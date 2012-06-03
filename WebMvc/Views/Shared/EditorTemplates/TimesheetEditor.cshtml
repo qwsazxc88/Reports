@@ -1,0 +1,171 @@
+﻿@using System.Globalization;
+@using Reports.Core.Dto;
+ <input type="hidden" id="TimesheetDto.IsEditable" name="TimesheetDto.IsEditable" value="@Model.IsEditable" />
+ <table>
+    <tr>
+        <td>
+           @Model.MonthAndYear
+        </td>
+        <td>
+           @Model.UserNameAndCode
+           <input type="hidden" id="TimesheetDto.OwnerId" name="TimesheetDto.OwnerId" value="@Model.OwnerId" />
+           <input type="hidden" id="TimesheetDto.Id" name="TimesheetDto.Id" value="@Model.Id" />
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding:0px;">        
+            <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px;">
+                <tr>
+                   @{ 
+                    int i=0;
+                    foreach(var day in Model.Days)
+                    {
+                        var timesheetDayNumberPrefix = "TimesheetDto.Days[" + @i.ToString() + "].Number";
+                        var timesheetDayStatusIdPrefix = "TimesheetDto.Days[" + @i.ToString() + "].StatusId";
+                        var timesheetDayStatusIdJQueryPrefix = "TimesheetDtoDays" + @i.ToString() + "StatusId";
+                        var timesheetDayHoursPrefix = "TimesheetDto.Days[" + @i.ToString() + "].Hours";
+                        var timesheetDayHoursJQueryPrefix = "TimesheetDtoDays" + @i.ToString() + "Hours";
+                        var timesheetDayHoursDivJQueryPrefix = "TimesheetDtoDays" + @i.ToString() + "HoursDiv";
+                        var timesheetDayIdPrefix = "TimesheetDto.Days[" + @i.ToString() + "].Id";
+                        var timesheetDayIdJQueryPrefix = "TimesheetDtoDays" + @i.ToString() + "Id";
+                        var timesheetDayHrefPrefix = "TimesheetDtoDays" + @i.ToString() + "Href";
+                        
+                       <td style="padding:0px;margin:0px">
+                            <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
+                                <tr>
+                                    <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                        @day.Number
+                                        <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number" />
+                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                    @if (Model.IsEditable)
+                                    {
+                                        <a class="ui-notify-close" id="@timesheetDayHrefPrefix" href='' onclick="OnChangeDay(@i);return false;" style="cursor:hand">@day.Status</a>
+                                        <input type="hidden" id="@timesheetDayIdJQueryPrefix" name="@timesheetDayIdPrefix" value="@day.Id" />
+                                           @*@Html.DropDownList(timesheetDayStatusIdComboPrefix, new SelectList(Model.Statuses, "Id", "Name", day.StatusId), new { style="width:45px"})*@
+                                    }
+                                    else
+                                    {
+                                        @day.Status
+                                    }
+                                    <input type="hidden" id="@timesheetDayStatusIdJQueryPrefix" name="@timesheetDayStatusIdPrefix" value="@day.StatusId" />
+                                    </td>
+                                </tr>   
+                                <tr>
+                                    <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                    <div id="@timesheetDayHoursDivJQueryPrefix">@day.Hours</div>
+                                    <input type="hidden" id="@timesheetDayHoursJQueryPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours" />
+                                    </td>
+                                </tr>
+                            </table>
+                       </td> 
+                        i++;
+                    }
+                   }
+                </tr>
+            </table>
+        </td>
+    </tr>
+ </table>
+  <script type="text/javascript">
+     function OnChangeDay(index) {
+         var idControlName = "#TimesheetDtoDays" + index + "Id";
+         var id = $(idControlName).val();
+         var statusControlName = "#TimesheetDtoDays" + index + "StatusId";
+         var statusId = $(statusControlName).val();
+         var hoursControlName = "#TimesheetDtoDays" + index + "Hours";
+         var hours = $(hoursControlName).val();
+        var elem = document.createElement('div');
+        elem.id = "divDialog";
+        var newDiv = $(elem);
+        var title =  "Редактирование дня";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditDayDialog", "Employee")?Id=" + id +
+        "&statusId=" + statusId + "&hours=" + hours + " #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            width: 300,
+	        height: 200,
+            // fix IE6  
+            bgiframe: true, 
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Изменить": function () {
+                    if(!ValidateAndSet(index))
+                        return;
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+     }
+     function ValidateAndSet(index)
+     {
+        if(!ValidateHours())
+            return false;
+        SetValues(index);
+        return true;
+     }
+     function SetValues(index)
+     {
+         var statusControlName = "#TimesheetDtoDays" + index + "StatusId";
+         $(statusControlName).val($("#StatusId").val());
+         var hoursControlName = "#TimesheetDtoDays" + index + "Hours";
+         var hoursDivControlName = "#TimesheetDtoDays" + index + "HoursDiv";
+         $(hoursControlName).val($("#Hours").val());
+         $(hoursDivControlName).text($("#Hours").val());
+         var hrefControlName = "#TimesheetDtoDays" + index + "Href";
+         $(hrefControlName).text($("#StatusId option:selected").text());
+     }
+     function ValidateHours()
+     {
+        var hours = $("#Hours").val();
+        if(hours == "")
+        {
+            addError("Часы - обязательное поле.");
+            return false;
+        }
+        var hourValue = getFloatValue(hours);
+        if(isNaN(hourValue) || (hourValue < 0) || (hourValue > 24))
+        {
+            addError('Недопустимое значение поля "Часы".');
+            return false;
+        }
+        hourValue = GetTwoDigitValue(hourValue);
+        hours = ReplaceToRussianDecimalPoint(hourValue.toString());
+        $("#Hours").val(hours);
+        clearErrors();
+        return true;
+     }
+
+    function getFloatValue(textValue) 
+    {
+        var value = trimSpaces(textValue);
+        value = ReplaceDecimalPoint(value); //value.replace(/,/g, '.');
+        return parseFloat(value);
+    }
+    function ReplaceDecimalPoint(value) {
+        //if(decimalSeparator == 44)
+        return value.replace(/,/g, '.');
+
+    }
+    function ReplaceToRussianDecimalPoint(value) {
+        //if(decimalSeparator == 44)
+        return value.replace('.', ',');
+
+    }
+
+</script>
+

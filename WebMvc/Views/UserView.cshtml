@@ -1,0 +1,43 @@
+﻿@model Reports.Presenters.UI.ViewModel.UserModel
+<table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.DisplayFor(m => m.FullName)
+        </td>
+    </tr>
+    <tr>
+        <td style="width:20%">
+            @Html.LabelFor(m => m.Code)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Code)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateAccepted)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateAccepted)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateRelease)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateRelease)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Comment)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Comment)
+        </td>
+    </tr>
+</table>

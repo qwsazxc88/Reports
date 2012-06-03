@@ -1,0 +1,94 @@
+﻿@model Reports.Presenters.UI.ViewModel.EmployeeListModel
+@{
+    ViewBag.Title = "Список сотрудников";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td>
+            @Html.TextBoxFor(m => m.UserName,!Model.IsUserNameVisible ? (object)new { style = "display:none" } : null)
+	    <input type="submit" value="Найти" @if (!Model.IsUserNameVisible) {<text>style="display:none"</text>}/>
+        </td>
+@*      <td style="text-align:left">
+            
+        </td>
+        <td style="text-align:right">
+            @if (Model.IsRolesVisible)
+            {
+                @Html.LabelFor(m => m.RoleId)
+            }
+        </td>
+         <td>
+            @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name"), !Model.IsRolesVisible ? (object)new { style = "display:none" } : null) 
+        </td>
+*@
+    </tr>
+    <tr>
+        <td>
+            <table class="grid" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Сотрудник</th>
+                    <th>Код 1C</th>
+                </tr>
+            </thead>
+            
+                @if (Model.Employees != null && Model.Employees.Count > 0)
+                {
+                    <tbody>
+                    @foreach (var emp in Model.Employees)
+                    {
+                        <tr>
+                            <td>
+                                @if(Model.IsLinkToUser)
+                                {
+                                    <a class="ui-notify-close" href='' style="cursor:hand">@emp.Name</a>
+                                }
+                                else
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("DocumentList", new { ownerId = emp.Id, viewHeader = true })' style="cursor:hand">@emp.Name</a>
+                                }
+                            </td>
+                            <td>@emp.Code</td>
+                        </tr>
+                    }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="text-align:left">
+                                <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                                @for (int i = 1; i <= Model.NumberOfPages; i++)
+                                {
+                                    if (i == Model.CurrentPage)
+                                    {
+                                        <text>@i</text>
+                                    }
+                                    else
+                                    {    
+                                        <a href="" onclick="return OnPageClick(@i);">@i</a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+    function OnPageClick(pageNumber) {
+        $("#CurrentPage").val(pageNumber);
+        submitForm();
+        return false;
+}
+function submitForm() {
+    if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
+        return;
+    document.forms[0].submit();
+}                                
+</script>
+}
+
+

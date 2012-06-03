@@ -1,0 +1,19 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@using WebMvc.Controllers           
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Произошла ошибка</title>
+</head>
+<body>
+        <p style="color:Red">В приложении произошла ошибка.</p>
+        @BaseController.WriteErrorToLog(Model.Exception)
+        <p>Контроллер: @Model.ControllerName </p>
+        <p>Action: @Model.ActionName</p>
+        <p>Сообщение: @Model.Exception.Message</p>
+        <p>Стек: <br/>@Model.Exception.StackTrace</p>
+</body>
+</html>

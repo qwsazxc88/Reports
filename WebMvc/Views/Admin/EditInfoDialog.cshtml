@@ -1,0 +1,28 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditInfoModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:130px">
+                <tr>
+                    <td colspan="2"><div id="Error" style="color:Red;display:none;"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="width:100%;">
+                        @Html.HiddenFor(model => model.Id)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Subject):</td>
+                    <td>@Html.TextBoxFor(model => model.Subject, new { maxlength = 1024,style = "width:365px;" })</td>
+                </tr>
+                <tr>
+                    <td>@Html.LabelFor(model => model.Message):</td>
+                    <td>
+                       @Html.TextAreaFor(model => model.Message, 4, 50,(object)new { style = "resize: none;" })
+                    </td>
+                </tr>
+    </table>
+</body>
+</html>

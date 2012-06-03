@@ -1,0 +1,64 @@
+﻿@model Reports.Presenters.UI.ViewModel.EmployeeDocumentListModel
+@{
+    ViewBag.Title = "Список заявок";
+}
+<table style="width:100%">
+    <tr>
+        <td @if(!Model.ViewHeader){<text>style="display:none"</text>}>
+            @Html.Partial("../UserView",Model)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.HiddenFor(m => m.UserId)
+            @Html.HiddenFor(m => m.ViewHeader)
+            @Html.HiddenFor(m => m.ShowNew)
+            @Html.HiddenFor(m => m.AddVisible)
+            @if (Model.AddVisible)
+            {
+                @Html.ActionLink("Добавить", "DocumentEdit", new { id = 0, userId = Model.UserId })
+            }
+        </td>
+    </tr>
+    <tr @if(!Model.TypeFilterVisible){<text>style="display:none"</text>} >
+        <td>
+            @Html.LabelFor(m => m.DocumentSubTypeId):
+            @Html.DropDownListFor(model => model.DocumentSubTypeId, new SelectList(Model.DocumentTypesAndSubtypes, "ID", "Name"), (object)new { onchange = "GetSubTypes();" }) 
+            @*@Html.DropDownListFor(model => model.DocumentSubTypeId, new SelectList(Model.DocumentSubTypes, "ID", "Name"))     *@
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid" style="width:100%">
+                <tr>
+                    <th>Документ</th>
+                    <th>Дата документа</th>
+                    <th>Одобрен</th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("DocumentEdit",new { id = doc.Id,ownerId = doc.OwnerId})' style="cursor:hand">@doc.Type</a>
+                            </td>
+                            <td>@doc.Date</td>
+                            <td>@if (doc.IsApproved)
+                                {<text>Да</text>}
+                                else
+                                {<text>Нет</text>}
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+    function GetSubTypes() {
+        window.location.href = '@Url.Action("DocumentList", "Employee")?ownerId=' + $("#UserId").val() + '&viewHeader=' + $("#ViewHeader").val()
+        + '&showNew=' + $("#ShowNew").val() +'&subtypeId=' + $("#DocumentSubTypeId").val();
+    }
+</script>

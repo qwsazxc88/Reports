@@ -1,0 +1,31 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="User" table="[Users]">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <!--<property name="IsAdministrator" not-null="true" />-->
+    <property name="IsFirstTimeLogin" not-null="true" />
+    <property name="IsActive" not-null="true" />
+    <property name="Login" length="64" not-null="true" unique="true"/>
+    <property name="_password" length="64" column="Password" not-null="false" access="field"/>
+	<property name="Code" length="32" not-null="false"/>
+	<property name="DateAccept" not-null="false" />
+    <property name="Name" length="512" not-null="true" />
+	<property name="Email" length="512" not-null="false" />
+    <!--<property name="LastName" length="100" not-null="true" />
+    <property name="MiddleName" length="100" not-null="true" />-->
+    <!--<property name="Branch" length="100" not-null="true" />
+    <property name="Position" length="100" not-null="true" />
+    <property name="Department" length="100" not-null="true" />-->
+    <property name="DateRelease" not-null="false"/>
+	<property name="Comment" length="512" not-null="false"/>  
+	<!--<property name="CanAnswer" not-null="true"/>
+	<property name="Birthday" not-null="false"/>-->
+	<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>
+	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>
+	<many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_User_PersonnelManager" index="IX_User_PersonnelManager_Id"  not-null="false"/>
+	<!--<many-to-one name="BudgetManager" class="User" column="BudgetManagerId" foreign-key="FK_User_BudgetManager" index="IX_User_BudgetManager_Id"  not-null="false"/>
+	<many-to-one name="OutsourcingManager" class="User" column="OutsourcingManagerId" foreign-key="FK_User_OutsourcingManager" index="IX_User_OutsourcingManager_Id"  not-null="false"/>-->
+  </class>
+</hibernate-mapping>

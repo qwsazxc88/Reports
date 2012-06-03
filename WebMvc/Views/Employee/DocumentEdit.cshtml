@@ -1,0 +1,219 @@
+﻿@model Reports.Presenters.UI.ViewModel.EmployeeDocumentEditModel
+@{
+    ViewBag.Title = "Редактирование заявки";
+}
+@using (Html.BeginForm("DocumentEdit", "Employee", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+<table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(true, "")
+            <div id="Error" style="color:Red;display:none;"></div>
+            <div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.Partial("../UserView", Model)
+        </td>
+    </tr>
+    <tr>
+        <td style="width:25%">
+            <input type="hidden" id="DocumentId" name="DocumentId" value="@Model.DocumentId" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="SendEmailToBilling" name="SendEmailToBilling" value="@Model.SendEmailToBilling" />
+            <input type="hidden" id="IsSendToBillingAvailable" name="IsSendToBillingAvailable" value="@Model.IsSendToBillingAvailable" />
+            @Html.HiddenFor(m => m.UserId)
+            @Html.LabelFor(m => m.DocumentTypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.DocumentTypeId, new SelectList(Model.DocumentTypes, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "GetSubTypes();" } : (object)new { onchange = "GetSubTypes();", disabled = "disabled" }) 
+            @Html.DropDownListFor(model => model.DocumentSubTypeId, new SelectList(Model.DocumentSubTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+            @if (!Model.IsEditable)
+            {
+                <input type="hidden" id="DocumentTypeId" name="DocumentTypeId" value="@Model.DocumentTypeId" />
+                <input type="hidden" id="DocumentSubTypeId" name="DocumentSubTypeId" value="@Model.DocumentSubTypeId" />
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Date):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Date)
+            <input type="hidden" id="Date" name="Date" value="@Model.Date" />
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.EditComment):</td>
+        <td>
+           @Html.TextAreaFor(model => model.EditComment, 4, 50, Model.IsEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "readonly" })<br/> 
+           @Html.ValidationMessageFor(m => m.EditComment)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="height:5px">
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.Attachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.Attachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+            }
+        </td>
+    </tr>
+    <tr @if (!Model.IsEditable)
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан документа</td>
+        <td><input id="FileContext" type="file" name="file"/></td>
+    </tr>
+    <tr>
+        <td colspan="2" style="height:5px">
+        </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
+                @Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByManager)
+                @if (!Model.IsApprovedByManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
+                @Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
+                @if (!Model.IsApprovedByPersonnelManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByBudgetManagerEnable" name="IsApprovedByBudgetManagerEnable" value="@Model.IsApprovedByBudgetManagerEnable" />
+                @Html.CheckBoxFor(model => model.IsApprovedByBudgetManager, Model.IsApprovedByBudgetManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByBudgetManager)
+                @if (!Model.IsApprovedByBudgetManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByBudgetManagerHidden" name="IsApprovedByBudgetManagerHidden" value="@Model.IsApprovedByBudgetManager" />
+                }
+            </td>
+    </tr>
+       <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByOutsorsingManagerEnable" name="IsApprovedByOutsorsingManagerEnable" value="@Model.IsApprovedByOutsorsingManagerEnable" />
+                @Html.CheckBoxFor(model => model.IsApprovedByOutsorsingManager, Model.IsApprovedByOutsorsingManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByOutsorsingManager)
+                @if (!Model.IsApprovedByOutsorsingManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByOutsorsingManagerHidden" name="IsApprovedByOutsorsingManagerHidden" value="@Model.IsApprovedByOutsorsingManager" />
+                }
+            </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+            
+            <input type="button" id="SendToBillingButton" name="SendToBillingButton" value="Отправить в биллинг" onclick="return SendToBilling();" @if (!Model.IsSendToBillingAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div id="CommentModelContext">@Html.Partial("DocumentCommentPartial", Model.CommentsModel)</div>
+        </td>
+    </tr>
+</table> 
+<script type="text/javascript">       
+function ValidateForm()
+{
+    return CheckFileSize();
+}
+function CheckFileSize() {
+/*     var myFSO = new ActiveXObject("Scripting.FileSystemObject");
+    if (myFSO == null)
+        return true;
+    var filepath = $("#FileContext").val();
+    if (filepath == null)
+        return true;
+    var thefile = myFSO.getFile(filepath);
+    var size = thefile.size;
+    if (size > 2097152) {
+        $("#Error").show();
+        $("#Error").val("Размер прикрепленного файла > 2Мб.");
+        return false;
+    }
+    else {
+        $("#Error").hide();
+        $("#Error").val("");
+        return true;
+    }*/
+   return true;
+}
+function GetSubTypes(actionUrl) {
+    var actionUrl = "@Url.Action("GetSubTypes", "Employee")";
+    var typeId = $("#DocumentTypeId").val();
+    var url = actionUrl + "?typeId="+ typeId;
+    $.getJSON(url,
+                       function (result) {
+                           var optionsValues = '<select id="DocumentSubTypeId" name="DocumentSubTypeId">';
+                           $.each(result, function (item, data) {
+                               optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+                           })
+                           optionsValues += '</select>';
+                           var options = $('#DocumentSubTypeId');
+                           options.replaceWith(optionsValues);
+                       }
+                     );
+}
+    function SendToBilling()
+    {
+        var url="@Url.Action("SendToBilling", "Employee")"+"?documentId="+$("#DocumentId").val();
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addError(result.Error);
+                                                $("#Success").hide();
+                                            }
+                                            else
+                                            {
+                                                $("#SendEmailToBilling").val("true");
+                                                $("#IsSendToBillingAvailable").val("false");
+                                                $("#SendToBillingButton").hide();
+                                                $("#Success").show();
+                                                clearErrors();
+                                            }    
+                                  });
+    }
+  
+</script>
+}

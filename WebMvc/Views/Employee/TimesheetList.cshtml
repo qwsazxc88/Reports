@@ -1,0 +1,56 @@
+﻿@model Reports.Presenters.UI.ViewModel.TimesheetListModel
+@{
+    ViewBag.Title = "Табель";
+}
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td colspan="5">
+                @Html.ValidationSummary(false, "")
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.HiddenFor(m => m.ManagerId)
+                @Html.HiddenFor(m => m.IsEditable)
+                @Html.LabelFor(m => m.Month):
+@*            </td>    
+            <td>*@
+                @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Date", "Name"), new { onchange = "ChangeMonth();"}) 
+            </td>
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>
+                @Html.LabelFor(m => m.Date):
+@*            </td>    
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>*@
+                @Html.DropDownListFor(model => model.Date, new SelectList(Model.Dates, "Date", "Name")) 
+            </td>
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>
+                @Html.LabelFor(m => m.Status):
+@*            </td>    
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>*@
+                @Html.DropDownListFor(model => model.Status, new SelectList(Model.Statuses, "Id", "Name")) 
+            </td>
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>
+                @Html.LabelFor(m => m.Hours):
+@*            </td>    
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>*@
+                @Html.TextBoxFor(model => model.Hours, new { style = "width:50px"}) 
+            </td>
+            <td @if(!Model.IsEditable) {<text>style="display:none"</text>}>
+                <input type="submit" value="Установить"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                @Html.EditorFor(model => model.TimesheetDtos)
+            </td>
+        </tr>
+    </table>
+}
+<script type="text/javascript">
+    function ChangeMonth() {
+         window.location.href = '@Url.Action("TimesheetList", "Employee")?managerId='+$("#ManagerId").val()+'&month='+$("#Month").val();
+    }
+</script>
+

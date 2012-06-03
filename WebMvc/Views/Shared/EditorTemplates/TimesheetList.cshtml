@@ -1,0 +1,56 @@
+﻿@using System.Globalization;
+@using Reports.Core.Dto;
+@{ 
+    int i = 0;
+    foreach (var dto in Model)
+    {
+        var dtoIdPrefix = "TimesheetDtos[" + @i.ToString() + "].Id";
+    <table>
+    <tr>
+        <td colspan="2">
+            <hr style="width:100%"/>
+        </td>
+    </tr>
+@*    <tr>
+    </tr>*@
+    <tr>
+        <td>
+           <input type="hidden" id="@dtoIdPrefix" name="@dtoIdPrefix" value="@dto.Id" /> 
+           @dto.MonthAndYear <br/>
+@*        </td>
+        <td>*@
+           <a class="ui-notify-close" href='@Url.Action("TimesheetEdit",new { id = dto.Id })' style="cursor:hand">@dto.UserNameAndCode</a>
+        </td>
+        <td style="padding:0px;">        
+            <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px;">
+                <tr>
+                  @foreach (TimesheetDayDto day in dto.Days)
+                  {
+                                   <td style="padding:0px;margin:0px">
+                                        <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
+                                            <tr>
+                                                <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                                    @day.Number
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                                    @day.Status
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                                @day.Hours
+                                                </td>
+                                            </tr>
+                                        </table >
+                                   </td> 
+                  }
+                </tr>
+            </table>
+        </td>
+    </tr>
+ </table>
+        i++;
+        }
+}

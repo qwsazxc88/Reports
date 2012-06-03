@@ -1,0 +1,344 @@
+﻿input[type="radio"] {border:0px; border-width:0px; padding:0px; margin:0px; width:16px;}
+input[type="checkbox"] {border:0px; border-width:0px; padding:0px; margin:0px; width:16px;}
+.label
+{
+	color: Black;
+	font-size: 11px;
+	vertical-align:top;		
+	text-align: left;
+	font-weight: bold;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+}
+.richtextLabel
+{
+	color: Black;
+	font-size: 11px;
+	vertical-align:top;		
+	text-align: left;
+	font-family:Verdana,Arial,Helvetica,sans-serif;
+	table-layout:fixed;
+}
+.selected
+{
+	color: White;
+	background-color: #336699;	
+}
+
+.selected A:hover
+{
+	color: #ccffff;
+}
+
+A.submenu
+{
+	font-weight: bold;
+}
+
+A.blueboldlink
+{
+	font-weight: 600;
+	font-weight: bold;
+}
+A.blueboldlink:hover
+{
+	color: #965a19;
+}
+
+a.help
+{
+}
+.errortext
+{
+	color: Red;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.successtext
+{
+	color: Green;
+	font-size: 11px;
+	font-weight: 600;
+}
+
+
+TABLE.FindUserAccount
+{
+	font-size: 14px;
+	width: 400px;
+}
+
+TABLE.FindUserAccount td
+{
+	 padding: 0px;
+}
+TABLE.FindUserAccount tr
+{
+	padding: 0px;
+
+}
+
+
+#centerScreenDIV
+{
+	margin: 0 auto ;
+	width: 560px;
+}
+.centerControlInDIV
+{
+	text-align : center;
+}
+
+.previewheaderLabel
+{
+	font-size:large;
+	font-weight:bolder;
+	color:#003c79;
+}
+
+.centerscreen p{
+width: 400px;
+clear: left;
+margin: 0;
+padding: 2px 0 2px 0;
+padding-left: 155px; /*width of left column containing the label elements*/
+border-top: 1px dashed gray;
+height: 1%;
+}
+
+.centerscreen label{
+font-weight: bold;
+float: left;
+margin-left: -155px; /*width of left column*/
+width: 150px; /*width of labels. Should be smaller than left column (155px) to create some right margin*/
+padding: 5px;
+}
+
+.centerscreen input[type="text"]{ /*width of text boxes. IE6 does not understand this attribute*/
+width: 180px;
+}
+.centerscreen input[type="password"]{ /*width of text boxes. IE6 does not understand this attribute*/
+width: 180px;
+}
+
+.centerscreen textarea{
+width: 250px;
+height: 150px;
+}
+
+#MasterCustomerIdTextBox
+{
+	width: 100px;
+}
+#SubCustomerIdTextBox
+{
+	width: 63px;
+}
+
+.divsimplehidden
+{
+	display: none;
+	visibility: hidden;
+}
+
+.divsimplevisible
+{
+	display: block;
+	visibility: visible;
+}
+
+.popupControl
+{
+	visibility: hidden;
+	background-color:White;
+	position:absolute;	
+	border-width:1px;
+	border-style:solid;
+}
+
+/*Tabs*/
+/*Credits: Dynamic Drive CSS Library */
+/*URL: http://www.dynamicdrive.com/style/ */
+
+
+.tabs 
+{
+	padding: 3px 3px;
+	margin-bottom: 1px;
+	margin-bottom: 1em;
+	font-size: 12px;
+	border-bottom: 1px solid gray;
+}
+
+.tabs a
+{
+	text-decoration: none;
+	padding: 3px 7px;
+	margin-right: 3px;
+	border: 1px solid #778;
+	color: #2d2b2b;
+	background: white url(./images/shade.gif) top left repeat-x;
+}
+
+.tabs a:visited
+{
+	color: #2d2b2b;
+	text-decoration: none;
+}
+
+.tabs a:hover
+{
+	text-decoration: underline;
+	color: #2d2b2b;
+}
+
+.tabs a.selected
+{
+	position:relative;	
+	top: 1px;
+	left: 0;
+}
+.tabs a.selected 
+{
+	background-image: url(./images/shadeactive.gif);
+	border-bottom: none;
+}
+
+.tabs a.selected:hover
+{
+	text-decoration: none;
+}
+
+/*Error message. Ex. on ErrorPage.aspx*/
+.LabelErrorMessageHeight
+{
+	 height: 18px;
+}
+.LabelErrorMessageFont
+{
+	  font-size:  xx-large;
+}
+.SelectImageBorder
+{
+	border: 1px solid #cc0000;
+	vertical-align: middle;
+	text-align: center;
+}
+.OnlyImageBorder
+{
+	border: 1px solid #d7dce6;
+	vertical-align: middle;
+	text-align: center;
+}
+.SelectImageName
+{
+	font-weight: bold;
+}
+
+.gridIndicatedItem
+{
+	font-weight:bold;
+}
+
+/*Calendar Styles for PublishedDate*/
+.calpopup_calendar
+{
+  border-style:solid;
+  border-width:1px;
+  border-color:Black;
+  border-collapse:collapse;
+  background-color:#FFFFFF;
+  cursor:default;
+}
+.calpopup_calendar td
+{
+  font-size:11px;
+}
+.calpopup_title
+{
+  font-weight:bold;
+  background-color:#D7D7E5;
+}
+.calpopup_day
+{
+  width:25px;
+  cursor:pointer;
+  text-align:  center;
+  border-width:1px;
+  border-color:#F6F6F6;
+  border-style:solid;
+}
+.calpopup_dayheader
+{
+    width:25px;
+  text-align:center;
+  border-width:1px;
+  border-color:white;
+  border-style:solid;
+  font-weight:bold;
+  background-color:#FFFFFF;
+}
+.calpopup_dayhover
+{
+    width:25px;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:underline;
+  border-width:1px;
+  border-color:#F6F6F6;
+  border-style:solid;
+}
+.calpopup_month
+{
+  background-color:#F6F6F6;
+  margin-left:5px;
+  margin-right:5px;
+  margin-bottom:5px;
+  margin-top:0px;
+}
+.calpopup_nextprev
+{
+  cursor:pointer;
+  height:25px;
+  vertical-align: middle;
+  padding:0px 5px 0px 5px;
+}
+.calpopup_othermonthday
+{
+  color:#999999;
+}
+.calpopup_selectedday
+{
+  width:25px;
+  background-color:#FBE694;
+  color:#000000;
+  border-width:1px;
+  border-color:#BB5503 !important;
+  border-style:solid;
+  font-weight:bold;
+}
+.calpopup_selector
+{
+  width:14px;
+  cursor:pointer;
+  text-align:left;
+  vertical-align: middle;
+  background-color:#FFFFFF;
+}
+.calpopup_disabledday
+{
+	BORDER-RIGHT: black 1px solid;
+	BORDER-TOP: black 1px solid;
+	BORDER-LEFT: black 1px solid;
+	BORDER-BOTTOM: black 1px solid;
+	BACKGROUND-COLOR: buttonshadow;
+	CURSOR: default;
+}
+.GridViewFix
+{
+	table-layout:fixed;	
+}
+.ContectListBorder
+{
+	border: 1px solid #d7dce6;
+}

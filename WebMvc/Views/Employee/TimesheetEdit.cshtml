@@ -1,0 +1,49 @@
+﻿@model Reports.Presenters.UI.ViewModel.TimesheetEditModel
+@{
+    ViewBag.Title = "Табель";
+}
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td @if(!Model.ViewHeader){<text>style="display:none"</text>}>
+                @Html.Partial("../UserView",Model)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="hidden" id="Month" name="Month" value="@Model.Month" />
+                @Html.EditorFor(model => model.TimesheetDto)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="hidden" id="IsNotApprovedByUserEnable" name="IsNotApprovedByUserEnable" value="@Model.IsNotApprovedByUserEnable" />
+                @Html.CheckBox("IsNotApprovedByUser", Model.IsNotApprovedByUser, Model.IsNotApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsNotApprovedByUser)
+                @if (!Model.IsNotApprovedByUserEnable)
+                {
+                    <input type="hidden" id="IsNotApprovedByUserHidden" name="IsNotApprovedByUserHidden" value="@Model.IsNotApprovedByUser" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="hidden" id="IsNotApprovedByPersonnelEnable" name="IsNotApprovedByPersonnelEnable" value="@Model.IsNotApprovedByPersonnelEnable" />
+                @Html.CheckBox("IsNotApprovedByPersonnel", Model.IsNotApprovedByPersonnel, Model.IsNotApprovedByPersonnelEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsNotApprovedByPersonnel)
+                @if (!Model.IsNotApprovedByPersonnelEnable)
+                {
+                    <input type="hidden" id="IsNotApprovedByPersonnelHidden" name="IsNotApprovedByPersonnelHidden" value="@Model.IsNotApprovedByPersonnel" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>
+            <input type="submit" value="Сохранить" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+            </td>
+        </tr>
+    </table>
+  
+}
+

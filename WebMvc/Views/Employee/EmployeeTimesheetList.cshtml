@@ -1,0 +1,39 @@
+﻿@model Reports.Presenters.UI.ViewModel.EmployeeTimesheetListModel
+@{
+    ViewBag.Title = "Список табелей";
+}
+<table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.HiddenFor(m => m.OwnerId)
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table class="grid" style="width:100%">
+                <tr>
+                    <th>Документ</th>
+                    <th>Дата документа</th>
+                    <th>Одобрен</th>
+                </tr>
+                @if (Model.Timesheets != null && Model.Timesheets.Count > 0)
+                {
+                    foreach (var doc in Model.Timesheets)
+                    {
+                        <tr>
+                            <td>
+                                <a class="ui-notify-close" href='@Url.Action("TimesheetEdit", new { Id = doc.Id })' style="cursor:hand">Табель</a>
+                            </td>
+                            <td>@doc.Date</td>
+                            <td>@if (doc.IsApproved)
+                                {<text>Да</text>}
+                                else
+                                {<text>Нет</text>}
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </td>
+    </tr>
+</table>    

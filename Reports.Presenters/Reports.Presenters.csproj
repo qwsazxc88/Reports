@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{22B7ACB5-AC6F-4D58-B546-1E8963B07AF1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Reports.Presenters</RootNamespace>
+    <AssemblyName>Reports.Presenters</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>http://localhost/Reports.Presenters/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.MicroKernel, Version=1.0.0.2, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.MicroKernel.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=1.0.0.2, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=1.2.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CmfContainer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\IAuthenticationService.cs" />
+    <Compile Include="Services\IFormsAuthenticationService.cs" />
+    <Compile Include="Services\Impl\AuthenticationService.cs" />
+    <Compile Include="Services\Impl\FormsAuthenticationService.cs" />
+    <Compile Include="Services\Impl\UserDto.cs" />
+    <Compile Include="Services\IUser.cs" />
+    <Compile Include="UI\Attributes.cs" />
+    <Compile Include="UI\Bl\IAdminBl.cs" />
+    <Compile Include="UI\Bl\IBaseBl.cs" />
+    <Compile Include="UI\Bl\IEmployeeBl.cs" />
+    <Compile Include="UI\Bl\Impl\AdminBl.cs" />
+    <Compile Include="UI\Bl\Impl\BaseBl.cs" />
+    <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
+    <Compile Include="UI\Bl\ILoginBL.cs" />
+    <Compile Include="UI\Bl\Impl\LoginBL.cs" />
+    <Compile Include="UI\ViewModel\AccountModels.cs" />
+    <Compile Include="UI\ViewModel\AddCommentModel.cs" />
+    <Compile Include="UI\ViewModel\AttachmentModel.cs" />
+    <Compile Include="UI\ViewModel\AutoImportModel.cs" />
+    <Compile Include="UI\ViewModel\BaseModel.cs" />
+    <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
+    <Compile Include="UI\ViewModel\DialogErrorModel.cs" />
+    <Compile Include="UI\ViewModel\DocumentCommentsModel.cs" />
+    <Compile Include="UI\ViewModel\DocumentSubtypeListModel.cs" />
+    <Compile Include="UI\ViewModel\DocumentTypeListModel.cs" />
+    <Compile Include="UI\ViewModel\EditDayModel.cs" />
+    <Compile Include="UI\ViewModel\EditInfoModel.cs" />
+    <Compile Include="UI\ViewModel\EditSubTypeModel.cs" />
+    <Compile Include="UI\ViewModel\EditTypeModel.cs" />
+    <Compile Include="UI\ViewModel\EmployeeDocumentEditModel.cs" />
+    <Compile Include="UI\ViewModel\EmployeeDocumentListModel.cs" />
+    <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
+    <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
+    <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
+    <Compile Include="UI\ViewModel\IExportImport.cs" />
+    <Compile Include="UI\ViewModel\InformationListModel.cs" />
+    <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
+    <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
+    <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
+    <Compile Include="UI\ViewModel\SettingsModel.cs" />
+    <Compile Include="UI\ViewModel\TimesheetEditModel.cs" />
+    <Compile Include="UI\ViewModel\TimesheetListModel.cs" />
+    <Compile Include="UI\ViewModel\TimesheetModel.cs" />
+    <Compile Include="UI\ViewModel\UserEditModel.cs" />
+    <Compile Include="UI\ViewModel\UserListModel.cs" />
+    <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="Utils\WebUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Reports.CommonWeb\Reports.CommonWeb.csproj">
+      <Project>{B3032E92-B802-4876-92B3-6E2479EE6CDE}</Project>
+      <Name>Reports.CommonWeb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Reports.Core\Reports.Core.csproj">
+      <Project>{918064DA-FDBE-4DF2-8BA2-73F1C72F4DE5}</Project>
+      <Name>Reports.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

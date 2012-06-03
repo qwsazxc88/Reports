@@ -1,0 +1,27 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditSubTypeModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:50px">
+                <tr>
+                    <td colspan="2"><div id="Error" style="color:Red;display:none;"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="width:100%;">
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.HiddenFor(model => model.TypeId)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.TypeName):</td>
+                    <td>@Html.DisplayFor(model => model.TypeName)</td>
+                <tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Name):</td>
+                    <td>@Html.TextBoxFor(model => model.Name, new { style = "width:350px", maxlength = 100 })</td>
+                </tr>
+    </table>
+</body>
+</html>

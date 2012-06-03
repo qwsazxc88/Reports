@@ -1,0 +1,101 @@
+﻿@model Reports.Presenters.UI.ViewModel.LoginRecoveryModel
+
+@{
+    Layout = "~/Views/Shared/_SimpleLayoutJquery.cshtml";
+    ViewBag.Title = "Восстановление пароля";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">    
+                @Html.ValidationSummary(false, "")
+            </td>
+        </tr>    
+        <tr>
+            <td colspan="2" @if (!Model.IsRecoverySuccess)
+                            {<text>style="display:none"</text>}
+                            else
+                            {<text>style="color:Green"</text>}>
+                Пароль отправлен на e-mail пользователя.
+            </td>
+        </tr>
+        <tr>
+            <td style="width:50px">    
+                @Html.LabelFor(m => m.Login)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Login, new { maxlength = 64 })
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">    
+                <input type="submit" value="Отправить"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <br/>
+            </td>
+        </tr>    
+        <tr>
+            <td colspan="2"><div id="Error" style="color:Red;display:none;"/></td>
+        </tr>    
+        <tr>
+            <td colspan="2"><div id="Success" style="color:Green;display:none;">Письмо в техподдержку отправлено.</div></td>
+        </tr>    
+        <tr @if (!Model.IsSupportFormVisible)
+            {<text>style="display:none"</text>}>
+            <td>
+                @Html.LabelFor(m => m.Subject)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Subject, new { maxlength = 64 })
+            </td>
+        </tr>
+        <tr @if (!Model.IsSupportFormVisible)
+            {<text>style="display:none"</text>}>
+            <td>@Html.LabelFor(model => model.Text):</td>
+            <td>
+               @Html.TextAreaFor(model => model.Text, 4, 50, null)<br/> 
+            </td>
+        </tr>
+        <tr @if (!Model.IsSupportFormVisible)
+            {<text>style="display:none"</text>}>
+            <td colspan="2">    
+                <input type="button" value="Отправить" onclick="SendToSupport();"/>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+    function SendToSupport()
+    {
+        var url="@Url.Action("SendToSupport", "Account")"+"?subject="+escapeJson($("#Subject").val())
+        +"&text="+escapeJson($("#Text").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addError(result.Error);
+                                                $("#Success").hide();
+                                            }
+                                            else
+                                            {
+                                                $("#Success").show();
+                                                clearErrors();
+                                            }    
+                                  });
+    }
+
+    </script>
+}

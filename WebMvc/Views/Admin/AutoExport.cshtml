@@ -1,0 +1,36 @@
+﻿@model Reports.Presenters.UI.ViewModel.AutoImportModel
+
+@{
+    Layout = "~/Views/Shared/_SimpleLayout.cshtml";
+    ViewBag.Title = "Импорт";
+}
+@using (Html.BeginForm()) {
+    <table style="width:100%">
+            <tr>
+                <td style="width:10%">
+                    @Html.LabelFor(m => m.Result):
+                </td>
+                <td>
+                    @if(Model.Result){<text><div style="color:Green">Выгрузка успешна.</div></text>}
+                    else
+                    {<text><div style="color:Red">Были ошибки при выгрузке.</div></text>} 
+                </td>
+            </tr>
+            <tr>
+                <td style="width:10%">
+                    @Html.LabelFor(m => m.ExportMonth):
+                </td>
+                <td>
+                    @Model.ExportMonth
+                </td>
+            </tr>
+            <tr @if(String.IsNullOrEmpty(Model.Error)){<text>style="display:none"</text>}>
+                <td>
+                    @Html.LabelFor(m => m.Error):
+                </td>
+                <td style="color:Red">
+                    @Model.Error
+                </td>
+            </tr>
+    </table>
+}

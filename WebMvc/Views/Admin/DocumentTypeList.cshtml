@@ -1,0 +1,165 @@
+﻿@model Reports.Presenters.UI.ViewModel.DocumentTypeListModel
+@{
+    ViewBag.Title = "Типы заявок";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td>
+            @*@Html.ActionLink("Добавить", "UserEdit", new { id = 0 }) *@
+            @*<input type="button" value="Добавить" id="Add" onclick="OnChangeType(0);"/>*@
+            <a class="ui-notify-close" href='' style="cursor:hand" onclick="OnChangeType(0);return false;">Добавить</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Тип</th>
+                    <th></th>
+                </tr>
+            </thead>
+            
+                @if (Model.Types != null && Model.Types.Count > 0)
+                {
+                    <tbody>
+                    @foreach (var emp in Model.Types)
+                    {
+                        <tr>
+                            <td style="text-align:left">
+                              <a class="ui-notify-close" href='' style="cursor:hand" onclick="OnChangeType(@emp.Id);return false;">@emp.Name</a>
+                            </td>
+                            <td><a class="ui-notify-close" href='@Url.Action("DocumentSubTypeList", new { typeId = emp.Id })' style="cursor:hand">Подтипы</a></td>
+                        </tr>
+                    }
+                    </tbody>
+@*                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="text-align:left">
+                                <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                                @for (int i = 1; i <= Model.NumberOfPages; i++)
+                                {
+                                    if (i == Model.CurrentPage)
+                                    {
+                                        <text>@i</text>
+                                    }
+                                    else
+                                    {    
+                                        <a href="" onclick="return OnPageClick(@i);">@i</a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tfoot>*@
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+function submitForm() {
+    if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
+        return;
+    document.forms[0].submit();
+}                                
+function GetTypes() {
+        window.location.href = '@Url.Action("DocumentTypeList", "Admin")';
+    }
+function OnChangeType(id) {
+        var elem = document.createElement('div');
+        elem.id = "divDialog";
+        var newDiv = $(elem);
+        var title =  "Редактирование типа заявки";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditTypeDialog", "Admin")?Id=" + id +" #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            width: 500,
+	        height: 150,
+            // fix IE6  
+            bgiframe: true, 
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Изменить": function () {
+                    if(!ValidateAndSet(id))
+                        return;
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+     }
+    function ValidateAndSet(id)
+    {
+        if(trimSpaces($("#Name").val()) == "")
+        {
+            addError("Название - обязательное поле")
+            return false;
+        }
+        SaveType(id);
+    }
+//     function addError(value) {
+//        $("#Error").text(value);
+//        $("#Error").show();
+//    }
+//    function clearErrors() {
+//        $("#Error").text("");
+//        $("#Error").hide();
+//    }
+    function SaveType()
+    {
+        var url="@Url.Action("SaveType", "Admin")"+"?id=" +$("#Id").val() +"&name="+escapeJson($("#Name").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addError(result.Error);
+//                                                $("#Error").text(result.Error);
+//                                                $("#Error").attr( "visible", "true"); 
+                                            }
+                                            else
+                                            {
+//                                                $("#Error").attr( "visible", "false"); 
+                                                clearErrors();
+                                                $("#divDialog").dialog("close");
+                                                GetTypes();
+                                            }    
+                                  });
+//            jqxhr.error(function(jqXHR, textStatus, errorThrown) 
+//                                    { 
+//                                        var error = "";
+//                                        if(textStatus != null){
+//                                            error += textStatus;
+//                                        }
+//                                        if(errorThrown != null){
+//                                            error+=errorThrown;
+//                                        }
+//                                        $("#Error").text(result.Error);
+//                                        $("#Error").attr( "visible", "true"); 
+//                                    });
+    }
+
+</script>
+}
+
+

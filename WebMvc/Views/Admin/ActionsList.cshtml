@@ -1,0 +1,65 @@
+﻿@using Reports.Core.Enum
+@model Reports.Presenters.UI.ViewModel.ActionListModel
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td>
+            @Html.ValidationSummary(false, "")
+        </td>
+    </tr>
+    <tr @if (Model.Type == ExportImportType.Import){<text>style="display:none"</text>} >
+            <td>
+                @Html.LabelFor(m => m.Month):
+                @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Date", "Name")) 
+            </td>
+   </tr>
+   <tr>
+        <td>
+            @Html.HiddenFor(m => m.Type)
+            <input type="submit" @if (Model.Type == ExportImportType.Import)
+                                 {<text> value="Загрузить" </text>}
+                                 else
+                                 {<text> value="Выгрузить" </text>}/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @if (Model.Type == ExportImportType.Import)
+            {
+                <text>Успешные загрузки</text>
+            }
+            else
+            {
+                <text>Успешные выгрузки</text>
+            }
+        </td>
+    </tr>    
+    <tr>
+        <td>
+            <table class="grid" style="width:400px;">
+            <thead>
+                <tr>
+                    <th>Дата, время</th>
+                </tr>
+            </thead>
+                @if (Model.Actions != null && Model.Actions.Count > 0)
+                {
+                    <tbody>
+                    @foreach (var emp in Model.Actions)
+                    {
+                        <tr>
+                            <td>@emp.Name</td>
+                        </tr>
+                    }
+                    </tbody>
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+</script>
+}
+
+

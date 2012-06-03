@@ -1,0 +1,143 @@
+﻿@model Reports.Presenters.UI.ViewModel.UserEditModel
+@{
+    ViewBag.Title = "Редактирование пользователя";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            @Html.LabelFor(m => m.UserNameStatic)
+            @Html.DisplayFor(m => m.UserNameStatic)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false, "")
+            <div id="Error" visible="false" style="color:Red"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.UserName)
+        </td>
+        <td>
+@*            @if (Model.IsUserNameEditable)
+            {*@
+                @Html.TextBoxFor(m => m.UserName, Model.IsUserNameEditable ? (object)new { maxlength = 512 } : (object)new { @readonly = "readonly", maxlength = 512 })
+                <input type="hidden" id="IsUserNameEditable" name="IsUserNameEditable" value="@Model.IsUserNameEditable" />
+@*            }
+            else
+            {
+                @Html.DisplayFor(m => m.UserName)
+            }*@
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Login)
+        </td>
+        <td>
+@*            @if (Model.IsLoginEditable)
+            {*@
+             @Html.TextBoxFor(m => m.Login, Model.IsLoginEditable ? (object)new { maxlength = 64 } : (object)new { @readonly = "readonly", maxlength = 64 })
+             <input type="hidden" id="IsLoginEditable" name="IsLoginEditable" value="@Model.IsLoginEditable" />
+@*            }
+            else
+            {
+                @Html.DisplayFor(m => m.Login)
+            }*@
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Password)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.Password, new { maxlength = 64 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Email)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.Email, new { maxlength = 512 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Code)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.Code, new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.RoleId)
+        </td>
+        <td>
+            <input type="hidden" id="IsRoleEditable" name="IsRoleEditable" value="@Model.IsRoleEditable" />
+            @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name"), Model.IsRoleEditable ? (object) null : (object)new { disabled = "disabled" }) 
+            @if (!Model.IsRoleEditable)
+            {
+                <input type="hidden" id="RoleId" name="RoleId" value="@Model.RoleId" />
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ManagerId)
+        </td>
+        <td>
+            <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
+            @Html.DropDownListFor(model => model.ManagerId, new SelectList(Model.Managers, "ID", "Name"), Model.IsManagerEditable ? (object)null : (object)new { disabled = "disabled" }) 
+            @if (!Model.IsManagerEditable)
+            {
+                <input type="hidden" id="ManagerId" name="ManagerId" value="@Model.ManagerId" />
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.PersonnelId)
+        </td>
+        <td>
+            <input type="hidden" id="IsPersonnelEditable" name="IsPersonnelEditable" value="@Model.IsPersonnelEditable" />
+            @Html.DropDownListFor(model => model.PersonnelId, new SelectList(Model.Personnels, "ID", "Name"), Model.IsPersonnelEditable ? (object)null : (object)new { disabled = "disabled" }) 
+            @if (!Model.IsPersonnelEditable)
+            {
+                <input type="hidden" id="PersonnelId" name="PersonnelId" value="@Model.PersonnelId" />
+            }
+        </td>
+    </tr>
+
+
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsActiveEditable" name="IsActiveEditable" value="@Model.IsActiveEditable" />
+                @Html.CheckBox("IsActive", Model.IsActive, Model.IsActiveEditable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsActive)
+                @if (!Model.IsActiveEditable)
+                {
+                    <input type="hidden" id="IsActiveHidden" name="IsActiveHidden" value="@Model.IsActive" />
+                }
+            </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Сохранить"/>
+        </td>
+    </tr>
+</table> 
+<script type="text/javascript">       
+</script>
+}

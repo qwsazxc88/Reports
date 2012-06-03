@@ -1,0 +1,41 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Reports.Core.Domain;
+using Reports.Core.Dto;
+
+namespace Reports.Core.Dao
+{
+    public interface IUserDao : IDao<User>
+    {
+        User FindByLogin(string login);
+        bool IsLoginWithOtherIdExists(string login, int id);
+        IList<User> GetUsersWithRole(UserRole role);
+        IList<User> LoadUserByCodes(List<string> codes);
+		//User FindByEmail(string email);
+		//User FindByCustomerId(string masterCustomerId, string subCustomerId);
+        //IList<User> FindByFilter(UserListFilter filter, out int count);
+		//IList<User> GetUsersInRole(string roleName);
+		//IList<User> GetUsersInDcmRole(ContentManagementRole role, int baseCaseId);
+		//ContentManagementRole GetUserRolesForCase(int userId, int baseCaseId);
+		//string[] GetUsersLoginInRole(string roleName);
+        int Count();
+		//ISet<Institution> GetLinkedInstitutions(int userId);
+		//IList<User> GetUsersInDcmRoles(ContentManagementRole roles, int maxResults, int firstResult,
+		//    string sortExpression, bool sortAscending, out int count);
+		//IList<SelectUserDto> LoadDtoListForInstitution(IList<User> list, int institutionId);
+        IList<User> LoadForIdsList(ArrayList ids);
+        //IList<UsersListItemDto> FindByFilter(UserListFilter filter, out int count);
+        //Iesi.Collections.Generic.ISet<IdNameDto> GetAllEntitiesForDictionary(string fieldName);
+
+        string ConstFKExistsViewName { get;}
+        IList<UserDto> GetUsersForManager(string userName, int managerId,
+            UserRole managerRole, int? role,ref int currentPage,
+            out int numberOfPages);
+        IList<User> GetUsersForAdmin(string userName, int role,
+                                     ref int currentPage, out int numberOfPages);
+
+        int DeleteEmployees(DateTime date);
+    }
+}
+

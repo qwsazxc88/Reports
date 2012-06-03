@@ -1,0 +1,184 @@
+﻿@model Reports.Presenters.UI.ViewModel.InformationListModel
+@{
+    ViewBag.Title = "Информация";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td>
+           <input type="button" value="Добавить" id="Add" onclick="OnChangeInfo(0);"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align:left">
+           Информация
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid" style="width:100%;">
+@*            <thead>
+                <tr>
+                    <th style="width:25%">Тема</th>
+                    <th></th>
+                </tr>
+            </thead>
+*@            
+                @if (Model.Items != null && Model.Items.Count > 0)
+                {
+                    <tbody>
+                    @foreach (var emp in Model.Items)
+                    {
+                        <tr>
+                            <td style="width:50%;text-align:left">
+                              <a class="ui-notify-close" href='' style="cursor:hand" onclick="OnChangeInfo(@emp.Id);return false;">@emp.Subject</a>
+                            </td>
+                            <td>@emp.Message</td>
+                        </tr>
+                    }
+                    </tbody>
+@*                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="text-align:left">
+                                <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                                @for (int i = 1; i <= Model.NumberOfPages; i++)
+                                {
+                                    if (i == Model.CurrentPage)
+                                    {
+                                        <text>@i</text>
+                                    }
+                                    else
+                                    {    
+                                        <a href="" onclick="return OnPageClick(@i);">@i</a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tfoot>*@
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+function submitForm() {
+    if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
+        return;
+    document.forms[0].submit();
+}                                
+function GetInformation() {
+        window.location.href = '@Url.Action("InformationsList", "Admin")';
+    }
+function OnChangeInfo(id) {
+        var elem = document.createElement('div');
+        elem.id = "divDialog";
+        var newDiv = $(elem);
+        var title =  "Редактирование информации";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditInfoDialog", "Admin")?Id=" + id +" #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            width: 500,
+	        height: 250,
+            // fix IE6  
+            bgiframe: true, 
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Изменить": function () {
+                    if(!ValidateAndSet())
+                        return;
+                    //$(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+     }
+    function ValidateAndSet()
+    {
+        if(trimSpaces($("#Subject").val()) == "")
+        {
+            addError("Тема - обязательное поле")
+            return false;
+        }
+        if(trimSpaces($("#Message").val()) == "")
+        {
+            addError("Информация - обязательное поле")
+            return false;
+        }
+        SaveInfo();
+    }
+//     function addError(value) {
+//        $("#Error").text(value);
+//        $("#Error").show();
+//    }
+//    function clearErrors() {
+//        $("#Error").text("");
+//        $("#Error").hide();
+//    }
+    function SaveInfo()
+    {
+        var url="@Url.Action("SaveInfo", "Admin")"+"?id=" +$("#Id").val() +"&subject="+escapeJson($("#Subject").val())+
+        "&message="+escapeJson($("#Message").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addError(result.Error);
+//                                                $("#Error").text(result.Error);
+//                                                $("#Error").attr( "visible", "true"); 
+                                            }
+                                            else
+                                            {
+//                                                $("#Error").attr( "visible", "false"); 
+                                                clearErrors();
+                                                $("#divDialog").dialog("close");
+                                                GetInformation();
+                                            }    
+                                  });
+//            jqxhr.error(function(jqXHR, textStatus, errorThrown) 
+//                                    { 
+//                                        var error = "";
+//                                        if(textStatus != null){
+//                                            error += textStatus;
+//                                        }
+//                                        if(errorThrown != null){
+//                                            error+=errorThrown;
+//                                        }
+//                                        $("#Error").text(result.Error);
+//                                        $("#Error").attr( "visible", "true"); 
+//                                    });
+    }
+
+</script>
+}
+
+

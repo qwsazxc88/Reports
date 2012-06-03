@@ -1,0 +1,25 @@
+﻿@model Reports.Presenters.UI.ViewModel.TimesheetModel
+@{
+    ViewBag.Title = "Табель";
+}
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+                @Html.EditorFor(model => model.TimesheetDto)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.EditorFor(model => model.TimesheetDtos)
+            </td>
+        </tr>
+         <tr>
+            <td>
+                <input type="submit" value="Сохранить"/>
+            </td>
+    </tr>
+    </table>
+}
+

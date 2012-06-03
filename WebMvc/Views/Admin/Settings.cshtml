@@ -1,0 +1,177 @@
+﻿@model Reports.Presenters.UI.ViewModel.SettingsModel
+@{
+    ViewBag.Title = "Настройки";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false, "")
+            <div id="Error" visible="false" style="color:Red"/>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <br/>
+        </td>
+    </tr>
+    <tr>
+        <td style="width:380px">
+            @Html.LabelFor(m => m.DownloadDictionaryFilePath)
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.DownloadDictionaryFilePath, new { maxlength = 512 } )
+        </td>
+        
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.UploadTimesheetFilePath)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.UploadTimesheetFilePath, new { maxlength = 512 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ReleaseEmployeeDeleteDate)
+        </td>
+        <td>
+                @Html.EditorFor(m => m.ReleaseEmployeeDeleteDate)
+                <input id="Delete" type="button" value="Удалить" onclick="OnDelete();"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ExportImportEmail)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.ExportImportEmail, new { maxlength = 128 })
+        </td>
+    </tr>
+    <tr>
+            <td style="width:380px">
+                @Html.LabelFor(m => m.SendEmailToManagerAboutNew)
+            </td>
+            <td>
+                @Html.CheckBoxFor(m =>m.SendEmailToManagerAboutNew) 
+@*                @Html.LabelFor(model => model.SendEmailToManagerAboutNew)*@
+            </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NotificationEmail)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.NotificationEmail, new { maxlength = 128 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NotificationSmtp)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.NotificationSmtp, new { maxlength = 128 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NotificationPort)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.NotificationPort, new { maxlength = 5 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NotificationLogin)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.NotificationLogin, new { maxlength = 32 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NotificationPassword)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.NotificationPassword, new { maxlength = 32 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BillingEmail)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.BillingEmail, new { maxlength = 128 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BillingSmtp)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.BillingSmtp, new { maxlength = 128 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BillingPort)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.BillingPort, new { maxlength = 5 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BillingLogin)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.BillingLogin, new { maxlength = 32 })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BillingPassword)
+        </td>
+        <td>
+            @Html.TextBoxFor(m => m.BillingPassword, new { maxlength = 32 })
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Сохранить"/>
+        </td>
+    </tr>
+</table> 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ReleaseEmployeeDeleteDate").datepicker({ maxDate: -1 });
+        $(".hasDatepicker").width("75px");
+    });
+    function OnDelete() {
+        var deleteDate = $("#ReleaseEmployeeDeleteDate");
+                var url="@Url.Action("DeleteEmployees", "Admin")"+"?date="+deleteDate.val();
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                                addError(result.Error);
+                                            else
+                                                clearErrors();
+                                  });
+
+    }
+</script>
+}

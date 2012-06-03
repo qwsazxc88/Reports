@@ -1,0 +1,86 @@
+﻿@model Reports.Presenters.UI.ViewModel.UserListModel
+@{
+    ViewBag.Title = "Список пользователей";
+}
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td>
+            @Html.TextBoxFor(m => m.UserName)
+            @Html.LabelFor(m => m.RoleId)
+            @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name")) 
+            <input type="submit" value="Найти"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.ActionLink("Добавить", "UserEdit", new { id = 0 }) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Пользователь</th>
+                    <th>Логин</th>
+                    <th>Роль</th>
+                    <th>Активен</th>
+                </tr>
+            </thead>
+            
+                @if (Model.Users != null && Model.Users.Count > 0)
+                {
+                    <tbody>
+                    @foreach (var emp in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                              <a class="ui-notify-close" href='@Url.Action("UserEdit", new { Id = emp.Id })' style="cursor:hand">@emp.Name</a>
+                            </td>
+                            <td>@emp.Login</td>
+                            <td>@emp.Role</td>
+                            <td>Активен</td>
+                        </tr>
+                    }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:left">
+                                <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                                @for (int i = 1; i <= Model.NumberOfPages; i++)
+                                {
+                                    if (i == Model.CurrentPage)
+                                    {
+                                        <text>@i</text>
+                                    }
+                                    else
+                                    {    
+                                        <a href="" onclick="return OnPageClick(@i);">@i</a>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        </td>
+    </tr>
+</table>    
+<script type="text/javascript">
+    function OnPageClick(pageNumber) {
+        $("#CurrentPage").val(pageNumber);
+        submitForm();
+        return false;
+}
+function submitForm() {
+    if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
+        return;
+    document.forms[0].submit();
+}                                
+
+</script>
+}
+
+

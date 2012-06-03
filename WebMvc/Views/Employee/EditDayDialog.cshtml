@@ -1,0 +1,31 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditDayModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:85px">
+                <tr>
+                    <td colspan="2"><div id="Error" style="color:Red;display:none;"/></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="width:100%;text-align:center;">
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.DisplayFor(model => model.Day)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">
+                        @Html.LabelFor(model => model.StatusId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "Id", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Hours):</td>
+                    <td>@Html.TextBoxFor(model => model.Hours, new { style = "width:50px"})</td>
+                </tr>
+    </table>
+</body>
+</html>

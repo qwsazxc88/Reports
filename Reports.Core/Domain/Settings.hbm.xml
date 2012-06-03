@@ -1,0 +1,23 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Settings">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+	<property name="DownloadDictionaryFilePath" length="512" not-null="true" />
+	<property name="UploadTimesheetFilePath" length="512" not-null="true" />
+	<property name="ReleaseEmployeeDeleteDate" not-null="true" />
+	<property name="ExportImportEmail" length="128" not-null="true" />
+	<property name="SendEmailToManagerAboutNew" not-null="true" />
+	<property name="NotificationEmail" length="128" not-null="true" />
+	<property name="NotificationSmtp" length="128" not-null="true" />
+	<property name="NotificationPort" not-null="true" />
+	<property name="NotificationLogin" length="32"  not-null="true" />
+	<property name="NotificationPassword" length="32"  not-null="true" />
+	<property name="BillingEmail" length="128" not-null="true" />
+	<property name="BillingSmtp" length="128" not-null="true" />
+	<property name="BillingPort" not-null="true" />
+	<property name="BillingLogin" length="32"  not-null="true" />
+	<property name="BillingPassword" length="32"  not-null="true" />
+  </class>
+</hibernate-mapping>

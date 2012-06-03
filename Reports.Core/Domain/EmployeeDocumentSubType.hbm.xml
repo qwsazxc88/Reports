@@ -1,0 +1,14 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="EmployeeDocumentSubType" dynamic-update="true" table="EmployeeDocumentSubType">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="Name" length="100" not-null="true" />
+	<many-to-one name="Type" class="EmployeeDocumentType" column="TypeId" foreign-key="FK_DocumentSubType_EmployeeDocumentType" index="IX_DocumentSubType_EmployeeDocumentType_Id"  not-null="true"/>
+	<!--<set name="Users" inverse="true" cascade="all-delete-orphan">
+		  <key column="RoleId" foreign-key="FK_USER_ROLE"/>
+		  <one-to-many class="User"/>
+	</set>-->  
+  </class>
+</hibernate-mapping>

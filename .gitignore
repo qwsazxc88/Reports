@@ -1,6 +1,16 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
+_ReSharper.*
+*.ReSharper.*
 bin
 obj
+*.suo
+*.csproj.user
+*.rptproj.user
+*.Publish.xml
+Logs
+*.css.css
+_ReleasePackage/*
+Thumbs.db
 
 # mstest test results
 TestResults
