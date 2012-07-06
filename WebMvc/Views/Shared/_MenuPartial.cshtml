@@ -17,6 +17,7 @@
                 }
                 else if (dto.UserRole == UserRole.Employee)
                 {
+                     <li>@Html.ActionLink("Создать заявку", "CreateRequest", "UserRequest")</li>
                      <li>@Html.ActionLink("Заявки", "DocumentList", "Employee")</li>
                      <li>@Html.ActionLink("Табель", "EmployeeTimesheetList", "Employee")</li>
 
