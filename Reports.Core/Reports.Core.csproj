@@ -122,6 +122,7 @@
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
+    <Compile Include="Domain\Department.cs" />
     <Compile Include="Domain\Document.cs" />
     <Compile Include="Domain\DocumentComment.cs" />
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
@@ -132,6 +133,9 @@
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\Organization.cs" />
+    <Compile Include="Domain\Position.cs" />
+    <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
     <Compile Include="Domain\Timesheet.cs" />
@@ -139,6 +143,8 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\Vacation.cs" />
+    <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -257,7 +263,24 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\DocumentComment.hbm.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Organization.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Department.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Position.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Vacation.hbm.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

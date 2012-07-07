@@ -1,9 +1,39 @@
+set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (2,'Сотрудник',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (3,'Руководитель',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (4,'Кадровик',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (5,'Бюджет',1) 
-INSERT INTO [Role] (Id,[Name],Version) values (6,'Отусорсинг',1) 
+INSERT INTO [Role] (Id,[Name],Version) values (6,'Отусорсинг',1)
+set identity_insert  [Role] off 
+
+set identity_insert  [RequestStatus] on
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (1,'Не одобрен сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (2,'Одобрен сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (3,'Одобрен руководителем',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрен кадровиком',1)
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружен в 1С',1)
+set identity_insert  [RequestStatus] off 
+
+
+INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (1,'Тестовая организация',1)		
+
+INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values (1,'Тестовый департамент',1)		
+
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values (1,'Тестовая должность',1)		
+
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (31,'Оплата дня сдачи крови и доп. дня отдыха донорам #1125',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата дополнительного отпуска по календарным дням #1207',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (32,'Оплата дополнительных выходных дней по уходу за детьми - инвалидами #1504',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата отпуска по календарным дням #1201',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (42,'Оплата отпуска по шестидневке #1202',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата учебного отпуска по календарным дням #1204',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет #1206',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)			
+
 
 INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Я','Явка')
 INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Б','Временная нетрудоспособность с назначением пособия согласно законодательству')
