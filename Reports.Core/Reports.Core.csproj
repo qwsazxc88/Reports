@@ -87,6 +87,7 @@
     <Compile Include="Dao\IAttachmentDao.cs" />
     <Compile Include="Dao\IDao.cs" />
     <Compile Include="Dao\IDbVersionDao.cs" />
+    <Compile Include="Dao\IDepartmentDao.cs" />
     <Compile Include="Dao\IDocumentCommentDao.cs" />
     <Compile Include="Dao\IDocumentDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
@@ -95,6 +96,7 @@
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
+    <Compile Include="Dao\Impl\DepartmentDao.cs" />
     <Compile Include="Dao\Impl\DocumentCommentDao.cs" />
     <Compile Include="Dao\Impl\DocumentDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
@@ -102,14 +104,20 @@
     <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
     <Compile Include="Dao\IInformationDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\PositionDao.cs" />
+    <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
     <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\VacationDao.cs" />
+    <Compile Include="Dao\Impl\VacationTypeDao.cs" />
+    <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
+    <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
     <Compile Include="Dao\ITimesheetDao.cs" />
@@ -117,6 +125,8 @@
     <Compile Include="Dao\ITimesheetStatusDao.cs" />
     <Compile Include="Dao\IUserDao.cs" />
     <Compile Include="Dao\IUserLoginDao.cs" />
+    <Compile Include="Dao\IVacationDao.cs" />
+    <Compile Include="Dao\IVacationTypeDao.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
@@ -161,6 +171,7 @@
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
+    <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
@@ -279,7 +290,9 @@
     <EmbeddedResource Include="Domain\RequestStatus.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Vacation.hbm.xml" />
+    <EmbeddedResource Include="Domain\Vacation.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

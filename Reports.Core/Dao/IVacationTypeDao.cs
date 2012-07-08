@@ -1,0 +1,10 @@
+﻿using System.Collections.Generic;
+using Reports.Core.Domain;
+
+namespace Reports.Core.Dao
+{
+    public interface IVacationTypeDao : IDao<VacationType>
+    {
+        IList<VacationType> LoadAllSorted();
+    }
+}

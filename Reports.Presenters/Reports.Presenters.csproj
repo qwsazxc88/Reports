@@ -147,6 +147,7 @@
     <Compile Include="UI\ViewModel\UserEditModel.cs" />
     <Compile Include="UI\ViewModel\UserListModel.cs" />
     <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>
   <ItemGroup>

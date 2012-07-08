@@ -16,6 +16,15 @@ alter table [Users]  drop constraint FK_User_UserManager
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_PersonnelManager]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_PersonnelManager
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Organization]') AND parent_object_id = OBJECT_ID('[Users]'))
+alter table [Users]  drop constraint FK_User_Organization
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Department]') AND parent_object_id = OBJECT_ID('[Users]'))
+alter table [Users]  drop constraint FK_User_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Position]') AND parent_object_id = OBJECT_ID('[Users]'))
+alter table [Users]  drop constraint FK_User_Position
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_User]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_User
 
@@ -64,15 +73,15 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') an
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
+if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
-if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
-if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
-if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
-if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
 
 create table Document (
  Id INT IDENTITY NOT NULL,
@@ -112,6 +121,9 @@ create table [Users] (
   RoleId INT not null,
   ManagerId INT null,
   PersonnelManagerId INT null,
+  OrganizationId INT null,
+  DepartmentId INT null,
+  PositionId INT null,
   constraint PK_Users primary key (Id)
 )
 create table Settings (
@@ -192,6 +204,13 @@ create table EmployeeDocumentType (
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
 )
+create table Organization (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_Organization  primary key (Id)
+)
 create table Timesheet (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -208,6 +227,19 @@ create table UserLogin (
   Date DATETIME not null,
   constraint PK_UserLogin  primary key (Id)
 )
+create table Department (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_Department  primary key (Id)
+)
+create table RequestStatus (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) null,
+  constraint PK_RequestStatus  primary key (Id)
+)
 create table ExportImportAction (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -216,39 +248,12 @@ create table ExportImportAction (
   Month DATETIME null,
   constraint PK_ExportImportAction  primary key (Id)
 )
-create table TimesheetStatus (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  ShortName NVARCHAR(2) not null,
-  Name NVARCHAR(255) not null,
-  constraint PK_TimesheetStatus  primary key (Id)
-)
-create table Organization (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  constraint PK_Organization  primary key (Id)
-)
-create table Department (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  constraint PK_Department  primary key (Id)
-)
 create table Position (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
   Code INT null,
   Name NVARCHAR(128) null,
   constraint PK_Position  primary key (Id)
-)
-create table RequestStatus (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Name NVARCHAR(128) null,
-  constraint PK_RequestStatus  primary key (Id)
 )
 create table Vacation (
  Id INT IDENTITY NOT NULL,
@@ -266,6 +271,13 @@ create table Vacation (
   PersonnelManagerDateAccept DATETIME null,
   constraint PK_Vacation  primary key (Id)
 )
+create table TimesheetStatus (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  ShortName NVARCHAR(2) not null,
+  Name NVARCHAR(255) not null,
+  constraint PK_TimesheetStatus  primary key (Id)
+)
 create index IX_Document_EmployeeDocumentType_Id on Document (TypeId)
 create index IX_Document_EmployeeDocumentSubType_Id on Document (SubTypeId)
 create index IX_Document_User_Id on Document (UserId)
@@ -275,9 +287,15 @@ alter table Document add constraint FK_Document_User foreign key (UserId) refere
 create index IX_USER_ROLE_ID on [Users] (RoleId)
 create index IX_User_UserManager_Id on [Users] (ManagerId)
 create index IX_User_PersonnelManager_Id on [Users] (PersonnelManagerId)
+create index IX_User_Organization_Id on [Users] (OrganizationId)
+create index IX_User_Department_Id on [Users] (DepartmentId)
+create index IX_User_Position_Id on [Users] (PositionId)
 alter table [Users] add constraint FK_USER_ROLE foreign key (RoleId) references Role
 alter table [Users] add constraint FK_User_UserManager foreign key (ManagerId) references [Users]
 alter table [Users] add constraint FK_User_PersonnelManager foreign key (PersonnelManagerId) references [Users]
+alter table [Users] add constraint FK_User_Organization foreign key (OrganizationId) references Organization
+alter table [Users] add constraint FK_User_Department foreign key (DepartmentId) references Department
+alter table [Users] add constraint FK_User_Position foreign key (PositionId) references Position
 create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
@@ -319,12 +337,29 @@ INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрен кадровиком',1
 INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружен в 1С',1)
 set identity_insert  [RequestStatus] off 
 
+declare @OrganizationId int
+declare @Organization1Id int
+INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (1,'Тестовая организация',1)	
+set @OrganizationId = @@Identity
+INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (2,'Тестовая организация 1',1)	
+set @Organization1Id = @@Identity	
+	
 
-INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (1,'Тестовая организация',1)		
-
+declare @DepartmentId int
+declare @Department1Id int
 INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values (1,'Тестовый департамент',1)		
+set @DepartmentId = @@Identity	
+INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values (2,'Тестовый департамент 1',1)		
+set @Department1Id = @@Identity	
 
+
+declare @PositionId int
+declare @Position1Id int
 INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values (1,'Тестовая должность',1)		
+set @PositionId = @@Identity
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values (2,'Тестовая должность 1',1)		
+set @Position1Id = @@Identity	
+	
 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (31,'Оплата дня сдачи крови и доп. дня отдыха донорам #1125',1)			
@@ -456,12 +491,12 @@ INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept      
 VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              6,		       'АД0000000001')
 set @outsorsingId = @@Identity
 declare @userId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId) 
-VALUES			   (1,       	1              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,DepartmentId,PositionId) 
+VALUES			   (1,       	1              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId,       @OrganizationId,@DepartmentId,@PositionId)
 set @userId = @@Identity
 
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId) 
-VALUES			   (1,       	1              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId,            OrganizationId,DepartmentId,PositionId) 
+VALUES			   (1,       	1              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId,@Organization1Id,@Department1Id,@Position1Id)
 
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId) 
 VALUES			   (1,       	1              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId)

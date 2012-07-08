@@ -25,5 +25,19 @@ namespace WebMvc.Controllers
              CreateRequestModel model = RequestBl.GetCreateRequestModel(userId);
              return View(model);
          }
+
+         [HttpGet]
+         public ActionResult VacationList()
+         {
+             //int? userId = new int?();
+             VacationListModel model = RequestBl.GetVacationListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult VacationList(VacationListModel model)
+         {
+             RequestBl.SetVacationListModel(model);
+             return View(model);
+         }
      }
 }

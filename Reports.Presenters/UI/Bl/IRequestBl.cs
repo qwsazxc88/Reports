@@ -5,5 +5,7 @@ namespace Reports.Presenters.UI.Bl
     public interface IRequestBl : IBaseBl
     {
         CreateRequestModel GetCreateRequestModel(int? userId);
+        VacationListModel GetVacationListModel();
+        void SetVacationListModel(VacationListModel model);
     }
 }
