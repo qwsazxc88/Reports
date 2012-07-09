@@ -140,7 +140,7 @@ namespace Reports.Core.Domain
         //public virtual User OutsourcingManager { get; set; }
 
         public virtual Organization Organization { get; set; }
-        public virtual Department Department { get; set; }
+        //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
         #endregion
 

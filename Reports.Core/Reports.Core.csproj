@@ -112,6 +112,7 @@
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
     <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\UserToDepartmentDao.cs" />
     <Compile Include="Dao\Impl\VacationDao.cs" />
     <Compile Include="Dao\Impl\VacationTypeDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Dao\ITimesheetStatusDao.cs" />
     <Compile Include="Dao\IUserDao.cs" />
     <Compile Include="Dao\IUserLoginDao.cs" />
+    <Compile Include="Dao\IUserToDepartmentDao.cs" />
     <Compile Include="Dao\IVacationDao.cs" />
     <Compile Include="Dao\IVacationTypeDao.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\UserToDepartment.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
@@ -293,6 +296,9 @@
     <EmbeddedResource Include="Domain\Vacation.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\UserToDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

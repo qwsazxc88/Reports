@@ -17,6 +17,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IRequestStatusDao requestStatusDao;
         protected IPositionDao positionDao;
         protected IVacationDao vacationDao;
+        protected IUserToDepartmentDao userToDepartmentDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -43,6 +44,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(vacationDao); }
             set { vacationDao = value; }
         }
+        public IUserToDepartmentDao UserToDepartmentDao
+        {
+            get { return Validate.Dependency(userToDepartmentDao); }
+            set { userToDepartmentDao = value; }
+        }
 
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -68,27 +74,28 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public VacationListModel GetVacationListModel()
         {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             VacationListModel model = new VacationListModel
                                           {
                                               UserId = AuthenticationService.CurrentUser.Id,
-                                              Departments = GetDepartments(),
+                                              Departments = GetDepartments(user),
                                               VacationTypes = GetVacationTypes(),
                                               RequestStatuses = GetRequestStatuses(),
-                                              Positions = GetPositions()
+                                              Positions = GetPositions(user)
                                           };
             return model;
         }
         public void SetVacationListModel(VacationListModel model)
         {
-            model.Departments = GetDepartments();
-            model.RequestStatuses = GetRequestStatuses();
-            model.Positions = GetPositions();
-            model.VacationTypes = GetVacationTypes();
-            SetDocumentsToModel(model);
-        }
-        public void SetDocumentsToModel(VacationListModel model)
-        {
             User user = UserDao.Load(model.UserId);
+            model.Departments = GetDepartments(user);
+            model.RequestStatuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+            model.VacationTypes = GetVacationTypes();
+            SetDocumentsToModel(model,user);
+        }
+        public void SetDocumentsToModel(VacationListModel model,User user)
+        {
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = VacationDao.GetDocuments(
                 role,
@@ -99,10 +106,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate);
         }
-        public List<IdNameDto> GetDepartments()
+        public List<IdNameDto> GetDepartments(User user)
         {
-            var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            departmentList.Insert(0,new IdNameDto(0,SelectAll));
+            //var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            //departmentList.Insert(0,new IdNameDto(0,SelectAll));
+            var departmentList = UserToDepartmentDao.GetByUserId(user.Id).ToList();
+            if((UserRole)user.Role.Id != UserRole.Employee)
+                departmentList.Insert(0, new IdNameDto(0, SelectAll));
             return departmentList;
         }
         public List<IdNameDto> GetVacationTypes()
@@ -117,10 +127,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             requestStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return requestStatusesList;
         }
-        public List<IdNameDto> GetPositions()
+        public List<IdNameDto> GetPositions(User user)
         {
-            var positionList=PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            positionList.Insert(0, new IdNameDto(0, SelectAll));
+            List<IdNameDto> positionList = null;
+            if ((UserRole)user.Role.Id != UserRole.Employee)
+            {
+                positionList = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+                positionList.Insert(0, new IdNameDto(0, SelectAll));
+            }
+            else
+            {
+                Position position = user.Position;
+                if(position != null)
+                    positionList = new List<IdNameDto> {new IdNameDto(position.Id,position.Name)};
+            }
             return positionList;
         }
     }

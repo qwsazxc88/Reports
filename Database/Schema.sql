@@ -1,11 +1,8 @@
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('Document'))
-alter table Document  drop constraint FK_Document_EmployeeDocumentType
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Status]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
+alter table TimesheetDay  drop constraint FK_TimesheetDay_Status
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_EmployeeDocumentSubType]') AND parent_object_id = OBJECT_ID('Document'))
-alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
-alter table Document  drop constraint FK_Document_User
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Timesheet]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
+alter table TimesheetDay  drop constraint FK_TimesheetDay_Timesheet
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_USER_ROLE]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_USER_ROLE
@@ -19,35 +16,17 @@ alter table [Users]  drop constraint FK_User_PersonnelManager
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Organization]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_Organization
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Department]') AND parent_object_id = OBJECT_ID('[Users]'))
-alter table [Users]  drop constraint FK_User_Department
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Position]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_Position
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Attachment_Document]') AND parent_object_id = OBJECT_ID('Attachment'))
+alter table Attachment  drop constraint FK_Attachment_Document
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_User]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_Document]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_Document
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Status]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
-alter table TimesheetDay  drop constraint FK_TimesheetDay_Status
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Timesheet]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
-alter table TimesheetDay  drop constraint FK_TimesheetDay_Timesheet
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentSubType_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('EmployeeDocumentSubType'))
-alter table EmployeeDocumentSubType  drop constraint FK_DocumentSubType_EmployeeDocumentType
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Attachment_Document]') AND parent_object_id = OBJECT_ID('Attachment'))
-alter table Attachment  drop constraint FK_Attachment_Document
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Timesheet_User]') AND parent_object_id = OBJECT_ID('Timesheet'))
-alter table Timesheet  drop constraint FK_Timesheet_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
-alter table UserLogin  drop constraint FK_UserLogin_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_VacationType]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_VacationType
@@ -61,49 +40,68 @@ alter table Vacation  drop constraint FK_Vacation_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_CreatorUser]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_CreatorUser
 
-if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
-if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
-if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
-if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
-if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
-if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
-if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
-if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentSubType_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('EmployeeDocumentSubType'))
+alter table EmployeeDocumentSubType  drop constraint FK_DocumentSubType_EmployeeDocumentType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('Document'))
+alter table Document  drop constraint FK_Document_EmployeeDocumentType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_EmployeeDocumentSubType]') AND parent_object_id = OBJECT_ID('Document'))
+alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
+alter table Document  drop constraint FK_Document_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Timesheet_User]') AND parent_object_id = OBJECT_ID('Timesheet'))
+alter table Timesheet  drop constraint FK_Timesheet_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
+alter table UserLogin  drop constraint FK_UserLogin_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_User]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
+alter table [UserToDepartment]  drop constraint FK_UserToDepartment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_Department]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
+alter table [UserToDepartment]  drop constraint FK_UserToDepartment_Department
+
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
-if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
-if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
+if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
+if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
+if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
+if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
+if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
+if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
+if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
+if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
+if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
-if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
-if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
-if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
-if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
-if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
-if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
+if exists (select * from dbo.sysobjects where id = object_id(N'[UserToDepartment]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [UserToDepartment]
 
-create table Document (
+create table TimesheetDay (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  LastModifiedDate DATETIME not null,
-  Comment NVARCHAR(MAX) null,
-  TypeId INT not null,
-  SubTypeId INT null,
-  UserId INT not null,
-  ManagerDateAccept DATETIME null,
-  PersonnelManagerDateAccept DATETIME null,
-  BudgetManagerDateAccept DATETIME null,
-  OutsourcingManagerDateAccept DATETIME null,
-  SendEmailToBilling BIT not null,
-  constraint PK_Document  primary key (Id)
+  Number INT not null,
+  Hours REAL not null,
+  StatusId INT not null,
+  TimesheetId INT not null,
+  constraint PK_TimesheetDay  primary key (Id)
 )
-create table Information (
+create table TimesheetStatus (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Subject NVARCHAR(1024) not null,
-  Message NVARCHAR(MAX) not null,
-  constraint PK_Information  primary key (Id)
+  ShortName NVARCHAR(2) not null,
+  Name NVARCHAR(255) not null,
+  constraint PK_TimesheetStatus  primary key (Id)
 )
 create table [Users] (
  Id INT IDENTITY NOT NULL,
@@ -122,9 +120,123 @@ create table [Users] (
   ManagerId INT null,
   PersonnelManagerId INT null,
   OrganizationId INT null,
-  DepartmentId INT null,
   PositionId INT null,
   constraint PK_Users primary key (Id)
+)
+create table Attachment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  FileName NVARCHAR(64) not null,
+  ContextType NVARCHAR(64) not null,
+  Context VARBINARY(MAX) not null,
+  DocumentId INT not null,
+  constraint PK_Attachment  primary key (Id)
+)
+create table Organization (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_Organization  primary key (Id)
+)
+create table Role (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(100) not null,
+  constraint PK_Role  primary key (Id)
+)
+create table RequestStatus (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) null,
+  constraint PK_RequestStatus  primary key (Id)
+)
+create table Information (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Subject NVARCHAR(1024) not null,
+  Message NVARCHAR(MAX) not null,
+  constraint PK_Information  primary key (Id)
+)
+create table Department (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_Department  primary key (Id)
+)
+create table Position (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_Position  primary key (Id)
+)
+create table DocumentComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  DocumentId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_DocumentComment  primary key (Id)
+)
+create table ExportImportAction (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Type INT not null,
+  Date DATETIME not null,
+  Month DATETIME null,
+  constraint PK_ExportImportAction  primary key (Id)
+)
+create table DBVersion (
+ Id INT IDENTITY NOT NULL,
+  Version NVARCHAR(20) not null,
+  constraint PK_DBVersion  primary key (Id)
+)
+create table Vacation (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  BeginDate DATETIME not null,
+  EndDate DATETIME not null,
+  DaysCount INT not null,
+  Number INT not null,
+  TypeId INT not null,
+  StatusId INT not null,
+  UserId INT not null,
+  CreatorId INT not null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  constraint PK_Vacation  primary key (Id)
+)
+create table EmployeeDocumentType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(100) not null,
+  constraint PK_EmployeeDocumentType  primary key (Id)
+)
+create table EmployeeDocumentSubType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(100) not null,
+  TypeId INT not null,
+  constraint PK_EmployeeDocumentSubType  primary key (Id)
+)
+create table Document (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  LastModifiedDate DATETIME not null,
+  Comment NVARCHAR(MAX) null,
+  TypeId INT not null,
+  SubTypeId INT null,
+  UserId INT not null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  BudgetManagerDateAccept DATETIME null,
+  OutsourcingManagerDateAccept DATETIME null,
+  SendEmailToBilling BIT not null,
+  constraint PK_Document  primary key (Id)
 )
 create table Settings (
  Id INT IDENTITY NOT NULL,
@@ -146,71 +258,6 @@ create table Settings (
   BillingPassword NVARCHAR(32) not null,
   constraint PK_Settings  primary key (Id)
 )
-create table DBVersion (
- Id INT IDENTITY NOT NULL,
-  Version NVARCHAR(20) not null,
-  constraint PK_DBVersion  primary key (Id)
-)
-create table Role (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Name NVARCHAR(100) not null,
-  constraint PK_Role  primary key (Id)
-)
-create table VacationType (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  constraint PK_VacationType  primary key (Id)
-)
-create table DocumentComment (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  UserId INT not null,
-  DocumentId INT not null,
-  DateCreated DATETIME not null,
-  Comment NVARCHAR(256) not null,
-  constraint PK_DocumentComment  primary key (Id)
-)
-create table TimesheetDay (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Number INT not null,
-  Hours REAL not null,
-  StatusId INT not null,
-  TimesheetId INT not null,
-  constraint PK_TimesheetDay  primary key (Id)
-)
-create table EmployeeDocumentSubType (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Name NVARCHAR(100) not null,
-  TypeId INT not null,
-  constraint PK_EmployeeDocumentSubType  primary key (Id)
-)
-create table Attachment (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  FileName NVARCHAR(64) not null,
-  ContextType NVARCHAR(64) not null,
-  Context VARBINARY(MAX) not null,
-  DocumentId INT not null,
-  constraint PK_Attachment  primary key (Id)
-)
-create table EmployeeDocumentType (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Name NVARCHAR(100) not null,
-  constraint PK_EmployeeDocumentType  primary key (Id)
-)
-create table Organization (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  constraint PK_Organization  primary key (Id)
-)
 create table Timesheet (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -227,90 +274,40 @@ create table UserLogin (
   Date DATETIME not null,
   constraint PK_UserLogin  primary key (Id)
 )
-create table Department (
+create table VacationType (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
   Code INT null,
   Name NVARCHAR(128) null,
-  constraint PK_Department  primary key (Id)
+  constraint PK_VacationType  primary key (Id)
 )
-create table RequestStatus (
+create table [UserToDepartment] (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Name NVARCHAR(128) null,
-  constraint PK_RequestStatus  primary key (Id)
+  UserId INT null,
+  DepartmentId INT null,
+  constraint PK_UserToDepartment primary key (Id)
 )
-create table ExportImportAction (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Type INT not null,
-  Date DATETIME not null,
-  Month DATETIME null,
-  constraint PK_ExportImportAction  primary key (Id)
-)
-create table Position (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  constraint PK_Position  primary key (Id)
-)
-create table Vacation (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  CreateDate DATETIME not null,
-  BeginDate DATETIME not null,
-  EndDate DATETIME not null,
-  DaysCount INT not null,
-  Number INT not null,
-  TypeId INT not null,
-  StatusId INT not null,
-  UserId INT not null,
-  CreatorId INT not null,
-  ManagerDateAccept DATETIME null,
-  PersonnelManagerDateAccept DATETIME null,
-  constraint PK_Vacation  primary key (Id)
-)
-create table TimesheetStatus (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  ShortName NVARCHAR(2) not null,
-  Name NVARCHAR(255) not null,
-  constraint PK_TimesheetStatus  primary key (Id)
-)
-create index IX_Document_EmployeeDocumentType_Id on Document (TypeId)
-create index IX_Document_EmployeeDocumentSubType_Id on Document (SubTypeId)
-create index IX_Document_User_Id on Document (UserId)
-alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
-alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
-alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
+create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
+create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
+alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
+alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
 create index IX_USER_ROLE_ID on [Users] (RoleId)
 create index IX_User_UserManager_Id on [Users] (ManagerId)
 create index IX_User_PersonnelManager_Id on [Users] (PersonnelManagerId)
 create index IX_User_Organization_Id on [Users] (OrganizationId)
-create index IX_User_Department_Id on [Users] (DepartmentId)
 create index IX_User_Position_Id on [Users] (PositionId)
 alter table [Users] add constraint FK_USER_ROLE foreign key (RoleId) references Role
 alter table [Users] add constraint FK_User_UserManager foreign key (ManagerId) references [Users]
 alter table [Users] add constraint FK_User_PersonnelManager foreign key (PersonnelManagerId) references [Users]
 alter table [Users] add constraint FK_User_Organization foreign key (OrganizationId) references Organization
-alter table [Users] add constraint FK_User_Department foreign key (DepartmentId) references Department
 alter table [Users] add constraint FK_User_Position foreign key (PositionId) references Position
+create index IX_Attachment_Document_Id on Attachment (DocumentId)
+alter table Attachment add constraint FK_Attachment_Document foreign key (DocumentId) references Document
 create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
 alter table DocumentComment add constraint FK_DocumentComment_Document foreign key (DocumentId) references Document
-create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
-create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
-alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
-alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
-create index IX_DocumentSubType_EmployeeDocumentType_Id on EmployeeDocumentSubType (TypeId)
-alter table EmployeeDocumentSubType add constraint FK_DocumentSubType_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
-create index IX_Attachment_Document_Id on Attachment (DocumentId)
-alter table Attachment add constraint FK_Attachment_Document foreign key (DocumentId) references Document
-create index IX_Timesheet_User_Id on Timesheet (UserId)
-alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
-alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
 create index Vacation_VacationType on Vacation (TypeId)
 create index Vacation_RequestStatus on Vacation (StatusId)
 create index IX_Vacation_User_Id on Vacation (UserId)
@@ -319,6 +316,21 @@ alter table Vacation add constraint FK_Vacation_VacationType foreign key (TypeId
 alter table Vacation add constraint FK_Vacation_RequestStatus foreign key (StatusId) references RequestStatus
 alter table Vacation add constraint FK_Vacation_User foreign key (UserId) references [Users]
 alter table Vacation add constraint FK_Vacation_CreatorUser foreign key (CreatorId) references [Users]
+create index IX_DocumentSubType_EmployeeDocumentType_Id on EmployeeDocumentSubType (TypeId)
+alter table EmployeeDocumentSubType add constraint FK_DocumentSubType_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
+create index IX_Document_EmployeeDocumentType_Id on Document (TypeId)
+create index IX_Document_EmployeeDocumentSubType_Id on Document (SubTypeId)
+create index IX_Document_User_Id on Document (UserId)
+alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
+alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
+alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
+create index IX_Timesheet_User_Id on Timesheet (UserId)
+alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
+alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index IX_UserToDepartment_User_Id on [UserToDepartment] (UserId)
+create index IX_UserToDepartment_Department_Id on [UserToDepartment] (DepartmentId)
+alter table [UserToDepartment] add constraint FK_UserToDepartment_User foreign key (UserId) references [Users]
+alter table [UserToDepartment] add constraint FK_UserToDepartment_Department foreign key (DepartmentId) references Department
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
@@ -491,12 +503,16 @@ INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept      
 VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              6,		       'АД0000000001')
 set @outsorsingId = @@Identity
 declare @userId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,DepartmentId,PositionId) 
-VALUES			   (1,       	1              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId,       @OrganizationId,@DepartmentId,@PositionId)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,/*DepartmentId,*/PositionId) 
+VALUES			   (1,       	1              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId,       @OrganizationId,/*@DepartmentId,*/@PositionId)
 set @userId = @@Identity
+INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@userId,@DepartmentId,1)
 
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId,            OrganizationId,DepartmentId,PositionId) 
-VALUES			   (1,       	1              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId,@Organization1Id,@Department1Id,@Position1Id)
+declare @user1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId,            OrganizationId,/*DepartmentId,*/PositionId) 
+VALUES			   (1,       	1              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId,@Organization1Id,/*@Department1Id,*/@Position1Id)
+set @user1Id = @@Identity
+INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
 
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId) 
 VALUES			   (1,       	1              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId)

@@ -2,6 +2,10 @@ namespace Reports.Core.Dto
 {
     public class IdNameDto
     {
+        public IdNameDto()
+        {
+        }
+
         public IdNameDto(int id, string name)
         {
             Id = id;

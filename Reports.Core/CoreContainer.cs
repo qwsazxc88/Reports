@@ -179,6 +179,10 @@ namespace Reports.Core
             Register(Component.For(typeof(IVacationDao)).
                   ImplementedBy(typeof(VacationDao)).
                   LifeStyle.Is(type));
+
+            Register(Component.For(typeof(IUserToDepartmentDao)).
+                  ImplementedBy(typeof(UserToDepartmentDao)).
+                  LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))
