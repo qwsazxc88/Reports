@@ -102,9 +102,9 @@
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
-        if ($('#DepartmentId').length > 1)
+        if ($('#DepartmentId option').length > 1)
             $("#DepartmentId").val('0');
-        if ($('#PositionId').length > 1)
+        if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#VacationTypeId").val('0');
         $("#RequestStatusId").val('0');
