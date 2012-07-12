@@ -1,0 +1,131 @@
+﻿@model Reports.Presenters.UI.ViewModel.RequestCommentsModel
+@*<script src="@Url.Content("~/Scripts/jquery.upload-1.0.2.min.js")" type="text/javascript"></script>*@
+
+@Html.HiddenFor(model => model.RequestId)      
+@Html.HiddenFor(model => model.RequestTypeId)          
+<table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td>
+                <input type="button" value="Добавить комментарий" @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } id="AddComment" onclick="OnAddComment();"/>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold">Комментарии:</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="CommentError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td style="border-bottom:1px solid gray">@attach.Creator  @attach.CreatedDate</td>
+            </tr>
+            <tr>
+                <td style="border-bottom:1px solid black">@attach.Comment</td>
+            </tr>   
+            }
+        }
+</table>
+
+@*<input  type="button"  id="btnRender" value="Срендерить" onclick="Render();"/>*@
+
+<script type="text/javascript">
+    function Render() {
+        var actionUrl="@Url.Action("RenderComments", "UserRequest")";
+        var documentId = $("#RequestId").val();
+        var typeId = $("#RequestTypeId").val();
+        var url = actionUrl + "?id=" + documentId+"&typeId="+typeId+"&dummy=" + new Date().getTime();
+        $("#CommentModelContext").load(url);
+    }
+    function OnAddComment() {
+        createCommentDialog(0);
+    }
+    function createCommentDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divCommentDialog";
+        var newDiv = $(elem);
+        var documentId = $("#RequestId").val();
+        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Добавление нового комментария";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("AddCommentDialog", "UserRequest")?id=" + documentId + "&typeId="+typeId + " #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 500,
+	        height: 220,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateComment())
+                        return;
+                    SaveComment();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateComment()
+    {
+        if(trimSpaces($("#Comment").val()) == "")
+        {
+            addCommentError("Комментарий - обязательное поле");
+            return false;
+        }
+        return true;
+    }
+    function SaveComment()
+    {
+        var url="@Url.Action("SaveComment", "UserRequest")"+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+                +"&comment="+escapeJson($("#Comment").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addCommentError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addCommentError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearCommentErrors();
+                                                $("#divCommentDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addCommentError(value) {
+    $("#AddCommentError").text(value);
+    $("#AddCommentError").show();
+}
+function clearCommentErrors() {
+    $("#AddCommentError").text("");
+    $("#AddCommentError").hide();
+}
+    </script>

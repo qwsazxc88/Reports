@@ -46,6 +46,9 @@ alter table Vacation  drop constraint FK_Vacation_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_CreatorUser]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_CreatorUser
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Vacation'))
+alter table Vacation  drop constraint FK_Vacation_TimesheetStatus
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentSubType_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('EmployeeDocumentSubType'))
 alter table EmployeeDocumentSubType  drop constraint FK_DocumentSubType_EmployeeDocumentType
 
@@ -63,6 +66,12 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_VacationComment_User]') AND parent_object_id = OBJECT_ID('VacationComment'))
+alter table VacationComment  drop constraint FK_VacationComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_VacationComment_Vacation]') AND parent_object_id = OBJECT_ID('VacationComment'))
+alter table VacationComment  drop constraint FK_VacationComment_Vacation
 
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
@@ -86,6 +95,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
+if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 
 create table TimesheetDay (
  Id INT IDENTITY NOT NULL,
@@ -215,6 +225,7 @@ create table Vacation (
   CreatorId INT not null,
   ManagerDateAccept DATETIME null,
   PersonnelManagerDateAccept DATETIME null,
+  TimesheetStatusId INT null,
   constraint PK_Vacation  primary key (Id)
 )
 create table EmployeeDocumentType (
@@ -288,6 +299,15 @@ create table VacationType (
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
 )
+create table VacationComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  VacationId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_VacationComment  primary key (Id)
+)
 create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
 create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
 alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
@@ -316,10 +336,12 @@ create index Vacation_VacationType on Vacation (TypeId)
 create index Vacation_RequestStatus on Vacation (StatusId)
 create index IX_Vacation_User_Id on Vacation (UserId)
 create index IX_Vacation_CreatorUser_Id on Vacation (CreatorId)
+create index Vacation_TimesheetStatus on Vacation (TimesheetStatusId)
 alter table Vacation add constraint FK_Vacation_VacationType foreign key (TypeId) references VacationType
 alter table Vacation add constraint FK_Vacation_RequestStatus foreign key (StatusId) references RequestStatus
 alter table Vacation add constraint FK_Vacation_User foreign key (UserId) references [Users]
 alter table Vacation add constraint FK_Vacation_CreatorUser foreign key (CreatorId) references [Users]
+alter table Vacation add constraint FK_Vacation_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index IX_DocumentSubType_EmployeeDocumentType_Id on EmployeeDocumentSubType (TypeId)
 alter table EmployeeDocumentSubType add constraint FK_DocumentSubType_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 create index IX_Document_EmployeeDocumentType_Id on Document (TypeId)
@@ -331,6 +353,10 @@ alter table Document add constraint FK_Document_User foreign key (UserId) refere
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index IX_VacationComment_User_Id on VacationComment (UserId)
+create index IX_VacationComment_Vacation_Id on VacationComment (VacationId)
+alter table VacationComment add constraint FK_VacationComment_User foreign key (UserId) references [Users]
+alter table VacationComment add constraint FK_VacationComment_Vacation foreign key (VacationId) references Vacation
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
@@ -385,25 +411,26 @@ INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)			
 
-
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Я','Явка')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Б','Временная нетрудоспособность с назначением пособия согласно законодательству')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Т','Временная нетрудоспособность без назнач. пособия в случаях, предусм. законодательством')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ВЧ','Вечерние часы')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Н','Ночные часы')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'В','Выходные и нерабочие дни')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'К','Командировка')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ОТ','Отпуск')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ОЗ','Отпуск без сохранения заработной платы в случаях, предусмотренных законодательством')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ДО','Отпуск без сохранения заработной платы, предоставляемый сотр. по разреш. работодателя')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'Р','Отпуск по беременности и родам (отпуск в связи с усыновлением новорожд. ребенка)')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ОЖ','Отпуск по уходу за ребенком до достижения им возраста трех лет')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'РВ','Продолжительность работы в выходные и нерабочие, праздничные дни')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'С','Продолжительность сверхурочной работы')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ПР','Прогулы (отсутствие на рабочем месте без уваж. причин в теч. времени, уст. законодательством)')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'НН','Неявки по невыясненным причинам')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'ВП','Простои по вине сотрудника')
-INSERT INTO [TimesheetStatus] (Version,ShortName,Name) values (1,'РП','Время простоя по вине работодателя')
+set identity_insert  [TimesheetStatus] on
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (1,1,'Я','Явка')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (2,1,'Б','Временная нетрудоспособность с назначением пособия согласно законодательству')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (3,1,'Т','Временная нетрудоспособность без назнач. пособия в случаях, предусм. законодательством')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (4,1,'ВЧ','Вечерние часы')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (5,1,'Н','Ночные часы')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (6,1,'В','Выходные и нерабочие дни')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (7,1,'К','Командировка')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (8,1,'ОТ','Отпуск')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (9,1,'ОЗ','Отпуск без сохранения заработной платы в случаях, предусмотренных законодательством')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (10,1,'ДО','Отпуск без сохранения заработной платы, предоставляемый сотр. по разреш. работодателя')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (11,1,'Р','Отпуск по беременности и родам (отпуск в связи с усыновлением новорожд. ребенка)')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (12,1,'ОЖ','Отпуск по уходу за ребенком до достижения им возраста трех лет')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (13,1,'РВ','Продолжительность работы в выходные и нерабочие, праздничные дни')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (14,1,'С','Продолжительность сверхурочной работы')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (15,1,'ПР','Прогулы (отсутствие на рабочем месте без уваж. причин в теч. времени, уст. законодательством)')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (16,1,'НН','Неявки по невыясненным причинам')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (17,1,'ВП','Простои по вине сотрудника')
+INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (18,1,'РП','Время простоя по вине работодателя')
+set identity_insert  [TimesheetStatus] off
 
 
 declare @typeId int

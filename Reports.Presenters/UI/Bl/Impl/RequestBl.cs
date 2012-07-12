@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -18,6 +19,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IPositionDao positionDao;
         protected IVacationDao vacationDao;
         protected IUserToDepartmentDao userToDepartmentDao;
+        protected ITimesheetStatusDao timesheetStatusDao;
+        protected IVacationCommentDao vacationCommentDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -49,6 +52,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(userToDepartmentDao); }
             set { userToDepartmentDao = value; }
         }
+        public ITimesheetStatusDao TimesheetStatusDao
+        {
+            get { return Validate.Dependency(timesheetStatusDao); }
+            set { timesheetStatusDao = value; }
+        }
+        public IVacationCommentDao VacationCommentDao
+        {
+            get { return Validate.Dependency(vacationCommentDao); }
+            set { vacationCommentDao = value; }
+        }
 
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -72,6 +85,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        #region Vacation list model
         public VacationListModel GetVacationListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -142,6 +156,140 @@ namespace Reports.Presenters.UI.Bl.Impl
                     positionList = new List<IdNameDto> {new IdNameDto(position.Id,position.Name)};
             }
             return positionList;
+        }
+        #endregion
+        #region Vacation edit model
+        public VacationEditModel GetVacationEditModel(int id,int userId)
+        {
+            VacationEditModel model = new VacationEditModel {Id = id, UserId = userId};
+            User user = UserDao.Load(userId);
+            SetUserInfoModel(user,model);
+            model.CommentsModel = GetCommentsModel(id, 1);
+            model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+            model.VacationTypes = GetVacationTypes();
+            SetFlagsState(id,user,model);
+            if(id == 0)
+            {
+                model.CreatorLogin = user.Login;
+                model.Version = 0;
+            }
+            else
+            {
+                
+            }
+            return model;
+        }
+        protected void SetFlagsState(int id,User user,VacationEditModel model)
+        {
+            if(id == 0)
+            {
+                model.IsApprovedByManager = false;
+                model.IsApprovedByManagerHidden = false;
+                model.IsApprovedByManagerEnable = false;
+                
+                model.IsApprovedByPersonnelManager = false;
+                model.IsApprovedByPersonnelManagerHidden = false;
+                model.IsApprovedByPersonnelManagerEnable = false;
+
+                model.IsApprovedByUser = false;
+                model.IsApprovedByUserHidden = false;
+                model.IsApprovedByUserEnable = false;
+
+                model.IsPostedTo1C = false;
+                model.IsPostedTo1CHidden = false;
+                model.IsPostedTo1CEnable = false;
+
+                model.IsSaveAvailable = true;
+                model.IsTimesheetStatusEditable = false;
+                return;
+            }
+        }
+        protected void SetUserInfoModel(User user,UserInfoModel model)
+        {
+            model.DateCreated = DateTime.Today.ToShortDateString();
+            IList<IdNameDto> departments = UserToDepartmentDao.GetByUserId(user.Id);
+            if (departments.Count > 0)
+                model.Department = departments[0].Name;
+            if(user.Manager != null)
+                model.ManagerName = user.Manager.FullName;
+            if (user.PersonnelManager != null)
+                model.PersonnelName = user.PersonnelManager.FullName;
+            model.Organization = user.Organization.Name;
+            model.Position = user.Position.Name;
+            model.UserName = user.FullName;
+            model.UserNumber = user.Code;
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForVacation()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().Where(x => (x.Id >= 8) && (x.Id <= 12)).ToList().ConvertAll(
+                x => new IdNameDto(x.Id, x.Name));
+            dtos.Insert(0,new IdNameDto(0,string.Empty));
+            return dtos;
+        }
+        #endregion
+
+        public  RequestCommentsModel GetCommentsModel(int id,int typeId)
+        {
+            return SetCommentsModel(id,typeId);
+        }
+        protected RequestCommentsModel SetCommentsModel(int id,int typeId)
+        {
+            RequestCommentsModel commentModel = new RequestCommentsModel 
+            { 
+                RequestId = id 
+                ,RequestTypeId = typeId 
+                ,Comments = new List<RequestCommentModel>() };
+            if (id > 0)
+            {
+                switch(typeId)
+                {
+                    case 1:
+                        Vacation vacation = VacationDao.Load(id);
+                        if ((vacation.Comments != null) && (vacation.Comments.Count() > 0))
+                        {
+                            commentModel.Comments = vacation.Comments.OrderBy(x => x.DateCreated).ToList().
+                                ConvertAll(x => new RequestCommentModel
+                                                    {
+                                                        Comment = x.Comment,
+                                                        CreatedDate = x.DateCreated.ToString(),
+                                                        Creator = x.User.FullName,
+                                                    });
+                        }
+                    break;
+                }
+            }
+            return commentModel;
+        }
+        public bool SaveComment(SaveCommentModel model)
+        {
+            try
+            {
+                int userId = AuthenticationService.CurrentUser.Id;
+                switch(model.TypeId)
+                {
+                    case 1:
+                        Vacation vacation = VacationDao.Load(model.DocumentId);
+                        User user = UserDao.Load(userId);
+                        VacationComment comment = new VacationComment
+                                                      {
+                                                          Comment = model.Comment,
+                                                          Vacation = vacation,
+                                                          DateCreated = DateTime.Now,
+                                                          User = user,
+                                                      };
+                        VacationCommentDao.MergeAndFlush(comment);
+                        break;
+                }
+                //doc.Comments.Add(comment);
+                //DocumentDao.MergeAndFlush(doc);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                model.Error = "Исключение: " + ex.GetBaseException().Message;
+                return false;
+            }
         }
     }
 

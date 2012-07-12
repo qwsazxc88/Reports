@@ -21,6 +21,7 @@ namespace Reports.Core.Domain
         
         public virtual VacationType Type { get; set; }
         public virtual RequestStatus Status { get; set; }
+        public virtual TimesheetStatus TimesheetStatus { get; set; }
         //public virtual EmployeeDocumentType  Type { get; set; }
         //public virtual EmployeeDocumentSubType SubType { get; set; }
 
@@ -29,6 +30,8 @@ namespace Reports.Core.Domain
 
         public virtual DateTime? ManagerDateAccept { get; set; }
         public virtual DateTime? PersonnelManagerDateAccept { get; set; }
+
+        public virtual IList<VacationComment> Comments { get; set; }
         //public virtual DateTime? BudgetManagerDateAccept { get; set; }
         //public virtual DateTime? OutsourcingManagerDateAccept { get; set; }
         //public virtual bool SendEmailToBilling { get; set; }

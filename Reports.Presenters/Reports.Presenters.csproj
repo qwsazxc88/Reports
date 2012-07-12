@@ -137,6 +137,7 @@
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
@@ -145,8 +146,10 @@
     <Compile Include="UI\ViewModel\TimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetModel.cs" />
     <Compile Include="UI\ViewModel\UserEditModel.cs" />
+    <Compile Include="UI\ViewModel\UserInfoModel.cs" />
     <Compile Include="UI\ViewModel\UserListModel.cs" />
     <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>

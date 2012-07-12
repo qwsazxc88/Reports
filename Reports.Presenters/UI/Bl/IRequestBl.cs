@@ -7,5 +7,9 @@ namespace Reports.Presenters.UI.Bl
         CreateRequestModel GetCreateRequestModel(int? userId);
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model);
+
+        VacationEditModel GetVacationEditModel(int id, int userId);
+        RequestCommentsModel GetCommentsModel(int id, int typeId);
+        bool SaveComment(SaveCommentModel model);
     }
 }

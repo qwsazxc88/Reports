@@ -1,0 +1,86 @@
+﻿@model Reports.Presenters.UI.ViewModel.UserInfoModel
+<table style="width:100%">
+    <tr>
+        <td colspan="2"  style="font-weight:bold">
+            Реквизиты
+        </td>
+    </tr>
+    <tr>
+        <td style="width:20%">
+            @Html.LabelFor(m => m.DateCreated)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateCreated)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Organization)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Organization)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DocumentNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DocumentNumber)
+            
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.UserName)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.UserNumber)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.UserNumber)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Department)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Department)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Position)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Position)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ManagerName)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.ManagerName)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.PersonnelName)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.PersonnelName)
+        </td>
+    </tr>
+    <tr>
+       <td colspan="2"/>
+    <tr/>
+</table>
