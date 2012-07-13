@@ -261,4 +261,10 @@
   <data name="ActionListModel_Month_Required" xml:space="preserve">
     <value>Месяц - обязательное поле.</value>
   </data>
+  <data name="VacationEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала отпуска - обязательное поле </value>
+  </data>
+  <data name="VacationEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания отпуска - обязательное поле</value>
+  </data>
 </root>

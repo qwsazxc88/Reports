@@ -78,7 +78,7 @@
                     {
                         <tr>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id })' style="cursor:hand">@doc.Name</a>
+                                <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id,UserId=doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
                             <td>@doc.Date</td>
                             @*<td>@if (doc.IsApproved)

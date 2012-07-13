@@ -2,7 +2,7 @@ using System;
 
 namespace Reports.Core.Domain
 {
-    public class User : AbstractUsedEntityWithVersion//AbstractUsedEntity
+    public class User : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants
 

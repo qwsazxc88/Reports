@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class VacationType : AbstractUsedEntityWithVersion//AbstractUsedEntity
+    public class VacationType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants
         #endregion

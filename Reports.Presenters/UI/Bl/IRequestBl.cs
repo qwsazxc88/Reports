@@ -8,7 +8,11 @@ namespace Reports.Presenters.UI.Bl
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model);
 
+
         VacationEditModel GetVacationEditModel(int id, int userId);
+        bool SaveVacationEditModel(VacationEditModel model,out string error);
+        void ReloadDictionariesToModel(VacationEditModel model);
+
         RequestCommentsModel GetCommentsModel(int id, int typeId);
         bool SaveComment(SaveCommentModel model);
     }

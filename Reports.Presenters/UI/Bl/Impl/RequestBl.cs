@@ -5,6 +5,8 @@ using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
+using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -12,6 +14,9 @@ namespace Reports.Presenters.UI.Bl.Impl
     public class RequestBl : BaseBl, IRequestBl
     {
         protected string SelectAll = "Все";
+
+        public const int VacationFirstTimesheetStatisId = 8;
+        public const int VacationLastTimesheetStatisId = 12;
 
         protected IDepartmentDao departmentDao;
         protected IVacationTypeDao vacationTypeDao;
@@ -21,6 +26,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IUserToDepartmentDao userToDepartmentDao;
         protected ITimesheetStatusDao timesheetStatusDao;
         protected IVacationCommentDao vacationCommentDao;
+        protected IRequestNextNumberDao requestNextNumberDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -62,6 +68,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(vacationCommentDao); }
             set { vacationCommentDao = value; }
         }
+        public IRequestNextNumberDao RequestNextNumberDao
+        {
+            get { return Validate.Dependency(requestNextNumberDao); }
+            set { requestNextNumberDao = value; }
+        }
 
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -93,7 +104,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                           {
                                               UserId = AuthenticationService.CurrentUser.Id,
                                               Departments = GetDepartments(user),
-                                              VacationTypes = GetVacationTypes(),
+                                              VacationTypes = GetVacationTypes(true),
                                               RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)
                                           };
@@ -105,7 +116,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
-            model.VacationTypes = GetVacationTypes();
+            model.VacationTypes = GetVacationTypes(true);
             SetDocumentsToModel(model,user);
         }
         public void SetDocumentsToModel(VacationListModel model,User user)
@@ -129,10 +140,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 departmentList.Insert(0, new IdNameDto(0, SelectAll));
             return departmentList;
         }
-        public List<IdNameDto> GetVacationTypes()
+        public List<IdNameDto> GetVacationTypes(bool addAll)
         {
             var vacationTypeList = VacationTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            vacationTypeList.Insert(0,new IdNameDto(0,SelectAll));
+            if(addAll)
+                vacationTypeList.Insert(0,new IdNameDto(0,SelectAll));
             return vacationTypeList;
         }
         public List<IdNameDto> GetRequestStatuses()
@@ -163,10 +175,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             VacationEditModel model = new VacationEditModel {Id = id, UserId = userId};
             User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user,model);
-            model.CommentsModel = GetCommentsModel(id, 1);
+            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
-            model.VacationTypes = GetVacationTypes();
+            model.VacationTypes = GetVacationTypes(false);
             SetFlagsState(id,user,model);
             if(id == 0)
             {
@@ -178,6 +193,95 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
             return model;
+        }
+        public bool SaveVacationEditModel(VacationEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Vacation vacation = null;
+                if(model.Id == 0)
+                {
+                    vacation = new Vacation
+                                            {
+                                                BeginDate = model.BeginDate.Value,
+                                                CreateDate = DateTime.Now,
+                                                Creator = UserDao.Load(current.Id),
+                                                EndDate = model.EndDate.Value,
+                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days,
+                                                Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
+                                                Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
+                                                Type = VacationTypeDao.Load(model.VacationTypeId),
+                                                User = user
+                                             };
+                    VacationDao.SaveAndFlush(vacation);
+                    model.Id = vacation.Id;
+                    model.Version = vacation.Version;
+                    model.DaysCount = vacation.DaysCount;
+                    model.DocumentNumber = vacation.Number.ToString();
+                }
+                else
+                {
+                    
+                }
+                
+                model.CreatorLogin = vacation.Creator.Login;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on GetVacationEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Vacation);
+                model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+                model.VacationTypes = GetVacationTypes(false);
+            }
+        }
+        public bool CheckUserRights(User user, IUser current)
+        {
+            switch (current.UserRole)
+            {
+                case UserRole.Employee:
+                    if (user.Id != current.Id)
+                        return false;
+                    break;
+                case UserRole.Manager:
+                    if (user.Manager != null && user.Manager.Id != current.Id)
+                        return false;
+                    break;
+                case UserRole.PersonnelManager:
+                    if (user.PersonnelManager != null && user.PersonnelManager.Id != current.Id)
+                        return false;
+                    break;
+            }
+            return true;
+        }
+        public void ReloadDictionariesToModel(VacationEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetUserInfoModel(user, model);
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Vacation);
+            model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+            model.VacationTypes = GetVacationTypes(false);
+            if(model.Id == 0)
+                model.CreatorLogin = user.Login;
+            else
+            {
+                
+            }
         }
         protected void SetFlagsState(int id,User user,VacationEditModel model)
         {
@@ -221,13 +325,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetTimesheetStatusesForVacation()
         {
-            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().Where(x => (x.Id >= 8) && (x.Id <= 12)).ToList().ConvertAll(
-                x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name));
             dtos.Insert(0,new IdNameDto(0,string.Empty));
             return dtos;
         }
         #endregion
-
+        #region Comments
         public  RequestCommentsModel GetCommentsModel(int id,int typeId)
         {
             return SetCommentsModel(id,typeId);
@@ -243,7 +348,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 switch(typeId)
                 {
-                    case 1:
+                    case (int)RequestTypeEnum.Vacation:
                         Vacation vacation = VacationDao.Load(id);
                         if ((vacation.Comments != null) && (vacation.Comments.Count() > 0))
                         {
@@ -267,7 +372,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 int userId = AuthenticationService.CurrentUser.Id;
                 switch(model.TypeId)
                 {
-                    case 1:
+                    case (int)RequestTypeEnum.Vacation:
                         Vacation vacation = VacationDao.Load(model.DocumentId);
                         User user = UserDao.Load(userId);
                         VacationComment comment = new VacationComment
@@ -291,6 +396,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return false;
             }
         }
+        #endregion
     }
 
 }

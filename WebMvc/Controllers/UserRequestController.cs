@@ -4,11 +4,12 @@ using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
-using Reports.Presenters.UI.Bl.Impl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
     public class UserRequestController : BaseController
     {
         public const int MaxCommentLength = 256;
@@ -52,6 +53,60 @@ namespace WebMvc.Controllers
              VacationEditModel model = RequestBl.GetVacationEditModel(id,userId);
              return View(model);
          }
+         [HttpPost]
+         public ActionResult VacationEdit(VacationEditModel model)
+         {
+             CorrectCheckboxes(model);
+             if (!ValidateVacationEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+
+             string error;
+             if(!RequestBl.SaveVacationEditModel(model,out error))
+             {
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+                 if(model.ReloadPage)
+                     return View(RequestBl.GetVacationEditModel(model.Id, model.UserId));
+             }
+             return View(model);
+         }
+         protected bool ValidateVacationEditModel(VacationEditModel model)
+         {
+             if(model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate > model.EndDate)
+                 ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
+             return ModelState.IsValid;
+         }
+         protected void CorrectCheckboxes(VacationEditModel model)
+         {
+             if (!model.IsApprovedByManagerEnable && model.IsApprovedByManagerHidden)
+             {
+                 if (ModelState.ContainsKey("IsApprovedByManager"))
+                     ModelState.Remove("IsApprovedByManager");
+                 model.IsApprovedByManager = model.IsApprovedByManagerHidden;
+             }
+             if (!model.IsApprovedByPersonnelManagerEnable && model.IsApprovedByPersonnelManagerHidden)
+             {
+                 if (ModelState.ContainsKey("IsApprovedByPersonnelManager"))
+                     ModelState.Remove("IsApprovedByPersonnelManager");
+                 model.IsApprovedByPersonnelManager = model.IsApprovedByPersonnelManagerHidden;
+             }
+             if (!model.IsApprovedByUserEnable && model.IsApprovedByUserHidden)
+             {
+                 if (ModelState.ContainsKey("IsApprovedByUser"))
+                     ModelState.Remove("IsApprovedByUser");
+                 model.IsApprovedByUser = model.IsApprovedByUserHidden;
+             }
+             if (!model.IsPostedTo1CEnable && model.IsPostedTo1CHidden)
+             {
+                 if (ModelState.ContainsKey("IsPostedTo1C"))
+                     ModelState.Remove("IsPostedTo1C");
+                 model.IsPostedTo1C = model.IsPostedTo1CHidden;
+             }
+         }
 
          [HttpGet]
          public ActionResult RenderComments(int id,int typeId)
@@ -60,7 +115,7 @@ namespace WebMvc.Controllers
              RequestCommentsModel model = RequestBl.GetCommentsModel(id,typeId);
              return PartialView("RequestCommentPartial", model);
          }
-
+        
          [HttpGet]
          public ActionResult AddCommentDialog(int id, int typeId)
          {

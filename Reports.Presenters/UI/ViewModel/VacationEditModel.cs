@@ -17,9 +17,15 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Вид отпуска")]
         public int VacationTypeId { get; set; }
         public IList<IdNameDto> VacationTypes;
-        [Display(Name = "c")]
+        [Display(Name = "Дата начала отпуска")]
+        [Required(ErrorMessageResourceName = "VacationEditModel_BeginDate_Required",
+         ErrorMessageResourceType = typeof(Resources))]
+        [LocalizationDisplayName("VacationEditModel_BeginDate_Required", typeof(Resources))]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "по")]
+        [Display(Name = "Дата окончания отпуска")]
+        [Required(ErrorMessageResourceName = "VacationEditModel_EndDate_Required",
+        ErrorMessageResourceType = typeof(Resources))]
+        [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
         [Display(Name = "на")]
         public int? DaysCount { get; set; }
@@ -50,7 +56,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string CreatorLogin { get; set; }
 
         public bool IsSaveAvailable { get; set; }
-
         public RequestCommentsModel CommentsModel { get; set; }
+
+        public bool ReloadPage { get; set; }
     }
 }

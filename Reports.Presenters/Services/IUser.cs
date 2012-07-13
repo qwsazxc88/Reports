@@ -11,6 +11,8 @@ namespace Reports.Presenters.Services
         bool IsAdministrator { get; set; }
 
         string Serialize();
+
+        //string[] Roles { get; set; }
         //IUser Deserialize(string data);
     }
 }

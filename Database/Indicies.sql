@@ -1,10 +1,10 @@
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (2,'Сотрудник',1) 
-INSERT INTO [Role] (Id,[Name],Version) values (3,'Руководитель',1) 
-INSERT INTO [Role] (Id,[Name],Version) values (4,'Кадровик',1) 
-INSERT INTO [Role] (Id,[Name],Version) values (5,'Бюджет',1) 
-INSERT INTO [Role] (Id,[Name],Version) values (6,'Отусорсинг',1)
+INSERT INTO [Role] (Id,[Name],Version) values (4,'Руководитель',1) 
+INSERT INTO [Role] (Id,[Name],Version) values (8,'Кадровик',1) 
+INSERT INTO [Role] (Id,[Name],Version) values (16,'Бюджет',1) 
+INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
@@ -155,23 +155,23 @@ INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept      
 VALUES			   (1,       		0               ,'admin','adminadmin' ,	GetDate(),      N'Администратор',             1,		  null ,          1,           'АА0000000001' )
 declare @managerId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	1              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 3,		   'АВ0000000001')
+VALUES			   (1,       	1              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 4,		   'АВ0000000001')
 set @managerId = @@Identity
 INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@DepartmentId,1)
 INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@Department1Id,1)
 declare @personnelId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	1              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 4,		   'АГ0000000001')
+VALUES			   (1,       	1              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001')
 set @personnelId = @@Identity
 INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
 INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
 declare @budgetId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,              Name,               Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'budget' ,'budget'  ,	'2008-12-01 15:13:25:000',       N'Бюджет',           1,         null								        , 5,		   'АГ0000000001')
+VALUES			   (1,       	0              ,'budget' ,'budget'  ,	'2008-12-01 15:13:25:000',       N'Бюджет',           1,         null								        , 16,		   'АГ0000000001')
 set @budgetId = @@Identity
 declare @outsorsingId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,                       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              6,		       'АД0000000001')
+VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              32,		       'АД0000000001')
 set @outsorsingId = @@Identity
 declare @userId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,/*DepartmentId,*/PositionId) 

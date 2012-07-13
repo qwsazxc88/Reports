@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class Department : AbstractUsedEntityWithVersion//AbstractUsedEntity
+    public class Department : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants
         #endregion

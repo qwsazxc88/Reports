@@ -26,6 +26,7 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery =
                 @"select v.Id as Id,
+                         u.Id as UserId,
                          cast(v.Id as nvarchar(10)) as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Vacation] v
@@ -70,6 +71,7 @@ namespace Reports.Core.Dao.Impl
 
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("Date", NHibernateUtil.DateTime);
             if (requestStatusId != 0)

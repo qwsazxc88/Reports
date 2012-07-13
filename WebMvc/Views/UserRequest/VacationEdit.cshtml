@@ -9,7 +9,7 @@
     <table style="width:100%">
     <tr>
         <td colspan="2">
-            @Html.ValidationSummary(true, "")
+            @Html.ValidationSummary(false)
             <div id="Error" style="color:Red;display:none;"></div>
             @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
         </td>
@@ -21,6 +21,10 @@
     </tr>
     <tr>
         <td>
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
             @Html.LabelFor(m => m.VacationTypeId):
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
         </td>

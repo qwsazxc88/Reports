@@ -2,7 +2,7 @@
 
 namespace Reports.Core.Domain
 {
-    public class Settings : AbstractUsedEntityWithVersion
+    public class Settings : AbstractEntityWithVersion
     {
         public virtual string DownloadDictionaryFilePath { get; set; }
         public virtual string UploadTimesheetFilePath { get; set; }
