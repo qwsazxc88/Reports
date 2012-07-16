@@ -19,8 +19,8 @@ namespace Reports.Core
     {
         public const string Admin = "1";
         public const string Employee = "2";
-        public const string Manager = "3";
-        public const string PersonnelManager = "4";
+        public const string Manager = "4";
+        public const string PersonnelManager = "8";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";

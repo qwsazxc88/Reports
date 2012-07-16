@@ -178,11 +178,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (!CheckUserRights(user, current))
                 throw new ArgumentException("Доступ запрещен.");
-            SetUserInfoModel(user,model);
+            SetUserInfoModel(user, model);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
-            SetFlagsState(id,user,model);
+            Vacation vacation = null; 
             if(id == 0)
             {
                 model.CreatorLogin = user.Login;
@@ -190,8 +190,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                
+                vacation = vacationDao.Load(id);
+                if(vacation == null)
+                    throw new ArgumentException(string.Format("Заявка на отпуск (id {0}) не найдена в базе данных.",id));
+                model.Version = vacation.Version;
+                model.VacationTypeId = vacation.Type.Id;
+                model.BeginDate = vacation.BeginDate;//new DateTimeDto(vacation.BeginDate);//
+                model.EndDate = vacation.EndDate;
+                model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
+                model.DaysCount = vacation.DaysCount;
+                model.CreatorLogin = vacation.Creator.Login;
+                model.DocumentNumber = vacation.Number.ToString();
+                model.DateCreated = vacation.CreateDate.ToShortDateString();
             }
+            SetFlagsState(id, user,vacation, model);
             return model;
         }
         public bool SaveVacationEditModel(VacationEditModel model, out string error)
@@ -224,16 +236,60 @@ namespace Reports.Presenters.UI.Bl.Impl
                                              };
                     VacationDao.SaveAndFlush(vacation);
                     model.Id = vacation.Id;
-                    model.Version = vacation.Version;
-                    model.DaysCount = vacation.DaysCount;
-                    model.DocumentNumber = vacation.Number.ToString();
                 }
                 else
                 {
-                    
+                    vacation = VacationDao.Load(model.Id);
+                    if(vacation.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                        && vacation.StatusId == RequestStatusEnum.NotApproved
+                        && model.IsApprovedByUser)
+                        vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByUser);
+                    if (current.UserRole == UserRole.Manager && user.Manager != null
+                        && current.Id == user.Manager.Id
+                        && vacation.StatusId == RequestStatusEnum.ApprovedByUser
+                        && model.IsApprovedByManager)
+                    {
+                        vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByManager);
+                        vacation.ManagerDateAccept = DateTime.Now;
+                    }
+                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id
+                        && vacation.StatusId == RequestStatusEnum.ApprovedByManager
+                        )
+                    {
+                        if (model.IsApprovedByPersonnelManager && model.TimesheetStatusId == 0)
+                        {
+                            error = "Необходимо указать значение поля 'Заполнение табеля'";
+                            return false;
+                        }
+                        if (model.TimesheetStatusId != 0)
+                            vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if (model.IsApprovedByPersonnelManager)
+                        {
+                            vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByPersonnel);
+                            vacation.PersonnelManagerDateAccept = DateTime.Now;
+                        }
+                    }
+                    if (model.IsVacationTypeEditable)
+                    {
+                        vacation.BeginDate = model.BeginDate.Value;
+                        vacation.EndDate = model.EndDate.Value;
+                        vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days;
+                        vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
+                    }
+                    VacationDao.SaveAndFlush(vacation);
                 }
-                
+                model.DocumentNumber = vacation.Number.ToString();
+                model.Version = vacation.Version;
+                model.DaysCount = vacation.DaysCount;
                 model.CreatorLogin = vacation.Creator.Login;
+                SetFlagsState(vacation.Id,user,vacation,model);
                 return true;
             }
             catch (Exception ex)
@@ -283,29 +339,73 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
         }
-        protected void SetFlagsState(int id,User user,VacationEditModel model)
+        protected void SetFlagsState(VacationEditModel model,bool state)
         {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsVacationTypeEditable = state;
+        }
+        protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
+        {
+            SetFlagsState(model,false);
             if(id == 0)
             {
-                model.IsApprovedByManager = false;
-                model.IsApprovedByManagerHidden = false;
-                model.IsApprovedByManagerEnable = false;
-                
-                model.IsApprovedByPersonnelManager = false;
-                model.IsApprovedByPersonnelManagerHidden = false;
-                model.IsApprovedByPersonnelManagerEnable = false;
-
-                model.IsApprovedByUser = false;
-                model.IsApprovedByUserHidden = false;
-                model.IsApprovedByUserEnable = false;
-
-                model.IsPostedTo1C = false;
-                model.IsPostedTo1CHidden = false;
-                model.IsPostedTo1CEnable = false;
-
                 model.IsSaveAvailable = true;
-                model.IsTimesheetStatusEditable = false;
+                model.IsVacationTypeEditable = true;
                 return;
+            }
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = vacation.StatusId >= RequestStatusEnum.ApprovedByUser;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = vacation.StatusId >= RequestStatusEnum.ApprovedByManager;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = vacation.StatusId >= RequestStatusEnum.ApprovedByPersonnel;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.StatusId >= RequestStatusEnum.SendTo1C;
+            switch(currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (vacation.StatusId == RequestStatusEnum.NotApproved)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsVacationTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (vacation.StatusId == RequestStatusEnum.ApprovedByUser)
+                    {
+                        //model.IsApprovedByManager = true;
+                        //model.IsApprovedByManagerHidden = true;
+                        model.IsApprovedByManagerEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsVacationTypeEditable = true;
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (vacation.StatusId == RequestStatusEnum.ApprovedByManager)
+                    {
+                        //model.IsApprovedByPersonnelManager = true;
+                        //model.IsApprovedByPersonnelManagerHidden = true;
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsVacationTypeEditable = true;
+                        model.IsTimesheetStatusEditable = true;
+                    }
+                    break;
             }
         }
         protected void SetUserInfoModel(User user,UserInfoModel model)
@@ -318,8 +418,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerName = user.Manager.FullName;
             if (user.PersonnelManager != null)
                 model.PersonnelName = user.PersonnelManager.FullName;
-            model.Organization = user.Organization.Name;
-            model.Position = user.Position.Name;
+            if (user.Organization != null)
+                model.Organization = user.Organization.Name;
+            if(user.Position != null)
+                model.Position = user.Position.Name;
             model.UserName = user.FullName;
             model.UserNumber = user.Code;
         }

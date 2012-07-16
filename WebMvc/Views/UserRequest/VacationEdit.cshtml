@@ -24,21 +24,38 @@
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
             <input type="hidden" id="Version" name="Version" value="@Model.Version" />
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsVacationTypeEditable" name="IsVacationTypeEditable" value="@Model.IsVacationTypeEditable" />
             <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
             @Html.LabelFor(m => m.VacationTypeId):
-            @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
+            @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name"), Model.IsVacationTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>
         <td>
             @Html.LabelFor(m => m.BeginDate):
-            @Html.EditorFor(model => model.BeginDate) 
+            @if (Model.IsVacationTypeEditable)
+            {
+                @Html.EditorFor(model => model.BeginDate) 
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.BeginDate)
+                @Html.HiddenFor(model => model.BeginDate)
+            } 
         </td>
      </tr>
      <tr>
         <td>
             @Html.LabelFor(m => m.EndDate):
-            @Html.EditorFor(model => model.EndDate) 
+            @if (Model.IsVacationTypeEditable)
+            {
+                @Html.EditorFor(model => model.EndDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.EndDate)
+                @Html.HiddenFor(model => model.EndDate)
+            } 
          </td>
     </tr>
     <tr>
@@ -50,7 +67,7 @@
     <tr>
         <td>
             @Html.LabelFor(m => m.TimesheetStatusId):
-            @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null :(object)new { disabled = "disabled" } ) 
+            @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>

@@ -66,10 +66,16 @@ namespace WebMvc.Controllers
              string error;
              if(!RequestBl.SaveVacationEditModel(model,out error))
              {
+                 
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetVacationEditModel(model.Id, model.UserId));
+                 }
                  if (!string.IsNullOrEmpty(error))
                      ModelState.AddModelError("", error);
-                 if(model.ReloadPage)
-                     return View(RequestBl.GetVacationEditModel(model.Id, model.UserId));
              }
              return View(model);
          }

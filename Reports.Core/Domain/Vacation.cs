@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
 using Reports.Core.Domain;
+using Reports.Core.Enum;
 
 namespace Reports.Core.Domain
 {
@@ -21,6 +22,10 @@ namespace Reports.Core.Domain
         
         public virtual VacationType Type { get; set; }
         public virtual RequestStatus Status { get; set; }
+
+        public virtual RequestStatusEnum StatusId {
+            get { return (RequestStatusEnum)Status.Id; }
+        }
         public virtual TimesheetStatus TimesheetStatus { get; set; }
         //public virtual EmployeeDocumentType  Type { get; set; }
         //public virtual EmployeeDocumentSubType SubType { get; set; }

@@ -17,17 +17,21 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Вид отпуска")]
         public int VacationTypeId { get; set; }
         public IList<IdNameDto> VacationTypes;
+        public bool IsVacationTypeEditable { get; set; }
         [Display(Name = "Дата начала отпуска")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_BeginDate_Required",
          ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("VacationEditModel_BeginDate_Required", typeof(Resources))]
+        //[DataType("DateTimeDto")]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "Дата окончания отпуска")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_EndDate_Required",
         ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
-        [Display(Name = "на")]
+        [Display(Name = "Длительность отпуска (календарных дней)")]
         public int? DaysCount { get; set; }
 
         [Display(Name = "Заполнение табеля")]
