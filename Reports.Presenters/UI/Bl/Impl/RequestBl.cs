@@ -196,6 +196,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.CreatorLogin = current.Login;
                 model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
@@ -337,15 +338,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void ReloadDictionariesToModel(VacationEditModel model)
         {
             User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
             SetUserInfoModel(user, model);
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
-            if(model.Id == 0)
-                model.CreatorLogin = user.Login;
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
             else
             {
-                
+                Vacation vacation = VacationDao.Load(model.Id);
+                model.CreatorLogin = vacation.Creator.Login;
+                model.DocumentNumber = vacation.Number.ToString();
+                model.DateCreated = vacation.CreateDate.ToShortDateString();
+                model.DaysCount = vacation.DaysCount;
             }
         }
         protected void SetFlagsState(VacationEditModel model,bool state)
@@ -419,7 +428,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetUserInfoModel(User user,UserInfoModel model)
         {
-            model.DateCreated = DateTime.Today.ToShortDateString();
+            //model.DateCreated = DateTime.Today.ToShortDateString();
             IList<IdNameDto> departments = UserToDepartmentDao.GetByUserId(user.Id);
             if (departments.Count > 0)
                 model.Department = departments[0].Name;
