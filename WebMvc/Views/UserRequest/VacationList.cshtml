@@ -1,4 +1,6 @@
-﻿@model Reports.Presenters.UI.ViewModel.VacationListModel
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.VacationListModel
 @{
     ViewBag.Title = "Отпуска";
 }
@@ -62,7 +64,10 @@
     </tr>
      <tr>
         <td colspan="2">
-         @Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })
+         @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+         {@Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })}
+         else
+         {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
         </td>
     </tr>
     <tr>
@@ -78,7 +83,7 @@
                     {
                         <tr>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id,UserId=doc.UserId })' style="cursor:hand">@doc.Name</a>
+                                <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
                             <td>@doc.Date</td>
                             @*<td>@if (doc.IsApproved)

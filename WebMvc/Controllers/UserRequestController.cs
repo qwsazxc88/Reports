@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -31,6 +33,23 @@ namespace WebMvc.Controllers
              int? userId = new int?();
              CreateRequestModel model = RequestBl.GetCreateRequestModel(userId);
              return View(model);
+         }
+
+         [HttpPost]
+         public ActionResult CreateRequest(CreateRequestModel model)
+         {
+             RequestTypeEnum type = (RequestTypeEnum)model.RequestTypeId;
+             switch (type)
+             {
+                 case RequestTypeEnum.Vacation:
+                     return RedirectToAction("VacationEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
+                 default:
+                     throw new ArgumentException("Неизвестный тип заявки");
+             }
          }
 
          [HttpGet]

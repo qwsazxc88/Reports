@@ -4,7 +4,7 @@
 }
 @using (Html.BeginForm())
 {
-    <table style="width:200px">
+    <table>
         <tr>
             <td colspan="2">
                 @Html.ValidationSummary(false, "")
@@ -13,7 +13,7 @@
         </tr>
         <tr>
             <td>
-                @Html.LabelFor(m => m.RequestTypeId)
+                @Html.LabelFor(m => m.RequestTypeId):
             </td>
             <td>
                @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
@@ -21,10 +21,10 @@
         </tr>
          <tr @if (!Model.IsUserVisible) {<text>style="display:none"</text>}>
             <td>
-                @Html.LabelFor(m => m.UserId)
+                @Html.LabelFor(m => m.UserId):
             </td>
             <td>
-               @Html.DropDownListFor(model => model.Users, new SelectList(Model.RequestTypes, "ID", "Name")) 
+               @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
             </td>
         </tr>
         <tr>

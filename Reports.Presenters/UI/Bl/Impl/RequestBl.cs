@@ -76,24 +76,33 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
-            UserRole role;
             if(userId == null)
-            {
                 userId = AuthenticationService.CurrentUser.Id;
-                role = AuthenticationService.CurrentUser.UserRole;
-            }
-            else
-            {
-                User user = UserDao.Load(userId.Value);
-                role = (UserRole)user.Role.Id;
-            }
 
+            User user = UserDao.Load(userId.Value);
+            UserRole role = (UserRole)user.Role.Id;
             CreateRequestModel model = new CreateRequestModel
-                                           {
-                                               IsUserVisible = role != UserRole.Employee
-                                           };
-            //model.RequestStatuses =  GetRequestTypes();
+            {
+                IsUserVisible = role != UserRole.Employee,
+                RequestTypes = GetRequestTypes()
+            };
+            switch(role)
+            {
+                case UserRole.Employee:
+                    model.Users = new List<IdNameDto>{new IdNameDto(user.Id,user.FullName)};
+                    break;
+                case UserRole.Manager:
+                case UserRole.PersonnelManager:
+                    model.Users = UserDao.GetUsersForManager(user.Id, role);
+                    break;
+
+
+            }
             return model;
+        }
+        protected IList<IdNameDto> GetRequestTypes()
+        {
+            return new List<IdNameDto>{new IdNameDto((int)RequestTypeEnum.Vacation,"Заявка на отпуск")};
         }
 
         #region Vacation list model
@@ -185,7 +194,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Vacation vacation = null; 
             if(id == 0)
             {
-                model.CreatorLogin = user.Login;
+                model.CreatorLogin = current.Login;
                 model.Version = 0;
             }
             else
