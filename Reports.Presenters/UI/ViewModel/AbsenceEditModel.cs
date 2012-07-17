@@ -5,31 +5,34 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class VacationEditModel : UserInfoModel, ICheckBoxes
+    public class AbsenceEditModel : UserInfoModel, ICheckBoxes
     {
         public int Id { get; set; }
         public int Version { get; set; }
         public int UserId { get; set; }
 
 
-        [Display(Name = "Вид отпуска")]
-        public int VacationTypeId { get; set; }
-        public IList<IdNameDto> VacationTypes;
-        public bool IsVacationTypeEditable { get; set; }
-        [Display(Name = "Дата начала отпуска")]
+        [Display(Name = "Вид неявки")]
+        public int AbsenceTypeId { get; set; }
+        public IList<IdNameDto> AbsenceTypes;
+        public bool IsAbsenceTypeEditable { get; set; }
+        [Display(Name = "Дата начала")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",ApplyFormatInEditMode = true)]
-        [Required(ErrorMessageResourceName = "VacationEditModel_BeginDate_Required",
+        [Required(ErrorMessageResourceName = "AbsenceEditModel_BeginDate_Required",
          ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("VacationEditModel_BeginDate_Required", typeof(Resources))]
+        [LocalizationDisplayName("AbsenceEditModel_BeginDate_Required", typeof(Resources))]
         //[DataType("DateTimeDto")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания отпуска")]
+        [Display(Name = "Дата окончания")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        [Required(ErrorMessageResourceName = "VacationEditModel_EndDate_Required",
+        [Required(ErrorMessageResourceName = "AbsenceEditModel_EndDate_Required",
         ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
+        [LocalizationDisplayName("AbsenceEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
-        [Display(Name = "Длительность отпуска (календарных дней)")]
+        [Required(ErrorMessageResourceName = "AbsenceEditModel_DaysCount_Required",
+        ErrorMessageResourceType = typeof(Resources))]
+        [LocalizationDisplayName("AbsenceEditModel_DaysCount_Required", typeof(Resources))]
+        [Display(Name = "Количество дней (часов)")]
         public int? DaysCount { get; set; }
 
         [Display(Name = "Заполнение табеля")]

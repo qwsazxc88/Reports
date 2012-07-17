@@ -28,6 +28,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IVacationCommentDao vacationCommentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
 
+        protected IAbsenceTypeDao absenceTypeDao;
+        protected IAbsenceDao absenceDao;
+        protected IAbsenceCommentDao absenceCommentDao;
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -73,6 +77,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(requestNextNumberDao); }
             set { requestNextNumberDao = value; }
         }
+        public IAbsenceTypeDao AbsenceTypeDao
+        {
+            get { return Validate.Dependency(absenceTypeDao); }
+            set { absenceTypeDao = value; }
+        }
+        public IAbsenceDao AbsenceDao
+        {
+            get { return Validate.Dependency(absenceDao); }
+            set { absenceDao = value; }
+        }
+        public IAbsenceCommentDao AbsenceCommentDao
+        {
+            get { return Validate.Dependency(absenceCommentDao); }
+            set { absenceCommentDao = value; }
+        }
 
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -102,8 +121,290 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected IList<IdNameDto> GetRequestTypes()
         {
-            return new List<IdNameDto>{new IdNameDto((int)RequestTypeEnum.Vacation,"Заявка на отпуск")};
+            return new List<IdNameDto>{new IdNameDto((int)RequestTypeEnum.Vacation,"Заявка на отпуск"),
+                                       new IdNameDto((int)RequestTypeEnum.Absence,"Заявка на неявку")};
         }
+        #region Absence
+        public AbsenceListModel GetAbsenceListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            AbsenceListModel model = new AbsenceListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                Departments = GetDepartments(user),
+                AbsenceTypes = GetAbsenceTypes(true),
+                RequestStatuses = GetRequestStatuses(),
+                Positions = GetPositions(user)
+            };
+            return model;
+        }
+        protected List<IdNameDto> GetAbsenceTypes(bool addAll)
+        {
+            var typeList = AbsenceTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        public void SetAbsenceListModel(AbsenceListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            model.Departments = GetDepartments(user);
+            model.RequestStatuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+            model.AbsenceTypes = GetAbsenceTypes(true);
+            SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(AbsenceListModel model, User user)
+        {
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = AbsenceDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.PositionId,
+                model.AbsenceTypeId,
+                model.RequestStatusId,
+                model.BeginDate,
+                model.EndDate);
+        }
+        public AbsenceEditModel GetAbsenceEditModel(int id, int userId)
+        {
+            AbsenceEditModel model = new AbsenceEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Absence);
+            model.TimesheetStatuses = GetTimesheetStatusesForAbsence();
+            model.AbsenceTypes = GetAbsenceTypes(false);
+            Absence absence = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                absence = AbsenceDao.Load(id);
+                if (absence == null)
+                    throw new ArgumentException(string.Format("Заявка на неявку (id {0}) не найдена в базе данных.", id));
+                model.Version = absence.Version;
+                model.AbsenceTypeId = absence.Type.Id;
+                model.BeginDate = absence.BeginDate;//new DateTimeDto(vacation.BeginDate);//
+                model.EndDate = absence.EndDate;
+                model.TimesheetStatusId = absence.TimesheetStatus == null ? 0 : absence.TimesheetStatus.Id;
+                model.DaysCount = absence.DaysCount;
+                model.CreatorLogin = absence.Creator.Login;
+                model.DocumentNumber = absence.Number.ToString();
+                model.DateCreated = absence.CreateDate.ToShortDateString();
+            }
+            SetFlagsState(id,user,absence,model);
+            return model;
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForAbsence()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        protected void SetFlagsState(int id, User user, Absence absence, AbsenceEditModel model)
+        {
+            SetFlagsState(model, false);
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsAbsenceTypeEditable = true;
+                return;
+            }
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = absence.StatusId >= RequestStatusEnum.ApprovedByUser;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = absence.StatusId >= RequestStatusEnum.ApprovedByManager;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = absence.StatusId >= RequestStatusEnum.ApprovedByPersonnel;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = absence.StatusId >= RequestStatusEnum.SendTo1C;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (absence.StatusId == RequestStatusEnum.NotApproved)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsAbsenceTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (absence.StatusId == RequestStatusEnum.ApprovedByUser)
+                    {
+                        //model.IsApprovedByManager = true;
+                        //model.IsApprovedByManagerHidden = true;
+                        model.IsApprovedByManagerEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsAbsenceTypeEditable = true;
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (absence.StatusId == RequestStatusEnum.ApprovedByManager)
+                    {
+                        //model.IsApprovedByPersonnelManager = true;
+                        //model.IsApprovedByPersonnelManagerHidden = true;
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsSaveAvailable = true;
+                        model.IsAbsenceTypeEditable = true;
+                        model.IsTimesheetStatusEditable = true;
+                    }
+                    break;
+            }
+        }
+        protected void SetFlagsState(AbsenceEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsAbsenceTypeEditable = state;
+        }
+        public void ReloadDictionariesToModel(AbsenceEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Absence);
+            model.TimesheetStatuses = GetTimesheetStatusesForAbsence();
+            model.AbsenceTypes = GetAbsenceTypes(false);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Absence absence = AbsenceDao.Load(model.Id);
+                model.CreatorLogin = absence.Creator.Login;
+                model.DocumentNumber = absence.Number.ToString();
+                model.DateCreated = absence.CreateDate.ToShortDateString();
+                model.DaysCount = absence.DaysCount;
+            }
+        }
+        public bool SaveAbsenceEditModel(AbsenceEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Absence absence;
+                if (model.Id == 0)
+                {
+                    absence = new Absence
+                    {
+                        BeginDate = model.BeginDate.Value,
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        EndDate = model.EndDate.Value,
+                        DaysCount = model.DaysCount.Value,
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
+                        Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
+                        Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
+                        User = user
+                    };
+                    AbsenceDao.SaveAndFlush(absence);
+                    model.Id = absence.Id;
+                }
+                else
+                {
+                    absence = AbsenceDao.Load(model.Id);
+                    if (absence.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                        && absence.StatusId == RequestStatusEnum.NotApproved
+                        && model.IsApprovedByUser)
+                        absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByUser);
+                    if (current.UserRole == UserRole.Manager && user.Manager != null
+                        && current.Id == user.Manager.Id
+                        && absence.StatusId == RequestStatusEnum.ApprovedByUser
+                        && model.IsApprovedByManager)
+                    {
+                        absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByManager);
+                        absence.ManagerDateAccept = DateTime.Now;
+                    }
+                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id
+                        && absence.StatusId == RequestStatusEnum.ApprovedByManager
+                        )
+                    {
+                        if (model.IsApprovedByPersonnelManager && model.TimesheetStatusId == 0)
+                        {
+                            error = "Необходимо указать значение поля 'Заполнение табеля'";
+                            return false;
+                        }
+                        if (model.TimesheetStatusId != 0)
+                            absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if (model.IsApprovedByPersonnelManager)
+                        {
+                            absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByPersonnel);
+                            absence.PersonnelManagerDateAccept = DateTime.Now;
+                        }
+                    }
+                    if (model.IsAbsenceTypeEditable)
+                    {
+                        absence.BeginDate = model.BeginDate.Value;
+                        absence.EndDate = model.EndDate.Value;
+                        absence.DaysCount = model.DaysCount.Value;
+                        absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
+                    }
+                    AbsenceDao.SaveAndFlush(absence);
+                }
+                model.DocumentNumber = absence.Number.ToString();
+                model.Version = absence.Version;
+                model.DaysCount = absence.DaysCount;
+                model.CreatorLogin = absence.Creator.Login;
+                model.DateCreated = absence.CreateDate.ToShortDateString();
+                SetFlagsState(absence.Id, user, absence, model);
+                //throw new ArgumentException("Test exception");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AbsenceDao.RollbackTran();
+                Log.Error("Error on GetVacationEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Absence);
+                model.TimesheetStatuses = GetTimesheetStatusesForAbsence();
+                model.AbsenceTypes = GetAbsenceTypes(false);
+            }
+        }
+        #endregion
 
         #region Vacation list model
         public VacationListModel GetVacationListModel()
@@ -200,7 +501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                vacation = vacationDao.Load(id);
+                vacation = VacationDao.Load(id);
                 if(vacation == null)
                     throw new ArgumentException(string.Format("Заявка на отпуск (id {0}) не найдена в базе данных.",id));
                 model.Version = vacation.Version;
@@ -229,7 +530,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     error = "Редактирование заявки запрещено";
                     return false;
                 }
-                Vacation vacation = null;
+                Vacation vacation;
                 if(model.Id == 0)
                 {
                     vacation = new Vacation
@@ -299,11 +600,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = vacation.Version;
                 model.DaysCount = vacation.DaysCount;
                 model.CreatorLogin = vacation.Creator.Login;
+                model.DateCreated = vacation.CreateDate.ToShortDateString();
                 SetFlagsState(vacation.Id,user,vacation,model);
                 return true;
             }
             catch (Exception ex)
             {
+                AbsenceDao.RollbackTran();
                 Log.Error("Error on GetVacationEditModel:", ex);
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
@@ -481,6 +784,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                     });
                         }
                     break;
+                    case (int)RequestTypeEnum.Absence:
+                    Absence absence = AbsenceDao.Load(id);
+                    if ((absence.Comments != null) && (absence.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = absence.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -490,11 +806,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 int userId = AuthenticationService.CurrentUser.Id;
+                User user;
                 switch(model.TypeId)
                 {
                     case (int)RequestTypeEnum.Vacation:
                         Vacation vacation = VacationDao.Load(model.DocumentId);
-                        User user = UserDao.Load(userId);
+                        user = UserDao.Load(userId);
                         VacationComment comment = new VacationComment
                                                       {
                                                           Comment = model.Comment,
@@ -504,6 +821,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                       };
                         VacationCommentDao.MergeAndFlush(comment);
                         break;
+                    case (int)RequestTypeEnum.Absence:
+                        Absence absence = AbsenceDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        AbsenceComment absenceComment = new AbsenceComment
+                        {
+                            Comment = model.Comment,
+                            Absence = absence,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        AbsenceCommentDao.MergeAndFlush(absenceComment);
+                        break;
                 }
                 //doc.Comments.Add(comment);
                 //DocumentDao.MergeAndFlush(doc);
@@ -511,6 +840,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
+                AbsenceDao.RollbackTran();
                 Log.Error("Exception", ex);
                 model.Error = "Исключение: " + ex.GetBaseException().Message;
                 return false;

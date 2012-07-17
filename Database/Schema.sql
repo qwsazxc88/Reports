@@ -73,6 +73,27 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_AbsenceType]') AND parent_object_id = OBJECT_ID('Absence'))
+alter table Absence  drop constraint FK_Absence_AbsenceType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_RequestStatus]') AND parent_object_id = OBJECT_ID('Absence'))
+alter table Absence  drop constraint FK_Absence_RequestStatus
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_User]') AND parent_object_id = OBJECT_ID('Absence'))
+alter table Absence  drop constraint FK_Absence_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_CreatorUser]') AND parent_object_id = OBJECT_ID('Absence'))
+alter table Absence  drop constraint FK_Absence_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Absence'))
+alter table Absence  drop constraint FK_Absence_TimesheetStatus
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AbsenceComment_User]') AND parent_object_id = OBJECT_ID('AbsenceComment'))
+alter table AbsenceComment  drop constraint FK_AbsenceComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AbsenceComment_Absence]') AND parent_object_id = OBJECT_ID('AbsenceComment'))
+alter table AbsenceComment  drop constraint FK_AbsenceComment_Absence
+
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
@@ -90,6 +111,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportActio
 if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
+if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceType
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
@@ -97,6 +119,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and O
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
+if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
+if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 
 create table VacationComment (
  Id INT IDENTITY NOT NULL,
@@ -244,6 +268,13 @@ create table EmployeeDocumentType (
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
 )
+create table AbsenceType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_AbsenceType  primary key (Id)
+)
 create table EmployeeDocumentSubType (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -316,6 +347,32 @@ create table VacationType (
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
 )
+create table Absence (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  BeginDate DATETIME not null,
+  EndDate DATETIME not null,
+  DaysCount INT not null,
+  Number INT not null,
+  TypeId INT not null,
+  StatusId INT not null,
+  UserId INT not null,
+  CreatorId INT not null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_Absence  primary key (Id)
+)
+create table AbsenceComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  AbsenceId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_AbsenceComment  primary key (Id)
+)
 create index IX_VacationComment_User_Id on VacationComment (UserId)
 create index IX_VacationComment_Vacation_Id on VacationComment (VacationId)
 alter table VacationComment add constraint FK_VacationComment_User foreign key (UserId) references [Users]
@@ -365,6 +422,20 @@ alter table Document add constraint FK_Document_User foreign key (UserId) refere
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index Absence_AbsenceType on Absence (TypeId)
+create index Absence_RequestStatus on Absence (StatusId)
+create index IX_Absence_User_Id on Absence (UserId)
+create index IX_Absence_CreatorUser_Id on Absence (CreatorId)
+create index Absence_TimesheetStatus on Absence (TimesheetStatusId)
+alter table Absence add constraint FK_Absence_AbsenceType foreign key (TypeId) references AbsenceType
+alter table Absence add constraint FK_Absence_RequestStatus foreign key (StatusId) references RequestStatus
+alter table Absence add constraint FK_Absence_User foreign key (UserId) references [Users]
+alter table Absence add constraint FK_Absence_CreatorUser foreign key (CreatorId) references [Users]
+alter table Absence add constraint FK_Absence_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_AbsenceComment_User_Id on AbsenceComment (UserId)
+create index IX_AbsenceComment_Absence_Id on AbsenceComment (AbsenceId)
+alter table AbsenceComment add constraint FK_AbsenceComment_User foreign key (UserId) references [Users]
+alter table AbsenceComment add constraint FK_AbsenceComment_Absence foreign key (AbsenceId) references Absence
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
@@ -376,11 +447,11 @@ INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (1,'Не одобрен сотрудником',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (2,'Одобрен сотрудником',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (3,'Одобрен руководителем',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрен кадровиком',1)
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружен в 1С',1)
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (1,'Не одобрена сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (2,'Одобрена сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (3,'Одобрена руководителем',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрена кадровиком',1)
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружена в 1С',1)
 set identity_insert  [RequestStatus] off 
 
 declare @OrganizationId int
@@ -417,7 +488,16 @@ INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата уче
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет #1206',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)		
+
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет#1206',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (56,'Прогул, простой по вине работника #1807',1)	
+	
 
 set identity_insert  [TimesheetStatus] on
 INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (1,1,'Я','Явка')

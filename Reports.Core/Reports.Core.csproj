@@ -84,6 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IAbsenceCommentDao.cs" />
+    <Compile Include="Dao\IAbsenceDao.cs" />
+    <Compile Include="Dao\IAbsenceTypeDao.cs" />
     <Compile Include="Dao\IAttachmentDao.cs" />
     <Compile Include="Dao\IDao.cs" />
     <Compile Include="Dao\IDbVersionDao.cs" />
@@ -93,6 +96,9 @@
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
     <Compile Include="Dao\IExportImportActionDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
@@ -133,6 +139,9 @@
     <Compile Include="Dao\IVacationCommentDao.cs" />
     <Compile Include="Dao\IVacationDao.cs" />
     <Compile Include="Dao\IVacationTypeDao.cs" />
+    <Compile Include="Domain\Absence.cs" />
+    <Compile Include="Domain\AbsenceComment.cs" />
+    <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
@@ -313,6 +322,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\RequestNextNumber.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AbsenceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Absence.hbm.xml" />
+    <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

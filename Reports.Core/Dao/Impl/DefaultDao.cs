@@ -107,6 +107,12 @@ namespace Reports.Core.Dao.Impl
         {
             return CreateCriteria().List<TEntity>();
         }
+        public virtual void RollbackTran()
+        {
+            ITransaction tx = Session.Transaction;
+            if(tx != null && tx.IsActive)
+                tx.Rollback();
+        }
     }
 
     public class DefaultDao<TEntity> : DefaultDao<TEntity, int>, IDao<TEntity>

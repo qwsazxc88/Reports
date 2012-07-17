@@ -15,5 +15,12 @@ namespace Reports.Presenters.UI.Bl
 
         RequestCommentsModel GetCommentsModel(int id, int typeId);
         bool SaveComment(SaveCommentModel model);
+
+        AbsenceListModel GetAbsenceListModel();
+        void SetAbsenceListModel(AbsenceListModel model);
+
+        AbsenceEditModel GetAbsenceEditModel(int id, int userId);
+        void ReloadDictionariesToModel(AbsenceEditModel model);
+        bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
     }
 }

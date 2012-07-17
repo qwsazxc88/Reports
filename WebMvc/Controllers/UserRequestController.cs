@@ -47,11 +47,72 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.Absence:
+                     return RedirectToAction("AbsenceEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
-
+         #region Absence
+         [HttpGet]
+         public ActionResult AbsenceList()
+         {
+             AbsenceListModel model = RequestBl.GetAbsenceListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult AbsenceList(AbsenceListModel model)
+         {
+             RequestBl.SetAbsenceListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult AbsenceEdit(int id, int userId)
+         {
+             //int? userId = new int?();
+             AbsenceEditModel model = RequestBl.GetAbsenceEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult AbsenceEdit(AbsenceEditModel model)
+         {
+             CorrectCheckboxes(model);
+             if (!ValidateAbsenceEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveAbsenceEditModel(model, out error))
+             {
+                 //HttpContext.AddError(new Exception(error));
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetAbsenceEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected bool ValidateAbsenceEditModel(AbsenceEditModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate > model.EndDate)
+                 ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
+             if(model.DaysCount.HasValue && model.DaysCount.Value <=0 )
+                 ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
+             return ModelState.IsValid;
+         }
+         #endregion
+         #region Vacation
          [HttpGet]
          public ActionResult VacationList()
          {
@@ -105,7 +166,7 @@ namespace WebMvc.Controllers
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
              return ModelState.IsValid;
          }
-         protected void CorrectCheckboxes(VacationEditModel model)
+         protected void CorrectCheckboxes(ICheckBoxes model)
          {
              if (!model.IsApprovedByManagerEnable && model.IsApprovedByManagerHidden)
              {
@@ -132,7 +193,7 @@ namespace WebMvc.Controllers
                  model.IsPostedTo1C = model.IsPostedTo1CHidden;
              }
          }
-
+         #endregion
          [HttpGet]
          public ActionResult RenderComments(int id,int typeId)
          {

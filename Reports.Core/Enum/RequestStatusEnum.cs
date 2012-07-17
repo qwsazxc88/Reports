@@ -12,6 +12,6 @@
     public enum RequestTypeEnum
     {
         Vacation = 1,
-        
+        Absence = 2,
     }
 }

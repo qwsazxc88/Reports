@@ -113,6 +113,8 @@
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
+    <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
+    <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
     <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />

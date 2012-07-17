@@ -61,6 +61,33 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата начала - обязательное поле.
+        /// </summary>
+        internal static string AbsenceEditModel_BeginDate_Required {
+            get {
+                return ResourceManager.GetString("AbsenceEditModel_BeginDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество дней (часов) - обязательное поле.
+        /// </summary>
+        internal static string AbsenceEditModel_DaysCount_Required {
+            get {
+                return ResourceManager.GetString("AbsenceEditModel_DaysCount_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Дата окончания - обязательное поле.
+        /// </summary>
+        internal static string AbsenceEditModel_EndDate_Required {
+            get {
+                return ResourceManager.GetString("AbsenceEditModel_EndDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Месяц - обязательное поле..
         /// </summary>
         internal static string ActionListModel_Month_Required {

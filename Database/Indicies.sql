@@ -8,11 +8,11 @@ INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (1,'Не одобрен сотрудником',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (2,'Одобрен сотрудником',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (3,'Одобрен руководителем',1) 
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрен кадровиком',1)
-INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружен в 1С',1)
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (1,'Не одобрена сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (2,'Одобрена сотрудником',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (3,'Одобрена руководителем',1) 
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (4,'Одобрена кадровиком',1)
+INSERT INTO [RequestStatus] (Id,[Name],Version) values (5,'Выгружена в 1С',1)
 set identity_insert  [RequestStatus] off 
 
 declare @OrganizationId int
@@ -49,7 +49,16 @@ INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата уче
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет #1206',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)		
+
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет#1206',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (56,'Прогул, простой по вине работника #1807',1)	
+	
 
 set identity_insert  [TimesheetStatus] on
 INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (1,1,'Я','Явка')
