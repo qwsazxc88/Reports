@@ -67,6 +67,7 @@ namespace Reports.Core.Dao.Impl
 
             if (whereString.Length > 0)
                 sqlQuery += @" where " + whereString;
+            sqlQuery += @" order by Date DESC,Name ";
 
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
