@@ -107,8 +107,14 @@ namespace WebMvc.Controllers
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-             if(model.DaysCount.HasValue && model.DaysCount.Value <=0 )
-                 ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
+             int dayCounts;
+             if(!Int32.TryParse(model.DaysCount, out dayCounts))
+                ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть числом.");
+             else
+             {
+                 if (dayCounts <= 0)
+                     ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
+             }
              return ModelState.IsValid;
          }
          #endregion

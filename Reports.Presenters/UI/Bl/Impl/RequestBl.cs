@@ -194,7 +194,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate = absence.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = absence.EndDate;
                 model.TimesheetStatusId = absence.TimesheetStatus == null ? 0 : absence.TimesheetStatus.Id;
-                model.DaysCount = absence.DaysCount;
+                model.DaysCount = absence.DaysCount.ToString();
                 model.CreatorLogin = absence.Creator.Login;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
@@ -298,7 +298,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = absence.Creator.Login;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
-                model.DaysCount = absence.DaysCount;
+                model.DaysCount = absence.DaysCount.ToString();
             }
         }
         public bool SaveAbsenceEditModel(AbsenceEditModel model, out string error)
@@ -323,7 +323,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         CreateDate = DateTime.Now,
                         Creator = UserDao.Load(current.Id),
                         EndDate = model.EndDate.Value,
-                        DaysCount = model.DaysCount.Value,
+                        DaysCount = Int32.Parse(model.DaysCount),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
                         Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
@@ -375,14 +375,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         absence.BeginDate = model.BeginDate.Value;
                         absence.EndDate = model.EndDate.Value;
-                        absence.DaysCount = model.DaysCount.Value;
+                        absence.DaysCount = Int32.Parse(model.DaysCount);
                         absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
                     }
                     AbsenceDao.SaveAndFlush(absence);
                 }
                 model.DocumentNumber = absence.Number.ToString();
                 model.Version = absence.Version;
-                model.DaysCount = absence.DaysCount;
+                model.DaysCount = absence.DaysCount.ToString();
                 model.CreatorLogin = absence.Creator.Login;
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 SetFlagsState(absence.Id, user, absence, model);

@@ -33,7 +33,7 @@ namespace Reports.Presenters.UI.ViewModel
         ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("AbsenceEditModel_DaysCount_Required", typeof(Resources))]
         [Display(Name = "Количество дней (часов)")]
-        public int? DaysCount { get; set; }
+        public string DaysCount { get; set; }
 
         [Display(Name = "Заполнение табеля")]
         public int TimesheetStatusId { get; set; }
