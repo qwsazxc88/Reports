@@ -18,14 +18,17 @@
 	<!--<property name="Comment" type="StringClob" not-null="false"/>-->  
     <!--<property name="Number" length="50" not-null="true"/>-->
 	<many-to-one name="Type" class="VacationType" column="TypeId" foreign-key="FK_Vacation_VacationType" index="Vacation_VacationType"  not-null="true"/>
-  <many-to-one name="Status" class="RequestStatus" column="StatusId" foreign-key="FK_Vacation_RequestStatus" index="Vacation_RequestStatus"  not-null="true"/>
+  <!--<many-to-one name="Status" class="RequestStatus" column="StatusId" foreign-key="FK_Vacation_RequestStatus" index="Vacation_RequestStatus"  not-null="true"/>-->
 	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_Vacation_User" index="IX_Vacation_User_Id"  not-null="true"/>
   <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Vacation_CreatorUser" index="IX_Vacation_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
 	<property name="ManagerDateAccept" not-null="false"/>
 	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
 
-  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Vacation_TimesheetStatus" index="Vacation_TimesheetStatus"  not-null="false"/>
+
+    <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Vacation_TimesheetStatus" index="Vacation_TimesheetStatus"  not-null="false"/>
 
   <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
     <key column="VacationId" foreign-key="FK_VacationComment_Vacation"/>

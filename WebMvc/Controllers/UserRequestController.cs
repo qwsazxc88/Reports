@@ -170,7 +170,7 @@ namespace WebMvc.Controllers
              if(model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-             return ModelState.IsValid;
+              return ModelState.IsValid;
          }
          protected void CorrectCheckboxes(ICheckBoxes model)
          {

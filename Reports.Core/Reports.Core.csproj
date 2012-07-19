@@ -327,7 +327,9 @@
     <EmbeddedResource Include="Domain\AbsenceType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Absence.hbm.xml" />
+    <EmbeddedResource Include="Domain\Absence.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -204,58 +204,81 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetTimesheetStatusesForAbsence()
         {
+            //TODO узнать совместимые типы
             List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
                 Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
                 ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            dtos.Insert(0, new IdNameDto(0, string.Empty));
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
             return dtos;
         }
         protected void SetFlagsState(int id, User user, Absence absence, AbsenceEditModel model)
         {
             SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
                 model.IsAbsenceTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        break;
+                }
                 return;
             }
-            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
-            model.IsApprovedByUserHidden = model.IsApprovedByUser = absence.StatusId >= RequestStatusEnum.ApprovedByUser;
-            model.IsApprovedByManagerHidden = model.IsApprovedByManager = absence.StatusId >= RequestStatusEnum.ApprovedByManager;
-            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = absence.StatusId >= RequestStatusEnum.ApprovedByPersonnel;
-            model.IsPostedTo1CHidden = model.IsPostedTo1C = absence.StatusId >= RequestStatusEnum.SendTo1C;
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = absence.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = absence.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = absence.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = absence.SendTo1C.HasValue;
             switch (currentUserRole)
             {
                 case UserRole.Employee:
-                    if (absence.StatusId == RequestStatusEnum.NotApproved)
+                    if (!absence.UserDateAccept.HasValue)
                     {
                         model.IsApprovedByUserEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsAbsenceTypeEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if (!absence.ManagerDateAccept.HasValue && !absence.PersonnelManagerDateAccept.HasValue && !absence.SendTo1C.HasValue)
+                            model.IsAbsenceTypeEditable = true;
                     }
                     break;
                 case UserRole.Manager:
-                    if (absence.StatusId == RequestStatusEnum.ApprovedByUser)
+                    if (!absence.ManagerDateAccept.HasValue)
                     {
                         //model.IsApprovedByManager = true;
                         //model.IsApprovedByManagerHidden = true;
                         model.IsApprovedByManagerEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsAbsenceTypeEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if (!absence.PersonnelManagerDateAccept.HasValue && !absence.SendTo1C.HasValue)
+                            model.IsAbsenceTypeEditable = true;
                     }
                     break;
                 case UserRole.PersonnelManager:
-                    if (absence.StatusId == RequestStatusEnum.ApprovedByManager)
+                    if (!absence.PersonnelManagerDateAccept.HasValue)
                     {
                         //model.IsApprovedByPersonnelManager = true;
                         //model.IsApprovedByPersonnelManagerHidden = true;
                         model.IsApprovedByPersonnelManagerEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsAbsenceTypeEditable = true;
-                        model.IsTimesheetStatusEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if (!absence.SendTo1C.HasValue)
+                        {
+                            model.IsAbsenceTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
                     }
                     break;
             }
+            model.IsSaveAvailable = model.IsAbsenceTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable;
         }
         protected void SetFlagsState(AbsenceEditModel model, bool state)
         {
@@ -325,10 +348,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EndDate = model.EndDate.Value,
                         DaysCount = Int32.Parse(model.DaysCount),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
-                        Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
+                        //Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
                         User = user
                     };
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
+                        absence.UserDateAccept = DateTime.Now;
+                    if (current.UserRole == UserRole.Manager && user.Manager != null
+                        && current.Id == user.Manager.Id && model.IsApprovedByManager)
+                        absence.ManagerDateAccept = DateTime.Now;
+                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id)
+                    {
+                        absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if (model.IsApprovedByPersonnelManager)
+                            absence.PersonnelManagerDateAccept = DateTime.Now;
+                    }
                     AbsenceDao.SaveAndFlush(absence);
                     model.Id = absence.Id;
                 }
@@ -342,34 +377,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                        && absence.StatusId == RequestStatusEnum.NotApproved
+                        && !absence.UserDateAccept.HasValue
                         && model.IsApprovedByUser)
-                        absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByUser);
+                        absence.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id
-                        && absence.StatusId == RequestStatusEnum.ApprovedByUser
+                        && !absence.ManagerDateAccept.HasValue
                         && model.IsApprovedByManager)
                     {
-                        absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByManager);
                         absence.ManagerDateAccept = DateTime.Now;
                     }
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id
-                        && absence.StatusId == RequestStatusEnum.ApprovedByManager
+                        && !absence.PersonnelManagerDateAccept.HasValue
                         )
                     {
-                        if (model.IsApprovedByPersonnelManager && model.TimesheetStatusId == 0)
-                        {
-                            error = "Необходимо указать значение поля 'Заполнение табеля'";
-                            return false;
-                        }
-                        if (model.TimesheetStatusId != 0)
-                            absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByPersonnelManager)
-                        {
-                            absence.Status = RequestStatusDao.Load((int)RequestStatusEnum.ApprovedByPersonnel);
                             absence.PersonnelManagerDateAccept = DateTime.Now;
-                        }
+                        
                     }
                     if (model.IsAbsenceTypeEditable)
                     {
@@ -459,7 +485,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetRequestStatuses()
         {
-            var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> requestStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Новые"),
+                                                           new IdNameDto(2, "Одобренные сотрудником"),
+                                                           new IdNameDto(3, "Не одобренные сотрудником"),
+                                                           new IdNameDto(4, "Одобренные руководителем"),
+                                                           new IdNameDto(5, "Не одобренные руководителем"),
+                                                           new IdNameDto(6, "Одобренные кадровиком"),
+                                                           new IdNameDto(7, "Не одобренные кадровиком"),
+                                                           new IdNameDto(8, "Одобренные всеми"),
+                                                           new IdNameDto(9, "Выгруженные в 1С"),
+                                                       };
             requestStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return requestStatusesList;
         }
@@ -541,10 +579,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 EndDate = model.EndDate.Value,
                                                 DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days,
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
-                                                Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
+                                                //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
                                                 User = user
                                              };
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
+                        vacation.UserDateAccept = DateTime.Now;
+                    if (current.UserRole == UserRole.Manager && user.Manager != null
+                        && current.Id == user.Manager.Id && model.IsApprovedByManager)
+                        vacation.ManagerDateAccept = DateTime.Now;
+                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id )
+                    {
+                        vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if (model.IsApprovedByPersonnelManager)
+                            vacation.PersonnelManagerDateAccept = DateTime.Now;
+                    }
+
                     VacationDao.SaveAndFlush(vacation);
                     model.Id = vacation.Id;
                 }
@@ -558,34 +609,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                        && vacation.StatusId == RequestStatusEnum.NotApproved
+                        && !vacation.UserDateAccept.HasValue//vacation.StatusId == RequestStatusEnum.NotApproved
                         && model.IsApprovedByUser)
-                        vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByUser);
+                    {
+                        //vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByUser);
+                        vacation.UserDateAccept = DateTime.Now;
+                    }
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id
-                        && vacation.StatusId == RequestStatusEnum.ApprovedByUser
+                        && !vacation.ManagerDateAccept.HasValue //vacation.StatusId == RequestStatusEnum.ApprovedByUser
                         && model.IsApprovedByManager)
                     {
-                        vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByManager);
+                        //vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByManager);
                         vacation.ManagerDateAccept = DateTime.Now;
                     }
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id
-                        && vacation.StatusId == RequestStatusEnum.ApprovedByManager
-                        )
+                        && !vacation.PersonnelManagerDateAccept.HasValue)
                     {
-                        if (model.IsApprovedByPersonnelManager && model.TimesheetStatusId == 0)
-                        {
-                            error = "Необходимо указать значение поля 'Заполнение табеля'";
-                            return false;
-                        }
-                        if (model.TimesheetStatusId != 0)
-                            vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        //if (model.IsApprovedByPersonnelManager && model.TimesheetStatusId == 0)
+                        //{
+                        //    error = "Необходимо указать значение поля 'Заполнение табеля'";
+                        //    return false;
+                        //}
+                        //if (model.TimesheetStatusId != 0)
+                        vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByPersonnelManager)
-                        {
-                            vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByPersonnel);
                             vacation.PersonnelManagerDateAccept = DateTime.Now;
-                        }
+                        
                     }
                     if (model.IsVacationTypeEditable)
                     {
@@ -685,49 +736,72 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
             SetFlagsState(model,false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if(id == 0)
             {
                 model.IsSaveAvailable = true;
                 model.IsVacationTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        break;
+                }
                 return;
             }
-            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
-            model.IsApprovedByUserHidden = model.IsApprovedByUser = vacation.StatusId >= RequestStatusEnum.ApprovedByUser;
-            model.IsApprovedByManagerHidden = model.IsApprovedByManager = vacation.StatusId >= RequestStatusEnum.ApprovedByManager;
-            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = vacation.StatusId >= RequestStatusEnum.ApprovedByPersonnel;
-            model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.StatusId >= RequestStatusEnum.SendTo1C;
+            
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = vacation.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = vacation.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden =
+                model.IsApprovedByPersonnelManager = vacation.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.SendTo1C.HasValue;
             switch(currentUserRole)
             {
                 case UserRole.Employee:
-                    if (vacation.StatusId == RequestStatusEnum.NotApproved)
+                    if (!vacation.UserDateAccept.HasValue)
                     {
                         model.IsApprovedByUserEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsVacationTypeEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if(!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                            model.IsVacationTypeEditable = true;
                     }
                     break;
                 case UserRole.Manager:
-                    if (vacation.StatusId == RequestStatusEnum.ApprovedByUser)
+                    if (!vacation.ManagerDateAccept.HasValue)
                     {
                         //model.IsApprovedByManager = true;
                         //model.IsApprovedByManagerHidden = true;
                         model.IsApprovedByManagerEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsVacationTypeEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                            model.IsVacationTypeEditable = true;
                     }
                     break;
                 case UserRole.PersonnelManager:
-                    if (vacation.StatusId == RequestStatusEnum.ApprovedByManager)
+                    if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         //model.IsApprovedByPersonnelManager = true;
                         //model.IsApprovedByPersonnelManagerHidden = true;
                         model.IsApprovedByPersonnelManagerEnable = true;
-                        model.IsSaveAvailable = true;
-                        model.IsVacationTypeEditable = true;
-                        model.IsTimesheetStatusEditable = true;
+                        //model.IsSaveAvailable = true;
+                        if (!vacation.SendTo1C.HasValue)
+                        {
+                            model.IsVacationTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
                     }
                     break;
             }
+            model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable;
         }
         protected void SetUserInfoModel(User user,UserInfoModel model)
         {
@@ -751,7 +825,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
                 Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
                 ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            dtos.Insert(0,new IdNameDto(0,string.Empty));
+            if(AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
+                dtos.Insert(0,new IdNameDto(0,string.Empty));
             return dtos;
         }
         #endregion

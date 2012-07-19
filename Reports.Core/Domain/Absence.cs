@@ -21,11 +21,11 @@ namespace Reports.Core.Domain
         //public virtual string Comment { get; set; }
         
         public virtual AbsenceType Type { get; set; }
-        public virtual RequestStatus Status { get; set; }
+        //public virtual RequestStatus Status { get; set; }
 
-        public virtual RequestStatusEnum StatusId {
-            get { return (RequestStatusEnum)Status.Id; }
-        }
+        //public virtual RequestStatusEnum StatusId {
+        //    get { return (RequestStatusEnum)Status.Id; }
+        //}
         public virtual TimesheetStatus TimesheetStatus { get; set; }
         //public virtual EmployeeDocumentType  Type { get; set; }
         //public virtual EmployeeDocumentSubType SubType { get; set; }
@@ -33,8 +33,10 @@ namespace Reports.Core.Domain
         public virtual User User { get; set; }
         public virtual User Creator { get; set; }
 
+        public virtual DateTime? UserDateAccept { get; set; }
         public virtual DateTime? ManagerDateAccept { get; set; }
         public virtual DateTime? PersonnelManagerDateAccept { get; set; }
+        public virtual DateTime? SendTo1C { get; set; }
 
         public virtual IList<AbsenceComment> Comments { get; set; }
         //public virtual DateTime? BudgetManagerDateAccept { get; set; }

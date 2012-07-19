@@ -26,14 +26,49 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery =
                 @"select v.Id as Id,
                          u.Id as UserId,
-                         cast(v.Id as nvarchar(10)) as Name,
+                         'Неявка '+ u.Name as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Absence] v
             inner join [dbo].[Users] u on u.Id = v.UserId
             inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = string.Empty;
             if (requestStatusId != 0)
-                whereString += @"v.[StatusId] = :statusId ";
+            {
+                string statusWhere;
+                switch (requestStatusId)
+                {
+                    case 1:
+                        statusWhere = @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
+                        break;
+                    case 2:
+                        statusWhere = @"UserDateAccept is not null";
+                        break;
+                    case 3:
+                        statusWhere = @"UserDateAccept is null";
+                        break;
+                    case 4:
+                        statusWhere = @"ManagerDateAccept is not null";
+                        break;
+                    case 5:
+                        statusWhere = @"ManagerDateAccept is null";
+                        break;
+                    case 6:
+                        statusWhere = @"PersonnelManagerDateAccept is not null";
+                        break;
+                    case 7:
+                        statusWhere = @"PersonnelManagerDateAccept is null";
+                        break;
+                    case 8:
+                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
+                        break;
+                    case 9:
+                        statusWhere = @"SendTo1C is not null";
+                        break;
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                whereString += @" " + statusWhere + " ";
+            }
             if (absenceTypeId != 0)
             {
                 if (whereString.Length > 0)
@@ -74,8 +109,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("Date", NHibernateUtil.DateTime);
-            if (requestStatusId != 0)
-                query.SetInt32("statusId", requestStatusId);
+            //if (requestStatusId != 0)
+            //    query.SetInt32("statusId", requestStatusId);
             if (absenceTypeId != 0)
                 query.SetInt32("typeId", absenceTypeId);
             if (beginDate.HasValue)
