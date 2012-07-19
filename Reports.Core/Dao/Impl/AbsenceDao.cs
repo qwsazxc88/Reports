@@ -119,7 +119,7 @@ namespace Reports.Core.Dao.Impl
                 query.SetDateTime("endDate", endDate.Value.AddDays(1).AddMilliseconds(-1));
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
-            if (positionId != 0)
+            if (departmentId != 0)
                 query.SetInt32("departmentId", departmentId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
