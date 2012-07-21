@@ -17,6 +17,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const int VacationFirstTimesheetStatisId = 8;
         public const int VacationLastTimesheetStatisId = 12;
+        public const int AbsenceFirstTimesheetStatisId = 15;
+        public const int AbsenceLastTimesheetStatisId = 18;
 
         protected IDepartmentDao departmentDao;
         protected IVacationTypeDao vacationTypeDao;
@@ -206,8 +208,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //TODO узнать совместимые типы
             List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
-                Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
-                ConvertAll(x => new IdNameDto(x.Id, x.Name));
+                Where(x => (x.Id >= AbsenceFirstTimesheetStatisId) && (x.Id <= AbsenceLastTimesheetStatisId)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x=>x.Name).ToList();
             if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
                 dtos.Insert(0, new IdNameDto(0, string.Empty));
             return dtos;
@@ -824,7 +826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
                 Where(x => (x.Id >= VacationFirstTimesheetStatisId) && (x.Id <= VacationLastTimesheetStatisId)).ToList().
-                ConvertAll(x => new IdNameDto(x.Id, x.Name));
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x => x.Name).ToList();
             if(AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
                 dtos.Insert(0,new IdNameDto(0,string.Empty));
             return dtos;
