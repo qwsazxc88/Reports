@@ -26,6 +26,8 @@
 	<property name="ManagerDateAccept" not-null="false"/>
 	<property name="PersonnelManagerDateAccept" not-null="false"/>
   <property name="SendTo1C" not-null="false"/>
+    <property name="DeleteDate" not-null="false"/>
+
 
 
     <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Vacation_TimesheetStatus" index="Vacation_TimesheetStatus"  not-null="false"/>

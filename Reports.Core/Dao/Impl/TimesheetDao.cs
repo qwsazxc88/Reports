@@ -236,6 +236,7 @@ namespace Reports.Core.Dao.Impl
                                  (v.EndDate between :beginDate and :endDate) or 
                                  (:beginDate between v.BeginDate and v.EndDate) or
                                  (:endDate between v.BeginDate and v.EndDate))
+                          and v.DeleteDate is null 
                           and v.UserDateAccept is not  null
                           and v.ManagerDateAccept is not null
                           and v.PersonnelManagerDateAccept is not null ";

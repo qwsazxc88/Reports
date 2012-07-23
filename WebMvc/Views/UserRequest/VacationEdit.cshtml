@@ -24,6 +24,8 @@
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
             <input type="hidden" id="Version" name="Version" value="@Model.Version" />
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+            <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
             <input type="hidden" id="IsVacationTypeEditable" name="IsVacationTypeEditable" value="@Model.IsVacationTypeEditable" />
             <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
             @Html.LabelFor(m => m.VacationTypeId):
@@ -129,6 +131,8 @@
         <td colspan="2">
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                     {<text>style="display:none"</text>}/>
+            <input type="submit" value="Удалить" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
             
            @* <input type="button" id="SendToBillingButton" name="SendToBillingButton" value="Отправить в биллинг" onclick="return SendToBilling();" @if (!Model.IsSendToBillingAvailable)
                                                                                    {<text>style="display:none"</text>}/>*@
@@ -149,6 +153,10 @@
         });    
     function ValidateForm()
     {
+        return true;
+    }
+    function Delete() {
+        $("#IsDelete").val("true");
         return true;
     }
     </script>
