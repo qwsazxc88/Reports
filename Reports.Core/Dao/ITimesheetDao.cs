@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 
 namespace Reports.Core.Dao
 {
@@ -15,5 +16,9 @@ namespace Reports.Core.Dao
         IList<Timesheet> GetTimesheetListForOwner(int ownerId);
         IList<Timesheet> LoadTimesheetsForMonth(DateTime date);
         IList<DateTime> GetTimesheetDates();
+
+        //IList<RequestDto> GetRequests(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
+        //                              int userId, UserRole userRole);
+        IList<DayRequestsDto> GetRequestsForMonth(int month, int year, int userId, UserRole userRole);
     }
 }

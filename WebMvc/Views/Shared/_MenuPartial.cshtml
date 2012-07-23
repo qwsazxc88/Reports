@@ -21,7 +21,7 @@
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Неявки", "AbsenceList", "UserRequest")</li>
                      <li>@Html.ActionLink("Заявки", "DocumentList", "Employee")</li>
-                     <li>@Html.ActionLink("Табель", "EmployeeTimesheetList", "Employee")</li>
+                     <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
 
                 }
                 else if (dto.UserRole == UserRole.Manager)

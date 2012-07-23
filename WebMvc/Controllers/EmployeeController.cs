@@ -256,18 +256,18 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ActionResult TimesheetList(int managerId,string month)
+        public ActionResult TimesheetList(int managerId,int? month,int? year)
         {
-            DateTime monthParam = new DateTime(
-                                                DateTime.Today.Year,
-                                                DateTime.Today.Month,
-                                                1);
-            if(month != null)
-                DateTime.TryParse(month, out monthParam);
+            if (!month.HasValue)
+                month = DateTime.Today.Month;
+            if(!year.HasValue)
+                year = DateTime.Today.Year;
             TimesheetListModel model = new TimesheetListModel
                                            {
                                                ManagerId = managerId,
-                                               Month = monthParam,
+                                               Month = month.Value,
+                                               Year = year.Value,
+                                               IsEditable = false,
                                            };
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
@@ -281,7 +281,7 @@ namespace WebMvc.Controllers
                 return View(model);
             }
             CorrectHours(model);
-            EmployeeBl.SetTimesheetsHours(model);
+            //EmployeeBl.SetTimesheetsHours(model);
             return View(model);
         }
         protected void CorrectHours(TimesheetListModel model)
@@ -302,30 +302,30 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
-        [HttpGet]
-        public ActionResult TimesheetEdit(int Id)
-        {
-            TimesheetEditModel model = new TimesheetEditModel
-            {
-                Id = Id
-            };
-            EmployeeBl.GetTimesheetEditModel(model);
-            return View(model);
-        }
-        [HttpPost]
-        public ActionResult TimesheetEdit(TimesheetEditModel model)
-        {
-            CorrectTimesheetEditCheckboxes(model);
-            EmployeeBl.SetTimesheet(model);
-            if(AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
-                return RedirectToAction("EmployeeTimesheetList");
-             return RedirectToAction("TimesheetList",
-                                    new
-                                        {
-                                            month = model.Month.ToString(), 
-                                            managerId = AuthenticationService.CurrentUser.Id
-                                        });
-        }
+        //[HttpGet]
+        //public ActionResult TimesheetEdit(int Id)
+        //{
+        //    TimesheetEditModel model = new TimesheetEditModel
+        //    {
+        //        Id = Id
+        //    };
+        //    EmployeeBl.GetTimesheetEditModel(model);
+        //    return View(model);
+        //}
+        //[HttpPost]
+        //public ActionResult TimesheetEdit(TimesheetEditModel model)
+        //{
+        //    CorrectTimesheetEditCheckboxes(model);
+        //    EmployeeBl.SetTimesheet(model);
+        //    if(AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+        //        return RedirectToAction("EmployeeTimesheetList");
+        //     return RedirectToAction("TimesheetList",
+        //                            new
+        //                                {
+        //                                    month = model.Month.ToString(), 
+        //                                    managerId = AuthenticationService.CurrentUser.Id
+        //                                });
+        //}
         protected void CorrectTimesheetEditCheckboxes(TimesheetEditModel model)
         {
             if (!model.IsNotApprovedByUserEnable && model.IsNotApprovedByUserHidden)
@@ -370,56 +370,56 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        public ActionResult TimesheetTest()
-        {
-            TimesheetModel model = new TimesheetModel
-                                       {
-                                           TimesheetDtos = new List<TimesheetDto>
-                                                               {
-                                                                   GetTestModel(1, 1, false),
-                                                                   GetTestModel(2, 2, false),
-                                                               },
-                                           TimesheetDto = GetTestModel(3, 3, true)
-                                       };
+        //[HttpGet]
+        //public ActionResult TimesheetTest()
+        //{
+        //    TimesheetModel model = new TimesheetModel
+        //                               {
+        //                                   TimesheetDtos = new List<TimesheetDto>
+        //                                                       {
+        //                                                           GetTestModel(1, 1, false),
+        //                                                           GetTestModel(2, 2, false),
+        //                                                       },
+        //                                   TimesheetDto = GetTestModel(3, 3, true)
+        //                               };
 
-            return View(model);
-        }
-        [HttpPost]
-        public ActionResult TimesheetTest(TimesheetModel model)
-        {
-            model.TimesheetDtos = new List<TimesheetDto>
-                                      {
-                                          GetTestModel(1,1,false),
-                                          GetTestModel(2,2,false),
-                                      };
-            model.TimesheetDto = GetTestModel(3, 3, true);
-            return View(model);
-        }
-        protected TimesheetDto GetTestModel(int id, int ownerId, bool isEditable)
-        {
-            IList<IdNameDto> statuses = EmployeeBl.GetTimesheetStatusesList();
-            TimesheetDto dto = new TimesheetDto
-                                   {
-                                       Id = id,
-                                       IsEditable = isEditable,
-                                       MonthAndYear = "Январь 2011",
-                                       OwnerId = ownerId,
-                                       //Statuses = EmployeeBl.GetTimesheetStatusesList(),
-                                       UserNameAndCode = "Иванов Иван Иванович, АБС001",
-                                   };
-            IdNameDto holidayStatus = statuses.Where(x => x.Name == "Я").First();
-            IList<TimesheetDayDto> days = new List<TimesheetDayDto>();
-            for(var i=0;i<31;i++)
-                days.Add(new TimesheetDayDto
-                             {
-                                 Hours = 7.5f, 
-                                 Number = i + 1, 
-                                 Status = holidayStatus.Name, 
-                                 StatusId = holidayStatus.Id
-                             });
-            dto.Days = days;
-            return dto;
-        }
+        //    return View(model);
+        //}
+        //[HttpPost]
+        //public ActionResult TimesheetTest(TimesheetModel model)
+        //{
+        //    model.TimesheetDtos = new List<TimesheetDto>
+        //                              {
+        //                                  GetTestModel(1,1,false),
+        //                                  GetTestModel(2,2,false),
+        //                              };
+        //    model.TimesheetDto = GetTestModel(3, 3, true);
+        //    return View(model);
+        //}
+        //protected TimesheetDto GetTestModel(int id, int ownerId, bool isEditable)
+        //{
+        //    IList<IdNameDto> statuses = EmployeeBl.GetTimesheetStatusesList();
+        //    TimesheetDto dto = new TimesheetDto
+        //                           {
+        //                               Id = id,
+        //                               IsEditable = isEditable,
+        //                               MonthAndYear = "Январь 2011",
+        //                               OwnerId = ownerId,
+        //                               //Statuses = EmployeeBl.GetTimesheetStatusesList(),
+        //                               UserNameAndCode = "Иванов Иван Иванович, АБС001",
+        //                           };
+        //    IdNameDto holidayStatus = statuses.Where(x => x.Name == "Я").First();
+        //    IList<TimesheetDayDto> days = new List<TimesheetDayDto>();
+        //    for(var i=0;i<31;i++)
+        //        days.Add(new TimesheetDayDto
+        //                     {
+        //                         Hours = 7.5f, 
+        //                         Number = i + 1, 
+        //                         Status = holidayStatus.Name, 
+        //                         StatusId = holidayStatus.Id
+        //                     });
+        //    dto.Days = days;
+        //    return dto;
+        //}
     }
 }

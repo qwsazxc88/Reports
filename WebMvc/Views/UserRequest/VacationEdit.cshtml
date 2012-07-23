@@ -77,7 +77,7 @@
     </tr>
      <tr>
             <td colspan="2">
-                <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByUserEnable" />
+                <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
                 @Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsApprovedByUser)
                 @if (!Model.IsApprovedByUserEnable)
