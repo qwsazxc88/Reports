@@ -211,7 +211,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetTimesheetStatusesForAbsence()
         {
-            //TODO узнать совместимые типы
             List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
                 Where(x => (x.Id >= AbsenceFirstTimesheetStatisId) && (x.Id <= AbsenceLastTimesheetStatisId)).ToList().
                 ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x=>x.Name).ToList();
