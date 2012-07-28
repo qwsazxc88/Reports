@@ -19,6 +19,12 @@
             @Html.Partial("../UserInfoView", Model)
         </td>
     </tr>
+     @if (Model.IsDeleted)
+    { 
+        <tr>
+            <td style="color:Red">Заявка удалена</td>
+        </tr>
+    }
     <tr>
         <td>
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />

@@ -203,6 +203,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = absence.Creator.Login;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
+                if (absence.DeleteDate.HasValue)
+                    model.IsDeleted = true;
             }
             SetFlagsState(id,user,absence,model);
             return model;
@@ -333,6 +335,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 model.DaysCount = absence.DaysCount;
                 model.DaysCountHidden = model.DaysCount;
+                if (absence.DeleteDate.HasValue)
+                    model.IsDeleted = true;
             }
         }
         public bool SaveAbsenceEditModel(AbsenceEditModel model, out string error)
@@ -427,6 +431,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         AbsenceDao.SaveAndFlush(absence);
                     }
+                    if (absence.DeleteDate.HasValue)
+                        model.IsDeleted = true;
                 }
                 model.DocumentNumber = absence.Number.ToString();
                 model.Version = absence.Version;
@@ -579,6 +585,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = vacation.Creator.Login;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
+                if (vacation.DeleteDate.HasValue)
+                    model.IsDeleted = true;
             }
             SetFlagsState(id, user,vacation, model);
             return model;
@@ -686,6 +694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         VacationDao.SaveAndFlush(vacation);
                     }
+                    if (vacation.DeleteDate.HasValue)
+                        model.IsDeleted = true;
                 }
                 model.DocumentNumber = vacation.Number.ToString();
                 model.Version = vacation.Version;
@@ -753,6 +763,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 model.DaysCount = vacation.DaysCount;
                 model.DaysCountHidden = model.DaysCount;
+                if (vacation.DeleteDate.HasValue)
+                    model.IsDeleted = true;
             }
         }
         protected void SetFlagsState(VacationEditModel model,bool state)

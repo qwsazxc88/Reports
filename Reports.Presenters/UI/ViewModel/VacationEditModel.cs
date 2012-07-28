@@ -63,6 +63,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsDelete { get; set; }
+        public bool IsDeleted { get; set; }
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool ReloadPage { get; set; }

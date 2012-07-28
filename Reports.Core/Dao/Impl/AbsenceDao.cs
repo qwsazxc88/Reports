@@ -26,7 +26,7 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery =
                 @"select v.Id as Id,
                          u.Id as UserId,
-                         'Неявка '+ u.Name as Name,
+                         'Неявка '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Absence] v
             inner join [dbo].[Users] u on u.Id = v.UserId
