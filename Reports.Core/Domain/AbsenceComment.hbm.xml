@@ -1,0 +1,12 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+	<class name="AbsenceComment">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<version name="Version" column= "Version"/>
+		<many-to-one name="User" class="User" column="UserId" foreign-key="FK_AbsenceComment_User" index="IX_AbsenceComment_User_Id"  not-null="true"/>
+		<many-to-one name="Absence" class="Absence" column="AbsenceId" foreign-key="FK_AbsenceComment_Absence" index="IX_AbsenceComment_Absence_Id"  not-null="true"/>
+		<property name="DateCreated" not-null="true"/>
+		<property name="Comment" length="256" not-null="true"/>
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,119 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.VacationListModel
+@{
+    ViewBag.Title = "Отпуска";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+   @* <tr>
+        <td @if (!Model.ViewHeader)
+            {<text>style="display:none"</text>}>
+            @Html.Partial("../UserView", Model)
+        </td>
+    </tr>*@
+    <tr>
+        <td>
+            @Html.HiddenFor(m => m.UserId)
+            @*@Html.HiddenFor(m => m.ViewHeader)
+            @Html.HiddenFor(m => m.ShowNew)
+            @Html.HiddenFor(m => m.AddVisible)*@
+           @* @if (Model.AddVisible)
+            {*@
+                
+            @*}*@
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DepartmentId):
+            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) 
+        </td>
+        <td>
+            @Html.LabelFor(m => m.PositionId):
+            @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.VacationTypeId):
+            @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
+        </td>
+        <td>
+            @Html.LabelFor(m => m.RequestStatusId):
+            @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
+         </td>
+    </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.BeginDate):
+            @Html.EditorFor(model => model.BeginDate) 
+        </td>
+        <td>
+            @Html.LabelFor(m => m.EndDate):
+            @Html.EditorFor(model => model.EndDate) 
+         </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <input type="submit" value="Применить"/>
+        <input type="button" value="Сбросить" onclick="resetFilter();"/>
+      </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+         @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+         {@Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })}
+         else
+         {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table class="grid" style="width:100%">
+                <tr>
+                    <th>Название документа</th>
+                    <th>Дата</th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
+                            </td>
+                            <td>@doc.Date</td>
+                            @*<td>@if (doc.IsApproved)
+                                {<text>Да</text>}
+                                else
+                                {<text>Нет</text>}
+                            </td>*@
+                        </tr>
+                    }
+                }
+            </table>
+        </td>
+    </tr>
+</table> 
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($('#DepartmentId option').length > 1)
+            $("#DepartmentId").val('0');
+        if ($('#PositionId option').length > 1)
+            $("#PositionId").val('0');
+        $("#VacationTypeId").val('0');
+        $("#RequestStatusId").val('0');
+    }
+ </script>   
+}
+

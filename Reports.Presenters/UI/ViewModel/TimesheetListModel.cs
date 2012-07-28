@@ -10,8 +10,13 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
 
         [Display(Name = "Месяц")]
-        public DateTime Month { get; set; }
-        public IList<DateDto> Monthes;
+        public int Month { get; set; }
+        public IList<IdNameDto> Monthes;
+
+        [Display(Name = "Год")]
+        public int Year { get; set; }
+        public IList<IdNameDto> Years;
+
 
         [Display(Name = "Дата")]
         public DateTime Date { get; set; }

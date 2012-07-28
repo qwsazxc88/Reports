@@ -30,6 +30,10 @@ namespace Reports.Presenters
             Register(Component.For(typeof(IAdminBl))
                          .ImplementedBy(typeof(AdminBl))
                          .LifeStyle.Is(type));
+
+            Register(Component.For(typeof(IRequestBl))
+                        .ImplementedBy(typeof(RequestBl))
+                        .LifeStyle.Is(type));
             //AddComponent<IAdminBl, AdminBl>();
 
             

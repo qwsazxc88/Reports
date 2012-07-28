@@ -17,6 +17,7 @@ namespace Reports.Core.Dao
         void Delete(TEntity entity);
         TEntity FindById(TIdentifier id);
         IList<TEntity> FindAll();
+        void RollbackTran();
     }
 
     public interface IDao<TEntity> : IDao<TEntity, int>

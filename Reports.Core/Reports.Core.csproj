@@ -84,17 +84,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IAbsenceCommentDao.cs" />
+    <Compile Include="Dao\IAbsenceDao.cs" />
+    <Compile Include="Dao\IAbsenceTypeDao.cs" />
     <Compile Include="Dao\IAttachmentDao.cs" />
     <Compile Include="Dao\IDao.cs" />
     <Compile Include="Dao\IDbVersionDao.cs" />
+    <Compile Include="Dao\IDepartmentDao.cs" />
     <Compile Include="Dao\IDocumentCommentDao.cs" />
     <Compile Include="Dao\IDocumentDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
     <Compile Include="Dao\IExportImportActionDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceDao.cs" />
+    <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
+    <Compile Include="Dao\Impl\DepartmentDao.cs" />
     <Compile Include="Dao\Impl\DocumentCommentDao.cs" />
     <Compile Include="Dao\Impl\DocumentDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
@@ -102,14 +110,24 @@
     <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
     <Compile Include="Dao\IInformationDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\PositionDao.cs" />
+    <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
+    <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
     <Compile Include="Dao\Impl\UserLoginDao.cs" />
+    <Compile Include="Dao\Impl\UserToDepartmentDao.cs" />
+    <Compile Include="Dao\Impl\VacationCommentDao.cs" />
+    <Compile Include="Dao\Impl\VacationDao.cs" />
+    <Compile Include="Dao\Impl\VacationTypeDao.cs" />
+    <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
+    <Compile Include="Dao\IRequestNextNumberDao.cs" />
+    <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
     <Compile Include="Dao\ITimesheetDao.cs" />
@@ -117,11 +135,19 @@
     <Compile Include="Dao\ITimesheetStatusDao.cs" />
     <Compile Include="Dao\IUserDao.cs" />
     <Compile Include="Dao\IUserLoginDao.cs" />
+    <Compile Include="Dao\IUserToDepartmentDao.cs" />
+    <Compile Include="Dao\IVacationCommentDao.cs" />
+    <Compile Include="Dao\IVacationDao.cs" />
+    <Compile Include="Dao\IVacationTypeDao.cs" />
+    <Compile Include="Domain\Absence.cs" />
+    <Compile Include="Domain\AbsenceComment.cs" />
+    <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
+    <Compile Include="Domain\Department.cs" />
     <Compile Include="Domain\Document.cs" />
     <Compile Include="Domain\DocumentComment.cs" />
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
@@ -132,6 +158,10 @@
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\Organization.cs" />
+    <Compile Include="Domain\Position.cs" />
+    <Compile Include="Domain\RequestNextNumber.cs" />
+    <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
     <Compile Include="Domain\Timesheet.cs" />
@@ -139,6 +169,11 @@
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
+    <Compile Include="Domain\UserToDepartment.cs" />
+    <Compile Include="Domain\Vacation.cs" />
+    <Compile Include="Domain\VacationComment.cs" />
+    <Compile Include="Domain\VacationType.cs" />
+    <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -155,7 +190,9 @@
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
+    <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
+    <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />
@@ -257,7 +294,44 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\DocumentComment.hbm.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Organization.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Department.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Position.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Vacation.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\UserToDepartment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\VacationComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestNextNumber.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AbsenceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Absence.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

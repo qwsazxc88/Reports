@@ -598,121 +598,224 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Timesheet List
         public void GetTimesheetListModel(TimesheetListModel model)
         {
-            SetDaysToModel(model);
-            SetTimesheets(model);
-            SetControlsState(model);
+            //SetDaysToModel(model);
+            //SetTimesheets(model);
+            //SetControlsState(model);
+            SetListboxes(model);
+            SetTimesheetsInfo(model);
+            //model.TimesheetDtos = new List<TimesheetDto>();
         }
-
-        public void SetTimesheetsHours(TimesheetListModel model)
+        protected void SetTimesheetsInfo(TimesheetListModel model)
         {
-            IEnumerable<int> timesheetIds = model.TimesheetDtos.Select(x => x.Id);
-            float hours = model.Hours;
-            if (hours < 0 || hours > 24)
-                throw new ArgumentException("Incorrect hours value");
-            //hours = (float)Math.Round(hours*100)/100;
-            //if (hours != model.Hours)
-            //    model.Hours = hours;
-            TimesheetDao.UpdateTimesheetDays(timesheetIds, model.Status, model.Hours, model.Date.Day);
-            model.Statuses = GetTimesheetStatusesList();
-            SetDaysToModel(model);
-            SetTimesheets(model);
-        }
-        protected void SetControlsState(TimesheetListModel model)
-        {
-            model.IsEditable = CurrentUser.UserRole == UserRole.Manager;
-        }
-        protected void SetDaysToModel(TimesheetListModel model)
-        {
-            model.Month = new DateTime(model.Month.Year,model.Month.Month,1);
-            IList<DateTime> dates = TimesheetDao.GetTimesheetDatesForManager(model.ManagerId,
-                CurrentUser.UserRole);
-            SetMonthesToListbox(model, dates);
-            SetDaysToListbox(model);
-        }
-        protected void SetMonthesToListbox(TimesheetListModel model,IList<DateTime> dates)
-        {
-            IList<DateTime> months = dates.ToList();
-            DateTime today = DateTime.Today;
-            DateTime currentMonth = new DateTime(today.Year, today.Month, 1);
-            if (!months.Contains(currentMonth))
-                months.Add(currentMonth);
-            DateTime nextMonth = currentMonth.AddMonths(1);
-            if (!months.Contains(nextMonth))
-                months.Add(nextMonth);
-            IList<DateDto> dtoMonth = months.ToList().ConvertAll(x => new DateDto
+            IUser user = AuthenticationService.CurrentUser;
+            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth(model.Month, model.Year, user.Id, user.UserRole);
+            List<int> allUserIds = new List<int>();
+            allUserIds = dtos.Aggregate(allUserIds,
+                                        (current, dayRequestsDto) =>
+                                        current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
+                                            .ToList());
+            List<TimesheetDto> list = new List<TimesheetDto>();
+            foreach (int userId in allUserIds)
             {
-                Date = x,
-                Name =
-                    x.ToString("MMMM") + " " + x.Year.ToString(),
-            });
-            model.Monthes = dtoMonth;
-        }
-        protected void SetDaysToListbox(TimesheetListModel model)
-        {
-            IList<DateDto> dtoDays = new List<DateDto>();
-            if (CurrentUser.UserRole == UserRole.Manager)
-            {
-                model.Statuses = GetTimesheetStatusesList();
-                DateTime currentDay = model.Month;
-                for (int i = 0; i < 31; i++)
+                //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
+                TimesheetDto dto = new TimesheetDto();
+                List<RequestDto> userDtoList = new List<RequestDto>();
+                List<TimesheetDayDto> userDayList = new List<TimesheetDayDto>();
+                foreach (var dayRequestsDto in dtos)
                 {
-
-                    dtoDays.Add(new DateDto
-                                    {
-                                        Date = currentDay,
-                                        Name = currentDay.Day.ToString()
-                                    });
-                    currentDay = currentDay.AddDays(1);
-                    if (currentDay.Month != model.Month.Month)
-                        break;
+                    List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
+                    string status = userList.Aggregate(string.Empty,
+                                                       (curr, requestDto) => curr + requestDto.TimesheetCode + "/");
+                    string hours = userList.Aggregate(string.Empty,
+                                                      (curr, requestDto) =>
+                                                      curr +
+                                                      (requestDto.TimesheetHours.HasValue
+                                                           ? requestDto.TimesheetHours.Value.ToString()
+                                                           : " ") + "/");
+                    userDayList.Add(new TimesheetDayDto
+                                                 {
+                                                     Number = dayRequestsDto.Day.Day,
+                                                     Status = status.Substring(0,status.Length -1),
+                                                     Hours = hours.Substring(0, hours.Length - 1),
+                                                 });
+                    userDtoList.AddRange(userList);
                 }
+                dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
+                dto.UserNameAndCode = userDtoList.First().UserName;
+                dto.Days = userDayList;
+                list.Add(dto);
             }
-            else 
-                model.Statuses = new List<IdNameDto>();
-            model.Dates = dtoDays;            
+            model.TimesheetDtos = list;
         }
-        protected void SetTimesheets(TimesheetListModel model)
+        //public void SetTimesheetsHours(TimesheetListModel model)
+        //{
+        //    IEnumerable<int> timesheetIds = model.TimesheetDtos.Select(x => x.Id);
+        //    float hours = model.Hours;
+        //    if (hours < 0 || hours > 24)
+        //        throw new ArgumentException("Incorrect hours value");
+        //    //hours = (float)Math.Round(hours*100)/100;
+        //    //if (hours != model.Hours)
+        //    //    model.Hours = hours;
+        //    TimesheetDao.UpdateTimesheetDays(timesheetIds, model.Status, model.Hours, model.Date.Day);
+        //    model.Statuses = GetTimesheetStatusesList();
+        //    //SetDaysToModel(model);
+        //    //SetTimesheets(model);
+        //}
+        //protected void SetControlsState(TimesheetListModel model)
+        //{
+        //    model.IsEditable = CurrentUser.UserRole == UserRole.Manager;
+        //}
+        //protected void SetDaysToModel(TimesheetListModel model)
+        //{
+        //    //model.Month = new DateTime(model.Month.Year,model.Month.Month,1);
+        //    //IList<DateTime> dates = TimesheetDao.GetTimesheetDatesForManager(model.ManagerId,
+        //    //    CurrentUser.UserRole);
+        //    SetListboxes(model);
+        //    //SetDaysToListbox(model);
+        //}
+        protected static string GetMonthName(int month)
         {
-            if(CurrentUser.UserRole ==  UserRole.Manager)
-                TimesheetDao.CheckAndCreateTimesheetsForMonth(model.ManagerId, model.Month);
-            IList<TimesheetDaysDto> dtos = TimesheetDao.LoadTimesheetsForMonth(model.ManagerId, 
-                model.Month,CurrentUser.UserRole);
-            SetTimesheetDtosToModel(model,dtos);
-        }
-        protected void SetTimesheetDtosToModel(TimesheetListModel model,IList<TimesheetDaysDto> dtos)
-        {
-            IList<TimesheetDto> modelDtos = new List<TimesheetDto>();
-            IEnumerable<int> timesheetIds = dtos.Select(x => x.TimesheetId).Distinct();
-            foreach (int timesheetId in timesheetIds)
+            switch(month)
             {
-                IEnumerable<TimesheetDaysDto> days = dtos.Where(x => x.TimesheetId == timesheetId);
-                if (days.Count() > 0)
-                {
-                    TimesheetDaysDto day = days.First();
-                    TimesheetDto modelDto = new TimesheetDto
-                    {
-                        Id = timesheetId,
-                        //Statuses = model.Statuses,
-                        IsEditable = false,
-                        MonthAndYear = model.Month.ToString("MMMM") + " " + model.Month.Year,
-                        OwnerId = day.UserId,
-                        UserNameAndCode =
-                            User.GetFullName(day.Name) + ", " +
-                            day.Code,
-                        Days = days.ToList().ConvertAll(x => new TimesheetDayDto
-                        {
-                            Id = x.Id,
-                            Hours = x.Hours,
-                            Number = x.Number,
-                            Status = x.Status,
-                            StatusId = x.StatusId,
-                        })
-                    };
-                    modelDtos.Add(modelDto);
-                }
+                case 1:
+                    return "Январь";
+                case 2:
+                    return "Февраль";
+                case 3:
+                    return "Март";
+                case 4:
+                    return "Апрель";
+                case 5:
+                    return "Май";
+                case 6:
+                    return "Июнь";
+                case 7:
+                    return "Июль";
+                case 8:
+                    return "Август";
+                case 9:
+                    return "Сентябрь";
+                case 10:
+                    return "Октябрь";
+                case 11:
+                    return "Ноябрь";
+                case 12:
+                    return "Декабрь";
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный месяц {0}",month));
             }
-            model.TimesheetDtos = modelDtos;
         }
+        protected void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
+        {
+            model.Monthes = GetMonthesList();
+            model.Years = GetYearsList();
+            //IList<DateTime> months = dates.ToList();
+            //DateTime today = DateTime.Today;
+            //DateTime currentMonth = new DateTime(today.Year, today.Month, 1);
+            //if (!months.Contains(currentMonth))
+            //    months.Add(currentMonth);
+            //DateTime nextMonth = currentMonth.AddMonths(1);
+            //if (!months.Contains(nextMonth))
+            //    months.Add(nextMonth);
+            //IList<DateDto> dtoMonth = months.ToList().ConvertAll(x => new DateDto
+            //{
+            //    Date = x,
+            //    Name =
+            //        x.ToString("MMMM") + " " + x.Year.ToString(),
+            //});
+            //model.Monthes = dtoMonth;
+        }
+        protected IList<IdNameDto> GetYearsList()
+        {
+            IList<IdNameDto> list = new List<IdNameDto>();
+            for(int i=2012;i<2015;i++)
+                list.Add(new IdNameDto(i,i.ToString()));
+            return list;
+        }
+        protected IList<IdNameDto> GetMonthesList()
+        {
+            return new List<IdNameDto>
+                       {
+                           new IdNameDto(1,"Январь"),
+                           new IdNameDto(2,"Февраль"),
+                           new IdNameDto(3,"Март"),
+                           new IdNameDto(4,"Апрель"),
+                           new IdNameDto(5,"Май"),
+                           new IdNameDto(6,"Июнь"),
+                           new IdNameDto(7,"Июль"),
+                           new IdNameDto(8,"Август"),
+                           new IdNameDto(9,"Сентябрь"),
+                           new IdNameDto(10,"Октябрь"),
+                           new IdNameDto(11,"Ноябрь"),
+                           new IdNameDto(12,"Декабрь"),
+                       };
+        }
+        //protected void SetDaysToListbox(TimesheetListModel model)
+        //{
+        //    IList<DateDto> dtoDays = new List<DateDto>();
+        //    if (CurrentUser.UserRole == UserRole.Manager)
+        //    {
+        //        model.Statuses = GetTimesheetStatusesList();
+        //        DateTime currentDay = model.Month;
+        //        for (int i = 0; i < 31; i++)
+        //        {
+
+        //            dtoDays.Add(new DateDto
+        //                            {
+        //                                Date = currentDay,
+        //                                Name = currentDay.Day.ToString()
+        //                            });
+        //            currentDay = currentDay.AddDays(1);
+        //            if (currentDay.Month != model.Month.Month)
+        //                break;
+        //        }
+        //    }
+        //    else 
+        //        model.Statuses = new List<IdNameDto>();
+        //    model.Dates = dtoDays;            
+        //}
+        //protected void SetTimesheets(TimesheetListModel model)
+        //{
+        //    if(CurrentUser.UserRole ==  UserRole.Manager)
+        //        TimesheetDao.CheckAndCreateTimesheetsForMonth(model.ManagerId, model.Month);
+        //    IList<TimesheetDaysDto> dtos = TimesheetDao.LoadTimesheetsForMonth(model.ManagerId, 
+        //        model.Month,CurrentUser.UserRole);
+        //    SetTimesheetDtosToModel(model,dtos);
+        //}
+        //protected void SetTimesheetDtosToModel(TimesheetListModel model,IList<TimesheetDaysDto> dtos)
+        //{
+        //    IList<TimesheetDto> modelDtos = new List<TimesheetDto>();
+        //    IEnumerable<int> timesheetIds = dtos.Select(x => x.TimesheetId).Distinct();
+        //    foreach (int timesheetId in timesheetIds)
+        //    {
+        //        IEnumerable<TimesheetDaysDto> days = dtos.Where(x => x.TimesheetId == timesheetId);
+        //        if (days.Count() > 0)
+        //        {
+        //            TimesheetDaysDto day = days.First();
+        //            TimesheetDto modelDto = new TimesheetDto
+        //            {
+        //                Id = timesheetId,
+        //                //Statuses = model.Statuses,
+        //                IsEditable = false,
+        //                MonthAndYear = model.Month.ToString("MMMM") + " " + model.Month.Year,
+        //                OwnerId = day.UserId,
+        //                UserNameAndCode =
+        //                    User.GetFullName(day.Name) + ", " +
+        //                    day.Code,
+        //                Days = days.ToList().ConvertAll(x => new TimesheetDayDto
+        //                {
+        //                    Id = x.Id,
+        //                    Hours = x.Hours,
+        //                    Number = x.Number,
+        //                    Status = x.Status,
+        //                    StatusId = x.StatusId,
+        //                })
+        //            };
+        //            modelDtos.Add(modelDto);
+        //        }
+        //    }
+        //    model.TimesheetDtos = modelDtos;
+        //}
         #endregion
         public IList<IdNameDto> GetRoleList()
         {
@@ -727,74 +830,74 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ConvertAll(x => new IdNameDto(x.Id, x.ShortName));
         }
         #region Timesheet List Edit
-        public void GetTimesheetEditModel(TimesheetEditModel model)
-        {
-            Timesheet timesheet = TimesheetDao.Load(model.Id);
-            model.Month = timesheet.Month;
-            SetTimesheetDto(model, timesheet);
-            SetControlState(model, timesheet);
-        }
-        protected void SetTimesheetDto(TimesheetEditModel model, Timesheet timesheet)
-        {
-            User owner = timesheet.User;
-            TimesheetDto modelDto = new TimesheetDto
-            {
-                Id = timesheet.Id,
-                //Statuses = model.Statuses,
-                IsEditable = false,
-                MonthAndYear = timesheet.Month.ToString("MMMM") + " " + timesheet.Month.Year,
-                OwnerId = owner.Id,
-                UserNameAndCode =
-                    User.GetFullName(owner.Name) + ", " +
-                    owner.Code,
-                Days = timesheet.Days.ToList().ConvertAll(x => new TimesheetDayDto
-                {
-                    Id = x.Id,
-                    Hours = x.Hours,
-                    Number = x.Number,
-                    Status = x.Status.ShortName,
-                    StatusId = x.Status.Id,
-                })
-            };
-            model.TimesheetDto = modelDto;
-        }
-        protected void SetControlState(TimesheetEditModel model, Timesheet timesheet)
-        {
-            int currentUserId = AuthenticationService.CurrentUser.Id;
-            model.IsNotApprovedByPersonnel = timesheet.PersonnelNotAcceptDate.HasValue;
-            model.IsNotApprovedByUser = timesheet.UserNotAcceptDate.HasValue;
-            switch (AuthenticationService.CurrentUser.UserRole)
-            {
-                case UserRole.Employee:
-                    if (currentUserId != timesheet.User.Id)
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    model.IsNotApprovedByUserEnable = IsLastMonthWokingDay(model.Month);
-                    model.IsSaveAvailable = model.IsNotApprovedByUserEnable;
-                    break;
-                case UserRole.Manager:
-                    if ((timesheet.User.Manager == null) || 
-                        (currentUserId != timesheet.User.Manager.Id))
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    model.TimesheetDto.IsEditable = true;
-                    model.IsSaveAvailable = true;
-                    model.ViewHeader = true;
-                    //model.TimesheetDto.Statuses = GetTimesheetStatusesList();
-                    SetUserModel(model, timesheet.User);
-                    break;
-                case UserRole.PersonnelManager:
-                    if ((timesheet.User.PersonnelManager == null) ||
-                        (currentUserId != timesheet.User.PersonnelManager.Id))
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    model.IsNotApprovedByPersonnelEnable = true;
-                    model.IsSaveAvailable = true;
-                    model.ViewHeader = true;
-                    SetUserModel(model, timesheet.User);
-                    //model.TimesheetDto.Statuses = GetTimesheetStatusesList();
-                    break;
-                default:
-                    throw new ArgumentException("Доступ к документу запрещен.");
-            }
-        }
+        //public void GetTimesheetEditModel(TimesheetEditModel model)
+        //{
+        //    Timesheet timesheet = TimesheetDao.Load(model.Id);
+        //    model.Month = timesheet.Month;
+        //    SetTimesheetDto(model, timesheet);
+        //    SetControlState(model, timesheet);
+        //}
+        //protected void SetTimesheetDto(TimesheetEditModel model, Timesheet timesheet)
+        //{
+        //    User owner = timesheet.User;
+        //    TimesheetDto modelDto = new TimesheetDto
+        //    {
+        //        Id = timesheet.Id,
+        //        //Statuses = model.Statuses,
+        //        IsEditable = false,
+        //        MonthAndYear = timesheet.Month.ToString("MMMM") + " " + timesheet.Month.Year,
+        //        OwnerId = owner.Id,
+        //        UserNameAndCode =
+        //            User.GetFullName(owner.Name) + ", " +
+        //            owner.Code,
+        //        Days = timesheet.Days.ToList().ConvertAll(x => new TimesheetDayDto
+        //        {
+        //            Id = x.Id,
+        //            Hours = x.Hours,
+        //            Number = x.Number,
+        //            Status = x.Status.ShortName,
+        //            StatusId = x.Status.Id,
+        //        })
+        //    };
+        //    model.TimesheetDto = modelDto;
+        //}
+        //protected void SetControlState(TimesheetEditModel model, Timesheet timesheet)
+        //{
+        //    int currentUserId = AuthenticationService.CurrentUser.Id;
+        //    model.IsNotApprovedByPersonnel = timesheet.PersonnelNotAcceptDate.HasValue;
+        //    model.IsNotApprovedByUser = timesheet.UserNotAcceptDate.HasValue;
+        //    switch (AuthenticationService.CurrentUser.UserRole)
+        //    {
+        //        case UserRole.Employee:
+        //            if (currentUserId != timesheet.User.Id)
+        //                throw new ArgumentException("Доступ к документу запрещен.");
+        //            model.IsNotApprovedByUserEnable = IsLastMonthWokingDay(model.Month);
+        //            model.IsSaveAvailable = model.IsNotApprovedByUserEnable;
+        //            break;
+        //        case UserRole.Manager:
+        //            if ((timesheet.User.Manager == null) || 
+        //                (currentUserId != timesheet.User.Manager.Id))
+        //                throw new ArgumentException("Доступ к документу запрещен.");
+        //            model.TimesheetDto.IsEditable = true;
+        //            model.IsSaveAvailable = true;
+        //            model.ViewHeader = true;
+        //            //model.TimesheetDto.Statuses = GetTimesheetStatusesList();
+        //            SetUserModel(model, timesheet.User);
+        //            break;
+        //        case UserRole.PersonnelManager:
+        //            if ((timesheet.User.PersonnelManager == null) ||
+        //                (currentUserId != timesheet.User.PersonnelManager.Id))
+        //                throw new ArgumentException("Доступ к документу запрещен.");
+        //            model.IsNotApprovedByPersonnelEnable = true;
+        //            model.IsSaveAvailable = true;
+        //            model.ViewHeader = true;
+        //            SetUserModel(model, timesheet.User);
+        //            //model.TimesheetDto.Statuses = GetTimesheetStatusesList();
+        //            break;
+        //        default:
+        //            throw new ArgumentException("Доступ к документу запрещен.");
+        //    }
+        //}
         protected bool IsLastMonthWokingDay(DateTime month)
         {
             //return true;
@@ -807,76 +910,76 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return false;
         }
-        public void SetTimesheet(TimesheetEditModel model)
-        {
-            Timesheet timesheet = TimesheetDao.Load(model.TimesheetDto.Id);
-            switch (AuthenticationService.CurrentUser.UserRole)
-            {
-                case UserRole.Manager:
-                    if ((timesheet.User.Manager == null) || 
-                        (authenticationService.CurrentUser.Id != timesheet.User.Manager.Id))
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    IList<TimesheetStatus> statuses = TimesheetStatusDao.LoadAllSorted();
-                    IList<TimesheetDayDto> dtos = model.TimesheetDto.Days;
-                    foreach (TimesheetDay day in timesheet.Days)
-                    {
-                        TimesheetDayDto dto = dtos.Where(x => x.Id == day.Id).First();
-                        if (day.Status.Id != dto.StatusId)
-                        {
-                            TimesheetStatus status = statuses.Where(x => x.Id == dto.StatusId).First();
-                            day.Status = status;
-                        }
-                        day.Hours = dto.Hours;
-                    }
-                    TimesheetDao.SaveAndFlush(timesheet);
-                    break;
-                case UserRole.Employee:
-                    if (authenticationService.CurrentUser.Id != timesheet.User.Id)
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    bool isTimesheetIsAcceptedBefore = !timesheet.UserNotAcceptDate.HasValue;
-                    if (timesheet.UserNotAcceptDate.HasValue && !model.IsNotApprovedByUser)
-                        timesheet.UserNotAcceptDate = null;
-                    else if(!timesheet.UserNotAcceptDate.HasValue && model.IsNotApprovedByUser)
-                        timesheet.UserNotAcceptDate = DateTime.Now;
-                    TimesheetDao.SaveAndFlush(timesheet);
-                    if(isTimesheetIsAcceptedBefore && timesheet.UserNotAcceptDate.HasValue)
-                    {
-                        if (timesheet.User.Manager == null || string.IsNullOrEmpty(timesheet.User.Manager.Email))
-                            Log.WarnFormat("У пользователя {0} (Id {1}) отсутствует руководитель или e-mail руководителя не указан.", 
-                                timesheet.User.FullName, timesheet.User.Id);
-                        else
-                        {
+//        public void SetTimesheet(TimesheetEditModel model)
+//        {
+//            Timesheet timesheet = TimesheetDao.Load(model.TimesheetDto.Id);
+//            switch (AuthenticationService.CurrentUser.UserRole)
+//            {
+//                case UserRole.Manager:
+//                    if ((timesheet.User.Manager == null) || 
+//                        (authenticationService.CurrentUser.Id != timesheet.User.Manager.Id))
+//                        throw new ArgumentException("Доступ к документу запрещен.");
+//                    IList<TimesheetStatus> statuses = TimesheetStatusDao.LoadAllSorted();
+//                    IList<TimesheetDayDto> dtos = model.TimesheetDto.Days;
+//                    foreach (TimesheetDay day in timesheet.Days)
+//                    {
+//                        TimesheetDayDto dto = dtos.Where(x => x.Id == day.Id).First();
+//                        if (day.Status.Id != dto.StatusId)
+//                        {
+//                            TimesheetStatus status = statuses.Where(x => x.Id == dto.StatusId).First();
+//                            day.Status = status;
+//                        }
+//                        day.Hours = dto.Hours;
+//                    }
+//                    TimesheetDao.SaveAndFlush(timesheet);
+//                    break;
+//                case UserRole.Employee:
+//                    if (authenticationService.CurrentUser.Id != timesheet.User.Id)
+//                        throw new ArgumentException("Доступ к документу запрещен.");
+//                    bool isTimesheetIsAcceptedBefore = !timesheet.UserNotAcceptDate.HasValue;
+//                    if (timesheet.UserNotAcceptDate.HasValue && !model.IsNotApprovedByUser)
+//                        timesheet.UserNotAcceptDate = null;
+//                    else if(!timesheet.UserNotAcceptDate.HasValue && model.IsNotApprovedByUser)
+//                        timesheet.UserNotAcceptDate = DateTime.Now;
+//                    TimesheetDao.SaveAndFlush(timesheet);
+//                    if(isTimesheetIsAcceptedBefore && timesheet.UserNotAcceptDate.HasValue)
+//                    {
+//                        if (timesheet.User.Manager == null || string.IsNullOrEmpty(timesheet.User.Manager.Email))
+//                            Log.WarnFormat("У пользователя {0} (Id {1}) отсутствует руководитель или e-mail руководителя не указан.", 
+//                                timesheet.User.FullName, timesheet.User.Id);
+//                        else
+//                        {
 
-                            SendEmail(model, timesheet.User.Manager.Email,
-                                      string.Format("Несогласие с табелем"),
-                                      string.Format("Пользователь {0} не согласен с табелем за {1}. Дата {2}."
-                                      ,timesheet.User.FullName,GetMonth(timesheet.Month),
-                                      DateTime.Today.ToShortDateString()));
-                            if (!string.IsNullOrEmpty(model.EmailDto.Error))
-                                Log.WarnFormat(@"Письмо о несогласии с табелем за {4} 
-                                                пользователя {0}(Id {1}) не было отправлено 
-                                                руководителю {2}.Ошибка: {3}",
-                                    timesheet.User.FullName, timesheet.User.Id, 
-                                    timesheet.User.Manager.FullName, 
-                                    model.EmailDto.Error,
-                                    GetMonth(timesheet.Month));
-                        }
-                    }
-                    break;
-                case UserRole.PersonnelManager:
-                    if ((timesheet.User.PersonnelManager == null) || 
-                        (authenticationService.CurrentUser.Id != timesheet.User.PersonnelManager.Id))
-                        throw new ArgumentException("Доступ к документу запрещен.");
-                    if (timesheet.PersonnelNotAcceptDate.HasValue && !model.IsNotApprovedByPersonnel)
-                        timesheet.PersonnelNotAcceptDate = null;
-                    else if (!timesheet.PersonnelNotAcceptDate.HasValue && model.IsNotApprovedByPersonnel)
-                        timesheet.PersonnelNotAcceptDate = DateTime.Now;
-                    TimesheetDao.SaveAndFlush(timesheet);
-                    break;
-                default:
-                    throw new ArgumentException("Доступ к документу запрещен.");
-            }
-        }
+//                            SendEmail(model, timesheet.User.Manager.Email,
+//                                      string.Format("Несогласие с табелем"),
+//                                      string.Format("Пользователь {0} не согласен с табелем за {1}. Дата {2}."
+//                                      ,timesheet.User.FullName,GetMonth(timesheet.Month),
+//                                      DateTime.Today.ToShortDateString()));
+//                            if (!string.IsNullOrEmpty(model.EmailDto.Error))
+//                                Log.WarnFormat(@"Письмо о несогласии с табелем за {4} 
+//                                                пользователя {0}(Id {1}) не было отправлено 
+//                                                руководителю {2}.Ошибка: {3}",
+//                                    timesheet.User.FullName, timesheet.User.Id, 
+//                                    timesheet.User.Manager.FullName, 
+//                                    model.EmailDto.Error,
+//                                    GetMonth(timesheet.Month));
+//                        }
+//                    }
+//                    break;
+//                case UserRole.PersonnelManager:
+//                    if ((timesheet.User.PersonnelManager == null) || 
+//                        (authenticationService.CurrentUser.Id != timesheet.User.PersonnelManager.Id))
+//                        throw new ArgumentException("Доступ к документу запрещен.");
+//                    if (timesheet.PersonnelNotAcceptDate.HasValue && !model.IsNotApprovedByPersonnel)
+//                        timesheet.PersonnelNotAcceptDate = null;
+//                    else if (!timesheet.PersonnelNotAcceptDate.HasValue && model.IsNotApprovedByPersonnel)
+//                        timesheet.PersonnelNotAcceptDate = DateTime.Now;
+//                    TimesheetDao.SaveAndFlush(timesheet);
+//                    break;
+//                default:
+//                    throw new ArgumentException("Доступ к документу запрещен.");
+//            }
+//        }
         #endregion
         #region Timesheet List Edit Dialog
         public void GetEditDayModel(EditDayModel model)

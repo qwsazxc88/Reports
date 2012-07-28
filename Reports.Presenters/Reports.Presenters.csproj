@@ -110,12 +110,17 @@
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
+    <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
+    <Compile Include="UI\Bl\Impl\RequestBl.cs" />
+    <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
+    <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />
+    <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
     <Compile Include="UI\ViewModel\DialogErrorModel.cs" />
     <Compile Include="UI\ViewModel\DocumentCommentsModel.cs" />
@@ -130,10 +135,12 @@
     <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
     <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
@@ -142,8 +149,11 @@
     <Compile Include="UI\ViewModel\TimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetModel.cs" />
     <Compile Include="UI\ViewModel\UserEditModel.cs" />
+    <Compile Include="UI\ViewModel\UserInfoModel.cs" />
     <Compile Include="UI\ViewModel\UserListModel.cs" />
     <Compile Include="UI\ViewModel\UserModel.cs" />
+    <Compile Include="UI\ViewModel\VacationEditModel.cs" />
+    <Compile Include="UI\ViewModel\VacationListModel.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>
   <ItemGroup>

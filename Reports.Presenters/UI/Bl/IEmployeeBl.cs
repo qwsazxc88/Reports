@@ -21,10 +21,10 @@ namespace Reports.Presenters.UI.Bl
         void GetEmployeeListModel(EmployeeListModel model);
         IList<IdNameDto> GetTimesheetStatusesList();
         void GetTimesheetListModel(TimesheetListModel model);
-        void SetTimesheetsHours(TimesheetListModel model);
-        void SetTimesheet(TimesheetEditModel model);
+        //void SetTimesheetsHours(TimesheetListModel model);
+        //void SetTimesheet(TimesheetEditModel model);
 
-        void GetTimesheetEditModel(TimesheetEditModel model);
+        //void GetTimesheetEditModel(TimesheetEditModel model);
         void GetEditDayModel(EditDayModel model);
 
         EmployeeTimesheetListModel GetEmployeeTimesheetListModel();

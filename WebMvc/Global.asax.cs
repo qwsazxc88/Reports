@@ -5,10 +5,13 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 using Reports.CommonWeb;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Presenters;
+using Reports.Presenters.Services;
+using Reports.Presenters.Services.Impl;
 
 
 namespace WebMvc
@@ -116,6 +119,47 @@ namespace WebMvc
                     log4net.LogManager.GetLogger(GetType()).Error("Exception on Application_End: ", ex);
                 }
             }
+        }
+        protected void Application_AuthenticateRequest(Object sender, EventArgs e)
+        {
+            var cookieName = FormsAuthentication.FormsCookieName;
+            var authCookie = Context.Request.Cookies[cookieName];
+            if (null == authCookie)
+            {
+                return;
+            }
+            FormsAuthenticationTicket authTicket = null;
+            try
+            {
+                authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+            }
+            catch (Exception ex)
+            {
+                log4net.LogManager.GetLogger(GetType()).Error(ex);
+                return;
+            }
+
+            if (null == authTicket)
+            {
+                return;
+            }
+
+            IUser info = null;
+            try
+            {
+                info = UserDto.Deserialize(authTicket.UserData);
+                if (info == null)
+                    return;
+            }
+            catch (Exception ex)
+            {
+                log4net.LogManager.GetLogger(GetType()).Error(ex);
+                return;
+            }
+
+            var id = new FormsIdentity(authTicket);
+            var principal = new ReportPrincipal(id, info);
+            Context.User = principal;
         }
 
 

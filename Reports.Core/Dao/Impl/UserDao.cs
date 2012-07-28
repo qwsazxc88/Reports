@@ -168,6 +168,30 @@ namespace Reports.Core.Dao.Impl
                             .SetProjection(Projections.RowCount())
                             .UniqueResult();
         }
+        public IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole)
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(User));
+            switch (managerRole)
+            {
+                case UserRole.Employee:
+                    throw new ArgumentException("—писок сотрудников нелоступен дл€ сотрудника.");
+                case UserRole.Manager:
+                    criteria.Add(Restrictions.Eq("Manager.Id", managerId));
+                    break;
+                case UserRole.PersonnelManager:
+                    criteria.Add(Restrictions.Eq("PersonnelManager.Id", managerId));
+                    break;
+                //case UserRole.BudgetManager:
+                //    criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
+                //    break;
+                //case UserRole.OutsourcingManager:
+                //    criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
+                //    break;
+                default:
+                    break;
+            }
+            return criteria.List<User>().ToList().ConvertAll(x => new IdNameDto(x.Id, x.FullName)).OrderBy(x => x.Name).ToList();
+        }
         public IList<UserDto> GetUsersForManager(string userName,
             int managerId,UserRole managerRole, int? role,ref int currentPage,
             out int numberOfPages)

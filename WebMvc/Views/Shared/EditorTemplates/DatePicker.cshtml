@@ -1,0 +1,42 @@
+﻿@using System.Globalization;
+@using Reports.Core.Dto
+@{
+    var propertyName = ViewData.ModelMetadata.PropertyName;
+    var propertyValue = ViewData.ModelMetadata.Model;
+    var id = propertyName;// Guid.NewGuid().ToString();
+    bool isReadOnly = false;
+    var propertyNameReadOnly = propertyName + "ReadOnly";
+    var readOnlyPropertyName = string.Empty;
+
+    string onscreenValue = propertyValue == null ? string.Empty : propertyValue.ToString();
+    DateTimeFormatInfo currentDTFI  = CultureInfo.CurrentCulture.DateTimeFormat;
+    string shortPattern = currentDTFI.ShortDatePattern;
+    if (shortPattern == "M/d/yyyy")
+    {
+        shortPattern = "MM/dd/yyyy";
+    }
+    if (propertyValue is DateTime) { onscreenValue = ((DateTime)propertyValue).ToString(shortPattern); }
+    else if (propertyValue is DateTimeDto) 
+    {
+        DateTimeDto dto = propertyValue as DateTimeDto;
+        onscreenValue = dto.Date.HasValue ? dto.Date.Value.ToString(shortPattern) : string.Empty;
+        isReadOnly = dto.IsReadOnly;
+        readOnlyPropertyName = propertyName + ".IsReadOnly";
+        propertyName = propertyName + ".Date";
+        //id = propertyName;
+    }
+
+}
+@if (propertyValue is DateTimeDto)
+{
+    <input type="hidden" id="@readOnlyPropertyName" name="@readOnlyPropertyName" value="@isReadOnly" />
+}
+@if (isReadOnly) 
+{
+    <input type="text" name="@propertyNameReadOnly" value="@onscreenValue" id="@propertyNameReadOnly" disabled="disabled" />
+    <input type="hidden" id="@id" name="@propertyName" value="@onscreenValue" />
+}
+else
+{
+    <input type="text" name="@propertyName" value="@onscreenValue" id="@id" class="datePicker"/>
+}

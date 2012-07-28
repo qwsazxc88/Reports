@@ -89,16 +89,19 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Attributes\ReportAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="CustomModelMetadataProvider.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controllers\UserRequestController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Default.css" />
@@ -288,7 +291,42 @@
     <Content Include="Views\Employee\DialogError.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="db.config" />
+    <Content Include="db.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\CreateRequest.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\VacationList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\VacationEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserInfoView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\RequestCommentPartial.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\AddCommentDialog.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\DialogError.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\EditorTemplates\DatePicker.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\AbsenceList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\AbsenceEdit.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

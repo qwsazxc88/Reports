@@ -6,6 +6,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -20,18 +21,21 @@ namespace Reports.Core.Dao.Impl
         private const string UserAlias = "User";
 
         protected ITimesheetStatusDao timesheetStatusDao;
+        protected IUserDao userDao;
         public ITimesheetStatusDao TimesheetStatusDao
         {
             get { return Validate.Dependency(timesheetStatusDao); }
             set { timesheetStatusDao = value; }
         }
-
-
+        public IUserDao UserDao
+        {
+            get { return Validate.Dependency(userDao); }
+            set { userDao = value; }
+        }
         public TimesheetDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
         }
-
         //public virtual Timesheet FindByUserAndMonth(int userId,DateTime month)
         //{
         //    return (Timesheet)Session.CreateCriteria(typeof(Timesheet))
@@ -39,7 +43,6 @@ namespace Reports.Core.Dao.Impl
         //                      .Add(Restrictions.Eq("Month", userId))
         //                      .UniqueResult();
         //}
-
         public IList<DateTime> GetTimesheetDates()
         {
             string sqlQuery =
@@ -49,7 +52,6 @@ namespace Reports.Core.Dao.Impl
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
             return query.List<DateTime>();
         }
-
         public IList<DateTime> GetTimesheetDatesForManager(int managerId,UserRole role)
         {
             string sqlQuery =
@@ -203,6 +205,129 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.Eq("User.Id", ownerId));
             criteria.AddOrder(new Order("Month", false));
             return criteria.List<Timesheet>();
+        }
+
+        protected IList<RequestDto> GetRequestsForType(DateTime beginDate,DateTime endDate,RequestTypeEnum type,
+            int userId,UserRole userRole)
+        {
+            string sqlQuery =
+                @"select v.BeginDate as BeginDate,
+                         v.EndDate as EndDate,
+                         v.TimesheetStatusId  as TimesheetStatusId,
+                         ts.[ShortName] as TimesheetCode,
+                         null as TimesheetHours,
+                         u.Id as UserId,
+                         u.Name as UserName";
+            switch(type)
+            {
+                case RequestTypeEnum.Vacation:
+                    sqlQuery += @" from [dbo].[Vacation] v ";
+                    break;
+                case RequestTypeEnum.Absence:
+                    sqlQuery += @" from [dbo].[Absence] v ";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип заявки {0}", type));
+
+            }
+            sqlQuery += @" inner join [dbo].[TimesheetStatus] ts on ts.Id = v.TimesheetStatusId
+                           inner join [dbo].[Users] u on u.Id = v.UserId ";
+            sqlQuery+= @" where ((v.BeginDate between :beginDate and :endDate) or
+                                 (v.EndDate between :beginDate and :endDate) or 
+                                 (:beginDate between v.BeginDate and v.EndDate) or
+                                 (:endDate between v.BeginDate and v.EndDate))
+                          and v.DeleteDate is null 
+                          and v.UserDateAccept is not  null
+                          and v.ManagerDateAccept is not null
+                          and v.PersonnelManagerDateAccept is not null ";
+            switch(userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                case UserRole.Manager:
+                    sqlQuery += " and u.ManagerId = :userId ";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));
+
+            }
+            sqlQuery += " order by UserName,UserId,BeginDate,EndDate ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+               AddScalar("BeginDate", NHibernateUtil.DateTime).
+               AddScalar("EndDate", NHibernateUtil.DateTime).
+               AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
+               AddScalar("TimesheetCode", NHibernateUtil.String).
+               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("UserId", NHibernateUtil.Int32).
+               AddScalar("UserName", NHibernateUtil.String).
+               SetDateTime("beginDate", beginDate).
+               SetDateTime("endDate", endDate).
+               SetInt32("userId", userId);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(RequestDto))).List<RequestDto>();
+        }
+        protected IList<RequestDto> GetRequests(DateTime beginDate,DateTime endDate,int userId,UserRole userRole)
+        {
+            List<RequestDto> allList = new List<RequestDto>();
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Vacation, userId, userRole));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Absence, userId, userRole));
+            return allList;
+        }
+        public IList<DayRequestsDto> GetRequestsForMonth(int month,int year,int userId,UserRole userRole)
+        {
+            DateTime current = new DateTime(year,month, 1);
+            IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
+            for (int i = 0; i < 31; i++)
+            {
+                DayRequestsDto dto = new DayRequestsDto {Day = current};
+                if (current.Month != month)
+                    break;
+                dtoList.Add(dto);
+                current = current.AddDays(1);
+            }
+            IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day, userId, userRole);
+            IList<IdNameDto> users;
+            switch(userRole)
+            {
+                case UserRole.Employee:
+                    users = new List<IdNameDto>{ new IdNameDto(userId,UserDao.Load(userId).FullName)};
+                    break;
+                case UserRole.Manager:
+                case UserRole.PersonnelManager:
+                    users = UserDao.GetUsersForManager(userId, userRole); 
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));
+            }
+            foreach (var idNameDto in users)
+            {
+                foreach (var dayRequestsDto in dtoList)
+                {
+                    DateTime date = dayRequestsDto.Day;
+                    List<RequestDto> userRequestList = requests.Where(x => 
+                        (date >= x.BeginDate && date <= x.EndDate && idNameDto.Id == x.UserId)).ToList();
+                    if (userRequestList.Count == 0)
+                    {
+                        DayOfWeek dayOfweek = date.DayOfWeek;
+                        bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
+                        dayRequestsDto.Requests.Add(new RequestDto
+                                                        {
+                                                            BeginDate = date,
+                                                            EndDate = date,
+                                                            TimesheetCode =
+                                                                isHoliday ?HolidayStatusCode: PresenceStatusCode,
+                                                            TimesheetHours = isHoliday ? new int?() : 8,
+                                                            UserId = idNameDto.Id,
+                                                            UserName = idNameDto.Name
+                                                        });
+                    }
+                    dayRequestsDto.Requests.AddRange(userRequestList);
+                }
+            }
+            return dtoList;
         }
     }
 }

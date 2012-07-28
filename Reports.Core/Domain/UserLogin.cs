@@ -4,7 +4,7 @@ using Reports.Core.Utils;
 
 namespace Reports.Core.Domain
 {
-    public class UserLogin : AbstractUsedEntityWithVersion//AbstractUsedEntity
+    public class UserLogin : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants
         #endregion

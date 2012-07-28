@@ -1,0 +1,38 @@
+﻿@model Reports.Presenters.UI.ViewModel.CreateRequestModel
+@{
+    ViewBag.Title = "Создание заявки";
+}
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(false, "")
+                <div id="Error" visible="false" style="color:Red"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.RequestTypeId):
+            </td>
+            <td>
+               @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+            </td>
+        </tr>
+         <tr @if (!Model.IsUserVisible) {<text>style="display:none"</text>}>
+            <td>
+                @Html.LabelFor(m => m.UserId):
+            </td>
+            <td>
+               @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Создать"/>
+            </td>
+        </tr>
+    </table>
+}
+
+
