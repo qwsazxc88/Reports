@@ -81,6 +81,7 @@ namespace WebMvc.Controllers
          public ActionResult AbsenceEdit(AbsenceEditModel model)
          {
              CorrectCheckboxes(model);
+             CorrectDropdowns(model);
              if (!ValidateAbsenceEditModel(model))
              {
                  RequestBl.ReloadDictionariesToModel(model);
@@ -102,19 +103,27 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+         protected void CorrectDropdowns(AbsenceEditModel model)
+         {
+             if (!model.IsAbsenceTypeEditable)
+                model.AbsenceTypeId = model.AbsenceTypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+             model.DaysCount = model.DaysCountHidden;
+         }
          protected bool ValidateAbsenceEditModel(AbsenceEditModel model)
          {
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-             int dayCounts;
-             if(!Int32.TryParse(model.DaysCount, out dayCounts))
-                ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть числом.");
-             else
-             {
-                 if (dayCounts <= 0)
-                     ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
-             }
+             //int dayCounts;
+             //if(!Int32.TryParse(model.DaysCount, out dayCounts))
+             //   ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть числом.");
+             //else
+             //{
+             //    if (dayCounts <= 0)
+             //        ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
+             //}
              return ModelState.IsValid;
          }
          #endregion
@@ -143,6 +152,7 @@ namespace WebMvc.Controllers
          public ActionResult VacationEdit(VacationEditModel model)
          {
              CorrectCheckboxes(model);
+             CorrectDropdowns(model);
              if (!ValidateVacationEditModel(model))
              {
                  RequestBl.ReloadDictionariesToModel(model);
@@ -171,6 +181,14 @@ namespace WebMvc.Controllers
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
               return ModelState.IsValid;
+         }
+         protected void CorrectDropdowns(VacationEditModel model)
+         {
+             if (!model.IsVacationTypeEditable)
+                 model.VacationTypeId = model.VacationTypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+             model.DaysCount = model.DaysCountHidden;
          }
          protected void CorrectCheckboxes(ICheckBoxes model)
          {

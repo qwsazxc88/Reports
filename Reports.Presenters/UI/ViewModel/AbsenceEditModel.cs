@@ -14,6 +14,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Вид неявки")]
         public int AbsenceTypeId { get; set; }
+        public int AbsenceTypeIdHidden { get; set; }
         public IList<IdNameDto> AbsenceTypes;
         public bool IsAbsenceTypeEditable { get; set; }
         [Display(Name = "Дата начала")]
@@ -29,14 +30,16 @@ namespace Reports.Presenters.UI.ViewModel
         ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("AbsenceEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
-        [Required(ErrorMessageResourceName = "AbsenceEditModel_DaysCount_Required",
-        ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("AbsenceEditModel_DaysCount_Required", typeof(Resources))]
-        [Display(Name = "Количество дней (часов)")]
-        public string DaysCount { get; set; }
+        //[Required(ErrorMessageResourceName = "AbsenceEditModel_DaysCount_Required",
+        //ErrorMessageResourceType = typeof(Resources))]
+        //[LocalizationDisplayName("AbsenceEditModel_DaysCount_Required", typeof(Resources))]
+        [Display(Name = "Количество дней")]
+        public int? DaysCount { get; set; }
+        public int? DaysCountHidden { get; set; }
 
         [Display(Name = "Заполнение табеля")]
         public int TimesheetStatusId { get; set; }
+        public int TimesheetStatusIdHidden { get; set; }
         public IList<IdNameDto> TimesheetStatuses;
         public bool IsTimesheetStatusEditable { get; set; }
 

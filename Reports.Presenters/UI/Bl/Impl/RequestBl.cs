@@ -193,10 +193,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Заявка на неявку (id {0}) не найдена в базе данных.", id));
                 model.Version = absence.Version;
                 model.AbsenceTypeId = absence.Type.Id;
+                model.AbsenceTypeIdHidden = model.AbsenceTypeId;
                 model.BeginDate = absence.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = absence.EndDate;
                 model.TimesheetStatusId = absence.TimesheetStatus == null ? 0 : absence.TimesheetStatus.Id;
-                model.DaysCount = absence.DaysCount.ToString();
+                model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+                model.DaysCount = absence.DaysCount;
+                model.DaysCountHidden = model.DaysCount;
                 model.CreatorLogin = absence.Creator.Login;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
@@ -328,7 +331,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = absence.Creator.Login;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
-                model.DaysCount = absence.DaysCount.ToString();
+                model.DaysCount = absence.DaysCount;
+                model.DaysCountHidden = model.DaysCount;
             }
         }
         public bool SaveAbsenceEditModel(AbsenceEditModel model, out string error)
@@ -353,7 +357,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         CreateDate = DateTime.Now,
                         Creator = UserDao.Load(current.Id),
                         EndDate = model.EndDate.Value,
-                        DaysCount = Int32.Parse(model.DaysCount),
+                        DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
                         //Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
@@ -387,8 +391,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         absence.DeleteDate = DateTime.Now;
                         AbsenceDao.SaveAndFlush(absence);
-                        model.TimesheetStatusId = absence.TimesheetStatus == null? 0:absence.TimesheetStatus.Id;
-                        model.AbsenceTypeId = absence.Type.Id;
+                        //model.TimesheetStatusId = absence.TimesheetStatus == null? 0:absence.TimesheetStatus.Id;
+                        //model.AbsenceTypeId = absence.Type.Id;
                         model.IsDelete = false;
                     }
                     else
@@ -418,7 +422,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             absence.BeginDate = model.BeginDate.Value;
                             absence.EndDate = model.EndDate.Value;
-                            absence.DaysCount = Int32.Parse(model.DaysCount);
+                            absence.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                             absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
                         }
                         AbsenceDao.SaveAndFlush(absence);
@@ -426,7 +430,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.DocumentNumber = absence.Number.ToString();
                 model.Version = absence.Version;
-                model.DaysCount = absence.DaysCount.ToString();
+                model.DaysCount = absence.DaysCount;
                 model.CreatorLogin = absence.Creator.Login;
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 SetFlagsState(absence.Id, user, absence, model);
@@ -446,6 +450,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Absence);
                 model.TimesheetStatuses = GetTimesheetStatusesForAbsence();
                 model.AbsenceTypes = GetAbsenceTypes(false);
+                model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+                model.AbsenceTypeIdHidden = model.AbsenceTypeId;
+                model.DaysCountHidden = model.DaysCount;
             }
         }
         #endregion
@@ -562,10 +569,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Заявка на отпуск (id {0}) не найдена в базе данных.",id));
                 model.Version = vacation.Version;
                 model.VacationTypeId = vacation.Type.Id;
+                model.VacationTypeIdHidden = model.VacationTypeId;
                 model.BeginDate = vacation.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = vacation.EndDate;
                 model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
+                model.TimesheetStatusIdHidden = model.TimesheetStatusId; 
                 model.DaysCount = vacation.DaysCount;
+                model.DaysCountHidden = model.DaysCount;
                 model.CreatorLogin = vacation.Creator.Login;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
@@ -595,7 +605,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 CreateDate = DateTime.Now,
                                                 Creator = UserDao.Load(current.Id),
                                                 EndDate = model.EndDate.Value,
-                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days,
+                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
@@ -631,8 +641,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         vacation.DeleteDate = DateTime.Now;
                         VacationDao.SaveAndFlush(vacation);
                         model.IsDelete = false;
-                        model.VacationTypeId = vacation.Type.Id;
-                        model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
+                        //model.VacationTypeId = vacation.Type.Id;
+                        //model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
                     }
                     else
                     {
@@ -671,7 +681,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             vacation.BeginDate = model.BeginDate.Value;
                             vacation.EndDate = model.EndDate.Value;
-                            vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days;
+                            vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1;
                             vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
                         }
                         VacationDao.SaveAndFlush(vacation);
@@ -698,6 +708,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Vacation);
                 model.TimesheetStatuses = GetTimesheetStatusesForVacation();
                 model.VacationTypes = GetVacationTypes(false);
+                model.VacationTypeIdHidden = model.VacationTypeId;
+                model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+                model.DaysCountHidden = model.DaysCount;
             }
         }
         public bool CheckUserRights(User user, IUser current)
@@ -739,6 +752,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 model.DaysCount = vacation.DaysCount;
+                model.DaysCountHidden = model.DaysCount;
             }
         }
         protected void SetFlagsState(VacationEditModel model,bool state)

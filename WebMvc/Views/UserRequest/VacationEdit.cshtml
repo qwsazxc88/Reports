@@ -28,6 +28,9 @@
             <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
             <input type="hidden" id="IsVacationTypeEditable" name="IsVacationTypeEditable" value="@Model.IsVacationTypeEditable" />
             <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
+            <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
+            <input type="hidden" id="VacationTypeIdHidden" name="VacationTypeIdHidden" value="@Model.VacationTypeIdHidden" />
+            <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             @Html.LabelFor(m => m.VacationTypeId):
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name"), Model.IsVacationTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>

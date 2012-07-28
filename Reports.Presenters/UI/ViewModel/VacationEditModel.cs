@@ -14,6 +14,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Вид отпуска")]
         public int VacationTypeId { get; set; }
+        public int VacationTypeIdHidden { get; set; }
         public IList<IdNameDto> VacationTypes;
         public bool IsVacationTypeEditable { get; set; }
         [Display(Name = "Дата начала отпуска")]
@@ -31,9 +32,11 @@ namespace Reports.Presenters.UI.ViewModel
         public DateTime? EndDate { get; set; }
         [Display(Name = "Длительность отпуска (календарных дней)")]
         public int? DaysCount { get; set; }
+        public int? DaysCountHidden { get; set; }
 
         [Display(Name = "Заполнение табеля")]
         public int TimesheetStatusId { get; set; }
+        public int TimesheetStatusIdHidden { get; set; }
         public IList<IdNameDto> TimesheetStatuses;
         public bool IsTimesheetStatusEditable { get; set; }
 
