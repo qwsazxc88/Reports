@@ -15,7 +15,7 @@
         </td>
     </tr>*@
     <tr>
-        <td>
+        <td colspan="4">
             @Html.HiddenFor(m => m.UserId)
             @*@Html.HiddenFor(m => m.ViewHeader)
             @Html.HiddenFor(m => m.ShowNew)
@@ -27,43 +27,55 @@
         </td>
     </tr>
     <tr>
-        <td>
+        <td style="width:200px">
             @Html.LabelFor(m => m.DepartmentId):
-            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) 
         </td>
         <td>
+            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) 
+        </td>
+        <td style="width:116px">
             @Html.LabelFor(m => m.PositionId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
     <tr>
         <td>
             @Html.LabelFor(m => m.VacationTypeId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
         </td>
         <td>
             @Html.LabelFor(m => m.RequestStatusId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
     </tr>
      <tr>
         <td>
             @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
             @Html.EditorFor(model => model.BeginDate) 
         </td>
         <td>
             @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
             @Html.EditorFor(model => model.EndDate) 
          </td>
     </tr>
     <tr>
-      <td colspan="2">
+      <td colspan="4">
         <input type="submit" value="Применить"/>
         <input type="button" value="Сбросить" onclick="resetFilter();"/>
       </td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="4">
          @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
          {@Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })}
          else
@@ -71,7 +83,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="4">
             <table class="grid" style="width:100%">
                 <tr>
                     <th>Название документа</th>

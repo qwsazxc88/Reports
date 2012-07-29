@@ -12,7 +12,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int UserId { get; set; }
 
 
-        [Display(Name = "Вид неявки")]
+        [Display(Name = "Вид невыхода")]
         public int AbsenceTypeId { get; set; }
         public int AbsenceTypeIdHidden { get; set; }
         public IList<IdNameDto> AbsenceTypes;
@@ -33,7 +33,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Required(ErrorMessageResourceName = "AbsenceEditModel_DaysCount_Required",
         //ErrorMessageResourceType = typeof(Resources))]
         //[LocalizationDisplayName("AbsenceEditModel_DaysCount_Required", typeof(Resources))]
-        [Display(Name = "Количество дней")]
+        [Display(Name = "Количество календарных дней")]
         public int? DaysCount { get; set; }
         public int? DaysCountHidden { get; set; }
 

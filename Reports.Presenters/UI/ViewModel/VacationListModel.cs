@@ -19,9 +19,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int VacationTypeId { get; set; }
         public IList<IdNameDto> VacationTypes;
 
-        [Display(Name = "Дата начало отпуска")]
+        [Display(Name = "Дата начала")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания отпуска")]
+        [Display(Name = "Дата окончания")]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]

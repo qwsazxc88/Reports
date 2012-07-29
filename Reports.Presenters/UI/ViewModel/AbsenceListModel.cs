@@ -15,13 +15,13 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Должность")]
         public int PositionId { get; set; }
         public IList<IdNameDto> Positions;
-        [Display(Name = "Вид неявки")]
+        [Display(Name = "Вид невыхода")]
         public int AbsenceTypeId { get; set; }
         public IList<IdNameDto> AbsenceTypes;
 
-        [Display(Name = "Дата начало неявки")]
+        [Display(Name = "Дата начала")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания неявки")]
+        [Display(Name = "Дата окончания")]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]

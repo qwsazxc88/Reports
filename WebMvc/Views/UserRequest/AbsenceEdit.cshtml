@@ -1,6 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.AbsenceEditModel
 @{
-    ViewBag.Title = "Редактирование неявки";
+    ViewBag.Title = "Редактирование невыхода";
 }
 
 @using (Html.BeginForm())
@@ -22,7 +22,7 @@
      @if (Model.IsDeleted)
     { 
         <tr>
-            <td style="color:Red">Заявка удалена</td>
+            <td colspan="2" style="color:Red">Заявка удалена</td>
         </tr>
     }
     <tr>
@@ -38,12 +38,16 @@
             <input type="hidden" id="AbsenceTypeIdHidden" name="AbsenceTypeIdHidden" value="@Model.AbsenceTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             @Html.LabelFor(m => m.AbsenceTypeId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name"), Model.IsAbsenceTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>
-        <td>
+        <td style="width:210px">
             @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
             @if (Model.IsAbsenceTypeEditable)
             {
                 @Html.EditorFor(model => model.BeginDate) 
@@ -58,6 +62,8 @@
      <tr>
         <td>
             @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
             @if (Model.IsAbsenceTypeEditable)
             {
                 @Html.EditorFor(model => model.EndDate)
@@ -72,6 +78,8 @@
     <tr>
         <td>
             @Html.LabelFor(m => m.DaysCount):
+        </td>
+        <td>
             @Html.DisplayFor(model => model.DaysCount) 
             @*@Html.TextBoxFor(model => model.DaysCount,(object)new { @readonly = "readonly" })  *@
          </td>
@@ -79,6 +87,8 @@
     <tr>
         <td>
             @Html.LabelFor(m => m.TimesheetStatusId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
@@ -132,7 +142,7 @@
             </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="2">
             @Html.LabelFor(m => m.CreatorLogin):
             @Html.DisplayFor(model => model.CreatorLogin) 
          </td>

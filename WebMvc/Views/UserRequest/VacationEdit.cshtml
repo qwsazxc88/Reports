@@ -22,7 +22,7 @@
     @if (Model.IsDeleted)
     { 
         <tr>
-            <td style="color:Red">Заявка удалена</td>
+            <td colspan="2" style="color:Red;">Заявка удалена</td>
         </tr>
     }
     <tr>
@@ -38,12 +38,16 @@
             <input type="hidden" id="VacationTypeIdHidden" name="VacationTypeIdHidden" value="@Model.VacationTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             @Html.LabelFor(m => m.VacationTypeId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name"), Model.IsVacationTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>
-        <td>
+        <td style="width:300px">
             @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
             @if (Model.IsVacationTypeEditable)
             {
                 @Html.EditorFor(model => model.BeginDate) 
@@ -58,6 +62,8 @@
      <tr>
         <td>
             @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
             @if (Model.IsVacationTypeEditable)
             {
                 @Html.EditorFor(model => model.EndDate)
@@ -72,12 +78,16 @@
     <tr>
         <td>
             @Html.LabelFor(m => m.DaysCount):
+        </td>
+        <td>
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
     <tr>
         <td>
             @Html.LabelFor(m => m.TimesheetStatusId):
+        </td>
+        <td>
             @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
@@ -131,8 +141,10 @@
             </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="2">
             @Html.LabelFor(m => m.CreatorLogin):
+       @* </td>
+        <td>*@
             @Html.DisplayFor(model => model.CreatorLogin) 
          </td>
     </tr>
