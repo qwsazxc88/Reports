@@ -58,7 +58,34 @@ INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10024,'Отсутств
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (56,'Прогул, простой по вине работника #1807',1)	
-	
+
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (26,'Доплата по больничным листам #1402',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (22,'Оплата БЛ по травме на производстве #1403',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (25,'Оплата больничных листов за счет работодателя #1426',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (21,'Оплата больничных листов #1469',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805','Нулевая сумма',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (26,'Доплата по больничным листам #1402','Доплата до среднего заработка ФСС',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (22,'Оплата БЛ по травме на производстве #1403','По среднему заработку ФСС',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'Оплата больничных листов за счет работодателя #1426','По среднему заработку ФСС',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (21,'Оплата больничных листов #1469','По среднему заработку ФСС',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804','Нулевая сумма',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10023,'Отсутствие по болезни #1803','Нулевая сумма',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (55,'Отсутствие по невыясненной причине #1806','Нулевая сумма',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
+INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
+
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (60,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (80,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (100,1)
+
+
 
 set identity_insert  [TimesheetStatus] on
 INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (1,1,'Я','Явка')

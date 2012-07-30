@@ -164,6 +164,11 @@
     <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
+    <Compile Include="Domain\Sicklist.cs" />
+    <Compile Include="Domain\SicklistComment.cs" />
+    <Compile Include="Domain\SicklistPaymentPercent.cs" />
+    <Compile Include="Domain\SicklistPaymentType.cs" />
+    <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\Timesheet.cs" />
     <Compile Include="Domain\TimesheetDay.cs" />
     <Compile Include="Domain\TimesheetStatus.cs" />
@@ -331,6 +336,21 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Sicklist.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
