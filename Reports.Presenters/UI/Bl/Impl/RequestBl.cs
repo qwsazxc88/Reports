@@ -34,6 +34,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAbsenceDao absenceDao;
         protected IAbsenceCommentDao absenceCommentDao;
 
+        protected ISicklistTypeDao sicklistTypeDao;
+        protected ISicklistPaymentRestrictTypeDao sicklistPaymentRestrictTypeDao;
+        protected ISicklistPaymentPercentDao sicklistPaymentPercentDao;
+        protected ISicklistDao sicklistDao;
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -95,6 +100,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { absenceCommentDao = value; }
         }
 
+        public ISicklistTypeDao SicklistTypeDao
+        {
+            get { return Validate.Dependency(sicklistTypeDao); }
+            set { sicklistTypeDao = value; }
+        }
+        public ISicklistPaymentRestrictTypeDao SicklistPaymentRestrictTypeDao
+        {
+            get { return Validate.Dependency(sicklistPaymentRestrictTypeDao); }
+            set { sicklistPaymentRestrictTypeDao = value; }
+        }
+        public ISicklistPaymentPercentDao SicklistPaymentPercentDao
+        {
+            get { return Validate.Dependency(sicklistPaymentPercentDao); }
+            set { sicklistPaymentPercentDao = value; }
+        }
+        public ISicklistDao SicklistDao
+        {
+            get { return Validate.Dependency(sicklistDao); }
+            set { sicklistDao = value; }
+        }
+
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
             if(userId == null)
@@ -126,6 +152,57 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new List<IdNameDto>{new IdNameDto((int)RequestTypeEnum.Vacation,"Заявка на отпуск"),
                                        new IdNameDto((int)RequestTypeEnum.Absence,"Заявка на неявку")};
         }
+        #region Sicklist
+        public SicklistListModel GetSicklistListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            SicklistListModel model = new SicklistListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model,user);
+            return model;
+        }
+        protected List<IdNameDto> GetSicklisTypes(bool addAll)
+        {
+            var typeList = SicklistTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        protected List<IdNameDto> GetSicklisPaymentPercentTypes(bool addAll)
+        {
+            var typeList = SicklistPaymentPercentDao.LoadAll().ToList().ConvertAll(x => new IdNameDto(x.Id, x.SicklistPercent.ToString()+"%"));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        public void SetSicklistListModel(SicklistListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            SetDocumentsToModel(model, user);
+        }
+        protected void SetDictionariesToModel(SicklistListModel model, User user)
+        {
+            model.Departments = GetDepartments(user);
+            model.Types = GetSicklisTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+            model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true);
+        }
+        public void SetDocumentsToModel(SicklistListModel model, User user)
+        {
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = SicklistDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.PositionId,
+                model.TypeId,
+                model.StatusId,
+                model.PaymentPercentType);
+        }
+        #endregion
         #region Absence
         public AbsenceListModel GetAbsenceListModel()
         {

@@ -203,6 +203,19 @@ namespace Reports.Core
             Register(Component.For(typeof(IAbsenceCommentDao)).
                  ImplementedBy(typeof(AbsenceCommentDao)).
                  LifeStyle.Is(type));
+
+            Register(Component.For(typeof(ISicklistTypeDao)).
+                ImplementedBy(typeof(SicklistTypeDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(ISicklistPaymentRestrictTypeDao)).
+                ImplementedBy(typeof(SicklistPaymentRestrictTypeDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(ISicklistPaymentPercentDao)).
+               ImplementedBy(typeof(SicklistPaymentPercentDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(ISicklistDao)).
+              ImplementedBy(typeof(SicklistDao)).
+              LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))

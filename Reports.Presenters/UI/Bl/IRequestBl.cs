@@ -22,5 +22,8 @@ namespace Reports.Presenters.UI.Bl
         AbsenceEditModel GetAbsenceEditModel(int id, int userId);
         void ReloadDictionariesToModel(AbsenceEditModel model);
         bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
+
+        SicklistListModel GetSicklistListModel();
+        void SetSicklistListModel(SicklistListModel model);
     }
 }

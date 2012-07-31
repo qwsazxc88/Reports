@@ -5,6 +5,6 @@ namespace Reports.Core.Dao
 {
     public interface IInformationDao : IDao<Information>
     {
-        IList<Information> LoadAllSorted();
+        //IList<Information> LoadAllSorted();
     }
 }

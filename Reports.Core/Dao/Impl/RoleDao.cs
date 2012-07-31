@@ -12,11 +12,11 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public IList<Role> LoadAllSorted()
-        {
-            ICriteria criteria = Session.CreateCriteria(typeof(Role));
-            criteria.AddOrder(new Order("Name", true));
-            return criteria.List<Role>();
-        }
+        //public IList<Role> LoadAllSorted()
+        //{
+        //    ICriteria criteria = Session.CreateCriteria(typeof(Role));
+        //    criteria.AddOrder(new Order("Name", true));
+        //    return criteria.List<Role>();
+        //}
     }
 }

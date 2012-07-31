@@ -5,6 +5,6 @@ namespace Reports.Core.Dao
 {
     public interface IRoleDao : IDao<Role>
     {
-        IList<Role> LoadAllSorted();
+        //IList<Role> LoadAllSorted();
     }
 }

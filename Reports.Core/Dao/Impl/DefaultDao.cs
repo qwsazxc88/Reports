@@ -5,6 +5,7 @@ using System.Reflection;
 using log4net;
 using NHibernate;
 using System.Collections;
+using NHibernate.Criterion;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
@@ -141,6 +142,18 @@ namespace Reports.Core.Dao.Impl
             if (int.TryParse(id,NumberStyles.Integer,CultureInfo.InvariantCulture, out entityId))
                 return FindById(entityId);
             return default(TEntity);
+        }
+        public IList<TEntity> LoadAll()
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(TEntity));
+            //criteria.AddOrder(new Order("Name", true));
+            return criteria.List<TEntity>();
+        }
+        public IList<TEntity> LoadAllSorted()
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(TEntity));
+            criteria.AddOrder(new Order("Name", true));
+            return criteria.List<TEntity>();
         }
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{

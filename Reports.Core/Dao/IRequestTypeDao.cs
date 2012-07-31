@@ -5,6 +5,6 @@ namespace Reports.Core.Dao
 {
     public interface IRequestStatusDao : IDao<RequestStatus>
     {
-        IList<RequestStatus> LoadAllSorted();
+        //IList<RequestStatus> LoadAllSorted();
     }
 }

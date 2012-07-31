@@ -52,6 +52,12 @@ alter table DocumentComment  drop constraint FK_DocumentComment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_Document]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_Document
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SicklistComment_User]') AND parent_object_id = OBJECT_ID('SicklistComment'))
+alter table SicklistComment  drop constraint FK_SicklistComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SicklistComment_Sicklist]') AND parent_object_id = OBJECT_ID('SicklistComment'))
+alter table SicklistComment  drop constraint FK_SicklistComment_Sicklist
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_VacationType]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_VacationType
 
@@ -82,26 +88,14 @@ alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
 alter table Document  drop constraint FK_Document_User
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Timesheet_User]') AND parent_object_id = OBJECT_ID('Timesheet'))
-alter table Timesheet  drop constraint FK_Timesheet_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
-alter table UserLogin  drop constraint FK_UserLogin_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SicklistComment_User]') AND parent_object_id = OBJECT_ID('SicklistComment'))
-alter table SicklistComment  drop constraint FK_SicklistComment_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SicklistComment_Sicklist]') AND parent_object_id = OBJECT_ID('SicklistComment'))
-alter table SicklistComment  drop constraint FK_SicklistComment_Sicklist
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistType]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_SicklistType
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistPaymentType]') AND parent_object_id = OBJECT_ID('Sicklist'))
-alter table Sicklist  drop constraint FK_Sicklist_SicklistPaymentType
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistPaymentPercent]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_SicklistPaymentPercent
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistPaymentRestrictType]') AND parent_object_id = OBJECT_ID('Sicklist'))
+alter table Sicklist  drop constraint FK_Sicklist_SicklistPaymentRestrictType
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_User]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_User
@@ -111,6 +105,12 @@ alter table Sicklist  drop constraint FK_Sicklist_CreatorUser
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Timesheet_User]') AND parent_object_id = OBJECT_ID('Timesheet'))
+alter table Timesheet  drop constraint FK_Timesheet_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
+alter table UserLogin  drop constraint FK_UserLogin_User
 
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
@@ -128,22 +128,22 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
 if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
-if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentType
+if exists (select * from dbo.sysobjects where id = object_id(N'SicklistComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
+if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentRestrictType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentRestrictType
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistType
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceType
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
-if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
-if exists (select * from dbo.sysobjects where id = object_id(N'SicklistComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistComment
-if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
+if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
 
 create table Absence (
  Id INT IDENTITY NOT NULL,
@@ -287,13 +287,14 @@ create table DBVersion (
   Version NVARCHAR(20) not null,
   constraint PK_DBVersion  primary key (Id)
 )
-create table SicklistPaymentType (
+create table SicklistComment (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
-  PaymentMethod NVARCHAR(128) null,
-  constraint PK_SicklistPaymentType  primary key (Id)
+  UserId INT not null,
+  SicklistId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_SicklistComment  primary key (Id)
 )
 create table Vacation (
  Id INT IDENTITY NOT NULL,
@@ -319,6 +320,12 @@ create table EmployeeDocumentType (
   Version INT not null,
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
+)
+create table SicklistPaymentRestrictType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) null,
+  constraint PK_SicklistPaymentRestrictType  primary key (Id)
 )
 create table SicklistType (
  Id INT IDENTITY NOT NULL,
@@ -365,6 +372,34 @@ create table Document (
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
 )
+create table Sicklist (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  BeginDate DATETIME not null,
+  EndDate DATETIME not null,
+  DaysCount INT not null,
+  Number INT not null,
+  TypeId INT not null,
+  PaymentPercentId INT not null,
+  PaymentRestrictTypeId INT null,
+  PaymentBeginDate DATETIME not null,
+  Experience INT not null,
+  PaymentLimit INT not null,
+  PaymentDecreaseDate DATETIME not null,
+  IsPreviousPaymentCounted BIT not null,
+  Is2010Calculate BIT not null,
+  IsAddToFullPayment BIT not null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_Sicklist  primary key (Id)
+)
 create table Settings (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -401,12 +436,6 @@ create table UserLogin (
   Date DATETIME not null,
   constraint PK_UserLogin  primary key (Id)
 )
-create table SicklistPaymentPercent (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  SicklistPercent INT null,
-  constraint PK_SicklistPaymentPercent  primary key (Id)
-)
 create table RequestNextNumber (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -421,42 +450,11 @@ create table VacationType (
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
 )
-create table SicklistComment (
+create table SicklistPaymentPercent (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  UserId INT not null,
-  SicklistId INT not null,
-  DateCreated DATETIME not null,
-  Comment NVARCHAR(256) not null,
-  constraint PK_SicklistComment  primary key (Id)
-)
-create table Sicklist (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  CreateDate DATETIME not null,
-  BeginDate DATETIME not null,
-  EndDate DATETIME not null,
-  DaysCount INT not null,
-  Number INT not null,
-  TypeId INT not null,
-  PaymentTypeId INT not null,
-  PaymentPercentId INT not null,
-  PaymentBeginDate DATETIME not null,
-  Experience INT not null,
-  PaymentLimit INT not null,
-  PaymentDecreaseDate DATETIME not null,
-  IsPreviousPaymentCounted BIT not null,
-  Is2010Calculate BIT not null,
-  IsAddToFullPayment BIT not null,
-  UserId INT not null,
-  CreatorId INT not null,
-  UserDateAccept DATETIME null,
-  ManagerDateAccept DATETIME null,
-  PersonnelManagerDateAccept DATETIME null,
-  SendTo1C DATETIME null,
-  DeleteDate DATETIME null,
-  TimesheetStatusId INT null,
-  constraint PK_Sicklist  primary key (Id)
+  SicklistPercent INT null,
+  constraint PK_SicklistPaymentPercent  primary key (Id)
 )
 create index Absence_AbsenceType on Absence (TypeId)
 create index IX_Absence_User_Id on Absence (UserId)
@@ -494,6 +492,10 @@ create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
 alter table DocumentComment add constraint FK_DocumentComment_Document foreign key (DocumentId) references Document
+create index IX_SicklistComment_User_Id on SicklistComment (UserId)
+create index IX_SicklistComment_Sicklist_Id on SicklistComment (SicklistId)
+alter table SicklistComment add constraint FK_SicklistComment_User foreign key (UserId) references [Users]
+alter table SicklistComment add constraint FK_SicklistComment_Sicklist foreign key (SicklistId) references Sicklist
 create index Vacation_VacationType on Vacation (TypeId)
 create index IX_Vacation_User_Id on Vacation (UserId)
 create index IX_Vacation_CreatorUser_Id on Vacation (CreatorId)
@@ -514,25 +516,21 @@ create index IX_Document_User_Id on Document (UserId)
 alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
 alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
-create index IX_Timesheet_User_Id on Timesheet (UserId)
-alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
-alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
-create index IX_SicklistComment_User_Id on SicklistComment (UserId)
-create index IX_SicklistComment_Sicklist_Id on SicklistComment (SicklistId)
-alter table SicklistComment add constraint FK_SicklistComment_User foreign key (UserId) references [Users]
-alter table SicklistComment add constraint FK_SicklistComment_Sicklist foreign key (SicklistId) references Sicklist
 create index Sicklist_SicklistType on Sicklist (TypeId)
-create index Sicklist_SicklistPaymentType on Sicklist (PaymentTypeId)
 create index Sicklist_SicklistPaymentPercent on Sicklist (PaymentPercentId)
+create index Sicklist_SicklistPaymentRestrictType on Sicklist (PaymentRestrictTypeId)
 create index IX_Sicklist_User_Id on Sicklist (UserId)
 create index IX_Sicklist_CreatorUser_Id on Sicklist (CreatorId)
 create index Sicklist_TimesheetStatus on Sicklist (TimesheetStatusId)
 alter table Sicklist add constraint FK_Sicklist_SicklistType foreign key (TypeId) references SicklistType
-alter table Sicklist add constraint FK_Sicklist_SicklistPaymentType foreign key (PaymentTypeId) references SicklistPaymentType
 alter table Sicklist add constraint FK_Sicklist_SicklistPaymentPercent foreign key (PaymentPercentId) references SicklistPaymentPercent
+alter table Sicklist add constraint FK_Sicklist_SicklistPaymentRestrictType foreign key (PaymentRestrictTypeId) references SicklistPaymentRestrictType
 alter table Sicklist add constraint FK_Sicklist_User foreign key (UserId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_CreatorUser foreign key (CreatorId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_Timesheet_User_Id on Timesheet (UserId)
+alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
+alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
@@ -606,16 +604,19 @@ INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
 
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805','Нулевая сумма',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (26,'Доплата по больничным листам #1402','Доплата до среднего заработка ФСС',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (22,'Оплата БЛ по травме на производстве #1403','По среднему заработку ФСС',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'Оплата больничных листов за счет работодателя #1426','По среднему заработку ФСС',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (21,'Оплата больничных листов #1469','По среднему заработку ФСС',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804','Нулевая сумма',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10023,'Отсутствие по болезни #1803','Нулевая сумма',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (55,'Отсутствие по невыясненной причине #1806','Нулевая сумма',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
-INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По ММОТ',1)
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По закону ФСС',1)
+
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (26,'Доплата по больничным листам #1402','Доплата до среднего заработка ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (22,'Оплата БЛ по травме на производстве #1403','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'Оплата больничных листов за счет работодателя #1426','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (21,'Оплата больничных листов #1469','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10023,'Отсутствие по болезни #1803','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (55,'Отсутствие по невыясненной причине #1806','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
 
 INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (60,1)
 INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (80,1)

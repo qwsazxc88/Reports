@@ -24,12 +24,12 @@ namespace Reports.Core.Dao.Impl
                               .UniqueResult() > 0;
         }
 
-        public IList<EmployeeDocumentType> LoadAllSorted()
-        {
-            ICriteria criteria = Session.CreateCriteria(typeof(EmployeeDocumentType));
-            criteria.AddOrder(new Order(NameFieldName, true));
-            return criteria.List<EmployeeDocumentType>();
-        }
+        //public IList<EmployeeDocumentType> LoadAllSorted()
+        //{
+        //    ICriteria criteria = Session.CreateCriteria(typeof(EmployeeDocumentType));
+        //    criteria.AddOrder(new Order(NameFieldName, true));
+        //    return criteria.List<EmployeeDocumentType>();
+        //}
         public IList<EmployeeDocumentSubType> LoadAllSubtype()
         {
             ICriteria criteria = Session.CreateCriteria(typeof(EmployeeDocumentSubType));

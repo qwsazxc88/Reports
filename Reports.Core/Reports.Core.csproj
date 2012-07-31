@@ -115,6 +115,10 @@
     <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
+    <Compile Include="Dao\Impl\SicklistDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
+    <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
@@ -130,6 +134,10 @@
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
+    <Compile Include="Dao\ISicklistDao.cs" />
+    <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
+    <Compile Include="Dao\ISicklistTypeDao.cs" />
     <Compile Include="Dao\ITimesheetDao.cs" />
     <Compile Include="Dao\ITimesheetDayDao.cs" />
     <Compile Include="Dao\ITimesheetStatusDao.cs" />
@@ -166,8 +174,10 @@
     <Compile Include="Domain\Settings.cs" />
     <Compile Include="Domain\Sicklist.cs" />
     <Compile Include="Domain\SicklistComment.cs" />
-    <Compile Include="Domain\SicklistPaymentPercent.cs" />
-    <Compile Include="Domain\SicklistPaymentType.cs" />
+    <Compile Include="Domain\SicklistPaymentPercent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\Timesheet.cs" />
     <Compile Include="Domain\TimesheetDay.cs" />
@@ -225,6 +235,7 @@
     <Compile Include="Validate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
     <EmbeddedResource Include="Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -341,16 +352,13 @@
     <EmbeddedResource Include="Domain\SicklistType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\SicklistPaymentType.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Domain\Sicklist.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\SicklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentRestrictType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

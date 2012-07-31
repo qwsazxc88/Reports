@@ -21,11 +21,13 @@ namespace Reports.Core.Domain
        
         
         public virtual SicklistType Type { get; set; }
-        public virtual SicklistPaymentType PaymentType { get; set; }
+        public virtual SicklistPaymentPercent PaymentPercent { get; set; }
+        //public virtual SicklistPaymentType PaymentType { get; set; }
+
         
         public virtual DateTime PaymentBeginDate { get; set; }
         public virtual int Experience { get; set; }
-        public virtual SicklistPaymentPercent PaymentPercent { get; set; }
+        public virtual SicklistPaymentRestrictType RestrictType { get; set; }
         public virtual int PaymentLimit { get; set; }
         public virtual DateTime? PaymentDecreaseDate { get; set; }
         public virtual bool IsPreviousPaymentCounted { get; set; }

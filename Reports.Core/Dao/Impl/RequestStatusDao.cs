@@ -15,11 +15,11 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
-        public IList<RequestStatus> LoadAllSorted()
-        {
-            ICriteria criteria = Session.CreateCriteria(typeof (RequestStatus));
-            criteria.AddOrder(new Order(NameFieldName, true));
-            return criteria.List<RequestStatus>();
-        }
+        //public IList<RequestStatus> LoadAllSorted()
+        //{
+        //    ICriteria criteria = Session.CreateCriteria(typeof (RequestStatus));
+        //    criteria.AddOrder(new Order(NameFieldName, true));
+        //    return criteria.List<RequestStatus>();
+        //}
     }
 }

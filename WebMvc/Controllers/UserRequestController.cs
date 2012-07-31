@@ -57,6 +57,21 @@ namespace WebMvc.Controllers
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+
+         #region Sicklist
+         [HttpGet]
+         public ActionResult SicklistList()
+         {
+             SicklistListModel model = RequestBl.GetSicklistListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult SicklistList(SicklistListModel model)
+         {
+             RequestBl.SetSicklistListModel(model);
+             return View(model);
+         }
+         #endregion
          #region Absence
          [HttpGet]
          public ActionResult AbsenceList()

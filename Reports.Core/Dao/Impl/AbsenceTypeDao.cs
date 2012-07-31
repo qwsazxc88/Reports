@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using NHibernate;
-using NHibernate.Criterion;
-using Reports.Core.Domain;
+﻿using Reports.Core.Domain;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -13,15 +10,11 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
-        #region IAbsenceTypeDao Members
-
-        public IList<AbsenceType> LoadAllSorted()
-        {
-            ICriteria criteria = Session.CreateCriteria(typeof (AbsenceType));
-            criteria.AddOrder(new Order("Name", true));
-            return criteria.List<AbsenceType>();
-        }
-
-        #endregion
+        //public IList<AbsenceType> LoadAllSorted()
+        //{
+        //    ICriteria criteria = Session.CreateCriteria(typeof (AbsenceType));
+        //    criteria.AddOrder(new Order("Name", true));
+        //    return criteria.List<AbsenceType>();
+        //}
     }
 }

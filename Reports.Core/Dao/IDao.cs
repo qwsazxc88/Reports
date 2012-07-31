@@ -25,6 +25,8 @@ namespace Reports.Core.Dao
     {
         TEntity Load(string id);
         TEntity FindById(string id);
+        IList<TEntity> LoadAll();
+        IList<TEntity> LoadAllSorted();
 //        bool IsSameNameEntityExists(Type type,int entityId, string name);
 //        ContentManagementRole GetUserRoles(User user, AbstractSecuredEntity item, Category cat);
     }
