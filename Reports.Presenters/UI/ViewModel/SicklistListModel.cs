@@ -20,7 +20,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Процент оплаты заработка")]
         public int PaymentPercentType { get; set; }
-        public IList<IdNameDto> PaymentPercentTypes;
+        public IList<IdNameDtoSort> PaymentPercentTypes;
 
         //[Display(Name = "Дата начала")]
         //public DateTime? BeginDate { get; set; }

@@ -216,6 +216,12 @@ namespace Reports.Core
             Register(Component.For(typeof(ISicklistDao)).
               ImplementedBy(typeof(SicklistDao)).
               LifeStyle.Is(type));
+            Register(Component.For(typeof(IRequestAttachmentDao)).
+             ImplementedBy(typeof(RequestAttachmentDao)).
+             LifeStyle.Is(type));
+            Register(Component.For(typeof(ISicklistCommentDao)).
+             ImplementedBy(typeof(SicklistCommentDao)).
+             LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))

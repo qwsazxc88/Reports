@@ -84,9 +84,9 @@ INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По зак
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
 
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (60,1)
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (80,1)
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (100,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (60,3,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (80,2,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (100,1,1)
 
 
 

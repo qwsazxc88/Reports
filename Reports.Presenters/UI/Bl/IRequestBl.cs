@@ -1,4 +1,5 @@
-﻿using Reports.Presenters.UI.ViewModel;
+﻿using Reports.Core.Dto;
+using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -25,5 +26,10 @@ namespace Reports.Presenters.UI.Bl
 
         SicklistListModel GetSicklistListModel();
         void SetSicklistListModel(SicklistListModel model);
+        SicklistEditModel GetSicklistEditModel(int id, int userId);
+        void ReloadDictionariesToModel(SicklistEditModel model);
+        bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
+
+        AttachmentModel GetFileContext(int id, int typeId);
     }
 }

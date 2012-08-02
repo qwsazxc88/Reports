@@ -276,4 +276,10 @@
   <data name="AbsenceEditModel_EndDate_Required" xml:space="preserve">
     <value>Дата окончания - обязательное поле</value>
   </data>
+  <data name="SicklistEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала больничного - обязательное поле</value>
+  </data>
+  <data name="SicklistEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания больничного - обязательное поле</value>
+  </data>
 </root>

@@ -111,10 +111,12 @@
     <Compile Include="Dao\IInformationDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
+    <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
     <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
+    <Compile Include="Dao\Impl\SicklistCommentDao.cs" />
     <Compile Include="Dao\Impl\SicklistDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
@@ -130,10 +132,12 @@
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
+    <Compile Include="Dao\IRequestAttachmentDao.cs" />
     <Compile Include="Dao\IRequestNextNumberDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
+    <Compile Include="Dao\ISicklistCommentDao.cs" />
     <Compile Include="Dao\ISicklistDao.cs" />
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
@@ -168,6 +172,7 @@
     <Compile Include="Domain\Information.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
+    <Compile Include="Domain\RequestAttachment.cs" />
     <Compile Include="Domain\RequestNextNumber.cs" />
     <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
@@ -359,6 +364,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\SicklistPaymentRestrictType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestAttachment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -457,6 +457,24 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата начала больничного - обязательное поле.
+        /// </summary>
+        internal static string SicklistEditModel_BeginDate_Required {
+            get {
+                return ResourceManager.GetString("SicklistEditModel_BeginDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Дата окончания больничного - обязательное поле.
+        /// </summary>
+        internal static string SicklistEditModel_EndDate_Required {
+            get {
+                return ResourceManager.GetString("SicklistEditModel_EndDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Активный.
         /// </summary>
         internal static string StatusActive {

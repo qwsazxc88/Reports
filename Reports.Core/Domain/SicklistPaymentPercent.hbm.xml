@@ -5,5 +5,6 @@
     </id>
     <version name="Version" column= "Version"/>
     <property name="SicklistPercent" not-null="false"/>
+    <property name="SortOrder" not-null="false"/>
   </class>
 </hibernate-mapping>

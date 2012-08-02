@@ -145,6 +145,7 @@
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
     <Compile Include="UI\ViewModel\SettingsModel.cs" />
+    <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetEditModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetListModel.cs" />

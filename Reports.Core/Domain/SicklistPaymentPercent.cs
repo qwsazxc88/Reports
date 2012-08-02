@@ -10,6 +10,7 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual int SicklistPercent { get; set; }
+        public virtual int SortOrder { get; set; }
         #endregion
 
         #region Constructors

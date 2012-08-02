@@ -13,5 +13,6 @@
     {
         Vacation = 1,
         Absence = 2,
+        Sicklist = 3,
     }
 }

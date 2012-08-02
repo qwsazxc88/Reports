@@ -133,6 +133,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentRestrictType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentRestrictType
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistType
+if exists (select * from dbo.sysobjects where id = object_id(N'RequestAttachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestAttachment
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceType
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
@@ -141,9 +142,9 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
+if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
-if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
 
 create table Absence (
  Id INT IDENTITY NOT NULL,
@@ -334,6 +335,17 @@ create table SicklistType (
   Name NVARCHAR(128) null,
   constraint PK_SicklistType  primary key (Id)
 )
+create table RequestAttachment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  FileName NVARCHAR(64) not null,
+  ContextType NVARCHAR(64) not null,
+  Context VARBINARY(MAX) not null,
+  RequestId INT not null,
+  RequestType INT not null,
+  DateCreated DATETIME not null,
+  constraint PK_RequestAttachment  primary key (Id)
+)
 create table AbsenceComment (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -381,12 +393,12 @@ create table Sicklist (
   DaysCount INT not null,
   Number INT not null,
   TypeId INT not null,
-  PaymentPercentId INT not null,
+  PaymentPercentId INT null,
   PaymentRestrictTypeId INT null,
-  PaymentBeginDate DATETIME not null,
-  Experience INT not null,
-  PaymentLimit INT not null,
-  PaymentDecreaseDate DATETIME not null,
+  PaymentBeginDate DATETIME null,
+  ExperienceYears INT null,
+  ExperienceMonthes INT null,
+  PaymentDecreaseDate DATETIME null,
   IsPreviousPaymentCounted BIT not null,
   Is2010Calculate BIT not null,
   IsAddToFullPayment BIT not null,
@@ -436,6 +448,13 @@ create table UserLogin (
   Date DATETIME not null,
   constraint PK_UserLogin  primary key (Id)
 )
+create table SicklistPaymentPercent (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  SicklistPercent INT null,
+  SortOrder INT null,
+  constraint PK_SicklistPaymentPercent  primary key (Id)
+)
 create table RequestNextNumber (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -449,12 +468,6 @@ create table VacationType (
   Code INT null,
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
-)
-create table SicklistPaymentPercent (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  SicklistPercent INT null,
-  constraint PK_SicklistPaymentPercent  primary key (Id)
 )
 create index Absence_AbsenceType on Absence (TypeId)
 create index IX_Absence_User_Id on Absence (UserId)
@@ -618,9 +631,9 @@ INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По зак
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
 
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (60,1)
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (80,1)
-INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],Version) values (100,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (60,3,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (80,2,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (100,1,1)
 
 
 

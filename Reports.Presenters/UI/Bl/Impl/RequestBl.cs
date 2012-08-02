@@ -20,6 +20,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int AbsenceFirstTimesheetStatisId = 15;
         public const int AbsenceLastTimesheetStatisId = 18;
 
+        #region DAOs
         protected IDepartmentDao departmentDao;
         protected IVacationTypeDao vacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
@@ -38,6 +39,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ISicklistPaymentRestrictTypeDao sicklistPaymentRestrictTypeDao;
         protected ISicklistPaymentPercentDao sicklistPaymentPercentDao;
         protected ISicklistDao sicklistDao;
+        protected IRequestAttachmentDao requestAttachmentDao;
+        protected ISicklistCommentDao sicklistCommentDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -120,7 +123,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(sicklistDao); }
             set { sicklistDao = value; }
         }
-
+        public IRequestAttachmentDao RequestAttachmentDao
+        {
+            get { return Validate.Dependency(requestAttachmentDao); }
+            set { requestAttachmentDao = value; }
+        }
+        public ISicklistCommentDao SicklistCommentDao
+        {
+            get { return Validate.Dependency(sicklistCommentDao); }
+            set { sicklistCommentDao = value; }
+        }
+        #endregion
+        #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
             if(userId == null)
@@ -149,9 +163,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected IList<IdNameDto> GetRequestTypes()
         {
-            return new List<IdNameDto>{new IdNameDto((int)RequestTypeEnum.Vacation,"Заявка на отпуск"),
-                                       new IdNameDto((int)RequestTypeEnum.Absence,"Заявка на неявку")};
+            return new List<IdNameDto>
+                       {
+                           new IdNameDto((int) RequestTypeEnum.Vacation, "Заявка на отпуск"),
+                           new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
+                           new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный")
+                       };
         }
+        #endregion
         #region Sicklist
         public SicklistListModel GetSicklistListModel()
         {
@@ -163,18 +182,39 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model,user);
             return model;
         }
-        protected List<IdNameDto> GetSicklisTypes(bool addAll)
+        protected List<IdNameDto> GetSicklistTypes(bool addAll)
         {
             var typeList = SicklistTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
-        protected List<IdNameDto> GetSicklisPaymentPercentTypes(bool addAll)
+        protected List<IdNameDtoSort> GetSicklisPaymentPercentTypes(bool addAll,bool addNameAll)
         {
-            var typeList = SicklistPaymentPercentDao.LoadAll().ToList().ConvertAll(x => new IdNameDto(x.Id, x.SicklistPercent.ToString()+"%"));
+            List<IdNameDtoSort> typeList = SicklistPaymentPercentDao.LoadAll().ToList().
+                ConvertAll(
+                    x =>
+                    new IdNameDtoSort
+                        {
+                            Id = x.Id, 
+                            Name = x.SicklistPercent.ToString() + "%",
+                            SortOrder = x.SortOrder
+                        }).OrderBy(x => x.SortOrder).ToList();
             if (addAll)
-                typeList.Insert(0, new IdNameDto(0, SelectAll));
+                typeList.Insert(0,
+                                new IdNameDtoSort
+                                    {
+                                        Id = 0,
+                                        Name = addNameAll ? SelectAll : string.Empty,
+                                        SortOrder = -100
+                                    });
+            return typeList;
+        }
+        protected List<IdNameDto> GetSicklisPaymentRestrictTypes(bool addEmpty)
+        {
+            var typeList = SicklistPaymentRestrictTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if(addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
         public void SetSicklistListModel(SicklistListModel model)
@@ -186,11 +226,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetDictionariesToModel(SicklistListModel model, User user)
         {
             model.Departments = GetDepartments(user);
-            model.Types = GetSicklisTypes(true);
+            model.Types = GetSicklistTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
-            model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true);
-        }
+            model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
+       }
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
             UserRole role = (UserRole)user.Role.Id;
@@ -201,6 +241,358 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId,
                 model.StatusId,
                 model.PaymentPercentType);
+        }
+        public SicklistEditModel GetSicklistEditModel(int id, int userId)
+        {
+            SicklistEditModel model = new SicklistEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            SetAttachmentToModel(model, id);
+            Sicklist sicklist = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                sicklist = SicklistDao.Load(id);
+                if (sicklist == null)
+                    throw new ArgumentException(string.Format("Больничный (id {0}) не найдена в базе данных.", id));
+                model.Version = sicklist.Version;
+                model.TypeId = sicklist.Type.Id;
+                model.BeginDate = sicklist.BeginDate;//new DateTimeDto(vacation.BeginDate);//
+                model.EndDate = sicklist.EndDate;
+                model.TimesheetStatusId = sicklist.TimesheetStatus == null ? 0 : sicklist.TimesheetStatus.Id;
+                model.DaysCount = sicklist.DaysCount;
+                model.CreatorLogin = sicklist.Creator.Login;
+                model.DocumentNumber = sicklist.Number.ToString();
+                model.DateCreated = sicklist.CreateDate.ToShortDateString();
+
+                model.PaymentBeginDate = sicklist.PaymentBeginDate;
+                model.ExperienceYears = !sicklist.ExperienceYears.HasValue || sicklist.ExperienceYears.Value == 0 ? 
+                                        string.Empty:sicklist.ExperienceYears.Value.ToString();
+                model.ExperienceMonthes = !sicklist.ExperienceMonthes.HasValue || sicklist.ExperienceMonthes.Value == 0 ?
+                                        string.Empty : sicklist.ExperienceMonthes.Value.ToString();
+                model.PaymentPercentTypeId = sicklist.PaymentPercent == null ? 0 : sicklist.PaymentPercent.Id;
+                model.PaymentRestrictTypeId = sicklist.RestrictType == null ? 0 : sicklist.RestrictType.Id;
+                model.PaymentDecreaseDate = sicklist.PaymentDecreaseDate;
+                model.IsPreviousPaymentCounted = sicklist.IsPreviousPaymentCounted;
+                model.Is2010Calculate = sicklist.Is2010Calculate;
+                model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
+                SetHiddenFields(model);
+                if (sicklist.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+            SetFlagsState(id, user, sicklist, model);
+            LoadDictionaries(model);
+            return model;
+        }
+        protected void SetHiddenFields(SicklistEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+            model.DaysCountHidden = model.DaysCount;
+            model.PaymentPercentTypeIdHidden = model.PaymentPercentTypeId;
+            model.PaymentRestrictTypeIdHidden = model.PaymentRestrictTypeId;
+            model.Is2010CalculateHidden = model.Is2010Calculate;
+            model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
+            model.IsAddToFullPaymentHidden = model.IsAddToFullPaymentHidden;
+        }
+        protected void SetAttachmentToModel(SicklistEditModel model,int id)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestTypeEnum.Sicklist);
+            if (attach == null) 
+                return;
+            model.AttachmentId = attach.Id;
+            model.AttachmentTypeId = attach.RequestType;
+            model.Attachment = attach.FileName;
+        }
+        public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Sicklist sicklist;
+                if (model.Id == 0)
+                {
+                    sicklist = new Sicklist
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Sicklist),
+                        User = user
+                    };
+                    ChangeEntityProperties(current, sicklist, model, user);
+                    SicklistDao.SaveAndFlush(sicklist);
+                    model.Id = sicklist.Id;
+                }
+                else
+                {
+                    sicklist = SicklistDao.Load(model.Id);
+                    SaveAttachment(sicklist, fileDto, model ,RequestTypeEnum.Sicklist);
+                    if (sicklist.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        sicklist.DeleteDate = DateTime.Now;
+                        SicklistDao.SaveAndFlush(sicklist);
+                        model.IsDelete = false;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current,sicklist,model,user);   
+                        SicklistDao.SaveAndFlush(sicklist);
+                    }
+                    if (sicklist.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = sicklist.Number.ToString();
+                model.Version = sicklist.Version;
+                model.DaysCount = sicklist.DaysCount;
+                model.CreatorLogin = sicklist.Creator.Login;
+                model.DateCreated = sicklist.CreateDate.ToShortDateString();
+                SetFlagsState(sicklist.Id, user, sicklist, model);
+                //throw new ArgumentException("Test exception");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AbsenceDao.RollbackTran();
+                Log.Error("Error on GetVacationEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void SaveAttachment(Sicklist sicklist, UploadFileDto fileDto, SicklistEditModel model, RequestTypeEnum type)
+        {
+            if (fileDto == null)
+                return;
+            RequestAttachment attach =
+                RequestAttachmentDao.FindByRequestIdAndTypeId(sicklist.Id, RequestTypeEnum.Sicklist) ??
+                new RequestAttachment
+                    {
+                        RequestId = sicklist.Id,
+                        RequestType = (int) type,
+                    };
+
+            attach.DateCreated = DateTime.Now;
+            attach.Context = fileDto.Context;
+            attach.ContextType = fileDto.ContextType;
+            attach.FileName = fileDto.FileName;
+            RequestAttachmentDao.SaveAndFlush(attach);
+            model.AttachmentId = attach.Id;
+            model.AttachmentTypeId = attach.RequestType;
+            model.Attachment = attach.FileName;
+        }
+        protected void ChangeEntityProperties(IUser current, Sicklist sicklist,SicklistEditModel model,User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !sicklist.UserDateAccept.HasValue
+                && model.IsApprovedByUser)
+                sicklist.UserDateAccept = DateTime.Now;
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !sicklist.ManagerDateAccept.HasValue)
+            {
+                sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByManager)
+                    sicklist.ManagerDateAccept = DateTime.Now;
+            }
+            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id
+                && !sicklist.PersonnelManagerDateAccept.HasValue)
+            {
+                if (model.IsPersonnelFieldsEditable)
+                    SetPersonnelDataFromModel(sicklist, model);
+                if (model.IsApprovedByPersonnelManager)
+                    sicklist.PersonnelManagerDateAccept = DateTime.Now;
+            }
+            if (model.IsTypeEditable)
+            {
+                sicklist.BeginDate = model.BeginDate.Value;
+                sicklist.EndDate = model.EndDate.Value;
+                sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
+                sicklist.Type = SicklistTypeDao.Load(model.TypeId);
+            }
+        }
+        protected void SetPersonnelDataFromModel(Sicklist sicklist,SicklistEditModel model)
+        {
+            sicklist.PaymentBeginDate = model.PaymentBeginDate;
+            sicklist.ExperienceYears = GetIntFromModel(model.ExperienceYears);
+            sicklist.ExperienceMonthes = GetIntFromModel(model.ExperienceMonthes); 
+            sicklist.PaymentPercent = model.PaymentPercentTypeId == 0 ? null : SicklistPaymentPercentDao.Load(model.PaymentPercentTypeId);
+            sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
+            sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
+            sicklist.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
+            sicklist.Is2010Calculate = model.Is2010Calculate;
+            sicklist.IsAddToFullPayment = model.IsAddToFullPayment;
+        }
+        protected int? GetIntFromModel(string modelValue)
+        {
+            if (!string.IsNullOrEmpty(modelValue))
+            {
+                int experienceYears;
+                if (Int32.TryParse(modelValue, out experienceYears))
+                    return experienceYears;
+                throw new ArgumentException("Значение поля не является целым числом."); 
+            }
+            return null;
+        }
+        public void ReloadDictionariesToModel(SicklistEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Sicklist sicklist = SicklistDao.Load(model.Id);
+                model.CreatorLogin = sicklist.Creator.Login;
+                model.DocumentNumber = sicklist.Number.ToString();
+                model.DateCreated = sicklist.CreateDate.ToShortDateString();
+            }
+        }
+        protected void LoadDictionaries(SicklistEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Sicklist);
+            model.TimesheetStatuses = GetTimesheetStatusesForSicklist();
+            model.Types = GetSicklistTypes(false);
+            model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(!model.IsPersonnelFieldsEditable,false);
+            model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(true);
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForSicklist()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id == 2) || (x.Id == 3) || (x.Id == 11) || (x.Id == 12)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x => x.Name).ToList();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        protected void SetFlagsState(int id, User user, Sicklist entity, SicklistEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        break;
+                }
+                return;
+            }
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByManagerEnable = true;
+                        if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                        }
+                    }
+                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
+        }
+        protected void SetFlagsState(SicklistEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsTypeEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+
+            model.IsPersonnelFieldsEditable = false;
         }
         #endregion
         #region Absence
@@ -443,8 +835,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
                         absence.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
-                        && current.Id == user.Manager.Id && model.IsApprovedByManager)
-                        absence.ManagerDateAccept = DateTime.Now;
+                        && current.Id == user.Manager.Id)
+                    {
+                        absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if(model.IsApprovedByManager)
+                            absence.ManagerDateAccept = DateTime.Now;
+                    }
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id)
                     {
@@ -536,7 +932,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
-
         #region Vacation list model
         public VacationListModel GetVacationListModel()
         {
@@ -696,8 +1091,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
                         vacation.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
-                        && current.Id == user.Manager.Id && model.IsApprovedByManager)
-                        vacation.ManagerDateAccept = DateTime.Now;
+                        && current.Id == user.Manager.Id)
+                    {
+                        vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                        if(model.IsApprovedByManager)
+                            vacation.ManagerDateAccept = DateTime.Now;
+                    }
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id )
                     {
@@ -729,12 +1128,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                     {
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                            && !vacation.UserDateAccept.HasValue //vacation.StatusId == RequestStatusEnum.NotApproved
+                            && !vacation.UserDateAccept.HasValue 
                             && model.IsApprovedByUser)
-                        {
-                            //vacation.Status = RequestStatusDao.Load((int) RequestStatusEnum.ApprovedByUser);
                             vacation.UserDateAccept = DateTime.Now;
-                        }
+                        
                         if (current.UserRole == UserRole.Manager && user.Manager != null
                             && current.Id == user.Manager.Id
                             && !vacation.ManagerDateAccept.HasValue )
@@ -895,7 +1292,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         model.IsApprovedByUserEnable = true;
-                        //model.IsSaveAvailable = true;
                         if(!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
                             model.IsVacationTypeEditable = true;
                     }
@@ -903,11 +1299,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
-                        //model.IsApprovedByManager = true;
-                        //model.IsApprovedByManagerHidden = true;
                         model.IsApprovedByManagerEnable = true;
-                        //model.IsSaveAvailable = true;
-                        if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                       if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
                         {
                             model.IsVacationTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
@@ -1003,6 +1396,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.Sicklist:
+                    Sicklist sicklist = SicklistDao.Load(id);
+                    if ((sicklist.Comments != null) && (sicklist.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = sicklist.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -1039,6 +1445,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         };
                         AbsenceCommentDao.MergeAndFlush(absenceComment);
                         break;
+                    case (int)RequestTypeEnum.Sicklist:
+                        Sicklist sicklist = SicklistDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        SicklistComment sicklistComment = new SicklistComment
+                        {
+                            Comment = model.Comment,
+                            Sicklist = sicklist,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        SicklistCommentDao.MergeAndFlush(sicklistComment);
+                        break;
                 }
                 //doc.Comments.Add(comment);
                 //DocumentDao.MergeAndFlush(doc);
@@ -1051,6 +1469,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Error = "Исключение: " + ex.GetBaseException().Message;
                 return false;
             }
+        }
+        #endregion
+        #region Attachment
+        public AttachmentModel GetFileContext(int id,int typeId)
+        {
+            RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(id,(RequestTypeEnum)typeId);
+            return new AttachmentModel
+            {
+                Context = attachment.Context,
+                FileName = attachment.FileName,
+                ContextType = attachment.ContextType
+            };
         }
         #endregion
     }

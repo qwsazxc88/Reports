@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
@@ -15,6 +17,7 @@ namespace WebMvc.Controllers
     public class UserRequestController : BaseController
     {
         public const int MaxCommentLength = 256;
+        public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
@@ -53,6 +56,12 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.Sicklist:
+                     return RedirectToAction("SicklistEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
@@ -70,6 +79,98 @@ namespace WebMvc.Controllers
          {
              RequestBl.SetSicklistListModel(model);
              return View(model);
+         }
+         [HttpGet]
+         public ActionResult SicklistEdit(int id, int userId)
+         {
+             SicklistEditModel model = RequestBl.GetSicklistEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult SicklistEdit(SicklistEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             UploadFileDto fileDto = GetFileContext();
+             if (!ValidateSicklistEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveSicklistEditModel(model, fileDto, out error))
+             {
+                 //HttpContext.AddError(new Exception(error));
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetSicklistEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected bool ValidateSicklistEditModel(SicklistEditModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate > model.EndDate)
+                 ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
+             if (model.IsPersonnelFieldsEditable)
+             {
+                 if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))
+                    ModelState.AddModelError("ExperienceYears", "Необходимо заполнить хотя бы одно из полей стажа.");
+                 
+                 if (!string.IsNullOrEmpty(model.ExperienceYears))
+                 {
+                     int experienceYears;
+                     if (!Int32.TryParse(model.ExperienceYears, out experienceYears))
+                         ModelState.AddModelError("ExperienceYears", "Неправильно указано число лет стажа.");
+                     else if (experienceYears < 0)
+                         ModelState.AddModelError("ExperienceYears",
+                                                  "Число лет стажа должно быть неотрицательным числом.");
+                 }
+                 if (!string.IsNullOrEmpty(model.ExperienceMonthes))
+                 {
+                     int experienceMonth;
+                     if (!Int32.TryParse(model.ExperienceMonthes, out experienceMonth))
+                         ModelState.AddModelError("ExperienceMonthes", "Неправильно указано число месяцев стажа.");
+                     else if (experienceMonth < 0 || experienceMonth > 11)
+                         ModelState.AddModelError("ExperienceMonthes",
+                                                  "Число месяцев стажа должно быть неотрицательным числом меньшим 12.");
+                 }
+                 if (!model.PaymentBeginDate.HasValue)
+                     ModelState.AddModelError("PaymentBeginDate","'Назначить с даты' - обязательное поле.");
+
+                 if(model.PaymentBeginDate.HasValue && model.BeginDate.HasValue && model.BeginDate.Value > model.PaymentBeginDate.Value)
+                     ModelState.AddModelError("PaymentBeginDate",
+                                                  "Поле 'Назначить с даты' не должно быть меньше поля 'Дата начала'.");
+                 if (model.PaymentBeginDate.HasValue && model.EndDate.HasValue && model.EndDate.Value < model.PaymentBeginDate.Value)
+                     ModelState.AddModelError("PaymentBeginDate",
+                                                  "Поле 'Назначить с даты' не должно быть больше поля 'Дата окончания'.");
+                 if (model.PaymentDecreaseDate.HasValue && model.BeginDate.HasValue && model.BeginDate.Value > model.PaymentDecreaseDate.Value)
+                     ModelState.AddModelError("PaymentDecreaseDate",
+                                                  "Поле 'Снизить пособие за нарушение режима с' не должно быть меньше поля 'Дата начала'.");
+                 if (model.PaymentDecreaseDate.HasValue && model.EndDate.HasValue && model.EndDate.Value < model.PaymentDecreaseDate.Value)
+                     ModelState.AddModelError("PaymentBeginDate",
+                                                  "Поле 'Снизить пособие за нарушение режима с' не должно быть больше поля 'Дата окончания'.");
+             }
+             return ModelState.IsValid;
+         }
+         protected void CorrectDropdowns(SicklistEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+             model.DaysCount = model.DaysCountHidden;
+             if(!model.IsPersonnelFieldsEditable)
+             {
+                 model.PaymentRestrictTypeId = model.PaymentRestrictTypeIdHidden;
+                 model.PaymentPercentTypeId = model.PaymentPercentTypeIdHidden;
+             }
          }
          #endregion
          #region Absence
@@ -295,6 +396,46 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
 
-         
+         public FileContentResult ViewAttachment(int id,int type)
+         {
+             try
+             {
+                 AttachmentModel model = RequestBl.GetFileContext(id,type);
+                 return File(model.Context, model.ContextType, model.FileName);
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Error on ViewAttachment:", ex);
+                 throw;
+             }
+         }
+         protected UploadFileDto GetFileContext()
+         {
+             if (Request.Files.Count == 0)
+                 return null;
+             string file = Request.Files.GetKey(0);
+             HttpPostedFileBase hpf = Request.Files[file];
+             if ((hpf == null) || (hpf.ContentLength == 0))
+                 return null;
+             if (hpf.ContentLength > MaxFileSize)
+             {
+                 ModelState.AddModelError("", string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize));
+                 return null;
+             }
+             byte[] context = GetFileData(hpf);
+             return new UploadFileDto
+             {
+                 Context = context,
+                 ContextType = hpf.ContentType,
+                 FileName = Path.GetFileName(hpf.FileName),
+             };
+         }
+         protected byte[] GetFileData(HttpPostedFileBase file)
+         {
+             var length = file.ContentLength;
+             var fileContent = new byte[length];
+             file.InputStream.Read(fileContent, 0, length);
+             return fileContent;
+         }
      }
 }

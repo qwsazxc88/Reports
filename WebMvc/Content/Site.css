@@ -383,7 +383,7 @@ div#title
           position: static;
           line-height: 40px;
           height: 50px;
-          background-image: url(/Content/logobg.gif);
+          background-image: url("logobg.gif");
 }
 
  .menu { border: 1px solid rgb(0, 109, 181);
