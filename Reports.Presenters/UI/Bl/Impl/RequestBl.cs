@@ -353,9 +353,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (model.AttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.AttachmentId);
                         sicklist.DeleteDate = DateTime.Now;
                         SicklistDao.SaveAndFlush(sicklist);
                         model.IsDelete = false;
+                        model.AttachmentId = 0;
+                        model.Attachment = string.Empty;
                     }
                     else
                     {

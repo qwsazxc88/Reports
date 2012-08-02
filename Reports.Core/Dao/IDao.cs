@@ -15,6 +15,7 @@ namespace Reports.Core.Dao
         TEntity MergeAndFlush(TEntity entity);
         void Flush();
         void Delete(TEntity entity);
+        void Delete(TIdentifier entityId);
         TEntity FindById(TIdentifier id);
         IList<TEntity> FindAll();
         void RollbackTran();
