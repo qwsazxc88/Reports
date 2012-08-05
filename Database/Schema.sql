@@ -40,11 +40,29 @@ alter table [Users]  drop constraint FK_User_Position
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Attachment_Document]') AND parent_object_id = OBJECT_ID('Attachment'))
 alter table Attachment  drop constraint FK_Attachment_Document
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_HolidayWorkType]') AND parent_object_id = OBJECT_ID('HolidayWork'))
+alter table HolidayWork  drop constraint FK_HolidayWork_HolidayWorkType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_User]') AND parent_object_id = OBJECT_ID('HolidayWork'))
+alter table HolidayWork  drop constraint FK_HolidayWork_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_CreatorUser]') AND parent_object_id = OBJECT_ID('HolidayWork'))
+alter table HolidayWork  drop constraint FK_HolidayWork_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_TimesheetStatus]') AND parent_object_id = OBJECT_ID('HolidayWork'))
+alter table HolidayWork  drop constraint FK_HolidayWork_TimesheetStatus
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_User]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
 alter table [UserToDepartment]  drop constraint FK_UserToDepartment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_Department]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
 alter table [UserToDepartment]  drop constraint FK_UserToDepartment_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWorkComment_User]') AND parent_object_id = OBJECT_ID('HolidayWorkComment'))
+alter table HolidayWorkComment  drop constraint FK_HolidayWorkComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWorkComment_HolidayWork]') AND parent_object_id = OBJECT_ID('HolidayWorkComment'))
+alter table HolidayWorkComment  drop constraint FK_HolidayWorkComment_HolidayWork
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_User]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_User
@@ -118,11 +136,14 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') an
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
+if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'[UserToDepartment]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [UserToDepartment]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
+if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkComment
+if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkType
 if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
 if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
@@ -219,6 +240,25 @@ create table Attachment (
   DocumentId INT not null,
   constraint PK_Attachment  primary key (Id)
 )
+create table HolidayWork (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  Number INT not null,
+  TypeId INT not null,
+  WorkDate DATETIME null,
+  Rate INT not null,
+  Hours INT not null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_HolidayWork  primary key (Id)
+)
 create table [UserToDepartment] (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -251,6 +291,22 @@ create table Information (
   Subject NVARCHAR(1024) not null,
   Message NVARCHAR(MAX) not null,
   constraint PK_Information  primary key (Id)
+)
+create table HolidayWorkComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  HolidayWorkId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_HolidayWorkComment  primary key (Id)
+)
+create table HolidayWorkType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) not null,
+  constraint PK_HolidayWorkType  primary key (Id)
 )
 create table Department (
  Id INT IDENTITY NOT NULL,
@@ -497,10 +553,22 @@ alter table [Users] add constraint FK_User_Organization foreign key (Organizatio
 alter table [Users] add constraint FK_User_Position foreign key (PositionId) references Position
 create index IX_Attachment_Document_Id on Attachment (DocumentId)
 alter table Attachment add constraint FK_Attachment_Document foreign key (DocumentId) references Document
+create index HolidayWork_HolidayWorkType on HolidayWork (TypeId)
+create index IX_HolidayWork_User_Id on HolidayWork (UserId)
+create index IX_HolidayWork_CreatorUser_Id on HolidayWork (CreatorId)
+create index HolidayWork_TimesheetStatus on HolidayWork (TimesheetStatusId)
+alter table HolidayWork add constraint FK_HolidayWork_HolidayWorkType foreign key (TypeId) references HolidayWorkType
+alter table HolidayWork add constraint FK_HolidayWork_User foreign key (UserId) references [Users]
+alter table HolidayWork add constraint FK_HolidayWork_CreatorUser foreign key (CreatorId) references [Users]
+alter table HolidayWork add constraint FK_HolidayWork_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index IX_UserToDepartment_User_Id on [UserToDepartment] (UserId)
 create index IX_UserToDepartment_Department_Id on [UserToDepartment] (DepartmentId)
 alter table [UserToDepartment] add constraint FK_UserToDepartment_User foreign key (UserId) references [Users]
 alter table [UserToDepartment] add constraint FK_UserToDepartment_Department foreign key (DepartmentId) references Department
+create index IX_HolidayWorkComment_User_Id on HolidayWorkComment (UserId)
+create index IX_HolidayWorkComment_HolidayWork_Id on HolidayWorkComment (HolidayWorkId)
+alter table HolidayWorkComment add constraint FK_HolidayWorkComment_User foreign key (UserId) references [Users]
+alter table HolidayWorkComment add constraint FK_HolidayWorkComment_HolidayWork foreign key (HolidayWorkId) references HolidayWork
 create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
@@ -616,6 +684,10 @@ INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10023,'Отсутст
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (13,'Доплата за работу в праздники и выходные #1107',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (12,'Оплата праздничных и выходных дней #1106',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (null,'Отгул',1)
 
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По ММОТ',1)
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По закону ФСС',1)

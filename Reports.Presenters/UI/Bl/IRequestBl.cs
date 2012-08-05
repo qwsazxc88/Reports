@@ -30,6 +30,12 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
 
-        AttachmentModel GetFileContext(int id, int typeId);
+        HolidayWorkListModel GetHolidayWorkListModel();
+        void SetHolidayWorkListModel(HolidayWorkListModel model);
+        HolidayWorkEditModel GetHolidayWorkEditModel(int id, int userId);
+        void ReloadDictionariesToModel(HolidayWorkEditModel model);
+        bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
+
+        AttachmentModel GetFileContext(int id/*, int typeId*/);
     }
 }

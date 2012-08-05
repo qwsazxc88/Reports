@@ -250,6 +250,33 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Работа в выходной /праздничный день - обязательное поле.
+        /// </summary>
+        internal static string HolidayWorkEditModel_Date_Required {
+            get {
+                return ResourceManager.GetString("HolidayWorkEditModel_Date_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Кол-во отработанных часов - обязательное поле.
+        /// </summary>
+        internal static string HolidayWorkEditModel_Hours_Required {
+            get {
+                return ResourceManager.GetString("HolidayWorkEditModel_Hours_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Часовая тарифная ставка - обязательное поле.
+        /// </summary>
+        internal static string HolidayWorkEditModel_Rate_Required {
+            get {
+                return ResourceManager.GetString("HolidayWorkEditModel_Rate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ваша учетная запись неактивна. Свяжитесь с администратором..
         /// </summary>
         internal static string Login_AccountInactive {

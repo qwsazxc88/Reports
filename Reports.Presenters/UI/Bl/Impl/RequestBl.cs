@@ -42,6 +42,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IRequestAttachmentDao requestAttachmentDao;
         protected ISicklistCommentDao sicklistCommentDao;
 
+        protected IHolidayWorkTypeDao holidayWorkTypeDao;
+        protected IHolidayWorkDao holidayWorkDao;
+        protected IHolidayWorkCommentDao holidayWorkCommentDao;
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -133,6 +137,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(sicklistCommentDao); }
             set { sicklistCommentDao = value; }
         }
+
+        public IHolidayWorkTypeDao HolidayWorkTypeDao
+        {
+            get { return Validate.Dependency(holidayWorkTypeDao); }
+            set { holidayWorkTypeDao = value; }
+        }
+        public IHolidayWorkDao HolidayWorkDao
+        {
+            get { return Validate.Dependency(holidayWorkDao); }
+            set { holidayWorkDao = value; }
+        }
+        public IHolidayWorkCommentDao HolidayWorkCommentDao
+        {
+            get { return Validate.Dependency(holidayWorkCommentDao); }
+            set { holidayWorkCommentDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -167,8 +187,328 @@ namespace Reports.Presenters.UI.Bl.Impl
                        {
                            new IdNameDto((int) RequestTypeEnum.Vacation, "Заявка на отпуск"),
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
-                           new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный")
+                           new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
+                           new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней")
                        };
+        }
+        #endregion
+        #region HolidayWork
+        public HolidayWorkListModel GetHolidayWorkListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            HolidayWorkListModel model = new HolidayWorkListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model, user);
+            return model;
+        }
+        public void SetHolidayWorkListModel(HolidayWorkListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(HolidayWorkListModel model, User user)
+        {
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = HolidayWorkDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.PositionId,
+                model.TypeId,
+                model.StatusId
+                //model.PaymentPercentType
+                );
+        }
+        protected void SetDictionariesToModel(HolidayWorkListModel model, User user)
+        {
+            model.Departments = GetDepartments(user);
+            model.Types = GetHolidayWorkTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+        protected List<IdNameDto> GetHolidayWorkTypes(bool addAll)
+        {
+            var typeList = HolidayWorkTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        public HolidayWorkEditModel GetHolidayWorkEditModel(int id, int userId)
+        {
+            HolidayWorkEditModel model = new HolidayWorkEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            HolidayWork holidayWork = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                holidayWork = HolidayWorkDao.Load(id);
+                if (holidayWork == null)
+                    throw new ArgumentException(string.Format("Больничный (id {0}) не найдена в базе данных.", id));
+                model.Version = holidayWork.Version;
+                model.TypeId = holidayWork.Type.Id;
+                model.Date = holidayWork.WorkDate;
+                model.TimesheetStatusId = holidayWork.TimesheetStatus == null ? 0 : holidayWork.TimesheetStatus.Id;
+                model.Rate = holidayWork.Rate.ToString();
+                model.Hours = holidayWork.Hours.ToString();
+                model.CreatorLogin = holidayWork.Creator.Login;
+                model.DocumentNumber = holidayWork.Number.ToString();
+                model.DateCreated = holidayWork.CreateDate.ToShortDateString();
+
+                SetHiddenFields(model);
+                if (holidayWork.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+            SetFlagsState(id, user, holidayWork, model);
+            LoadDictionaries(model);
+            return model;
+        }
+        public bool SaveHolidayWorkEditModel(HolidayWorkEditModel model, /*UploadFileDto fileDto,*/ out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                HolidayWork holidayWork;
+                if (model.Id == 0)
+                {
+                    holidayWork = new HolidayWork
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HolidayWork),
+                        User = user
+                    };
+                    ChangeEntityProperties(current, holidayWork, model, user);
+                    HolidayWorkDao.SaveAndFlush(holidayWork);
+                    model.Id = holidayWork.Id;
+                }
+                else
+                {
+                    holidayWork = HolidayWorkDao.Load(model.Id);
+                    //SaveAttachment(holidayWork, fileDto, model, RequestTypeEnum.Sicklist);
+                    if (holidayWork.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        //if (model.AttachmentId > 0)
+                        //    RequestAttachmentDao.Delete(model.AttachmentId);
+                        holidayWork.DeleteDate = DateTime.Now;
+                        HolidayWorkDao.SaveAndFlush(holidayWork);
+                        model.IsDelete = false;
+                        //model.AttachmentId = 0;
+                        //model.Attachment = string.Empty;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, holidayWork, model, user);
+                        HolidayWorkDao.SaveAndFlush(holidayWork);
+                    }
+                    if (holidayWork.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = holidayWork.Number.ToString();
+                model.Version = holidayWork.Version;
+                //model.DaysCount = holidayWork.DaysCount;
+                model.CreatorLogin = holidayWork.Creator.Login;
+                model.DateCreated = holidayWork.CreateDate.ToShortDateString();
+                SetFlagsState(holidayWork.Id, user, holidayWork, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HolidayWorkDao.RollbackTran();
+                Log.Error("Error on SaveHolidayWorkEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, HolidayWork entity, HolidayWorkEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsApprovedByUser)
+                entity.UserDateAccept = DateTime.Now;
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByManager)
+                    entity.ManagerDateAccept = DateTime.Now;
+            }
+            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id
+                && !entity.PersonnelManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByPersonnelManager)
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
+            }
+            if (model.IsTypeEditable)
+            {
+                entity.WorkDate = model.Date.Value;
+                entity.Hours = Int32.Parse(model.Hours);
+                entity.Rate = Int32.Parse(model.Rate);
+                entity.Type = HolidayWorkTypeDao.Load(model.TypeId);
+            }
+        }
+        protected void SetFlagsState(int id, User user, HolidayWork entity, HolidayWorkEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        break;
+                }
+                return;
+            }
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByManagerEnable = true;
+                        if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable;
+        }
+        protected void SetFlagsState(HolidayWorkEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsTypeEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+        }
+        protected void SetHiddenFields(HolidayWorkEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+        }
+        protected void LoadDictionaries(HolidayWorkEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.HolidayWork);
+            model.TimesheetStatuses = GetTimesheetStatusesForHolidayWork();
+            model.Types = GetHolidayWorkTypes(false);
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForHolidayWork()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id == 6) || (x.Id == 13)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x => x.Name).ToList();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        public void ReloadDictionariesToModel(HolidayWorkEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                HolidayWork holidayWork = HolidayWorkDao.Load(model.Id);
+                model.CreatorLogin = holidayWork.Creator.Login;
+                model.DocumentNumber = holidayWork.Number.ToString();
+                model.DateCreated = holidayWork.CreateDate.ToShortDateString();
+            }
         }
         #endregion
         #region Sicklist
@@ -182,6 +522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model,user);
             return model;
         }
+
         protected List<IdNameDto> GetSicklistTypes(bool addAll)
         {
             var typeList = SicklistTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -311,7 +652,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (attach == null) 
                 return;
             model.AttachmentId = attach.Id;
-            model.AttachmentTypeId = attach.RequestType;
+            //model.AttachmentTypeId = attach.RequestType;
             model.Attachment = attach.FileName;
         }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
@@ -380,8 +721,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                AbsenceDao.RollbackTran();
-                Log.Error("Error on GetVacationEditModel:", ex);
+                SicklistDao.RollbackTran();
+                Log.Error("Error on SaveSicklistEditModel:", ex);
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
             }
@@ -397,7 +738,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (fileDto == null)
                 return;
             RequestAttachment attach =
-                RequestAttachmentDao.FindByRequestIdAndTypeId(sicklist.Id, RequestTypeEnum.Sicklist) ??
+                RequestAttachmentDao.Load(model.AttachmentId) ??
                 new RequestAttachment
                     {
                         RequestId = sicklist.Id,
@@ -405,12 +746,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     };
 
             attach.DateCreated = DateTime.Now;
-            attach.Context = fileDto.Context;
+            attach.UncompressContext = fileDto.Context;
             attach.ContextType = fileDto.ContextType;
             attach.FileName = fileDto.FileName;
             RequestAttachmentDao.SaveAndFlush(attach);
             model.AttachmentId = attach.Id;
-            model.AttachmentTypeId = attach.RequestType;
+            //model.AttachmentTypeId = attach.RequestType;
             model.Attachment = attach.FileName;
         }
         protected void ChangeEntityProperties(IUser current, Sicklist sicklist,SicklistEditModel model,User user)
@@ -920,7 +1261,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             catch (Exception ex)
             {
                 AbsenceDao.RollbackTran();
-                Log.Error("Error on GetVacationEditModel:", ex);
+                Log.Error("Error on SaveAbsenceEditModel:", ex);
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
             }
@@ -1413,6 +1754,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.HolidayWork:
+                    HolidayWork holidayWork = HolidayWorkDao.Load(id);
+                    if ((holidayWork.Comments != null) && (holidayWork.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = holidayWork.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -1461,6 +1815,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         };
                         SicklistCommentDao.MergeAndFlush(sicklistComment);
                         break;
+                    case (int)RequestTypeEnum.HolidayWork:
+                        HolidayWork holidayWork = HolidayWorkDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        HolidayWorkComment holidayWorkComment = new HolidayWorkComment
+                        {
+                            Comment = model.Comment,
+                            HolidayWork = holidayWork,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        HolidayWorkCommentDao.MergeAndFlush(holidayWorkComment);
+                        break;
                 }
                 //doc.Comments.Add(comment);
                 //DocumentDao.MergeAndFlush(doc);
@@ -1476,12 +1842,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Attachment
-        public AttachmentModel GetFileContext(int id,int typeId)
+        public AttachmentModel GetFileContext(int id/*,int typeId*/)
         {
-            RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(id,(RequestTypeEnum)typeId);
+            RequestAttachment attachment = RequestAttachmentDao.Load(id);
             return new AttachmentModel
             {
-                Context = attachment.Context,
+                Context = attachment.UncompressContext,
                 FileName = attachment.FileName,
                 ContextType = attachment.ContextType
             };

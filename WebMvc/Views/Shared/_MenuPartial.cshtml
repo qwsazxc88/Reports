@@ -18,6 +18,7 @@
                 else if (dto.UserRole == UserRole.Employee)
                 {
                     
+                     <li>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</li>
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
@@ -27,6 +28,7 @@
                 }
                 else if (dto.UserRole == UserRole.Manager)
                 {
+                     <li>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</li>
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
@@ -37,6 +39,7 @@
                 }
                 else if (dto.UserRole == UserRole.PersonnelManager)
                 {
+                     <li>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</li>
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>

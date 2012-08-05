@@ -106,7 +106,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан документа")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
-        public int AttachmentTypeId { get; set; }
+        //public int AttachmentTypeId { get; set; }
 
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }

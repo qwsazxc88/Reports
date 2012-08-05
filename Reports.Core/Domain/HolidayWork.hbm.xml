@@ -1,0 +1,27 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="HolidayWork">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+	
+	<many-to-one name="Type" class="HolidayWorkType" column="TypeId" foreign-key="FK_HolidayWork_HolidayWorkType" index="HolidayWork_HolidayWorkType"  not-null="true"/>
+  <property name="WorkDate" not-null="false"/>
+  <property name="Rate" not-null="true"/>
+  <property name="Hours" not-null="true"/>
+  <many-to-one name="User" class="User" column="UserId" foreign-key="FK_HolidayWork_User" index="IX_HolidayWork_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HolidayWork_CreatorUser" index="IX_HolidayWork_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+  <property name="DeleteDate" not-null="false"/>
+  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_HolidayWork_TimesheetStatus" index="HolidayWork_TimesheetStatus"  not-null="false"/>
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="HolidayWorkId" foreign-key="FK_HolidayWorkComment_HolidayWork"/>
+    <one-to-many class="HolidayWorkComment"/>
+  </bag>
+	</class>
+</hibernate-mapping>

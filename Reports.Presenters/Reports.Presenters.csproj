@@ -135,6 +135,8 @@
     <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
+    <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
     <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
     <Compile Include="UI\ViewModel\IExportImport.cs" />

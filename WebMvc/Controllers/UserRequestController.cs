@@ -62,10 +62,93 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.HolidayWork:
+                     return RedirectToAction("HolidayWorkEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+         #region HolidayWork
+         [HttpGet]
+         public ActionResult HolidayWorkList()
+         {
+             HolidayWorkListModel model = RequestBl.GetHolidayWorkListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult HolidayWorkList(HolidayWorkListModel model)
+         {
+             RequestBl.SetHolidayWorkListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult HolidayWorkEdit(int id, int userId)
+         {
+             HolidayWorkEditModel model = RequestBl.GetHolidayWorkEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult HolidayWorkEdit(HolidayWorkEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             if (!ValidateHolidayWorkEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveHolidayWorkEditModel(model, out error))
+             {
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetHolidayWorkEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected bool ValidateHolidayWorkEditModel(HolidayWorkEditModel model)
+         {
+             if (model.IsTypeEditable)
+             {
+                 if (!string.IsNullOrEmpty(model.Rate))
+                 {
+                     int rate;
+                     if (!Int32.TryParse(model.Rate, out rate))
+                         ModelState.AddModelError("Rate", "Неправильное поле 'Часовая тарифная ставка'.");
+                     else if (rate <= 0)
+                         ModelState.AddModelError("Rate",
+                                                  "Поле 'Часовая тарифная ставка' должно быть положительным числом.");
+                 }
+                 if (!string.IsNullOrEmpty(model.Hours))
+                 {
+                     int hours;
+                     if (!Int32.TryParse(model.Hours, out hours))
+                         ModelState.AddModelError("Hours", "Неправильное поле 'Кол-во отработанных часов'.");
+                     else if (hours <= 0 || hours > 24)
+                         ModelState.AddModelError("Hours",
+                                                  "Поле 'Кол-во отработанных часов'  должно быть положительным числом меньшим 25.");
+                 }
+             }
+             return ModelState.IsValid;
+         }
+         protected void CorrectDropdowns(HolidayWorkEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+         }
+         #endregion
 
          #region Sicklist
          [HttpGet]
@@ -396,11 +479,11 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
 
-         public FileContentResult ViewAttachment(int id,int type)
+         public FileContentResult ViewAttachment(int id/*,int type*/)
          {
              try
              {
-                 AttachmentModel model = RequestBl.GetFileContext(id,type);
+                 AttachmentModel model = RequestBl.GetFileContext(id/*,type*/);
                  return File(model.Context, model.ContextType, model.FileName);
              }
              catch (Exception ex)

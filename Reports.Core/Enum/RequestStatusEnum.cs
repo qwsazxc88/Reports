@@ -14,5 +14,6 @@
         Vacation = 1,
         Absence = 2,
         Sicklist = 3,
+        HolidayWork = 4,
     }
 }

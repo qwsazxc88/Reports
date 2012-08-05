@@ -70,6 +70,10 @@ INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
 
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (13,'Доплата за работу в праздники и выходные #1107',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (12,'Оплата праздничных и выходных дней #1106',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (null,'Отгул',1)
+
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По ММОТ',1)
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По закону ФСС',1)
 

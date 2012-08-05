@@ -64,6 +64,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Iesi.Collections.dll</HintPath>
@@ -96,6 +99,9 @@
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
     <Compile Include="Dao\IExportImportActionDao.cs" />
+    <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\IHolidayWorkDao.cs" />
+    <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
@@ -109,6 +115,9 @@
     <Compile Include="Dao\Impl\EmployeeDocumentTypeDao.cs" />
     <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
     <Compile Include="Dao\IInformationDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
@@ -167,6 +176,9 @@
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
+    <Compile Include="Domain\HolidayWork.cs" />
+    <Compile Include="Domain\HolidayWorkComment.cs" />
+    <Compile Include="Domain\HolidayWorkType.cs" />
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
@@ -367,6 +379,13 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\RequestAttachment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWorkType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWork.hbm.xml" />
+    <EmbeddedResource Include="Domain\HolidayWorkComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

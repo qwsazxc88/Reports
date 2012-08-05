@@ -222,6 +222,15 @@ namespace Reports.Core
             Register(Component.For(typeof(ISicklistCommentDao)).
              ImplementedBy(typeof(SicklistCommentDao)).
              LifeStyle.Is(type));
+            Register(Component.For(typeof(IHolidayWorkTypeDao)).
+            ImplementedBy(typeof(HolidayWorkTypeDao)).
+            LifeStyle.Is(type));
+            Register(Component.For(typeof(IHolidayWorkDao)).
+            ImplementedBy(typeof(HolidayWorkDao)).
+            LifeStyle.Is(type));
+            Register(Component.For(typeof(IHolidayWorkCommentDao)).
+            ImplementedBy(typeof(HolidayWorkCommentDao)).
+            LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))
