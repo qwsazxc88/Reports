@@ -905,7 +905,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             var typeList = SicklistPaymentRestrictTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if(addEmpty)
-                typeList.Insert(0, new IdNameDto(0, string.Empty));
+                typeList.Insert(0, new IdNameDto(0, "Отсутствует"));
             return typeList;
         }
         public void SetSicklistListModel(SicklistListModel model)
@@ -1205,14 +1205,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = true;
+                        model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = true;
+                        model.IsApprovedByManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
                         break;

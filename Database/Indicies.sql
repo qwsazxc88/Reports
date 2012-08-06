@@ -78,8 +78,8 @@ INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по Росси
 INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по СНГ',1)
 INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку  за рубеж',1)
 
-INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По ММОТ',1)
-INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По закону ФСС',1)
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('В размере ММОТ',1)
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('Общее, в соответствии с Законом о бюджете ФСС',1)
 
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805','Нулевая сумма',1)
 --INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (26,'Доплата по больничным листам #1402','Доплата до среднего заработка ФСС',1)
