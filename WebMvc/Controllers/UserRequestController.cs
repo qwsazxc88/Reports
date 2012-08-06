@@ -245,12 +245,21 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
-             if (!ValidateSicklistEditModel(model, fileDto))
+             bool needToReload;
+             string error;
+             if (!ValidateSicklistEditModel(model, fileDto,out needToReload,out error))
              {
+                 if(needToReload)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetSicklistEditModel(model.Id, model.UserId)); 
+                 }
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
-             string error;
+             //string error;
              if (!RequestBl.SaveSicklistEditModel(model, fileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
@@ -266,19 +275,27 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
-         protected bool ValidateSicklistEditModel(SicklistEditModel model, UploadFileDto fileDto)
+         protected bool ValidateSicklistEditModel(SicklistEditModel model, UploadFileDto fileDto,
+             out bool needToReload,out string error)
          {
+             needToReload = false;
+             error = string.Empty;
+             if (model.Id > 0 && fileDto == null)
+             {
+                 UserRole role = AuthenticationService.CurrentUser.UserRole;
+                 if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                     (role == UserRole.Manager && model.IsApprovedByManager) ||
+                     (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                 {
+                     error = "Заявка не может быть согласована без прикрепленого скана больничного.";
+                     needToReload = true;
+                     return false;
+                 }
+             }
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-             if(model.Id > 0 && fileDto == null)
-             {
-                 UserRole role = AuthenticationService.CurrentUser.UserRole;
-                 if((role == UserRole.Employee && model.IsApprovedByUser) ||
-                     (role == UserRole.Manager && model.IsApprovedByManager) ||
-                     (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
-                     ModelState.AddModelError(string.Empty, "Заявка не может быть согласована без прикрепленого скана больничного.");
-             }
+             
              if (model.IsPersonnelFieldsEditable)
              {
                  if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))
