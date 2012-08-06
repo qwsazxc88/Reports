@@ -204,33 +204,42 @@ namespace Reports.Core
                  ImplementedBy(typeof(AbsenceCommentDao)).
                  LifeStyle.Is(type));
 
-            Register(Component.For(typeof(ISicklistTypeDao)).
-                ImplementedBy(typeof(SicklistTypeDao)).
-                LifeStyle.Is(type));
-            Register(Component.For(typeof(ISicklistPaymentRestrictTypeDao)).
-                ImplementedBy(typeof(SicklistPaymentRestrictTypeDao)).
-                LifeStyle.Is(type));
-            Register(Component.For(typeof(ISicklistPaymentPercentDao)).
-               ImplementedBy(typeof(SicklistPaymentPercentDao)).
-               LifeStyle.Is(type));
-            Register(Component.For(typeof(ISicklistDao)).
-              ImplementedBy(typeof(SicklistDao)).
-              LifeStyle.Is(type));
-            Register(Component.For(typeof(IRequestAttachmentDao)).
-             ImplementedBy(typeof(RequestAttachmentDao)).
-             LifeStyle.Is(type));
-            Register(Component.For(typeof(ISicklistCommentDao)).
-             ImplementedBy(typeof(SicklistCommentDao)).
-             LifeStyle.Is(type));
-            Register(Component.For(typeof(IHolidayWorkTypeDao)).
-            ImplementedBy(typeof(HolidayWorkTypeDao)).
-            LifeStyle.Is(type));
-            Register(Component.For(typeof(IHolidayWorkDao)).
-            ImplementedBy(typeof(HolidayWorkDao)).
-            LifeStyle.Is(type));
-            Register(Component.For(typeof(IHolidayWorkCommentDao)).
-            ImplementedBy(typeof(HolidayWorkCommentDao)).
-            LifeStyle.Is(type));
+            Register(Component.For(typeof (ISicklistTypeDao)).
+                         ImplementedBy(typeof (SicklistTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (ISicklistPaymentRestrictTypeDao)).
+                         ImplementedBy(typeof (SicklistPaymentRestrictTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (ISicklistPaymentPercentDao)).
+                         ImplementedBy(typeof (SicklistPaymentPercentDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (ISicklistDao)).
+                         ImplementedBy(typeof (SicklistDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IRequestAttachmentDao)).
+                         ImplementedBy(typeof (RequestAttachmentDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (ISicklistCommentDao)).
+                         ImplementedBy(typeof (SicklistCommentDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IHolidayWorkTypeDao)).
+                         ImplementedBy(typeof (HolidayWorkTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IHolidayWorkDao)).
+                         ImplementedBy(typeof (HolidayWorkDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IHolidayWorkCommentDao)).
+                         ImplementedBy(typeof (HolidayWorkCommentDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IMissionTypeDao)).
+                         ImplementedBy(typeof (MissionTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IMissionDao)).
+                         ImplementedBy(typeof (MissionDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof (IMissionCommentDao)).
+                         ImplementedBy(typeof (MissionCommentDao)).
+                         LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))

@@ -1,0 +1,124 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.MissionListModel
+@{
+    ViewBag.Title = "Командировки";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+    <tr>
+        <td colspan="4">
+            @Html.HiddenFor(m => m.UserId)
+        </td>
+    </tr>
+    <tr>
+        <td style="width:200px">
+            @Html.LabelFor(m => m.DepartmentId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) 
+        </td>
+        <td style="width:116px">
+            @Html.LabelFor(m => m.PositionId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+        </td>
+        <td>
+            @Html.LabelFor(m => m.StatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
+            @Html.EditorFor(model => model.BeginDate) 
+        </td>
+        <td>
+            @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
+            @Html.EditorFor(model => model.EndDate) 
+         </td>
+    </tr>
+   @* <tr>
+        <td>
+            @Html.LabelFor(m => m.PaymentPercentType):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.PaymentPercentType, new SelectList(Model.PaymentPercentTypes, "ID", "Name")) 
+        </td>
+        <td colspan="2">
+        </td>
+     </tr>*@
+    <tr>
+      <td colspan="4">
+        <input type="submit" value="Применить"/>
+        <input type="button" value="Сбросить" onclick="resetFilter();"/>
+      </td>
+    </tr>
+     <tr>
+        <td colspan="4">
+         @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+         {@Html.ActionLink("Создать новую заявку", "MissionEdit", new { id = 0, userId = Model.UserId })}
+         else
+         {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <table class="grid" style="width:100%">
+                <tr>
+                    <th>Название документа</th>
+                    <th>Дата</th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("MissionEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
+                            </td>
+                            <td>@doc.Date</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </td>
+    </tr>
+</table> 
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($('#DepartmentId option').length > 1)
+            $("#DepartmentId").val('0');
+        if ($('#PositionId option').length > 1)
+            $("#PositionId").val('0');
+        $("#TypeId").val('0');
+        $("#StatusId").val('0');
+        //$("#PaymentPercentType").val('0');
+    }
+ </script>   
+}
+

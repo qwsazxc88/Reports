@@ -74,6 +74,10 @@ INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (13,'Доплата
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (12,'Оплата праздничных и выходных дней #1106',1)
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (null,'Отгул',1)
 
+INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по России',1)
+INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по СНГ',1)
+INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку  за рубеж',1)
+
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По ММОТ',1)
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('По закону ФСС',1)
 

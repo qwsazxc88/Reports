@@ -36,6 +36,12 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
 
+        MissionListModel GetMissionListModel();
+        void SetMissionListModel(MissionListModel model);
+        MissionEditModel GetMissionEditModel(int id, int userId);
+        void ReloadDictionariesToModel(MissionEditModel model);
+        bool SaveMissionEditModel(MissionEditModel model, out string error);
+
         AttachmentModel GetFileContext(int id/*, int typeId*/);
     }
 }

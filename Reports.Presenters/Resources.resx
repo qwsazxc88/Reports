@@ -291,4 +291,25 @@
   <data name="HolidayWorkEditModel_Rate_Required" xml:space="preserve">
     <value>Часовая тарифная ставка - обязательное поле</value>
   </data>
+  <data name="MissionEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Country_Required" xml:space="preserve">
+    <value>Страна, город командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_FinancesSource_Required" xml:space="preserve">
+    <value>Источник финансирования командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Goal_Required" xml:space="preserve">
+    <value>Цель командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Organization_Required" xml:space="preserve">
+    <value>Организация, куда командировка - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Reason_Required" xml:space="preserve">
+    <value>Основание командировки - обязательное поле</value>
+  </data>
 </root>

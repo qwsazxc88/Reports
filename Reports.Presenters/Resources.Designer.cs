@@ -340,6 +340,69 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата начала - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_BeginDate_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_BeginDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Страна, город командировки - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_Country_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_Country_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Дата окончания - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_EndDate_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_EndDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Источник финансирования командировки - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_FinancesSource_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_FinancesSource_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Цель командировки - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_Goal_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_Goal_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Организация, куда командировка - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_Organization_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_Organization_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Основание командировки - обязательное поле.
+        /// </summary>
+        internal static string MissionEditModel_Reason_Required {
+            get {
+                return ResourceManager.GetString("MissionEditModel_Reason_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Пароль слишком короткий..
         /// </summary>
         internal static string PasswordRegExValidatorText {

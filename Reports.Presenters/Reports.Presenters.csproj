@@ -142,6 +142,8 @@
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\MissionEditModel.cs" />
+    <Compile Include="UI\ViewModel\MissionListModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />

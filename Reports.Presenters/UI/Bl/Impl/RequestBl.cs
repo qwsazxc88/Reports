@@ -46,6 +46,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IHolidayWorkDao holidayWorkDao;
         protected IHolidayWorkCommentDao holidayWorkCommentDao;
 
+        protected IMissionTypeDao missionTypeDao;
+        protected IMissionDao missionDao;
+        protected IMissionCommentDao missionCommentDao;
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -153,6 +157,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(holidayWorkCommentDao); }
             set { holidayWorkCommentDao = value; }
         }
+        public IMissionTypeDao MissionTypeDao
+        {
+            get { return Validate.Dependency(missionTypeDao); }
+            set { missionTypeDao = value; }
+        }
+        public IMissionDao MissionDao
+        {
+            get { return Validate.Dependency(missionDao); }
+            set { missionDao = value; }
+        }
+        public IMissionCommentDao MissionCommentDao
+        {
+            get { return Validate.Dependency(missionCommentDao); }
+            set { missionCommentDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -188,8 +207,337 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Vacation, "Заявка на отпуск"),
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
-                           new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней")
+                           new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
+                           new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку")
                        };
+        }
+        #endregion
+        #region Mission
+        public MissionListModel GetMissionListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            MissionListModel model = new MissionListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model, user);
+            return model;
+        }
+        public void SetMissionListModel(MissionListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            SetDocumentsToModel(model, user);
+        }
+        protected void SetDictionariesToModel(MissionListModel model, User user)
+        {
+            model.Departments = GetDepartments(user);
+            model.Types = GetMissionTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+        protected List<IdNameDto> GetMissionTypes(bool addAll)
+        {
+            var typeList = MissionTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        public void SetDocumentsToModel(MissionListModel model, User user)
+        {
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = MissionDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.PositionId,
+                model.TypeId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate);
+        }
+        public MissionEditModel GetMissionEditModel(int id, int userId)
+        {
+            MissionEditModel model = new MissionEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            Mission mission = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                mission = MissionDao.Load(id);
+                if (mission == null)
+                    throw new ArgumentException(string.Format("Командировка (id {0}) не найдена в базе данных.", id));
+                model.Version = mission.Version;
+                model.TypeId = mission.Type.Id;
+                model.BeginDate = mission.BeginDate;
+                model.EndDate = mission.EndDate;
+                model.DaysCount = mission.DaysCount;
+                model.TimesheetStatusId = mission.TimesheetStatus == null ? 0 : mission.TimesheetStatus.Id;
+                model.Country = mission.Country;
+                model.MissionOrganization = mission.Organization;
+                model.Goal = mission.Goal;
+                model.FinancesSource = mission.FinancesSource;
+                model.Reason = mission.Reason;
+                model.CreatorLogin = mission.Creator.Login;
+                model.DocumentNumber = mission.Number.ToString();
+                model.DateCreated = mission.CreateDate.ToShortDateString();
+                SetHiddenFields(model);
+                if (mission.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+            SetFlagsState(id, user, mission, model);
+            LoadDictionaries(model);
+            return model;
+        }
+        protected void SetFlagsState(int id, User user, Mission entity, MissionEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        model.IsReasonEditable = true;
+                        break;
+                }
+                return;
+            }
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByManagerEnable = true;
+                        if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                            model.IsReasonEditable = true;
+                        }
+                    }
+                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable || model.IsReasonEditable;
+        }
+        protected void SetFlagsState(MissionEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsTypeEditable = state;
+            model.IsReasonEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+        }
+        protected void LoadDictionaries(MissionEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Mission);
+            model.TimesheetStatuses = GetTimesheetStatusesForMission();
+            model.Types = GetMissionTypes(false);
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForMission()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id == 7)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x => x.Name).ToList();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        protected void SetHiddenFields(MissionEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+            model.DaysCountHidden = model.DaysCount;
+        }
+        public bool SaveMissionEditModel(MissionEditModel model,out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Mission mission;
+                if (model.Id == 0)
+                {
+                    mission = new Mission
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Mission),
+                        User = user
+                    };
+                    ChangeEntityProperties(current, mission, model, user);
+                    MissionDao.SaveAndFlush(mission);
+                    model.Id = mission.Id;
+                }
+                else
+                {
+                    mission = MissionDao.Load(model.Id);
+                    if (mission.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        mission.DeleteDate = DateTime.Now;
+                        MissionDao.SaveAndFlush(mission);
+                        model.IsDelete = false;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, mission, model, user);
+                        MissionDao.SaveAndFlush(mission);
+                    }
+                    if (mission.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = mission.Number.ToString();
+                model.Version = mission.Version;
+                model.DaysCount = mission.DaysCount;
+                model.CreatorLogin = mission.Creator.Login;
+                model.DateCreated = mission.CreateDate.ToShortDateString();
+                SetFlagsState(mission.Id, user, mission, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MissionDao.RollbackTran();
+                Log.Error("Error on SaveMissionEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        public void ReloadDictionariesToModel(MissionEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Mission mission = MissionDao.Load(model.Id);
+                model.CreatorLogin = mission.Creator.Login;
+                model.DocumentNumber = mission.Number.ToString();
+                model.DateCreated = mission.CreateDate.ToShortDateString();
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, Mission entity, MissionEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsApprovedByUser)
+                entity.UserDateAccept = DateTime.Now;
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByManager)
+                    entity.ManagerDateAccept = DateTime.Now;
+            }
+            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id
+                && !entity.PersonnelManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByPersonnelManager)
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
+            }
+            if (model.IsTypeEditable)
+            {
+                entity.BeginDate = model.BeginDate.Value;
+                entity.EndDate = model.EndDate.Value;
+                entity.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
+                entity.Country = model.Country;
+                entity.Organization = model.MissionOrganization;
+                entity.Goal = model.Goal;
+                entity.FinancesSource = model.FinancesSource;
+                entity.Reason = model.Reason;
+                entity.Type = MissionTypeDao.Load(model.TypeId);
+            }
         }
         #endregion
         #region HolidayWork
@@ -395,6 +743,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                     case UserRole.Manager:
                         model.IsApprovedByManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = true;
@@ -859,6 +1208,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                     case UserRole.Manager:
                         model.IsApprovedByManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = true;
@@ -1047,6 +1397,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                     case UserRole.Manager:
                         model.IsApprovedByManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = true;
@@ -1767,6 +2118,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.Mission:
+                    Mission mission = MissionDao.Load(id);
+                    if ((mission.Comments != null) && (mission.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = mission.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -1827,6 +2191,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         };
                         HolidayWorkCommentDao.MergeAndFlush(holidayWorkComment);
                         break;
+                    case (int)RequestTypeEnum.Mission:
+                        Mission mission = MissionDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        MissionComment missionComment = new MissionComment
+                        {
+                            Comment = model.Comment,
+                            Mission = mission,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        MissionCommentDao.MergeAndFlush(missionComment);
+                        break;
                 }
                 //doc.Comments.Add(comment);
                 //DocumentDao.MergeAndFlush(doc);
@@ -1834,7 +2210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                AbsenceDao.RollbackTran();
+                VacationDao.RollbackTran();
                 Log.Error("Exception", ex);
                 model.Error = "Исключение: " + ex.GetBaseException().Message;
                 return false;

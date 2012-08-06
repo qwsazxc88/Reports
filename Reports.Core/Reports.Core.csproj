@@ -102,6 +102,9 @@
     <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
     <Compile Include="Dao\IHolidayWorkDao.cs" />
     <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\IMissionCommentDao.cs" />
+    <Compile Include="Dao\IMissionDao.cs" />
+    <Compile Include="Dao\IMissionTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
@@ -119,6 +122,9 @@
     <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\MissionCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionDao.cs" />
+    <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
@@ -182,6 +188,9 @@
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\Mission.cs" />
+    <Compile Include="Domain\MissionComment.cs" />
+    <Compile Include="Domain\MissionType.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
     <Compile Include="Domain\RequestAttachment.cs" />
@@ -386,6 +395,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\HolidayWork.hbm.xml" />
     <EmbeddedResource Include="Domain\HolidayWorkComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Mission.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

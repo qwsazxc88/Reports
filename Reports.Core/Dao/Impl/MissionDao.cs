@@ -8,28 +8,27 @@ using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
 {
-    public class VacationDao : DefaultDao<Vacation>, IVacationDao
+    public class MissionDao : DefaultDao<Mission>, IMissionDao
     {
-        public VacationDao(ISessionManager sessionManager)
+        public MissionDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
         }
-
         public IList<VacationDto> GetDocuments(
-                UserRole role,
-                int departmentId,
-                int positionId,
-                int vacationTypeId,
-                int requestStatusId,
-                DateTime? beginDate,
-                DateTime? endDate)
+               UserRole role,
+               int departmentId,
+               int positionId,
+               int typeId,
+               int requestStatusId,
+               DateTime? beginDate,
+               DateTime? endDate)
         {
             string sqlQuery =
                 @"select v.Id as Id,
                          u.Id as UserId,
-                         N'Отпуск '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
+                         'Командировка '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
                          v.[CreateDate] as Date    
-            from [dbo].[Vacation] v
+            from [dbo].[Mission] v
             inner join [dbo].[Users] u on u.Id = v.UserId
             inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = string.Empty;
@@ -40,38 +39,37 @@ namespace Reports.Core.Dao.Impl
                 {
                     case 1:
                         statusWhere = @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
-                    break;
+                        break;
                     case 2:
                         statusWhere = @"UserDateAccept is not null";
-                    break;
+                        break;
                     case 3:
                         statusWhere = @"UserDateAccept is null";
-                    break;
+                        break;
                     case 4:
                         statusWhere = @"ManagerDateAccept is not null";
-                    break;
+                        break;
                     case 5:
                         statusWhere = @"ManagerDateAccept is null";
-                    break;
+                        break;
                     case 6:
                         statusWhere = @"PersonnelManagerDateAccept is not null";
-                    break;
+                        break;
                     case 7:
                         statusWhere = @"PersonnelManagerDateAccept is null";
-                    break;
+                        break;
                     case 8:
                         statusWhere = @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
-                    break;
+                        break;
                     case 9:
                         statusWhere = @"SendTo1C is not null";
-                    break;
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
-                whereString += @" "+statusWhere+" ";
+                whereString += @" " + statusWhere + " ";
             }
-                //whereString += @"v.[StatusId] = :statusId ";
-            if (vacationTypeId != 0)
+            if (typeId != 0)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
@@ -113,8 +111,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Date", NHibernateUtil.DateTime);
             //if (requestStatusId != 0)
             //    query.SetInt32("statusId", requestStatusId);
-            if (vacationTypeId != 0)
-                query.SetInt32("typeId", vacationTypeId);
+            if (typeId != 0)
+                query.SetInt32("typeId", typeId);
             if (beginDate.HasValue)
                 query.SetDateTime("beginDate", beginDate.Value);
             if (endDate.HasValue)

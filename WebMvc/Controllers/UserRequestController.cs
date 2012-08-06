@@ -68,10 +68,80 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.Mission:
+                     return RedirectToAction("MissionEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+         #region Mission
+         [HttpGet]
+         public ActionResult MissionList()
+         {
+             MissionListModel model = RequestBl.GetMissionListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult MissionList(MissionListModel model)
+         {
+             RequestBl.SetMissionListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult MissionEdit(int id, int userId)
+         {
+             MissionEditModel model = RequestBl.GetMissionEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult MissionEdit(MissionEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             if (!ValidateMissionEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveMissionEditModel(model, out error))
+             {
+                 //HttpContext.AddError(new Exception(error));
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetMissionEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected void CorrectDropdowns(MissionEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+             model.DaysCount = model.DaysCountHidden;
+         }
+         protected bool ValidateMissionEditModel(MissionEditModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate > model.EndDate)
+                 ModelState.AddModelError("BeginDate", "Дата начала не может превышать дату окончания.");
+             UserRole role = AuthenticationService.CurrentUser.UserRole;
+             if(role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Reason))
+                 ModelState.AddModelError("Reason", "Основание командировки - обязательное поле.");
+             return ModelState.IsValid;
+         }
+         #endregion
          #region HolidayWork
          [HttpGet]
          public ActionResult HolidayWorkList()
