@@ -523,6 +523,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && !entity.PersonnelManagerDateAccept.HasValue)
             {
                 entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                entity.Reason = model.Reason;
                 if (model.IsApprovedByPersonnelManager)
                     entity.PersonnelManagerDateAccept = DateTime.Now;
             }
@@ -535,7 +536,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Organization = model.MissionOrganization;
                 entity.Goal = model.Goal;
                 entity.FinancesSource = model.FinancesSource;
-                entity.Reason = model.Reason;
+                //entity.Reason = model.Reason;
                 entity.Type = MissionTypeDao.Load(model.TypeId);
             }
         }
