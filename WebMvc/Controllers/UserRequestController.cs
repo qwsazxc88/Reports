@@ -245,21 +245,21 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
-             bool needToReload;
-             string error;
-             if (!ValidateSicklistEditModel(model, fileDto,out needToReload,out error))
+             //bool needToReload;
+             //string error;
+             if (!ValidateSicklistEditModel(model, fileDto/*,out needToReload,out error*/))
              {
-                 if(needToReload)
-                 {
-                     ModelState.Clear();
-                     if (!string.IsNullOrEmpty(error))
-                         ModelState.AddModelError("", error);
-                     return View(RequestBl.GetSicklistEditModel(model.Id, model.UserId)); 
-                 }
+                 //if(needToReload)
+                 //{
+                 //    ModelState.Clear();
+                 //    if (!string.IsNullOrEmpty(error))
+                 //        ModelState.AddModelError("", error);
+                 //    return View(RequestBl.GetSicklistEditModel(model.Id, model.UserId)); 
+                 //}
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
-             //string error;
+             string error;
              if (!RequestBl.SaveSicklistEditModel(model, fileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
@@ -275,11 +275,11 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
-         protected bool ValidateSicklistEditModel(SicklistEditModel model, UploadFileDto fileDto,
-             out bool needToReload,out string error)
+         protected bool ValidateSicklistEditModel(SicklistEditModel model, UploadFileDto fileDto
+             /*out bool needToReload,out string error*/)
          {
-             needToReload = false;
-             error = string.Empty;
+             //needToReload = false;
+             //error = string.Empty;
              if (model.Id > 0 && fileDto == null)
              {
                  UserRole role = AuthenticationService.CurrentUser.UserRole;
@@ -287,9 +287,27 @@ namespace WebMvc.Controllers
                      (role == UserRole.Manager && model.IsApprovedByManager) ||
                      (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
                  {
-                     error = "Заявка не может быть согласована без прикрепленого скана больничного.";
-                     needToReload = true;
-                     return false;
+                     
+                     ModelState.AddModelError(string.Empty, "Заявка не может быть согласована без прикрепленого скана больничного.");
+                     if(role == UserRole.Employee && model.IsApprovedByUser)
+                     {
+                         ModelState.Remove("IsApprovedByUser");
+                         model.IsApprovedByUser = false;
+                     }
+                     if (role == UserRole.Manager && model.IsApprovedByManager)
+                     {
+                         ModelState.Remove("IsApprovedByManager");
+                         model.IsApprovedByManager = false;
+                     }
+                     if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                     {
+                         ModelState.Remove("IsApprovedByPersonnelManager");
+                         model.IsApprovedByPersonnelManager = false;
+                     }
+                     //error = "Заявка не может быть согласована без прикрепленого скана больничного.";
+                     //needToReload = true;
+                     //return false;
+
                  }
              }
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
