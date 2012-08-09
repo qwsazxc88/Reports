@@ -22,6 +22,12 @@ alter table TimesheetDay  drop constraint FK_TimesheetDay_Status
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Timesheet]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
 alter table TimesheetDay  drop constraint FK_TimesheetDay_Timesheet
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_User]') AND parent_object_id = OBJECT_ID('MissionComment'))
+alter table MissionComment  drop constraint FK_MissionComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_Mission]') AND parent_object_id = OBJECT_ID('MissionComment'))
+alter table MissionComment  drop constraint FK_MissionComment_Mission
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_USER_ROLE]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_USER_ROLE
 
@@ -63,6 +69,18 @@ alter table HolidayWorkComment  drop constraint FK_HolidayWorkComment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWorkComment_HolidayWork]') AND parent_object_id = OBJECT_ID('HolidayWorkComment'))
 alter table HolidayWorkComment  drop constraint FK_HolidayWorkComment_HolidayWork
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_MissionType]') AND parent_object_id = OBJECT_ID('Mission'))
+alter table Mission  drop constraint FK_Mission_MissionType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_User]') AND parent_object_id = OBJECT_ID('Mission'))
+alter table Mission  drop constraint FK_Mission_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_CreatorUser]') AND parent_object_id = OBJECT_ID('Mission'))
+alter table Mission  drop constraint FK_Mission_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Mission'))
+alter table Mission  drop constraint FK_Mission_TimesheetStatus
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_User]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_User
@@ -130,28 +148,11 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_User]') AND parent_object_id = OBJECT_ID('MissionComment'))
-alter table MissionComment  drop constraint FK_MissionComment_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_Mission]') AND parent_object_id = OBJECT_ID('MissionComment'))
-alter table MissionComment  drop constraint FK_MissionComment_Mission
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_MissionType]') AND parent_object_id = OBJECT_ID('Mission'))
-alter table Mission  drop constraint FK_Mission_MissionType
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_User]') AND parent_object_id = OBJECT_ID('Mission'))
-alter table Mission  drop constraint FK_Mission_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_CreatorUser]') AND parent_object_id = OBJECT_ID('Mission'))
-alter table Mission  drop constraint FK_Mission_CreatorUser
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Mission'))
-alter table Mission  drop constraint FK_Mission_TimesheetStatus
-
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
@@ -163,6 +164,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Information') and
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkComment
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkType
 if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
+if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
 if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
@@ -185,8 +187,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPe
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
-if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
-if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
 
 create table Absence (
  Id INT IDENTITY NOT NULL,
@@ -232,6 +232,15 @@ create table TimesheetStatus (
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
 )
+create table MissionComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  MissionId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_MissionComment  primary key (Id)
+)
 create table [Users] (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -268,7 +277,6 @@ create table HolidayWork (
   Number INT not null,
   TypeId INT not null,
   WorkDate DATETIME null,
-  Rate INT not null,
   Hours INT not null,
   UserId INT not null,
   CreatorId INT not null,
@@ -335,6 +343,30 @@ create table Department (
   Code INT null,
   Name NVARCHAR(128) null,
   constraint PK_Department  primary key (Id)
+)
+create table Mission (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  BeginDate DATETIME not null,
+  EndDate DATETIME not null,
+  DaysCount INT not null,
+  Number INT not null,
+  TypeId INT not null,
+  Country NVARCHAR(255) not null,
+  Organization NVARCHAR(255) not null,
+  Goal NVARCHAR(255) not null,
+  FinancesSource NVARCHAR(255) not null,
+  Reason NVARCHAR(255) null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_Mission  primary key (Id)
 )
 create table Position (
  Id INT IDENTITY NOT NULL,
@@ -552,39 +584,6 @@ create table VacationType (
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
 )
-create table MissionComment (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  UserId INT not null,
-  MissionId INT not null,
-  DateCreated DATETIME not null,
-  Comment NVARCHAR(256) not null,
-  constraint PK_MissionComment  primary key (Id)
-)
-create table Mission (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  CreateDate DATETIME not null,
-  BeginDate DATETIME not null,
-  EndDate DATETIME not null,
-  DaysCount INT not null,
-  Number INT not null,
-  TypeId INT not null,
-  Country NVARCHAR(255) not null,
-  Organization NVARCHAR(255) not null,
-  Goal NVARCHAR(255) not null,
-  FinancesSource NVARCHAR(255) not null,
-  Reason NVARCHAR(255) null,
-  UserId INT not null,
-  CreatorId INT not null,
-  UserDateAccept DATETIME null,
-  ManagerDateAccept DATETIME null,
-  PersonnelManagerDateAccept DATETIME null,
-  SendTo1C DATETIME null,
-  DeleteDate DATETIME null,
-  TimesheetStatusId INT null,
-  constraint PK_Mission  primary key (Id)
-)
 create index Absence_AbsenceType on Absence (TypeId)
 create index IX_Absence_User_Id on Absence (UserId)
 create index IX_Absence_CreatorUser_Id on Absence (CreatorId)
@@ -601,6 +600,10 @@ create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
 create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
 alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
 alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
+create index IX_MissionComment_User_Id on MissionComment (UserId)
+create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
+alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
+alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
 create index IX_USER_ROLE_ID on [Users] (RoleId)
 create index IX_User_UserManager_Id on [Users] (ManagerId)
 create index IX_User_PersonnelManager_Id on [Users] (PersonnelManagerId)
@@ -629,6 +632,14 @@ create index IX_HolidayWorkComment_User_Id on HolidayWorkComment (UserId)
 create index IX_HolidayWorkComment_HolidayWork_Id on HolidayWorkComment (HolidayWorkId)
 alter table HolidayWorkComment add constraint FK_HolidayWorkComment_User foreign key (UserId) references [Users]
 alter table HolidayWorkComment add constraint FK_HolidayWorkComment_HolidayWork foreign key (HolidayWorkId) references HolidayWork
+create index Mission_MissionType on Mission (TypeId)
+create index IX_Mission_User_Id on Mission (UserId)
+create index IX_Mission_CreatorUser_Id on Mission (CreatorId)
+create index Mission_TimesheetStatus on Mission (TimesheetStatusId)
+alter table Mission add constraint FK_Mission_MissionType foreign key (TypeId) references MissionType
+alter table Mission add constraint FK_Mission_User foreign key (UserId) references [Users]
+alter table Mission add constraint FK_Mission_CreatorUser foreign key (CreatorId) references [Users]
+alter table Mission add constraint FK_Mission_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
@@ -672,18 +683,6 @@ alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (Tim
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
-create index IX_MissionComment_User_Id on MissionComment (UserId)
-create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
-alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
-alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
-create index Mission_MissionType on Mission (TypeId)
-create index IX_Mission_User_Id on Mission (UserId)
-create index IX_Mission_CreatorUser_Id on Mission (CreatorId)
-create index Mission_TimesheetStatus on Mission (TimesheetStatusId)
-alter table Mission add constraint FK_Mission_MissionType foreign key (TypeId) references MissionType
-alter table Mission add constraint FK_Mission_User foreign key (UserId) references [Users]
-alter table Mission add constraint FK_Mission_CreatorUser foreign key (CreatorId) references [Users]
-alter table Mission add constraint FK_Mission_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 

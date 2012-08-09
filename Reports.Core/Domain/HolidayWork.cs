@@ -17,7 +17,7 @@ namespace Reports.Core.Domain
         public virtual HolidayWorkType Type { get; set; }
      
         public virtual DateTime WorkDate { get; set; }
-        public virtual int? Rate { get; set; }
+        //public virtual int? Rate { get; set; }
         public virtual int? Hours { get; set; }
         
         public virtual TimesheetStatus TimesheetStatus { get; set; }

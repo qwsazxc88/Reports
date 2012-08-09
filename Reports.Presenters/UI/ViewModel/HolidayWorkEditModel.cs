@@ -24,10 +24,10 @@ namespace Reports.Presenters.UI.ViewModel
         [LocalizationDisplayName("HolidayWorkEditModel_Date_Required", typeof(Resources))]
         public DateTime? Date { get; set; }
        
-        [Display(Name = "Часовая тарифная ставка")]
-        [Required(ErrorMessageResourceName = "HolidayWorkEditModel_Rate_Required", ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("HolidayWorkEditModel_Rate_Required", typeof(Resources))]
-        public string Rate { get; set; }
+        //[Display(Name = "Часовая тарифная ставка")]
+        //[Required(ErrorMessageResourceName = "HolidayWorkEditModel_Rate_Required", ErrorMessageResourceType = typeof(Resources))]
+        //[LocalizationDisplayName("HolidayWorkEditModel_Rate_Required", typeof(Resources))]
+        //public string Rate { get; set; }
         [Display(Name = "Кол-во отработанных часов")]
         [Required(ErrorMessageResourceName = "HolidayWorkEditModel_Hours_Required", ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("HolidayWorkEditModel_Hours_Required", typeof(Resources))]

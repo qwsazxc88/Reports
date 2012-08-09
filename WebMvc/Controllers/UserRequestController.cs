@@ -190,15 +190,15 @@ namespace WebMvc.Controllers
          {
              if (model.IsTypeEditable)
              {
-                 if (!string.IsNullOrEmpty(model.Rate))
-                 {
-                     int rate;
-                     if (!Int32.TryParse(model.Rate, out rate))
-                         ModelState.AddModelError("Rate", "Неправильное поле 'Часовая тарифная ставка'.");
-                     else if (rate <= 0)
-                         ModelState.AddModelError("Rate",
-                                                  "Поле 'Часовая тарифная ставка' должно быть положительным числом.");
-                 }
+                 //if (!string.IsNullOrEmpty(model.Rate))
+                 //{
+                 //    int rate;
+                 //    if (!Int32.TryParse(model.Rate, out rate))
+                 //        ModelState.AddModelError("Rate", "Неправильное поле 'Часовая тарифная ставка'.");
+                 //    else if (rate <= 0)
+                 //        ModelState.AddModelError("Rate",
+                 //                                 "Поле 'Часовая тарифная ставка' должно быть положительным числом.");
+                 //}
                  if (!string.IsNullOrEmpty(model.Hours))
                  {
                      int hours;

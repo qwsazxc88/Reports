@@ -608,7 +608,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId = holidayWork.Type.Id;
                 model.Date = holidayWork.WorkDate;
                 model.TimesheetStatusId = holidayWork.TimesheetStatus == null ? 0 : holidayWork.TimesheetStatus.Id;
-                model.Rate = holidayWork.Rate.ToString();
+                //model.Rate = holidayWork.Rate.ToString();
                 model.Hours = holidayWork.Hours.ToString();
                 model.CreatorLogin = holidayWork.Creator.Login;
                 model.DocumentNumber = holidayWork.Number.ToString();
@@ -725,7 +725,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.WorkDate = model.Date.Value;
                 entity.Hours = Int32.Parse(model.Hours);
-                entity.Rate = Int32.Parse(model.Rate);
+                //entity.Rate = Int32.Parse(model.Rate);
                 entity.Type = HolidayWorkTypeDao.Load(model.TypeId);
             }
         }

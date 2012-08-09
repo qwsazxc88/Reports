@@ -9,7 +9,7 @@
 	
 	<many-to-one name="Type" class="HolidayWorkType" column="TypeId" foreign-key="FK_HolidayWork_HolidayWorkType" index="HolidayWork_HolidayWorkType"  not-null="true"/>
   <property name="WorkDate" not-null="false"/>
-  <property name="Rate" not-null="true"/>
+  <!--<property name="Rate" not-null="true"/>-->
   <property name="Hours" not-null="true"/>
   <many-to-one name="User" class="User" column="UserId" foreign-key="FK_HolidayWork_User" index="IX_HolidayWork_User_Id"  not-null="true"/>
   <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HolidayWork_CreatorUser" index="IX_HolidayWork_CreatorUser_Id"  not-null="true"/>

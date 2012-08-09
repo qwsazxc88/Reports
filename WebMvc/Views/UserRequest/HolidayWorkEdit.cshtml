@@ -75,14 +75,14 @@
             } 
          </td>
     </tr>*@
-    <tr>
+   @* <tr>
         <td>
             @Html.LabelFor(m => m.Rate):
         </td>
         <td>
             @Html.TextBoxFor(model => model.Rate, Model.IsTypeEditable ? null : (object)new { @readonly = "readonly" }) 
         </td>
-    </tr>
+    </tr>*@
     <tr>
         <td>
             @Html.LabelFor(m => m.Hours):
