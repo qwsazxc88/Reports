@@ -42,6 +42,13 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(MissionEditModel model);
         bool SaveMissionEditModel(MissionEditModel model, out string error);
 
+        DismissalListModel GetDismissalListModel();
+        void SetDismissalListModel(DismissalListModel model);
+        DismissalEditModel GetDismissalEditModel(int id, int userId);
+        bool SaveDismissalEditModel(DismissalEditModel model, out string error);
+        void ReloadDictionariesToModel(DismissalEditModel model);
+
+
         AttachmentModel GetFileContext(int id/*, int typeId*/);
     }
 }

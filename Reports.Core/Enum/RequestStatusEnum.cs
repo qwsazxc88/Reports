@@ -16,5 +16,6 @@
         Sicklist = 3,
         HolidayWork = 4,
         Mission = 5,
+        Dismissal = 6,
     }
 }

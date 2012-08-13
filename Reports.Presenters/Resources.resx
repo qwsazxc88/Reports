@@ -312,4 +312,10 @@
   <data name="MissionEditModel_Reason_Required" xml:space="preserve">
     <value>Основание командировки - обязательное поле</value>
   </data>
+  <data name="DismissalEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания Т. Д. - обязательное поле</value>
+  </data>
+  <data name="DismissalEditModel_Reason_Required" xml:space="preserve">
+    <value>Основание документ - обязательное поле</value>
+  </data>
 </root>

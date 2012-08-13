@@ -74,10 +74,88 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.Dismissal:
+                     return RedirectToAction("DismissalEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+         #region Dismissal
+         [HttpGet]
+         public ActionResult DismissalList()
+         {
+             DismissalListModel model = RequestBl.GetDismissalListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult DismissalList(DismissalListModel model)
+         {
+             RequestBl.SetDismissalListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult DismissalEdit(int id, int userId)
+         {
+             DismissalEditModel model = RequestBl.GetDismissalEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult DismissalEdit(DismissalEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             if (!ValidateDismissalEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveDismissalEditModel(model, out error))
+             {
+                 //HttpContext.AddError(new Exception(error));
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetDismissalEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected void CorrectDropdowns(DismissalEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsStatusEditable)
+                 model.StatusId = model.StatusIdHidden;
+             //model.DaysCount = model.DaysCountHidden;
+         }
+         protected bool ValidateDismissalEditModel(DismissalEditModel model)
+         {
+             //if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+             //    model.BeginDate > model.EndDate)
+             //    ModelState.AddModelError("BeginDate", "Дата начала не может превышать дату окончания.");
+             //UserRole role = AuthenticationService.CurrentUser.UserRole;
+             //if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Reason))
+             //    ModelState.AddModelError("Reason", "Основание командировки - обязательное поле.");
+             if(!string.IsNullOrEmpty(model.Compensation))
+             {
+                 decimal compensation;
+                 if(!Decimal.TryParse(model.Compensation,out compensation) ||
+                     compensation <= 0)
+                     ModelState.AddModelError("Compensation", "Кол-во дней компенсации должно быть положительным десятичным числом.");
+             }
+             return ModelState.IsValid;
+         }
+
+         #endregion
          #region Mission
          [HttpGet]
          public ActionResult MissionList()

@@ -123,6 +123,8 @@
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
     <Compile Include="UI\ViewModel\DialogErrorModel.cs" />
+    <Compile Include="UI\ViewModel\DismissalEditModel.cs" />
+    <Compile Include="UI\ViewModel\DismissalListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentCommentsModel.cs" />
     <Compile Include="UI\ViewModel\DocumentSubtypeListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentTypeListModel.cs" />

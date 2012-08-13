@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
+using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -49,6 +50,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IMissionTypeDao missionTypeDao;
         protected IMissionDao missionDao;
         protected IMissionCommentDao missionCommentDao;
+
+        protected IDismissalTypeDao dismissalTypeDao;
+        protected IDismissalDao dismissalDao;
+        protected IDismissalCommentDao dismissalCommentDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -172,6 +177,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionCommentDao); }
             set { missionCommentDao = value; }
         }
+        public IDismissalTypeDao DismissalTypeDao
+        {
+            get { return Validate.Dependency(dismissalTypeDao); }
+            set { dismissalTypeDao = value; }
+        }
+        public IDismissalDao DismissalDao
+        {
+            get { return Validate.Dependency(dismissalDao); }
+            set { dismissalDao = value; }
+        }
+        public IDismissalCommentDao DismissalCommentDao
+        {
+            get { return Validate.Dependency(dismissalCommentDao); }
+            set { dismissalCommentDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -208,8 +228,329 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
                            new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
-                           new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку")
+                           new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
+                           new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение")
                        };
+        }
+        #endregion
+        #region Dismissal
+        public DismissalListModel GetDismissalListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            DismissalListModel model = new DismissalListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model, user);
+            return model;
+        }
+        public void SetDismissalListModel(DismissalListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(DismissalListModel model, User user)
+        {
+
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = DismissalDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.PositionId,
+                model.TypeId,
+                model.StatusId,
+                //model.BeginDate,
+                model.EndDate);
+        }
+        protected void SetDictionariesToModel(DismissalListModel model, User user)
+        {
+            model.Departments = GetDepartments(user);
+            model.Types = GetDismissalTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+        protected List<IdNameDto> GetDismissalTypes(bool addAll)
+        {
+            var typeList = DismissalTypeDao.LoadAll().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name+" "+(x.Reason.Length > 64?x.Reason.Substring(0,64)+" ...":x.Reason))).OrderBy(x =>x.Name).ToList();
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+
+        public DismissalEditModel GetDismissalEditModel(int id, int userId)
+        {
+            DismissalEditModel model = new DismissalEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            Dismissal dismissal = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                dismissal = DismissalDao.Load(id);
+                if (dismissal == null)
+                    throw new ArgumentException(string.Format("Командировка (id {0}) не найдена в базе данных.", id));
+                model.Version = dismissal.Version;
+                model.TypeId = dismissal.Type.Id;
+                model.EndDate = dismissal.EndDate;
+                model.Compensation = dismissal.Compensation.HasValue? dismissal.Compensation.Value.ToString():string.Empty;
+                model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
+                model.Reason = dismissal.Reason;
+                model.CreatorLogin = dismissal.Creator.Login;
+                model.DocumentNumber = dismissal.Number.ToString();
+                model.DateCreated = dismissal.CreateDate.ToShortDateString();
+                SetHiddenFields(model);
+                if (dismissal.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+            SetFlagsState(id, user, dismissal, model);
+            LoadDictionaries(model);
+            return model;
+        }
+        protected void LoadDictionaries(DismissalEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
+            model.Statuses = GetTimesheetStatusesForDismissal();
+            model.Types = GetDismissalTypes(false);
+        }
+        protected void SetHiddenFields(DismissalEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.StatusIdHidden = model.StatusId;
+            //model.DaysCountHidden = model.DaysCount;
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForDismissal()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => (x.Id == 7)).ToList().
+                ConvertAll(x => new IdNameDto(x.Id, x.Name)).OrderBy(x => x.Name).ToList();
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        protected void SetFlagsState(int id, User user, Dismissal entity, DismissalEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        model.IsStatusEditable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsStatusEditable = true;
+                        model.IsPersonnelFieldsEditable = true;
+                        break;
+                }
+                return;
+            }
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByManagerEnable = true;
+                        if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                        }
+                    }
+                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsTypeEditable || model.IsStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
+        }
+        protected void SetFlagsState(DismissalEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsStatusEditable = state;
+            model.IsTypeEditable = state;
+            model.IsPersonnelFieldsEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+        }
+        public bool SaveDismissalEditModel(DismissalEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Dismissal dismissal;
+                if (model.Id == 0)
+                {
+                    dismissal = new Dismissal
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Dismissal),
+                        User = user
+                    };
+                    ChangeEntityProperties(current, dismissal, model, user);
+                    DismissalDao.SaveAndFlush(dismissal);
+                    model.Id = dismissal.Id;
+                }
+                else
+                {
+                    dismissal = DismissalDao.Load(model.Id);
+                    if (dismissal.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        dismissal.DeleteDate = DateTime.Now;
+                        DismissalDao.SaveAndFlush(dismissal);
+                        model.IsDelete = false;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, dismissal, model, user);
+                        DismissalDao.SaveAndFlush(dismissal);
+                    }
+                    if (dismissal.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = dismissal.Number.ToString();
+                model.Version = dismissal.Version;
+                //model.DaysCount = dismissal.DaysCount;
+                model.CreatorLogin = dismissal.Creator.Login;
+                model.DateCreated = dismissal.CreateDate.ToShortDateString();
+                SetFlagsState(dismissal.Id, user, dismissal, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DismissalDao.RollbackTran();
+                Log.Error("Error on SaveDismissalEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, Dismissal entity, DismissalEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsApprovedByUser)
+                entity.UserDateAccept = DateTime.Now;
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                if (model.IsApprovedByManager)
+                    entity.ManagerDateAccept = DateTime.Now;
+            }
+            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id
+                && !entity.PersonnelManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                entity.Compensation = string.IsNullOrEmpty(model.Compensation)?new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
+                if (model.IsApprovedByPersonnelManager)
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
+            }
+            if (model.IsTypeEditable)
+            {
+                entity.EndDate = model.EndDate.Value;
+                entity.Reason = model.Reason;
+                entity.Type = DismissalTypeDao.Load(model.TypeId);
+            }
+        }
+        public void ReloadDictionariesToModel(DismissalEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Dismissal dismissal = DismissalDao.Load(model.Id);
+                model.CreatorLogin = dismissal.Creator.Login;
+                model.DocumentNumber = dismissal.Number.ToString();
+                model.DateCreated = dismissal.CreateDate.ToShortDateString();
+            }
         }
         #endregion
         #region Mission
@@ -2132,6 +2473,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.Dismissal:
+                    Dismissal dismissal = DismissalDao.Load(id);
+                    if ((dismissal.Comments != null) && (dismissal.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = dismissal.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -2203,6 +2557,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         MissionCommentDao.MergeAndFlush(missionComment);
+                        break;
+                    case (int)RequestTypeEnum.Dismissal:
+                        Dismissal dismissal = DismissalDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        DismissalComment dismissalComment = new DismissalComment
+                        {
+                            Comment = model.Comment,
+                            Dismissal = dismissal,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        DismissalCommentDao.MergeAndFlush(dismissalComment);
                         break;
                 }
                 //doc.Comments.Add(comment);

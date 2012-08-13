@@ -94,6 +94,8 @@
     <Compile Include="Dao\IDao.cs" />
     <Compile Include="Dao\IDbVersionDao.cs" />
     <Compile Include="Dao\IDepartmentDao.cs" />
+    <Compile Include="Dao\IDismissalCommentDao.cs" />
+    <Compile Include="Dao\IDismissalDao.cs" />
     <Compile Include="Dao\IDocumentCommentDao.cs" />
     <Compile Include="Dao\IDocumentDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
@@ -112,6 +114,9 @@
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
     <Compile Include="Dao\Impl\DepartmentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalCommentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalDao.cs" />
+    <Compile Include="Dao\Impl\DismissalTypeDao.cs" />
     <Compile Include="Dao\Impl\DocumentCommentDao.cs" />
     <Compile Include="Dao\Impl\DocumentDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
@@ -121,6 +126,7 @@
     <Compile Include="Dao\Impl\HolidayWorkCommentDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\Impl\IDismissalTypeDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
@@ -175,10 +181,16 @@
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Department.cs" />
+    <Compile Include="Domain\Dismissal.cs" />
+    <Compile Include="Domain\DismissalComment.cs" />
+    <Compile Include="Domain\DismissalType.cs" />
     <Compile Include="Domain\Document.cs" />
     <Compile Include="Domain\DocumentComment.cs" />
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
+    <Compile Include="Domain\EmploymentAddition.cs" />
+    <Compile Include="Domain\EmploymentHoursType.cs" />
+    <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
@@ -402,6 +414,22 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\Mission.hbm.xml" />
     <EmbeddedResource Include="Domain\MissionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentHoursType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentAddition.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DismissalType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Dismissal.hbm.xml" />
+    <EmbeddedResource Include="Domain\DismissalComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

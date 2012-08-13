@@ -154,7 +154,7 @@ namespace Reports.Core.Dao.Impl
             //criteria.AddOrder(new Order("Name", true));
             return criteria.List<TEntity>();
         }
-        public IList<TEntity> LoadAllSorted()
+        public virtual IList<TEntity> LoadAllSorted()
         {
             ICriteria criteria = Session.CreateCriteria(typeof(TEntity));
             criteria.AddOrder(new Order("Name", true));

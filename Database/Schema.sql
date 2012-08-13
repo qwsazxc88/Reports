@@ -22,6 +22,18 @@ alter table TimesheetDay  drop constraint FK_TimesheetDay_Status
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Timesheet]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
 alter table TimesheetDay  drop constraint FK_TimesheetDay_Timesheet
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_DismissalType]') AND parent_object_id = OBJECT_ID('Dismissal'))
+alter table Dismissal  drop constraint FK_Dismissal_DismissalType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_User]') AND parent_object_id = OBJECT_ID('Dismissal'))
+alter table Dismissal  drop constraint FK_Dismissal_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_CreatorUser]') AND parent_object_id = OBJECT_ID('Dismissal'))
+alter table Dismissal  drop constraint FK_Dismissal_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Dismissal'))
+alter table Dismissal  drop constraint FK_Dismissal_TimesheetStatus
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_User]') AND parent_object_id = OBJECT_ID('MissionComment'))
 alter table MissionComment  drop constraint FK_MissionComment_User
 
@@ -63,6 +75,12 @@ alter table [UserToDepartment]  drop constraint FK_UserToDepartment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_Department]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
 alter table [UserToDepartment]  drop constraint FK_UserToDepartment_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DismissalComment_User]') AND parent_object_id = OBJECT_ID('DismissalComment'))
+alter table DismissalComment  drop constraint FK_DismissalComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DismissalComment_Dismissal]') AND parent_object_id = OBJECT_ID('DismissalComment'))
+alter table DismissalComment  drop constraint FK_DismissalComment_Dismissal
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWorkComment_User]') AND parent_object_id = OBJECT_ID('HolidayWorkComment'))
 alter table HolidayWorkComment  drop constraint FK_HolidayWorkComment_User
@@ -151,6 +169,7 @@ alter table UserLogin  drop constraint FK_UserLogin_User
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
+if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Dismissal
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
@@ -159,8 +178,11 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and
 if exists (select * from dbo.sysobjects where id = object_id(N'[UserToDepartment]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [UserToDepartment]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalComment
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
+if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentAddition') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentAddition
+if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentType
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkComment
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkType
 if exists (select * from dbo.sysobjects where id = object_id(N'Department') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Department
@@ -169,6 +191,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
 if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
+if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentHoursType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentHoursType
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
@@ -179,6 +202,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') 
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceType
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'DismissalType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalType
 if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
@@ -224,6 +248,25 @@ create table TimesheetDay (
   StatusId INT not null,
   TimesheetId INT not null,
   constraint PK_TimesheetDay  primary key (Id)
+)
+create table Dismissal (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  EndDate DATETIME not null,
+  Number INT not null,
+  TypeId INT not null,
+  Compensation DECIMAL(19, 2) null,
+  Reason NVARCHAR(256) not null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_Dismissal  primary key (Id)
 )
 create table TimesheetStatus (
  Id INT IDENTITY NOT NULL,
@@ -308,6 +351,15 @@ create table Role (
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
 )
+create table DismissalComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  DismissalId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_DismissalComment  primary key (Id)
+)
 create table RequestStatus (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -320,6 +372,20 @@ create table Information (
   Subject NVARCHAR(1024) not null,
   Message NVARCHAR(MAX) not null,
   constraint PK_Information  primary key (Id)
+)
+create table EmploymentAddition (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(255) null,
+  Name NVARCHAR(128) not null,
+  CalculationMethod NVARCHAR(255) null,
+  constraint PK_EmploymentAddition  primary key (Id)
+)
+create table EmploymentType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) not null,
+  constraint PK_EmploymentType  primary key (Id)
 )
 create table HolidayWorkComment (
  Id INT IDENTITY NOT NULL,
@@ -396,6 +462,12 @@ create table DBVersion (
  Id INT IDENTITY NOT NULL,
   Version NVARCHAR(20) not null,
   constraint PK_DBVersion  primary key (Id)
+)
+create table EmploymentHoursType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) not null,
+  constraint PK_EmploymentHoursType  primary key (Id)
 )
 create table SicklistComment (
  Id INT IDENTITY NOT NULL,
@@ -492,6 +564,13 @@ create table Document (
   OutsourcingManagerDateAccept DATETIME null,
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
+)
+create table DismissalType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(128) not null,
+  Reason NVARCHAR(512) not null,
+  constraint PK_DismissalType  primary key (Id)
 )
 create table Sicklist (
  Id INT IDENTITY NOT NULL,
@@ -600,6 +679,14 @@ create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
 create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
 alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
 alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
+create index Dismissal_DismissalType on Dismissal (TypeId)
+create index IX_Dismissal_User_Id on Dismissal (UserId)
+create index IX_Dismissal_CreatorUser_Id on Dismissal (CreatorId)
+create index Dismissal_TimesheetStatus on Dismissal (TimesheetStatusId)
+alter table Dismissal add constraint FK_Dismissal_DismissalType foreign key (TypeId) references DismissalType
+alter table Dismissal add constraint FK_Dismissal_User foreign key (UserId) references [Users]
+alter table Dismissal add constraint FK_Dismissal_CreatorUser foreign key (CreatorId) references [Users]
+alter table Dismissal add constraint FK_Dismissal_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index IX_MissionComment_User_Id on MissionComment (UserId)
 create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
 alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
@@ -628,6 +715,10 @@ create index IX_UserToDepartment_User_Id on [UserToDepartment] (UserId)
 create index IX_UserToDepartment_Department_Id on [UserToDepartment] (DepartmentId)
 alter table [UserToDepartment] add constraint FK_UserToDepartment_User foreign key (UserId) references [Users]
 alter table [UserToDepartment] add constraint FK_UserToDepartment_Department foreign key (DepartmentId) references Department
+create index IX_DismissalComment_User_Id on DismissalComment (UserId)
+create index IX_DismissalComment_Dismissal_Id on DismissalComment (DismissalId)
+alter table DismissalComment add constraint FK_DismissalComment_User foreign key (UserId) references [Users]
+alter table DismissalComment add constraint FK_DismissalComment_Dismissal foreign key (DismissalId) references Dismissal
 create index IX_HolidayWorkComment_User_Id on HolidayWorkComment (UserId)
 create index IX_HolidayWorkComment_HolidayWork_Id on HolidayWorkComment (HolidayWorkId)
 alter table HolidayWorkComment add constraint FK_HolidayWorkComment_User foreign key (UserId) references [Users]
@@ -763,6 +854,112 @@ INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (null,'Отгул
 INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по России',1)
 INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку по СНГ',1)
 INSERT INTO [dbo].[MissionType]  ([Name],Version) values ('Командировку  за рубеж',1)
+
+INSERT INTO [dbo].[EmploymentType]  ([Name],Version) values ('По совместительству',1)
+INSERT INTO [dbo].[EmploymentType]  ([Name],Version) values ('На основное место работы',1)
+INSERT INTO [dbo].[EmploymentType]  ([Name],Version) values ('По срочному трудовому договору',1)
+INSERT INTO [dbo].[EmploymentType]  ([Name],Version) values ('Переводом',1)
+
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка   0,2 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,001',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,01',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,01',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,1',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,16',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,2 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,55 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,68 ставки (27,2 часа)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,7 ставки (28 часов)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0,8 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('0.8',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('1 час',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('10 часов (0,25)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('10-часовая',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('12 ч (0,3ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('14ч (0,35 ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('16 ч (0,4ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('16,8 ч (0,42 ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('20 часов (0,5 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('24 ч(0,6ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('25 (0,625)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('29,2 часа (0.73 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('30 (0,75ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('32 часа ( 0.8ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('33.6 часа ( 0.84ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('34,8 часа ( 0,87 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('35 часов (0,87 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('35,6 часа (0,89ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('36,4 часа ( 0,91ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('36.8 часа  (0,92ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('37,5 часов (0,94 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('38,4 часа (0,96ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('39.6 часа ( 0.99ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('4 часа (0,1 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('6,4 часа (0,16 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('6,8 часа (0,17 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('График 15ч/н (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('график 2 через 2 2смена',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('график 2 через 2 по 11 часов 1смена',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('График 25ч/н (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной график',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной график (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной график 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной график 20часов неделя (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Основной график 40часов неделя',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка (30 часов)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 0.4ст',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('пятидневка 10часов (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 30 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 32 часа',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 35',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 35 часов (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Пятидневка 37,5',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Сменный',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Сокращенный день по 7 часов (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Сум. учет раб. времени',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Name],Version) values ('Суммированный учет',1)
+
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за выслугу лет рабочим и служащим #1114','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за квалификацию #1115','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за разъездной характер работы #1116','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка Персональная #1117','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка территориальная #1123','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00070','Районный коэффициент #1301','Процентом Зависимое второго уровня',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values (null,'Расширение зоны обслуживания #1120','По месячной тарифной ставке по часам Первичное',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00070','Северная надбавка 1 #1302','Процентом Зависимое второго уровня',1)
+
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Заявление работника',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Служебная записка',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Распоряжение руководителя',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Медицинское заключение',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Приказ руководителя',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Справка о смерти',1)
+
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 1 ст. 81 ТК','Ликвидация',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 1 части 1 ст. 77 ТК','Соглашение сторон.',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 2 ст. 77 ТК','Истечение срока трудового договора.',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 2 части 1 ст. 81 ТК','Сокращение численности штата',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 3 ст. 77 ТК','Расторжение трудового договора по инициативе работника.',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 4 ст. 77 ТК','Расторжение трудового договора по инициативе работодателя',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 5 ст. 77 ТК','Перевод работника на другую работу к другому работодателю',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 5 части первой ст. 77','Перевод работника на выборную должность',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 6 ст. 81 ТК','Расторжение трудового договора по инициативе работодателя за прогул.',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 6 ст.83 ТК','Смерть  работника  либо работодателя - физ. лица, а также признание судом работника либо работодателя - физ. лица умершим',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 7 ч. 1 ст.81 ТК РФ','Трудовой договор расторгнут в связи с совершением виновных действий работником',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 7 части 1 ст. 77','Отказ работника от продолжения работы в связи с изменением определенных сторонами условий ТД',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.3 части 1 ст. 77 ТК РФ','Собственное желание',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.5 части первой ст. 83 ТК РФ','Трудовой договор прекращен в связи с признанием работника полностью неспособным к трудовой деятельности в соответствии с медицинским заключением',1)
+INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.6 ч.1 ст. 83','Трудовой договор прекращен в связи со смертью работника',1)
+
+
+--INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 1',1)
+--INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 2',1)
+
 
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('В размере ММОТ',1)
 INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Name],Version) values ('Общее, в соответствии с Законом о бюджете ФСС',1)

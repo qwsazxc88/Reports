@@ -187,6 +187,24 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата окончания Т. Д. - обязательное поле.
+        /// </summary>
+        internal static string DismissalEditModel_EndDate_Required {
+            get {
+                return ResourceManager.GetString("DismissalEditModel_EndDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Основание документ - обязательное поле.
+        /// </summary>
+        internal static string DismissalEditModel_Reason_Required {
+            get {
+                return ResourceManager.GetString("DismissalEditModel_Reason_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Информация - обязательное поле.
         /// </summary>
         internal static string EditInfoModel_Message_Required {

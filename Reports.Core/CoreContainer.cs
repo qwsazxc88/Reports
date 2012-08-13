@@ -240,6 +240,15 @@ namespace Reports.Core
             Register(Component.For(typeof (IMissionCommentDao)).
                          ImplementedBy(typeof (MissionCommentDao)).
                          LifeStyle.Is(type));
+            Register(Component.For(typeof(IDismissalTypeDao)).
+                         ImplementedBy(typeof(DismissalTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof(IDismissalDao)).
+                        ImplementedBy(typeof(DismissalDao)).
+                        LifeStyle.Is(type));
+            Register(Component.For(typeof(IDismissalCommentDao)).
+                         ImplementedBy(typeof(DismissalCommentDao)).
+                         LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))
