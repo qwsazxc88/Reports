@@ -48,6 +48,11 @@ namespace Reports.Presenters.UI.Bl
         bool SaveDismissalEditModel(DismissalEditModel model, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
 
+        TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
+        void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model);
+        TimesheetCorrectionEditModel GetTimesheetCorrectionEditModel(int id, int userId);
+        void ReloadDictionariesToModel(TimesheetCorrectionEditModel model);
+        bool SaveTimesheetCorrectionEditModel(TimesheetCorrectionEditModel model, out string error);
 
         AttachmentModel GetFileContext(int id/*, int typeId*/);
     }

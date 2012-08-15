@@ -318,4 +318,10 @@
   <data name="DismissalEditModel_Reason_Required" xml:space="preserve">
     <value>Основание документ - обязательное поле</value>
   </data>
+  <data name="TimesheetCorrectionEditModel_Date_Required" xml:space="preserve">
+    <value>Дата  - обязательное поле</value>
+  </data>
+  <data name="TimesheetCorrectionEditModel_Hours_Required" xml:space="preserve">
+    <value>Часы  - обязательное поле</value>
+  </data>
 </root>

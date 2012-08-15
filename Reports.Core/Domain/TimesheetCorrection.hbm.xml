@@ -1,0 +1,29 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="TimesheetCorrection">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <property name="EventDate" not-null="true"/>
+        
+    <property name="Number"  not-null="true"/>
+	
+	<many-to-one name="Type" class="TimesheetCorrectionType" column="TypeId" foreign-key="FK_TimesheetCorrection_TimesheetCorrectionType" index="TimesheetCorrection_TimesheetCorrectionType"  not-null="true"/>
+  <property name="Hours" not-null="false"/>
+ 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_TimesheetCorrection_User" index="IX_TimesheetCorrection_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_TimesheetCorrection_CreatorUser" index="IX_TimesheetCorrection_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+    <property name="DeleteDate" not-null="false"/>
+
+  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_TimesheetCorrection_TimesheetStatus" index="TimesheetCorrection_TimesheetStatus"  not-null="false"/>
+
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="TimesheetCorrectionId" foreign-key="FK_TimesheetCorrectionComment_TimesheetCorrection"/>
+    <one-to-many class="TimesheetCorrectionComment"/>
+  </bag>
+	</class>
+</hibernate-mapping>

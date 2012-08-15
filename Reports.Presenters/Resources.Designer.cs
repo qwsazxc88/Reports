@@ -601,6 +601,24 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата  - обязательное поле.
+        /// </summary>
+        internal static string TimesheetCorrectionEditModel_Date_Required {
+            get {
+                return ResourceManager.GetString("TimesheetCorrectionEditModel_Date_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Часы  - обязательное поле.
+        /// </summary>
+        internal static string TimesheetCorrectionEditModel_Hours_Required {
+            get {
+                return ResourceManager.GetString("TimesheetCorrectionEditModel_Hours_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Часы - обязательное поле.
         /// </summary>
         internal static string TimesheetListModel_Hours_Required {

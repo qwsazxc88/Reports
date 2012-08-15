@@ -80,10 +80,80 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.TimesheetCorrection:
+                     return RedirectToAction("TimesheetCorrectionEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+         #region Timesheet Correction
+         [HttpGet]
+         public ActionResult TimesheetCorrectionList()
+         {
+             TimesheetCorrectionListModel model = RequestBl.GetTimesheetCorrectionListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult TimesheetCorrectionList(TimesheetCorrectionListModel model)
+         {
+             RequestBl.SetTimesheetCorrectionListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult TimesheetCorrectionEdit(int id, int userId)
+         {
+             TimesheetCorrectionEditModel model = RequestBl.GetTimesheetCorrectionEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult TimesheetCorrectionEdit(TimesheetCorrectionEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             if (!ValidateTimesheetCorrectionEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveTimesheetCorrectionEditModel(model, out error))
+             {
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetTimesheetCorrectionEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected void CorrectDropdowns(TimesheetCorrectionEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsStatusEditable)
+                 model.StatusId = model.StatusIdHidden;
+         }
+         protected bool ValidateTimesheetCorrectionEditModel(TimesheetCorrectionEditModel model)
+         {
+             if (!string.IsNullOrEmpty(model.Hours))
+             {
+                 int hours;
+                 if (!Int32.TryParse(model.Hours, out hours) ||
+                     hours <= 0 || hours > 24)
+                     ModelState.AddModelError("Hours", "Поле 'Часы' должно быть положительным целым числом не больше 24.");
+             }
+             return ModelState.IsValid;
+         }
+
+         #endregion
          #region Dismissal
          [HttpGet]
          public ActionResult DismissalList()

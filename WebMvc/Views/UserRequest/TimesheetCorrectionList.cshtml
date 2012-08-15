@@ -1,8 +1,8 @@
 ﻿@using Reports.Core
 @using Reports.Presenters.Services.Impl
-@model Reports.Presenters.UI.ViewModel.DismissalListModel
+@model Reports.Presenters.UI.ViewModel.TimesheetCorrectionListModel
 @{
-    ViewBag.Title = "Увольнения";
+    ViewBag.Title = "Корректировки табеля";
 }
 
 @using (Html.BeginForm())
@@ -29,11 +29,17 @@
     </tr>
     <tr>
         <td>
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
+        </td>
+        @*<td>
             @Html.LabelFor(m => m.EndDate):
         </td>
         <td>
             @Html.EditorFor(model => model.EndDate) 
-         </td>
+         </td>*@
         
         <td>
             @Html.LabelFor(m => m.StatusId):
@@ -41,20 +47,6 @@
         <td>
             @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
          </td>
-    </tr>
-     <tr>
-        @*<td>
-            @Html.LabelFor(m => m.BeginDate):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.BeginDate) 
-        </td>*@
-       <td>
-            @Html.LabelFor(m => m.TypeId):
-        </td>
-        <td colspan="3">
-            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
-        </td>
     </tr>
     <tr>
       <td colspan="4">
@@ -65,7 +57,7 @@
      <tr>
         <td colspan="4">
          @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-         {@Html.ActionLink("Создать новую заявку", "DismissalEdit", new { id = 0, userId = Model.UserId })}
+         {@Html.ActionLink("Создать новую заявку", "TimesheetCorrectionEdit", new { id = 0, userId = Model.UserId })}
          else
          {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
         </td>
@@ -83,7 +75,7 @@
                     {
                         <tr>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("DismissalEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
+                                <a class="ui-notify-close" href='@Url.Action("TimesheetCorrectionEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
                             <td>@doc.Date</td>
                             </tr>
@@ -95,13 +87,12 @@
 </table> 
     <script type="text/javascript">
     $(document).ready(function () {
-        //$("#BeginDate").datepicker();
-        $("#EndDate").datepicker();
-        $(".hasDatepicker").width("75px");
+//        $("#EndDate").datepicker();
+//        $(".hasDatepicker").width("75px");
     });
     function resetFilter() {
-        //$("#BeginDate").val('');
-        $("#EndDate").val('');
+//        $("#BeginDate").val('');
+//        $("#EndDate").val('');
         if ($('#DepartmentId option').length > 1)
             $("#DepartmentId").val('0');
         if ($('#PositionId option').length > 1)

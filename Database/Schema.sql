@@ -166,6 +166,24 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrectionComment_User]') AND parent_object_id = OBJECT_ID('TimesheetCorrectionComment'))
+alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrectionComment_TimesheetCorrection]') AND parent_object_id = OBJECT_ID('TimesheetCorrectionComment'))
+alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionComment_TimesheetCorrection
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_TimesheetCorrectionType]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
+alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_TimesheetCorrectionType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_User]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
+alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_CreatorUser]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
+alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_TimesheetStatus]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
+alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_TimesheetStatus
+
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
@@ -178,6 +196,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and
 if exists (select * from dbo.sysobjects where id = object_id(N'[UserToDepartment]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [UserToDepartment]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalComment
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
@@ -211,6 +230,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPe
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionComment
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrection') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrection
 
 create table Absence (
  Id INT IDENTITY NOT NULL,
@@ -350,6 +371,14 @@ create table Role (
   Version INT not null,
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
+)
+create table TimesheetCorrectionType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code INT not null,
+  Name NVARCHAR(128) not null,
+  Reason NVARCHAR(512) not null,
+  constraint PK_TimesheetCorrectionType  primary key (Id)
 )
 create table DismissalComment (
  Id INT IDENTITY NOT NULL,
@@ -663,6 +692,33 @@ create table VacationType (
   Name NVARCHAR(128) null,
   constraint PK_VacationType  primary key (Id)
 )
+create table TimesheetCorrectionComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  TimesheetCorrectionId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_TimesheetCorrectionComment  primary key (Id)
+)
+create table TimesheetCorrection (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  EventDate DATETIME not null,
+  Number INT not null,
+  TypeId INT not null,
+  Hours INT null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_TimesheetCorrection  primary key (Id)
+)
 create index Absence_AbsenceType on Absence (TypeId)
 create index IX_Absence_User_Id on Absence (UserId)
 create index IX_Absence_CreatorUser_Id on Absence (CreatorId)
@@ -774,6 +830,18 @@ alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (Tim
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index IX_TimesheetCorrectionComment_User_Id on TimesheetCorrectionComment (UserId)
+create index IX_TimesheetCorrectionComment_TimesheetCorrection_Id on TimesheetCorrectionComment (TimesheetCorrectionId)
+alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_User foreign key (UserId) references [Users]
+alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_TimesheetCorrection foreign key (TimesheetCorrectionId) references TimesheetCorrection
+create index TimesheetCorrection_TimesheetCorrectionType on TimesheetCorrection (TypeId)
+create index IX_TimesheetCorrection_User_Id on TimesheetCorrection (UserId)
+create index IX_TimesheetCorrection_CreatorUser_Id on TimesheetCorrection (CreatorId)
+create index TimesheetCorrection_TimesheetStatus on TimesheetCorrection (TimesheetStatusId)
+alter table TimesheetCorrection add constraint FK_TimesheetCorrection_TimesheetCorrectionType foreign key (TypeId) references TimesheetCorrectionType
+alter table TimesheetCorrection add constraint FK_TimesheetCorrection_User foreign key (UserId) references [Users]
+alter table TimesheetCorrection add constraint FK_TimesheetCorrection_CreatorUser foreign key (CreatorId) references [Users]
+alter table TimesheetCorrection add constraint FK_TimesheetCorrection_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
@@ -955,6 +1023,13 @@ INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п. 7 части
 INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.3 части 1 ст. 77 ТК РФ','Собственное желание',1)
 INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.5 части первой ст. 83 ТК РФ','Трудовой договор прекращен в связи с признанием работника полностью неспособным к трудовой деятельности в соответствии с медицинским заключением',1)
 INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.6 ч.1 ст. 83','Трудовой договор прекращен в связи со смертью работника',1)
+
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (2,'Оклад по часам #1102','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (3,'Оплата по часовому тарифу #1103','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (66,'Оплата почасового простоя от оклада по часам #1707','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (67,'Оплата почасового простоя по часовому тарифу# 1708','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (68,'Почасовой простой по вине работодателя #1702','По среднему заработку',1)
+
 
 
 --INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 1',1)

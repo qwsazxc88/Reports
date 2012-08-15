@@ -17,5 +17,6 @@
         HolidayWork = 4,
         Mission = 5,
         Dismissal = 6,
+        TimesheetCorrection = 7,
     }
 }

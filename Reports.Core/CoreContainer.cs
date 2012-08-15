@@ -249,6 +249,15 @@ namespace Reports.Core
             Register(Component.For(typeof(IDismissalCommentDao)).
                          ImplementedBy(typeof(DismissalCommentDao)).
                          LifeStyle.Is(type));
+            Register(Component.For(typeof(ITimesheetCorrectionTypeDao)).
+                         ImplementedBy(typeof(TimesheetCorrectionTypeDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof(ITimesheetCorrectionDao)).
+                         ImplementedBy(typeof(TimesheetCorrectionDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof(ITimesheetCorrectionCommentDao)).
+                        ImplementedBy(typeof(TimesheetCorrectionCommentDao)).
+                        LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))

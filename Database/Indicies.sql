@@ -179,6 +179,13 @@ INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.3 части 
 INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.5 части первой ст. 83 ТК РФ','Трудовой договор прекращен в связи с признанием работника полностью неспособным к трудовой деятельности в соответствии с медицинским заключением',1)
 INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('п.6 ч.1 ст. 83','Трудовой договор прекращен в связи со смертью работника',1)
 
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (2,'Оклад по часам #1102','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (3,'Оплата по часовому тарифу #1103','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (66,'Оплата почасового простоя от оклада по часам #1707','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (67,'Оплата почасового простоя по часовому тарифу# 1708','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values (68,'Почасовой простой по вине работодателя #1702','По среднему заработку',1)
+
+
 
 --INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 1',1)
 --INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 2',1)
