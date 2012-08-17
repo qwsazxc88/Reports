@@ -25,6 +25,7 @@ namespace Reports.Presenters.UI.ViewModel
         ErrorMessageResourceType = typeof(Resources))]
         [ValidatePasswordLength]
         public string Password { get; set; }
+        public bool IsPasswordHide { get; set; }
         [Email]
         [Display(Name = "Адрес эл. почты")]
         public string Email { get; set; }
@@ -46,6 +47,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsActive { get; set; }
         public bool IsActiveEditable { get; set; }
         public bool IsActiveHidden { get; set; }
+
+        public bool IsNew { get; set; }
+        //public bool IsNewHidden { get; set; }
 
         public string Error { get; set; }
         public bool NeedToReload { get; set; }

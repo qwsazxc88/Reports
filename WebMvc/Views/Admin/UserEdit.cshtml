@@ -45,20 +45,15 @@
             @Html.LabelFor(m => m.Login)
         </td>
         <td>
-@*            @if (Model.IsLoginEditable)
-            {*@
              @Html.TextBoxFor(m => m.Login, Model.IsLoginEditable ? (object)new { maxlength = 64 } : (object)new { @readonly = "readonly", maxlength = 64 })
              <input type="hidden" id="IsLoginEditable" name="IsLoginEditable" value="@Model.IsLoginEditable" />
-@*            }
-            else
-            {
-                @Html.DisplayFor(m => m.Login)
-            }*@
         </td>
     </tr>
-    <tr>
+    @Html.HiddenFor(model => model.IsPasswordHide)
+    <tr @if(Model.IsPasswordHide){<text>style="display:none"</text>}>
         <td>
             @Html.LabelFor(m => m.Password)
+
         </td>
         <td>
             @Html.TextBoxFor(m => m.Password, new { maxlength = 64 })
@@ -69,7 +64,7 @@
             @Html.LabelFor(m => m.Email)
         </td>
         <td>
-            @Html.TextBoxFor(m => m.Email, new { maxlength = 512 })
+            @Html.TextBoxFor(m => m.Email,Model.IsPasswordHide ?  (object)new { @readonly = "readonly", maxlength = 512 }: (object)new { maxlength = 512 })
         </td>
     </tr>
     <tr>
@@ -126,6 +121,7 @@
                 <input type="hidden" id="IsActiveEditable" name="IsActiveEditable" value="@Model.IsActiveEditable" />
                 @Html.CheckBox("IsActive", Model.IsActive, Model.IsActiveEditable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsActive)
+                @Html.HiddenFor(model => model.IsNew)
                 @if (!Model.IsActiveEditable)
                 {
                     <input type="hidden" id="IsActiveHidden" name="IsActiveHidden" value="@Model.IsActive" />

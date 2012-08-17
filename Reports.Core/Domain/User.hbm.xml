@@ -7,6 +7,7 @@
     <!--<property name="IsAdministrator" not-null="true" />-->
     <property name="IsFirstTimeLogin" not-null="true" />
     <property name="IsActive" not-null="true" />
+    <property name="IsNew" not-null="true" />
     <property name="Login" length="64" not-null="true" unique="true"/>
     <property name="_password" length="64" column="Password" not-null="false" access="field"/>
 	<property name="Code" length="32" not-null="false"/>

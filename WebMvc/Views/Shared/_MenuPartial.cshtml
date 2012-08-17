@@ -24,7 +24,7 @@
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
-                     <li>@Html.ActionLink("Заявки", "DocumentList", "Employee")</li>
+                    @* <li>@Html.ActionLink("Заявки", "DocumentList", "Employee")</li>*@
                      <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
 
                 }
@@ -37,9 +37,9 @@
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
-                     <li>@Html.ActionLink("Новые заявки", "DocumentList", "Employee", new { showNew = true }, null)</li>
+                     @*<li>@Html.ActionLink("Новые заявки", "DocumentList", "Employee", new { showNew = true }, null)</li>
                      <li>@Html.ActionLink("Все заявки", "DocumentList", "Employee")</li>
-                     <li>@Html.ActionLink("Сотрудники", "EmployeeList", "Employee")</li>
+                     <li>@Html.ActionLink("Сотрудники", "EmployeeList", "Employee")</li>*@
                      <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
                 }
                 else if (dto.UserRole == UserRole.PersonnelManager)
@@ -51,9 +51,10 @@
                      <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                      <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                      <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
-                     <li>@Html.ActionLink("Новые заявки", "DocumentList", "Employee", new { showNew = true }, null)</li>
+                     <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
+                     @*<li>@Html.ActionLink("Новые заявки", "DocumentList", "Employee", new { showNew = true }, null)</li>
                      <li>@Html.ActionLink("Все заявки", "DocumentList", "Employee")</li>
-                     <li>@Html.ActionLink("Сотрудники", "EmployeeList", "Employee")</li>
+                     <li>@Html.ActionLink("Сотрудники", "EmployeeList", "Employee")</li>*@
                      <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
                 }
                 else if (dto.UserRole == UserRole.BudgetManager)

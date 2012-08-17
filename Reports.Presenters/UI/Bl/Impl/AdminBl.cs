@@ -80,21 +80,39 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //int id = CurrentUser.Id;
             UserRole role = CurrentUser.UserRole;
-            if (role != UserRole.Admin)
+            if (role != UserRole.Admin && role != UserRole.PersonnelManager)
                 throw new ArgumentException("Доступ запрещен.");
-            model.Roles = GetRoleList(true);
+            model.Roles = GetRoleList(true,role);
             int numberOfPages;
             int currentPage = model.CurrentPage;
-            model.Users = UserDao.GetUsersForAdmin(model.UserName, model.RoleId,
-                                                   ref currentPage, out numberOfPages).ToList().
-                ConvertAll(x => new UserDtoModel
-                                    {
-                                        Id = x.Id,
-                                        Name = x.FullName,
-                                        IsActive = x.IsActive,
-                                        Login = x.Login,
-                                        Role = GetUserRoleName(x.UserRole),
-                                    });
+            if (role == UserRole.Admin)
+            {
+                model.Users = UserDao.GetUsersForAdmin(model.UserName, model.RoleId,
+                                                       ref currentPage, out numberOfPages).ToList().
+                    ConvertAll(x => new UserDtoModel
+                                        {
+                                            Id = x.Id,
+                                            Name = x.FullName,
+                                            IsActive = x.IsActive,
+                                            Login = x.Login,
+                                            Role = GetUserRoleName(x.UserRole),
+                                        });
+            }
+            else if (role == UserRole.PersonnelManager)
+            {
+                model.Users = UserDao.GetUsersForPersonnel(model.UserName, CurrentUser.Id, ref currentPage, out numberOfPages).ToList().
+                   ConvertAll(x => new UserDtoModel
+                   {
+                       Id = x.Id,
+                       Name = x.FullName,
+                       IsActive = x.IsActive,
+                       Login = x.Login,
+                       Role = GetUserRoleName(x.UserRole),
+                   });
+                
+            }
+            else
+                throw new ArgumentException("Доступ запрещен.");
             model.NumberOfPages = numberOfPages;
             model.CurrentPage = currentPage;
         }
@@ -105,39 +123,51 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public void GetUserEditModel(UserEditModel model)
         {
-            model.Roles = GetRoleList(false);
+            UserRole role = CurrentUser.UserRole;
+            if (role != UserRole.Admin && role != UserRole.PersonnelManager)
+                throw new ArgumentException("Доступ запрещен.");
+            model.Roles = GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            model.Personnels = GetUsersWithRoleList(UserRole.PersonnelManager, true);
+            model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true) 
+                                                        : new List<IdNameDto> { new IdNameDto {Id = CurrentUser.Id,Name = CurrentUser.Name}};
             if (model.Id > 0)
             {
                 User user = UserDao.Load(model.Id);
                 model.Code = user.Code;
                 model.Email = user.Email;
                 model.IsActive = user.IsActive;
+                model.IsNew = user.IsNew;
                 model.Login = user.Login;
                 model.Password = user.Password;
                 model.RoleId = user.Role.Id;
                 model.UserName = user.FullName;
                 model.UserNameStatic = user.FullName;
                 model.Version = user.Version;
-                if (model.RoleId == (int) UserRole.Employee)
+                if (model.RoleId == (int)UserRole.Employee)
                 {
                     if (user.Manager != null)
                         model.ManagerId = user.Manager.Id;
                     if (user.PersonnelManager != null)
                         model.PersonnelId = user.PersonnelManager.Id;
                 }
+                SetControlStates(model, user);
             }
             else
+            {
                 model.IsActive = true;
-            SetControlStates(model);
+                model.IsNew = true;
+                SetControlStates(model,null);
+            }
+            
         }
 
-        public void SetStaticToModel(UserEditModel model)
+        public void SetStaticToModel(UserEditModel model,bool setStatic)
         {
-            model.Roles = GetRoleList(false);
+            UserRole role = CurrentUser.UserRole;
+            model.Roles = GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            model.Personnels = GetUsersWithRoleList(UserRole.PersonnelManager, true);
+            model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true)
+                                                       : new List<IdNameDto> { new IdNameDto { Id = CurrentUser.Id, Name = CurrentUser.Name } };
             SetStaticUserPopertiesToModel(model);
         }
 
@@ -145,9 +175,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                model.Roles = GetRoleList(false);
-                model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-                model.Personnels = GetUsersWithRoleList(UserRole.PersonnelManager, true);
+                SetStaticToModel(model,false);
+                //UserRole role = CurrentUser.UserRole;
+                //model.Roles = GetRoleList(false,role);
+                //model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
+                //model.Personnels = GetUsersWithRoleList(UserRole.PersonnelManager, true);
                 var user = new User();
                 if (model.Id > 0)
                     user = UserDao.Load(model.Id);
@@ -164,6 +196,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     user.Login = model.Login;
                     user.Name = model.UserName;
                     user.Password = model.Password;
+                    user.IsNew = true;
                     user.Role = RoleDao.Load(model.RoleId);
                     if (IsUserFrom1C((UserRole)(model.RoleId)))
                         user.IsFirstTimeLogin = true;
@@ -178,23 +211,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    user.Email = model.Email;
-                    user.Password = model.Password;
-                    if (!IsUserFrom1C((UserRole) (model.RoleId)))
+                    if (!model.IsPasswordHide)
                     {
-                        user.Login = model.Login;
-                        user.Name = model.UserName;
+                        user.Email = model.Email;
+                        user.Password = model.Password;
+                        if (!IsUserFrom1C((UserRole) (model.RoleId)) || user.IsNew)
+                        {
+                            user.Login = model.Login;
+                            user.Name = model.UserName;
+                        }
                     }
                 }
                 user = UserDao.MergeAndFlush(user);
                 model.Id = user.Id;
+                model.IsNew = user.IsNew;
                 model.Version = user.Version;
                 model.UserNameStatic = model.UserName;
                 if ((user.Role.Id != (int) UserRole.Employee) &&
                     ((model.ManagerId != 0) || (model.PersonnelId != 0)))
                     model.ClearManagers = true;
 
-                SetControlStates(model);
+                SetControlStates(model,user);
                 if (!string.IsNullOrEmpty(user.Email) && (oldPassword != user.Password))
                 {
                     SendEmail(model,
@@ -217,6 +254,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Error = string.Format("Исключение {0} ", ex.GetBaseException().Message);
                 model.NeedToReload = true;
             }
+            
         }
 
         protected bool ValidateModel(UserEditModel model, User user)
@@ -242,7 +280,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
-        protected void SetControlStates(UserEditModel model)
+        protected void SetControlStates(UserEditModel model, User user)
         {
             model.IsActiveEditable = true;
             model.IsRoleEditable = model.Id == 0;
@@ -255,9 +293,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                bool isEditable = !IsUserFrom1C((UserRole)(model.RoleId));
-                model.IsLoginEditable = isEditable;
+                if (CurrentUser.UserRole == UserRole.PersonnelManager && !user.IsFirstTimeLogin)
+                {
+                    model.IsPasswordHide = true;
+                    model.Password = "1234567";
+                }
+                bool isEditable = !IsUserFrom1C((UserRole)(model.RoleId)) || model.IsNew && !model.IsPasswordHide;
+                model.IsLoginEditable = isEditable ;
                 model.IsUserNameEditable = isEditable;
+                
             }
         }
 
@@ -1012,10 +1056,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        public IList<IdNameDto> GetRoleList(bool addAll)
+        public IList<IdNameDto> GetRoleList(bool addAll, UserRole role)
         {
+            
             List<IdNameDto> dtoList = RoleDao.LoadAllSorted().ToList().
                 ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (role == UserRole.PersonnelManager)
+                return dtoList.Where(x => x.Id == (int) UserRole.Employee).ToList();
             if (addAll)
                 dtoList.Insert(0, new IdNameDto(0, "Все"));
             return dtoList;

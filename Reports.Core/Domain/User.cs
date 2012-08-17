@@ -82,6 +82,7 @@ namespace Reports.Core.Domain
         //    set { _isAdministrator = value; }
         //}
         public virtual bool IsActive { get; set; }
+        public virtual bool IsNew { get; set; }
         //{
         //    get { return _isActive; }
         //    set { _isActive = value; }

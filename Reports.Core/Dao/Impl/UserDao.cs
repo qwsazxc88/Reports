@@ -283,6 +283,38 @@ namespace Reports.Core.Dao.Impl
                 .Take(PageSize);
             return userList.ToList();
         }
+        public IList<User> GetUsersForPersonnel(string userName,int personnelId,ref int currentPage, out int numberOfPages)
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(User));
+            if (!string.IsNullOrEmpty(userName))
+                criteria.Add(Restrictions.InsensitiveLike("Name", "%" + userName + "%"));
+            criteria.Add(Restrictions.Eq("PersonnelManager.Id", personnelId));
+            criteria.Add(Restrictions.Eq("IsNew", true));
+            ICriteria countCriteria = (ICriteria)criteria.Clone();
+            int rowCount = (int)countCriteria
+            .SetProjection(Projections.RowCount())
+            .UniqueResult();
+            numberOfPages = Convert.ToInt32(Math.Ceiling((double)rowCount / PageSize));
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            if (numberOfPages == 0)
+            {
+                currentPage = 1;
+                return new List<User>();
+            }
+            if (currentPage == 0)
+                currentPage = 1;
+
+            criteria.
+                //AddOrder(new Order("LastName", true)).
+                //AddOrder(new Order("FirstName", true)).
+                AddOrder(new Order("Name", true));
+            IEnumerable<User> userList = criteria
+                .List<User>()
+                .Skip((currentPage - 1) * PageSize)
+                .Take(PageSize);
+            return userList.ToList();
+        }
 
 
 //        public ISet<Institution> GetLinkedInstitutions(int userId)

@@ -36,6 +36,8 @@ namespace Reports.Core.Dao
         IList<User> GetUsersForAdmin(string userName, int role,
                                      ref int currentPage, out int numberOfPages);
 
+        IList<User> GetUsersForPersonnel(string userName, int personnelId, ref int currentPage, out int numberOfPages);
+
         int DeleteEmployees(DateTime date);
     }
 }
