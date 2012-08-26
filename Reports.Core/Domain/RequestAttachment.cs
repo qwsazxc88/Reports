@@ -32,6 +32,7 @@ namespace Reports.Core.Domain
         public virtual int RequestId { get; set; }
         public virtual int RequestType { get; set; }
         public virtual DateTime DateCreated { get; set; }
+        public virtual string Description { get; set; }
         //public virtual Document Document { get; set; }
 
         #endregion

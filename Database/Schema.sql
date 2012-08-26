@@ -76,6 +76,12 @@ alter table [UserToDepartment]  drop constraint FK_UserToDepartment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_Department]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
 alter table [UserToDepartment]  drop constraint FK_UserToDepartment_Department
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_EmploymentComment_User]') AND parent_object_id = OBJECT_ID('EmploymentComment'))
+alter table EmploymentComment  drop constraint FK_EmploymentComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_EmploymentComment_Employment]') AND parent_object_id = OBJECT_ID('EmploymentComment'))
+alter table EmploymentComment  drop constraint FK_EmploymentComment_Employment
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DismissalComment_User]') AND parent_object_id = OBJECT_ID('DismissalComment'))
 alter table DismissalComment  drop constraint FK_DismissalComment_User
 
@@ -172,6 +178,27 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_EmploymentType]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_EmploymentType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_EmploymentHoursType]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_EmploymentHoursType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_Addition]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_Addition
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_Position]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_Position
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_User]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_CreatorUser]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Employment'))
+alter table Employment  drop constraint FK_Employment_TimesheetStatus
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_TimesheetCorrectionType]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
 alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_TimesheetCorrectionType
 
@@ -196,6 +223,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and
 if exists (select * from dbo.sysobjects where id = object_id(N'[UserToDepartment]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [UserToDepartment]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalComment
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
@@ -227,6 +255,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OB
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
+if exists (select * from dbo.sysobjects where id = object_id(N'Employment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Employment
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrection') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrection
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionType
@@ -372,6 +401,15 @@ create table Role (
   Version INT not null,
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
+)
+create table EmploymentComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  EmploymentId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_EmploymentComment  primary key (Id)
 )
 create table TimesheetCorrectionType (
  Id INT IDENTITY NOT NULL,
@@ -564,6 +602,7 @@ create table RequestAttachment (
   RequestId INT not null,
   RequestType INT not null,
   DateCreated DATETIME not null,
+  Description NVARCHAR(255) null,
   constraint PK_RequestAttachment  primary key (Id)
 )
 create table AbsenceComment (
@@ -675,6 +714,29 @@ create table UserLogin (
   Date DATETIME not null,
   constraint PK_UserLogin  primary key (Id)
 )
+create table Employment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  BeginDate DATETIME not null,
+  Number INT not null,
+  TypeId INT not null,
+  HoursTypeId INT not null,
+  AdditionId INT null,
+  PositionId INT not null,
+  Salary DECIMAL(19, 2) not null,
+  Probaion INT null,
+  Reason NVARCHAR(256) null,
+  UserId INT not null,
+  CreatorId INT not null,
+  UserDateAccept DATETIME null,
+  ManagerDateAccept DATETIME null,
+  PersonnelManagerDateAccept DATETIME null,
+  SendTo1C DATETIME null,
+  DeleteDate DATETIME null,
+  TimesheetStatusId INT null,
+  constraint PK_Employment  primary key (Id)
+)
 create table SicklistPaymentPercent (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -772,6 +834,10 @@ create index IX_UserToDepartment_User_Id on [UserToDepartment] (UserId)
 create index IX_UserToDepartment_Department_Id on [UserToDepartment] (DepartmentId)
 alter table [UserToDepartment] add constraint FK_UserToDepartment_User foreign key (UserId) references [Users]
 alter table [UserToDepartment] add constraint FK_UserToDepartment_Department foreign key (DepartmentId) references Department
+create index IX_EmploymentComment_User_Id on EmploymentComment (UserId)
+create index IX_EmploymentComment_Employment_Id on EmploymentComment (EmploymentId)
+alter table EmploymentComment add constraint FK_EmploymentComment_User foreign key (UserId) references [Users]
+alter table EmploymentComment add constraint FK_EmploymentComment_Employment foreign key (EmploymentId) references Employment
 create index IX_DismissalComment_User_Id on DismissalComment (UserId)
 create index IX_DismissalComment_Dismissal_Id on DismissalComment (DismissalId)
 alter table DismissalComment add constraint FK_DismissalComment_User foreign key (UserId) references [Users]
@@ -835,6 +901,20 @@ alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (Tim
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index Employment_EmploymentType on Employment (TypeId)
+create index Employment_EmploymentHoursType on Employment (HoursTypeId)
+create index Employment_Addition on Employment (AdditionId)
+create index Employment_Position on Employment (PositionId)
+create index IX_Employment_User_Id on Employment (UserId)
+create index IX_Employment_CreatorUser_Id on Employment (CreatorId)
+create index Employment_TimesheetStatus on Employment (TimesheetStatusId)
+alter table Employment add constraint FK_Employment_EmploymentType foreign key (TypeId) references EmploymentType
+alter table Employment add constraint FK_Employment_EmploymentHoursType foreign key (HoursTypeId) references EmploymentHoursType
+alter table Employment add constraint FK_Employment_Addition foreign key (AdditionId) references EmploymentAddition
+alter table Employment add constraint FK_Employment_Position foreign key (PositionId) references Position
+alter table Employment add constraint FK_Employment_User foreign key (UserId) references [Users]
+alter table Employment add constraint FK_Employment_CreatorUser foreign key (CreatorId) references [Users]
+alter table Employment add constraint FK_Employment_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index TimesheetCorrection_TimesheetCorrectionType on TimesheetCorrection (TypeId)
 create index IX_TimesheetCorrection_User_Id on TimesheetCorrection (UserId)
 create index IX_TimesheetCorrection_CreatorUser_Id on TimesheetCorrection (CreatorId)

@@ -81,9 +81,9 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -116,6 +116,7 @@
     <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
     <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
+    <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
@@ -137,6 +138,8 @@
     <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\EmploymentEditModel.cs" />
+    <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
@@ -146,6 +149,7 @@
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />
+    <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />

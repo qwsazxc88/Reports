@@ -1,0 +1,44 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Employment">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<property name="Id_1C" length="50" not-null="true"/>-->
+    <!--<property name="ReportType" not-null="true" />-->
+    <!--<property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>-->
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <!--<property name="BeginDate" not-null="true"/>-->
+    <property name="BeginDate" not-null="true"/>
+    <!--<property name="EndDate" not-null="false"/>-->
+    <!--<property name="DaysCount"  not-null="true"/>-->
+    
+    <property name="Number"  not-null="true"/>
+	
+	<many-to-one name="Type" class="EmploymentType" column="TypeId" foreign-key="FK_Employment_EmploymentType" index="Employment_EmploymentType"  not-null="true"/>
+  <many-to-one name="HoursType" class="EmploymentHoursType" column="HoursTypeId" foreign-key="FK_Employment_EmploymentHoursType" index="Employment_EmploymentHoursType"  not-null="true"/>
+  <!--<many-to-one name="Addition" class="EmploymentAdditionType" column="AdditionId" foreign-key="FK_Employment_Addition" index="Employment_Addition"  not-null="false"/>-->
+  <many-to-one name="Addition" class="EmploymentAddition" column="AdditionId" foreign-key="FK_Employment_Addition" index="Employment_Addition"  not-null="false"/>
+  <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Employment_Position" index="Employment_Position"  not-null="true"/>
+  <!--<many-to-one name="CompensationType" class="EmploymentCompensationType" column="CompensationTypeId" foreign-key="FK_Employment_EmploymentCompensationType" index="Employment_EmploymentCompensationType"  not-null="false"/>-->
+  <property name="Salary" precision="19" scale="2" not-null="true"/>
+  <property name="Probaion" not-null="false"/>
+  <property name="Reason"   length="256" not-null="false"/>
+	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_Employment_User" index="IX_Employment_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Employment_CreatorUser" index="IX_Employment_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+    <property name="DeleteDate" not-null="false"/>
+
+  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Employment_TimesheetStatus" index="Employment_TimesheetStatus"  not-null="false"/>
+
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="EmploymentId" foreign-key="FK_EmploymentComment_Employment"/>
+    <one-to-many class="EmploymentComment"/>
+  </bag>
+	</class>
+</hibernate-mapping>

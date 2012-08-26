@@ -87,6 +87,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IEmploymentAdditionDao.cs" />
+    <Compile Include="Dao\IEmploymentCommentDao.cs" />
+    <Compile Include="Dao\IEmploymentDao.cs" />
+    <Compile Include="Dao\IEmploymentTypeDao.cs" />
     <Compile Include="Dao\IAbsenceCommentDao.cs" />
     <Compile Include="Dao\IAbsenceDao.cs" />
     <Compile Include="Dao\IAbsenceTypeDao.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="Dao\IDocumentDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHoursTypeDao.cs" />
     <Compile Include="Dao\IExportImportActionDao.cs" />
     <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
     <Compile Include="Dao\IHolidayWorkDao.cs" />
@@ -121,12 +126,17 @@
     <Compile Include="Dao\Impl\DocumentDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentAdditionDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHoursTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentTypeDao.cs" />
     <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
     <Compile Include="Dao\IInformationDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkCommentDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
     <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
     <Compile Include="Dao\Impl\IDismissalTypeDao.cs" />
+    <Compile Include="Dao\Impl\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
@@ -194,7 +204,9 @@
     <Compile Include="Domain\DocumentComment.cs" />
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
+    <Compile Include="Domain\Employment.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
+    <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\EnumFormatter.cs" />
@@ -446,6 +458,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\TimesheetCorrection.hbm.xml" />
     <EmbeddedResource Include="Domain\TimesheetCorrectionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment.hbm.xml" />
+    <EmbeddedResource Include="Domain\EmploymentComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

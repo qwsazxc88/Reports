@@ -241,6 +241,24 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дата начала Т Д - обязательное поле.
+        /// </summary>
+        internal static string EmploymentEditModel_BeginDate_Required {
+            get {
+                return ResourceManager.GetString("EmploymentEditModel_BeginDate_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Оклад (тарифная ставка) - обязательное поле.
+        /// </summary>
+        internal static string EmploymentEditModel_Salary_Required {
+            get {
+                return ResourceManager.GetString("EmploymentEditModel_Salary_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Доступ запрещен.
         /// </summary>
         internal static string Error_AccessDeniedException {

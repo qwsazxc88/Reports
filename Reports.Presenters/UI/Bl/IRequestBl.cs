@@ -1,4 +1,5 @@
 ﻿using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
@@ -54,6 +55,13 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(TimesheetCorrectionEditModel model);
         bool SaveTimesheetCorrectionEditModel(TimesheetCorrectionEditModel model, out string error);
 
+        EmploymentListModel GetEmploymentListModel();
+        void SetEmploymentListModel(EmploymentListModel model);
+        EmploymentEditModel GetEmploymentEditModel(int id, int userId);
+        void ReloadDictionariesToModel(EmploymentEditModel model);
+        bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);
+
         AttachmentModel GetFileContext(int id/*, int typeId*/);
+        RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
     }
 }

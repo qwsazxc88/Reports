@@ -18,5 +18,20 @@
         Mission = 5,
         Dismissal = 6,
         TimesheetCorrection = 7,
+        Employment = 8,
+    }
+    public enum RequestAttachmentTypeEnum
+    {
+        //Vacation = 1,
+        //Absence = 2,
+        Sicklist = 1,
+        //HolidayWork = 4,
+        //Mission = 5,
+        //Dismissal = 6,
+        //TimesheetCorrection = 7,
+        Employment = 2,
+        //EmploymentPen = 3,
+        //EmploymentInn = 4,
+        //EmploymentNdfl = 5,
     }
 }

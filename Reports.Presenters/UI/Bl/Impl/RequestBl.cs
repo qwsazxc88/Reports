@@ -59,6 +59,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetCorrectionDao timesheetCorrectionDao;
         protected ITimesheetCorrectionCommentDao timesheetCorrectionCommentDao;
 
+        protected IEmploymentTypeDao employmentTypeDao;
+        protected IEmploymentHoursTypeDao employmentHoursTypeDao;
+        protected IEmploymentDao employmentDao;
+        protected IEmploymentCommentDao employmentCommentDao;
+        protected IEmploymentAdditionDao employmentAdditionDao;
+
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -211,6 +218,32 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(timesheetCorrectionCommentDao); }
             set { timesheetCorrectionCommentDao = value; }
         }
+
+        public IEmploymentTypeDao EmploymentTypeDao
+        {
+            get { return Validate.Dependency(employmentTypeDao); }
+            set { employmentTypeDao = value; }
+        }
+        public IEmploymentHoursTypeDao EmploymentHoursTypeDao
+        {
+            get { return Validate.Dependency(employmentHoursTypeDao); }
+            set { employmentHoursTypeDao = value; }
+        }
+        public IEmploymentDao EmploymentDao
+        {
+            get { return Validate.Dependency(employmentDao); }
+            set { employmentDao = value; }
+        }
+        public IEmploymentCommentDao EmploymentCommentDao
+        {
+            get { return Validate.Dependency(employmentCommentDao); }
+            set { employmentCommentDao = value; }
+        }
+        public IEmploymentAdditionDao EmploymentAdditionDao
+        {
+            get { return Validate.Dependency(employmentAdditionDao); }
+            set { employmentAdditionDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -249,9 +282,444 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
                            new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
-                           new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля")
+                           new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля"),
+                           new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
                        };
         }
+        #endregion
+        #region Employment
+        public EmploymentListModel GetEmploymentListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            EmploymentListModel model = new EmploymentListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model, user);
+            return model;
+        }
+        public void SetEmploymentListModel(EmploymentListModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(EmploymentListModel model, User user)
+        {
+            //model.Documents = new List<VacationDto>();
+
+            UserRole role = (UserRole)user.Role.Id;
+            model.Documents = EmploymentDao.GetDocuments(
+                role,
+                //model.DepartmentId,
+                model.PositionId,
+                model.TypeId,
+                model.GraphicTypeId,
+                model.StatusId,
+                model.BeginDate,
+                model.CreateDate);
+        }
+        protected void SetDictionariesToModel(EmploymentListModel model, User user)
+        {
+            //model.Departments = GetDepartments(user);
+            model.Types = GetEmploymentTypes(true);
+            model.GraphicTypes = GetEmploymentGraphicTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+        protected List<IdNameDto> GetEmploymentGraphicTypes(bool addAll)
+        {
+            var typeList = EmploymentHoursTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        protected List<IdNameDto> GetEmploymentTypes(bool addAll)
+        {
+            var typeList = EmploymentTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+        public EmploymentEditModel GetEmploymentEditModel(int id, int userId)
+        {
+            EmploymentEditModel model = new EmploymentEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            SetAttachmentsToModel(model, id);
+            Employment employment = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                employment = EmploymentDao.Load(id);
+                if (employment == null)
+                    throw new ArgumentException(string.Format("Прием на работу (id {0}) не найдена в базе данных.", id));
+                model.Version = employment.Version;
+                model.TypeId = employment.Type.Id;
+                model.BeginDate = employment.BeginDate;
+                //model.EndDate = employment.EndDate;
+                model.GraphicTypeId = employment.HoursType.Id;
+                model.PositionId = employment.Position.Id;
+                model.AdditionId = employment.Addition == null ? 0 : employment.Addition.Id;
+                model.TimesheetStatusId = employment.TimesheetStatus == null ? 0 : employment.TimesheetStatus.Id;
+                model.Salary = employment.Salary.ToString();
+                model.Probaion = employment.Probaion.ToString();
+                model.Reason = employment.Reason;
+                model.CreatorLogin = employment.Creator.Login;
+                model.DocumentNumber = employment.Number.ToString();
+                model.DateCreated = employment.CreateDate.ToShortDateString();
+                SetHiddenFields(model);
+                if (employment.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+            SetFlagsState(id, user, employment, model);
+            LoadDictionaries(model);
+            return model;
+        }
+        public void ReloadDictionariesToModel(EmploymentEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Login;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Employment employment = EmploymentDao.Load(model.Id);
+                model.CreatorLogin = employment.Creator.Login;
+                model.DocumentNumber = employment.Number.ToString();
+                model.DateCreated = employment.CreateDate.ToShortDateString();
+            }
+        }
+        public bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                Employment employment;
+                if (model.Id == 0)
+                {
+                    employment = new Employment()
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Employment),
+                        User = user
+                    };
+                    ChangeEntityProperties(current, employment, model, user);
+                    EmploymentDao.SaveAndFlush(employment);
+                    model.Id = employment.Id;
+                }
+                else
+                {
+                    employment = EmploymentDao.Load(model.Id);
+                    //SaveAttachments(employment.Id, filesDto, model);
+                    if (employment.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        employment.DeleteDate = DateTime.Now;
+                        EmploymentDao.SaveAndFlush(employment);
+                        model.IsDelete = false;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, employment, model, user);
+                        EmploymentDao.SaveAndFlush(employment);
+                    }
+                    if (employment.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = employment.Number.ToString();
+                model.Version = employment.Version;
+                model.CreatorLogin = employment.Creator.Login;
+                model.DateCreated = employment.CreateDate.ToShortDateString();
+                SetFlagsState(employment.Id, user, employment, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                EmploymentDao.RollbackTran();
+                Log.Error("Error on SaveEmploymentEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        //protected void SaveAttachments(int entityId, UploadFilesDto filesDto, EmploymentEditModel model)
+        //{
+        //    string fileName;
+        //    int? attachmentId = SaveAttachment(entityId, model.AttachmentId, filesDto.attachment, RequestAttachmentTypeEnum.Employment , out fileName);
+        //    if (attachmentId.HasValue)
+        //    {
+        //        model.AttachmentId = attachmentId.Value;
+        //        model.Attachment = fileName;
+        //    }
+        //    attachmentId = SaveAttachment(entityId, model.PensAttachmentId, filesDto.penAttachment, RequestAttachmentTypeEnum.EmploymentPen, out fileName);
+        //    if (attachmentId.HasValue)
+        //    {
+        //        model.PensAttachmentId = attachmentId.Value;
+        //        model.PensAttachment = fileName;
+        //    }
+        //    attachmentId = SaveAttachment(entityId, model.InnAttachmentId, filesDto.innAttachment, RequestAttachmentTypeEnum.EmploymentInn, out fileName);
+        //    if (attachmentId.HasValue)
+        //    {
+        //        model.InnAttachmentId = attachmentId.Value;
+        //        model.InnAttachment = fileName;
+        //    }
+        //    attachmentId = SaveAttachment(entityId, model.NdflAttachmentId, filesDto.ndflAttachment, RequestAttachmentTypeEnum.EmploymentNdfl, out fileName);
+        //    if (attachmentId.HasValue)
+        //    {
+        //        model.NdflAttachmentId = attachmentId.Value;
+        //        model.NdflAttachment = fileName;
+        //    }
+        //}
+        protected int? SaveAttachment(int entityId, int id, UploadFileDto dto,RequestAttachmentTypeEnum type, out string attachment)
+        {
+            attachment = string.Empty;
+            if(dto == null)
+                return new int?();
+            RequestAttachment attach = id != 0 ?
+               RequestAttachmentDao.Load(id) :
+               new RequestAttachment
+               {
+                   RequestId = entityId,
+                   RequestType = (int)type,
+               };
+
+            attach.DateCreated = DateTime.Now;
+            attach.UncompressContext = dto.Context;
+            attach.ContextType = dto.ContextType;
+            attach.FileName = dto.FileName;
+            RequestAttachmentDao.SaveAndFlush(attach);
+            attachment = attach.FileName;
+            return attach.Id;
+        }
+        protected void ChangeEntityProperties(IUser current, Employment entity, EmploymentEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsApprovedByUser)
+                entity.UserDateAccept = DateTime.Now;
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByManager)
+                    entity.ManagerDateAccept = DateTime.Now;
+            }
+            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id
+                && !entity.PersonnelManagerDateAccept.HasValue)
+            {
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByPersonnelManager)
+                    entity.PersonnelManagerDateAccept = DateTime.Now;
+            }
+            if (model.IsTypeEditable)
+            {
+                entity.BeginDate = model.BeginDate.Value;
+                //entity.EndDate = model.EndDate;
+                entity.Salary = (decimal)((int)(decimal.Parse(model.Salary) * 100)) / 100;
+                entity.Probaion = string.IsNullOrEmpty(model.Probaion) ? new int?() : Int32.Parse(model.Probaion); 
+                entity.Type = EmploymentTypeDao.Load(model.TypeId);
+                entity.HoursType = EmploymentHoursTypeDao.Load(model.GraphicTypeId);
+                entity.Addition = model.AdditionId == 0 ? null : EmploymentAdditionDao.Load(model.AdditionId);
+                entity.Position = PositionDao.Load(model.PositionId);
+            }
+        }
+        protected void SetAttachmentsToModel(EmploymentEditModel model, int id)
+        {
+            model.AttachmentsModel = GetAttachmentsModel(id, RequestAttachmentTypeEnum.Employment);
+            //if (id == 0)
+            //    return;
+            //RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.Employment);
+            //if (attach != null)
+            //{
+            //    model.AttachmentId = attach.Id;
+            //    model.Attachment = attach.FileName;
+            //}
+            //RequestAttachment attachPen = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.EmploymentPen);
+            //if (attachPen != null)
+            //{
+            //    model.PensAttachmentId = attachPen.Id;
+            //    model.PensAttachment = attachPen.FileName;
+            //}
+            //RequestAttachment attachInn = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.EmploymentInn);
+            //if (attachInn != null)
+            //{
+            //    model.InnAttachmentId = attachInn.Id;
+            //    model.InnAttachment = attachInn.FileName;
+            //}
+            //RequestAttachment attachNdfl = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.EmploymentNdfl);
+            //if (attachNdfl != null)
+            //{
+            //    model.NdflAttachmentId = attachNdfl.Id;
+            //    model.NdflAttachment = attachNdfl.FileName;
+            //}
+        }
+        protected void LoadDictionaries(EmploymentEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Employment);
+            model.AttachmentsModel = GetAttachmentsModel(model.Id, RequestAttachmentTypeEnum.Employment);
+            model.TimesheetStatuses = GetTimesheetStatusesForEmployment();
+            model.Types = GetEmploymentTypes(false);
+            model.GraphicTypes = GetEmploymentGraphicTypes(false);
+            model.Additions = GetEmploymentAdditions();
+            model.Positions = GetPositionsForEmployment();
+        }
+        protected List<IdNameDto> GetEmploymentAdditions()
+        {
+            var list = EmploymentAdditionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            list.Insert(0, new IdNameDto(0, string.Empty));
+            return list;
+        }
+        protected List<IdNameDto> GetPositionsForEmployment()
+        {
+            var list = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            //if (addAll)
+            //    typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return list;
+        }
+        protected void SetHiddenFields(EmploymentEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.AdditionIdHidden = model.AdditionId;
+            model.GraphicTypeIdHidden = model.GraphicTypeId;
+            model.PositionIdHidden = model.PositionId;
+            model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+        }
+        protected List<IdNameDto> GetTimesheetStatusesForEmployment()
+        {
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+                dtos.Insert(0, new IdNameDto(0, string.Empty));
+            return dtos;
+        }
+        protected void SetFlagsState(int id, User user, Employment entity, EmploymentEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsTypeEditable = true;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        //model.IsApprovedByUserEnable = true;
+                        break;
+                    case UserRole.Manager:
+                        model.IsApprovedByManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsTimesheetStatusEditable = true;
+                        //model.IsPersonnelFieldsEditable = true;
+                        break;
+                }
+                return;
+            }
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    //if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    //{
+                    //    model.IsApprovedByUserEnable = true;
+                    //    if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                    //        model.IsTypeEditable = true;
+                    //}
+                    break;
+                case UserRole.Manager:
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByManagerEnable = true;
+                        if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.PersonnelManagerDateAccept.HasValue)
+                    {
+                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (!entity.SendTo1C.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
+                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+                                    model.IsApprovedByPersonnelManagerEnable;
+        }
+        protected void SetFlagsState(EmploymentEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            model.IsTimesheetStatusEditable = state;
+            model.IsTypeEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+        }
+
         #endregion
         #region Timesheet Correction
         public TimesheetCorrectionListModel GetTimesheetCorrectionListModel()
@@ -1674,11 +2142,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (id == 0)
                 return;
-            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestTypeEnum.Sicklist);
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.Sicklist);
             if (attach == null) 
                 return;
             model.AttachmentId = attach.Id;
-            //model.AttachmentTypeId = attach.RequestType;
             model.Attachment = attach.FileName;
         }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
@@ -1711,7 +2178,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     sicklist = SicklistDao.Load(model.Id);
-                    SaveAttachment(sicklist, fileDto, model ,RequestTypeEnum.Sicklist);
+                    string fileName;
+                    int? attachmentId = SaveAttachment(sicklist.Id,model.AttachmentId ,fileDto,RequestAttachmentTypeEnum.Sicklist,out fileName);
+                    if(attachmentId.HasValue)
+                    {
+                        model.AttachmentId = attachmentId.Value;
+                        model.Attachment = fileName;
+                    }
                     if (sicklist.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -1759,27 +2232,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
-        protected void SaveAttachment(Sicklist sicklist, UploadFileDto fileDto, SicklistEditModel model, RequestTypeEnum type)
-        {
-            if (fileDto == null)
-                return;
-            RequestAttachment attach =
-                RequestAttachmentDao.Load(model.AttachmentId) ??
-                new RequestAttachment
-                    {
-                        RequestId = sicklist.Id,
-                        RequestType = (int) type,
-                    };
+        //protected void SaveAttachment(int entityId, UploadFileDto fileDto,SicklistEditModel model, RequestAttachmentTypeEnum type)
+        //{
+        //    if (fileDto == null)
+        //        return;
+        //    RequestAttachment attach = model.AttachmentId != 0 ?
+        //        RequestAttachmentDao.Load(model.AttachmentId) :
+        //        new RequestAttachment
+        //            {
+        //                RequestId = entityId,
+        //                RequestType = (int) type,
+        //            };
 
-            attach.DateCreated = DateTime.Now;
-            attach.UncompressContext = fileDto.Context;
-            attach.ContextType = fileDto.ContextType;
-            attach.FileName = fileDto.FileName;
-            RequestAttachmentDao.SaveAndFlush(attach);
-            model.AttachmentId = attach.Id;
-            //model.AttachmentTypeId = attach.RequestType;
-            model.Attachment = attach.FileName;
-        }
+        //    attach.DateCreated = DateTime.Now;
+        //    attach.UncompressContext = fileDto.Context;
+        //    attach.ContextType = fileDto.ContextType;
+        //    attach.FileName = fileDto.FileName;
+        //    RequestAttachmentDao.SaveAndFlush(attach);
+        //    model.AttachmentId = attach.Id;
+        //    model.Attachment = attach.FileName;
+        //}
+       
         protected void ChangeEntityProperties(IUser current, Sicklist sicklist,SicklistEditModel model,User user)
         {
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
@@ -2834,6 +3307,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.Employment:
+                    Employment employment = EmploymentDao.Load(id);
+                    if ((employment.Comments != null) && (employment.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = employment.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -2907,7 +3393,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         MissionCommentDao.MergeAndFlush(missionComment);
                         break;
                     case (int)RequestTypeEnum.Dismissal:
-                        Dismissal dismissal = DismissalDao.Load(model.DocumentId);
+                        Dismissal  dismissal = DismissalDao.Load(model.DocumentId);
                         user = UserDao.Load(userId);
                         DismissalComment dismissalComment = new DismissalComment
                         {
@@ -2930,6 +3416,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         };
                         TimesheetCorrectionCommentDao.MergeAndFlush(timesheetCorrectionComment);
                         break;
+                    case (int)RequestTypeEnum.Employment:
+                        Employment employment = EmploymentDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        EmploymentComment employmentComment = new EmploymentComment
+                        {
+                            Comment = model.Comment,
+                            Employment = employment,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        EmploymentCommentDao.MergeAndFlush(employmentComment);
+                        break;
                 }
                 //doc.Comments.Add(comment);
                 //DocumentDao.MergeAndFlush(doc);
@@ -2945,6 +3443,27 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Attachment
+        public RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
+        {
+            RequestAttachmentsModel model = new RequestAttachmentsModel
+            {
+                RequestId = id,
+                RequestTypeId =(int) typeId,
+                Attachments = new List<RequestAttachmentModel>()
+            };
+            model.Attachments =
+                RequestAttachmentDao.FindManyByRequestIdAndTypeId(id, typeId).ToList().
+                    ConvertAll(
+                        x =>
+                        new RequestAttachmentModel
+                            {
+                                Attachment = x.FileName, 
+                                AttachmentId = x.Id, 
+                                Description = x.Description
+                            });
+            return model;
+        }
+
         public AttachmentModel GetFileContext(int id/*,int typeId*/)
         {
             RequestAttachment attachment = RequestAttachmentDao.Load(id);

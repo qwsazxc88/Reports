@@ -11,6 +11,7 @@
     <property name="RequestId" not-null="true"/>
     <property name="RequestType" not-null="true"/>
     <property name="DateCreated" not-null="true"/>
+    <property name="Description" not-null="false"/>
     
     <!--<property name="Number" length="50" not-null="true"/>-->
 	<!--<many-to-one name="Document" class="Document" column="DocumentId" foreign-key="FK_Attachment_Document" index="IX_Attachment_Document_Id"  not-null="true"/>-->

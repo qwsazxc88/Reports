@@ -1,0 +1,320 @@
+﻿@model Reports.Presenters.UI.ViewModel.EmploymentEditModel
+@{
+    ViewBag.Title = "Редактирование приема на работу";
+}
+
+@using (Html.BeginForm("EmploymentEdit", "UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.Partial("../UserInfoView", Model)
+        </td>
+    </tr>
+    @if (Model.IsDeleted)
+    { 
+        <tr>
+            <td colspan="2" style="color:Red;">Заявка удалена</td>
+        </tr>
+    }
+    <tr>
+        <td>
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+             <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+            <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+            <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />
+            <input type="hidden" id="IsTypeEditable" name="IsTypeEditable" value="@Model.IsTypeEditable" />
+            <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
+           @* <input type="hidden" id="IsTypeEditable" name="IsTypeEditable" value="@Model.IsTypeEditable" />*@
+            <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
+            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+
+           @* <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />*@
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsTypeEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.GraphicTypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.GraphicTypeId, new SelectList(Model.GraphicTypes, "ID", "Name"), Model.IsTypeEditable ? null : (object)new { disabled = "disabled" }) 
+            <input type="hidden" id="GraphicTypeIdHidden" name="GraphicTypeIdHidden" value="@Model.GraphicTypeIdHidden" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.PositionId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"), Model.IsTypeEditable ? null : (object)new { disabled = "disabled" }) 
+            <input type="hidden" id="PositionIdHidden" name="PositionIdHidden" value="@Model.PositionIdHidden" />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:300px">
+            @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
+            @if (Model.IsTypeEditable)
+            {
+                @Html.EditorFor(model => model.BeginDate) 
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.BeginDate)
+                @Html.HiddenFor(model => model.BeginDate)
+            } 
+        </td>
+     </tr>
+      <tr>
+        <td>
+            @Html.LabelFor(m => m.Salary):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Salary, Model.IsTypeEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    @* <tr>
+        <td>
+            @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
+            @if (Model.IsTypeEditable)
+            {
+                @Html.EditorFor(model => model.EndDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.EndDate)
+                @Html.HiddenFor(model => model.EndDate)
+            } 
+         </td>
+    </tr>*@
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Probaion):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Probaion, Model.IsTypeEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AdditionId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.AdditionId, new SelectList(Model.Additions, "ID", "Name"), Model.IsTypeEditable ? null : (object)new { disabled = "disabled" }) 
+            <input type="hidden" id="AdditionIdHidden" name="AdditionIdHidden" value="@Model.AdditionIdHidden" />
+        </td>
+    </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.Reason):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reason,(object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.TimesheetStatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+           
+        </td>
+    </tr>
+     <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
+                @Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByUser)
+                @if (!Model.IsApprovedByUserEnable)
+                {
+                    <input type="hidden" id="IsApprovedByUserHidden" name="IsApprovedByUserHidden" value="@Model.IsApprovedByUser" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
+                @Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByManager)
+                @if (!Model.IsApprovedByManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
+                @Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
+                @if (!Model.IsApprovedByPersonnelManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />
+                }
+            </td>
+    </tr>
+     <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsPostedTo1CEnable" name="IsPostedTo1CEnable" value="@Model.IsPostedTo1CEnable" />
+                @Html.CheckBox("IsPostedTo1C", Model.IsPostedTo1C, Model.IsPostedTo1CEnable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsPostedTo1C)
+                @if (!Model.IsPostedTo1CEnable)
+                {
+                    <input type="hidden" id="IsPostedTo1CHidden" name="IsPostedTo1CHidden" value="@Model.IsPostedTo1C" />
+                }
+            </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.LabelFor(m => m.CreatorLogin):
+       @* </td>
+        <td>*@
+            @Html.DisplayFor(model => model.CreatorLogin) 
+         </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="height:5px">
+        </td>
+    </tr>
+  
+    <tr>
+        <td colspan="2">
+            <div id="AttachmentModelContext">@Html.Partial("RequestAttachmentsPartial", Model.AttachmentsModel)</div>
+        </td>
+    </tr>
+
+  @*  <tr>
+        <td>@Html.LabelFor(model => model.Attachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.Attachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+            }
+        </td>
+    </tr>
+    <tr @if (!Model.IsTypeEditable || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан паспорта</td>
+        <td><input id="FileContext" type="file" name="file"/></td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.PensAttachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.PensAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PensAttachmentId })' style="cursor:hand" target="_blank" >@Model.PensAttachment</a>
+                <input type="hidden" id="PensAttachment" name="PensAttachment" value="@Model.PensAttachment" />
+                <input type="hidden" id="PensAttachmentId" name="PensAttachmentId" value="@Model.PensAttachmentId" />
+            }
+        </td>
+    </tr>
+    <tr @if (!Model.IsTypeEditable || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан пенсионного</td>
+        <td><input id="FileContextPens" type="file" name="filePen"/></td>
+    </tr>
+     <tr>
+        <td>@Html.LabelFor(model => model.InnAttachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.InnAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InnAttachmentId })' style="cursor:hand" target="_blank" >@Model.InnAttachment</a>
+                <input type="hidden" id="InnAttachment" name="InnAttachment" value="@Model.InnAttachment" />
+                <input type="hidden" id="InnAttachmentId" name="InnAttachmentId" value="@Model.InnAttachmentId" />
+            }
+        </td>
+    </tr>
+    <tr @if (!Model.IsTypeEditable || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан ИНН</td>
+        <td><input id="FileContextInn" type="file" name="fileInn"/></td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.NdflAttachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.NdflAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.NdflAttachmentId })' style="cursor:hand" target="_blank" >@Model.NdflAttachment</a>
+                <input type="hidden" id="NdflAttachment" name="NdflAttachment" value="@Model.NdflAttachment" />
+                <input type="hidden" id="NdflAttachmentId" name="NdflAttachmentId" value="@Model.NdflAttachmentId" />
+            }
+        </td>
+    </tr>
+    <tr @if (!Model.IsTypeEditable || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан 2НДФЛ</td>
+        <td><input id="FileContextNdfl" type="file" name="fileNdfl"/></td>
+    </tr>*@
+     <tr>
+        <td colspan="2">
+            <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+            <input type="submit" value="Удалить" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+                                                                            {<text>style="display:none"</text>}/>
+            
+         </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+        </td>
+    </tr>
+
+    </table>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#BeginDate").datepicker();
+            $("#EndDate").datepicker();
+//            $("#PaymentBeginDate").datepicker();
+//            $("#PaymentDecreaseDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#Salary").width("100px");
+            $("#Probaion").width("50px");
+            //setupUploader();
+
+        });    
+    function ValidateForm()
+    {
+        return true;
+    }
+    function Delete() {
+        $("#IsDelete").val("true");
+        return true;
+    }
+
+//function createUploader(){
+//var uploader = new qq.FileUploader({
+//element: document.getElementById('file-uploader-demo1'),
+//action: 'do-nothing.htm',
+//debug: true
+////extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area')[0]]
+//});
+//} 
+//window.onload = setupUploader; 
+    </script>
+}
+

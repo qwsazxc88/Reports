@@ -86,10 +86,130 @@ namespace WebMvc.Controllers
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
                                                                        });
+                 case RequestTypeEnum.Employment:
+                     return RedirectToAction("EmploymentEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
                  default:
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+         #region Employment
+         [HttpGet]
+         public ActionResult EmploymentList()
+         {
+             EmploymentListModel model = RequestBl.GetEmploymentListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult EmploymentList(EmploymentListModel model)
+         {
+             RequestBl.SetEmploymentListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult EmploymentEdit(int id, int userId)
+         {
+             EmploymentEditModel model = RequestBl.GetEmploymentEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult EmploymentEdit(EmploymentEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             //UploadFilesDto filesDto = GetFilesContexts();
+             if (!ValidateEmploymentEditModel(model/*,filesDto*/))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveEmploymentEditModel(model, /*filesDto,*/out error))
+             {
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetEmploymentEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected void CorrectDropdowns(EmploymentEditModel model)
+         {
+             if (!model.IsTypeEditable)
+                 model.TypeId = model.TypeIdHidden;
+             if (!model.IsTimesheetStatusEditable)
+                 model.TimesheetStatusId = model.TimesheetStatusIdHidden;
+             if (!model.IsTypeEditable)
+                 model.GraphicTypeId = model.GraphicTypeIdHidden;
+             if (!model.IsTypeEditable)
+                 model.AdditionId = model.AdditionIdHidden;
+             if (!model.IsTypeEditable)
+                 model.PositionId = model.PositionIdHidden;
+         }
+         protected bool ValidateEmploymentEditModel(EmploymentEditModel model/*, UploadFilesDto filesDto*/)
+         {
+             if (model.Id > 0 
+                 //&& 
+                 //(
+                 //   (filesDto.attachment == null) || 
+                 //   (filesDto.penAttachment == null) ||
+                 //   (filesDto.innAttachment == null) ||
+                 //   (filesDto.ndflAttachment == null)
+                 //)
+                 )
+             {
+                 UserRole role = AuthenticationService.CurrentUser.UserRole;
+                 if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                     (role == UserRole.Manager && model.IsApprovedByManager) ||
+                     (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                 {
+
+                     ModelState.AddModelError(string.Empty, "Заявка не может быть согласована без прикрепленых сканов.");
+                     if (role == UserRole.Employee && model.IsApprovedByUser)
+                     {
+                         ModelState.Remove("IsApprovedByUser");
+                         model.IsApprovedByUser = false;
+                     }
+                     if (role == UserRole.Manager && model.IsApprovedByManager)
+                     {
+                         ModelState.Remove("IsApprovedByManager");
+                         model.IsApprovedByManager = false;
+                     }
+                     if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                     {
+                         ModelState.Remove("IsApprovedByPersonnelManager");
+                         model.IsApprovedByPersonnelManager = false;
+                     }
+                 }
+             }
+             if (!string.IsNullOrEmpty(model.Probaion))
+             {
+                 int probation;
+                 if (!Int32.TryParse(model.Probaion, out probation) ||
+                     probation <= 0 || probation > 24)
+                     ModelState.AddModelError("Probaion", "Поле 'Испытательный срок' должно быть положительным целым числом не больше 3.");
+             }
+             if (!string.IsNullOrEmpty(model.Salary))
+             {
+                 decimal salary;
+                 if (!Decimal.TryParse(model.Salary, out salary) ||
+                     salary <= 0)
+                     ModelState.AddModelError("Salary", "Поле 'Оклад (тарифная ставка)' должно быть неотрицательным числом.");
+             }
+             //if(model.BeginDate.HasValue && model.EndDate.HasValue && model.BeginDate.Value > model.EndDate.Value)
+             //    ModelState.AddModelError("BeginDate", "Поле 'Дата начало Т Д' должно быть не больше поля 'Дата окончания Т Д.'.");
+             return ModelState.IsValid;
+         }
+
+         #endregion
          #region Timesheet Correction
          [HttpGet]
          public ActionResult TimesheetCorrectionList()
@@ -753,11 +873,94 @@ namespace WebMvc.Controllers
                  throw;
              }
          }
+         //protected UploadFilesDto GetFilesContexts()
+         //{
+         //    UploadFilesDto dto = new UploadFilesDto(); 
+         //    if (Request.Files.Count == 0)
+         //        return dto;
+             
+         //    dto.attachment = GetFileContext("file");
+         //    dto.penAttachment = GetFileContext("filePen");
+         //    dto.innAttachment = GetFileContext("fileInn");
+         //    dto.ndflAttachment = GetFileContext("fileNdfl");
+         //    return dto;
+         //}
+         [HttpGet]
+         public ActionResult RenderAttachments(int id, int typeId)
+         {
+             //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+             RequestAttachmentsModel model = RequestBl.GetAttachmentsModel(id, (RequestAttachmentTypeEnum)typeId);
+             return PartialView("RequestAttachmentsPartial", model);
+         }
+         [HttpGet]
+         public ActionResult AddAttachmentDialog(int id, int typeId)
+         {
+             try
+             {
+                 AddAttachmentModel model = new AddAttachmentModel { DocumentId = id };
+                 return PartialView(model);
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception", ex);
+                 string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                 return PartialView("DialogError", new DialogErrorModel { Error = error });
+             }
+         }
          protected UploadFileDto GetFileContext()
          {
              if (Request.Files.Count == 0)
                  return null;
              string file = Request.Files.GetKey(0);
+             return GetFileContext(file);
+         }
+         [HttpPost]
+         public ContentResult SaveAttachment(int? id, string description, string qqFile)
+         {
+             bool saveResult = false;
+             string error = string.Empty;
+             try
+             {
+                 var length = Request.ContentLength;
+                 var bytes = new byte[length];
+                 Request.InputStream.Read(bytes, 0, length);
+
+                 saveResult = true;
+                 //if (comment == null || string.IsNullOrEmpty(comment.Trim()))
+                 //{
+                 //    error = "Комментарий - обязательное поле";
+                 //}
+                 //else if (comment.Trim().Length > MaxCommentLength)
+                 //{
+                 //    error = string.Format("Длина поля 'Комментарий' не может превышать {0} символов.", MaxCommentLength);
+                 //}
+                 //else
+                 //{
+                 //    var model = new SaveCommentModel
+                 //    {
+                 //        DocumentId = id,
+                 //        TypeId = typeId,
+                 //        Comment = comment.Trim(),
+                 //    };
+                 //    saveResult = RequestBl.SaveComment(model);
+                 //    error = model.Error;
+                 //}
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception on SaveAttachment:", ex);
+                 error = ex.GetBaseException().Message;
+                 saveResult = false;
+             }
+             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+             return Content(jsonString);
+         }
+         protected UploadFileDto GetFileContext(string file)
+         {
+             //if (Request.Files.Count == 0)
+             //    return null;
+             //string file = Request.Files.GetKey(0);
              HttpPostedFileBase hpf = Request.Files[file];
              if ((hpf == null) || (hpf.ContentLength == 0))
                  return null;
