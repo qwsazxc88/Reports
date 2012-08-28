@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -3447,8 +3448,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             RequestAttachmentsModel model = new RequestAttachmentsModel
             {
-                RequestId = id,
-                RequestTypeId =(int) typeId,
+                AttachmentRequestId = id,
+                AttachmentRequestTypeId =(int) typeId,
                 Attachments = new List<RequestAttachmentModel>()
             };
             model.Attachments =
@@ -3473,6 +3474,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                 FileName = attachment.FileName,
                 ContextType = attachment.ContextType
             };
+        }
+        public bool SaveAttachment(SaveAttacmentModel model)
+        {
+            RequestAttachment attach = new RequestAttachment
+                                           {
+                                               ContextType = GetFileContext(model.FileDto.FileName),
+                                               DateCreated = DateTime.Now,
+                                               Description = model.Description,
+                                               FileName = model.FileDto.FileName,
+                                               RequestId = model.EntityId,
+                                               RequestType = (int)model.EntityTypeId,
+                                               UncompressContext = model.FileDto.Context,
+
+                                           };
+            RequestAttachmentDao.SaveAndFlush(attach);
+            return true;
+        }
+        public string GetFileContext(string fileName)
+        {
+            string extension = Path.GetExtension(fileName);
+            string contextType;
+            switch (extension)
+            {
+                case ".doc":
+                case ".docx":
+                    return  "application/msword";
+                    break;
+                case ".xls":
+                case ".xlsx":
+                    return "application/ms-excel";
+                    break;
+                default:
+                    return "application/octet-stream";
+                    break;
+            }
+
+            
         }
         #endregion
     }

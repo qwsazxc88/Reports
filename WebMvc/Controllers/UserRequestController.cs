@@ -915,7 +915,7 @@ namespace WebMvc.Controllers
              return GetFileContext(file);
          }
          [HttpPost]
-         public ContentResult SaveAttachment(int? id, string description, string qqFile)
+         public ContentResult SaveAttachment(int id, string description, string qqFile)
          {
              bool saveResult = false;
              string error = string.Empty;
@@ -926,25 +926,31 @@ namespace WebMvc.Controllers
                  Request.InputStream.Read(bytes, 0, length);
 
                  saveResult = true;
-                 //if (comment == null || string.IsNullOrEmpty(comment.Trim()))
-                 //{
-                 //    error = "Комментарий - обязательное поле";
-                 //}
-                 //else if (comment.Trim().Length > MaxCommentLength)
-                 //{
-                 //    error = string.Format("Длина поля 'Комментарий' не может превышать {0} символов.", MaxCommentLength);
-                 //}
-                 //else
-                 //{
-                 //    var model = new SaveCommentModel
-                 //    {
-                 //        DocumentId = id,
-                 //        TypeId = typeId,
-                 //        Comment = comment.Trim(),
-                 //    };
-                 //    saveResult = RequestBl.SaveComment(model);
-                 //    error = model.Error;
-                 //}
+                 if (description == null || string.IsNullOrEmpty(description.Trim()))
+                 {
+                     error = "Описание - обязательное поле";
+                 }
+                 else if (description.Trim().Length > MaxCommentLength)
+                 {
+                     error = string.Format("Длина поля 'Описание' не может превышать {0} символов.", MaxCommentLength);
+                 }
+                 else
+                 {
+                     var model = new SaveAttacmentModel
+                     {
+                         EntityId = id,
+                         EntityTypeId = RequestAttachmentTypeEnum.Employment,
+                         Description = description.Trim(),
+                         FileDto = new UploadFileDto
+                                       {
+                                           Context = bytes,
+                                           FileName = qqFile,
+                                           //ContextType = Request.Content,
+                                       }
+                     };
+                     saveResult = RequestBl.SaveAttachment(model);
+                     error = model.Error;
+                 }
              }
              catch (Exception ex)
              {

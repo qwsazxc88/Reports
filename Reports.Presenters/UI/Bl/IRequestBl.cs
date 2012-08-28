@@ -63,5 +63,6 @@ namespace Reports.Presenters.UI.Bl
 
         AttachmentModel GetFileContext(int id/*, int typeId*/);
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
+        bool SaveAttachment(SaveAttacmentModel model);
     }
 }
