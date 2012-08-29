@@ -39,7 +39,7 @@
                 </td>         
                 <td>@attach.Description</td>
                 <td>
-                    <a class="ui-notify-close" href='@Url.Action("DeleteAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >Удалить</a>
+                    <a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a>
                 </td>  
             </tr>   
             }
@@ -160,6 +160,7 @@ function setupUploader()
         element: document.getElementById('file-uploader'),
         // path to server-side upload script      
         action: "@Url.Action("SaveAttachment", "UserRequest")",
+        sizeLimit: 2097152,
 //        params: {
 //            id: id
 //        },
@@ -205,5 +206,23 @@ function setupUploader()
         debug: true
     });
 }
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "UserRequest")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#AttachmentError").text(result.Error);
+                                $("#AttachmentError").show(); 
+                            }
+                            else{
+                                $("#AttachmentError").text("");
+                                $("#AttachmentTableError").hide();                                 
+                           }
+                           RenderAttachments();
+                       }
+                     );
+        return false;
+    }
 //setupUploader();
 </script>

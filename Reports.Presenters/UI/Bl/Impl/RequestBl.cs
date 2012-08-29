@@ -3491,6 +3491,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             RequestAttachmentDao.SaveAndFlush(attach);
             return true;
         }
+        public bool DeleteAttachment(DeleteAttacmentModel model)
+        {
+            RequestAttachmentDao.Delete(model.Id);
+            return true;
+        }
         public string GetFileContext(string fileName)
         {
             string extension = Path.GetExtension(fileName);

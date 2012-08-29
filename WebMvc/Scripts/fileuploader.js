@@ -300,12 +300,12 @@ qq.FileUploaderBasic = function(o){
 		onError: function(id, fileName, xhr) {},
 		// messages
 		messages: {
-			typeError: "{file} has an invalid extension. Only {extensions} {isAre} allowed.",
-			sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
-			minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
-			emptyError: "{file} is empty, please select files again without it.",
-			noFilesError: "No files to upload.",
-			onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
+			typeError: "{file} имеет неправильное расширение. Возможны только расширения {extensions}.",
+			sizeError: "Слишком большой размер файла {file} , максимально возможный размер - {sizeLimit}.",
+			minSizeError: "Слишком маленький размер файла {file} , минимально возможный размер - {minSizeLimit}.",
+			emptyError: "Файл {file} пуст, пожалуйста, выберите другой файл .",
+			noFilesError: "Нет файлов дял загрузки.",
+			onLeave: "Файл загружается, при закрытии диалога загрузка будет прервана."
 		},
 		showMessage: function(message){
 			alert(message);
