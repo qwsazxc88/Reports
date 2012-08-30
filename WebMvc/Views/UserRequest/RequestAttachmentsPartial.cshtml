@@ -7,8 +7,9 @@
         
          <tr>
             <td>
-                <input type="button" value="Прикрепить файл" @if (Model.AttachmentRequestId == 0)
-                                                             { <text>style = "display:none"</text>; } id="AddAttachment" onclick="OnAddAttachment();"/>
+                <input type="button" value="Прикрепить файл" @if (!Model.IsAddAvailable)
+                                                             { <text>style = "display:none"</text>;
+                                                             } id="AddAttachment" onclick="OnAddAttachment();"/>
             </td>
         </tr>
          @*<tr>
@@ -31,18 +32,27 @@
         </tr>    
         @if (Model != null && Model.Attachments != null && Model.Attachments.Count > 0)
         {
-            foreach (var attach in Model.Attachments)
-            {
+            int i = 0;
             <tr>
-                <td>
+                <td style="font-weight:bold;border:1px solid">Файл</td>         
+                <td style="font-weight:bold;border:1px solid">Описание</td>
+                <td style="border:1px solid"></td>  
+            </tr>   
+
+                    foreach (var attach in Model.Attachments)
+                    {
+                        var bkColor = i++ % 2 == 0 ? "#e8e8e8" : "transparent";
+            <tr style="background-color:@bkColor">
+                <td style="border:1px solid">
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >@attach.Attachment</a>
                 </td>         
-                <td>@attach.Description</td>
-                <td>
-                    <a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a>
-                </td>  
+                <td style="border:1px solid">@attach.Description</td>
+                <td style="border:1px solid">
+                    @if (attach.IsDeleteAvailable)
+                    {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                 </td>  
             </tr>   
-            }
+                    }
         }
 </table>
 

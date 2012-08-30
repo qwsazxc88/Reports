@@ -8,6 +8,7 @@ namespace Reports.Presenters.UI.ViewModel
     {
         public int AttachmentRequestId { get; set; }
         public int AttachmentRequestTypeId { get; set; }
+        public bool IsAddAvailable { get; set; }
         public IList<RequestAttachmentModel> Attachments { get; set; }
     }
 
@@ -16,6 +17,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int AttachmentId { get; set; }
         public string Attachment { get; set; }
         public string Description { get; set; }
+        public bool IsDeleteAvailable { get; set; }
     }
     public class SaveAttacmentModel
     {

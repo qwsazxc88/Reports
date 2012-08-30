@@ -175,6 +175,9 @@ alter table MissionComment  drop constraint FK_MissionComment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_Mission]') AND parent_object_id = OBJECT_ID('MissionComment'))
 alter table MissionComment  drop constraint FK_MissionComment_Mission
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ATTACHMENT_USER_ROLE]') AND parent_object_id = OBJECT_ID('RequestAttachment'))
+alter table RequestAttachment  drop constraint FK_ATTACHMENT_USER_ROLE
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToDepartment_User]') AND parent_object_id = OBJECT_ID('[UserToDepartment]'))
 alter table [UserToDepartment]  drop constraint FK_UserToDepartment_User
 
@@ -704,7 +707,8 @@ create table RequestAttachment (
   RequestId INT not null,
   RequestType INT not null,
   DateCreated DATETIME not null,
-  Description NVARCHAR(255) null,
+  Description NVARCHAR(256) null,
+  CreatorRoleId INT not null,
   constraint PK_RequestAttachment  primary key (Id)
 )
 create table [UserToDepartment] (
@@ -899,6 +903,8 @@ create index IX_MissionComment_User_Id on MissionComment (UserId)
 create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
 alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
 alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
+create index IX_ATTACHMENT_USER_ROLE_ID on RequestAttachment (CreatorRoleId)
+alter table RequestAttachment add constraint FK_ATTACHMENT_USER_ROLE foreign key (CreatorRoleId) references Role
 create index IX_UserToDepartment_User_Id on [UserToDepartment] (UserId)
 create index IX_UserToDepartment_Department_Id on [UserToDepartment] (DepartmentId)
 alter table [UserToDepartment] add constraint FK_UserToDepartment_User foreign key (UserId) references [Users]

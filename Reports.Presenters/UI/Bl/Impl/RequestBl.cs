@@ -32,6 +32,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetStatusDao timesheetStatusDao;
         protected IVacationCommentDao vacationCommentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
+        protected IRoleDao roleDao;
 
         protected IAbsenceTypeDao absenceTypeDao;
         protected IAbsenceDao absenceDao;
@@ -245,6 +246,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(employmentAdditionDao); }
             set { employmentAdditionDao = value; }
         }
+        public IRoleDao RoleDao
+        {
+            get { return Validate.Dependency(roleDao); }
+            set { roleDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -420,7 +426,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Employment employment;
                 if (model.Id == 0)
                 {
-                    employment = new Employment()
+                    employment = new Employment
                     {
                         CreateDate = DateTime.Now,
                         Creator = UserDao.Load(current.Id),
@@ -515,6 +521,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                {
                    RequestId = entityId,
                    RequestType = (int)type,
+                   CreatorRole = RoleDao.Load((int)CurrentUser.UserRole),
                };
 
             attach.DateCreated = DateTime.Now;
@@ -3446,10 +3453,17 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Attachment
         public RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
+            bool isAddAvailable = false;
+            if(id > 0)
+            {
+                Employment entity = EmploymentDao.Load(id);
+                isAddAvailable = !entity.SendTo1C.HasValue;
+            }    
             RequestAttachmentsModel model = new RequestAttachmentsModel
             {
                 AttachmentRequestId = id,
                 AttachmentRequestTypeId =(int) typeId,
+                IsAddAvailable = isAddAvailable,
                 Attachments = new List<RequestAttachmentModel>()
             };
             model.Attachments =
@@ -3460,7 +3474,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 Attachment = x.FileName, 
                                 AttachmentId = x.Id, 
-                                Description = x.Description
+                                Description = x.Description,
+                                IsDeleteAvailable = (x.CreatorUserRole == CurrentUser.UserRole)
                             });
             return model;
         }
@@ -3486,6 +3501,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                RequestId = model.EntityId,
                                                RequestType = (int)model.EntityTypeId,
                                                UncompressContext = model.FileDto.Context,
+                                               CreatorRole = RoleDao.Load((int)CurrentUser.UserRole)
 
                                            };
             RequestAttachmentDao.SaveAndFlush(attach);
@@ -3499,20 +3515,17 @@ namespace Reports.Presenters.UI.Bl.Impl
         public string GetFileContext(string fileName)
         {
             string extension = Path.GetExtension(fileName);
-            string contextType;
+            //string contextType;
             switch (extension)
             {
                 case ".doc":
                 case ".docx":
                     return  "application/msword";
-                    break;
                 case ".xls":
                 case ".xlsx":
                     return "application/ms-excel";
-                    break;
                 default:
                     return "application/octet-stream";
-                    break;
             }
 
             

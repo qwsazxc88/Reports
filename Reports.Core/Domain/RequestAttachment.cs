@@ -33,6 +33,11 @@ namespace Reports.Core.Domain
         public virtual int RequestType { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual string Description { get; set; }
+        public virtual Role CreatorRole { get; set; }
+        public virtual UserRole CreatorUserRole
+        {
+            get { return (UserRole)CreatorRole.Id; }
+        }
         //public virtual Document Document { get; set; }
 
         #endregion

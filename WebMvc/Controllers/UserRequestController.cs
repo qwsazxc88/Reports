@@ -926,7 +926,11 @@ namespace WebMvc.Controllers
                  Request.InputStream.Read(bytes, 0, length);
 
                  saveResult = true;
-                 if (description == null || string.IsNullOrEmpty(description.Trim()))
+                 if (length > MaxFileSize)
+                 {
+                     error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                 }
+                 else if (description == null || string.IsNullOrEmpty(description.Trim()))
                  {
                      error = "Описание - обязательное поле";
                  }
