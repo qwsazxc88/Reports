@@ -8,5 +8,7 @@ namespace Reports.Core.Dao
     {
         RequestAttachment FindByRequestIdAndTypeId(int id, RequestAttachmentTypeEnum type);
         IList<RequestAttachment> FindManyByRequestIdAndTypeId(int id, RequestAttachmentTypeEnum type);
+        int GetAttachmentsCount(int entityId);
+        int DeleteForEntityId(int entityId);
     }
 }

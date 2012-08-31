@@ -34,20 +34,20 @@
         {
             int i = 0;
             <tr>
-                <td style="font-weight:bold;border:1px solid">Файл</td>         
-                <td style="font-weight:bold;border:1px solid">Описание</td>
-                <td style="border:1px solid"></td>  
+                <td style="font-weight:bold">Файл</td>         
+                <td style="font-weight:bold">Описание</td>
+                <td></td>  
             </tr>   
 
                     foreach (var attach in Model.Attachments)
                     {
                         var bkColor = i++ % 2 == 0 ? "#e8e8e8" : "transparent";
             <tr style="background-color:@bkColor">
-                <td style="border:1px solid">
+                <td>
                     <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >@attach.Attachment</a>
                 </td>         
-                <td style="border:1px solid">@attach.Description</td>
-                <td style="border:1px solid">
+                <td>@attach.Description</td>
+                <td>
                     @if (attach.IsDeleteAvailable)
                     {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                  </td>  

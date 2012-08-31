@@ -450,6 +450,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsDelete)
                     {
                         employment.DeleteDate = DateTime.Now;
+                        RequestAttachmentDao.DeleteForEntityId(model.Id);
                         EmploymentDao.SaveAndFlush(employment);
                         model.IsDelete = false;
                     }
@@ -3454,10 +3455,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         public RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
             bool isAddAvailable = false;
+            bool isDeleteAvailable = false;
+            List<RequestAttachment> list = RequestAttachmentDao.FindManyByRequestIdAndTypeId(id, typeId).ToList();
             if(id > 0)
             {
                 Employment entity = EmploymentDao.Load(id);
-                isAddAvailable = !entity.SendTo1C.HasValue;
+                isAddAvailable = !entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue;
+                isDeleteAvailable = !entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue;
+                if(isDeleteAvailable && list.Count <= 4 )
+                {
+                     if((entity.UserDateAccept.HasValue && CurrentUser.UserRole == UserRole.Employee) ||
+                        (entity.ManagerDateAccept.HasValue && CurrentUser.UserRole == UserRole.Manager) ||
+                        (entity.PersonnelManagerDateAccept.HasValue && CurrentUser.UserRole == UserRole.PersonnelManager)
+                       )
+                         isDeleteAvailable = false;
+                }
             }    
             RequestAttachmentsModel model = new RequestAttachmentsModel
             {
@@ -3466,16 +3478,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsAddAvailable = isAddAvailable,
                 Attachments = new List<RequestAttachmentModel>()
             };
-            model.Attachments =
-                RequestAttachmentDao.FindManyByRequestIdAndTypeId(id, typeId).ToList().
-                    ConvertAll(
-                        x =>
-                        new RequestAttachmentModel
+            model.Attachments =list. ConvertAll(x =>
+                            new RequestAttachmentModel
                             {
                                 Attachment = x.FileName, 
                                 AttachmentId = x.Id, 
                                 Description = x.Description,
-                                IsDeleteAvailable = (x.CreatorUserRole == CurrentUser.UserRole)
+                                IsDeleteAvailable = (x.CreatorUserRole == CurrentUser.UserRole) && isDeleteAvailable,
                             });
             return model;
         }
@@ -3511,6 +3520,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             RequestAttachmentDao.Delete(model.Id);
             return true;
+        }
+        public int GetAttachmentsCount(int entityId)
+        {
+            return RequestAttachmentDao.GetAttachmentsCount(entityId);
         }
         public string GetFileContext(string fileName)
         {

@@ -65,5 +65,6 @@ namespace Reports.Presenters.UI.Bl
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
         bool DeleteAttachment(DeleteAttacmentModel model);
+        int GetAttachmentsCount(int entityId);
     }
 }

@@ -156,37 +156,34 @@ namespace WebMvc.Controllers
          }
          protected bool ValidateEmploymentEditModel(EmploymentEditModel model/*, UploadFilesDto filesDto*/)
          {
-             if (model.Id > 0 
-                 //&& 
-                 //(
-                 //   (filesDto.attachment == null) || 
-                 //   (filesDto.penAttachment == null) ||
-                 //   (filesDto.innAttachment == null) ||
-                 //   (filesDto.ndflAttachment == null)
-                 //)
-                 )
+             if (model.Id > 0)
              {
-                 UserRole role = AuthenticationService.CurrentUser.UserRole;
-                 if ((role == UserRole.Employee && model.IsApprovedByUser) ||
-                     (role == UserRole.Manager && model.IsApprovedByManager) ||
-                     (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id);
+                 if(attachmentCount < 4)
                  {
+                     UserRole role = AuthenticationService.CurrentUser.UserRole;
+                     if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                         (role == UserRole.Manager && model.IsApprovedByManager) ||
+                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                     {
 
-                     ModelState.AddModelError(string.Empty, "Заявка не может быть согласована без прикрепленых сканов.");
-                     if (role == UserRole.Employee && model.IsApprovedByUser)
-                     {
-                         ModelState.Remove("IsApprovedByUser");
-                         model.IsApprovedByUser = false;
-                     }
-                     if (role == UserRole.Manager && model.IsApprovedByManager)
-                     {
-                         ModelState.Remove("IsApprovedByManager");
-                         model.IsApprovedByManager = false;
-                     }
-                     if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
-                     {
-                         ModelState.Remove("IsApprovedByPersonnelManager");
-                         model.IsApprovedByPersonnelManager = false;
+                         ModelState.AddModelError(string.Empty,
+                                                  "Заявка не может быть одобрена без прикрепления 4 обязательных файлов (копии паспорта, пенсионного, ИНН, 2НДФЛ).");
+                         if (role == UserRole.Employee && model.IsApprovedByUser)
+                         {
+                             ModelState.Remove("IsApprovedByUser");
+                             model.IsApprovedByUser = false;
+                         }
+                         if (role == UserRole.Manager && model.IsApprovedByManager)
+                         {
+                             ModelState.Remove("IsApprovedByManager");
+                             model.IsApprovedByManager = false;
+                         }
+                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                         {
+                             ModelState.Remove("IsApprovedByPersonnelManager");
+                             model.IsApprovedByPersonnelManager = false;
+                         }
                      }
                  }
              }
@@ -550,32 +547,37 @@ namespace WebMvc.Controllers
              //error = string.Empty;
              if (model.Id > 0 && fileDto == null)
              {
-                 UserRole role = AuthenticationService.CurrentUser.UserRole;
-                 if ((role == UserRole.Employee && model.IsApprovedByUser) ||
-                     (role == UserRole.Manager && model.IsApprovedByManager) ||
-                     (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id);
+                 if (attachmentCount <= 0)
                  {
-                     
-                     ModelState.AddModelError(string.Empty, "Заявка не может быть согласована без прикрепленого скана больничного.");
-                     if(role == UserRole.Employee && model.IsApprovedByUser)
+                     UserRole role = AuthenticationService.CurrentUser.UserRole;
+                     if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                         (role == UserRole.Manager && model.IsApprovedByManager) ||
+                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
                      {
-                         ModelState.Remove("IsApprovedByUser");
-                         model.IsApprovedByUser = false;
-                     }
-                     if (role == UserRole.Manager && model.IsApprovedByManager)
-                     {
-                         ModelState.Remove("IsApprovedByManager");
-                         model.IsApprovedByManager = false;
-                     }
-                     if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
-                     {
-                         ModelState.Remove("IsApprovedByPersonnelManager");
-                         model.IsApprovedByPersonnelManager = false;
-                     }
-                     //error = "Заявка не может быть согласована без прикрепленого скана больничного.";
-                     //needToReload = true;
-                     //return false;
 
+                         ModelState.AddModelError(string.Empty,
+                                                  "Заявка не может быть согласована без прикрепленого скана больничного.");
+                         if (role == UserRole.Employee && model.IsApprovedByUser)
+                         {
+                             ModelState.Remove("IsApprovedByUser");
+                             model.IsApprovedByUser = false;
+                         }
+                         if (role == UserRole.Manager && model.IsApprovedByManager)
+                         {
+                             ModelState.Remove("IsApprovedByManager");
+                             model.IsApprovedByManager = false;
+                         }
+                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                         {
+                             ModelState.Remove("IsApprovedByPersonnelManager");
+                             model.IsApprovedByPersonnelManager = false;
+                         }
+                         //error = "Заявка не может быть согласована без прикрепленого скана больничного.";
+                         //needToReload = true;
+                         //return false;
+
+                     }
                  }
              }
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
