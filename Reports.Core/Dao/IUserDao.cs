@@ -13,6 +13,7 @@ namespace Reports.Core.Dao
         IList<User> GetUsersWithRole(UserRole role);
         IList<User> LoadUserByCodes(List<string> codes);
         IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole);
+        IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);
         //IList<User> FindByFilter(UserListFilter filter, out int count);

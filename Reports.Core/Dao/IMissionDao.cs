@@ -8,6 +8,7 @@ namespace Reports.Core.Dao
     public interface IMissionDao : IDao<Mission>
     {
         IList<VacationDto> GetDocuments(
+            int userId, 
             UserRole role,
             int departmentId,
             int positionId,

@@ -317,6 +317,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = EmploymentDao.GetDocuments(
+                user.Id,
                 role,
                 //model.DepartmentId,
                 model.PositionId,
@@ -667,12 +668,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUserRole)
             {
                 case UserRole.Employee:
-                    //if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
-                    //{
-                    //    model.IsApprovedByUserEnable = true;
-                    //    if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
-                    //        model.IsTypeEditable = true;
-                    //}
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsApprovedByUserEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+                    }
                     break;
                 case UserRole.Manager:
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
@@ -766,6 +767,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = TimesheetCorrectionDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -1068,6 +1070,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = DismissalDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -1400,6 +1403,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = MissionDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -1715,6 +1719,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = HolidayWorkDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -2079,6 +2084,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = SicklistDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -2483,6 +2489,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = (UserRole)user.Role.Id;
             model.Documents = AbsenceDao.GetDocuments(
+                user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -2813,7 +2820,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(VacationListModel model,User user)
         {
             UserRole role = (UserRole)user.Role.Id;
-            model.Documents = VacationDao.GetDocuments(
+            model.Documents = VacationDao.GetDocuments(user.Id,
                 role,
                 model.DepartmentId,
                 model.PositionId,
@@ -2869,6 +2876,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Position position = user.Position;
                 if(position != null)
                     positionList = new List<IdNameDto> {new IdNameDto(position.Id,position.Name)};
+                else
+                    positionList = new List<IdNameDto> { new IdNameDto(0, SelectAll) };
             }
             return positionList;
         }

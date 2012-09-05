@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
@@ -168,6 +169,54 @@ namespace Reports.Core.Dao.Impl
                             .SetProjection(Projections.RowCount())
                             .UniqueResult();
         }
+        public IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole)
+        {
+            string sqlQuery =
+                        @"select 
+            u.Id 
+            ,u.Name
+            ,case when emp.BeginDate is not null then emp.BeginDate else u.DateAccept end as DateAccept
+            ,case when dis.EndDate is not null then dis.EndDate else u.DateRelease end as DateRelease
+            from dbo.Users u
+            left join dbo.Employment emp on emp.UserId = u.Id
+            and u.IsNew = 1
+            and emp.ManagerDateAccept is not null
+            and emp.UserDateAccept is not null
+            and emp.PersonnelManagerDateAccept is not null
+            and emp.DeleteDate is null
+            left join dbo.Dismissal dis on
+            dis.UserId = u.Id
+            and dis.ManagerDateAccept is not null
+            and dis.UserDateAccept is not null
+            and dis.PersonnelManagerDateAccept is not null
+            and dis.DeleteDate is null
+            ";
+            string sqlWhere = string.Empty;
+            switch (managerRole)
+            {
+                case UserRole.Employee:
+                    sqlWhere += "u.Id = :userId";
+                    break;
+                case UserRole.Manager:
+                    sqlWhere += "u.ManagerId = :userId";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlWhere += "u.PersonnelManagerId = :userId";
+                    break;
+                default:
+                    break;
+            }
+            sqlQuery += @" where " + sqlWhere;
+            sqlQuery += @" order by u.Name,u.Id ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("DateAccept", NHibernateUtil.DateTime).
+                AddScalar("DateRelease", NHibernateUtil.DateTime);
+            query.SetInt32("userId", userId);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
+        }
+
         public IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole)
         {
             ICriteria criteria = Session.CreateCriteria(typeof(User));

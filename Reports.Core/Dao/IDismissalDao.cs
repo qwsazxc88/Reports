@@ -8,6 +8,7 @@ namespace Reports.Core.Dao
     public interface IDismissalDao : IDao<Dismissal>
     {
         IList<VacationDto> GetDocuments(
+            int userId, 
             UserRole role,
             int departmentId,
             int positionId,

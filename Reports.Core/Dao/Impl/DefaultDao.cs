@@ -160,6 +160,20 @@ namespace Reports.Core.Dao.Impl
             criteria.AddOrder(new Order("Name", true));
             return criteria.List<TEntity>();
         }
+        public virtual string GetWhereForUserRole(UserRole role,int userId)
+        {
+            switch (role)
+            {
+                case UserRole.Employee:
+                    return string.Format(" u.Id = {0} ", userId);
+                case UserRole.Manager:
+                    return string.Format(" u.ManagerId = {0} ", userId);
+                case UserRole.PersonnelManager:
+                    return string.Format(" u.PersonnelManagerId = {0} ", userId);
+                default:
+                    throw new ArgumentException(string.Format("Invalid user role {0}",role));
+            }
+        }
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{
 		//    Validate.NotNull(type,"type"); 

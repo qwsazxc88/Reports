@@ -15,6 +15,7 @@ namespace Reports.Core.Dao.Impl
         {
         }
         public IList<VacationDto> GetDocuments(
+               int userId, 
                UserRole role,
                int departmentId,
                int positionId,
@@ -33,7 +34,7 @@ namespace Reports.Core.Dao.Impl
             from [dbo].[Sicklist] v
             inner join [dbo].[Users] u on u.Id = v.UserId
             inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
-            string whereString = string.Empty;
+            string whereString = GetWhereForUserRole(role, userId);
             if (statusId != 0)
             {
                 string statusWhere;
@@ -69,6 +70,8 @@ namespace Reports.Core.Dao.Impl
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
+                if (whereString.Length > 0)
+                    whereString += @" and ";
                 whereString += @" " + statusWhere + " ";
             }
             if (typeId != 0)

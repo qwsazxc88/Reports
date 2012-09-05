@@ -1,3 +1,5 @@
+using System;
+
 namespace Reports.Core.Dto
 {
     public class IdNameDto
@@ -19,4 +21,10 @@ namespace Reports.Core.Dto
     {
         public int SortOrder { get; set; }
     }
+    public class IdNameDtoWithDates : IdNameDto
+    {
+        public DateTime? DateAccept { get; set; }
+        public DateTime? DateRelease { get; set; }
+    }
+    
 }
