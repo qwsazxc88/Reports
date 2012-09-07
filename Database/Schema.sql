@@ -599,8 +599,8 @@ create table AbsenceType (
 create table Organization (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code INT null,
-  Name NVARCHAR(128) null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(256) null,
   constraint PK_Organization  primary key (Id)
 )
 create table Timesheet (
@@ -622,7 +622,7 @@ create table UserLogin (
 create table Department (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code INT null,
+  Code NVARCHAR(10) null,
   Name NVARCHAR(128) null,
   constraint PK_Department  primary key (Id)
 )
@@ -694,7 +694,7 @@ create table MissionComment (
 create table Position (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code INT null,
+  Code NVARCHAR(10) null,
   Name NVARCHAR(128) null,
   constraint PK_Position  primary key (Id)
 )

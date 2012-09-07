@@ -281,6 +281,8 @@ namespace Reports.Core.Dao.Impl
                 int userId, UserRole userRole)
         {
             IList<RequestDto> list = GetRequestsForDismissal(beginDate, endDate, userId, userRole);
+            foreach (RequestDto requestDto in list.Where(requestDto => requestDto.TimesheetCode == PresenceStatusCode))
+                requestDto.TimesheetHours = 8;
             IList<RequestDto> afterList = list.Select(requestDto => new RequestDto
             {
                 BeginDate = requestDto.EndDate.AddDays(1),
@@ -349,6 +351,8 @@ namespace Reports.Core.Dao.Impl
                 int userId, UserRole userRole)
         {
             IList<RequestDto> list = GetRequestsForEmployment(beginDate, endDate, userId, userRole);
+            foreach (RequestDto requestDto in list.Where(requestDto => requestDto.TimesheetCode == PresenceStatusCode))
+                requestDto.TimesheetHours = 8;
             IList<RequestDto> beforeList = list.Select(requestDto => new RequestDto
                                                                          {
                                                                              BeginDate = beginDate, 
@@ -531,8 +535,8 @@ namespace Reports.Core.Dao.Impl
                       && (idNameDto.DateAccept.Value.Month <= month)))) &&
                     (!idNameDto.DateRelease.HasValue ||
                     ((idNameDto.DateRelease.Value.Year > year) ||
-                    ((idNameDto.DateAccept.Value.Year == year)
-                      && (idNameDto.DateAccept.Value.Month >= month))))
+                    ((idNameDto.DateRelease.Value.Year == year)
+                      && (idNameDto.DateRelease.Value.Month >= month))))
                     )
                 {
                     foreach (var dayRequestsDto in dtoList)

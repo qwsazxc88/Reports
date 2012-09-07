@@ -291,7 +291,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
                            new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля"),
                            new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
-                       };
+                       }.OrderBy(x => x.Name).ToList();
         }
         #endregion
         #region Employment
