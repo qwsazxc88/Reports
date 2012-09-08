@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
+using System.Web.Security;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -919,8 +923,8 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ContentResult SaveAttachment(int id, string description, string qqFile)
          {
-             bool saveResult = false;
-             string error = string.Empty;
+             bool saveResult;
+             string error;
              try
              {
                  var length = Request.ContentLength;
@@ -971,8 +975,8 @@ namespace WebMvc.Controllers
          [HttpGet]
          public ContentResult DeleteAttachment(int id)
          {
-             bool saveResult = false;
-             string error = string.Empty;
+             bool saveResult;
+             string error;
              try
              {
                      DeleteAttacmentModel model = new DeleteAttacmentModel{Id = id};
@@ -1019,5 +1023,126 @@ namespace WebMvc.Controllers
              file.InputStream.Read(fileContent, 0, length);
              return fileContent;
          }
+
+
+         [HttpGet]
+         public ActionResult PrintForm(int id,int typeId)
+         {
+             //int? userId = new int?();
+             switch((RequestTypeEnum)typeId)
+             {
+                 case RequestTypeEnum.Vacation:
+                     return RedirectToAction("VacationEdit", new  RouteValueDictionary
+                                                                    {
+                                                                        {"id", id},
+                                                                        {"userId",6}
+                                                                     });
+                 default:
+                     throw new ArgumentException(string.Format("Неизвестный тип формы {0}",typeId));
+             }
+         }
+         [HttpGet]
+         public ActionResult RenderToPdf(int id,int typeId)
+         {
+             string filePath = null;
+             try
+             {
+                 var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                 var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                 folderPath = HttpContext.Server.MapPath(folderPath);
+                 if (!Directory.Exists(folderPath))
+                     Directory.CreateDirectory(folderPath);
+                 filePath = Path.Combine(folderPath, fileName);
+
+                 var argumrnts = new StringBuilder();
+
+                 var cookieName = FormsAuthentication.FormsCookieName;
+                 var authCookie = Request.Cookies[cookieName];
+                 if (authCookie == null || authCookie.Value == null)
+                     throw new ArgumentException("Ошибка авторизации.");
+                 argumrnts.AppendFormat("{0} --cookie {1} {2}", GetConverterCommandParam(id, typeId), cookieName, authCookie.Value);
+                 //argumrnts.AppendFormat("\"{0}\"", GetConverterCommandParam(id));
+                 argumrnts.AppendFormat(" \"{0}\"", filePath);
+                 var serverSideProcess = new Process
+                 {
+                     StartInfo =
+                     {
+                         FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                         Arguments = argumrnts.ToString(),
+                         UseShellExecute = true
+                     },
+                     EnableRaisingEvents = true
+                 };
+                 serverSideProcess.Start();
+                 serverSideProcess.WaitForExit();
+                 return GetFile(filePath, fileName);
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception on RenderToPdf", ex);
+                 throw;
+             }
+             finally
+             {
+                 if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                 {
+                     try
+                     {
+                         System.IO.File.Delete(filePath);
+                     }
+                     catch (Exception ex)
+                     {
+                         Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                     }
+                 }
+             }
+         }
+         protected string GetConverterCommandParam(int formId, int typeId)
+         {
+             //if (!formId.HasValue && !typeId.HasValue)
+             //    throw new ArgumentException("Неправильный вызов функции  GetConverterCommandParam.");
+             var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+             const string urlTemplate = "UserRequest/PrintForm";
+             return !string.IsNullOrEmpty(localhostUrl)
+                        ? string.Format("{0}/{1}/{2}?typeId={3}", localhostUrl, urlTemplate, formId, typeId)
+                        : Url.Content(string.Format("{0}/{1}?typeId={2}", urlTemplate, formId, typeId));
+             //!string.IsNullOrEmpty(localhostUrl) ?
+             //formId.HasValue ?
+             //string.Format("{0}/{1}/{2}", localhostUrl, urlTemplate, formId.Value) :
+             //string.Format("{0}/{1}?typeId={2}", localhostUrl, urlTemplate, typeId.Value)
+             //:
+             //formId.HasValue ?
+             //Url.Content(string.Format("{0}/{1}", urlTemplate, formId.Value)) :
+             //Url.Content(string.Format("{0}?typeId={1}", urlTemplate, typeId.Value));
+         }
+         protected ActionResult GetFile(string filePath, string fileName)
+         {
+             byte[] value;
+             using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+             {
+                 value = new byte[stream.Length];
+                 stream.Read(value, 0, (int)stream.Length);
+             }
+
+             const string contentType = "application/pdf";
+             Response.Clear();
+             if (Request.Browser.Browser == "IE")
+             {
+                 string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(fileName));
+                 Response.AddHeader("Content-Disposition", attachment);
+             }
+             else
+                 Response.AddHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+             Response.ContentType = contentType;
+             Response.Charset = "utf-8";
+             Response.HeaderEncoding = Encoding.UTF8;
+             Response.ContentEncoding = Encoding.UTF8;
+             Response.BinaryWrite(value);
+             Response.End();
+             return null;
+         }
+
      }
 }
