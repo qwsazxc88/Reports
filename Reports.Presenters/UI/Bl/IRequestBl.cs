@@ -66,5 +66,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveAttachment(SaveAttacmentModel model);
         bool DeleteAttachment(DeleteAttacmentModel model);
         int GetAttachmentsCount(int entityId);
+
+        void CreateVacationOrder(int id, string templatePath, string filePath);
     }
 }

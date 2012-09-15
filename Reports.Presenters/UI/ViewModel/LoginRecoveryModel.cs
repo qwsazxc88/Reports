@@ -5,10 +5,10 @@ namespace Reports.Presenters.UI.ViewModel
 {
     public class LoginRecoveryModel : IEmailDtoSupport
     {
-        [Required(ErrorMessageResourceName = "LogOnModel_Login_Required",
+        [Required(ErrorMessageResourceName = "LoginRecoveryModel_Email_Required",
             ErrorMessageResourceType = typeof (Resources))]
-        [Display(Name = "Логин")]
-        public string Login { get; set; }
+        [Display(Name = "Введите адрес электронной почты")]
+        public string Email { get; set; }
 
         public string Error { get; set; }
         //public string Success { get; set; }

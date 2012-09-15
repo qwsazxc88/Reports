@@ -59,11 +59,11 @@ namespace Reports.Core.Dao.Impl
                               .SetProjection(Projections.RowCount())
                               .UniqueResult() > 0;
         }
-        public virtual User FindByEmail(string email)
+        public virtual IList<User> FindByEmail(string email)
         {
-            return (User)Session.CreateCriteria(typeof(User))
+            return Session.CreateCriteria(typeof(User))
                             .Add( Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String ))
-                            .UniqueResult();
+                            .List<User>();
         }
         public virtual IList<User> GetUsersWithRole(UserRole role)
         {

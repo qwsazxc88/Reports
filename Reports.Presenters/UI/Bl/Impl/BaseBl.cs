@@ -122,7 +122,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   };
                 mailMessage.To.Add(new MailAddress(dto.To, dto.To));
                 mailMessage.Subject = dto.Subject;
-                mailMessage.Body = dto.Body;
+                mailMessage.Body = "<html>" + dto.Body + "</html>";
                 mailMessage.IsBodyHtml = true;
                 var smtpClient = new SmtpClient
                 {

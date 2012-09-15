@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Microsoft.Office.Interop.Word;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Dao.Impl;
@@ -3553,6 +3555,148 @@ namespace Reports.Presenters.UI.Bl.Impl
             
         }
         #endregion
+
+        public void CreateVacationOrder(int id,string templatePath,string filePath)
+        {
+            _Application word = null;
+            _Document sdoc = null;
+            _Document ddoc = null;
+            object noSave = WdSaveOptions.wdDoNotSaveChanges;
+            object oMissing = Missing.Value;
+            try
+            {
+
+                Vacation vacation = VacationDao.Load(id);
+                List<PrintVacationOrderDto> list = GetdDtoList(vacation);
+                
+                //разделитель страниц http://msdn.microsoft.com/en-us/library/bb213704%28office.12%29.aspx
+                object pageBreak = WdBreakType.wdPageBreak;
+                //не сохранять изменения
+                word = new Application {Visible = false};
+                //word.Options.DefaultFilePath[WdDefaultFilePath.wdUserTemplatesPath] = folderPath;
+                //Можем сделать его видимым и смотреть как скачут слова, абзацы и страницы
+                object objTemplatePath = templatePath;
+                //Создаем временный документ, в котором будем заменять ключевые слова на наши
+                sdoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
+                for (int i = 0; i < sdoc.Words.Count; i++)
+                {
+                    //Log.DebugFormat("Text {0} at position {1} ", sdoc.Words[i + 1].Text, i + 1);
+                    foreach (PrintVacationOrderDto dto in list)
+                    {
+                        if (sdoc.Words[i + 1].Text.Trim() == dto.Keyword) //не забываем, что ворд считает с единицы, а не нуля
+                        {
+                            Log.DebugFormat("Found keyword {0} (word number {1}) ",dto.Keyword, i+1);
+                            dto.Position = i + 1;
+                            dto.spacesAfter = sdoc.Words[i + 1].Text.Remove(0, dto.Keyword.Length);
+                            //keyWordEntries.Add(new keyWordEntry(keyWord, i + 1, sdoc.Words[i + 1].Text.Remove(0, keyWord.Length)));
+                        }
+                    }
+                }
+                /*ddoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
+                ddoc.Range(ref oMissing, ref oMissing).Delete(ref oMissing, ref oMissing);
+                ddoc.Range(ref oMissing, ref oMissing).InsertParagraphAfter();*/
+                int positionCorrection = 0;
+                foreach (PrintVacationOrderDto dto in list)
+                {
+                    /*if (dto.Keyword == "FIO")
+                        positionCorrection = positionCorrection+2;*/
+                    Log.DebugFormat("Setting {0} {1} {3} '{2}' to document", dto.Keyword, dto.Text, dto.spacesAfter,dto.Position+positionCorrection);
+                    sdoc.Words[dto.Position + positionCorrection].Text = dto.Text + dto.spacesAfter;
+                    string[] words = dto.Text.Split(new [] {' '});
+                    positionCorrection += words.Count() - 1;
+                    string[] wordsPoint = dto.Text.Split(new[] { '.'});
+                    positionCorrection += 2*(wordsPoint.Count() - 1);
+                }
+                /*for (int i = 0; i < sdoc.Words.Count; i++)
+                    Log.DebugFormat("Text {0} at position {1} ", sdoc.Words[i + 1].Text, i + 1);*/
+                ddoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
+                ddoc.Range(ref oMissing, ref oMissing).Delete(ref oMissing, ref oMissing);
+                ddoc.Range(ref oMissing, ref oMissing).InsertParagraphAfter();
+                sdoc.Range(ref oMissing, ref oMissing).Copy();
+                ddoc.Paragraphs[1].Range.Paste();
+                sdoc.Close(ref noSave, ref oMissing, ref oMissing);
+                sdoc = null;
+                object objFilePath = filePath;
+                //сахраняем полученный документ
+                ddoc.SaveAs(ref objFilePath, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing, ref oMissing);
+                //закрываем полученный документ
+                ddoc.Close(ref oMissing, ref oMissing, ref oMissing);
+                ddoc = null;
+                //завершаем наш процесс ворда
+                word.Quit(ref oMissing, ref oMissing, ref oMissing);
+                word = null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on CreateVacationOrder:",ex);
+                throw;
+            }
+            finally
+            {
+                if(sdoc != null)
+                    sdoc.Close(ref noSave,ref oMissing, ref oMissing);
+                if(ddoc != null)
+                    ddoc.Close(ref oMissing, ref oMissing, ref oMissing);
+                if(word != null)
+                    word.Quit(ref oMissing, ref oMissing, ref oMissing);
+            }
+            
+        }
+        protected List<PrintVacationOrderDto> GetdDtoList(Vacation vacation)
+        {
+            return new List<PrintVacationOrderDto>
+                       {
+                           new PrintVacationOrderDto { Keyword = "ORGNAME",Text = vacation.User.Organization.Name},
+                           new PrintVacationOrderDto { Keyword = "DOCNUM",Text = vacation.Number.ToString()},
+                           new PrintVacationOrderDto { Keyword = "DOCDATE",Text = vacation.CreateDate.ToShortDateString()},
+                           new PrintVacationOrderDto { Keyword = "FIO",Text = vacation.User.FullName},
+                           new PrintVacationOrderDto { Keyword = "TABNUM",Text = vacation.User.Code},
+                           new PrintVacationOrderDto { Keyword = "DEPARTMENT",Text = "Тест"},
+                           new PrintVacationOrderDto { Keyword = "POSITION",Text = vacation.User.Position.Name},
+                           new PrintVacationOrderDto { Keyword = "VT",Text = vacation.DaysCount.ToString()},
+                           new PrintVacationOrderDto { Keyword = "BDD",Text = vacation.BeginDate.Day.ToString()},
+                           new PrintVacationOrderDto { Keyword = "BM",Text = GetMonthName(vacation.BeginDate.Month)},
+                           new PrintVacationOrderDto { Keyword = "Y",Text = vacation.BeginDate.Year.ToString().Substring(2)},
+                           new PrintVacationOrderDto { Keyword = "ED",Text = vacation.EndDate.Day.ToString()},
+                           new PrintVacationOrderDto { Keyword = "EDM",Text = GetMonthName(vacation.BeginDate.Month)},
+                           new PrintVacationOrderDto { Keyword = "EY",Text = vacation.EndDate.Year.ToString().Substring(2)},
+                           new PrintVacationOrderDto { Keyword = "MANPOS",Text = vacation.User.Manager.Position.Name},
+                           new PrintVacationOrderDto { Keyword = "MANFIO",Text = vacation.User.Manager.Name},
+                       };
+        }
+        protected static string GetMonthName(int month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return "января";
+                case 2:
+                    return "февраля";
+                case 3:
+                    return "марта";
+                case 4:
+                    return "апреля";
+                case 5:
+                    return "мая";
+                case 6:
+                    return "июня";
+                case 7:
+                    return "июля";
+                case 8:
+                    return "августа";
+                case 9:
+                    return "cентября";
+                case 10:
+                    return "октября";
+                case 11:
+                    return "ноября";
+                case 12:
+                    return "декабря";
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный месяц {0}", month));
+            }
+        }
+
     }
 
 }

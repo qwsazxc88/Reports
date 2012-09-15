@@ -330,4 +330,7 @@
   <data name="EmploymentEditModel_Salary_Required" xml:space="preserve">
     <value>Оклад (тарифная ставка) - обязательное поле</value>
   </data>
+  <data name="LoginRecoveryModel_Email_Required" xml:space="preserve">
+    <value>Адрес электронной почты - обязательное поле</value>
+  </data>
 </root>

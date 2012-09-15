@@ -18,20 +18,20 @@
                             {<text>style="display:none"</text>}
                             else
                             {<text>style="color:Green"</text>}>
-                Пароль отправлен на e-mail пользователя.
+                Письмо отправлено на эл. почту пользователя.
             </td>
         </tr>
         <tr>
-            <td style="width:50px">    
-                @Html.LabelFor(m => m.Login)
+            <td style="width:235px">    
+                @Html.LabelFor(m => m.Email)
             </td>
             <td>
-                @Html.TextBoxFor(m => m.Login, new { maxlength = 64 })
+                @Html.TextBoxFor(m => m.Email, new { maxlength = 64 })
             </td>
         </tr>
         <tr>
             <td colspan="2">    
-                <input type="submit" value="Отправить"/>
+                <input type="submit" value="Напомнить пароль"/>
             </td>
         </tr>
         <tr>
