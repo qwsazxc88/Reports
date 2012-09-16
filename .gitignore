@@ -11,6 +11,7 @@ Logs
 *.css.css
 _ReleasePackage/*
 Thumbs.db
+WebMvc/Presentations/*
 
 # mstest test results
 TestResults

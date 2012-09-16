@@ -1,4 +1,50 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+   
+    Layout = "~/Views/Shared/_LayoutWithoutMenu.cshtml";
+    ViewBag.Title = "Главная страница";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+   
 }
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@using (Html.BeginForm())
+{
+    if (Request.IsAuthenticated)
+    {
+    <table style="width:100%">
+                <tr>
+                    <td>
+                        <table>
 
+                @if (dto.UserRole == UserRole.Admin)
+                {
+                     <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>
+                     <tr><td>@Html.ActionLink("Типы заявок", "DocumentTypeList", "Admin")</td></tr>
+                     <tr><td>@Html.ActionLink("Настройки", "Settings", "Admin")</td></tr>
+                     <tr><td>@Html.ActionLink("Импорт", "ActionsList", "Admin", new { type = 1 }, null)</td></tr>
+                     <tr><td>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</td></tr>
+                     <tr><td>@Html.ActionLink("Информация", "InformationsList", "Admin")</td></tr>
+                }
+                else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager)
+                {
+                        <tr><td style="font-weight:bold">Табель</td></tr>
+                        <tr><td>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td></tr>
+                       if (dto.UserRole == UserRole.PersonnelManager)
+                       {
+                            <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>
+                       }
+                }
+                  </table> 
+                 </td>
+            </tr>
+    </table>
+    }
+}
