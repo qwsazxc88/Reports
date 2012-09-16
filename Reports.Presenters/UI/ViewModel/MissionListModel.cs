@@ -19,9 +19,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public IList<IdNameDto> Types;
 
-        [Display(Name = "Дата начала")]
+        [Display(Name = "Дата создания заявки с")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания")]
+        [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]

@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.Bl
     {
         CreateRequestModel GetCreateRequestModel(int? userId);
         VacationListModel GetVacationListModel();
-        void SetVacationListModel(VacationListModel model);
+        void SetVacationListModel(VacationListModel model, bool hasError);
 
 
         VacationEditModel GetVacationEditModel(int id, int userId);
@@ -19,7 +19,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveComment(SaveCommentModel model);
 
         AbsenceListModel GetAbsenceListModel();
-        void SetAbsenceListModel(AbsenceListModel model);
+        void SetAbsenceListModel(AbsenceListModel model, bool hasError);
 
         AbsenceEditModel GetAbsenceEditModel(int id, int userId);
         void ReloadDictionariesToModel(AbsenceEditModel model);
@@ -38,7 +38,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
 
         MissionListModel GetMissionListModel();
-        void SetMissionListModel(MissionListModel model);
+        void SetMissionListModel(MissionListModel model, bool hasError);
         MissionEditModel GetMissionEditModel(int id, int userId);
         void ReloadDictionariesToModel(MissionEditModel model);
         bool SaveMissionEditModel(MissionEditModel model, out string error);

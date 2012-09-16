@@ -10,6 +10,7 @@
     <table style="width:100%">
     <tr>
         <td colspan="4">
+            @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
     </tr>
@@ -42,16 +43,10 @@
          </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="4">
             @Html.LabelFor(m => m.BeginDate):
-        </td>
-        <td>
             @Html.EditorFor(model => model.BeginDate) 
-        </td>
-        <td>
             @Html.LabelFor(m => m.EndDate):
-        </td>
-        <td>
             @Html.EditorFor(model => model.EndDate) 
          </td>
     </tr>

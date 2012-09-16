@@ -1381,11 +1381,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model, user);
             return model;
         }
-        public void SetMissionListModel(MissionListModel model)
+        public void SetMissionListModel(MissionListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         protected void SetDictionariesToModel(MissionListModel model, User user)
         {
@@ -2478,14 +2481,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
-        public void SetAbsenceListModel(AbsenceListModel model)
+        public void SetAbsenceListModel(AbsenceListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.AbsenceTypes = GetAbsenceTypes(true);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         public void SetDocumentsToModel(AbsenceListModel model, User user)
         {
@@ -2810,14 +2816,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                                           };
             return model;
         }
-        public void SetVacationListModel(VacationListModel model)
+        public void SetVacationListModel(VacationListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
-            SetDocumentsToModel(model,user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model,user);
         }
         public void SetDocumentsToModel(VacationListModel model,User user)
         {

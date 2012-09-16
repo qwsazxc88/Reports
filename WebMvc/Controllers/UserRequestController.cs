@@ -357,8 +357,15 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult MissionList(MissionListModel model)
          {
-             RequestBl.SetMissionListModel(model);
+             RequestBl.SetMissionListModel(model,!ValidateModel(model));
              return View(model);
+         }
+         protected bool ValidateModel(MissionListModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate.Value > model.EndDate.Value)
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+             return ModelState.IsValid;
          }
          [HttpGet]
          public ActionResult MissionEdit(int id, int userId)
@@ -653,8 +660,15 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult AbsenceList(AbsenceListModel model)
          {
-             RequestBl.SetAbsenceListModel(model);
+             RequestBl.SetAbsenceListModel(model, !ValidateModel(model));
              return View(model);
+         }
+         protected bool ValidateModel(AbsenceListModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate.Value > model.EndDate.Value)
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+             return ModelState.IsValid;
          }
          [HttpGet]
          public ActionResult AbsenceEdit(int id, int userId)
@@ -724,10 +738,19 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult VacationList(VacationListModel model)
          {
-             RequestBl.SetVacationListModel(model);
+             RequestBl.SetVacationListModel(model, !ValidateModel(model));
              return View(model);
          }
-         [HttpGet]
+
+        protected bool ValidateModel(VacationListModel model)
+         {
+             if(model.BeginDate.HasValue && model.EndDate.HasValue && 
+                 model.BeginDate.Value > model.EndDate.Value)
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+             return ModelState.IsValid;
+         }
+
+        [HttpGet]
          public ActionResult VacationEdit(int id,int userId)
          {
              //int? userId = new int?();

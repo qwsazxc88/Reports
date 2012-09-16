@@ -82,13 +82,13 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[BeginDate] = :beginDate ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
             }
             if (endDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[EndDate] = :endDate ";
+                whereString += @"v.[CreateDate] < :endDate ";
             }
             if (positionId != 0)
             {
@@ -119,7 +119,7 @@ namespace Reports.Core.Dao.Impl
             if (beginDate.HasValue)
                 query.SetDateTime("beginDate", beginDate.Value);
             if (endDate.HasValue)
-                query.SetDateTime("endDate", endDate.Value);//.AddDays(1).AddMilliseconds(-1));
+                query.SetDateTime("endDate", endDate.Value.AddDays(1));//.AddDays(1).AddMilliseconds(-1));
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
             if (departmentId != 0)
