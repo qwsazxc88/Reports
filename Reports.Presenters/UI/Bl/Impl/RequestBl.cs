@@ -560,7 +560,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 entity.BeginDate = model.BeginDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                 //entity.EndDate = model.EndDate;
                 entity.Salary = (decimal)((int)(decimal.Parse(model.Salary) * 100)) / 100;
                 entity.Probaion = string.IsNullOrEmpty(model.Probaion) ? new int?() : Int32.Parse(model.Probaion); 
@@ -1025,7 +1027,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 entity.EventDate = model.EventDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                 entity.Hours = Int32.Parse(model.Hours);
                 entity.Type = TimesheetCorrectionTypeDao.Load(model.TypeId);
             }
@@ -1345,7 +1349,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 entity.EndDate = model.EndDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                 entity.Reason = model.Reason;
                 entity.Type = DismissalTypeDao.Load(model.TypeId);
             }
@@ -1691,8 +1697,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 entity.BeginDate = model.BeginDate.Value;
                 entity.EndDate = model.EndDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                 entity.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                 entity.Country = model.Country;
                 entity.Organization = model.MissionOrganization;
@@ -1886,7 +1894,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 entity.WorkDate = model.Date.Value;
+// ReSharper restore PossibleInvalidOperationException
                 entity.Hours = Int32.Parse(model.Hours);
                 //entity.Rate = Int32.Parse(model.Rate);
                 entity.Type = HolidayWorkTypeDao.Load(model.TypeId);
@@ -2298,8 +2308,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsTypeEditable)
             {
+// ReSharper disable PossibleInvalidOperationException
                 sicklist.BeginDate = model.BeginDate.Value;
                 sicklist.EndDate = model.EndDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                 sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                 sicklist.Type = SicklistTypeDao.Load(model.TypeId);
             }
@@ -2691,11 +2703,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.Id == 0)
                 {
                     absence = new Absence
-                    {
-                        BeginDate = model.BeginDate.Value,
+                    {   
                         CreateDate = DateTime.Now,
                         Creator = UserDao.Load(current.Id),
+// ReSharper disable PossibleInvalidOperationException
+                        BeginDate = model.BeginDate.Value,
                         EndDate = model.EndDate.Value,
+// ReSharper restore PossibleInvalidOperationException
                         DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
                         //Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
@@ -2764,8 +2778,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (model.IsAbsenceTypeEditable)
                         {
+// ReSharper disable PossibleInvalidOperationException
                             absence.BeginDate = model.BeginDate.Value;
                             absence.EndDate = model.EndDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                             absence.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                             absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
                         }
@@ -2876,7 +2892,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetPositions(User user)
         {
-            List<IdNameDto> positionList = null;
+            List<IdNameDto> positionList;
             if ((UserRole)user.Role.Id != UserRole.Employee)
             {
                 positionList = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -2885,10 +2901,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 Position position = user.Position;
-                if(position != null)
-                    positionList = new List<IdNameDto> {new IdNameDto(position.Id,position.Name)};
-                else
-                    positionList = new List<IdNameDto> { new IdNameDto(0, SelectAll) };
+                positionList = position != null 
+                    ? new List<IdNameDto> {new IdNameDto(position.Id,position.Name)} 
+                    : new List<IdNameDto> { new IdNameDto(0, SelectAll) };
             }
             return positionList;
         }
@@ -2953,10 +2968,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     vacation = new Vacation
                                             {
+// ReSharper disable PossibleInvalidOperationException
                                                 BeginDate = model.BeginDate.Value,
+                                                EndDate = model.EndDate.Value,
+// ReSharper restore PossibleInvalidOperationException
                                                 CreateDate = DateTime.Now,
                                                 Creator = UserDao.Load(current.Id),
-                                                EndDate = model.EndDate.Value,
                                                 DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
@@ -3026,8 +3043,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         if (model.IsVacationTypeEditable)
                         {
+// ReSharper disable PossibleInvalidOperationException
                             vacation.BeginDate = model.BeginDate.Value;
                             vacation.EndDate = model.EndDate.Value;
+// ReSharper restore PossibleInvalidOperationException
                             vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1;
                             vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
                         }
@@ -3130,6 +3149,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
+            model.IsPrintAvailable = state;
         }
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
@@ -3161,6 +3181,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByPersonnelManagerHidden =
                 model.IsApprovedByPersonnelManager = vacation.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.SendTo1C.HasValue;
+           
             switch(currentUserRole)
             {
                 case UserRole.Employee:
@@ -3172,6 +3193,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
+                    model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         model.IsApprovedByManagerEnable = true;
@@ -3183,6 +3205,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         model.IsApprovedByPersonnelManagerEnable = true;
@@ -3579,7 +3602,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 List<PrintVacationOrderDto> list = GetdDtoList(vacation);
                 
                 //разделитель страниц http://msdn.microsoft.com/en-us/library/bb213704%28office.12%29.aspx
-                object pageBreak = WdBreakType.wdPageBreak;
+                //object pageBreak = WdBreakType.wdPageBreak;
                 //не сохранять изменения
                 word = new Application {Visible = false};
                 //word.Options.DefaultFilePath[WdDefaultFilePath.wdUserTemplatesPath] = folderPath;
