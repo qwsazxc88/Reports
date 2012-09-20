@@ -68,5 +68,7 @@ namespace Reports.Presenters.UI.Bl
         int GetAttachmentsCount(int entityId);
 
         void CreateVacationOrder(int id, string templatePath, string filePath);
+
+        VacationPrintModel GetVacationPrintModel(int id);
     }
 }

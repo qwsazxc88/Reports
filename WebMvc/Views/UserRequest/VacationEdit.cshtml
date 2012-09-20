@@ -154,7 +154,7 @@
                                                                                     {<text>style="display:none"</text>}/>
             <input type="submit" value="Удалить" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
                                                                                     {<text>style="display:none"</text>}/>
-            <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("PrintVacationOrder", "UserRequest", new { id = Model.Id })';" 
+            <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("RenderToPdf", "UserRequest", new { id = Model.Id, typeId = 1 })';" 
                                                                 @if (!Model.IsPrintAvailable)
                                                                 {<text>style="display:none"</text>}  />
             

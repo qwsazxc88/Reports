@@ -3587,7 +3587,43 @@ namespace Reports.Presenters.UI.Bl.Impl
             
         }
         #endregion
+        public VacationPrintModel GetVacationPrintModel(int id)
+        {
+            Vacation vacation = VacationDao.Load(id);
 
+            return new VacationPrintModel
+            {
+                AllBeginDateDay = vacation.BeginDate.Day.ToString(),
+                AllBeginDateMonth = GetMonthName(vacation.BeginDate.Month),
+                AllBeginDateYear = vacation.BeginDate.Year.ToString(),
+                AllDaysNumber = vacation.DaysCount.ToString(),
+                AllEndDateDay = vacation.EndDate.Day.ToString(),
+                AllEndDateMonth = GetMonthName(vacation.EndDate.Month),
+                AllEndDateYear = vacation.EndDate.Year.ToString(),
+                BeginDateDay = vacation.BeginDate.Day.ToString(),
+                BeginDateMonth = GetMonthName(vacation.BeginDate.Month),
+                BeginDateYear = vacation.BeginDate.Year.ToString(),
+                CreateDate = vacation.CreateDate.ToShortDateString(),
+                DaysNumber = vacation.DaysCount.ToString(),
+                //Department = 
+                DocNumber = vacation.Number.ToString(),
+                EndDateDay = vacation.EndDate.Day.ToString(),
+                EndDateMonth = GetMonthName(vacation.EndDate.Month),
+                EndDateYear = vacation.EndDate.Year.ToString(),
+                FIO = vacation.User.FullName,
+                //ManagerFIO = 
+                //ManagerPosition = 
+                OrgName = vacation.User.Organization.Name,
+                //PeriodBeginDateDay = vacation.BeginDate.Day.ToString(),
+                //PeriodBeginDateMonth = GetMonthName(vacation.BeginDate.Month),
+                //PeriodBeginDateYear = vacation.BeginDate.Year.ToString(),
+                //PeriodEndDateDay = vacation.EndDate.Day.ToString(),
+                //PeriodEndDateMonth = GetMonthName(vacation.EndDate.Month),
+                //PeriodEndDateYear = vacation.EndDate.Year.ToString(),
+                Position = vacation.User.Position.Name,
+                TabNumber = vacation.User.Code,
+            };
+        }
         public void CreateVacationOrder(int id,string templatePath,string filePath)
         {
             _Application word = null;

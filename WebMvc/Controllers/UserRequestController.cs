@@ -1049,16 +1049,22 @@ namespace WebMvc.Controllers
 
 
          [HttpGet]
+         public ActionResult VacationPrint(int id)
+         {
+             VacationPrintModel model = RequestBl.GetVacationPrintModel(id);
+             return View(model);
+         }
+         [HttpGet]
          public ActionResult PrintForm(int id,int typeId)
          {
              //int? userId = new int?();
              switch((RequestTypeEnum)typeId)
              {
                  case RequestTypeEnum.Vacation:
-                     return RedirectToAction("VacationEdit", new  RouteValueDictionary
+                     return RedirectToAction("VacationPrint", new  RouteValueDictionary
                                                                     {
                                                                         {"id", id},
-                                                                        {"userId",6}
+                                                                       // {"userId",6}
                                                                      });
                  default:
                      throw new ArgumentException(string.Format("Неизвестный тип формы {0}",typeId));
