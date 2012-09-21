@@ -30,7 +30,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IRequestStatusDao requestStatusDao;
         protected IPositionDao positionDao;
         protected IVacationDao vacationDao;
-        protected IUserToDepartmentDao userToDepartmentDao;
+        //protected IUserToDepartmentDao userToDepartmentDao;
         protected ITimesheetStatusDao timesheetStatusDao;
         protected IVacationCommentDao vacationCommentDao;
         protected IRequestNextNumberDao requestNextNumberDao;
@@ -95,11 +95,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(vacationDao); }
             set { vacationDao = value; }
         }
-        public IUserToDepartmentDao UserToDepartmentDao
+        /*public IUserToDepartmentDao UserToDepartmentDao
         {
             get { return Validate.Dependency(userToDepartmentDao); }
             set { userToDepartmentDao = value; }
-        }
+        }*/
         public ITimesheetStatusDao TimesheetStatusDao
         {
             get { return Validate.Dependency(timesheetStatusDao); }
@@ -2860,10 +2860,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             //departmentList.Insert(0,new IdNameDto(0,SelectAll));
-            var departmentList = UserToDepartmentDao.GetByUserId(user.Id).ToList();
+            //var departmentList = UserToDepartmentDao.GetByUserId(user.Id).ToList();
             if((UserRole)user.Role.Id != UserRole.Employee)
-                departmentList.Insert(0, new IdNameDto(0, SelectAll));
-            return departmentList;
+            {
+                var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+                departmentList.Insert(0,new IdNameDto(0,SelectAll));
+                return departmentList;
+            }
+            if(user.Department == null)
+                return new List<IdNameDto> { new IdNameDto(0, SelectAll) };
+            return new List<IdNameDto> { new IdNameDto(user.Department.Id, user.Department.Name) };
         }
         public List<IdNameDto> GetVacationTypes(bool addAll)
         {
@@ -2978,7 +2984,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
-                                                User = user
+                                                User = user,
+                                                UserFullNameForPrint = user.FullName, 
                                              };
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
                         vacation.UserDateAccept = DateTime.Now;
@@ -3050,6 +3057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1;
                             vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
                         }
+                        vacation.UserFullNameForPrint = user.FullName;
                         VacationDao.SaveAndFlush(vacation);
                     }
                     if (vacation.DeleteDate.HasValue)
@@ -3228,9 +3236,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetUserInfoModel(User user,UserInfoModel model)
         {
             //model.DateCreated = DateTime.Today.ToShortDateString();
-            IList<IdNameDto> departments = UserToDepartmentDao.GetByUserId(user.Id);
-            if (departments.Count > 0)
-                model.Department = departments[0].Name;
+            //IList<IdNameDto> departments = UserToDepartmentDao.GetByUserId(user.Id);
+            //if (departments.Count > 0)
+            model.Department = user.Department == null?string.Empty:user.Department.Name ;
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
             if (user.PersonnelManager != null)
@@ -3605,7 +3613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 BeginDateYear = vacation.BeginDate.Year.ToString(),
                 CreateDate = vacation.CreateDate.ToShortDateString(),
                 DaysNumber = vacation.DaysCount.ToString(),
-                //Department = 
+                Department = vacation.User.Department == null?string.Empty:vacation.User.Department.Name,
                 DocNumber = vacation.Number.ToString(),
                 EndDateDay = vacation.EndDate.Day.ToString(),
                 EndDateMonth = GetMonthName(vacation.EndDate.Month),

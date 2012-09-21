@@ -7,7 +7,7 @@ using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
 {
-    public class UserToDepartmentDao : DefaultDao<UserToDepartment>, IUserToDepartmentDao
+    /*public class UserToDepartmentDao : DefaultDao<UserToDepartment>, IUserToDepartmentDao
     {
         public UserToDepartmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -30,5 +30,5 @@ namespace Reports.Core.Dao.Impl
         }
 
         #endregion
-    }
+    }*/
 }

@@ -143,6 +143,7 @@ namespace Reports.Core.Domain
         public virtual Organization Organization { get; set; }
         //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
+        public virtual Department Department { get; set; }
         #endregion
 
         #region Constructors

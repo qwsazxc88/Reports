@@ -31,8 +31,8 @@ namespace Reports.Core.Dao.Impl
                          N'Отпуск '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Vacation] v
-            inner join [dbo].[Users] u on u.Id = v.UserId
-            inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
+            inner join [dbo].[Users] u on u.Id = v.UserId";
+            //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = GetWhereForUserRole(role,userId);
 
             if (requestStatusId != 0)
@@ -103,7 +103,7 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"ud.[DepartmentId] = :departmentId ";
+                whereString += @"u.[DepartmentId] = :departmentId ";
             }
 
             if (whereString.Length > 0)

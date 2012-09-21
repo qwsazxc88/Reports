@@ -180,9 +180,9 @@ namespace Reports.Core
                   ImplementedBy(typeof(VacationDao)).
                   LifeStyle.Is(type));
 
-            Register(Component.For(typeof(IUserToDepartmentDao)).
+            /*Register(Component.For(typeof(IUserToDepartmentDao)).
                   ImplementedBy(typeof(UserToDepartmentDao)).
-                  LifeStyle.Is(type));
+                  LifeStyle.Is(type));*/
 
             Register(Component.For(typeof(IRequestNextNumberDao)).
                   ImplementedBy(typeof(RequestNextNumberDao)).
