@@ -1047,6 +1047,20 @@ namespace WebMvc.Controllers
              return fileContent;
          }
 
+         [HttpGet]
+         public FileContentResult GetPrintForm(int id, int typeId)
+         {
+            try
+            {
+                AttachmentModel model = RequestBl.GetPrintFormFileContext(id,(RequestPrintFormTypeEnum)typeId);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on GetPrintForm:", ex);
+                throw;
+            }
+         }
 
          [HttpGet]
          public ActionResult VacationPrint(int id)

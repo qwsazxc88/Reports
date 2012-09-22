@@ -69,6 +69,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IEmploymentCommentDao employmentCommentDao;
         protected IEmploymentAdditionDao employmentAdditionDao;
 
+        protected IRequestPrintFormDao requestPrintFormDao;
 
         public IDepartmentDao DepartmentDao
         {
@@ -252,6 +253,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(roleDao); }
             set { roleDao = value; }
+        }
+        public IRequestPrintFormDao RequestPrintFormDao
+        {
+            get { return Validate.Dependency(requestPrintFormDao); }
+            set { requestPrintFormDao = value; }
         }
         #endregion
         #region Create Request
@@ -3213,7 +3219,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
-                    model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
+                    RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
+                    model.IsPrintAvailable = form != null;
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         model.IsApprovedByPersonnelManagerEnable = true;
@@ -3591,10 +3598,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     return "application/octet-stream";
             }
-
-            
         }
         #endregion
+        public AttachmentModel GetPrintFormFileContext(int id,RequestPrintFormTypeEnum typeId)
+        {
+            RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id,typeId);
+            if(printForm == null)
+                throw new ArgumentException(string.Format("Печатная форма для заявки (Id {0}) не найдена в базе данных",id));
+            return new AttachmentModel
+            {
+                Context = printForm.Context,
+                FileName = "PrintFrom",
+                ContextType = "application/msword"
+            };
+        }
+        
         public VacationPrintModel GetVacationPrintModel(int id)
         {
             Vacation vacation = VacationDao.Load(id);

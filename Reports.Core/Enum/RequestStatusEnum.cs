@@ -34,4 +34,8 @@
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
     }
+    public enum RequestPrintFormTypeEnum
+    {
+        Vacation = 1,
+    }
 }

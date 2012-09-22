@@ -273,6 +273,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentAdditionDao)).
                      ImplementedBy(typeof(EmploymentAdditionDao)).
                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IRequestPrintFormDao)).
+                     ImplementedBy(typeof(RequestPrintFormDao)).
+                     LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
             Register(Component.For(typeof(ISessionFactory))

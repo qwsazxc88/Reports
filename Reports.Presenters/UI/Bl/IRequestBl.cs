@@ -70,5 +70,6 @@ namespace Reports.Presenters.UI.Bl
         void CreateVacationOrder(int id, string templatePath, string filePath);
 
         VacationPrintModel GetVacationPrintModel(int id);
+        AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId);
     }
 }

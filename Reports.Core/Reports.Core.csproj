@@ -144,6 +144,7 @@
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
+    <Compile Include="Dao\Impl\RequestPrintFormDao.cs" />
     <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Dao\Impl\UserDao.cs" />
     <Compile Include="Dao\IRequestAttachmentDao.cs" />
     <Compile Include="Dao\IRequestNextNumberDao.cs" />
+    <Compile Include="Dao\IRequestPrintFormDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
@@ -225,6 +227,7 @@
     <Compile Include="Domain\Position.cs" />
     <Compile Include="Domain\RequestAttachment.cs" />
     <Compile Include="Domain\RequestNextNumber.cs" />
+    <Compile Include="Domain\RequestPrintForm.cs" />
     <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
@@ -461,6 +464,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment.hbm.xml" />
     <EmbeddedResource Include="Domain\EmploymentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestPrintForm.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

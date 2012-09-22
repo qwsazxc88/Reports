@@ -260,6 +260,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'RequestPrintForm') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestPrintForm
 
 create table DismissalComment (
  Id INT IDENTITY NOT NULL,
@@ -775,6 +776,13 @@ create table TimesheetStatus (
   ShortName NVARCHAR(2) not null,
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
+)
+create table RequestPrintForm (
+ Id INT IDENTITY NOT NULL,
+  Context VARBINARY(MAX) not null,
+  RequestId INT not null,
+  RequestTypeId INT not null,
+  constraint PK_RequestPrintForm  primary key (Id)
 )
 create index IX_DismissalComment_User_Id on DismissalComment (UserId)
 create index IX_DismissalComment_Dismissal_Id on DismissalComment (DismissalId)
