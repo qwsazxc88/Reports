@@ -27,9 +27,9 @@
   <property name="PersonnelManagerDateAccept" not-null="false"/>
   <property name="SendTo1C" not-null="false"/>
   <property name="DeleteDate" not-null="false"/>
-	  <property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
+	  <!--<property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
 	  <property name="ManagerPositionForPrint"  length="128" not-null="false"/>
-	  <property name="UserFullNameForPrint" length="512" not-null="false"/>
+	  <property name="UserFullNameForPrint" length="512" not-null="false"/>-->
 
 
     <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Vacation_TimesheetStatus" index="Vacation_TimesheetStatus"  not-null="false"/>

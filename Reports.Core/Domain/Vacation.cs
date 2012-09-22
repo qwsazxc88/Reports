@@ -41,9 +41,9 @@ namespace Reports.Core.Domain
 
         public virtual IList<VacationComment> Comments { get; set; }
 
-        public virtual string ManagerFullNameForPrint { get; set; }
-        public virtual string ManagerPositionForPrint { get; set; }
-        public virtual string UserFullNameForPrint { get; set; }
+        //public virtual string ManagerFullNameForPrint { get; set; }
+        //public virtual string ManagerPositionForPrint { get; set; }
+        //public virtual string UserFullNameForPrint { get; set; }
         //public virtual DateTime? BudgetManagerDateAccept { get; set; }
         //public virtual DateTime? OutsourcingManagerDateAccept { get; set; }
         //public virtual bool SendEmailToBilling { get; set; }

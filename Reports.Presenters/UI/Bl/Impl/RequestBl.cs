@@ -2985,7 +2985,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
                                                 User = user,
-                                                UserFullNameForPrint = user.FullName, 
+                                                //UserFullNameForPrint = user.FullName, 
                                              };
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
                         vacation.UserDateAccept = DateTime.Now;
@@ -3057,7 +3057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1;
                             vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
                         }
-                        vacation.UserFullNameForPrint = user.FullName;
+                        //vacation.UserFullNameForPrint = user.FullName;
                         VacationDao.SaveAndFlush(vacation);
                     }
                     if (vacation.DeleteDate.HasValue)

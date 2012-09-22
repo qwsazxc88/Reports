@@ -724,9 +724,6 @@ create table Vacation (
   PersonnelManagerDateAccept DATETIME null,
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
-  ManagerFullNameForPrint NVARCHAR(512) null,
-  ManagerPositionForPrint NVARCHAR(128) null,
-  UserFullNameForPrint NVARCHAR(512) null,
   TimesheetStatusId INT null,
   constraint PK_Vacation  primary key (Id)
 )
