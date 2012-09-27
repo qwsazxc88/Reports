@@ -17,6 +17,13 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
         public bool IsTypeEditable { get; set; }
+
+        [Display(Name = "В случае ухода за ребенком")]
+        public int? BabyMindingTypeId { get; set; }
+        public int? BabyMindingTypeIdHidden { get; set; }
+        public IList<IdNameDto> BabyMindingTypes;
+        public bool IsBabyMindingTypeEditable { get; set; }
+
         [Display(Name = "Дата начала")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "SicklistEditModel_BeginDate_Required",

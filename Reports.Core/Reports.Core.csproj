@@ -148,6 +148,7 @@
     <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
+    <Compile Include="Dao\Impl\SicklistBabyMindingTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistCommentDao.cs" />
     <Compile Include="Dao\Impl\SicklistDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
+    <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
     <Compile Include="Dao\ISicklistCommentDao.cs" />
     <Compile Include="Dao\ISicklistDao.cs" />
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
@@ -232,6 +234,7 @@
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
     <Compile Include="Domain\Sicklist.cs" />
+    <Compile Include="Domain\SicklistBabyMindingType.cs" />
     <Compile Include="Domain\SicklistComment.cs" />
     <Compile Include="Domain\SicklistPaymentPercent.cs">
       <SubType>Code</SubType>
@@ -467,6 +470,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\RequestPrintForm.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistBabyMindingType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

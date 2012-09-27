@@ -639,7 +639,12 @@ namespace WebMvc.Controllers
          protected void CorrectDropdowns(SicklistEditModel model)
          {
              if (!model.IsTypeEditable)
+             {
                  model.TypeId = model.TypeIdHidden;
+                 model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;
+             }
+             /*if (!model.IsBabyMindingTypeEditable)
+                 model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;*/
              if (!model.IsTimesheetStatusEditable)
                  model.TimesheetStatusId = model.TimesheetStatusIdHidden;
              model.DaysCount = model.DaysCountHidden;

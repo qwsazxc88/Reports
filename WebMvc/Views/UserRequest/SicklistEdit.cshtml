@@ -38,11 +38,20 @@
             <input type="hidden" id="IsPersonnelFieldsEditable" name="IsPersonnelFieldsEditable" value="@Model.IsPersonnelFieldsEditable" />
             <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
             <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+            <input type="hidden" id="BabyMindingTypeIdHidden" name="BabyMindingTypeIdHidden" value="@Model.BabyMindingTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             @Html.LabelFor(m => m.TypeId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsTypeEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BabyMindingTypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.BabyMindingTypeId, new SelectList(Model.BabyMindingTypes, "ID", "Name"), Model.IsBabyMindingTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>
@@ -301,8 +310,18 @@
             $(".hasDatepicker").width("75px");
             $("#ExperienceYears").width("50px");
             $("#ExperienceMonthes").width("50px");
+            $("#TypeId").change(function () {
+                OnChangeType(this.value);
+            });
 
-        });    
+
+        });
+        function OnChangeType(value) {
+            if (value == 9 || value == 10) 
+                $("#BabyMindingTypeId").removeAttr("disabled");
+            else
+                $("#BabyMindingTypeId").attr("disabled", "disabled");
+    }
     function ValidateForm()
     {
         return true;

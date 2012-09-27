@@ -278,6 +278,10 @@ namespace Reports.Core
                      LifeStyle.Is(type));
 			//AddComponent<IDBVersionDao, DBVersionDao>();
 
+            Register(Component.For(typeof(ISicklistBabyMindingTypeDao)).
+                     ImplementedBy(typeof(SicklistBabyMindingTypeDao)).
+                     LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

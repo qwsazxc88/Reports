@@ -57,6 +57,7 @@ INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)		
 
+
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет#1206',1)	
@@ -73,8 +74,13 @@ INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (21,'Оплата бол
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)
-INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
-INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+set identity_insert  [dbo].[SicklistType] on
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (9,71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (10,72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+set identity_insert [dbo].[SicklistType] off 
+
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values (73,'Тестовый уход за ребенком 1',1)
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values (74,'Тестовый уход за ребенком 2',1)
 
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (13,'Доплата за работу в праздники и выходные #1107',1)
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (12,'Оплата праздничных и выходных дней #1106',1)

@@ -73,6 +73,9 @@ alter table [Users]  drop constraint FK_User_Department
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistType]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_SicklistType
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_BabyMindingType]') AND parent_object_id = OBJECT_ID('Sicklist'))
+alter table Sicklist  drop constraint FK_Sicklist_BabyMindingType
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistPaymentPercent]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_SicklistPaymentPercent
 
@@ -250,6 +253,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkComment
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'RequestPrintForm') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestPrintForm
 if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Dismissal
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
@@ -260,7 +264,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
-if exists (select * from dbo.sysobjects where id = object_id(N'RequestPrintForm') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestPrintForm
+if exists (select * from dbo.sysobjects where id = object_id(N'SicklistBabyMindingType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistBabyMindingType
 
 create table DismissalComment (
  Id INT IDENTITY NOT NULL,
@@ -394,6 +398,7 @@ create table Sicklist (
   DaysCount INT not null,
   Number INT not null,
   TypeId INT not null,
+  BabyMindingTypeId INT null,
   PaymentPercentId INT null,
   PaymentRestrictTypeId INT null,
   PaymentBeginDate DATETIME null,
@@ -661,6 +666,13 @@ create table ExportImportAction (
   Month DATETIME null,
   constraint PK_ExportImportAction  primary key (Id)
 )
+create table RequestPrintForm (
+ Id INT IDENTITY NOT NULL,
+  Context VARBINARY(MAX) not null,
+  RequestId INT not null,
+  RequestTypeId INT not null,
+  constraint PK_RequestPrintForm  primary key (Id)
+)
 create table Dismissal (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -777,12 +789,12 @@ create table TimesheetStatus (
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
 )
-create table RequestPrintForm (
+create table SicklistBabyMindingType (
  Id INT IDENTITY NOT NULL,
-  Context VARBINARY(MAX) not null,
-  RequestId INT not null,
-  RequestTypeId INT not null,
-  constraint PK_RequestPrintForm  primary key (Id)
+  Version INT not null,
+  Code INT null,
+  Name NVARCHAR(128) null,
+  constraint PK_SicklistBabyMindingType  primary key (Id)
 )
 create index IX_DismissalComment_User_Id on DismissalComment (UserId)
 create index IX_DismissalComment_Dismissal_Id on DismissalComment (DismissalId)
@@ -833,12 +845,14 @@ alter table [Users] add constraint FK_User_Organization foreign key (Organizatio
 alter table [Users] add constraint FK_User_Position foreign key (PositionId) references Position
 alter table [Users] add constraint FK_User_Department foreign key (DepartmentId) references Department
 create index Sicklist_SicklistType on Sicklist (TypeId)
+create index Sicklist_BabyMindingType on Sicklist (BabyMindingTypeId)
 create index Sicklist_SicklistPaymentPercent on Sicklist (PaymentPercentId)
 create index Sicklist_SicklistPaymentRestrictType on Sicklist (PaymentRestrictTypeId)
 create index IX_Sicklist_User_Id on Sicklist (UserId)
 create index IX_Sicklist_CreatorUser_Id on Sicklist (CreatorId)
 create index Sicklist_TimesheetStatus on Sicklist (TimesheetStatusId)
 alter table Sicklist add constraint FK_Sicklist_SicklistType foreign key (TypeId) references SicklistType
+alter table Sicklist add constraint FK_Sicklist_BabyMindingType foreign key (BabyMindingTypeId) references SicklistBabyMindingType
 alter table Sicklist add constraint FK_Sicklist_SicklistPaymentPercent foreign key (PaymentPercentId) references SicklistPaymentPercent
 alter table Sicklist add constraint FK_Sicklist_SicklistPaymentRestrictType foreign key (PaymentRestrictTypeId) references SicklistPaymentRestrictType
 alter table Sicklist add constraint FK_Sicklist_User foreign key (UserId) references [Users]
@@ -985,6 +999,7 @@ INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)		
 
+
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)	
 INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет#1206',1)	
@@ -1001,8 +1016,13 @@ INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (21,'Оплата бол
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)
 INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)
-INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
-INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+set identity_insert  [dbo].[SicklistType] on
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (9,71,'Пособие по уходу за ребёнком до 1.5 лет #1502',1)
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (10,72,'Пособие по уходу за ребёнком до 3 лет #1503',1)
+set identity_insert [dbo].[SicklistType] off 
+
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values (73,'Тестовый уход за ребенком 1',1)
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values (74,'Тестовый уход за ребенком 2',1)
 
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (13,'Доплата за работу в праздники и выходные #1107',1)
 INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (12,'Оплата праздничных и выходных дней #1106',1)

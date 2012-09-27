@@ -46,6 +46,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ISicklistDao sicklistDao;
         protected IRequestAttachmentDao requestAttachmentDao;
         protected ISicklistCommentDao sicklistCommentDao;
+        protected ISicklistBabyMindingTypeDao sicklistBabyMindingTypeDao;
 
         protected IHolidayWorkTypeDao holidayWorkTypeDao;
         protected IHolidayWorkDao holidayWorkDao;
@@ -136,6 +137,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(sicklistTypeDao); }
             set { sicklistTypeDao = value; }
+        }
+        public ISicklistBabyMindingTypeDao SicklistBabyMindingTypeDao
+        {
+            get { return Validate.Dependency(sicklistBabyMindingTypeDao); }
+            set { sicklistBabyMindingTypeDao = value; }
         }
         public ISicklistPaymentRestrictTypeDao SicklistPaymentRestrictTypeDao
         {
@@ -2059,6 +2065,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
+        protected List<IdNameDto> GetBabyMindingTypes(bool addAll)
+        {
+            var typeList = SicklistBabyMindingTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+
         protected List<IdNameDtoSort> GetSicklisPaymentPercentTypes(bool addAll,bool addNameAll)
         {
             List<IdNameDtoSort> typeList = SicklistPaymentPercentDao.LoadAll().ToList().
@@ -2166,6 +2180,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetHiddenFields(SicklistEditModel model)
         {
             model.TypeIdHidden = model.TypeId;
+            model.BabyMindingTypeIdHidden = model.BabyMindingTypeId;
             model.TimesheetStatusIdHidden = model.TimesheetStatusId;
             model.DaysCountHidden = model.DaysCount;
             model.PaymentPercentTypeIdHidden = model.PaymentPercentTypeId;
@@ -2320,6 +2335,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper restore PossibleInvalidOperationException
                 sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                 sicklist.Type = SicklistTypeDao.Load(model.TypeId);
+                if (model.TypeId == 9 || model.TypeId == 10)
+                    sicklist.BabyMindingType = model.BabyMindingTypeId.HasValue 
+                        ? SicklistBabyMindingTypeDao.Load(model.BabyMindingTypeId.Value)
+                        : null;
+                else
+                    sicklist.BabyMindingType = null;
             }
         }
         protected void SetPersonnelDataFromModel(Sicklist sicklist,SicklistEditModel model)
@@ -2371,6 +2392,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Types = GetSicklistTypes(false);
             model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(!model.IsPersonnelFieldsEditable,false);
             model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(true);
+            model.BabyMindingTypes = GetBabyMindingTypes(false);
         }
         protected List<IdNameDto> GetTimesheetStatusesForSicklist()
         {
@@ -2389,6 +2411,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSaveAvailable = true;
                 model.IsTypeEditable = true;
+                model.IsBabyMindingTypeEditable = false;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2446,6 +2469,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
                     break;
             }
+
+            model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == 9 || model.TypeId == 10);
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
                                     || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
                                     model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
@@ -2471,6 +2496,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsSaveAvailable = state;
             model.IsTimesheetStatusEditable = state;
             model.IsTypeEditable = state;
+            model.IsBabyMindingTypeEditable = state;
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
