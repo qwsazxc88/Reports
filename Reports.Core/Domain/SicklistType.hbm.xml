@@ -4,7 +4,8 @@
       <generator class="native" />
     </id>
     <version name="Version" column= "Version"/>
-    <property name="Code" not-null="false"/>
+    <!--<property name="Code" not-null="false"/>-->
+	<property name="Code" length="16"  not-null="true"/>
     <property name="Name" length="128" not-null="false"/>
   </class>
 </hibernate-mapping>

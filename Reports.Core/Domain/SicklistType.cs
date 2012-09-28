@@ -9,7 +9,8 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual int Code { get; set; }
+        public virtual string Code { get; set; }
+        //public virtual string CCode { get; set; }
         public virtual string Name { get; set; }
         #endregion
 
