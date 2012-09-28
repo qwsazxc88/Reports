@@ -113,6 +113,7 @@
     <Content Include="Content\loading.gif" />
     <Content Include="Content\logo.gif" />
     <Content Include="Content\logobg.gif" />
+    <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\fileuploader.js" />

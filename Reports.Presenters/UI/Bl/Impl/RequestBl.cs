@@ -2150,6 +2150,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Больничный (id {0}) не найдена в базе данных.", id));
                 model.Version = sicklist.Version;
                 model.TypeId = sicklist.Type.Id;
+                model.BabyMindingTypeId = sicklist.BabyMindingType == null ? new int?() : sicklist.BabyMindingType.Id;
                 model.BeginDate = sicklist.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = sicklist.EndDate;
                 model.TimesheetStatusId = sicklist.TimesheetStatus == null ? 0 : sicklist.TimesheetStatus.Id;
