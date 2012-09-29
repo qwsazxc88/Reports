@@ -20,12 +20,7 @@ namespace Reports.Core.Dao.Impl
         public const int bufferSize = 1000;
 
 
-        protected IConfigurationService configurationService;
-        public IConfigurationService ConfigurationService
-        {
-            set { configurationService = value; }
-            get { return configurationService; }
-        }
+       
 
         public int PageSize
         {

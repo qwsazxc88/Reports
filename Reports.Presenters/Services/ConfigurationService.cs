@@ -182,6 +182,8 @@ namespace Reports.Presenters.Services
         public const string keyPageSize = "PageSize";
         public const int defaultPageSize = 100;
 
+        public const string keySicklistTypeIdBabyMinding = "SicklistTypeIdBabyMinding";
+
         #region IConfigurationService Members
 
         public int PageSize
@@ -197,6 +199,18 @@ namespace Reports.Presenters.Services
                 return pageSize;
             }
         }
+        public int SicklistTypeIdBabyMinding
+        {
+            get
+            {
+                int sicklistTypeIdBabyMinding;
+                if (!Int32.TryParse(ConfigurationManager.AppSettings[keySicklistTypeIdBabyMinding], out sicklistTypeIdBabyMinding) || (sicklistTypeIdBabyMinding < 0))
+                    throw new ArgumentException("No or incorrect {0} setting on configuration file.", keyPageSize);
+                return sicklistTypeIdBabyMinding;
+            }
+        }
+
+
 
         public int UsersDocumentsDelayInDays
         {

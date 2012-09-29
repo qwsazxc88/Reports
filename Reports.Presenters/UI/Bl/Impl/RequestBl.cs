@@ -2336,7 +2336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper restore PossibleInvalidOperationException
                 sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                 sicklist.Type = SicklistTypeDao.Load(model.TypeId);
-                if (model.TypeId == 9 || model.TypeId == 10)
+                if (model.TypeId == sicklistTypeDao.SicklistTypeIdBabyMinding)
                     sicklist.BabyMindingType = model.BabyMindingTypeId.HasValue 
                         ? SicklistBabyMindingTypeDao.Load(model.BabyMindingTypeId.Value)
                         : null;
@@ -2394,6 +2394,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(!model.IsPersonnelFieldsEditable,false);
             model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(true);
             model.BabyMindingTypes = GetBabyMindingTypes(false);
+            model.SicklistTypeIdBabyMindingHidden = SicklistTypeDao.SicklistTypeIdBabyMinding;
         }
         protected List<IdNameDto> GetTimesheetStatusesForSicklist()
         {
@@ -2471,7 +2472,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
 
-            model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == 9 || model.TypeId == 10);
+            model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
                                     || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
                                     model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;

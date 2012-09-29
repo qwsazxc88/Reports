@@ -17,6 +17,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
         public bool IsTypeEditable { get; set; }
+        public int SicklistTypeIdBabyMindingHidden { get; set; }
 
         [Display(Name = "В случае ухода за ребенком")]
         public int? BabyMindingTypeId { get; set; }

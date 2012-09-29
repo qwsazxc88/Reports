@@ -40,6 +40,7 @@
             <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
             <input type="hidden" id="BabyMindingTypeIdHidden" name="BabyMindingTypeIdHidden" value="@Model.BabyMindingTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
+            <input type="hidden" id="SicklistTypeIdBabyMindingHidden" name="SicklistTypeIdBabyMindingHidden" value="@Model.SicklistTypeIdBabyMindingHidden" />
             @Html.LabelFor(m => m.TypeId):
         </td>
         <td>
@@ -317,7 +318,7 @@
 
         });
         function OnChangeType(value) {
-            if (value == 9 || value == 10) 
+            if (value == $("#SicklistTypeIdBabyMindingHidden").val()) 
                 $("#BabyMindingTypeId").removeAttr("disabled");
             else
                 $("#BabyMindingTypeId").attr("disabled", "disabled");

@@ -9,5 +9,9 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+        public int SicklistTypeIdBabyMinding
+        {
+            get { return ConfigurationService.SicklistTypeIdBabyMinding; }
+        }
     }
 }

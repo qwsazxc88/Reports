@@ -129,6 +129,13 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
+        }
+
         public TEntity Load(string id)
         {
             int entityId;
