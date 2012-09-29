@@ -23,7 +23,7 @@ namespace Reports.Core.Dao.Impl
               int graphicTypeId,
               int requestStatusId,
               DateTime? beginDate,
-              DateTime? createDate)
+              DateTime? endDate)
         {
             string sqlQuery =
                 @"select v.Id as Id,
@@ -83,13 +83,13 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[BeginDate] = :beginDate ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
             }
-            if (createDate.HasValue)
+            if (endDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[CreateDate] = :createDate ";
+                whereString += @"v.[CreateDate] < :endDate ";
             }
             if (positionId != 0)
             {
@@ -119,8 +119,8 @@ namespace Reports.Core.Dao.Impl
                 query.SetInt32("typeId", typeId);
             if (beginDate.HasValue)
                 query.SetDateTime("beginDate", beginDate.Value);
-            if (createDate.HasValue)
-                query.SetDateTime("createDate", createDate.Value);//.AddDays(1).AddMilliseconds(-1));
+            if (endDate.HasValue)
+                query.SetDateTime("endDate", endDate.Value.AddDays(1));
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
             if (graphicTypeId != 0)

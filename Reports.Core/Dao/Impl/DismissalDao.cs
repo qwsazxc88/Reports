@@ -22,7 +22,7 @@ namespace Reports.Core.Dao.Impl
             int positionId,
             int typeId,
             int statusId,
-            //DateTime? beginDate,
+            DateTime? beginDate,
             DateTime? endDate)
         {
             string sqlQuery =
@@ -81,17 +81,17 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += @"v.[TypeId] = :typeId ";
             }
-            //if (beginDate.HasValue)
-            //{
-            //    if (whereString.Length > 0)
-            //        whereString += @" and ";
-            //    whereString += @"v.[BeginDate] = :beginDate ";
-            //}
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
+            }
             if (endDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[EndDate] = :endDate ";
+                whereString += @"v.[CreateDate] < :endDate ";
             }
             if (positionId != 0)
             {
@@ -119,10 +119,10 @@ namespace Reports.Core.Dao.Impl
             //    query.SetInt32("statusId", statusId);
             if (typeId != 0)
                 query.SetInt32("typeId", typeId);
-            //if (beginDate.HasValue)
-            //    query.SetDateTime("beginDate", beginDate.Value);
+            if (beginDate.HasValue)
+                query.SetDateTime("beginDate", beginDate.Value);
             if (endDate.HasValue)
-                query.SetDateTime("endDate", endDate.Value); 
+                query.SetDateTime("endDate", endDate.Value.AddDays(1)); 
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
             if (departmentId != 0)

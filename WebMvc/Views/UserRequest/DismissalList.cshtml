@@ -10,6 +10,7 @@
     <table style="width:100%">
     <tr>
         <td colspan="4">
+            @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
     </tr>
@@ -28,12 +29,12 @@
          </td>
     </tr>
     <tr>
-        <td>
+       @* <td>
             @Html.LabelFor(m => m.EndDate):
         </td>
         <td>
             @Html.EditorFor(model => model.EndDate) 
-         </td>
+         </td>*@
         
         <td>
             @Html.LabelFor(m => m.StatusId):
@@ -55,6 +56,14 @@
         <td colspan="3">
             @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name")) 
         </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            @Html.LabelFor(m => m.BeginDate):
+            @Html.EditorFor(model => model.BeginDate) 
+            @Html.LabelFor(m => m.EndDate):
+            @Html.EditorFor(model => model.EndDate) 
+         </td>
     </tr>
     <tr>
       <td colspan="4">
@@ -95,12 +104,12 @@
 </table> 
     <script type="text/javascript">
     $(document).ready(function () {
-        //$("#BeginDate").datepicker();
+        $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
     });
     function resetFilter() {
-        //$("#BeginDate").val('');
+        $("#BeginDate").val('');
         $("#EndDate").val('');
         if ($('#DepartmentId option').length > 1)
             $("#DepartmentId").val('0');

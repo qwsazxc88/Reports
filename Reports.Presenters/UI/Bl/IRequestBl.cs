@@ -32,7 +32,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
 
         HolidayWorkListModel GetHolidayWorkListModel();
-        void SetHolidayWorkListModel(HolidayWorkListModel model);
+        void SetHolidayWorkListModel(HolidayWorkListModel model, bool hasError);
         HolidayWorkEditModel GetHolidayWorkEditModel(int id, int userId);
         void ReloadDictionariesToModel(HolidayWorkEditModel model);
         bool SaveHolidayWorkEditModel(HolidayWorkEditModel model,out string error);
@@ -44,7 +44,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveMissionEditModel(MissionEditModel model, out string error);
 
         DismissalListModel GetDismissalListModel();
-        void SetDismissalListModel(DismissalListModel model);
+        void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
         bool SaveDismissalEditModel(DismissalEditModel model, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
@@ -56,7 +56,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveTimesheetCorrectionEditModel(TimesheetCorrectionEditModel model, out string error);
 
         EmploymentListModel GetEmploymentListModel();
-        void SetEmploymentListModel(EmploymentListModel model);
+        void SetEmploymentListModel(EmploymentListModel model, bool hasError);
         EmploymentEditModel GetEmploymentEditModel(int id, int userId);
         void ReloadDictionariesToModel(EmploymentEditModel model);
         bool SaveEmploymentEditModel(EmploymentEditModel model, /*UploadFilesDto filesDto,*/ out string error);

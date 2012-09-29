@@ -20,10 +20,10 @@ namespace Reports.Core.Dao.Impl
               int departmentId,
               int positionId,
               int typeId,
-              int statusId
+              int statusId,
             //  int paymentPercentTypeId
-            //DateTime? beginDate,
-            //DateTime? endDate
+            DateTime? beginDate,
+            DateTime? endDate
            )
         {
             string sqlQuery =
@@ -86,18 +86,18 @@ namespace Reports.Core.Dao.Impl
             //        whereString += @" and ";
             //    whereString += @"v.[PaymentPercentId] = :paymentPercentTypeId ";
             //}
-            //if (beginDate.HasValue)
-            //{
-            //    if (whereString.Length > 0)
-            //        whereString += @" and ";
-            //    whereString += @"v.[CreateDate] >= :beginDate ";
-            //}
-            //if (endDate.HasValue)
-            //{
-            //    if (whereString.Length > 0)
-            //        whereString += @" and ";
-            //    whereString += @"v.[CreateDate] <= :endDate ";
-            //}
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] < :endDate ";
+            }
             if (positionId != 0)
             {
                 if (whereString.Length > 0)
@@ -127,10 +127,10 @@ namespace Reports.Core.Dao.Impl
             //if (paymentPercentTypeId != 0)
             //    query.SetInt32("paymentPercentTypeId", paymentPercentTypeId);
 
-            //if (beginDate.HasValue)
-            //    query.SetDateTime("beginDate", beginDate.Value);
-            //if (endDate.HasValue)
-            //    query.SetDateTime("endDate", endDate.Value.AddDays(1).AddMilliseconds(-1));
+            if (beginDate.HasValue)
+                query.SetDateTime("beginDate", beginDate.Value);
+            if (endDate.HasValue)
+                query.SetDateTime("endDate", endDate.Value.AddDays(1));
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
             if (departmentId != 0)

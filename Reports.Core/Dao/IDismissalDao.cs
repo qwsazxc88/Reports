@@ -14,6 +14,7 @@ namespace Reports.Core.Dao
             int positionId,
             int typeId,
             int statusId,
+            DateTime? beginDate,
             DateTime? endDate);
     }
 }

@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class EmploymentListModel
+    public class EmploymentListModel : BeginEndCreateDate
     {
         public int UserId { get; set; }
 
@@ -23,10 +23,14 @@ namespace Reports.Presenters.UI.ViewModel
         public int GraphicTypeId { get; set; }
         public IList<IdNameDto> GraphicTypes;
 
-        [Display(Name = "Дата составления")]
-        public DateTime? CreateDate { get; set; }
-        [Display(Name = "Дата начала Т Д")]
+        [Display(Name = "Дата создания заявки с")]
         public DateTime? BeginDate { get; set; }
+        [Display(Name = "по")]
+        public DateTime? EndDate { get; set; }
+        //[Display(Name = "Дата составления")]
+        //public DateTime? CreateDate { get; set; }
+        //[Display(Name = "Дата начала Т Д")]
+        //public DateTime? BeginDate { get; set; }
 
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }

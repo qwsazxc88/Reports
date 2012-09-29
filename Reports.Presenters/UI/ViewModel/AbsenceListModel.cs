@@ -5,7 +5,12 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class AbsenceListModel
+    public interface BeginEndCreateDate
+    {
+        DateTime? BeginDate { get; }
+        DateTime? EndDate { get; }
+    }
+    public class AbsenceListModel : BeginEndCreateDate
     {
         public int UserId { get; set; }
 

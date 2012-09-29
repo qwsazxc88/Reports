@@ -319,11 +319,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model, user);
             return model;
         }
-        public void SetEmploymentListModel(EmploymentListModel model)
+        public void SetEmploymentListModel(EmploymentListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         public void SetDocumentsToModel(EmploymentListModel model, User user)
         {
@@ -339,7 +342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.GraphicTypeId,
                 model.StatusId,
                 model.BeginDate,
-                model.CreateDate);
+                model.EndDate);
         }
         protected void SetDictionariesToModel(EmploymentListModel model, User user)
         {
@@ -1077,11 +1080,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model, user);
             return model;
         }
-        public void SetDismissalListModel(DismissalListModel model)
+        public void SetDismissalListModel(DismissalListModel model, bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         public void SetDocumentsToModel(DismissalListModel model, User user)
         {
@@ -1094,7 +1100,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
-                //model.BeginDate,
+                model.BeginDate,
                 model.EndDate);
         }
         protected void SetDictionariesToModel(DismissalListModel model, User user)
@@ -1734,11 +1740,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetDictionariesToModel(model, user);
             return model;
         }
-        public void SetHolidayWorkListModel(HolidayWorkListModel model)
+        public void SetHolidayWorkListModel(HolidayWorkListModel model, bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         public void SetDocumentsToModel(HolidayWorkListModel model, User user)
         {
@@ -1749,7 +1758,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                model.StatusId
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate
                 //model.PaymentPercentType
                 );
         }

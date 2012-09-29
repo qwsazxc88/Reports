@@ -110,7 +110,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult EmploymentList(EmploymentListModel model)
          {
-             RequestBl.SetEmploymentListModel(model);
+             RequestBl.SetEmploymentListModel(model,!ValidateModel(model));
              return View(model);
          }
          [HttpGet]
@@ -285,7 +285,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult DismissalList(DismissalListModel model)
          {
-             RequestBl.SetDismissalListModel(model);
+             RequestBl.SetDismissalListModel(model, !ValidateModel(model));
              return View(model);
          }
          [HttpGet]
@@ -428,7 +428,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult HolidayWorkList(HolidayWorkListModel model)
          {
-             RequestBl.SetHolidayWorkListModel(model);
+             RequestBl.SetHolidayWorkListModel(model,!ValidateModel(model));
              return View(model);
          }
          [HttpGet]
@@ -668,7 +668,7 @@ namespace WebMvc.Controllers
              RequestBl.SetAbsenceListModel(model, !ValidateModel(model));
              return View(model);
          }
-         protected bool ValidateModel(AbsenceListModel model)
+         protected bool ValidateModel(BeginEndCreateDate model)
          {
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate.Value > model.EndDate.Value)

@@ -10,6 +10,7 @@
     <table style="width:100%">
     <tr>
         <td colspan="4">
+            @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
     </tr>
@@ -49,6 +50,14 @@
 
     </tr>
     <tr>
+        <td colspan="4">
+            @Html.LabelFor(m => m.BeginDate):
+            @Html.EditorFor(model => model.BeginDate) 
+            @Html.LabelFor(m => m.EndDate):
+            @Html.EditorFor(model => model.EndDate) 
+         </td>
+    </tr>
+    @*<tr>
         <td>
             @Html.LabelFor(m => m.CreateDate):
         </td>
@@ -61,7 +70,7 @@
         <td>
             @Html.EditorFor(model => model.BeginDate) 
         </td>
-    </tr>
+    </tr>*@
     @* <tr>
          <td>
             @Html.LabelFor(m => m.TypeId):
@@ -108,12 +117,12 @@
     <script type="text/javascript">
     $(document).ready(function () {
         $("#BeginDate").datepicker();
-        $("#CreateDate").datepicker();
+        $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
     });
     function resetFilter() {
         $("#BeginDate").val('');
-        $("#CreateDate").val('');
+        $("#EndDate").val('');
 //        if ($('#DepartmentId option').length > 1)
 //            $("#DepartmentId").val('0');
         if ($('#PositionId option').length > 1)

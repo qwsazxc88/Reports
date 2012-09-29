@@ -10,6 +10,7 @@
     <table style="width:100%">
     <tr>
         <td colspan="4">
+            @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
     </tr>
@@ -41,20 +42,14 @@
             @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
          </td>
     </tr>
-    @*<tr>
-        <td>
+    <tr>
+        <td colspan="4">
             @Html.LabelFor(m => m.BeginDate):
-        </td>
-        <td>
             @Html.EditorFor(model => model.BeginDate) 
-        </td>
-        <td>
             @Html.LabelFor(m => m.EndDate):
-        </td>
-        <td>
             @Html.EditorFor(model => model.EndDate) 
          </td>
-    </tr>*@
+    </tr>
    @* <tr>
         <td>
             @Html.LabelFor(m => m.PaymentPercentType):
@@ -108,14 +103,14 @@
     </tr>
 </table> 
     <script type="text/javascript">
-//    $(document).ready(function () {
-//        $("#BeginDate").datepicker();
-//        $("#EndDate").datepicker();
-//        $(".hasDatepicker").width("75px");
-//    });
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+    });
     function resetFilter() {
-//        $("#BeginDate").val('');
-//        $("#EndDate").val('');
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
         if ($('#DepartmentId option').length > 1)
             $("#DepartmentId").val('0');
         if ($('#PositionId option').length > 1)

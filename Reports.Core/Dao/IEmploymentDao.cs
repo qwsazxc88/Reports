@@ -16,6 +16,6 @@ namespace Reports.Core.Dao
             int graphicTypeId,
             int requestStatusId,
             DateTime? beginDate,
-            DateTime? createDate);
+            DateTime? endDate);
     }
 }

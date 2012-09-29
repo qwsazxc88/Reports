@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 
@@ -12,6 +13,8 @@ namespace Reports.Core.Dao
             int departmentId,
             int positionId,
             int typeId,
-            int statusId);
+            int statusId,
+            DateTime? beginDate,
+            DateTime? endDate);
     }
 }
