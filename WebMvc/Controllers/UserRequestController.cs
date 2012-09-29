@@ -221,7 +221,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult TimesheetCorrectionList(TimesheetCorrectionListModel model)
          {
-             RequestBl.SetTimesheetCorrectionListModel(model);
+             RequestBl.SetTimesheetCorrectionListModel(model,!ValidateModel(model));
              return View(model);
          }
          [HttpGet]
@@ -506,7 +506,7 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult SicklistList(SicklistListModel model)
          {
-             RequestBl.SetSicklistListModel(model);
+             RequestBl.SetSicklistListModel(model, !ValidateModel(model));
              return View(model);
          }
          [HttpGet]

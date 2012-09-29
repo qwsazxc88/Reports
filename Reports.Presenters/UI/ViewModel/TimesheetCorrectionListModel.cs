@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class TimesheetCorrectionListModel
+    public class TimesheetCorrectionListModel:BeginEndCreateDate
     {
         public int UserId { get; set; }
 
@@ -21,6 +21,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         //[Display(Name = "Дата окончания Т Д.")]
         //public DateTime? EndDate { get; set; }
+
+        [Display(Name = "Дата создания заявки с")]
+        public DateTime? BeginDate { get; set; }
+        [Display(Name = "по")]
+        public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }

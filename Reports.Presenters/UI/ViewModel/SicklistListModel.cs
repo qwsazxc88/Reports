@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class SicklistListModel
+    public class SicklistListModel :BeginEndCreateDate
     {
         public int UserId { get; set; }
 
@@ -22,10 +23,10 @@ namespace Reports.Presenters.UI.ViewModel
         public int PaymentPercentType { get; set; }
         public IList<IdNameDtoSort> PaymentPercentTypes;
 
-        //[Display(Name = "Дата начала")]
-        //public DateTime? BeginDate { get; set; }
-        //[Display(Name = "Дата окончания")]
-        //public DateTime? EndDate { get; set; }
+        [Display(Name = "Дата создания заявки с")]
+        public DateTime? BeginDate { get; set; }
+        [Display(Name = "по")]
+        public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }

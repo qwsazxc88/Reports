@@ -775,11 +775,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
-        public void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model)
+        public void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         public void SetDocumentsToModel(TimesheetCorrectionListModel model, User user)
         {
@@ -791,9 +794,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                model.StatusId);
-            //model.BeginDate,
-            //model.EndDate);
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate);
         }
         public TimesheetCorrectionEditModel GetTimesheetCorrectionEditModel(int id, int userId)
         {
@@ -2112,11 +2115,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, "Отсутствует"));
             return typeList;
         }
-        public void SetSicklistListModel(SicklistListModel model)
+        public void SetSicklistListModel(SicklistListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            SetDocumentsToModel(model, user);
+            if(hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
         }
         protected void SetDictionariesToModel(SicklistListModel model, User user)
         {
@@ -2136,7 +2142,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
-                model.PaymentPercentType);
+                model.PaymentPercentType,
+                model.BeginDate,
+                model.EndDate);
         }
         public SicklistEditModel GetSicklistEditModel(int id, int userId)
         {

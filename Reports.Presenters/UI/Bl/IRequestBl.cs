@@ -26,7 +26,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveAbsenceEditModel(AbsenceEditModel model, out string error);
 
         SicklistListModel GetSicklistListModel();
-        void SetSicklistListModel(SicklistListModel model);
+        void SetSicklistListModel(SicklistListModel model, bool hasError);
         SicklistEditModel GetSicklistEditModel(int id, int userId);
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
@@ -50,7 +50,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(DismissalEditModel model);
 
         TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
-        void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model);
+        void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model, bool hasError);
         TimesheetCorrectionEditModel GetTimesheetCorrectionEditModel(int id, int userId);
         void ReloadDictionariesToModel(TimesheetCorrectionEditModel model);
         bool SaveTimesheetCorrectionEditModel(TimesheetCorrectionEditModel model, out string error);

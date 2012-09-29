@@ -30,7 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lib", "Lib", "{2145B6FF-293
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{19456CBC-5700-43D2-8F1C-752EBEE15BD1}"
 	ProjectSection(SolutionItems) = preProject
-		Database\Indicies.sql = Database\Indicies.sql
 		Database\Schema.sql = Database\Schema.sql
 		Database\UpdateScript.sql = Database\UpdateScript.sql
 	EndProjectSection
