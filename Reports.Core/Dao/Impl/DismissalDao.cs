@@ -32,9 +32,20 @@ namespace Reports.Core.Dao.Impl
                          v.[CreateDate] as Date    
             from [dbo].[Dismissal] v
             inner join [dbo].[Users] u on u.Id = v.UserId";
+
+            return GetDefaultDocuments(userId, role, departmentId,
+                positionId, typeId,
+                statusId, beginDate, endDate, sqlQuery);
+
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = GetWhereForUserRole(role, userId);
-            if (statusId != 0)
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            /*if (statusId != 0)
             {
                 string statusWhere;
                 switch (statusId)
@@ -109,15 +120,16 @@ namespace Reports.Core.Dao.Impl
             if (whereString.Length > 0)
                 sqlQuery += @" where " + whereString;
             sqlQuery += @" order by Date DESC,Name ";
-
-            IQuery query = Session.CreateSQLQuery(sqlQuery).
+            */
+            IQuery query = CreateQuery(sqlQuery);
+                /*Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
-                AddScalar("Date", NHibernateUtil.DateTime);
-            //if (statusId != 0)
-            //    query.SetInt32("statusId", statusId);
-            if (typeId != 0)
+                AddScalar("Date", NHibernateUtil.DateTime);*/
+
+            AddDatesToQuery(query, beginDate, endDate);
+            /*if (typeId != 0)
                 query.SetInt32("typeId", typeId);
             if (beginDate.HasValue)
                 query.SetDateTime("beginDate", beginDate.Value);
@@ -126,7 +138,7 @@ namespace Reports.Core.Dao.Impl
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);
             if (departmentId != 0)
-                query.SetInt32("departmentId", departmentId);
+                query.SetInt32("departmentId", departmentId);*/
             return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
         }
     }

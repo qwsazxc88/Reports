@@ -6,10 +6,10 @@ using log4net;
 using NHibernate;
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
-using Reports.Core.Utils;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -180,6 +180,147 @@ namespace Reports.Core.Dao.Impl
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
+        }
+        public virtual string GetDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] < :endDate ";
+            }
+            return whereString;
+        }
+        public virtual void AddDatesToQuery( IQuery query,DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+                query.SetDateTime("beginDate", beginDate.Value);
+            if (endDate.HasValue)
+                query.SetDateTime("endDate", endDate.Value.AddDays(1));
+        }
+
+        public virtual string GetPositionWhere(string whereString, int positionId)
+        {
+            if (positionId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("u.[PositionId] = {0} ",positionId);
+            }
+            return whereString;
+        }
+        public virtual string GetTypeWhere(string whereString, int typeId)
+        {
+            if (typeId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("v.[TypeId] = {0} ",typeId);
+            }
+            return whereString;
+        }
+        public virtual string GetDepartmentWhere(string whereString, int departmentId)
+        {
+            if (departmentId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("u.[DepartmentId] = {0} ",departmentId);
+            }
+            return whereString;
+        }
+        public virtual string GetStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    case 1:
+                        statusWhere =
+                            @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
+                        break;
+                    case 2:
+                        statusWhere = @"UserDateAccept is not null";
+                        break;
+                    case 3:
+                        statusWhere = @"UserDateAccept is null";
+                        break;
+                    case 4:
+                        statusWhere = @"ManagerDateAccept is not null";
+                        break;
+                    case 5:
+                        statusWhere = @"ManagerDateAccept is null";
+                        break;
+                    case 6:
+                        statusWhere = @"PersonnelManagerDateAccept is not null";
+                        break;
+                    case 7:
+                        statusWhere = @"PersonnelManagerDateAccept is null";
+                        break;
+                    case 8:
+                        statusWhere =
+                            @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
+                        break;
+                    case 9:
+                        statusWhere = @"SendTo1C is not null";
+                        break;
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere + " ";
+                return whereString;
+            }
+            return whereString;
+        }
+        public virtual string GetSqlQueryOrdered(string sqlQuery, string whereString)
+        {
+            if (!string.IsNullOrEmpty(whereString))
+                sqlQuery += @" where " + whereString;
+            sqlQuery += @" order by Date DESC,Name ";
+            return sqlQuery;
+        }
+        public virtual IQuery CreateQuery(string sqlQuery)
+        {
+            return  Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime);
+        }
+        public virtual IList<VacationDto> GetDefaultDocuments(
+                                int userId,
+                                UserRole role,
+                                int departmentId,
+                                int positionId,
+                                int typeId,
+                                int statusId,
+                                DateTime? beginDate,
+                                DateTime? endDate,
+                                string sqlQuery
+            )
+        {
+            string whereString = GetWhereForUserRole(role, userId);
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{

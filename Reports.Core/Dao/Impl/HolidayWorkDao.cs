@@ -21,7 +21,6 @@ namespace Reports.Core.Dao.Impl
               int positionId,
               int typeId,
               int statusId,
-            //  int paymentPercentTypeId
             DateTime? beginDate,
             DateTime? endDate
            )
@@ -33,108 +32,21 @@ namespace Reports.Core.Dao.Impl
                          v.[CreateDate] as Date    
             from [dbo].[HolidayWork] v
             inner join [dbo].[Users] u on u.Id = v.UserId";
-            //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
+
+            return GetDefaultDocuments(userId, role, departmentId,
+                positionId, typeId,
+                statusId, beginDate, endDate, sqlQuery);
+            
             string whereString = GetWhereForUserRole(role, userId);
-            if (statusId != 0)
-            {
-                string statusWhere;
-                switch (statusId)
-                {
-                    case 1:
-                        statusWhere = @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
-                        break;
-                    case 2:
-                        statusWhere = @"UserDateAccept is not null";
-                        break;
-                    case 3:
-                        statusWhere = @"UserDateAccept is null";
-                        break;
-                    case 4:
-                        statusWhere = @"ManagerDateAccept is not null";
-                        break;
-                    case 5:
-                        statusWhere = @"ManagerDateAccept is null";
-                        break;
-                    case 6:
-                        statusWhere = @"PersonnelManagerDateAccept is not null";
-                        break;
-                    case 7:
-                        statusWhere = @"PersonnelManagerDateAccept is null";
-                        break;
-                    case 8:
-                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
-                        break;
-                    case 9:
-                        statusWhere = @"SendTo1C is not null";
-                        break;
-                    default:
-                        throw new ArgumentException("Неправильный статус заявки");
-                }
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @" " + statusWhere + " ";
-            }
-            if (typeId != 0)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @"v.[TypeId] = :typeId ";
-            }
-            //if (paymentPercentTypeId != 0)
-            //{
-            //    if (whereString.Length > 0)
-            //        whereString += @" and ";
-            //    whereString += @"v.[PaymentPercentId] = :paymentPercentTypeId ";
-            //}
-            if (beginDate.HasValue)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @"v.[CreateDate] >= :beginDate ";
-            }
-            if (endDate.HasValue)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @"v.[CreateDate] < :endDate ";
-            }
-            if (positionId != 0)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @"u.[PositionId] = :positionId ";
-            }
-            if (departmentId != 0)
-            {
-                if (whereString.Length > 0)
-                    whereString += @" and ";
-                whereString += @"u.[DepartmentId] = :departmentId ";
-            }
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
 
-            if (whereString.Length > 0)
-                sqlQuery += @" where " + whereString;
-            sqlQuery += @" order by Date DESC,Name ";
-
-            IQuery query = Session.CreateSQLQuery(sqlQuery).
-                AddScalar("Id", NHibernateUtil.Int32).
-                AddScalar("UserId", NHibernateUtil.Int32).
-                AddScalar("Name", NHibernateUtil.String).
-                AddScalar("Date", NHibernateUtil.DateTime);
-            //if (statusId != 0)
-            //    query.SetInt32("statusId", statusId);
-            if (typeId != 0)
-                query.SetInt32("typeId", typeId);
-            //if (paymentPercentTypeId != 0)
-            //    query.SetInt32("paymentPercentTypeId", paymentPercentTypeId);
-
-            if (beginDate.HasValue)
-                query.SetDateTime("beginDate", beginDate.Value);
-            if (endDate.HasValue)
-                query.SetDateTime("endDate", endDate.Value.AddDays(1));
-            if (positionId != 0)
-                query.SetInt32("positionId", positionId);
-            if (departmentId != 0)
-                query.SetInt32("departmentId", departmentId);
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
     }

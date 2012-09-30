@@ -32,6 +32,10 @@ namespace Reports.Core.Dao.Impl
                          v.[CreateDate] as Date    
             from [dbo].[Vacation] v
             inner join [dbo].[Users] u on u.Id = v.UserId";
+
+            return GetDefaultDocuments(userId, role, departmentId,
+                positionId, vacationTypeId,
+                requestStatusId, beginDate, endDate, sqlQuery);
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = GetWhereForUserRole(role,userId);
 
