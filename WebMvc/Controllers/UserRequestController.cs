@@ -198,16 +198,45 @@ namespace WebMvc.Controllers
                      probation <= 0 || probation > 24)
                      ModelState.AddModelError("Probaion", "Поле 'Испытательный срок' должно быть положительным целым числом не больше 3.");
              }
-             if (!string.IsNullOrEmpty(model.Salary))
+             CheckDecimalNotNegativeValue("Salary", "'Оклад (тарифная ставка)'",model.Salary);
+             /*if (!string.IsNullOrEmpty(model.Salary))
              {
                  decimal salary;
                  if (!Decimal.TryParse(model.Salary, out salary) ||
                      salary <= 0)
                      ModelState.AddModelError("Salary", "Поле 'Оклад (тарифная ставка)' должно быть неотрицательным числом.");
-             }
+             }*/
              //if(model.BeginDate.HasValue && model.EndDate.HasValue && model.BeginDate.Value > model.EndDate.Value)
              //    ModelState.AddModelError("BeginDate", "Поле 'Дата начало Т Д' должно быть не больше поля 'Дата окончания Т Д.'.");
              return ModelState.IsValid;
+         }
+         protected void CheckDecimalValue(string fieldModelName, string fieldName, 
+             string modelValue, decimal? minValue, decimal? maxValue)
+         {
+             decimal value;
+             if (!Decimal.TryParse(modelValue, out value))
+                 ModelState.AddModelError(fieldModelName,string.Format("Поле {0} должно быть десятичным числом.",fieldName));
+             else
+             {
+                 if(minValue.HasValue && minValue.Value > value)
+                     ModelState.AddModelError(fieldModelName, string.Format("Поле {0} должно быть не меньше {1}.", fieldName, minValue.Value));
+                 if (maxValue.HasValue && maxValue.Value < value)
+                     ModelState.AddModelError(fieldModelName, string.Format("Поле {0} должно быть не больше {1}.", fieldName, maxValue.Value));
+             }
+         }
+         protected void CheckDecimalNotNegativeValue(string fieldModelName,string fieldName, string modelValue)
+         {
+             if (!string.IsNullOrEmpty(modelValue))
+             {
+                 decimal value;
+                 if (!Decimal.TryParse(modelValue, out value))
+                     ModelState.AddModelError(fieldModelName,
+                                              string.Format("Поле {0} должно быть десятичным числом.", fieldName));
+                 else if (value <= 0)
+                     ModelState.AddModelError(fieldModelName,
+                                              string.Format("Поле {0} должно быть положительным десятичным числом.",
+                                                            fieldName));
+             }
          }
 
          #endregion

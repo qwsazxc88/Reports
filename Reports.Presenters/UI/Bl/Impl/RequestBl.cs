@@ -579,13 +579,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.BeginDate = model.BeginDate.Value;
 // ReSharper restore PossibleInvalidOperationException
                 //entity.EndDate = model.EndDate;
-                entity.Salary = (decimal)((int)(decimal.Parse(model.Salary) * 100)) / 100;
+                entity.Salary = GetTwoDigitValue(model.Salary);
                 entity.Probaion = string.IsNullOrEmpty(model.Probaion) ? new int?() : Int32.Parse(model.Probaion); 
                 entity.Type = EmploymentTypeDao.Load(model.TypeId);
                 entity.HoursType = EmploymentHoursTypeDao.Load(model.GraphicTypeId);
                 entity.Addition = model.AdditionId == 0 ? null : EmploymentAdditionDao.Load(model.AdditionId);
                 entity.Position = PositionDao.Load(model.PositionId);
             }
+        }
+        protected static decimal GetTwoDigitValue(string modelValue)
+        {
+            return (decimal) ((int) (decimal.Parse(modelValue)*100))/100;
         }
         protected void SetAttachmentsToModel(EmploymentEditModel model, int id)
         {
