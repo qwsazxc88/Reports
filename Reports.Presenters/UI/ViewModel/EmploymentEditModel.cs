@@ -52,6 +52,22 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Испытательный срок")]
         public string Probaion { get; set; }
 
+        [Display(Name = "Районный коэффициент")]
+        public string RegionFactor { get; set; }
+        [Display(Name = "Северный коэффициент")]
+        public string NorthFactor { get; set; }
+         [Display(Name = "Надбавка территориальная")]
+        public string RegionAddition { get; set; }
+         [Display(Name = "Надбавка персональная")]
+        public string PersonalAddition { get; set; }
+         [Display(Name = "Надбавка за разъездной характер работы")]
+        public string TravelWorkAddition { get; set; }
+         [Display(Name = "Надбавка за квалификацию")]
+        public string SkillAddition { get; set; }
+         [Display(Name = "Надбавка за выслугу лет рабочим и служащим")]
+        public string LongWorkAddition { get; set; }
+
+
         //[Display(Name = "Процент оплаты заработка")]
         //public int PaymentPercentTypeId { get; set; }
         //public int PaymentPercentTypeIdHidden { get; set; }

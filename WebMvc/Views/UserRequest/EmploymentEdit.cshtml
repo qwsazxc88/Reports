@@ -88,6 +88,62 @@
             @Html.TextBoxFor(model => model.Salary, Model.IsTypeEditable ? null : (object)new { @readonly = "readonly" }) 
          </td>
     </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.RegionFactor):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.RegionFactor, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.NorthFactor):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.NorthFactor, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.RegionAddition):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.RegionAddition, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.PersonalAddition):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.PersonalAddition, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.TravelWorkAddition):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.TravelWorkAddition, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.SkillAddition):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.SkillAddition, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.LongWorkAddition):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.LongWorkAddition, Model.IsTimesheetStatusEditable ? null : (object)new { @readonly = "readonly" }) 
+         </td>
+    </tr>
     @* <tr>
         <td>
             @Html.LabelFor(m => m.EndDate):
@@ -293,6 +349,13 @@
 //            $("#PaymentDecreaseDate").datepicker();
             $(".hasDatepicker").width("75px");
             $("#Salary").width("100px");
+            $("#RegionFactor").width("100px");
+            $("#NorthFactor").width("100px");
+            $("#RegionAddition").width("100px");
+            $("#PersonalAddition").width("100px");
+            $("#TravelWorkAddition").width("100px");
+            $("#SkillAddition").width("100px");
+            $("#LongWorkAddition").width("100px");
             $("#Probaion").width("50px");
             //setupUploader();
 

@@ -465,7 +465,9 @@
     <EmbeddedResource Include="Domain\TimesheetCorrectionComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\EmploymentComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>

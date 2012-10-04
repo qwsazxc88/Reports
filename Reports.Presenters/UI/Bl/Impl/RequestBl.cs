@@ -396,6 +396,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AdditionId = employment.Addition == null ? 0 : employment.Addition.Id;
                 model.TimesheetStatusId = employment.TimesheetStatus == null ? 0 : employment.TimesheetStatus.Id;
                 model.Salary = employment.Salary.ToString();
+                model.RegionFactor = GetModelValue(employment.RegionFactor);
+                model.NorthFactor = GetModelValue(employment.NorthFactor);
+                model.RegionAddition = GetModelValue(employment.RegionAddition);
+                model.PersonalAddition = GetModelValue(employment.PersonalAddition);
+                model.TravelWorkAddition = GetModelValue(employment.TravelWorkAddition);
+                model.SkillAddition = GetModelValue(employment.SkillAddition);
+                model.LongWorkAddition = GetModelValue(employment.LongWorkAddition);
                 model.Probaion = employment.Probaion.ToString();
                 model.Reason = employment.Reason;
                 model.CreatorLogin = employment.Creator.Login;
@@ -408,6 +415,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user, employment, model);
             LoadDictionaries(model);
             return model;
+        }
+        protected string GetModelValue(decimal? value)
+        {
+            return value.HasValue ? value.Value.ToString() : string.Empty;
         }
         public void ReloadDictionariesToModel(EmploymentEditModel model)
         {
@@ -580,6 +591,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper restore PossibleInvalidOperationException
                 //entity.EndDate = model.EndDate;
                 entity.Salary = GetTwoDigitValue(model.Salary);
+                entity.RegionFactor = GetTwoDigitNullableValue(model.RegionFactor);
+                entity.NorthFactor = GetTwoDigitNullableValue(model.NorthFactor);
+                entity.RegionAddition = GetIntValue(model.RegionAddition);
+                entity.PersonalAddition = GetIntValue(model.PersonalAddition);
+                entity.TravelWorkAddition = GetIntValue(model.TravelWorkAddition);
+                entity.SkillAddition = GetIntValue(model.SkillAddition);
+                entity.LongWorkAddition = GetIntValue(model.LongWorkAddition);
                 entity.Probaion = string.IsNullOrEmpty(model.Probaion) ? new int?() : Int32.Parse(model.Probaion); 
                 entity.Type = EmploymentTypeDao.Load(model.TypeId);
                 entity.HoursType = EmploymentHoursTypeDao.Load(model.GraphicTypeId);
@@ -590,6 +608,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected static decimal GetTwoDigitValue(string modelValue)
         {
             return (decimal) ((int) (decimal.Parse(modelValue)*100))/100;
+        }
+        protected static decimal? GetTwoDigitNullableValue(string modelValue)
+        {
+            if(string.IsNullOrEmpty(modelValue))
+                return new decimal?();
+            return (decimal)((int)(decimal.Parse(modelValue) * 100)) / 100;
+        }
+        protected static int? GetIntValue(string modelValue)
+        {
+            if (string.IsNullOrEmpty(modelValue))
+                return new int?();
+            return int.Parse(modelValue);
         }
         protected void SetAttachmentsToModel(EmploymentEditModel model, int id)
         {

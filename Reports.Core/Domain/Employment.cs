@@ -25,6 +25,14 @@ namespace Reports.Core.Domain
         public virtual int? Probaion { get; set; }
         public virtual string Reason { get; set; }
 
+        public virtual decimal? RegionFactor { get; set; }
+        public virtual decimal? NorthFactor { get; set; }
+        public virtual int? RegionAddition { get; set; }
+        public virtual int? PersonalAddition { get; set; }
+        public virtual int? TravelWorkAddition { get; set; }
+        public virtual int? SkillAddition { get; set; }
+        public virtual int? LongWorkAddition { get; set; }
+
         public virtual TimesheetStatus TimesheetStatus { get; set; }
 
         public virtual User User { get; set; }
