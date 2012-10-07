@@ -281,6 +281,9 @@ namespace Reports.Core
             Register(Component.For(typeof(ISicklistBabyMindingTypeDao)).
                      ImplementedBy(typeof(SicklistBabyMindingTypeDao)).
                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IInspectorToUserDao)).
+                    ImplementedBy(typeof(InspectorToUserDao)).
+                    LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

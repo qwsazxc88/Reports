@@ -5,6 +5,7 @@ INSERT INTO [Role] (Id,[Name],Version) values (4,'Руководитель',1)
 INSERT INTO [Role] (Id,[Name],Version) values (8,'Кадровик',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (16,'Бюджет',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
+INSERT INTO [Role] (Id,[Name],Version) values (64,'Контролер',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
@@ -43,6 +44,9 @@ set @ManPositionId = @@Identity
 declare @PerPositionId int
 INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('4','Кадровик',1)		
 set @PerPositionId = @@Identity	
+declare @InsPositionId int
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('5','Контролер',1)		
+set @InsPositionId = @@Identity	
 	
 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('51','Дополнительный учебный отпуск без оплаты #1203',1)			
@@ -335,6 +339,18 @@ declare @personnelId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001' , 0, @PerPositionId)
 set @personnelId = @@Identity
+
+declare @inspectorId int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector' ,'inspector'  ,	'2008-12-01 15:13:25:000',    N'Контролер',                    1,         null								, 64,		   'АЕ0000000001' , 0, @InsPositionId)
+set @inspectorId = @@Identity
+
+declare @inspector1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector1' ,'inspector1'  ,	'2008-12-01 15:13:25:000',    N'Контролер 1',                    1,         null								, 64,		   'АЖ0000000001' , 0, @InsPositionId)
+set @inspector1Id = @@Identity
+
+
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
 declare @budgetId int
@@ -357,9 +373,17 @@ VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:2
 set @user1Id = @@Identity
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
 
+declare @user2Id int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId , [IsNew], OrganizationId,DepartmentId,PositionId) 
 VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId , 0 ,  @OrganizationId,@DepartmentId, @PositionId )
+set @user2Id = @@Identity
 
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user1Id)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user2Id)
+
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@user1Id)
  
 INSERT INTO DBVERSION (Version) VALUES('1.0.0.1')
 

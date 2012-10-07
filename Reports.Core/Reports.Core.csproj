@@ -109,6 +109,7 @@
     <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
     <Compile Include="Dao\IHolidayWorkDao.cs" />
     <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\IInspectorToUserDao.cs" />
     <Compile Include="Dao\IMissionCommentDao.cs" />
     <Compile Include="Dao\IMissionDao.cs" />
     <Compile Include="Dao\IMissionTypeDao.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Dao\Impl\IDismissalTypeDao.cs" />
     <Compile Include="Dao\Impl\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\InspectorToUserDao.cs" />
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
@@ -222,6 +224,7 @@
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\InspectorToUser.cs" />
     <Compile Include="Domain\Mission.cs" />
     <Compile Include="Domain\MissionComment.cs" />
     <Compile Include="Domain\MissionType.cs" />
@@ -477,6 +480,9 @@
     <EmbeddedResource Include="Domain\SicklistBabyMindingType.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\InspectorToUser.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

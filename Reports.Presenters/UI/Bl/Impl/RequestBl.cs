@@ -72,6 +72,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected IRequestPrintFormDao requestPrintFormDao;
 
+        protected IInspectorToUserDao inspectorToUserDao;
+
         public IDepartmentDao DepartmentDao
         {
             get { return Validate.Dependency(departmentDao); }
@@ -265,6 +267,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(requestPrintFormDao); }
             set { requestPrintFormDao = value; }
         }
+        public IInspectorToUserDao InspectorToUserDao
+        {
+            get { return Validate.Dependency(inspectorToUserDao); }
+            set { inspectorToUserDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -371,7 +378,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentEditModel model = new EmploymentEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             SetAttachmentsToModel(model, id);
@@ -447,7 +454,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id, true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -837,7 +844,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             TimesheetCorrectionEditModel model = new TimesheetCorrectionEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             TimesheetCorrection timesheetCorrection = null;
@@ -990,7 +997,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -1160,7 +1167,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             DismissalEditModel model = new DismissalEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             Dismissal dismissal = null;
@@ -1315,7 +1322,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -1483,7 +1490,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionEditModel model = new MissionEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             Mission mission = null;
@@ -1644,7 +1651,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -1820,7 +1827,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HolidayWorkEditModel model = new HolidayWorkEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             HolidayWork holidayWork = null;
@@ -1861,7 +1868,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2185,7 +2192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SicklistEditModel model = new SicklistEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id);
@@ -2261,7 +2268,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2610,7 +2617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             AbsenceEditModel model = new AbsenceEditModel { Id = id, UserId = userId };
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Absence);
@@ -2781,7 +2788,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3007,7 +3014,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             VacationEditModel model = new VacationEditModel {Id = id, UserId = userId};
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserRights(user, current))
+            if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
@@ -3051,7 +3058,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current))
+                if (!CheckUserRights(user, current,model.Id,true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3176,7 +3183,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DaysCountHidden = model.DaysCount;
             }
         }
-        public bool CheckUserRights(User user, IUser current)
+        public bool CheckUserRights(User user, IUser current,int entityId,bool isSave)
         {
             switch (current.UserRole)
             {
@@ -3192,6 +3199,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (user.PersonnelManager != null && user.PersonnelManager.Id != current.Id)
                         return false;
                     break;
+                case UserRole.Inspector:
+                    if (entityId == 0)
+                        throw new ArgumentException("Вам запрещено создавать новые заявки.");
+                    if(isSave)
+                        throw new ArgumentException("Вам запрещено редактировать заявки.");
+                    return InspectorToUserDao.IsInspectorToUserRecordExists(current.Id, user.Id);
             }
             return true;
         }

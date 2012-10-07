@@ -73,10 +73,14 @@
     </tr>
      <tr>
         <td colspan="4">
-         @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-         {@Html.ActionLink("Создать новую заявку", "DismissalEdit", new { id = 0, userId = Model.UserId })}
-         else
-         {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
+        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
+        {
+            if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+            {@Html.ActionLink("Создать новую заявку", "DismissalEdit", new { id = 0, userId = Model.UserId })}
+            else
+            {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
+        
+        }
         </td>
     </tr>
     <tr>

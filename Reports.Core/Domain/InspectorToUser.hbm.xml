@@ -1,0 +1,10 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="InspectorToUser">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<version name="Version" column= "Version"/>-->
+	<many-to-one name="Inspector" class="User" column="InspectorId" foreign-key="FK_InspectorToUser_Inspector" index="IX_InspectorToUser_Inspector_Id"  not-null="true"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_InspectorToUser_User" index="IX_InspectorToUser_User_Id"  not-null="true"/>  
+   </class>
+</hibernate-mapping>

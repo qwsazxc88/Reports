@@ -75,7 +75,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsPreviousPaymentCounted { get; set; }
         public bool IsPreviousPaymentCountedHidden { get; set; }
 
-        [Display(Name = "Учитывать заработок предыдущих страхователей")]
+        [Display(Name = "Рассчитывать заработок по правилам 2010 года")]
         public bool Is2010Calculate { get; set; }
         public bool Is2010CalculateHidden { get; set; }
 

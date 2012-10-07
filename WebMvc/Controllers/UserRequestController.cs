@@ -17,7 +17,7 @@ using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Inspector)]
     public class UserRequestController : BaseController
     {
         public const int MaxCommentLength = 256;

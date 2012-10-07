@@ -15,7 +15,7 @@
                      <li>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</li>
                      <li>@Html.ActionLink("Информация", "InformationsList", "Admin")</li>
                 }
-                else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager)
+                else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Inspector)
                 {
                         <li>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</li>
                         <li>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</li>
@@ -25,7 +25,10 @@
                         <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
                         <li>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</li>
                         <li>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</li>
-                        <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
+                        if (dto.UserRole != UserRole.Inspector)
+                        {
+                            <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
+                        }
                        if (dto.UserRole == UserRole.PersonnelManager)
                        {
                             <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>

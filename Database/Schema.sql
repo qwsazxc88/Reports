@@ -115,6 +115,12 @@ alter table EmployeeDocumentSubType  drop constraint FK_DocumentSubType_Employee
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Attachment_Document]') AND parent_object_id = OBJECT_ID('Attachment'))
 alter table Attachment  drop constraint FK_Attachment_Document
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_InspectorToUser_Inspector]') AND parent_object_id = OBJECT_ID('InspectorToUser'))
+alter table InspectorToUser  drop constraint FK_InspectorToUser_Inspector
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_InspectorToUser_User]') AND parent_object_id = OBJECT_ID('InspectorToUser'))
+alter table InspectorToUser  drop constraint FK_InspectorToUser_User
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SicklistComment_User]') AND parent_object_id = OBJECT_ID('SicklistComment'))
 alter table SicklistComment  drop constraint FK_SicklistComment_User
 
@@ -238,6 +244,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment')
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentSubType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentSubType
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
+if exists (select * from dbo.sysobjects where id = object_id(N'InspectorToUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table InspectorToUser
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistComment
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
@@ -536,6 +543,12 @@ create table Attachment (
   Context VARBINARY(MAX) not null,
   DocumentId INT not null,
   constraint PK_Attachment  primary key (Id)
+)
+create table InspectorToUser (
+ Id INT IDENTITY NOT NULL,
+  InspectorId INT not null,
+  UserId INT not null,
+  constraint PK_InspectorToUser  primary key (Id)
 )
 create table SicklistComment (
  Id INT IDENTITY NOT NULL,
@@ -886,6 +899,10 @@ create index IX_DocumentSubType_EmployeeDocumentType_Id on EmployeeDocumentSubTy
 alter table EmployeeDocumentSubType add constraint FK_DocumentSubType_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 create index IX_Attachment_Document_Id on Attachment (DocumentId)
 alter table Attachment add constraint FK_Attachment_Document foreign key (DocumentId) references Document
+create index IX_InspectorToUser_Inspector_Id on InspectorToUser (InspectorId)
+create index IX_InspectorToUser_User_Id on InspectorToUser (UserId)
+alter table InspectorToUser add constraint FK_InspectorToUser_Inspector foreign key (InspectorId) references [Users]
+alter table InspectorToUser add constraint FK_InspectorToUser_User foreign key (UserId) references [Users]
 create index IX_SicklistComment_User_Id on SicklistComment (UserId)
 create index IX_SicklistComment_Sicklist_Id on SicklistComment (SicklistId)
 alter table SicklistComment add constraint FK_SicklistComment_User foreign key (UserId) references [Users]
@@ -959,6 +976,7 @@ INSERT INTO [Role] (Id,[Name],Version) values (4,'Руководитель',1)
 INSERT INTO [Role] (Id,[Name],Version) values (8,'Кадровик',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (16,'Бюджет',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
+INSERT INTO [Role] (Id,[Name],Version) values (64,'Контролер',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
@@ -997,6 +1015,9 @@ set @ManPositionId = @@Identity
 declare @PerPositionId int
 INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('4','Кадровик',1)		
 set @PerPositionId = @@Identity	
+declare @InsPositionId int
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('5','Контролер',1)		
+set @InsPositionId = @@Identity	
 	
 
 INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('51','Дополнительный учебный отпуск без оплаты #1203',1)			
@@ -1289,6 +1310,18 @@ declare @personnelId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001' , 0, @PerPositionId)
 set @personnelId = @@Identity
+
+declare @inspectorId int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector' ,'inspector'  ,	'2008-12-01 15:13:25:000',    N'Контролер',                    1,         null								, 64,		   'АЕ0000000001' , 0, @InsPositionId)
+set @inspectorId = @@Identity
+
+declare @inspector1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector1' ,'inspector1'  ,	'2008-12-01 15:13:25:000',    N'Контролер 1',                    1,         null								, 64,		   'АЖ0000000001' , 0, @InsPositionId)
+set @inspector1Id = @@Identity
+
+
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
 declare @budgetId int
@@ -1311,9 +1344,17 @@ VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:2
 set @user1Id = @@Identity
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
 
+declare @user2Id int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId , [IsNew], OrganizationId,DepartmentId,PositionId) 
 VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId , 0 ,  @OrganizationId,@DepartmentId, @PositionId )
+set @user2Id = @@Identity
 
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user1Id)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user2Id)
+
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@user1Id)
  
 INSERT INTO DBVERSION (Version) VALUES('1.0.0.1')
 
