@@ -100,6 +100,20 @@ namespace WebMvc.Controllers
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
+
+         [HttpGet]
+         public ActionResult AllRequestList()
+         {
+             AllRequestListModel model = RequestBl.GetAllRequestListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult AllRequestList(AllRequestListModel model)
+         {
+             RequestBl.SetAllRequestListModel(model, !ValidateModel(model));
+             return View(model);
+         }
+
          #region Employment
          [HttpGet]
          public ActionResult EmploymentList()

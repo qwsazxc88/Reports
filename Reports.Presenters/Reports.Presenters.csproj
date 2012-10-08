@@ -121,6 +121,7 @@
     <Compile Include="UI\ViewModel\AccountModels.cs" />
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
+    <Compile Include="UI\ViewModel\AllRequestListModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />

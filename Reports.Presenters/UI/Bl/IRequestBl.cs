@@ -10,6 +10,8 @@ namespace Reports.Presenters.UI.Bl
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model, bool hasError);
 
+        AllRequestListModel GetAllRequestListModel();
+        void SetAllRequestListModel(AllRequestListModel model, bool hasError);
 
         VacationEditModel GetVacationEditModel(int id, int userId);
         bool SaveVacationEditModel(VacationEditModel model,out string error);

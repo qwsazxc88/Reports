@@ -12,4 +12,8 @@ namespace Reports.Core.Dto
         //public bool IsApproved { get; set; }
         //public int OwnerId { get; set; }
     }
+    public class AllRequestDto : VacationDto
+    {
+        public string EditUrl { get; set; }
+    }
 }

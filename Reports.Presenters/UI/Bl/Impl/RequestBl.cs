@@ -315,6 +315,174 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }.OrderBy(x => x.Name).ToList();
         }
         #endregion
+
+        public AllRequestListModel GetAllRequestListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            AllRequestListModel model = new AllRequestListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+            };
+            SetDictionariesToModel(model, user);
+            return model;   
+        }
+        protected void SetDictionariesToModel(AllRequestListModel model, User user)
+        {
+            //model.Departments = GetDepartments(user);
+            //model.Types = GetEmploymentTypes(true);
+            //model.GraphicTypes = GetEmploymentGraphicTypes(true);
+            model.Statuses = GetRequestStatuses();
+            //model.Positions = GetPositions(user);
+        }
+        public void SetAllRequestListModel(AllRequestListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            if (hasError)
+                model.Documents = new List<AllRequestDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(AllRequestListModel model, User user)
+        {
+            //model.Documents = new List<VacationDto>();
+
+            List<AllRequestDto> result = new List<AllRequestDto>();
+            UserRole role = (UserRole)user.Role.Id;
+
+           
+            result.AddRange(SicklistDao.GetDocuments(
+                user.Id,
+                role,
+                0,
+                0,
+                0,
+                model.StatusId,
+                0,
+                model.BeginDate,
+                model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+                {
+                    Date = x.Date,
+                    EditUrl = "SicklistEdit",
+                    Id = x.Id,
+                    Name = x.Name,
+                    UserId = x.UserId
+                }));
+            result.AddRange(MissionDao.GetDocuments(
+               user.Id,
+               role,
+               0,
+               0,
+               0,
+               model.StatusId,
+               model.BeginDate,
+               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               {
+                   Date = x.Date,
+                   EditUrl = "MissionEdit",
+                   Id = x.Id,
+                   Name = x.Name,
+                   UserId = x.UserId
+               }));
+            result.AddRange(TimesheetCorrectionDao.GetDocuments(
+               user.Id,
+               role,
+               0,
+               0,
+               0,
+               model.StatusId,
+               model.BeginDate,
+               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               {
+                   Date = x.Date,
+                   EditUrl = "TimesheetCorrectionEdit",
+                   Id = x.Id,
+                   Name = x.Name,
+                   UserId = x.UserId
+               }));
+            result.AddRange(AbsenceDao.GetDocuments(
+               user.Id,
+               role,
+               0,
+               0,
+               0,
+               model.StatusId,
+               model.BeginDate,
+               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               {
+                   Date = x.Date,
+                   EditUrl = "AbsenceEdit",
+                   Id = x.Id,
+                   Name = x.Name,
+                   UserId = x.UserId
+               }));
+            result.AddRange(HolidayWorkDao.GetDocuments(
+              user.Id,
+              role,
+              0,
+              0,
+              0,
+              model.StatusId,
+              model.BeginDate,
+              model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+              {
+                  Date = x.Date,
+                  EditUrl = "HolidayWorkEdit",
+                  Id = x.Id,
+                  Name = x.Name,
+                  UserId = x.UserId
+              }));
+            result.AddRange(VacationDao.GetDocuments(
+              user.Id,
+              role,
+              0,
+              0,
+              0,
+              model.StatusId,
+              model.BeginDate,
+              model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+              {
+                  Date = x.Date,
+                  EditUrl = "VacationEdit",
+                  Id = x.Id,
+                  Name = x.Name,
+                  UserId = x.UserId
+              }));
+            result.AddRange(EmploymentDao.GetDocuments(
+               user.Id,
+               role,
+               0,
+               0,
+               0,
+               model.StatusId,
+               model.BeginDate,
+               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               {
+                   Date = x.Date,
+                   EditUrl = "EmploymentEdit",
+                   Id = x.Id,
+                   Name = x.Name,
+                   UserId = x.UserId
+               }));
+            result.AddRange(DismissalDao.GetDocuments(
+              user.Id,
+              role,
+              0,
+              0,
+              0,
+              model.StatusId,
+              model.BeginDate,
+              model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+              {
+                  Date = x.Date,
+                  EditUrl = "DismissalEdit",
+                  Id = x.Id,
+                  Name = x.Name,
+                  UserId = x.UserId
+              }));
+            
+            model.Documents = result;
+        }
         #region Employment
         public EmploymentListModel GetEmploymentListModel()
         {
