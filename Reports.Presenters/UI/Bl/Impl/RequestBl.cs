@@ -639,6 +639,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     };
                     ChangeEntityProperties(current, employment, model, user);
                     EmploymentDao.SaveAndFlush(employment);
+                    SendEmailForUserRequest(user, current, employment.Id, employment.Number,
+                                            RequestTypeEnum.Employment, false);
                     model.Id = employment.Id;
                 }
                 else
@@ -662,6 +664,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         ChangeEntityProperties(current, employment, model, user);
                         EmploymentDao.SaveAndFlush(employment);
+                        if(model.Version != employment.Version)
+                            SendEmailForUserRequest(user, current, employment.Id, employment.Number,
+                                            RequestTypeEnum.Employment, false);
                     }
                     if (employment.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -3756,6 +3761,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         EmploymentCommentDao.MergeAndFlush(employmentComment);
+                        SendEmailForUserRequest(employment.User, AuthenticationService.CurrentUser, employment.Id,
+                                                employment.Number, RequestTypeEnum.Employment, true);
                         break;
                 }
                 //doc.Comments.Add(comment);

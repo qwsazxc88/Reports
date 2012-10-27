@@ -176,7 +176,7 @@ function setupUploader()
 //        },
         onSubmit: function (id, fileName) {
             if(!ValidateAttachment())
-                return;
+                return false;
             clearAttachmentErrors();
             $('.qq-upload-list').hide();
             var description = $('#Description').val();

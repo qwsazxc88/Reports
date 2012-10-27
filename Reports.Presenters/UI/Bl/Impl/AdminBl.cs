@@ -1051,6 +1051,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return "Отусорсинг";
                 case UserRole.PersonnelManager:
                     return "Кадровик";
+                case UserRole.Inspector:
+                    return "Контролер";
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль {0}", (int) role));
             }

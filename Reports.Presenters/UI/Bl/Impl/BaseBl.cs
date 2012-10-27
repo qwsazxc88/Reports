@@ -7,6 +7,7 @@ using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -57,6 +58,143 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.FullName = user.FullName;
             return user;
         }
+        protected EmailDto SendEmailForUserRequest(User user,IUser current,
+            int requestId,int requestNumber,
+            RequestTypeEnum requestType,bool isFromComment)
+        {
+            string to = null;
+            switch(current.UserRole)
+            {
+                case UserRole.Employee:
+                    if(user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
+                    {
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from user {2} to manager - no manager or empty email",requestId,requestType,user.Id);
+                        return null;
+                    }
+                    to = user.Manager.Email;
+                    break;
+                case UserRole.Manager:
+                    if (user.PersonnelManager == null || string.IsNullOrEmpty(user.PersonnelManager.Email))
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager - no manager or empty email", requestId, requestType, current.Id);
+                    else
+                        to = user.PersonnelManager.Email;
+
+                    if (string.IsNullOrEmpty(user.Email))
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to user - empty email", requestId, requestType, current.Id);
+                    else
+                    {
+                        if (string.IsNullOrEmpty(to))
+                            to = user.Email;
+                        else
+                            to += ";" + user.Email;
+                    }
+                    if (string.IsNullOrEmpty(to))
+                        return null;
+                    break;
+                case UserRole.PersonnelManager:
+                    if (user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to manager - no manager or empty email", requestId, requestType, current.Id);
+                    else
+                        to = user.Manager.Email;
+
+                    if (string.IsNullOrEmpty(user.Email))
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to user - empty email", requestId, requestType, current.Id);
+                    else
+                    {
+                        if (string.IsNullOrEmpty(to))
+                            to = user.Email;
+                        else
+                            to += ";" + user.Email;
+                    }
+                    if (string.IsNullOrEmpty(to))
+                        return null;
+                    break;
+            }
+            string body;
+            string subject = GetSubjectAndBody(current, requestId, requestNumber, 
+                requestType,out body);
+            return SendEmail(to, subject, body);
+        }
+        protected string GetSubjectAndBody(IUser current,int requestId,int requestNumber,
+            RequestTypeEnum requestType,out string body)
+        {
+            string requestTypeStr;
+            switch(requestType)
+            {
+                case RequestTypeEnum.Absence:
+                    requestTypeStr = "Заявка на неявку";
+                    break;
+                case RequestTypeEnum.Dismissal:
+                    requestTypeStr = "Заявка на увольнение";
+                    break;
+                case RequestTypeEnum.Employment:
+                    requestTypeStr = "Заявка на прием на работу";
+                    break;
+                case RequestTypeEnum.HolidayWork:
+                    requestTypeStr = "Заявка на оплату праздничных и выходных дней";
+                    break;
+                case RequestTypeEnum.Mission:
+                    requestTypeStr = "Заявка на командировку";
+                    break;
+                case RequestTypeEnum.Sicklist:
+                    requestTypeStr = "Заявка на больничный";
+                    break;
+                case RequestTypeEnum.TimesheetCorrection:
+                    requestTypeStr = "Заявка на корректировку табеля";
+                    break;
+                case RequestTypeEnum.Vacation:
+                    requestTypeStr = "Заявка на отпуск";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Unknown request type {0}",(int)requestType));
+            }
+            body = requestTypeStr + " номер " + requestNumber + " изменена пользователем " + current.Name;
+            const string subject = "Изменение заявки";
+            return subject;
+        }
+
+        protected EmailDto SendEmail(string to, string subject, string body)
+        {
+            EmailDto dto = GetEmailDto(null, to, subject, body);
+            if (!string.IsNullOrEmpty(dto.Error))
+                return dto;
+            try
+            {
+                SendEmail(dto);
+                return dto;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception:", ex);
+                dto.Error = "Исключение: " + ex.GetBaseException().Message;
+                return dto;
+            }
+        }
+
+        protected EmailDto GetEmailDto(Settings settings,
+                string to, string subject, string body)
+        {
+            EmailDto dto = new EmailDto();
+            if (settings == null)
+                settings = SettingsDao.LoadFirst();
+            if (settings == null)
+            {
+                dto.Error = "Отсутствуют настройки в базе данных.";
+                return dto;
+            }
+            dto.SmtpServer = settings.NotificationSmtp;
+            dto.SmtpPort = settings.NotificationPort;
+            dto.UserName = settings.NotificationLogin;
+            dto.Password = settings.NotificationPassword;
+            dto.From = settings.NotificationEmail;
+            dto.To = to ?? settings.NotificationEmail;
+            dto.Subject = subject;
+            dto.Body = body;
+            return dto;
+        }
+
+
+
         protected void SendEmail(IEmailDtoSupport model,
             string to, string subject, string body)
         {
@@ -120,7 +258,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   {
                                       From = new MailAddress(dto.From, dto.From)
                                   };
-                mailMessage.To.Add(new MailAddress(dto.To, dto.To));
+                string[] toAddresses = dto.To.Split(';');
+                foreach (string address in toAddresses)
+                    mailMessage.To.Add(new MailAddress(address, address));
                 mailMessage.Subject = dto.Subject;
                 mailMessage.Body = "<html>" + dto.Body + "</html>";
                 mailMessage.IsBodyHtml = true;

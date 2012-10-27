@@ -248,15 +248,23 @@ namespace WebMvc.Controllers
          protected void CheckIntValue(string fieldModelName, string fieldName,
               string modelValue, int? minValue, int? maxValue)
          {
-             int value;
-             if (!int.TryParse(modelValue, out value))
-                 ModelState.AddModelError(fieldModelName, string.Format("Поле {0} должно быть целым числом.", fieldName));
-             else
+             if (!string.IsNullOrEmpty(modelValue))
              {
-                 if (minValue.HasValue && minValue.Value > value)
-                     ModelState.AddModelError(fieldModelName, string.Format("Поле {0} должно быть не меньше {1}.", fieldName, minValue.Value));
-                 if (maxValue.HasValue && maxValue.Value < value)
-                     ModelState.AddModelError(fieldModelName, string.Format("Поле {0} должно быть не больше {1}.", fieldName, maxValue.Value));
+                 int value;
+                 if (!int.TryParse(modelValue, out value))
+                     ModelState.AddModelError(fieldModelName,
+                                              string.Format("Поле {0} должно быть целым числом.", fieldName));
+                 else
+                 {
+                     if (minValue.HasValue && minValue.Value > value)
+                         ModelState.AddModelError(fieldModelName,
+                                                  string.Format("Поле {0} должно быть не меньше {1}.", fieldName,
+                                                                minValue.Value));
+                     if (maxValue.HasValue && maxValue.Value < value)
+                         ModelState.AddModelError(fieldModelName,
+                                                  string.Format("Поле {0} должно быть не больше {1}.", fieldName,
+                                                                maxValue.Value));
+                 }
              }
          }
          protected void CheckDecimalNotNegativeValue(string fieldModelName,string fieldName, string modelValue)
