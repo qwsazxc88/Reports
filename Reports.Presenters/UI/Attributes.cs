@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Reports.Presenters.UI
 {
@@ -69,4 +70,34 @@ namespace Reports.Presenters.UI
 	        }
 
 	}
+    public abstract class MetadataAttribute : Attribute
+    {
+        /// <summary>
+        /// Method for processing custom attribute data.
+        /// </summary>
+        /// <param name="modelMetaData">A ModelMetaData instance.</param>
+        public abstract void Process(ModelMetadata modelMetaData);
+    }
+
+    public class AutoCompleteAttribute : MetadataAttribute
+    {
+        public RouteValueDictionary RouteValueDictionary;
+
+        public AutoCompleteAttribute(string controller, string action, string parameterName)
+        {
+            RouteValueDictionary = new RouteValueDictionary
+                                            {
+                                                {"Controller", controller},
+                                                {"Action", action},
+                                                {parameterName, string.Empty}
+                                            };
+        }
+
+        public override void Process(ModelMetadata modelMetaData)
+        {
+            modelMetaData.AdditionalValues.Add("AutoCompleteUrlData", RouteValueDictionary);
+            modelMetaData.TemplateHint = "AutoComplete";
+        }
+    }
+
 }

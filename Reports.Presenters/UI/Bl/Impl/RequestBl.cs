@@ -25,7 +25,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int AbsenceLastTimesheetStatisId = 18;
 
         #region DAOs
-        protected IDepartmentDao departmentDao;
+        
         protected IVacationTypeDao vacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
         protected IPositionDao positionDao;
@@ -74,11 +74,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected IInspectorToUserDao inspectorToUserDao;
 
-        public IDepartmentDao DepartmentDao
-        {
-            get { return Validate.Dependency(departmentDao); }
-            set { departmentDao = value; }
-        }
+       
         public IVacationTypeDao VacationTypeDao
         {
             get { return Validate.Dependency(vacationTypeDao); }
@@ -2281,6 +2277,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SicklistListModel model = new SicklistListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
+                Department = new IdNameDto { Id = 0,Name = string.Empty},
             };
             SetDictionariesToModel(model,user);
             return model;
@@ -2300,7 +2297,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
-
         protected List<IdNameDtoSort> GetSicklisPaymentPercentTypes(bool addAll,bool addNameAll)
         {
             List<IdNameDtoSort> typeList = SicklistPaymentPercentDao.LoadAll().ToList().
@@ -2340,7 +2336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetDictionariesToModel(SicklistListModel model, User user)
         {
-            model.Departments = GetDepartments(user);
+            //model.Department = GetDepartments(user);
             model.Types = GetSicklistTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -2352,7 +2348,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = SicklistDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
@@ -3092,7 +3088,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             VacationListModel model = new VacationListModel
                                           {
                                               UserId = AuthenticationService.CurrentUser.Id,
-                                              Departments = GetDepartments(user),
+                                              Department = new IdNameDto {Id=0,Name = string.Empty},
                                               VacationTypes = GetVacationTypes(true),
                                               RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)
@@ -3102,7 +3098,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetVacationListModel(VacationListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
@@ -3114,9 +3110,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(VacationListModel model,User user)
         {
             UserRole role = (UserRole)user.Role.Id;
+            /*Department dep = null;
+            if(model.Department.Id != 0)
+             dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
             model.Documents = VacationDao.GetDocuments(user.Id,
                 role,
-                model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.VacationTypeId,
                 model.RequestStatusId,

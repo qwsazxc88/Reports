@@ -21,6 +21,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IAuthenticationService authenticationService;
         protected IUserDao userDao;
         protected ISettingsDao settingsDao;
+        protected IDepartmentDao departmentDao;
         #endregion
         public IAuthenticationService AuthenticationService
         {
@@ -37,6 +38,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(settingsDao); }
             set { settingsDao = value; }
         }
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
+
         public IUser CurrentUser
         {
             get { return AuthenticationService.CurrentUser; }
@@ -339,9 +346,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Body = body;
             model.EmailDto = dto;
         }
-
-
-
+        protected int GetDepartmentId(IdNameDto department)
+        {
+            Department dep = null;
+            if (department.Id != 0)
+            {
+                if (string.IsNullOrEmpty(department.Name))
+                    return 0;
+                dep = DepartmentDao.SearchByNameDistinct(department.Name);
+            }
+            return dep == null ? 0 : dep.Id;
+        }
         protected static string GetMonth(DateTime month)
         {
             return month.ToString("MMMM") + " " + month.Year;

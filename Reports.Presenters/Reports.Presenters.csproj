@@ -107,9 +107,11 @@
     <Compile Include="Services\IUser.cs" />
     <Compile Include="UI\Attributes.cs" />
     <Compile Include="UI\Bl\IAdminBl.cs" />
+    <Compile Include="UI\Bl\IAutoComplete.cs" />
     <Compile Include="UI\Bl\IBaseBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
     <Compile Include="UI\Bl\Impl\AdminBl.cs" />
+    <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
