@@ -643,6 +643,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
                 dto.Days = userDayList;
+                dto.IsHoursVisible = user.UserRole == UserRole.Manager;
                 list.Add(dto);
             }
             model.TimesheetDtos = list;

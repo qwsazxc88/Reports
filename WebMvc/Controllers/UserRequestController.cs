@@ -351,6 +351,13 @@ namespace WebMvc.Controllers
                      hours <= 0 || hours > 24)
                      ModelState.AddModelError("Hours", "Поле 'Часы' должно быть положительным целым числом не больше 24.");
              }
+             if(model.EventDate.HasValue && AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+             {
+                 DateTime eventDate = DateTime.Today;
+                 DateTime lastSunday = eventDate.AddDays((int)eventDate.DayOfWeek == 0 ? -7 : - (int)eventDate.DayOfWeek);
+                 if(lastSunday >= model.EventDate.Value)
+                     ModelState.AddModelError("EventDate", "Дата не может быть ранее понедельника текущей недели.");
+             }
              return ModelState.IsValid;
          }
 
@@ -1113,7 +1120,7 @@ namespace WebMvc.Controllers
                  return null;
              if (hpf.ContentLength > MaxFileSize)
              {
-                 ModelState.AddModelError("", string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize));
+                 ModelState.AddModelError("", string.Format("Размер прикрепленного файла не может превышать {0} Мб.", MaxFileSize/(1024*1024)));
                  return null;
              }
              byte[] context = GetFileData(hpf);

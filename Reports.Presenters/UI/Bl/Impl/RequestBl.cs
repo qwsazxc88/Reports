@@ -2283,11 +2283,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
-        protected List<IdNameDto> GetSicklistTypes(bool addAll)
+        protected List<IdNameDto> GetSicklistTypes(bool addAll,bool addEmpty)
         {
             var typeList = SicklistTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
+            else if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
         protected List<IdNameDto> GetBabyMindingTypes(bool addAll)
@@ -2337,7 +2339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetDictionariesToModel(SicklistListModel model, User user)
         {
             //model.Department = GetDepartments(user);
-            model.Types = GetSicklistTypes(true);
+            model.Types = GetSicklistTypes(true,false);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
@@ -2378,7 +2380,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (sicklist == null)
                     throw new ArgumentException(string.Format("Больничный (id {0}) не найдена в базе данных.", id));
                 model.Version = sicklist.Version;
-                model.TypeId = sicklist.Type.Id;
+                model.TypeId = sicklist.Type == null? 0 : sicklist.Type.Id;
                 model.BabyMindingTypeId = sicklist.BabyMindingType == null ? new int?() : sicklist.BabyMindingType.Id;
                 model.BeginDate = sicklist.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = sicklist.EndDate;
@@ -2557,13 +2559,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApprovedByPersonnelManager)
                     sicklist.PersonnelManagerDateAccept = DateTime.Now;
             }
-            if (model.IsTypeEditable)
+            if(model.IsDatesEditable)
             {
-// ReSharper disable PossibleInvalidOperationException
+                // ReSharper disable PossibleInvalidOperationException
                 sicklist.BeginDate = model.BeginDate.Value;
                 sicklist.EndDate = model.EndDate.Value;
-// ReSharper restore PossibleInvalidOperationException
+                // ReSharper restore PossibleInvalidOperationException
                 sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
+            }
+            if (model.IsTypeEditable)
+            {
                 sicklist.Type = SicklistTypeDao.Load(model.TypeId);
                 if (model.TypeId == sicklistTypeDao.SicklistTypeIdBabyMinding)
                     sicklist.BabyMindingType = model.BabyMindingTypeId.HasValue 
@@ -2619,7 +2624,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Sicklist);
             model.TimesheetStatuses = GetTimesheetStatusesForSicklist();
-            model.Types = GetSicklistTypes(false);
+            model.Types = GetSicklistTypes(false,false);
             model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(!model.IsPersonnelFieldsEditable,false);
             model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(true);
             model.BabyMindingTypes = GetBabyMindingTypes(false);
@@ -2641,8 +2646,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
-                model.IsTypeEditable = true;
                 model.IsBabyMindingTypeEditable = false;
+                model.IsDatesEditable = true;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2656,6 +2661,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
+                        model.IsTypeEditable = true;
                         break;
                 }
                 return;
@@ -2671,7 +2677,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         model.IsApprovedByUserEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
-                            model.IsTypeEditable = true;
+                            model.IsDatesEditable = true;
                     }
                     break;
                 case UserRole.Manager:
@@ -2680,7 +2686,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByManagerEnable = true;
                         if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                         {
-                            model.IsTypeEditable = true;
+                            model.IsDatesEditable = true;
                             model.IsTimesheetStatusEditable = true;
                         }
                     }
@@ -2694,6 +2700,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
+                            model.IsDatesEditable = true;
                         }
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
@@ -2704,7 +2711,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
                                     || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
-                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
+                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable || model.IsDatesEditable;
         }
         protected void SetFlagsState(SicklistEditModel model, bool state)
         {
@@ -2728,6 +2735,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsTimesheetStatusEditable = state;
             model.IsTypeEditable = state;
             model.IsBabyMindingTypeEditable = state;
+            model.IsDatesEditable = state;
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;

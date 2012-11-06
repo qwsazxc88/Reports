@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Web;
+using System.Web.Configuration;
+using System.Web.Management;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
@@ -23,6 +25,24 @@ namespace WebMvc
     {
         public const string AuthorizedErrorPageUrl = "~/ErrorPage.aspx";
         public const string UnauthorizedErrorPageUrl = "~/UnautorizedErrorPage.aspx";
+
+        /*public override void Init()
+        {
+            base.Init();
+            Error += ErrorHandler;
+        }
+        private void ErrorHandler(object sender, EventArgs e)
+        {
+            var ex = Server.GetLastError().InnerException as HttpException ?? 
+                     Server.GetLastError() as HttpException;
+            if (ex != null && ex.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
+            {
+                // или другой свой код обработки
+                Server.ClearError();
+                //Request.Form.Clear();
+                Response.Redirect("~/FileSizeTooLarge.htm",true);
+            }
+        }*/
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
@@ -173,51 +193,28 @@ namespace WebMvc
         {
             Exception ex = Server.GetLastError();
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
-            if (ex != null)
+            /*if (ex != null)
             {
-                if (ex is HttpUnhandledException /*&& ex.InnerException != null*/)
+                if (ex is HttpUnhandledException)
                     ex = ex.GetBaseException();
-                Guid guid = Guid.NewGuid();
+                //Guid guid = Guid.NewGuid();
                 try
                 {
-                    HttpContext.Current.Cache.Insert(guid.ToString(), ex);
+                    HttpException httpEx = ex as HttpException;
+                    //HttpContext.Current.Cache.Insert(guid.ToString(), ex);
+                    if (httpEx != null && ((httpEx.GetHttpCode() == 500 || httpEx.GetHttpCode() == 400) 
+                        && httpEx.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge))
+                    {
+                        Server.ClearError();
+                        Server.Transfer("~/FileSizeTooLarge.htm",false);
+                        //Response.Redirect("~/FileSizeTooLarge.htm", true);
+                    }
                 }
                 catch (Exception ex1)
                 {
                     log4net.LogManager.GetLogger(GetType()).Error("exception while set exception to session: ", ex1);
                 }
-                //try
-                //{
-                //    IAuthenticationService service = Ioc.Resolve<IAuthenticationService>();
-                //    if (service != null)
-                //    {
-                //        User user = service.CurrentUser;
-                //        if (user != null)
-                //        {
-                //            log4net.LogManager.GetLogger(GetType()).Error(string.Format("User: " + user.Id));
-                //            Response.Redirect(string.Format("{0}?{1}={2}", AuthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                            guid));
-                //        }
-                //        else
-                //            Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                            guid));
-                //    }
-                //    else
-                //        Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                        guid));
-                //}
-                //catch (Exception ex1)
-                //{
-                //    log4net.LogManager.GetLogger(GetType()).Error("Error while show error page: ", ex1);
-                //    Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                    guid));
-                //}
-                //try
-                //{
-                //    //TODO: Send errorString by E-Mail.
-                //}
-                //catch (Exception) { }
-            }
+            }*/
         }
         protected void SetCulture()
         {

@@ -420,7 +420,7 @@ create table Sicklist (
   EndDate DATETIME not null,
   DaysCount INT not null,
   Number INT not null,
-  TypeId INT not null,
+  TypeId INT null,
   BabyMindingTypeId INT null,
   PaymentPercentId INT null,
   PaymentRestrictTypeId INT null,

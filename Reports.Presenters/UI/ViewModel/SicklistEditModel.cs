@@ -19,6 +19,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsTypeEditable { get; set; }
         public int SicklistTypeIdBabyMindingHidden { get; set; }
 
+        public bool IsDatesEditable { get; set; }
+
         [Display(Name = "В случае ухода за ребенком")]
         public int? BabyMindingTypeId { get; set; }
         public int? BabyMindingTypeIdHidden { get; set; }

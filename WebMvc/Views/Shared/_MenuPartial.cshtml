@@ -27,16 +27,16 @@
                         <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
                         <li>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</li>
                         <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
-                        <li>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</li>
+                        @*<li>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</li>*@
                         <li>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</li>
                        if (dto.UserRole != UserRole.Inspector)
                        {
                             <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
                        }
-                       if (dto.UserRole == UserRole.PersonnelManager)
+                       @*if (dto.UserRole == UserRole.PersonnelManager)
                        {
                             <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
-                       }
+                       }*@
 
 
                 }

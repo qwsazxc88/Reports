@@ -34,6 +34,7 @@
             <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
             <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />
             <input type="hidden" id="IsTypeEditable" name="IsTypeEditable" value="@Model.IsTypeEditable" />
+            <input type="hidden" id="IsDatesEditable" name="IsDatesEditable" value="@Model.IsDatesEditable" />
             <input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
             <input type="hidden" id="IsPersonnelFieldsEditable" name="IsPersonnelFieldsEditable" value="@Model.IsPersonnelFieldsEditable" />
             <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
@@ -60,7 +61,7 @@
             @Html.LabelFor(m => m.BeginDate):
         </td>
         <td>
-            @if (Model.IsTypeEditable)
+            @if (Model.IsDatesEditable)
             {
                 @Html.EditorFor(model => model.BeginDate) 
             }
@@ -76,7 +77,7 @@
             @Html.LabelFor(m => m.EndDate):
         </td>
         <td>
-            @if (Model.IsTypeEditable)
+            @if (Model.IsDatesEditable)
             {
                 @Html.EditorFor(model => model.EndDate)
             }
@@ -281,10 +282,10 @@
             }
         </td>
     </tr>
-    <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsTypeEditable) || (Model.Id == 0))
+    <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsDatesEditable) || (Model.Id == 0))
         {<text>style="display:none"</text>}>    
-        <td>Прикрепить скан больничного</td>
-        <td><input id="FileContext" type="file" name="file"/></td>
+        <td>Прикрепить скан больничного </td>
+        <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
     </tr>
      <tr>
         <td colspan="2">

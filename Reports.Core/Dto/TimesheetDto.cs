@@ -7,6 +7,7 @@ namespace Reports.Core.Dto
     {
         //public int Id { get; set; }
         //public bool IsEditable { get; set; }
+        public bool IsHoursVisible  { get; set; }
         public string MonthAndYear { get; set; }
         public string UserNameAndCode { get; set; }
         //public int OwnerId { get; set; }
