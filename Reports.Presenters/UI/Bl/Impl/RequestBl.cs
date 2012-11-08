@@ -2546,6 +2546,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && current.Id == user.Manager.Id
                 && !sicklist.ManagerDateAccept.HasValue)
             {
+                if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
+                    sicklist.UserDateAccept = DateTime.Now;
                 sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsApprovedByManager)
                     sicklist.ManagerDateAccept = DateTime.Now;
@@ -2554,6 +2556,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && current.Id == user.PersonnelManager.Id
                 && !sicklist.PersonnelManagerDateAccept.HasValue)
             {
+                if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
+                    sicklist.UserDateAccept = DateTime.Now;
                 if (model.IsPersonnelFieldsEditable)
                     SetPersonnelDataFromModel(sicklist, model);
                 if (model.IsApprovedByPersonnelManager)
@@ -2664,6 +2668,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsTypeEditable = true;
                         break;
                 }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
+                }
                 return;
             }
             model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
@@ -2759,7 +2768,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetAbsenceTypes(bool addAll)
         {
-            var typeList = AbsenceTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            var typeList = AbsenceTypeDao.LoadAllSorted().
+                Where(x => x.Code.CompareTo("55") == 0 || x.Code.CompareTo("56") == 0).
+                ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
@@ -2860,6 +2871,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
                         break;
+                }
+                if(currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser  = true;
                 }
                 return;
             }
@@ -2992,6 +3008,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
                     {
+                        if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
+                            absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if(model.IsApprovedByManager)
                             absence.ManagerDateAccept = DateTime.Now;
@@ -2999,6 +3017,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id)
                     {
+                        if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
+                            absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByPersonnelManager)
                             absence.PersonnelManagerDateAccept = DateTime.Now;
