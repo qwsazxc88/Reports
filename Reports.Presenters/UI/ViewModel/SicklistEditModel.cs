@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class SicklistEditModel : UserInfoModel, ICheckBoxes
+    public class SicklistEditModel : UserInfoModel, ICheckBoxes, IAttachment
     {
         public int Id { get; set; }
         public int Version { get; set; }

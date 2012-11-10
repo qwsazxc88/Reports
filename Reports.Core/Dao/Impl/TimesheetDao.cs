@@ -303,14 +303,13 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery =
                 string.Format(@"select v.EndDate as BeginDate,
                          v.EndDate as EndDate,
-                         v.TimesheetStatusId  as TimesheetStatusId,
-                         ts.[ShortName] as TimesheetCode,
+                         0  as TimesheetStatusId,
+                         ' ' as TimesheetCode,
                          null as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName
                          from dbo.Dismissal v");
-            sqlQuery += @" inner join [dbo].[TimesheetStatus] ts on ts.Id = v.TimesheetStatusId
-                           inner join [dbo].[Users] u on u.Id = v.UserId ";
+            sqlQuery += @" inner join [dbo].[Users] u on u.Id = v.UserId ";
             sqlQuery += string.Format(@" where 
                           v.EndDate between :beginDate and :endDate
                           and v.DeleteDate is null 

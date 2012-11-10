@@ -176,7 +176,7 @@ namespace WebMvc.Controllers
          {
              if (model.Id > 0)
              {
-                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id);
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id,RequestAttachmentTypeEnum.Employment);
                  if(attachmentCount < 4)
                  {
                      UserRole role = AuthenticationService.CurrentUser.UserRole;
@@ -386,13 +386,14 @@ namespace WebMvc.Controllers
          {
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
-             if (!ValidateDismissalEditModel(model))
+             UploadFileDto fileDto = GetFileContext();
+             if (!ValidateDismissalEditModel(model,fileDto))
              {
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, fileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -409,20 +410,54 @@ namespace WebMvc.Controllers
          }
          protected void CorrectDropdowns(DismissalEditModel model)
          {
-             if (!model.IsTypeEditable)
+             if (!model.IsPersonnelFieldsEditable)
                  model.TypeId = model.TypeIdHidden;
-             if (!model.IsStatusEditable)
-                 model.StatusId = model.StatusIdHidden;
+             /*if (!model.IsPersonnelFieldsEditable)
+                 model.StatusId = model.StatusIdHidden;*/
              //model.DaysCount = model.DaysCountHidden;
          }
-         protected bool ValidateDismissalEditModel(DismissalEditModel model)
+         protected bool ValidateDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto)
          {
              //if (model.BeginDate.HasValue && model.EndDate.HasValue &&
              //    model.BeginDate > model.EndDate)
              //    ModelState.AddModelError("BeginDate", "Дата начала не может превышать дату окончания.");
-             //UserRole role = AuthenticationService.CurrentUser.UserRole;
-             //if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Reason))
-             //    ModelState.AddModelError("Reason", "Основание командировки - обязательное поле.");
+             UserRole role = AuthenticationService.CurrentUser.UserRole;
+             if (model.Id > 0 && fileDto == null)
+             {
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id, RequestAttachmentTypeEnum.Dismissal);
+                 if (attachmentCount <= 0)
+                 {
+                     if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                         (role == UserRole.Manager && model.IsApprovedByManager) ||
+                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                     {
+
+                         ModelState.AddModelError(string.Empty,
+                                                  "Заявка не может быть согласована без прикрепленого заявления.");
+                         if (role == UserRole.Employee && model.IsApprovedByUser)
+                         {
+                             ModelState.Remove("IsApprovedByUser");
+                             model.IsApprovedByUser = false;
+                         }
+                         if (role == UserRole.Manager && model.IsApprovedByManager)
+                         {
+                             ModelState.Remove("IsApprovedByManager");
+                             model.IsApprovedByManager = false;
+                         }
+                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                         {
+                             ModelState.Remove("IsApprovedByPersonnelManager");
+                             model.IsApprovedByPersonnelManager = false;
+                         }
+                         //error = "Заявка не может быть согласована без прикрепленого скана больничного.";
+                         //needToReload = true;
+                         //return false;
+
+                     }
+                 }
+             }
+             if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Reason))
+                 ModelState.AddModelError("Reason", "Основание документ - обязательное поле.");
              if(!string.IsNullOrEmpty(model.Compensation))
              {
                  decimal compensation;
@@ -645,7 +680,7 @@ namespace WebMvc.Controllers
              //error = string.Empty;
              if (model.Id > 0 && fileDto == null)
              {
-                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id);
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id,RequestAttachmentTypeEnum.Sicklist);
                  if (attachmentCount <= 0)
                  {
                      UserRole role = AuthenticationService.CurrentUser.UserRole;

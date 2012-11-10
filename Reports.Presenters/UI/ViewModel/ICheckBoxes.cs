@@ -20,4 +20,9 @@ namespace Reports.Presenters.UI.ViewModel
          bool IsPostedTo1CHidden { get; set; }
          bool IsPostedTo1CEnable { get; set; }
     }
+    public interface IAttachment
+    {
+        string Attachment { get; set; }
+        int AttachmentId { get; set; }
+    }
 }

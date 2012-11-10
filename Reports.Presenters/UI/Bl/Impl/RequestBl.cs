@@ -1339,6 +1339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
+            SetAttachmentToModel(model, id,RequestAttachmentTypeEnum.Dismissal);
             Dismissal dismissal = null;
             if (id == 0)
             {
@@ -1352,10 +1353,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (dismissal == null)
                     throw new ArgumentException(string.Format("Командировка (id {0}) не найдена в базе данных.", id));
                 model.Version = dismissal.Version;
-                model.TypeId = dismissal.Type.Id;
+                model.TypeId = dismissal.Type == null? 0 : dismissal.Type.Id;
                 model.EndDate = dismissal.EndDate;
                 model.Compensation = dismissal.Compensation.HasValue? dismissal.Compensation.Value.ToString():string.Empty;
-                model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
+                //model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
                 model.Reason = dismissal.Reason;
                 model.CreatorLogin = dismissal.Creator.Login;
                 model.DocumentNumber = dismissal.Number.ToString();
@@ -1371,13 +1372,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadDictionaries(DismissalEditModel model)
         {
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
-            model.Statuses = GetTimesheetStatusesForDismissal();
+            //model.Statuses = GetTimesheetStatusesForDismissal();
             model.Types = GetDismissalTypes(false);
         }
         protected void SetHiddenFields(DismissalEditModel model)
         {
             model.TypeIdHidden = model.TypeId;
-            model.StatusIdHidden = model.StatusId;
+            //model.StatusIdHidden = model.StatusId;
             //model.DaysCountHidden = model.DaysCount;
         }
         protected List<IdNameDto> GetTimesheetStatusesForDismissal()
@@ -1399,15 +1400,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = true;
+                        model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = true;
-                        model.IsStatusEditable = true;
+                        model.IsApprovedByManagerEnable = false;
+                        //model.IsStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = true;
-                        model.IsStatusEditable = true;
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        //model.IsStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
                         break;
                 }
@@ -1420,6 +1421,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUserRole)
             {
                 case UserRole.Employee:
+                    RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+                    model.IsPrintAvailable = form != null;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         model.IsApprovedByUserEnable = true;
@@ -1428,24 +1431,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
+                    RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+                    model.IsPrintAvailable = formMan != null;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         model.IsApprovedByManagerEnable = true;
                         if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
-                            model.IsStatusEditable = true;
+                            //model.IsStatusEditable = true;
                         }
                     }
                     break;
                 case UserRole.PersonnelManager:
+                  
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         model.IsApprovedByPersonnelManagerEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
-                            model.IsStatusEditable = true;
+                            //model.IsStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
                         }
                     }
@@ -1453,7 +1459,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsTypeEditable || model.IsStatusEditable
+            model.IsSaveAvailable = model.IsTypeEditable /*|| model.IsStatusEditable*/
                                     || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
                                     model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
         }
@@ -1476,14 +1482,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPostedTo1CEnable = state;
 
             model.IsSaveAvailable = state;
-            model.IsStatusEditable = state;
+            //model.IsStatusEditable = state;
             model.IsTypeEditable = state;
             model.IsPersonnelFieldsEditable = state;
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
+            model.IsPrintAvailable = state;
         }
-        public bool SaveDismissalEditModel(DismissalEditModel model, out string error)
+        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -1513,6 +1520,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     dismissal = DismissalDao.Load(model.Id);
+                    string fileName;
+                    int? attachmentId = SaveAttachment(dismissal.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Dismissal, out fileName);
+                    if (attachmentId.HasValue)
+                    {
+                        model.AttachmentId = attachmentId.Value;
+                        model.Attachment = fileName;
+                    }
+
                     if (dismissal.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -1521,6 +1536,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (model.AttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.AttachmentId);
+                        model.AttachmentId = 0;
+                        model.Attachment = string.Empty;
+
                         dismissal.DeleteDate = DateTime.Now;
                         DismissalDao.SaveAndFlush(dismissal);
                         model.IsDelete = false;
@@ -1565,7 +1585,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && current.Id == user.Manager.Id
                 && !entity.ManagerDateAccept.HasValue)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                 if (model.IsApprovedByManager)
                     entity.ManagerDateAccept = DateTime.Now;
             }
@@ -1573,7 +1593,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && current.Id == user.PersonnelManager.Id
                 && !entity.PersonnelManagerDateAccept.HasValue)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                entity.Reason = model.Reason;
+                entity.Type = DismissalTypeDao.Load(model.TypeId);
+                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                 entity.Compensation = string.IsNullOrEmpty(model.Compensation)?new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
                 if (model.IsApprovedByPersonnelManager)
                     entity.PersonnelManagerDateAccept = DateTime.Now;
@@ -1583,8 +1605,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper disable PossibleInvalidOperationException
                 entity.EndDate = model.EndDate.Value;
 // ReSharper restore PossibleInvalidOperationException
-                entity.Reason = model.Reason;
-                entity.Type = DismissalTypeDao.Load(model.TypeId);
+                
             }
         }
         public void ReloadDictionariesToModel(DismissalEditModel model)
@@ -2366,7 +2387,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
-            SetAttachmentToModel(model, id);
+            SetAttachmentToModel(model, id,RequestAttachmentTypeEnum.Sicklist);
             Sicklist sicklist = null;
             if (id == 0)
             {
@@ -2421,11 +2442,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
             model.IsAddToFullPaymentHidden = model.IsAddToFullPaymentHidden;
         }
-        protected void SetAttachmentToModel(SicklistEditModel model,int id)
+        protected void SetAttachmentToModel(IAttachment model, int id,RequestAttachmentTypeEnum type)
         {
             if (id == 0)
                 return;
-            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, RequestAttachmentTypeEnum.Sicklist);
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
             if (attach == null) 
                 return;
             model.AttachmentId = attach.Id;
@@ -2749,7 +2770,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
 
-            model.IsPersonnelFieldsEditable = false;
+            model.IsPersonnelFieldsEditable = state;
         }
         #endregion
         #region Absence
@@ -3501,7 +3522,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
+                    //model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
+                    RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
+                    model.IsPrintAvailable = formMan != null;
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         model.IsApprovedByManagerEnable = true;
@@ -3875,9 +3898,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             RequestAttachmentDao.Delete(model.Id);
             return true;
         }
-        public int GetAttachmentsCount(int entityId)
+        public int GetAttachmentsCount(int entityId,RequestAttachmentTypeEnum typeId)
         {
-            return RequestAttachmentDao.GetAttachmentsCount(entityId);
+            return RequestAttachmentDao.FindManyByRequestIdAndTypeId(entityId, typeId).Count;
         }
         public string GetFileContext(string fileName)
         {

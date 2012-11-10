@@ -30,6 +30,7 @@
         //Dismissal = 6,
         //TimesheetCorrection = 7,
         Employment = 2,
+        Dismissal = 3,
         //EmploymentPen = 3,
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
@@ -37,5 +38,6 @@
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,
+        Dismissal = 2,
     }
 }

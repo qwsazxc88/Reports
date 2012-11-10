@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class DismissalEditModel : UserInfoModel, ICheckBoxes
+    public class DismissalEditModel : UserInfoModel, ICheckBoxes,IAttachment
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -29,17 +29,17 @@ namespace Reports.Presenters.UI.ViewModel
         public string Compensation { get; set; }
         public bool IsPersonnelFieldsEditable { get; set; }
 
-        [Required(ErrorMessageResourceName = "DismissalEditModel_Reason_Required",
+        /*[Required(ErrorMessageResourceName = "DismissalEditModel_Reason_Required",
         ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("DismissalEditModel_Reason_Required", typeof(Resources))]
+        [LocalizationDisplayName("DismissalEditModel_Reason_Required", typeof(Resources))]*/
         [Display(Name = "Основание документ")]
         public string Reason { get; set; }
         
-        [Display(Name = "Заполнение табеля")]
+        /*[Display(Name = "Заполнение табеля")]
         public int StatusId { get; set; }
         public int StatusIdHidden { get; set; }
-        public IList<IdNameDto> Statuses;
-        public bool IsStatusEditable { get; set; }
+        public IList<IdNameDto> Statuses;*/
+        //public bool IsStatusEditable { get; set; }
 
         [Display(Name = "Согласен Сотрудник")]
         public bool IsApprovedByUser { get; set; }
@@ -61,10 +61,16 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
 
+        [Display(Name = "Заявление")]
+        public string Attachment { get; set; }
+        public int AttachmentId { get; set; }
+
+
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsDelete { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsPrintAvailable { get; set; }
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool ReloadPage { get; set; }

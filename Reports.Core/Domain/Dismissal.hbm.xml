@@ -15,10 +15,10 @@
     
     <property name="Number"  not-null="true"/>
 	
-	<many-to-one name="Type" class="DismissalType" column="TypeId" foreign-key="FK_Dismissal_DismissalType" index="Dismissal_DismissalType"  not-null="true"/>
+	<many-to-one name="Type" class="DismissalType" column="TypeId" foreign-key="FK_Dismissal_DismissalType" index="Dismissal_DismissalType"  not-null="false"/>
   <!--<many-to-one name="CompensationType" class="DismissalCompensationType" column="CompensationTypeId" foreign-key="FK_Dismissal_DismissalCompensationType" index="Dismissal_DismissalCompensationType"  not-null="false"/>-->
   <property name="Compensation" precision="19" scale="2" not-null="false"/>
-  <property name="Reason"   length="256" not-null="true"/>
+  <property name="Reason"   length="256" not-null="false"/>
 	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_Dismissal_User" index="IX_Dismissal_User_Id"  not-null="true"/>
   <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Dismissal_CreatorUser" index="IX_Dismissal_CreatorUser_Id"  not-null="true"/>

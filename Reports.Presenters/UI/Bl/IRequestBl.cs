@@ -48,7 +48,7 @@ namespace Reports.Presenters.UI.Bl
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
-        bool SaveDismissalEditModel(DismissalEditModel model, out string error);
+        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
 
         TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
@@ -67,7 +67,7 @@ namespace Reports.Presenters.UI.Bl
         RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         bool SaveAttachment(SaveAttacmentModel model);
         bool DeleteAttachment(DeleteAttacmentModel model);
-        int GetAttachmentsCount(int entityId);
+        int GetAttachmentsCount(int entityId,RequestAttachmentTypeEnum typeId);
 
         void CreateVacationOrder(int id, string templatePath, string filePath);
 
