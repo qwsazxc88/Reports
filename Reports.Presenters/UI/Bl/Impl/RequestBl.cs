@@ -3188,7 +3188,24 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetVacationTypes(bool addAll)
         {
-            var vacationTypeList = VacationTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            IList<VacationType> list =  VacationTypeDao.LoadAllSorted();
+            List<IdNameDto> vacationTypeList = new List<IdNameDto>();
+            vacationTypeList = list.
+                    Where(x =>
+                    x.Name == "Оплата дня сдачи крови и доп. дня отдыха донорам #1125" ||
+                    x.Name == "Оплата дополнительного отпуска по календарным дням #1207" ||
+                    x.Name == "Оплата дополнительных выходных дней по уходу за детьми - инвалидами #1504" ||
+                    x.Name == "Оплата отпуска по календарным дням #1201" ||
+                    x.Name == "Оплата учебного отпуска по календарным дням #1204" ||
+                    x.Name == "Отпуск без оплаты согласно ТК РФ #1205"
+                    )
+                .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            //if( addAll 
+            //    || AuthenticationService.CurrentUser.UserRole == UserRole.Manager
+            //    || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+            vacationTypeList.AddRange(list.Where(x => x.Name == "Отпуск по уходу за ребенком без оплаты #1802")
+                    .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name)));
+            vacationTypeList = vacationTypeList.OrderBy(x => x.Name).ToList();
             if(addAll)
                 vacationTypeList.Insert(0,new IdNameDto(0,SelectAll));
             return vacationTypeList;
@@ -3238,6 +3255,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
+            SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.Vacation);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
@@ -3271,7 +3289,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user,vacation, model);
             return model;
         }
-        public bool SaveVacationEditModel(VacationEditModel model, out string error)
+        public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -3325,6 +3343,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     vacation = VacationDao.Load(model.Id);
+                    string fileName;
+                    int? attachmentId = SaveAttachment(vacation.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Vacation, out fileName);
+                    if (attachmentId.HasValue)
+                    {
+                        model.AttachmentId = attachmentId.Value;
+                        model.Attachment = fileName;
+                    }
                     if (vacation.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -3333,6 +3358,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (model.AttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.AttachmentId);
+                        model.AttachmentId = 0;
+                        model.Attachment = string.Empty;
                         vacation.DeleteDate = DateTime.Now;
                         VacationDao.SaveAndFlush(vacation);
                         model.IsDelete = false;
@@ -3491,14 +3520,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = true;
+                        model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = true;
+                        model.IsApprovedByManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
@@ -3510,7 +3539,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByPersonnelManagerHidden =
                 model.IsApprovedByPersonnelManager = vacation.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.SendTo1C.HasValue;
-           
+
+            RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
+            model.IsPrintAvailable = form != null;
+
             switch(currentUserRole)
             {
                 case UserRole.Employee:
@@ -3522,9 +3554,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    //model.IsPrintAvailable = !vacation.DeleteDate.HasValue;
-                    RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
-                    model.IsPrintAvailable = formMan != null;
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         model.IsApprovedByManagerEnable = true;
@@ -3536,8 +3565,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
-                    RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
-                    model.IsPrintAvailable = form != null;
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         model.IsApprovedByPersonnelManagerEnable = true;

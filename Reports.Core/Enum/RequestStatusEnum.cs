@@ -31,6 +31,7 @@
         //TimesheetCorrection = 7,
         Employment = 2,
         Dismissal = 3,
+        Vacation = 4,
         //EmploymentPen = 3,
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,

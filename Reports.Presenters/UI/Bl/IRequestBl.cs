@@ -14,7 +14,7 @@ namespace Reports.Presenters.UI.Bl
         void SetAllRequestListModel(AllRequestListModel model, bool hasError);
 
         VacationEditModel GetVacationEditModel(int id, int userId);
-        bool SaveVacationEditModel(VacationEditModel model,out string error);
+        bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(VacationEditModel model);
 
         RequestCommentsModel GetCommentsModel(int id, int typeId);

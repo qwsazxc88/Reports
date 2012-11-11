@@ -889,14 +889,15 @@ namespace WebMvc.Controllers
          {
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
-             if (!ValidateVacationEditModel(model))
+             UploadFileDto fileDto = GetFileContext();
+             if (!ValidateVacationEditModel(model,fileDto))
              {
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
 
              string error;
-             if(!RequestBl.SaveVacationEditModel(model,out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, out error))
              {
                  
                  if (model.ReloadPage)
@@ -911,8 +912,40 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
-         protected bool ValidateVacationEditModel(VacationEditModel model)
+         protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
+             UserRole role = AuthenticationService.CurrentUser.UserRole;
+             if (model.Id > 0 && fileDto == null)
+             {
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id, RequestAttachmentTypeEnum.Vacation);
+                 if (attachmentCount <= 0)
+                 {
+                     if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                         (role == UserRole.Manager && model.IsApprovedByManager) ||
+                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                     {
+
+                         ModelState.AddModelError(string.Empty,
+                                                  "Заявка не может быть согласована без прикрепленого документа.");
+                         if (role == UserRole.Employee && model.IsApprovedByUser)
+                         {
+                             ModelState.Remove("IsApprovedByUser");
+                             model.IsApprovedByUser = false;
+                         }
+                         if (role == UserRole.Manager && model.IsApprovedByManager)
+                         {
+                             ModelState.Remove("IsApprovedByManager");
+                             model.IsApprovedByManager = false;
+                         }
+                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                         {
+                             ModelState.Remove("IsApprovedByPersonnelManager");
+                             model.IsApprovedByPersonnelManager = false;
+                         }
+                     }
+                 }
+             }
+
              if(model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
