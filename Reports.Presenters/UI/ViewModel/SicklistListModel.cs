@@ -11,7 +11,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Структурное подразделение")]
         [AutoComplete("AutoComplete", "Departments", "searchText")]
-        public IdNameDto Department { get; set; }
+        public IdNameReadonlyDto Department { get; set; }
         /*public int DepartmentId { get; set; }
         public IList<IdNameDto> Departments;*/
         [Display(Name = "Должность")]

@@ -4,7 +4,7 @@
     var propertyValue = ViewData.ModelMetadata.Model;
     var id = propertyName;//Guid.NewGuid().ToString();
 
-    RouteValueDictionary urlData = 
+    RouteValueDictionary urlData =
         (RouteValueDictionary)ViewData.ModelMetadata.AdditionalValues.Where(x => x.Key == "AutoCompleteUrlData").Single().Value;
 
     var url = WebMvc.Views.Shared.Helpers.RouteHelper.GetUrl(this.ViewContext.RequestContext, urlData);
@@ -16,9 +16,24 @@
 }
 else
 {
-    var idNameValue = (IdNameDto)propertyValue;
-    <input type="hidden" name="@string.Format("{0}.ID",propertyName)" value="@idNameValue.Id" id="@id-val"/>
-    <input type="text" name="@string.Format("{0}.Name",propertyName)" value="@idNameValue.Name" id="@id" class="autoComplete" style="width:99%"/>
+    var idNameValueContainer = (IdNameReadonlyDto)propertyValue;
+    //var idNameValue = idNameValueContainer.Value;
+    var isReadOnly = idNameValueContainer.IsReadOnly;
+    <input type="hidden" name="@string.Format("{0}.IsReadOnly", propertyName)" value="@isReadOnly" id="@string.Format("{0}.IsReadOnly", propertyName)"/>        
+    if (idNameValueContainer.IsReadOnly)
+    {
+        <input type="hidden" name="@string.Format("{0}.Id", propertyName)" value="@idNameValueContainer.Id" id="@id-val"/>
+        <input type="hidden" name="@string.Format("{0}.Name", propertyName)" value="@idNameValueContainer.Name" id="@string.Format("{0}.Name", propertyName)"/>        
+        <input type="text" name="@string.Format("{0}.NameReadOnly", propertyName)" value="@idNameValueContainer.Name" id="@id-readonly" style="width:98%" disabled="disabled"/>
+    }
+    else
+    {
+        <input type="hidden" name="@string.Format("{0}.Id", propertyName)" value="@idNameValueContainer.Id" id="@id-val"/>
+        <input type="text" name="@string.Format("{0}.Name", propertyName)" value="@idNameValueContainer.Name" id="@id" class="autoComplete" style="width:98%"/>    
+    }
+    //var idNameValue = (IdNameDto)propertyValue;
+@*    <input type="hidden" name="@string.Format("{0}.ID", propertyName)" value="@idNameValue.Id" id="@id-val"/>
+    <input type="text" name="@string.Format("{0}.Name", propertyName)" value="@idNameValue.Name" id="@id" class="autoComplete" style="width:99%"/>*@
 }
 
 <script type="text/javascript">

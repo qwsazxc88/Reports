@@ -967,13 +967,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             TimesheetCorrectionListModel model = new TimesheetCorrectionListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
+                Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
         }
         protected void SetDictionariesToModel(TimesheetCorrectionListModel model, User user)
         {
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.Types = GetTimesheetCorrectionTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -1001,7 +1002,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = TimesheetCorrectionDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
@@ -1289,6 +1290,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             DismissalListModel model = new DismissalListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
+                Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -1309,7 +1311,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = DismissalDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                //model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
@@ -1318,7 +1321,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetDictionariesToModel(DismissalListModel model, User user)
         {
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.Types = GetDismissalTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -1635,6 +1638,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionListModel model = new MissionListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
+                Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -1650,7 +1654,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetDictionariesToModel(MissionListModel model, User user)
         {
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.Types = GetMissionTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -1668,7 +1672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = MissionDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
@@ -1970,6 +1974,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HolidayWorkListModel model = new HolidayWorkListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
+                Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -1989,7 +1994,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = HolidayWorkDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
                 model.StatusId,
@@ -2000,7 +2005,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetDictionariesToModel(HolidayWorkListModel model, User user)
         {
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.Types = GetHolidayWorkTypes(true);
             model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -2298,7 +2303,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SicklistListModel model = new SicklistListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = new IdNameDto { Id = 0,Name = string.Empty},
+                Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model,user);
             return model;
@@ -2780,7 +2785,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             AbsenceListModel model = new AbsenceListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Departments = GetDepartments(user),
+                Department = GetDepartmentDto(user),
                 AbsenceTypes = GetAbsenceTypes(true),
                 RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
@@ -2799,7 +2804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetAbsenceListModel(AbsenceListModel model,bool hasError)
         {
             User user = UserDao.Load(model.UserId);
-            model.Departments = GetDepartments(user);
+            //model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.AbsenceTypes = GetAbsenceTypes(true);
@@ -2814,7 +2819,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = AbsenceDao.GetDocuments(
                 user.Id,
                 role,
-                model.DepartmentId,
+                //model.DepartmentId,
+                GetDepartmentId(model.Department),
                 model.PositionId,
                 model.AbsenceTypeId,
                 model.RequestStatusId,
@@ -3137,7 +3143,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             VacationListModel model = new VacationListModel
                                           {
                                               UserId = AuthenticationService.CurrentUser.Id,
-                                              Department = new IdNameDto {Id=0,Name = string.Empty},
+                                              Department = GetDepartmentDto(user),
                                               VacationTypes = GetVacationTypes(true),
                                               RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)

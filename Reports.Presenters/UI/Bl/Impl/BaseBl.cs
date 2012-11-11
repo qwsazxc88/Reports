@@ -346,8 +346,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Body = body;
             model.EmailDto = dto;
         }
-        protected int GetDepartmentId(IdNameDto department)
+        protected int GetDepartmentId(IdNameReadonlyDto department)
         {
+            if (department.IsReadOnly)
+                return department.Id;
             Department dep = null;
             if (department.Id != 0)
             {
@@ -357,6 +359,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return dep == null ? 0 : dep.Id;
         }
+        protected IdNameReadonlyDto GetDepartmentDto(User user)
+        {
+            return
+                user.UserRole == UserRole.Employee
+                    ? new IdNameReadonlyDto
+                          {
+                              Id = user.Department == null ? 0 : user.Department.Id,
+                              Name = user.Department == null ? string.Empty : user.Department.Name,
+                              IsReadOnly = true,
+                          }
+                    : new IdNameReadonlyDto
+                          {
+                              Id = 0,
+                              Name = string.Empty,
+                              IsReadOnly = false,
+                          };
+        }
+
         protected static string GetMonth(DateTime month)
         {
             return month.ToString("MMMM") + " " + month.Year;

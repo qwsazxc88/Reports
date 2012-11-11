@@ -17,6 +17,10 @@ namespace Reports.Core.Dto
         public int Id { get; set; }
         public string Name { get; set; }
     }
+    public class IdNameReadonlyDto:IdNameDto
+    {
+        public bool IsReadOnly { get; set; }
+    }
     public class IdNameDtoSort:IdNameDto
     {
         public int SortOrder { get; set; }

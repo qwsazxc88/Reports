@@ -10,8 +10,10 @@ namespace Reports.Presenters.UI.ViewModel
         public int UserId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
-        public int DepartmentId { get; set; }
-        public IList<IdNameDto> Departments;
+        [AutoComplete("AutoComplete", "Departments", "searchText")]
+        public IdNameReadonlyDto Department { get; set; }
+        //public int DepartmentId { get; set; }
+        //public IList<IdNameDto> Departments;
         [Display(Name = "Должность")]
         public int PositionId { get; set; }
         public IList<IdNameDto> Positions;
