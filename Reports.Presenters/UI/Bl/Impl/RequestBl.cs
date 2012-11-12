@@ -3616,6 +3616,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dtos.Insert(0,new IdNameDto(0,string.Empty));
             return dtos;
         }
+        public int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
+            DateTime endDate,int userId,int vacationId)
+        {
+            return VacationDao.GetRequestCountsForUserAndDates(beginDate, endDate
+                                                               , userId, vacationId);
+        }
         #endregion
         #region Comments
         public  RequestCommentsModel GetCommentsModel(int id,int typeId)

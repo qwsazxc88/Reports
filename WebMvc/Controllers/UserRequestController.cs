@@ -946,10 +946,21 @@ namespace WebMvc.Controllers
                  }
              }
 
-             if(model.BeginDate.HasValue && model.EndDate.HasValue &&
-                 model.BeginDate > model.EndDate)
-                 ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-              return ModelState.IsValid;
+             if(model.BeginDate.HasValue && model.EndDate.HasValue)
+             {
+                 if(model.BeginDate > model.EndDate)
+                    ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
+                 else
+                 {
+                     int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
+                         (model.BeginDate.Value, model.EndDate.Value, 
+                         model.UserId, model.Id);
+                     if(requestCount > 0)
+                         ModelState.AddModelError("BeginDate", 
+                      "Для данного пользователя существуют другие заявки в указанном интервале дат.");
+                 }
+             }
+             return ModelState.IsValid;
          }
          protected void CorrectDropdowns(VacationEditModel model)
          {

@@ -9,6 +9,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -300,6 +301,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("Date", NHibernateUtil.DateTime);
         }
+
+
+
         public virtual IList<VacationDto> GetDefaultDocuments(
                                 int userId,
                                 UserRole role,
@@ -324,6 +328,196 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
+        protected int GetRequestsCountForTypeOneDay(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
+                int userId, UserRole userRole)
+        {
+            string sqlQuery = string.Format(@"select count(Id) ");
+            switch (type)
+            {
+                case RequestTypeEnum.HolidayWork:
+                    sqlQuery += @" from [dbo].[HolidayWork] v ";
+                    break;
+                case RequestTypeEnum.TimesheetCorrection:
+                    sqlQuery += @" from [dbo].[TimesheetCorrection] v ";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип заявки {0}", type));
+
+            }
+            sqlQuery += string.Format(@" where 
+                          v.{0} between :beginDate and :endDate
+                          and v.DeleteDate is null ",
+                          type == RequestTypeEnum.HolidayWork ? "WorkDate" : "EventDate");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                Session.CreateSQLQuery(sqlQuery)
+                , beginDate
+                , endDate, userId);
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+
+        protected virtual int GetRequestsCountForDismissal(DateTime endDate,
+            int userId, UserRole userRole)
+        {
+            string sqlQuery =
+                string.Format(@"select count(Id)
+                         from dbo.Dismissal v");
+            sqlQuery += string.Format(@" where 
+                          v.EndDate <= :endDate
+                          and v.DeleteDate is null");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                Session.CreateSQLQuery(sqlQuery)
+                , new DateTime?()
+                , endDate, userId);
+
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+        protected virtual int GetRequestsCountForEmployment(DateTime beginDate, DateTime endDate,
+        int userId, UserRole userRole)
+        {
+            string sqlQuery =
+                string.Format(@"select count(Id)
+                         from dbo.Employment v");
+            sqlQuery += string.Format(@" where 
+                          v.BeginDate between :beginDate and :endDate
+                          and v.DeleteDate is null ");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                            Session.CreateSQLQuery(sqlQuery)
+                            , beginDate
+                            , endDate, userId);
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+        protected virtual int GetRequestsCountForType(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
+                int userId, UserRole userRole,int vacationId)
+        {
+            string sqlQuery =
+                @"select count(Id)";
+            switch (type)
+            {
+                case RequestTypeEnum.Vacation:
+                    sqlQuery += @" from [dbo].[Vacation] v ";
+                    break;
+                case RequestTypeEnum.Absence:
+                    sqlQuery += @" from [dbo].[Absence] v ";
+                    break;
+                case RequestTypeEnum.Sicklist:
+                    sqlQuery += @" from [dbo].[Sicklist] v ";
+                    break;
+                case RequestTypeEnum.Mission:
+                    sqlQuery += @" from [dbo].[Mission] v ";
+                    break;
+
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип заявки {0}", type));
+
+            }
+            sqlQuery += @" where ((v.BeginDate between :beginDate and :endDate) or
+                                 (v.EndDate between :beginDate and :endDate) or 
+                                 (:beginDate between v.BeginDate and v.EndDate) or
+                                 (:endDate between v.BeginDate and v.EndDate))
+                          and v.DeleteDate is null";
+            if (type == RequestTypeEnum.Vacation)
+                sqlQuery += string.Format(" and v.Id != {0} ",vacationId);
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                    Session.CreateSQLQuery(sqlQuery)
+                    ,beginDate
+                    ,endDate,userId);
+               //AddScalar("BeginDate", NHibernateUtil.DateTime).
+               //AddScalar("EndDate", NHibernateUtil.DateTime).
+               //SetDateTime("beginDate", beginDate).
+               //SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+        protected virtual IQuery AddDatesAndUserIdToQuery(ISQLQuery query, DateTime? beginDate,
+                            DateTime endDate,int userId)
+        {
+                IQuery q = query.
+                      SetDateTime("endDate", endDate).
+                      SetInt32("userId", userId);
+                return !beginDate.HasValue 
+                    ? q 
+                    : q.SetDateTime("beginDate", beginDate.Value);
+        }
+
+
+        
+
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{
 		//    Validate.NotNull(type,"type"); 

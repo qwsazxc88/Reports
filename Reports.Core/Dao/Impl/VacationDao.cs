@@ -4,6 +4,7 @@ using NHibernate;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -14,7 +15,89 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
+        public int GetRequestCountsForUserAndDates(DateTime beginDate,
+            DateTime endDate,int userId,int vacationId)
+        {
+            int requestCount = GetRequestsCountForType(beginDate,
+                                    endDate, RequestTypeEnum.Vacation, userId,
+                                    UserRole.Employee, vacationId);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} Vacation requests for {1} {2} {3} {4}"
+                    ,requestCount
+                    ,beginDate,endDate,userId,vacationId);
+                return requestCount;
+            }
+            requestCount = GetRequestsCountForType(beginDate,
+                        endDate, RequestTypeEnum.Absence, userId,
+                        UserRole.Employee, vacationId);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} Absence requests for {1} {2} {3} {4}"
+                , requestCount
+                , beginDate, endDate, userId, vacationId);
+                return requestCount;
+            }
+            requestCount = GetRequestsCountForType(beginDate,
+                        endDate, RequestTypeEnum.Sicklist, userId,
+                        UserRole.Employee, vacationId);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} Sicklist requests for {1} {2} {3} {4}"
+                , requestCount
+                , beginDate, endDate, userId, vacationId);
+                return requestCount;
+            }
+            requestCount = GetRequestsCountForType(beginDate,
+                        endDate, RequestTypeEnum.Mission, userId,
+                        UserRole.Employee, vacationId);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} Mission requests for {1} {2} {3} {4}"
+                    , requestCount
+                    , beginDate, endDate, userId, vacationId);
+                return requestCount;
+            }
 
+            requestCount = GetRequestsCountForTypeOneDay(beginDate,
+                endDate, RequestTypeEnum.HolidayWork, userId,
+                UserRole.Employee);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} HolidayWork requests for {1} {2} {3} {4}"
+                    , requestCount
+                    , beginDate, endDate, userId, vacationId);
+                return requestCount;
+            }
+
+            requestCount = GetRequestsCountForTypeOneDay(beginDate,
+                        endDate, RequestTypeEnum.TimesheetCorrection, userId,
+                        UserRole.Employee);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} TimesheetCorrection requests for {1} {2} {3} {4}"
+                    , requestCount
+                    , beginDate, endDate, userId, vacationId);
+                return requestCount;
+            }
+
+            requestCount = GetRequestsCountForDismissal(
+                            endDate, userId,
+                            UserRole.Employee);
+            if(requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} Dismissal requests for {1} {2} {3}"
+                   , requestCount
+                   , endDate, userId, vacationId);
+            }
+            else
+            {
+                Log.DebugFormat("No requests found for {0} {1} {2} {3}",
+                   beginDate, endDate, userId, vacationId);
+            }
+            return requestCount;
+
+        }
         public IList<VacationDto> GetDocuments(
                 int userId,
                 UserRole role,

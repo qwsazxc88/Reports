@@ -1,4 +1,5 @@
-﻿using Reports.Core.Dto;
+﻿using System;
+using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
@@ -16,6 +17,9 @@ namespace Reports.Presenters.UI.Bl
         VacationEditModel GetVacationEditModel(int id, int userId);
         bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(VacationEditModel model);
+
+        int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
+                                    DateTime endDate, int userId, int vacationId);
 
         RequestCommentsModel GetCommentsModel(int id, int typeId);
         bool SaveComment(SaveCommentModel model);
