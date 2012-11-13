@@ -306,8 +306,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
                            new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
-                           new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля"),
-                           new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
+                           new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля")
+                          // new IdNameDto((int) RequestTypeEnum.Employment, "Заявка на прием на работу")
                        }.OrderBy(x => x.Name).ToList();
         }
         #endregion
@@ -1087,6 +1087,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsPersonnelFieldsEditable = true;
                         break;
                 }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
+                }
                 return;
             }
             model.IsApprovedByUserHidden = model.IsApprovedByUser = entity.UserDateAccept.HasValue;
@@ -1238,21 +1243,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && model.IsApprovedByUser)
                 entity.UserDateAccept = DateTime.Now;
             if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+                && current.Id == user.Manager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
-                if (model.IsApprovedByManager)
-                    entity.ManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.ManagerDateAccept.HasValue)
+                {
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                    if (model.IsApprovedByManager)
+                        entity.ManagerDateAccept = DateTime.Now;
+                }
             }
             if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
-                && !entity.PersonnelManagerDateAccept.HasValue)
+                && current.Id == user.PersonnelManager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
-                //entity.Compensation = string.IsNullOrEmpty(model.Compensation) ? new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
-                if (model.IsApprovedByPersonnelManager)
-                    entity.PersonnelManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                    //entity.Compensation = string.IsNullOrEmpty(model.Compensation) ? new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
+                    if (model.IsApprovedByPersonnelManager)
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                }
             }
             if (model.IsTypeEditable)
             {
@@ -1414,6 +1427,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
                         break;
+                }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
                 }
                 return;
             }
@@ -1585,23 +1603,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && model.IsApprovedByUser)
                 entity.UserDateAccept = DateTime.Now;
             if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+                && current.Id == user.Manager.Id)
             {
                 //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
-                if (model.IsApprovedByManager)
-                    entity.ManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.ManagerDateAccept.HasValue)
+                {
+                    if (model.IsApprovedByManager)
+                        entity.ManagerDateAccept = DateTime.Now;
+                }
             }
             if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
-                && !entity.PersonnelManagerDateAccept.HasValue)
+                && current.Id == user.PersonnelManager.Id)
             {
-                entity.Reason = model.Reason;
-                entity.Type = DismissalTypeDao.Load(model.TypeId);
-                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
-                entity.Compensation = string.IsNullOrEmpty(model.Compensation)?new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
-                if (model.IsApprovedByPersonnelManager)
-                    entity.PersonnelManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    entity.Reason = model.Reason;
+                    entity.Type = DismissalTypeDao.Load(model.TypeId);
+                    //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
+                    entity.Compensation = string.IsNullOrEmpty(model.Compensation)
+                                              ? new decimal?()
+                                              : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
+                    if (model.IsApprovedByPersonnelManager)
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                }
             }
             if (model.IsTypeEditable)
             {
@@ -1743,6 +1771,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsTimesheetStatusEditable = true;
                         model.IsReasonEditable = true;
                         break;
+                }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
                 }
                 return;
             }
@@ -1935,21 +1968,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && model.IsApprovedByUser)
                 entity.UserDateAccept = DateTime.Now;
             if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+                && current.Id == user.Manager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApprovedByManager)
-                    entity.ManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.ManagerDateAccept.HasValue)
+                {
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    if (model.IsApprovedByManager)
+                        entity.ManagerDateAccept = DateTime.Now;
+                }
             }
             if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
-                && !entity.PersonnelManagerDateAccept.HasValue)
+                && current.Id == user.PersonnelManager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                entity.Reason = model.Reason;
-                if (model.IsApprovedByPersonnelManager)
-                    entity.PersonnelManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    entity.Reason = model.Reason;
+                    if (model.IsApprovedByPersonnelManager)
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                }
             }
             if (model.IsTypeEditable)
             {
@@ -2139,20 +2180,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && model.IsApprovedByUser)
                 entity.UserDateAccept = DateTime.Now;
             if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+                && current.Id == user.Manager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApprovedByManager)
-                    entity.ManagerDateAccept = DateTime.Now;
+               if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                   entity.UserDateAccept = DateTime.Now;
+               if (!entity.ManagerDateAccept.HasValue)
+               {
+                   entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                   if (model.IsApprovedByManager)
+                       entity.ManagerDateAccept = DateTime.Now;
+               }
             }
             if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
-                && !entity.PersonnelManagerDateAccept.HasValue)
+                && current.Id == user.PersonnelManager.Id)
             {
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApprovedByPersonnelManager)
-                    entity.PersonnelManagerDateAccept = DateTime.Now;
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    if (model.IsApprovedByPersonnelManager)
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                }
             }
             if (model.IsTypeEditable)
             {
@@ -2185,6 +2234,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
                         break;
+                }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
                 }
                 return;
             }
@@ -3206,9 +3260,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     x.Name == "Отпуск без оплаты согласно ТК РФ #1205"
                     )
                 .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            //if( addAll 
-            //    || AuthenticationService.CurrentUser.UserRole == UserRole.Manager
-            //    || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
+            if (addAll
+                || AuthenticationService.CurrentUser.UserRole == UserRole.Manager
+                || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
             vacationTypeList.AddRange(list.Where(x => x.Name == "Отпуск по уходу за ребенком без оплаты #1802")
                     .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name)));
             vacationTypeList = vacationTypeList.OrderBy(x => x.Name).ToList();
@@ -3326,20 +3380,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 User = user,
                                                 //UserFullNameForPrint = user.FullName, 
                                              };
-                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                        && model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
                         vacation.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
                     {
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                        if(model.IsApprovedByManager)
+                        if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
+                            vacation.UserDateAccept = DateTime.Now;
+                        if (model.IsApprovedByManager && !vacation.ManagerDateAccept.HasValue)
                             vacation.ManagerDateAccept = DateTime.Now;
                     }
                     if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id )
                     {
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                        if (model.IsApprovedByPersonnelManager)
+                        if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
+                            vacation.UserDateAccept = DateTime.Now;
+                        if (model.IsApprovedByPersonnelManager && !vacation.PersonnelManagerDateAccept.HasValue)
                             vacation.PersonnelManagerDateAccept = DateTime.Now;
                     }
 
@@ -3536,6 +3595,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
+                }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
                 }
                 return;
             }
