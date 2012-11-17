@@ -303,7 +303,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new IdNameDto((int) RequestTypeEnum.Vacation, "Заявка на отпуск"),
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
-                           new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
+                           //new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
                            new IdNameDto((int) RequestTypeEnum.Mission, "Заявка на командировку"),
                            new IdNameDto((int) RequestTypeEnum.Dismissal, "Заявка на увольнение"),
                            new IdNameDto((int) RequestTypeEnum.TimesheetCorrection, "Заявка на корректировку табеля")

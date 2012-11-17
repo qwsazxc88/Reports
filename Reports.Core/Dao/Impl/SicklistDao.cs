@@ -27,12 +27,12 @@ namespace Reports.Core.Dao.Impl
             )
         {
             string sqlQuery =
-                @"select v.Id as Id,
+                string.Format(@"select v.Id as Id,
                          u.Id as UserId,
-                         'Болезнь (неявка) '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
+                         'Болезнь (неявка) '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Sicklist] v
-            inner join [dbo].[Users] u on u.Id = v.UserId";
+            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = GetWhereForUserRole(role, userId);
             whereString = GetTypeWhere(whereString, typeId);

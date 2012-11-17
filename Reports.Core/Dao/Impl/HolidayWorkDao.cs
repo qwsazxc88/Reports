@@ -26,12 +26,12 @@ namespace Reports.Core.Dao.Impl
            )
         {
             string sqlQuery =
-                @"select v.Id as Id,
+                string.Format(@"select v.Id as Id,
                          u.Id as UserId,
-                         'Оплата праздничных и выходных дней  '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
+                         'Оплата праздничных и выходных дней  '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[HolidayWork] v
-            inner join [dbo].[Users] u on u.Id = v.UserId";
+            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

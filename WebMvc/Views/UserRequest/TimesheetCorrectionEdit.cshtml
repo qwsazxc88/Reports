@@ -21,7 +21,7 @@
      @if (Model.IsDeleted)
     { 
         <tr>
-            <td colspan="2" style="color:Red">Заявка удалена</td>
+            <td colspan="2" style="color:Red">Заявка отклонена</td>
         </tr>
     }
     <tr>
@@ -133,7 +133,7 @@
         <td colspan="2">
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                     {<text>style="display:none"</text>}/>
-            <input type="submit" value="Удалить" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+            <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
                                                                                     {<text>style="display:none"</text>}/>
             
          </td>

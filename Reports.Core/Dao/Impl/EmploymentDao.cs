@@ -26,12 +26,12 @@ namespace Reports.Core.Dao.Impl
               DateTime? endDate)
         {
             string sqlQuery =
-                @"select v.Id as Id,
+                string.Format(@"select v.Id as Id,
                          u.Id as UserId,
-                         'Прием на работу '+ u.Name + case when [DeleteDate] is not null then N' (заявка удалена)' else '' end as Name,
+                         'Прием на работу '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
                          v.[CreateDate] as Date    
             from [dbo].[Employment] v
-            inner join [dbo].[Users] u on u.Id = v.UserId";
+            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
             //left join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             string whereString = GetWhereForUserRole(role, userId);
             whereString = GetTypeWhere(whereString, typeId);

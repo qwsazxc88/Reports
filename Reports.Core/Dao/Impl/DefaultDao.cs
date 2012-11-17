@@ -126,6 +126,7 @@ namespace Reports.Core.Dao.Impl
         where TEntity : IEntity<int>
     {
         protected const string ObjectPropertyFormat = "{0}.{1}";
+        protected const string DeleteRequestText = "заявка отклонена";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }
