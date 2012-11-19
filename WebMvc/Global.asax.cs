@@ -10,7 +10,6 @@ using System.Web.Routing;
 using System.Web.Security;
 using Reports.CommonWeb;
 using Reports.Core;
-using Reports.Core.Dao;
 using Reports.Presenters;
 using Reports.Presenters.Services;
 using Reports.Presenters.Services.Impl;
@@ -26,7 +25,7 @@ namespace WebMvc
         public const string AuthorizedErrorPageUrl = "~/ErrorPage.aspx";
         public const string UnauthorizedErrorPageUrl = "~/UnautorizedErrorPage.aspx";
 
-        /*public override void Init()
+        public override void Init()
         {
             base.Init();
             Error += ErrorHandler;
@@ -37,12 +36,52 @@ namespace WebMvc
                      Server.GetLastError() as HttpException;
             if (ex != null && ex.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
             {
+                HttpRuntimeSection runTime = (HttpRuntimeSection)WebConfigurationManager.GetSection("system.web/httpRuntime");
+                int maxRequestLength = (runTime.MaxRequestLength - 100) * 1024;
                 // или другой свой код обработки
-                Server.ClearError();
-                //Request.Form.Clear();
-                Response.Redirect("~/FileSizeTooLarge.htm",true);
+                HttpContext context = ((HttpApplication)sender).Context;
+                if (context.Request.ContentLength > maxRequestLength)
+                {
+                    IServiceProvider provider = context;
+                    HttpWorkerRequest workerRequest =
+                        (HttpWorkerRequest) provider.GetService(typeof (HttpWorkerRequest));
+
+                    // Check if body contains data
+                    if (workerRequest.HasEntityBody())
+                    {
+                        // get the total body length
+                        int requestLength = workerRequest.GetTotalEntityBodyLength();
+
+                        // Get the initial bytes loaded
+                        int initialBytes = 0;
+
+                        if (workerRequest.GetPreloadedEntityBody() != null)
+                            initialBytes = workerRequest.GetPreloadedEntityBody().Length;
+
+                        if (!workerRequest.IsEntireEntityBodyIsPreloaded())
+                        {
+                            byte[] buffer = new byte[512000];
+
+                            // Set the received bytes to initial bytes before start reading
+                            int receivedBytes = initialBytes;
+
+                            while (requestLength - receivedBytes >= initialBytes)
+                            {
+                                // Read another set of bytes
+                                initialBytes = workerRequest.ReadEntityBody(buffer, buffer.Length);
+
+                                // Update the received bytes
+                                receivedBytes += initialBytes;
+                            }
+                            //initialBytes = 
+                            workerRequest.ReadEntityBody(buffer, requestLength - receivedBytes);
+                        }
+                    }
+                }
+                context.Server.ClearError();
+                context.Response.Redirect("~/FileSizeTooLarge.htm", true);
             }
-        }*/
+        }
 
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {

@@ -143,6 +143,7 @@
     <Content Include="Content\themes\base\ui-icons_888888_256x240.png" />
     <Content Include="Content\themes\base\ui-icons_cd0a0a_256x240.png" />
     <Content Include="favicon.ico" />
+    <Content Include="FileSizeTooLarge.htm" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\fileuploader.js" />
