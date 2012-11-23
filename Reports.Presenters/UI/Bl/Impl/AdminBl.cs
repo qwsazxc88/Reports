@@ -147,8 +147,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (user.Manager != null)
                         model.ManagerId = user.Manager.Id;
-                    if (user.PersonnelManager != null)
-                        model.PersonnelId = user.PersonnelManager.Id;
+                    // !!!
+                    /*if (user.PersonnelManager != null)
+                        model.PersonnelId = user.PersonnelManager.Id;*/
                 }
                 SetControlStates(model, user);
             }
@@ -205,8 +206,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (model.ManagerId != 0)
                             user.Manager = UserDao.Load(model.ManagerId);
-                        if (model.PersonnelId != 0)
-                            user.PersonnelManager = UserDao.Load(model.PersonnelId);
+                        /*if (model.PersonnelId != 0)
+                            user.PersonnelManager = UserDao.Load(model.PersonnelId);*/
                     }
                 }
                 else
@@ -654,7 +655,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     hasWarnings = true;
                     continue;
                 }
-                employee.PersonnelManager = personnel;
+                //employee.PersonnelManager = personnel;
                 employee = UserDao.Merge(employee);
                 if (isNewEmployee)
                     users.Add(employee);

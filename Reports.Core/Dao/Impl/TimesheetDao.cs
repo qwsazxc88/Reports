@@ -66,7 +66,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += @"where u.ManagerId = :managerId";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery += @"where u.PersonnelManagerId = :managerId";
+                    sqlQuery += @" and exists ( select * from UserToPersonnel up where up.PersonnelId = :managerId and u.Id = up.UserId ) ";//@"where u.PersonnelManagerId = :managerId";
                     break;
             }
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
@@ -121,7 +121,7 @@ namespace Reports.Core.Dao.Impl
                         sqlQuery += @"and u.ManagerId = :managerId";
                         break;
                     case UserRole.PersonnelManager:
-                        sqlQuery += @"and u.PersonnelManagerId = :managerId";
+                        sqlQuery += @" and exists ( select * from UserToPersonnel up where up.PersonnelId = :managerId and u.Id = up.UserId ) ";//@"and u.PersonnelManagerId = :managerId";
                         break;
                 }
                 return Session.CreateSQLQuery(sqlQuery).
@@ -256,7 +256,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += " and u.ManagerId = :userId ";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
                     break;
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
@@ -325,7 +325,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += " and u.ManagerId = :userId ";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
                     break;
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
@@ -395,7 +395,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += " and u.ManagerId = :userId ";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
                     break;
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
@@ -466,7 +466,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += " and u.ManagerId = :userId ";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
                     break;
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));

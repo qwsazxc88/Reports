@@ -58,9 +58,6 @@ alter table [Users]  drop constraint FK_USER_ROLE
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_UserManager]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_UserManager
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_PersonnelManager]') AND parent_object_id = OBJECT_ID('[Users]'))
-alter table [Users]  drop constraint FK_User_PersonnelManager
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Organization]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_Organization
 
@@ -69,6 +66,12 @@ alter table [Users]  drop constraint FK_User_Position
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_User_Department]') AND parent_object_id = OBJECT_ID('[Users]'))
 alter table [Users]  drop constraint FK_User_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToPersonnel_Personnel]') AND parent_object_id = OBJECT_ID('UserToPersonnel'))
+alter table UserToPersonnel  drop constraint FK_UserToPersonnel_Personnel
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToPersonnel_User]') AND parent_object_id = OBJECT_ID('UserToPersonnel'))
+alter table UserToPersonnel  drop constraint FK_UserToPersonnel_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_SicklistType]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_SicklistType
@@ -231,6 +234,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentHoursTy
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentType
 if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
+if exists (select * from dbo.sysobjects where id = object_id(N'UserToPersonnel') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserToPersonnel
 if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
@@ -406,11 +410,14 @@ create table [Users] (
   Comment NVARCHAR(512) null,
   RoleId INT not null,
   ManagerId INT null,
-  PersonnelManagerId INT null,
   OrganizationId INT null,
   PositionId INT null,
   DepartmentId INT null,
   constraint PK_Users primary key (Id)
+)
+create table UserToPersonnel (
+ UserId INT not null,
+  PersonnelId INT not null
 )
 create table Sicklist (
  Id INT IDENTITY NOT NULL,
@@ -859,16 +866,16 @@ alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComm
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_TimesheetCorrection foreign key (TimesheetCorrectionId) references TimesheetCorrection
 create index IX_USER_ROLE_ID on [Users] (RoleId)
 create index IX_User_UserManager_Id on [Users] (ManagerId)
-create index IX_User_PersonnelManager_Id on [Users] (PersonnelManagerId)
 create index IX_User_Organization_Id on [Users] (OrganizationId)
 create index IX_User_Position_Id on [Users] (PositionId)
 create index IX_User_Department_Id on [Users] (DepartmentId)
 alter table [Users] add constraint FK_USER_ROLE foreign key (RoleId) references Role
 alter table [Users] add constraint FK_User_UserManager foreign key (ManagerId) references [Users]
-alter table [Users] add constraint FK_User_PersonnelManager foreign key (PersonnelManagerId) references [Users]
 alter table [Users] add constraint FK_User_Organization foreign key (OrganizationId) references Organization
 alter table [Users] add constraint FK_User_Position foreign key (PositionId) references Position
 alter table [Users] add constraint FK_User_Department foreign key (DepartmentId) references Department
+alter table UserToPersonnel add constraint FK_UserToPersonnel_Personnel foreign key (PersonnelId) references [Users]
+alter table UserToPersonnel add constraint FK_UserToPersonnel_User foreign key (UserId) references [Users]
 create index Sicklist_SicklistType on Sicklist (TypeId)
 create index Sicklist_BabyMindingType on Sicklist (BabyMindingTypeId)
 create index Sicklist_SicklistPaymentPercent on Sicklist (PaymentPercentId)
@@ -1311,6 +1318,12 @@ INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept      
 VALUES			   (1,       	0              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001' , 0, @PerPositionId)
 set @personnelId = @@Identity
 
+declare @personnel1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'personnel1' ,'personnel1'  ,	'2008-12-01 15:13:25:000',    N'Кадровик1',                    1,         null								, 8,		   'АГ0000000002' , 0, @PerPositionId)
+set @personnel1Id = @@Identity
+
+
 declare @inspectorId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'inspector' ,'inspector'  ,	'2008-12-01 15:13:25:000',    N'Контролер',                    1,         null								, 64,		   'АЕ0000000001' , 0, @InsPositionId)
@@ -1324,29 +1337,29 @@ set @inspector1Id = @@Identity
 
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
-declare @budgetId int
+/*declare @budgetId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,              Name,               Version,  [DateRelease]    , [RoleId],      [Code] , [IsNew]) 
 VALUES			   (1,       	0              ,'budget' ,'budget'  ,	'2008-12-01 15:13:25:000',       N'Бюджет',           1,         null								        , 16,		   'АГ0000000001' , 0)
 set @budgetId = @@Identity
 declare @outsorsingId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,                       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , [IsNew] ) 
 VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              32,		       'АД0000000001' , 0)
-set @outsorsingId = @@Identity
+set @outsorsingId = @@Identity*/
 declare @userId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,DepartmentId,PositionId , [IsNew]) 
-VALUES			   (1,       	0              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId,       @OrganizationId,@DepartmentId,@PositionId , 0)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         /*PersonnelManagerId,*/ OrganizationId,DepartmentId,PositionId , [IsNew]) 
+VALUES			   (1,       	0              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       /*@personnelId,*/       @OrganizationId,@DepartmentId,@PositionId , 0)
 set @userId = @@Identity
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@userId,@DepartmentId,1)
 
 declare @user1Id int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId,            OrganizationId,DepartmentId,PositionId , [IsNew]) 
-VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId,@Organization1Id,@Department1Id,@Position1Id , 0)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,/*PersonnelManagerId,*/            OrganizationId,DepartmentId,PositionId , [IsNew]) 
+VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       /*@personnelId,*/@Organization1Id,@Department1Id,@Position1Id , 0)
 set @user1Id = @@Identity
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
 
 declare @user2Id int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId , [IsNew], OrganizationId,DepartmentId,PositionId) 
-VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId , 0 ,  @OrganizationId,@DepartmentId, @PositionId )
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,/*PersonnelManagerId ,*/ [IsNew], OrganizationId,DepartmentId,PositionId) 
+VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       /*@personnelId ,*/ 0 ,  @OrganizationId,@DepartmentId, @PositionId )
 set @user2Id = @@Identity
 
 insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@userId)
@@ -1355,6 +1368,14 @@ insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@u
 
 insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@userId)
 insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@user1Id)
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@userId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@user1Id)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@user2Id)
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@userId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@user1Id)
+
  
 INSERT INTO DBVERSION (Version) VALUES('1.0.0.1')
 

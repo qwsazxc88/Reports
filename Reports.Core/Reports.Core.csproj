@@ -379,7 +379,9 @@
     <EmbeddedResource Include="Domain\DocumentComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\VacationType.hbm.xml" />
+    <EmbeddedResource Include="Domain\VacationType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Organization.hbm.xml" />

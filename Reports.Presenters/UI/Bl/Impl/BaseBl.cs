@@ -81,10 +81,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     to = user.Manager.Email;
                     break;
                 case UserRole.Manager:
-                    if (user.PersonnelManager == null || string.IsNullOrEmpty(user.PersonnelManager.Email))
-                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager - no manager or empty email", requestId, requestType, current.Id);
-                    else
-                        to = user.PersonnelManager.Email;
+                    //if (user.PersonnelManager == null || string.IsNullOrEmpty(user.PersonnelManager.Email))
+                    //    Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager - no manager or empty email", requestId, requestType, current.Id);
+                    //else
+                    //    to = user.PersonnelManager.Email;
+                    foreach (User u in user.Personnels)
+                    {
+                        if (string.IsNullOrEmpty(u.Email))
+                            Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager {3} - empty email", requestId, requestType, current.Id, u.FullName);
+                        else
+                        {
+                            if (string.IsNullOrEmpty(to))
+                                to = user.Email;
+                            else
+                                to += ";" + user.Email;
+                        }
+                    }
 
                     if (string.IsNullOrEmpty(user.Email))
                         Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to user - empty email", requestId, requestType, current.Id);

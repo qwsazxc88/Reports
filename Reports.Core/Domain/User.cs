@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -136,7 +137,13 @@ namespace Reports.Core.Domain
         //}
 
         public virtual User Manager { get; set; }
-        public virtual User PersonnelManager { get; set; }
+        //public virtual User PersonnelManager { get; set; }
+        private IList<User> personnels = new List<User>();
+        public virtual IList<User> Personnels
+        {
+            get { return personnels; }
+            set { personnels = value; }
+        }
         //public virtual User BudgetManager { get; set; }
         //public virtual User OutsourcingManager { get; set; }
 

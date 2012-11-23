@@ -213,7 +213,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsSaveAvailable = !model.IsApprovedByBudgetManager;
                     break;
                 case UserRole.PersonnelManager:
-                    if (owner.PersonnelManager.Id != CurrentUser.Id)
+                    if (owner.Personnels.Where(x => x.Id == CurrentUser.Id).FirstOrDefault() == null )
                         throw new ArgumentException("Доступ к документу запрещен.");
                     model.IsApprovedByPersonnelManagerEnable = !model.IsApprovedByPersonnelManager;
                     model.IsSaveAvailable = !model.IsApprovedByPersonnelManager;
@@ -308,7 +308,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else if (user.UserRole == UserRole.PersonnelManager)
                 {
-                    if (user.Id != owner.PersonnelManager.Id)
+                    if (owner.Personnels.Where(x => x.Id == user.Id).FirstOrDefault() == null)
                         throw new ArgumentException("Доступ к документу запрещен.");
                     if (doc.PersonnelManagerDateAccept.HasValue)
                     {

@@ -196,7 +196,7 @@ namespace Reports.Core.Dao.Impl
                     sqlWhere += "u.ManagerId = :userId";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlWhere += "u.PersonnelManagerId = :userId";
+                    sqlWhere += " exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//"u.PersonnelManagerId = :userId";
                     break;
                 default:
                     break;
@@ -214,7 +214,32 @@ namespace Reports.Core.Dao.Impl
 
         public IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole)
         {
-            ICriteria criteria = Session.CreateCriteria(typeof(User));
+            string sqlQuery ="select u.Id,u.Name from dbo.Users u";
+            string sqlWhere = string.Empty;
+            switch (managerRole)
+            {
+                case UserRole.Employee:
+                    throw new ArgumentException("—писок сотрудников нелоступен дл€ сотрудника.");
+                case UserRole.Manager:
+                    sqlWhere += "u.ManagerId = :userId";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlWhere += " exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";
+                    break;
+                default:
+                    break;
+            }
+            sqlQuery += @" where " + sqlWhere;
+            sqlQuery += @" order by u.Name,u.Id ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetInt32("userId", managerId);
+
+            return query.
+            SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).
+            List<IdNameDto>();
+            /*ICriteria criteria = Session.CreateCriteria(typeof(User));
             switch (managerRole)
             {
                 case UserRole.Employee:
@@ -234,7 +259,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
-            return criteria.List<User>().ToList().ConvertAll(x => new IdNameDto(x.Id, x.FullName)).OrderBy(x => x.Name).ToList();
+            return criteria.List<User>().ToList().ConvertAll(x => new IdNameDto(x.Id, x.FullName)).OrderBy(x => x.Name).ToList();*/
         }
         public IList<UserDto> GetUsersForManager(string userName,
             int managerId,UserRole managerRole, int? role,ref int currentPage,

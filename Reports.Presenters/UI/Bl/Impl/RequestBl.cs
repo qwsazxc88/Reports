@@ -752,8 +752,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApprovedByManager)
                     entity.ManagerDateAccept = DateTime.Now;
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 && !entity.PersonnelManagerDateAccept.HasValue)
             {
                 entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
@@ -1254,8 +1255,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id)
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -1614,8 +1617,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id)
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -1979,8 +1984,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id)
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -2191,8 +2198,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                        entity.ManagerDateAccept = DateTime.Now;
                }
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id)
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -2632,16 +2641,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApprovedByManager)
                     sicklist.ManagerDateAccept = DateTime.Now;
             }
-            if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id
-                && !sicklist.PersonnelManagerDateAccept.HasValue)
+            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                && current.Id == user.PersonnelManager.Id*/
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
             {
                 if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
                     sicklist.UserDateAccept = DateTime.Now;
-                if (model.IsPersonnelFieldsEditable)
-                    SetPersonnelDataFromModel(sicklist, model);
-                if (model.IsApprovedByPersonnelManager)
-                    sicklist.PersonnelManagerDateAccept = DateTime.Now;
+                if (!sicklist.PersonnelManagerDateAccept.HasValue)
+                {
+                    sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    if (model.IsPersonnelFieldsEditable)
+                        SetPersonnelDataFromModel(sicklist, model);
+                    if (model.IsApprovedByPersonnelManager)
+                        sicklist.PersonnelManagerDateAccept = DateTime.Now;
+                }
             }
             if(model.IsDatesEditable)
             {
@@ -3095,8 +3109,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if(model.IsApprovedByManager)
                             absence.ManagerDateAccept = DateTime.Now;
                     }
-                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                        && current.Id == user.PersonnelManager.Id)
+                    if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id*/
+                        && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                        )
                     {
                         if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
                             absence.UserDateAccept = DateTime.Now;
@@ -3138,8 +3154,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if(model.IsApprovedByManager)
                                 absence.ManagerDateAccept = DateTime.Now;
                         }
-                        if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                            && current.Id == user.PersonnelManager.Id
+                        if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                            && current.Id == user.PersonnelManager.Id*/
+                            && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                             && !absence.PersonnelManagerDateAccept.HasValue
                             )
                         {
@@ -3392,8 +3409,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedByManager && !vacation.ManagerDateAccept.HasValue)
                             vacation.ManagerDateAccept = DateTime.Now;
                     }
-                    if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                        && current.Id == user.PersonnelManager.Id )
+                    if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                        && current.Id == user.PersonnelManager.Id*/
+                        && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                        )
                     {
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
@@ -3448,8 +3467,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if(model.IsApprovedByManager)
                                 vacation.ManagerDateAccept = DateTime.Now;
                         }
-                        if (current.UserRole == UserRole.PersonnelManager && user.PersonnelManager != null
-                            && current.Id == user.PersonnelManager.Id
+                        if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
+                            && current.Id == user.PersonnelManager.Id*/
+                            && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                             && !vacation.PersonnelManagerDateAccept.HasValue)
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
@@ -3511,7 +3531,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     break;
                 case UserRole.PersonnelManager:
-                    if (user.PersonnelManager != null && user.PersonnelManager.Id != current.Id)
+                    if (/*user.PersonnelManager != null && user.PersonnelManager.Id != current.Id*/
+                        user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() == null
+                        )
                         return false;
                     break;
                 case UserRole.Inspector:
@@ -3662,8 +3684,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Department = user.Department == null?string.Empty:user.Department.Name ;
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
-            if (user.PersonnelManager != null)
-                model.PersonnelName = user.PersonnelManager.FullName;
+            /*if (user.PersonnelManager != null)
+                model.PersonnelName = user.PersonnelManager.FullName;*/
+            if(user.Personnels.Count() > 0)
+                model.PersonnelName = user.Personnels.Aggregate(string.Empty, (current, entity) => current + (entity.FullName + "; "));
             if (user.Organization != null)
                 model.Organization = user.Organization.Name;
             if(user.Position != null)
