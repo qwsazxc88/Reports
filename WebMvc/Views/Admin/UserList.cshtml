@@ -13,11 +13,11 @@
             <input type="submit" value="Найти"/>
         </td>
     </tr>
-    <tr>
+@*    <tr>
         <td>
             @Html.ActionLink("Добавить", "UserEdit", new { id = 0 }) 
         </td>
-    </tr>
+    </tr>*@
     <tr>
         <td>
             <table class="grid" style="width:100%;">
@@ -41,7 +41,11 @@
                             </td>
                             <td>@emp.Login</td>
                             <td>@emp.Role</td>
-                            <td>Активен</td>
+                            <td>@if(emp.IsActive) 
+                                    {<text>Активен</text>}
+                                else
+                                    {<text>Неактивен</text>}
+                            </td>
                         </tr>
                     }
                     </tbody>

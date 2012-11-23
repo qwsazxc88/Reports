@@ -9,10 +9,10 @@
                 @if (dto.UserRole == UserRole.Admin)
                 {
                      <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
-                     <li>@Html.ActionLink("Типы заявок", "DocumentTypeList", "Admin")</li>
+                     @*<li>@Html.ActionLink("Типы заявок", "DocumentTypeList", "Admin")</li>*@
                      <li>@Html.ActionLink("Настройки", "Settings", "Admin")</li>
-                     <li>@Html.ActionLink("Импорт", "ActionsList", "Admin", new { type = 1 }, null)</li>
-                     <li>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</li>
+@*                     <li>@Html.ActionLink("Импорт", "ActionsList", "Admin", new { type = 1 }, null)</li>
+                     <li>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</li>*@
                      <li>@Html.ActionLink("Информация", "InformationsList", "Admin")</li>
                 }
                 else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Inspector)

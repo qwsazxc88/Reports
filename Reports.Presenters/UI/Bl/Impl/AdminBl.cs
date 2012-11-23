@@ -128,8 +128,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException("Доступ запрещен.");
             model.Roles = GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true) 
-                                                        : new List<IdNameDto> { new IdNameDto {Id = CurrentUser.Id,Name = CurrentUser.Name}};
+            //model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true) 
+            //                                            : new List<IdNameDto> { new IdNameDto {Id = CurrentUser.Id,Name = CurrentUser.Name}};
             if (model.Id > 0)
             {
                 User user = UserDao.Load(model.Id);
@@ -143,6 +143,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName = user.FullName;
                 model.UserNameStatic = user.FullName;
                 model.Version = user.Version;
+                if (user.Personnels.Count() > 0)
+                    model.PersonnelName = user.Personnels.Aggregate(string.Empty, (current, entity) => current + (entity.FullName + "; "));
                 if (model.RoleId == (int)UserRole.Employee)
                 {
                     if (user.Manager != null)
@@ -167,8 +169,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.Roles = GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true)
-                                                       : new List<IdNameDto> { new IdNameDto { Id = CurrentUser.Id, Name = CurrentUser.Name } };
+            //model.PersonnelName = 
+            //    role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true)
+            //                                           : new List<IdNameDto> { new IdNameDto { Id = CurrentUser.Id, Name = CurrentUser.Name } };
             SetStaticUserPopertiesToModel(model);
         }
 
@@ -229,7 +232,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = user.Version;
                 model.UserNameStatic = model.UserName;
                 if ((user.Role.Id != (int) UserRole.Employee) &&
-                    ((model.ManagerId != 0) || (model.PersonnelId != 0)))
+                    ((model.ManagerId != 0) /*|| (model.PersonnelId != 0)*/))
                     model.ClearManagers = true;
 
                 SetControlStates(model,user);
@@ -272,11 +275,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Error = "Необходимо указать руководителя для сотрудника.";
                     return false;
                 }
-                if (model.PersonnelId == 0)
+                /*if (model.PersonnelId == 0)
                 {
                     model.Error = "Необходимо указать кадровика для сотрудника.";
                     return false;
-                }
+                }*/
             }
             return true;
         }
@@ -312,6 +315,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 User user = UserDao.Load(model.Id);
                 model.UserNameStatic = user.FullName;
+                if(user.Personnels.Count() > 0)
+                    model.PersonnelName = user.Personnels.Aggregate(string.Empty, (current, entity) => current + (entity.FullName + "; "));
             }
         }
 

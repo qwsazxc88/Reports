@@ -39,9 +39,10 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
         public IList<IdNameDto> Managers;
         public bool IsManagerEditable { get; set; }
-        [Display(Name = "Кадровик")]
-        public int PersonnelId { get; set; }
-        public IList<IdNameDto> Personnels;
+        [Display(Name = "Кадровик(и)")]
+        public string PersonnelName { get; set; }
+        //public int PersonnelId { get; set; }
+        //public IList<IdNameDto> Personnels;
         public bool IsPersonnelEditable { get; set; }
         [Display(Name = "Активный")]
         public bool IsActive { get; set; }

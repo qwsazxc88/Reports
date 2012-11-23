@@ -77,9 +77,9 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("ManagerId"))
                     ModelState.Remove("ManagerId");
                 model.ManagerId = 0;
-                if (ModelState.ContainsKey("PersonnelId"))
+                /*if (ModelState.ContainsKey("PersonnelId"))
                     ModelState.Remove("PersonnelId");
-                model.PersonnelId = 0;
+                model.PersonnelId = 0;*/
             }
             return View(model);
         }
