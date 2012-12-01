@@ -5,6 +5,7 @@ using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -20,6 +21,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetDao timesheetDao;
         protected ITimesheetDayDao timesheetDayDao;
         protected IDocumentCommentDao documentCommentDao;
+
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
+        }
+
+        public int TimesheetPageSize
+        {
+            get { return ConfigurationService.TimesheetPageSize; }
+        }
 
         public IEmployeeDocumentTypeDao EmployeeDocumentTypeDao
         {
@@ -598,12 +611,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Timesheet List
         public void GetTimesheetListModel(TimesheetListModel model)
         {
-            //SetDaysToModel(model);
-            //SetTimesheets(model);
-            //SetControlsState(model);
             SetListboxes(model);
             SetTimesheetsInfo(model);
-            //model.TimesheetDtos = new List<TimesheetDto>();
+            int timesheetsCount = model.TimesheetDtos.Count;
+            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
+            int currentPage = model.CurrentPage;
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            //if (numberOfPages == 0)
+            //{
+            //    currentPage = 1;
+            //    return new List<User>();
+            //}
+            if (currentPage == 0)
+                currentPage = 1;
+            model.TimesheetDtos = model.TimesheetDtos
+                .Skip((currentPage - 1) * TimesheetPageSize)
+                .Take(TimesheetPageSize).ToList();
+            model.CurrentPage = currentPage;
+            model.NumberOfPages = numberOfPages;
         }
         protected void SetTimesheetsInfo(TimesheetListModel model)
         {
@@ -647,6 +673,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 list.Add(dto);
             }
             model.TimesheetDtos = list;
+
         }
         //public void SetTimesheetsHours(TimesheetListModel model)
         //{

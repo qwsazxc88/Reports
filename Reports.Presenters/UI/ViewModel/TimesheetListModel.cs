@@ -37,5 +37,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         [DataType("TimesheetDtoList")]
         public IList<TimesheetDto> TimesheetDtos { get; set; }
+
+        public int NumberOfPages { get; set; }
+        public int CurrentPage { get; set; }
     }
 }

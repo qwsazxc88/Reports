@@ -196,7 +196,7 @@ namespace Reports.Core.Dao.Impl
                     sqlWhere += "u.ManagerId = :userId";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlWhere += " exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//"u.PersonnelManagerId = :userId";
+                    sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ",(int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;
                 default:
                     break;

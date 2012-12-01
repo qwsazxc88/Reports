@@ -275,14 +275,16 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult TimesheetList(TimesheetListModel model)
         {
-            if(!ValidateModel(model))
-            {
-                EmployeeBl.GetTimesheetListModel(model);
-                return View(model);
-            }
-            CorrectHours(model);
-            //EmployeeBl.SetTimesheetsHours(model);
+            EmployeeBl.GetTimesheetListModel(model);
             return View(model);
+            //if(!ValidateModel(model))
+            //{
+            //    EmployeeBl.GetTimesheetListModel(model);
+            //    return View(model);
+            //}
+            //CorrectHours(model);
+            ////EmployeeBl.SetTimesheetsHours(model);
+            //return View(model);
         }
         protected void CorrectHours(TimesheetListModel model)
         {
