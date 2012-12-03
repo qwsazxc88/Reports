@@ -613,33 +613,65 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetListboxes(model);
             SetTimesheetsInfo(model);
-            int timesheetsCount = model.TimesheetDtos.Count;
-            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
-            int currentPage = model.CurrentPage;
-            if (currentPage > numberOfPages)
-                currentPage = numberOfPages;
-            //if (numberOfPages == 0)
-            //{
+            //int timesheetsCount = model.TimesheetDtos.Count;
+            //int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
+            //int currentPage = model.CurrentPage;
+            //if (currentPage > numberOfPages)
+            //    currentPage = numberOfPages;
+            ////if (numberOfPages == 0)
+            ////{
+            ////    currentPage = 1;
+            ////    return new List<User>();
+            ////}
+            //if (currentPage == 0)
             //    currentPage = 1;
-            //    return new List<User>();
-            //}
-            if (currentPage == 0)
-                currentPage = 1;
-            model.TimesheetDtos = model.TimesheetDtos
-                .Skip((currentPage - 1) * TimesheetPageSize)
-                .Take(TimesheetPageSize).ToList();
-            model.CurrentPage = currentPage;
-            model.NumberOfPages = numberOfPages;
+            //model.TimesheetDtos = model.TimesheetDtos
+            //    .Skip((currentPage - 1) * TimesheetPageSize)
+            //    .Take(TimesheetPageSize).ToList();
+            //model.CurrentPage = currentPage;
+            //model.NumberOfPages = numberOfPages;
         }
         protected void SetTimesheetsInfo(TimesheetListModel model)
         {
             IUser user = AuthenticationService.CurrentUser;
+            Log.Debug("Before GetRequestsForMonth");
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth(model.Month, model.Year, user.Id, user.UserRole);
+            Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
                                         (current, dayRequestsDto) =>
                                         current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
                                             .ToList());
+            Log.Debug("After aggregate");
+            IList<IdNameDto> userNameDtoList = new List<IdNameDto>();
+            foreach (int userId in allUserIds)
+            {
+                foreach (var dayRequestsDto in dtos)
+                {
+                    RequestDto dto = dayRequestsDto.Requests.Where(y => y.UserId == userId).FirstOrDefault();
+                    if(dto != null)
+                    {
+                        userNameDtoList.Add(new IdNameDto{Id = userId,Name = dto.UserName});
+                        break;
+                    }
+                }
+            }
+            userNameDtoList = userNameDtoList.OrderBy(x => x.Name).ToList();
+            Log.Debug("After create ordered user dto list ");
+            int timesheetsCount = userNameDtoList.Count;
+            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
+            int currentPage = model.CurrentPage;
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            if (currentPage == 0)
+                currentPage = 1;
+            userNameDtoList = userNameDtoList
+                .Skip((currentPage - 1) * TimesheetPageSize)
+                .Take(TimesheetPageSize).ToList();
+            model.CurrentPage = currentPage;
+            model.NumberOfPages = numberOfPages;
+            allUserIds = userNameDtoList.ToList().ConvertAll(x => x.Id).ToList();
+            Log.Debug("After paging");
             List<TimesheetDto> list = new List<TimesheetDto>();
             foreach (int userId in allUserIds)
             {
@@ -672,6 +704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.IsHoursVisible = user.UserRole == UserRole.Manager;
                 list.Add(dto);
             }
+            Log.Debug("After foreach");
             model.TimesheetDtos = list;
 
         }
