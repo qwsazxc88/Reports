@@ -200,6 +200,7 @@
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
+    <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Department.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationType.cs" />
+    <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
@@ -485,6 +487,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\InspectorToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AcceptRequestDate.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

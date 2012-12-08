@@ -34,7 +34,8 @@ namespace WebMvc.Controllers
         }
         //
         // GET: /UserRequestController/
-         [HttpGet]
+         #region CreateRequest
+        [HttpGet] 
          public ActionResult CreateRequest()
          {
              int? userId = new int?();
@@ -100,7 +101,6 @@ namespace WebMvc.Controllers
                      throw new ArgumentException("Неизвестный тип заявки");
              }
          }
-
          [HttpGet]
          public ActionResult AllRequestList()
          {
@@ -113,7 +113,7 @@ namespace WebMvc.Controllers
              RequestBl.SetAllRequestListModel(model, !ValidateModel(model));
              return View(model);
          }
-
+         #endregion
          #region Employment
          [HttpGet]
          public ActionResult EmploymentList()
@@ -617,7 +617,6 @@ namespace WebMvc.Controllers
                  model.TimesheetStatusId = model.TimesheetStatusIdHidden;
          }
          #endregion
-
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
@@ -998,6 +997,7 @@ namespace WebMvc.Controllers
              }
          }
          #endregion
+         #region Comments
          [HttpGet]
          public ActionResult RenderComments(int id,int typeId)
          {
@@ -1059,7 +1059,8 @@ namespace WebMvc.Controllers
              var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
              return Content(jsonString);
          }
-
+         #endregion
+         #region Attachment
          public FileContentResult ViewAttachment(int id/*,int type*/)
          {
              try
@@ -1217,7 +1218,8 @@ namespace WebMvc.Controllers
              file.InputStream.Read(fileContent, 0, length);
              return fileContent;
          }
-
+           #endregion
+         #region Print
          [HttpGet]
          public FileContentResult GetPrintForm(int id, int typeId)
          {
@@ -1232,8 +1234,7 @@ namespace WebMvc.Controllers
                 throw;
             }
          }
-
-         [HttpGet]
+         /*[HttpGet]
          public ActionResult VacationPrint(int id)
          {
              VacationPrintModel model = RequestBl.GetVacationPrintModel(id);
@@ -1523,9 +1524,33 @@ namespace WebMvc.Controllers
                      Log.Warn(string.Format("Exception on delete file {0}", strFilePath), ex);
                  }
              }
-         }
+         }*/
+         #endregion
 
-     }
+         [HttpGet]
+         public ActionResult AcceptRequests(int? month, int? year)
+         {
+             if (!month.HasValue)
+                 month = DateTime.Today.Month;
+             if (!year.HasValue)
+                 year = DateTime.Today.Year;
+             AcceptRequestsModel model = new AcceptRequestsModel
+             {
+                 Month = month.Value,
+                 Year = year.Value,
+             };
+             RequestBl.GetAcceptRequestsModel(model);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult AcceptRequests(AcceptRequestsModel model)
+         {
+             RequestBl.SetAcceptDate(model);
+             if(!string.IsNullOrEmpty(model.Error))
+                 ModelState.AddModelError(string.Empty,model.Error);
+             return View(model);
+         }
+    }
 
     /*struct keyWordEntry
     {

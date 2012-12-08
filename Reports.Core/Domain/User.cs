@@ -144,6 +144,7 @@ namespace Reports.Core.Domain
             get { return personnels; }
             set { personnels = value; }
         }
+        public virtual IList<AcceptRequestDate> AcceptRequests { get; set; }
         //public virtual User BudgetManager { get; set; }
         //public virtual User OutsourcingManager { get; set; }
 

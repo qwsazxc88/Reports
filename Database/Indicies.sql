@@ -333,6 +333,12 @@ declare @managerId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 4,		   'АВ0000000001' , 0, @ManPositionId)
 set @managerId = @@Identity
+
+declare @managerId1 int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'manager1' ,'manager1'  ,	'2008-12-01 15:13:25:000',  N'Руководитель 1',              1,         null								, 4,		   'АВ0000000002' , 0, @ManPositionId)
+set @managerId1 = @@Identity
+
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@DepartmentId,1)
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@Department1Id,1)
 declare @personnelId int
@@ -344,6 +350,10 @@ declare @personnel1Id int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'personnel1' ,'personnel1'  ,	'2008-12-01 15:13:25:000',    N'Кадровик1',                    1,         null								, 8,		   'АГ0000000002' , 0, @PerPositionId)
 set @personnel1Id = @@Identity
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId1)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@managerId)
 
 
 declare @inspectorId int

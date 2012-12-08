@@ -16,6 +16,9 @@ alter table Absence  drop constraint FK_Absence_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Absence'))
 alter table Absence  drop constraint FK_Absence_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AcceptRequestDate_User]') AND parent_object_id = OBJECT_ID('AcceptRequestDate'))
+alter table AcceptRequestDate  drop constraint FK_AcceptRequestDate_User
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Employment_EmploymentType]') AND parent_object_id = OBJECT_ID('Employment'))
 alter table Employment  drop constraint FK_Employment_EmploymentType
 
@@ -225,6 +228,7 @@ alter table VacationComment  drop constraint FK_VacationComment_Vacation
 
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
+if exists (select * from dbo.sysobjects where id = object_id(N'AcceptRequestDate') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AcceptRequestDate
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistBabyMindingType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistBabyMindingType
 if exists (select * from dbo.sysobjects where id = object_id(N'Employment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Employment
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistType
@@ -304,6 +308,13 @@ create table Absence (
   DeleteDate DATETIME null,
   TimesheetStatusId INT null,
   constraint PK_Absence  primary key (Id)
+)
+create table AcceptRequestDate (
+ Id INT IDENTITY NOT NULL,
+  DateAccept DATETIME null,
+  DateCreate DATETIME null,
+  UserId INT not null,
+  constraint PK_AcceptRequestDate  primary key (Id)
 )
 create table SicklistBabyMindingType (
  Id INT IDENTITY NOT NULL,
@@ -840,6 +851,8 @@ alter table Absence add constraint FK_Absence_AbsenceType foreign key (TypeId) r
 alter table Absence add constraint FK_Absence_User foreign key (UserId) references [Users]
 alter table Absence add constraint FK_Absence_CreatorUser foreign key (CreatorId) references [Users]
 alter table Absence add constraint FK_Absence_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)
+alter table AcceptRequestDate add constraint FK_AcceptRequestDate_User foreign key (UserId) references [Users]
 create index Employment_EmploymentType on Employment (TypeId)
 create index Employment_EmploymentHoursType on Employment (HoursTypeId)
 create index Employment_Addition on Employment (AdditionId)
@@ -1311,6 +1324,12 @@ declare @managerId int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 4,		   'АВ0000000001' , 0, @ManPositionId)
 set @managerId = @@Identity
+
+declare @managerId1 int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'manager1' ,'manager1'  ,	'2008-12-01 15:13:25:000',  N'Руководитель 1',              1,         null								, 4,		   'АВ0000000002' , 0, @ManPositionId)
+set @managerId1 = @@Identity
+
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@DepartmentId,1)
 --INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@Department1Id,1)
 declare @personnelId int
@@ -1322,6 +1341,10 @@ declare @personnel1Id int
 INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
 VALUES			   (1,       	0              ,'personnel1' ,'personnel1'  ,	'2008-12-01 15:13:25:000',    N'Кадровик1',                    1,         null								, 8,		   'АГ0000000002' , 0, @PerPositionId)
 set @personnel1Id = @@Identity
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId1)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@managerId)
 
 
 declare @inspectorId int

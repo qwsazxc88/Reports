@@ -40,6 +40,9 @@ namespace Reports.Core.Dao
 
         IList<User> GetUsersForPersonnel(string userName, int personnelId, ref int currentPage, out int numberOfPages);
 
+        IList<AcceptRequestDateDto> GetAcceptDatesForManager(int userId, UserRole managerRole,
+                                                             DateTime beginDate, DateTime endDate);
+
         int DeleteEmployees(DateTime date);
     }
 }

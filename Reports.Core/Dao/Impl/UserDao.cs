@@ -385,6 +385,40 @@ namespace Reports.Core.Dao.Impl
             return userList.ToList();
         }
 
+        public IList<AcceptRequestDateDto> GetAcceptDatesForManager(int userId, UserRole managerRole,
+            DateTime beginDate, DateTime endDate)
+        {
+            string sqlQuery = @"select 
+            u.Id as UserId
+            ,u.Name as UserName
+            ,ard.DateAccept
+            from dbo.Users u
+            left join AcceptRequestDate ard on ard.UserId = u.Id ";
+            string sqlWhere = string.Format(" (ard.DateAccept is null  or ard.DateAccept between :beginDate and :endDate) and u.RoleId = {0} ", (int)UserRole.Manager);
+            switch (managerRole)
+            {
+                case UserRole.Manager:
+                    sqlWhere += " and u.Id = :userId";
+                    break;
+                case UserRole.PersonnelManager:
+                    sqlQuery+= " inner join UserToPersonnel up on u.Id = up.UserId ";
+                    sqlWhere += " and up.PersonnelId = :userId ";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Invalid role {0} of user {1}",managerRole,userId)); 
+            }
+            sqlQuery += @" where " + sqlWhere;
+            sqlQuery += @" order by u.Name,ard.DateAccept ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("DateAccept", NHibernateUtil.DateTime);
+            query.SetInt32("userId", userId);
+            query.SetDateTime("beginDate", beginDate);
+            query.SetDateTime("endDate", endDate);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(AcceptRequestDateDto))).List<AcceptRequestDateDto>();
+        }
+
 
 //        public ISet<Institution> GetLinkedInstitutions(int userId)
 //        {

@@ -73,9 +73,12 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteAttachment(DeleteAttacmentModel model);
         int GetAttachmentsCount(int entityId,RequestAttachmentTypeEnum typeId);
 
-        void CreateVacationOrder(int id, string templatePath, string filePath);
+        /*void CreateVacationOrder(int id, string templatePath, string filePath);
 
-        VacationPrintModel GetVacationPrintModel(int id);
+        VacationPrintModel GetVacationPrintModel(int id);*/
         AttachmentModel GetPrintFormFileContext(int id, RequestPrintFormTypeEnum typeId);
+
+        void GetAcceptRequestsModel(AcceptRequestsModel model);
+        void SetAcceptDate(AcceptRequestsModel model);
     }
 }

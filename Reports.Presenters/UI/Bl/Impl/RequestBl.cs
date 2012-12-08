@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Microsoft.Office.Interop.Word;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Dao.Impl;
@@ -3266,8 +3264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public List<IdNameDto> GetVacationTypes(bool addAll)
         {
             IList<VacationType> list =  VacationTypeDao.LoadAllSorted();
-            List<IdNameDto> vacationTypeList = new List<IdNameDto>();
-            vacationTypeList = list.
+            List<IdNameDto> vacationTypeList = list.
                     Where(x =>
                     x.Name == "Оплата дня сдачи крови и доп. дня отдыха донорам #1125" ||
                     x.Name == "Оплата дополнительного отпуска по календарным дням #1207" ||
@@ -4058,8 +4055,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ContextType = "application/msword"
             };
         }
-        
-        public VacationPrintModel GetVacationPrintModel(int id)
+        /*public VacationPrintModel GetVacationPrintModel(int id)
         {
             Vacation vacation = VacationDao.Load(id);
 
@@ -4132,14 +4128,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                 }
-                /*ddoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
+                /?ddoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
                 ddoc.Range(ref oMissing, ref oMissing).Delete(ref oMissing, ref oMissing);
-                ddoc.Range(ref oMissing, ref oMissing).InsertParagraphAfter();*/
+                ddoc.Range(ref oMissing, ref oMissing).InsertParagraphAfter();?/
                 int positionCorrection = 0;
                 foreach (PrintVacationOrderDto dto in list)
                 {
-                    /*if (dto.Keyword == "FIO")
-                        positionCorrection = positionCorrection+2;*/
+                    /?if (dto.Keyword == "FIO")
+                        positionCorrection = positionCorrection+2;?/
                     Log.DebugFormat("Setting {0} {1} {3} '{2}' to document", dto.Keyword, dto.Text, dto.spacesAfter,dto.Position+positionCorrection);
                     sdoc.Words[dto.Position + positionCorrection].Text = dto.Text + dto.spacesAfter;
                     string[] words = dto.Text.Split(new [] {' '});
@@ -4147,8 +4143,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     string[] wordsPoint = dto.Text.Split(new[] { '.'});
                     positionCorrection += 2*(wordsPoint.Count() - 1);
                 }
-                /*for (int i = 0; i < sdoc.Words.Count; i++)
-                    Log.DebugFormat("Text {0} at position {1} ", sdoc.Words[i + 1].Text, i + 1);*/
+                /?for (int i = 0; i < sdoc.Words.Count; i++)
+                    Log.DebugFormat("Text {0} at position {1} ", sdoc.Words[i + 1].Text, i + 1);?/
                 ddoc = word.Documents.Add(ref objTemplatePath, ref oMissing, ref oMissing, ref oMissing);
                 ddoc.Range(ref oMissing, ref oMissing).Delete(ref oMissing, ref oMissing);
                 ddoc.Range(ref oMissing, ref oMissing).InsertParagraphAfter();
@@ -4235,7 +4231,131 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     throw new ArgumentException(string.Format("Неизвестный месяц {0}", month));
             }
+        }*/
+
+        public void GetAcceptRequestsModel(AcceptRequestsModel model)
+        {
+            SetListboxes(model);
+            SetWeekDtos(model);
         }
+        public void SetAcceptDate(AcceptRequestsModel model)
+        {
+            try
+            {
+                IUser currentUser = AuthenticationService.CurrentUser;
+                if(!string.IsNullOrEmpty(model.AcceptDate) || currentUser.UserRole == UserRole.Manager)
+                {
+                    DateTime acceptDate;
+                    if(DateTime.TryParse(model.AcceptDate,out acceptDate))
+                    {
+                        User user = UserDao.Load(currentUser.Id);
+                        AcceptRequestDate entity = user.AcceptRequests.Where(x => x.DateAccept == acceptDate).FirstOrDefault();
+                        if(entity == null)
+                        {
+                            entity = new AcceptRequestDate
+                                         {
+                                             DateAccept = acceptDate,
+                                             DateCreate = DateTime.Now,
+                                             User = user,
+                                         };
+                            user.AcceptRequests.Add(entity);
+                            UserDao.Save(user);
+                            //EmailDto emailDto = new EmailDto();
+                            EmailDto emailDto = SendEmailForManagerAcceptRequests(user, acceptDate);
+                        }
+                        else
+                            Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
+                                user.Id,entity.DateAccept,entity.DateCreate);
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                model.Error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                Log.Error("Exception on SetAccept",ex);
+
+            }
+            finally
+            {
+                model.AcceptDate = null;
+                SetListboxes(model);
+                SetWeekDtos(model);
+            }
+        }
+        protected void SetWeekDtos(AcceptRequestsModel model)
+        {
+            DateTime month = new DateTime(model.Year,model.Month,1);
+            IList<AcceptWeekDto> list = GetWeeksDtoList(month);
+            DateTime beginDate = list[0].Monday;
+            DateTime endDate = list[5].Friday;
+            IUser user = AuthenticationService.CurrentUser;
+            IList<AcceptRequestDateDto> acceptDates =
+                UserDao.GetAcceptDatesForManager(user.Id, user.UserRole, beginDate, endDate);
+            List<IdNameDto> allUserIds = new List<IdNameDto>();
+            foreach (AcceptRequestDateDto dto in acceptDates)
+            {
+                if(allUserIds.Where(x => x.Id == dto.UserId).FirstOrDefault() == null)
+                    allUserIds.Add(new IdNameDto(dto.UserId,dto.UserName));
+            }
+            IList<UserAcceptWeekDto> resultList = new List<UserAcceptWeekDto>();
+            foreach (IdNameDto idNameDto in allUserIds)
+            {
+                IList<AcceptRequestWeekDto> listFroUser = new List<AcceptRequestWeekDto>();
+                IList<AcceptRequestDateDto> userDto = 
+                    acceptDates.Where(x => x.UserId == idNameDto.Id).ToList();
+                foreach (AcceptWeekDto acceptWeekDto in list)
+                {
+                    AcceptRequestWeekDto newDto = new AcceptRequestWeekDto
+                    {
+                        Friday = acceptWeekDto.Friday,
+                        IsAccepted = 
+                        userDto.Where(x => x.DateAccept == acceptWeekDto.Friday).
+                        FirstOrDefault() != null,
+                        IsEditable = acceptWeekDto.Friday == DateTime.Today ||
+                        acceptWeekDto.Friday.AddDays(3) == DateTime.Today,
+                    };
+                    newDto.IsEditable = newDto.IsEditable && 
+                                        !newDto.IsAccepted &&
+                                        user.UserRole == UserRole.Manager;
+                    newDto.IsHidden = DateTime.Today < acceptWeekDto.Friday; 
+                    listFroUser.Add(newDto);
+                }
+                resultList.Add(new UserAcceptWeekDto
+                                   {
+                                       UserId = idNameDto.Id,
+                                       UserName = idNameDto.Name,
+                                       dtos = listFroUser
+                                   }
+                    );
+            }
+            model.WeeksList = list;
+            model.UsersList = resultList;
+        }
+        protected void SetListboxes(AcceptRequestsModel model)
+        {
+            model.Monthes = GetMonthesList();
+            model.Years = GetYearsList();
+        }
+        protected IList<AcceptWeekDto> GetWeeksDtoList(DateTime month)
+        {
+            IList<AcceptWeekDto> list = new List<AcceptWeekDto>();
+            DateTime firstMonday = month.AddDays((int)month.DayOfWeek == 0 ? -6 : -(int)month.DayOfWeek+1);
+            for (int i = 0; i < 6; i++)
+            {
+                DateTime monday = firstMonday.AddDays(i*7);
+                DateTime friday = firstMonday.AddDays(i*7 + 4);
+                //if(monday.Month != month.Month && friday.Month != month.Month)
+                //    continue;
+                list.Add( new AcceptWeekDto
+                              {
+                                  Monday = monday,
+                                  Friday = friday
+                              });
+            }
+            return list;
+        }
+
 
     }
 

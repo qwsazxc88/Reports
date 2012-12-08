@@ -40,10 +40,15 @@
                         <tr><td>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</td></tr>
                        @* <tr><td>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</td></tr>*@
                         <tr><td>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td></tr>
-                           if (dto.UserRole != UserRole.Inspector)
-                           {
-                            <tr><td>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td></tr>
-                           }
+                        if (dto.UserRole != UserRole.Inspector)
+                        {
+                        <tr><td>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td></tr>
+                        }
+                       if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
+                       {
+                            <tr><td>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</td></tr>
+                       }
+
 @*                           if (dto.UserRole == UserRole.PersonnelManager)
                            {
                             <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>

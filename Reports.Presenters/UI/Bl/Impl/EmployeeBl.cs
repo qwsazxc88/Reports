@@ -734,38 +734,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    SetListboxes(model);
         //    //SetDaysToListbox(model);
         //}
-        protected static string GetMonthName(int month)
-        {
-            switch(month)
-            {
-                case 1:
-                    return "Январь";
-                case 2:
-                    return "Февраль";
-                case 3:
-                    return "Март";
-                case 4:
-                    return "Апрель";
-                case 5:
-                    return "Май";
-                case 6:
-                    return "Июнь";
-                case 7:
-                    return "Июль";
-                case 8:
-                    return "Август";
-                case 9:
-                    return "Сентябрь";
-                case 10:
-                    return "Октябрь";
-                case 11:
-                    return "Ноябрь";
-                case 12:
-                    return "Декабрь";
-                default:
-                    throw new ArgumentException(string.Format("Неизвестный месяц {0}",month));
-            }
-        }
+        
         protected void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
         {
             model.Monthes = GetMonthesList();
@@ -785,31 +754,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             //        x.ToString("MMMM") + " " + x.Year.ToString(),
             //});
             //model.Monthes = dtoMonth;
-        }
-        protected IList<IdNameDto> GetYearsList()
-        {
-            IList<IdNameDto> list = new List<IdNameDto>();
-            for(int i=2012;i<2015;i++)
-                list.Add(new IdNameDto(i,i.ToString()));
-            return list;
-        }
-        protected IList<IdNameDto> GetMonthesList()
-        {
-            return new List<IdNameDto>
-                       {
-                           new IdNameDto(1,"Январь"),
-                           new IdNameDto(2,"Февраль"),
-                           new IdNameDto(3,"Март"),
-                           new IdNameDto(4,"Апрель"),
-                           new IdNameDto(5,"Май"),
-                           new IdNameDto(6,"Июнь"),
-                           new IdNameDto(7,"Июль"),
-                           new IdNameDto(8,"Август"),
-                           new IdNameDto(9,"Сентябрь"),
-                           new IdNameDto(10,"Октябрь"),
-                           new IdNameDto(11,"Ноябрь"),
-                           new IdNameDto(12,"Декабрь"),
-                       };
         }
         //protected void SetDaysToListbox(TimesheetListModel model)
         //{

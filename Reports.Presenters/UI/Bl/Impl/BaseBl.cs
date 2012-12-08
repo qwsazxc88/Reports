@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Reflection;
@@ -65,6 +66,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.FullName = user.FullName;
             return user;
         }
+        protected EmailDto SendEmailForManagerAcceptRequests(User user,DateTime acceptDate)
+        {
+            string to = null;
+            switch (user.UserRole)
+            {
+                case UserRole.Manager:
+                    foreach (User u in user.Personnels)
+                    {
+                        if (string.IsNullOrEmpty(u.Email))
+                            Log.ErrorFormat("Cannot send request accept e-mail  from manager {0} to personnel manager {1} - empty email",  user.Id, u.FullName);
+                        else
+                        {
+                            if (string.IsNullOrEmpty(to))
+                                to = u.Email;
+                            else
+                                to += ";" + u.Email;
+                        }
+                    }
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("SendEmailForManagerAcceptRequests - ivalid user {0} role",user.Id));
+            }
+            string body;
+            string subject = GetSubjectAndBodyForManagerAcceptRequest(user,acceptDate, out body);
+            return SendEmail(to, subject, body);
+        }
+        protected string GetSubjectAndBodyForManagerAcceptRequest(User user, DateTime acceptDate, out string body)
+        {
+            body = string.Format("Пользователь {0} подтвердил ввод заявок за неделю {1} - {2}", 
+                                 user.FullName,
+                                 acceptDate.AddDays(-4).ToShortDateString(), 
+                                 acceptDate.ToShortDateString());
+            const string subject = "Подтверждение ввода заявок";
+            return subject;
+        }
+
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
             int requestId,int requestNumber,
             RequestTypeEnum requestType,bool isFromComment)
@@ -92,9 +129,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else
                         {
                             if (string.IsNullOrEmpty(to))
-                                to = user.Email;
+                                to = u.Email;
                             else
-                                to += ";" + user.Email;
+                                to += ";" + u.Email;
                         }
                     }
 
@@ -393,6 +430,68 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return month.ToString("MMMM") + " " + month.Year;
         }
+        protected static IList<IdNameDto> GetYearsList()
+        {
+            IList<IdNameDto> list = new List<IdNameDto>();
+            for (int i = 2012; i <= DateTime.Today.Year + 1; i++)
+                list.Add(new IdNameDto(i, i.ToString()));
+            return list;
+        }
+        protected static IList<IdNameDto> GetMonthesList()
+        {
+            /*return new List<IdNameDto>
+                       {
+                           new IdNameDto(1,"Январь"),
+                           new IdNameDto(2,"Февраль"),
+                           new IdNameDto(3,"Март"),
+                           new IdNameDto(4,"Апрель"),
+                           new IdNameDto(5,"Май"),
+                           new IdNameDto(6,"Июнь"),
+                           new IdNameDto(7,"Июль"),
+                           new IdNameDto(8,"Август"),
+                           new IdNameDto(9,"Сентябрь"),
+                           new IdNameDto(10,"Октябрь"),
+                           new IdNameDto(11,"Ноябрь"),
+                           new IdNameDto(12,"Декабрь"),
+                       };*/
+            IList<IdNameDto> list = new List<IdNameDto>();
+            for (int i = 1; i < 13; i++)
+                list.Add(new IdNameDto(i,GetMonthName(i)));
+            return list;
+        }
+        protected static string GetMonthName(int month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return "Январь";
+                case 2:
+                    return "Февраль";
+                case 3:
+                    return "Март";
+                case 4:
+                    return "Апрель";
+                case 5:
+                    return "Май";
+                case 6:
+                    return "Июнь";
+                case 7:
+                    return "Июль";
+                case 8:
+                    return "Август";
+                case 9:
+                    return "Сентябрь";
+                case 10:
+                    return "Октябрь";
+                case 11:
+                    return "Ноябрь";
+                case 12:
+                    return "Декабрь";
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный месяц {0}", month));
+            }
+        }
+
 
     }
     public class BlockGSSAPINTLMCredential : ICredentialsByHost

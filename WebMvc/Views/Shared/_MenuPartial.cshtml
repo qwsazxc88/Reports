@@ -33,6 +33,10 @@
                        {
                             <li>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</li>
                        }
+                       if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
+                       {
+                            <li>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</li>
+                       }
                        @*if (dto.UserRole == UserRole.PersonnelManager)
                        {
                             <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
