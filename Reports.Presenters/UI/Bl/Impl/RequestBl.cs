@@ -3263,7 +3263,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetVacationTypes(bool addAll)
         {
-            IList<VacationType> list =  VacationTypeDao.LoadAllSorted();
+            List<IdNameDto> vacationTypeList = VacationTypeDao.LoadAllSorted().ToList()
+                .ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            /*IList<VacationType> list =  VacationTypeDao.LoadAllSorted();
             List<IdNameDto> vacationTypeList = list.
                     Where(x =>
                     x.Name == "Оплата дня сдачи крови и доп. дня отдыха донорам #1125" ||
@@ -3279,7 +3281,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 || AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager)
             vacationTypeList.AddRange(list.Where(x => x.Name == "Отпуск по уходу за ребенком без оплаты #1802")
                     .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name)));
-            vacationTypeList = vacationTypeList.OrderBy(x => x.Name).ToList();
+            vacationTypeList = vacationTypeList.OrderBy(x => x.Name).ToList();*/
             if(addAll)
                 vacationTypeList.Insert(0,new IdNameDto(0,SelectAll));
             return vacationTypeList;
