@@ -4054,7 +4054,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Context = printForm.Context,
                 FileName = "PrintFrom",
-                ContextType = "application/msword"
+                ContextType = "application/pdf"
             };
         }
         /*public VacationPrintModel GetVacationPrintModel(int id)

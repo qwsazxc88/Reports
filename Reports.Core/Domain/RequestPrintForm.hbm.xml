@@ -6,8 +6,8 @@
     <!--<version name="Version" column= "Version"/>-->
     <!--<property name="FileName" length="64" not-null="true"/>-->
     <!--<property name="ContextType" length="64" not-null="true"/>-->
-    <!--<property name="Context" type="BinaryBlob" not-null="true"/>-->
-	  <property name="Context" type="Serializable" length="2147483647" not-null="true"/>
+    <property name="Context" type="BinaryBlob" not-null="true"/>
+	  <!--<property name="Context" type="Serializable" length="2147483647" not-null="true"/>-->
     <property name="RequestId" not-null="true"/>
     <property name="RequestTypeId" not-null="true"/>
     <!--<property name="DateCreated" not-null="true"/>
