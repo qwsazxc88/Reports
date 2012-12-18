@@ -100,5 +100,8 @@ namespace Reports.Presenters.UI.ViewModel
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public bool IsPrintOrderAvailable { get; set; }
+        public bool IsPrintCertificateAvailable { get; set; }
     }
 }

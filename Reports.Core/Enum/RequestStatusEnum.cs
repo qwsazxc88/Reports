@@ -36,9 +36,19 @@
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
     }
+  //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
+  //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
+  //dbo.Employment (прием на работу)      RequestTypeId = 3, (приказ)
+  //dbo.HolidayWork (работа в выходные)   RequestTypeId = "",(Нет печатной формы)
+  //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
+  //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
+  //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,
         Dismissal = 2,
+        Employment = 3,
+        MissionOrder = 4,
+        MissionCertificate = 5
     }
 }

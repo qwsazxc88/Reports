@@ -1786,6 +1786,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+
+            RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.MissionOrder);
+            model.IsPrintOrderAvailable = form != null;
+            RequestPrintForm formCertificate = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.MissionCertificate);
+            model.IsPrintCertificateAvailable = formCertificate != null;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -1851,6 +1857,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
+
+            model.IsPrintOrderAvailable = state;
+            model.IsPrintCertificateAvailable = state;
         }
         protected void LoadDictionaries(MissionEditModel model)
         {
@@ -2722,7 +2731,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TimesheetStatuses = GetTimesheetStatusesForSicklist();
             model.Types = GetSicklistTypes(false,false);
             model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(!model.IsPersonnelFieldsEditable,false);
-            model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(true);
+            model.PaymentRestrictTypes = GetSicklisPaymentRestrictTypes(false);
             model.BabyMindingTypes = GetBabyMindingTypes(false);
             model.SicklistTypeIdBabyMindingHidden = SicklistTypeDao.SicklistTypeIdBabyMinding;
         }

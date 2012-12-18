@@ -195,6 +195,12 @@
                                                                                     {<text>style="display:none"</text>}/>
             <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
                                                                                     {<text>style="display:none"</text>}/>
+            <input type="button" value="Печать приказа" name="PrintOrderButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 4 })';" 
+                                                                @if (!Model.IsPrintOrderAvailable)
+                                                                {<text>style="display:none"</text>}  />
+            <input type="button" value="Печать удостоверения" name="PrintCertificatButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 5 })';" 
+                                                                @if (!Model.IsPrintCertificateAvailable)
+                                                                {<text>style="display:none"</text>}  />
         </td>
     </tr>
     <tr>
