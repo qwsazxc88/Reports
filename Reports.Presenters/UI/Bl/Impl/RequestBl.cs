@@ -4062,7 +4062,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new AttachmentModel
             {
                 Context = printForm.Context,
-                FileName = "PrintFrom",
+                FileName = "PrintForm.pdf",
                 ContextType = "application/pdf"
             };
         }
