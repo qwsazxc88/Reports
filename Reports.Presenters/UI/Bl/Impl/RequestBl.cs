@@ -2870,7 +2870,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected List<IdNameDto> GetAbsenceTypes(bool addAll)
         {
             var typeList = AbsenceTypeDao.LoadAllSorted().
-                Where(x => x.Code.CompareTo("55") == 0 || x.Code.CompareTo("56") == 0).
+                /*Where(x => x.Code.CompareTo("55") == 0 || x.Code.CompareTo("56") == 0).*/
                 ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
