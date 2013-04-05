@@ -548,13 +548,14 @@ namespace Reports.Core.Dao.Impl
                         {
                             DayOfWeek dayOfweek = date.DayOfWeek;
                             bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
+                            bool isDayInFuture = DateTime.Today < date;
                             dayRequestsDto.Requests.Add(new RequestDto
                                                             {
                                                                 BeginDate = date,
                                                                 EndDate = date,
                                                                 TimesheetCode =
-                                                                    isHoliday ? HolidayStatusCode : PresenceStatusCode,
-                                                                TimesheetHours = isHoliday ? new int?() : 8,
+                                                                    isHoliday ? HolidayStatusCode : isDayInFuture? EmptyStatusCode: PresenceStatusCode,
+                                                                TimesheetHours = isHoliday ? new int?() : isDayInFuture? new int?() : 8,
                                                                 UserId = idNameDto.Id,
                                                                 UserName = idNameDto.Name
                                                             });

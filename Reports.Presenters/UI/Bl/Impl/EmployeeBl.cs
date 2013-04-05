@@ -701,7 +701,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
                 dto.Days = userDayList;
-                dto.IsHoursVisible = user.UserRole == UserRole.Manager;
+                dto.IsHoursVisible = user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
                 list.Add(dto);
             }
             Log.Debug("After foreach");
