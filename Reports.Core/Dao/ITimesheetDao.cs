@@ -19,6 +19,7 @@ namespace Reports.Core.Dao
 
         //IList<RequestDto> GetRequests(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
         //                              int userId, UserRole userRole);
-        IList<DayRequestsDto> GetRequestsForMonth(int month, int year, int userId, UserRole userRole);
+        IList<DayRequestsDto> GetRequestsForMonth(int month, int year, int managerId, UserRole managerRole,
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users);
     }
 }

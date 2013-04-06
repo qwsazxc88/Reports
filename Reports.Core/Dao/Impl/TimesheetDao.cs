@@ -209,7 +209,7 @@ namespace Reports.Core.Dao.Impl
             return criteria.List<Timesheet>();
         }
         protected IList<RequestDto> GetRequestsForTypeOneDay(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
-            int userId, UserRole userRole)
+            int userId, UserRole userRole, IList<int> userIds)
         {
             string sqlQuery =
                 string.Format(@"select v.{0} as BeginDate,
@@ -247,21 +247,22 @@ namespace Reports.Core.Dao.Impl
                           and v.ManagerDateAccept is not null
                           and v.PersonnelManagerDateAccept is not null ",
                           type == RequestTypeEnum.HolidayWork ? "WorkDate" : "EventDate");
-            switch (userRole)
-            {
-                case UserRole.Employee:
-                    sqlQuery += " and v.UserId = :userId ";
-                    break;
-                case UserRole.Manager:
-                    sqlQuery += " and u.ManagerId = :userId ";
-                    break;
-                case UserRole.PersonnelManager:
-                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
-                    break;
-                default:
-                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+            sqlQuery += " and u.Id in (:userList)";
+            //switch (userRole)
+            //{
+            //    case UserRole.Employee:
+            //        sqlQuery += " and v.UserId = :userId ";
+            //        break;
+            //    case UserRole.Manager:
+            //        sqlQuery += " and u.ManagerId = :userId ";
+            //        break;
+            //    case UserRole.PersonnelManager:
+            //        sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
+            //        break;
+            //    default:
+            //        throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
 
-            }
+            //}
             sqlQuery += string.Format(" order by UserName,UserId,{0}",
                 type == RequestTypeEnum.HolidayWork ? "WorkDate" : "EventDate");
             IQuery query = Session.CreateSQLQuery(sqlQuery).
@@ -274,13 +275,14 @@ namespace Reports.Core.Dao.Impl
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
-               SetInt32("userId", userId);
+               SetParameterList("userList", userIds);
+               //SetInt32("userId", userId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(RequestDto))).List<RequestDto>();
         }
         protected IList<RequestDto> GetRequestsForDismissalAndDaysAfter(DateTime beginDate, DateTime endDate,
-                int userId, UserRole userRole)
+                int managerId, UserRole managerRole, IList<int> userIds)
         {
-            IList<RequestDto> list = GetRequestsForDismissal(beginDate, endDate, userId, userRole);
+            IList<RequestDto> list = GetRequestsForDismissal(beginDate, endDate, managerId, managerRole,userIds);
             foreach (RequestDto requestDto in list.Where(requestDto => requestDto.TimesheetCode == PresenceStatusCode))
                 requestDto.TimesheetHours = 8;
             IList<RequestDto> afterList = list.Select(requestDto => new RequestDto
@@ -298,7 +300,7 @@ namespace Reports.Core.Dao.Impl
             return result;
         }
         protected IList<RequestDto> GetRequestsForDismissal(DateTime beginDate, DateTime endDate,
-        int userId, UserRole userRole)
+        int managerId, UserRole managerRole, IList<int> userIds)
         {
             string sqlQuery =
                 string.Format(@"select v.EndDate as BeginDate,
@@ -316,21 +318,22 @@ namespace Reports.Core.Dao.Impl
                           and v.UserDateAccept is not  null
                           and v.ManagerDateAccept is not null
                           and v.PersonnelManagerDateAccept is not null ");
-            switch (userRole)
-            {
-                case UserRole.Employee:
-                    sqlQuery += " and v.UserId = :userId ";
-                    break;
-                case UserRole.Manager:
-                    sqlQuery += " and u.ManagerId = :userId ";
-                    break;
-                case UserRole.PersonnelManager:
-                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
-                    break;
-                default:
-                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+            sqlQuery += " and u.Id in (:userList)";
+            //switch (userRole)
+            //{
+            //    case UserRole.Employee:
+            //        sqlQuery += " and v.UserId = :userId ";
+            //        break;
+            //    case UserRole.Manager:
+            //        sqlQuery += " and u.ManagerId = :userId ";
+            //        break;
+            //    case UserRole.PersonnelManager:
+            //        sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
+            //        break;
+            //    default:
+            //        throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
 
-            }
+            //}
             sqlQuery += string.Format(" order by UserName,UserId,EndDate");
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                AddScalar("BeginDate", NHibernateUtil.DateTime).
@@ -342,14 +345,15 @@ namespace Reports.Core.Dao.Impl
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
-               SetInt32("userId", userId);
+               SetParameterList("userList", userIds);
+               //SetInt32("userId", userId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(RequestDto))).List<RequestDto>();
         }
 
-        protected IList<RequestDto> GetRequestsForEmploymentAndDaysBefore(DateTime beginDate, DateTime endDate, 
-                int userId, UserRole userRole)
+        protected IList<RequestDto> GetRequestsForEmploymentAndDaysBefore(DateTime beginDate, DateTime endDate,
+                int managerId, UserRole managerRole, IList<int> userIds)
         {
-            IList<RequestDto> list = GetRequestsForEmployment(beginDate, endDate, userId, userRole);
+            IList<RequestDto> list = GetRequestsForEmployment(beginDate, endDate, managerId, managerRole,userIds);
             foreach (RequestDto requestDto in list.Where(requestDto => requestDto.TimesheetCode == PresenceStatusCode))
                 requestDto.TimesheetHours = 8;
             IList<RequestDto> beforeList = list.Select(requestDto => new RequestDto
@@ -366,8 +370,8 @@ namespace Reports.Core.Dao.Impl
             result.AddRange(beforeList);
             return result;
         }
-        protected IList<RequestDto> GetRequestsForEmployment(DateTime beginDate, DateTime endDate, 
-                int userId, UserRole userRole)
+        protected IList<RequestDto> GetRequestsForEmployment(DateTime beginDate, DateTime endDate,
+                int managerId, UserRole managerRole, IList<int> userIds)
         {
             string sqlQuery =
                 string.Format(@"select v.BeginDate as BeginDate,
@@ -386,21 +390,22 @@ namespace Reports.Core.Dao.Impl
                           and v.UserDateAccept is not  null
                           and v.ManagerDateAccept is not null
                           and v.PersonnelManagerDateAccept is not null ");
-            switch (userRole)
-            {
-                case UserRole.Employee:
-                    sqlQuery += " and v.UserId = :userId ";
-                    break;
-                case UserRole.Manager:
-                    sqlQuery += " and u.ManagerId = :userId ";
-                    break;
-                case UserRole.PersonnelManager:
-                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
-                    break;
-                default:
-                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+            sqlQuery += " and u.Id in (:userList)";
+            //switch (userRole)
+            //{
+            //    case UserRole.Employee:
+            //        sqlQuery += " and v.UserId = :userId ";
+            //        break;
+            //    case UserRole.Manager:
+            //        sqlQuery += " and u.ManagerId = :userId ";
+            //        break;
+            //    case UserRole.PersonnelManager:
+            //        sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
+            //        break;
+            //    default:
+            //        throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
 
-            }
+            //}
             sqlQuery += string.Format(" order by UserName,UserId,BeginDate");
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                AddScalar("BeginDate", NHibernateUtil.DateTime).
@@ -412,13 +417,14 @@ namespace Reports.Core.Dao.Impl
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
-               SetInt32("userId", userId);
+               SetParameterList("userList", userIds);
+               //SetInt32("userId", userId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(RequestDto))).List<RequestDto>();
         }
 
 
         protected IList<RequestDto> GetRequestsForType(DateTime beginDate,DateTime endDate,RequestTypeEnum type,
-            int userId,UserRole userRole)
+            int managerId, UserRole managerRole, IList<int> userIds)
         {
             string sqlQuery =
                 @"select v.BeginDate as BeginDate,
@@ -457,21 +463,22 @@ namespace Reports.Core.Dao.Impl
                           and v.UserDateAccept is not  null
                           and v.ManagerDateAccept is not null
                           and v.PersonnelManagerDateAccept is not null ";
-            switch(userRole)
-            {
-                case UserRole.Employee:
-                    sqlQuery += " and v.UserId = :userId ";
-                    break;
-                case UserRole.Manager:
-                    sqlQuery += " and u.ManagerId = :userId ";
-                    break;
-                case UserRole.PersonnelManager:
-                    sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
-                    break;
-                default:
-                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));
+            sqlQuery += " and u.Id in (:userList)";
+            //switch(userRole)
+            //{
+            //    case UserRole.Employee:
+            //        sqlQuery += " and v.UserId = :userId ";
+            //        break;
+            //    case UserRole.Manager:
+            //        sqlQuery += " and u.ManagerId = :userId ";
+            //        break;
+            //    case UserRole.PersonnelManager:
+            //        sqlQuery += " and exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ";//" and u.PersonnelManagerId = :userId ";
+            //        break;
+            //    default:
+            //        throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));
 
-            }
+            //}
             sqlQuery += " order by UserName,UserId,BeginDate,EndDate ";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                AddScalar("BeginDate", NHibernateUtil.DateTime).
@@ -483,37 +490,47 @@ namespace Reports.Core.Dao.Impl
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
-               SetInt32("userId", userId);
+               SetParameterList("userList", userIds);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(RequestDto))).List<RequestDto>();
         }
-        protected IList<RequestDto> GetRequests(DateTime beginDate,DateTime endDate,int userId,UserRole userRole)
+        protected IList<RequestDto> GetRequests(DateTime beginDate,DateTime endDate,
+            int managerId, UserRole managerRole, IList<IdNameDtoWithDates> users)
         {
+
+            List<int> userIds = users.ToList().ConvertAll(x => x.Id).ToList();
             List<RequestDto> allList = new List<RequestDto>();
-            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Vacation, userId, userRole));
-            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Absence, userId, userRole));
-            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Sicklist, userId, userRole));
-            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Mission, userId, userRole));
-            allList.AddRange(GetRequestsForTypeOneDay(beginDate, endDate, RequestTypeEnum.HolidayWork, userId, userRole));
-            allList.AddRange(GetRequestsForTypeOneDay(beginDate, endDate, RequestTypeEnum.TimesheetCorrection, userId, userRole));
-            allList.AddRange(GetRequestsForEmploymentAndDaysBefore(beginDate, endDate, userId, userRole));
-            allList.AddRange(GetRequestsForDismissalAndDaysAfter(beginDate, endDate, userId, userRole));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Vacation, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Absence, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Sicklist, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Mission, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForTypeOneDay(beginDate, endDate, RequestTypeEnum.HolidayWork, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForTypeOneDay(beginDate, endDate, RequestTypeEnum.TimesheetCorrection, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForEmploymentAndDaysBefore(beginDate, endDate, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForDismissalAndDaysAfter(beginDate, endDate, managerId, managerRole, userIds));
 
             return allList;
         }
-        public IList<DayRequestsDto> GetRequestsForMonth(int month,int year,int userId,UserRole userRole)
+        public IList<DayRequestsDto> GetRequestsForMonth(
+            int month, int year, int managerId, UserRole managerRole,
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users
+            )
         {
-            DateTime current = new DateTime(year,month, 1);
-            IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
-            for (int i = 0; i < 31; i++)
-            {
-                DayRequestsDto dto = new DayRequestsDto {Day = current};
-                if (current.Month != month)
-                    break;
-                dtoList.Add(dto);
-                current = current.AddDays(1);
-            }
-            IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day, userId, userRole);
-            IList<IdNameDtoWithDates> users = UserDao.GetUsersForManagerWithDate(userId,userRole);
+            //DateTime current = new DateTime(year,month, 1);
+            //IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
+            //for (int i = 0; i < 31; i++)
+            //{
+            //    DayRequestsDto dto = new DayRequestsDto {Day = current};
+            //    if (current.Month != month)
+            //        break;
+            //    dtoList.Add(dto);
+            //    current = current.AddDays(1);
+            //}
+            //DateTime minDate = dtoList.First().Day;
+            //DateTime maxDate = dtoList.Last().Day;
+            //IList<IdNameDtoWithDates> users = UserDao.GetUsersForManagerWithDate(userId, userRole);
+            IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
+                managerId, managerRole, users);
+            
             //switch(userRole)
             //{
             //    case UserRole.Employee:

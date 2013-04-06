@@ -631,11 +631,44 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.CurrentPage = currentPage;
             //model.NumberOfPages = numberOfPages;
         }
+        protected IList<DayRequestsDto> GetDayDtoList(int month, int year)
+        {
+            DateTime current = new DateTime(year, month, 1);
+            IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
+            for (int i = 0; i < 31; i++)
+            {
+                DayRequestsDto dto = new DayRequestsDto { Day = current };
+                if (current.Month != month)
+                    break;
+                dtoList.Add(dto);
+                current = current.AddDays(1);
+            }
+            return dtoList;
+        }
         protected void SetTimesheetsInfo(TimesheetListModel model)
         {
             IUser user = AuthenticationService.CurrentUser;
             Log.Debug("Before GetRequestsForMonth");
-            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth(model.Month, model.Year, user.Id, user.UserRole);
+            IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
+            IList<IdNameDtoWithDates> uDtoList =
+                UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,
+                                                        dayDtoList.First().Day, dayDtoList.Last().Day);
+            Log.Debug("After GetUsersForManagerWithDatePaged");
+            int userCount = uDtoList.Count;
+            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
+            int currentPage = model.CurrentPage;
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            if (currentPage == 0)
+                currentPage = 1;
+            uDtoList = uDtoList
+                .Skip((currentPage - 1) * TimesheetPageSize)
+                .Take(TimesheetPageSize).ToList();
+            model.CurrentPage = currentPage;
+            model.NumberOfPages = numberOfPages;
+
+            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -657,21 +690,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             userNameDtoList = userNameDtoList.OrderBy(x => x.Name).ToList();
-            Log.Debug("After create ordered user dto list ");
-            int timesheetsCount = userNameDtoList.Count;
-            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
-            int currentPage = model.CurrentPage;
-            if (currentPage > numberOfPages)
-                currentPage = numberOfPages;
-            if (currentPage == 0)
-                currentPage = 1;
-            userNameDtoList = userNameDtoList
-                .Skip((currentPage - 1) * TimesheetPageSize)
-                .Take(TimesheetPageSize).ToList();
-            model.CurrentPage = currentPage;
-            model.NumberOfPages = numberOfPages;
             allUserIds = userNameDtoList.ToList().ConvertAll(x => x.Id).ToList();
-            Log.Debug("After paging");
+            Log.Debug("After create ordered user dto list ");
             List<TimesheetDto> list = new List<TimesheetDto>();
             foreach (int userId in allUserIds)
             {

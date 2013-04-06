@@ -15,6 +15,8 @@ namespace Reports.Core.Dao
         IList<User> LoadUserByCodes(List<string> codes);
         IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole);
         IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole);
+        IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
+                                                                  DateTime beginDate, DateTime endDate);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);
         //IList<User> FindByFilter(UserListFilter filter, out int count);
