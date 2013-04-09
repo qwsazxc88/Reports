@@ -786,6 +786,8 @@ namespace WebMvc.Controllers
          [HttpPost]
          public ActionResult AbsenceList(AbsenceListModel model)
          {
+             if (model.DepartmentName == null)
+                 model.DepartmentName = string.Empty;
              RequestBl.SetAbsenceListModel(model, !ValidateModel(model));
              return View(model);
          }
@@ -1526,6 +1528,23 @@ namespace WebMvc.Controllers
              }
          }*/
          #endregion
+
+         [HttpGet]
+         public ActionResult DepartmentDialog(int id/*, int typeId*/)
+         {
+             try
+             {
+                 AddCommentModel model = new AddCommentModel { DocumentId = id };
+                 return PartialView(model);
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception", ex);
+                 string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                 return PartialView("DialogError", new DialogErrorModel { Error = error });
+             }
+         }
+
 
          [HttpGet]
          public ActionResult AcceptRequests(int? month, int? year)

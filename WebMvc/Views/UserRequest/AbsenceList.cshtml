@@ -16,35 +16,50 @@
     </tr>
     <tr>
         <td style="width:200px">
-            @Html.LabelFor(m => m.Department):
+            @Html.LabelFor(m => m.DepartmentName):
         </td>
         <td>
-            @Html.EditorFor(model => model.Department)
+            @Html.Label(Model.DepartmentName)
+            <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+            <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
             @*@Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) *@
         </td>
-        <td style="width:116px">
+    </tr>
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+            @if (!Model.DepartmentReadOnly)
+            {
+                <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+            }            
+        </td>
+    </tr>
+    <tr>
+        <td>
             @Html.LabelFor(m => m.PositionId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-    <tr>
+     <tr>
         <td>
             @Html.LabelFor(m => m.AbsenceTypeId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name")) 
         </td>
-        <td>
+    </tr>
+    <tr>
+         <td>
             @Html.LabelFor(m => m.RequestStatusId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
     </tr>
-     <tr>
-        <td colspan="4">
+    <tr>
+        <td colspan="2">
             @Html.LabelFor(m => m.BeginDate):
             @Html.EditorFor(model => model.BeginDate) 
             @Html.LabelFor(m => m.EndDate):
@@ -62,7 +77,7 @@
         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
         {
             if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
-                {@Html.ActionLink("Создать новую заявку", "CreateRequest") }
+            {@Html.ActionLink("Создать новую заявку", "CreateRequest") }
         }                                                                                             
         </td>
     </tr>
@@ -94,7 +109,7 @@
         </td>
     </tr>
 </table> 
-    <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
@@ -104,11 +119,53 @@
         $("#BeginDate").val('');
         $("#EndDate").val('');
         //if ($('#DepartmentId option').length > 1)
-        $("#Department").val('');
+        //$("#Department").val('');
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#AbsenceTypeId").val('0');
         $("#RequestStatusId").val('0');
+    }
+    function changeDepartment() {
+        createDepartmentDialog();
+    }
+    function createDepartmentDialog() 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divDepartmentDialog";
+        var newDiv = $(elem);
+        var departmentId = $("#DepartmentId").val();
+        //var typeId = $("#RequestTypeId").val();
+
+        var title =  "Выбор структурного подразделения";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("DepartmentDialog", "UserRequest")?id=" + departmentId +" #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 550,
+	        height: 220,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateDepartment())
+                        return;
+                    SaveDepartment();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
     }
  </script>   
 }

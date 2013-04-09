@@ -2857,10 +2857,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public AbsenceListModel GetAbsenceListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            //Department parent = user.Department.Parent;
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             AbsenceListModel model = new AbsenceListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
                 AbsenceTypes = GetAbsenceTypes(true),
                 RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
@@ -2895,7 +2899,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 user.Id,
                 role,
                 //model.DepartmentId,
-                GetDepartmentId(model.Department),
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
                 model.PositionId,
                 model.AbsenceTypeId,
                 model.RequestStatusId,
