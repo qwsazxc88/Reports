@@ -8,5 +8,8 @@ namespace Reports.Core.Dao
         //IList<Department> LoadAllSorted();
         IList<Department> SearchByName(string name);
         Department SearchByNameDistinct(string name);
+        Department GetRootDepartment();
+        IList<Department> GetDepartmentsTree(int departmentId);
+        IList<Department> SearchByParentId(int parentId);
     }
 }

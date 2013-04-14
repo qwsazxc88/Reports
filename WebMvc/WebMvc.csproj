@@ -146,6 +146,7 @@
     <Content Include="FileSizeTooLarge.htm" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\Common.js" />
+    <Content Include="Scripts\DepartmentTree.js" />
     <Content Include="Scripts\fileuploader.js" />
     <Content Include="Scripts\globinfo\Globalization.ru-RU.js" />
     <Content Include="Scripts\globinfo\Globalization.ru-RU.min.js" />

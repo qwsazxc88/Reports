@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -1534,7 +1535,8 @@ namespace WebMvc.Controllers
          {
              try
              {
-                 AddCommentModel model = new AddCommentModel { DocumentId = id };
+                 //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
+                 DepartmentTreeModel model = RequestBl.GetDepartmentTreeModel(id);
                  return PartialView(model);
              }
              catch (Exception ex)
@@ -1543,6 +1545,28 @@ namespace WebMvc.Controllers
                  string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
                  return PartialView("DialogError", new DialogErrorModel { Error = error });
              }
+         }
+         [HttpGet]
+         public ContentResult GetChildren(int parentId, int level)
+         {
+             DepartmentChildrenDto model;
+             try
+             {
+               model = RequestBl.GetChildren(parentId, level);
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception on GetChildren:", ex);
+                 string error = ex.GetBaseException().Message;
+                 model = new DepartmentChildrenDto
+                 {
+                     Error = string.Format("Ошибка: {0}",error),
+                     Children = new List<IdNameDto>()
+                 };
+             }
+             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+             var jsonString = jsonSerializer.Serialize(model);
+             return Content(jsonString);
          }
 
 

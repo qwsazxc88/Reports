@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.Bl.Impl
     public class RequestBl : BaseBl, IRequestBl
     {
         protected string SelectAll = "Все";
+        protected string EmptyDepartmentName = string.Empty;
 
         public const int VacationFirstTimesheetStatisId = 8;
         public const int VacationLastTimesheetStatisId = 12;
@@ -4056,6 +4057,146 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return "application/ms-excel";
                 default:
                     return "application/octet-stream";
+            }
+        }
+        #endregion
+        #region Department Tree
+        public DepartmentTreeModel GetDepartmentTreeModel(int departmentId)
+        {
+            DepartmentTreeModel model = new DepartmentTreeModel {DepartmentID = departmentId};
+            /*List<Department> list = departmentDao.LoadAll().ToList();
+            Department rootDep = list.Where(x => x.ParentId == null).FirstOrDefault();
+            if(rootDep == null)
+                throw new ArgumentException("Отсутствует вершина дерева структурных подразделений");
+            Child root = new Child {
+                DepartmentID = rootDep.Id,
+                Id = rootDep.Code1C.Value,
+                Children = new List<Child>(),
+                Name = rootDep.Name,
+                Parent = null,
+            };
+            SetChildren(root,list);
+            model.Root = root;*/
+            if (departmentId == 0)
+                departmentId = DepartmentDao.GetRootDepartment().Id;
+            IList<Department> list = DepartmentDao.GetDepartmentsTree(departmentId);
+            SetModel(model, list);
+            return model;
+        }
+        /*protected void SetChildren(Child root, IList<Department> list)
+        {
+            List<Department> children = list.Where(x => x.ParentId == root.Id).ToList();
+            if(children.Count > 0)
+            {
+                foreach (Department dep in children)
+                {
+                    Child child = new Child
+                    {
+                        DepartmentID = dep.Id,
+                        Id = dep.Code1C.Value,
+                        Children = new List<Child>(),
+                        Name = dep.Name,
+                        Parent = root.Id,
+                    };
+                    SetChildren(child,list);
+                    root.Children.Add(child);
+                }
+            }
+        }*/
+        protected void SetModel(DepartmentTreeModel model, IList<Department> list)
+        {
+            model.Level2 = setLevelDropdown(list, 2);
+            model.Level3 = setLevelDropdown(list, 3);
+            model.Level4 = setLevelDropdown(list, 4);
+            model.Level5 = setLevelDropdown(list, 5);
+            model.Level6 = setLevelDropdown(list, 6);
+            model.Level7 = setLevelDropdown(list, 7);
+            SetTreeSelection(model,list);
+        }
+        protected void SetTreeSelection(DepartmentTreeModel model, IList<Department> list)
+        {
+            if (model.DepartmentID == 0)
+                return;
+            int departmentId = model.DepartmentID; 
+            Department selected = list.Where(x => x.Id == departmentId).FirstOrDefault();
+            if(selected == null)
+                throw new ArgumentException(string.Format("Не найдено структурное подразделение (id {0})",departmentId));
+            int level = selected.ItemLevel.Value;
+            for (int i = level; i > 1; i--)
+            {
+                SetSelection(model,selected);
+                if (i == 2)
+                    return;
+                selected = list.Where(x => x.Code1C.Value == selected.ParentId.Value).FirstOrDefault();
+                if (selected == null)
+                    throw new ArgumentException(string.Format("Не найдено родительское структурное подразделение уровня {0}", i));
+            }
+        }
+        protected void SetSelection(DepartmentTreeModel model,Department selected/*,int level*/)
+        {
+            switch (selected.ItemLevel.Value)
+            {
+                case 7:
+                    model.Level7ID = selected.Id;
+                    break;
+                case 6:
+                    model.Level6ID = selected.Id;
+                    break;
+                case 5:
+                    model.Level5ID = selected.Id;
+                    break;
+                case 4:
+                    model.Level4ID = selected.Id;
+                    break;
+                case 3:
+                    model.Level3ID = selected.Id;
+                    break;
+                case 2:
+                    model.Level2ID = selected.Id;
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный уровень структурного подразделения {0}",selected.ItemLevel.Value));
+            }
+        }
+        protected List<IdNameDto> setLevelDropdown(IList<Department> list, int level)
+        {
+
+            List<IdNameDto> destList = new List<IdNameDto>
+                            {
+                                new IdNameDto {Id = 0, Name = EmptyDepartmentName}
+                            };
+            List<Department> levelList = list.Where(x => x.ItemLevel == level).ToList();
+            if (levelList.Count > 0)
+                destList.AddRange(levelList.ToList().ConvertAll(x => new IdNameDto
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).OrderBy(x => x.Name).ToList());
+            return destList;
+        }
+
+        public DepartmentChildrenDto GetChildren(int parentId, int level)
+        {
+            try
+            {
+                Department parent = DepartmentDao.Load(parentId);
+                if (parent == null)
+                    throw new ArgumentException(string.Format("Подразделение с Id {0} отсутствует в базе данных",
+                                                              parentId));
+                List<IdNameDto> children = DepartmentDao.
+                    SearchByParentId(parent.Code1C.Value).
+                    ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                return new DepartmentChildrenDto { Error = string.Empty, Children = children };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetChildren:", ex);
+                return new DepartmentChildrenDto
+                {
+                    Error = string.Format("Ошибка: {0}",
+                         ex.GetBaseException().Message),
+                    Children = new List<IdNameDto>(),
+                };
             }
         }
         #endregion

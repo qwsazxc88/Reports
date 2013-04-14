@@ -258,6 +258,7 @@
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
+    <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />

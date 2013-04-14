@@ -130,6 +130,7 @@
     <Compile Include="UI\ViewModel\BaseModel.cs" />
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
+    <Compile Include="UI\ViewModel\DepartmentTreeModel.cs" />
     <Compile Include="UI\ViewModel\DialogErrorModel.cs" />
     <Compile Include="UI\ViewModel\DismissalEditModel.cs" />
     <Compile Include="UI\ViewModel\DismissalListModel.cs" />

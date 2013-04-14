@@ -1,19 +1,64 @@
-﻿<html>
+﻿@model Reports.Presenters.UI.ViewModel.DepartmentTreeModel
+<html>
 <head>
     <title/>
 </head>
 <body>
     <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:100px">
-    @*            <tr>
-                    <td colspan="2"><div id="AddCommentError" style="color:Red;display:none;"/></td>
-                    @Html.HiddenFor(model => model.DocumentId)
+                <tr>
+                    <td>
+                    <div id="SelectDepartmentError" style="color:Red;display:none;"/></td>
                 </tr>
                 <tr>
-                    <td style="text-align:right">@Html.LabelFor(model => model.Comment):</td>
                     <td>
-                       @Html.TextAreaFor(model => model.Comment, 4, 50,(object)new { style = "resize: none;" })
+                        @Html.DropDownListFor(model => model.Level2ID, new SelectList(Model.Level2, "ID", "Name"), new { style = "min-width:300px", onchange = "Level2IDChange();" }) 
                     </td>
-                </tr>*@
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level3ID, new SelectList(Model.Level3, "ID", "Name"), new { style = "min-width:300px", onchange = "Level3IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level4ID, new SelectList(Model.Level4, "ID", "Name"), new { style = "min-width:300px", onchange = "Level4IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level5ID, new SelectList(Model.Level5, "ID", "Name"), new { style = "min-width:300px", onchange = "Level5IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level6ID, new SelectList(Model.Level6, "ID", "Name"), new { style = "min-width:300px", onchange = "Level6IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level7ID, new SelectList(Model.Level7, "ID", "Name"), new { style = "min-width:300px", onchange = "Level7IDChange();" }) 
+                    </td>
+                    <script type="text/javascript">
+//                        $(function () {
+//                            $("#divtree").jstree();
+//                        });
+                            </script>
+
+@*                            <div id="divtree">
+                                <ul id="tree">
+                                    <li>
+                                        <a href="#">@Model.Root.Name</a>
+                                        @Html.Partial("Children",Model.Root)
+                                    </li>
+                                </ul>
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $("#divtree").jstree();
+                                });
+                            </script>
+                        </td>
+*@                </tr>
     </table>
 </body>
 </html>

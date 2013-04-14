@@ -80,5 +80,8 @@ namespace Reports.Presenters.UI.Bl
 
         void GetAcceptRequestsModel(AcceptRequestsModel model);
         void SetAcceptDate(AcceptRequestsModel model);
+
+        DepartmentTreeModel GetDepartmentTreeModel(int departmentId);
+        DepartmentChildrenDto GetChildren(int parentId, int level);
     }
 }
