@@ -10,6 +10,11 @@
     <table style="width:100%">
     <tr>
         <td colspan="4">
+            <b>Выбор параметров</b>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
             @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
@@ -42,14 +47,6 @@
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-     <tr>
-        <td>
-            @Html.LabelFor(m => m.AbsenceTypeId):
-        </td>
-        <td>
-            @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name")) 
-        </td>
-    </tr>
     <tr>
          <td>
             @Html.LabelFor(m => m.RequestStatusId):
@@ -57,6 +54,14 @@
         <td>
             @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AbsenceTypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name")) 
+        </td>
     </tr>
     <tr>
         <td colspan="2">
@@ -68,8 +73,8 @@
     </tr>
     <tr>
       <td colspan="4">
-        <input type="submit" value="Применить"/>
-        <input type="button" value="Сбросить" onclick="resetFilter();"/>
+        <input type="submit" value="Выбрать"/>
+        <input type="button" value="Очистить" onclick="resetFilter();"/>
       </td>
     </tr>
      <tr>
@@ -77,7 +82,10 @@
         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
         {
             if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
-            {@Html.ActionLink("Создать новую заявку", "CreateRequest") }
+            {
+                @*@Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest","UserRequest")'"/>
+            }
         }                                                                                             
         </td>
     </tr>
