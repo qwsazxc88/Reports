@@ -23,7 +23,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int GraphicTypeId { get; set; }
         public IList<IdNameDto> GraphicTypes;*/
 
-        [Display(Name = "Дата создания заявки с")]
+        [Display(Name = "Период с")]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }

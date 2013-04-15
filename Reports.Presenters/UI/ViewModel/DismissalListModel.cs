@@ -23,7 +23,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         /*[Display(Name = "Дата окончания Т Д.")]
         public DateTime? EndDate { get; set; }*/
-        [Display(Name = "Дата создания заявки с")]
+        [Display(Name = "Период с")]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }

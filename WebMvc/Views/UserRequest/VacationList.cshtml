@@ -8,6 +8,12 @@
 @using (Html.BeginForm())
 {
     <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            <b>Выбор параметров</b>
+        </td>
+    </tr>
+
    @* <tr>
         <td @if (!Model.ViewHeader)
             {<text>style="display:none"</text>}>
@@ -15,16 +21,9 @@
         </td>
     </tr>*@
     <tr>
-        <td colspan="4">
+        <td colspan="2">
             @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
-            @*@Html.HiddenFor(m => m.ViewHeader)
-            @Html.HiddenFor(m => m.ShowNew)
-            @Html.HiddenFor(m => m.AddVisible)*@
-           @* @if (Model.AddVisible)
-            {*@
-                
-            @*}*@
         </td>
     </tr>
     <tr>
@@ -35,11 +34,21 @@
             @Html.EditorFor(model => model.Department)
             @*@Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) *@
         </td>
-        <td style="width:116px">
+    </tr>
+    <tr>
+        <td>
             @Html.LabelFor(m => m.PositionId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
+         </td>
+    </tr>
+    <tr>
+         <td>
+            @Html.LabelFor(m => m.RequestStatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
     </tr>
     <tr>
@@ -49,15 +58,9 @@
         <td>
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
         </td>
-        <td>
-            @Html.LabelFor(m => m.RequestStatusId):
-        </td>
-        <td>
-            @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
-         </td>
     </tr>
      <tr>
-        <td colspan="4">
+        <td colspan="2">
             @Html.LabelFor(m => m.BeginDate):
             @Html.EditorFor(model => model.BeginDate) 
             @Html.LabelFor(m => m.EndDate):
@@ -65,24 +68,30 @@
          </td>
     </tr>
     <tr>
-      <td colspan="4">
-        <input type="submit" value="Применить"/>
-        <input type="button" value="Сбросить" onclick="resetFilter();"/>
+      <td colspan="2">
+        <input type="submit" value="Выбрать"/>
+        <input type="button" value="Очистить" onclick="resetFilter();"/>
       </td>
     </tr>
      <tr>
-        <td colspan="4">
+        <td colspan="2">
         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
         {
             if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-            {@Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })}
+            {
+            @*    @Html.ActionLink("Создать новую заявку", "VacationEdit", new { id = 0, userId = Model.UserId })*@
+                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("VacationEdit", "UserRequest", new { id = 0, userId = Model.UserId })'"/>   
+            }
             else
-            {@Html.ActionLink("Создать новую заявку", "CreateRequest") }
+            {
+            @*    @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "UserRequest")'"/>
+            }
         }                                                                                          
         </td>
     </tr>
     <tr>
-        <td colspan="4">
+        <td colspan="2">
             <table class="grid" style="width:100%">
                 <tr>
                     <th>Название документа</th>
