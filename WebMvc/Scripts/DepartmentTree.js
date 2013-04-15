@@ -91,7 +91,7 @@ function SaveDepartment() {
     $('#DepartmentNameLabel').text("");
     return;
 }
-function setDepartmentValues(controlName) {
+function setDepartmentValues(control) {
     $('#DepartmentId').val($('#'+control).val());
     $('#DepartmentName').val($('#' + control + ' option:selected').text());
     $('#DepartmentNameLabel').text($('#' + control + ' option:selected').text());
