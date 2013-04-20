@@ -30,7 +30,7 @@ function createDepartmentDialog()
         bgiframe: true, 
         draggable: false,
         resizable: false,
-        width: 550,
+        width: 750,
 	    height: 260,
         close: function (event, ui) {
             $(this).dialog("destroy").remove();
@@ -70,7 +70,7 @@ function SaveDepartment() {
 //        $('#DepartmentId').val($('#Level6ID').val());
 //        $('#DepartmentName').val($("#Level6ID option:selected").text());
 //        $('#DepartmentNameLabel').text($("#Level6ID option:selected").text());
-//        return;
+        return;
     }
     if ($('#Level5ID').val() != 0) {
         setDepartmentValues('Level5ID');
@@ -171,7 +171,7 @@ function setValuesToDropdown(controlName,data)
 {
     //var options = $('#' + controlName);
     //options.attr("disabled", "disabled");
-    var optionsValues = '<select style = "min-width:300px" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+    var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
     optionsValues += '<option value="0"></option>';
     $.each(data, function (item, data) {
         optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
@@ -182,7 +182,7 @@ function setValuesToDropdown(controlName,data)
     //options.removeAttr("disabled");
 }
 function setEmptyToDropdown(controlName) {
-    var optionsValues = '<select style = "min-width:300px" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+    var optionsValues = '<select style = "width:95%" onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
     optionsValues += '<option value="0"></option>';
     optionsValues += '</select>';
     var options = $('#' + controlName);
