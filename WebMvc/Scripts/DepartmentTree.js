@@ -37,7 +37,7 @@ function createDepartmentDialog()
         },
         buttons:
         {
-            "Сохранить": function () {
+            "Выбрать": function () {
                 if (!ValidateDepartment())
                     return;
                 SaveDepartment();

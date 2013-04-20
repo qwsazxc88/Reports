@@ -237,7 +237,12 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += string.Format("u.[DepartmentId] = {0} ",departmentId);
+                whereString += string.Format(@"exists 
+                    (select d1.ID from dbo.Department d
+                     inner join dbo.Department d1 on d1.Path like d.Path +'%'
+                     and u.DepartmentID = d1.ID and d1.ItemLevel = 7 
+                     and d.Id = {0}) "
+                    , departmentId);
             }
             return whereString;
         }
