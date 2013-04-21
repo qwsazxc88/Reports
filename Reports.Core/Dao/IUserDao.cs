@@ -13,10 +13,10 @@ namespace Reports.Core.Dao
         bool IsLoginWithOtherIdExists(string login, int id);
         IList<User> GetUsersWithRole(UserRole role);
         IList<User> LoadUserByCodes(List<string> codes);
-        IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole);
+        IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole,int departmentId);
         IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole);
         IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
-                                                                  DateTime beginDate, DateTime endDate);
+                                              DateTime beginDate, DateTime endDate,int departmentId);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);
         //IList<User> FindByFilter(UserListFilter filter, out int count);

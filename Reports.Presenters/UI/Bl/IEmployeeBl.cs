@@ -29,5 +29,6 @@ namespace Reports.Presenters.UI.Bl
 
         EmployeeTimesheetListModel GetEmployeeTimesheetListModel();
 
+        void SetupDepartment(TimesheetListModel model);
     }
 }

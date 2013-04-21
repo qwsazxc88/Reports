@@ -43,6 +43,28 @@ namespace WebMvc.Controllers
              CreateRequestModel model = RequestBl.GetCreateRequestModel(userId);
              return View(model);
          }
+        [HttpGet]
+        public ContentResult GetUsersForDepartment(int departmentId)
+        {
+            DepartmentChildrenDto model;
+            try
+            {
+                model = RequestBl.GetUsersForDepartment(departmentId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetUsersForDepartment:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new DepartmentChildrenDto
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                    Children = new List<IdNameDto>()
+                };
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
 
          [HttpPost]
          public ActionResult CreateRequest(CreateRequestModel model)

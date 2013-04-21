@@ -267,8 +267,9 @@ namespace WebMvc.Controllers
                                                ManagerId = managerId,
                                                Month = month.Value,
                                                Year = year.Value,
-                                               IsEditable = false,
+                                               //IsEditable = false,
                                            };
+            EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
         }
@@ -286,7 +287,7 @@ namespace WebMvc.Controllers
             ////EmployeeBl.SetTimesheetsHours(model);
             //return View(model);
         }
-        protected void CorrectHours(TimesheetListModel model)
+        /*protected void CorrectHours(TimesheetListModel model)
         {
             float hours = model.Hours;
             hours = (float)Math.Round(hours * 100) / 100;
@@ -296,11 +297,11 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("Hours"))
                     ModelState.Remove("Hours");
             }
-        }
+        }*/
         protected bool ValidateModel(TimesheetListModel model)
         {
-            if(model.Hours < 0 || model.Hours > 24)
-                ModelState.AddModelError("Hours","Значение поля <Часы> должно быть от 0 до 24");
+            /*if(model.Hours < 0 || model.Hours > 24)
+                ModelState.AddModelError("Hours","Значение поля <Часы> должно быть от 0 до 24");*/
             return ModelState.IsValid;
         }
 

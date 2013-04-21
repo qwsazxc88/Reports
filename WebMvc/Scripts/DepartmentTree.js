@@ -42,6 +42,9 @@ function createDepartmentDialog()
                     return;
                 SaveDepartment();
                 $(this).dialog("close");
+                if (typeof ChangeMonth == 'function') {
+                    ChangeMonth(); //call function
+                }
             },
             "Отмена": function () {
                 $(this).dialog("close");

@@ -8,6 +8,8 @@ namespace Reports.Presenters.UI.Bl
     public interface IRequestBl : IBaseBl
     {
         CreateRequestModel GetCreateRequestModel(int? userId);
+        DepartmentChildrenDto GetUsersForDepartment(int departmentId);
+
         VacationListModel GetVacationListModel();
         void SetVacationListModel(VacationListModel model, bool hasError);
 

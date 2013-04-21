@@ -165,7 +165,7 @@ namespace Reports.Core.Dao.Impl
                             .UniqueResult();
         }
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
-            DateTime beginDate,DateTime endDate)
+            DateTime beginDate,DateTime endDate,int departmentId)
         {
             string sqlQuery =
                         @"select 
@@ -203,6 +203,9 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
+            if(departmentId != 0 && managerRole != UserRole.Employee)
+                sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
+
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by u.Name,u.Id ";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
@@ -266,7 +269,8 @@ namespace Reports.Core.Dao.Impl
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
 
-        public IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole)
+        public IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole,
+            int departmentId)
         {
             string sqlQuery ="select u.Id,u.Name from dbo.Users u";
             string sqlWhere = string.Empty;
@@ -283,6 +287,8 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
+            if(managerRole != UserRole.Employee)
+                sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by u.Name,u.Id ";
             IQuery query = Session.CreateSQLQuery(sqlQuery).

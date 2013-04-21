@@ -408,7 +408,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return dep == null ? 0 : dep.Id;
         }
-        protected IdNameReadonlyDto GetDepartmentDto(User user)
+        public static IdNameReadonlyDto GetDepartmentDto(User user)
         {
             return
                 user.UserRole == UserRole.Employee

@@ -288,12 +288,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Manager:
                 case UserRole.PersonnelManager:
-                    model.Users = UserDao.GetUsersForManager(user.Id, role);
+                    model.Users = UserDao.GetUsersForManager(user.Id, role, 0);
                     break;
-
-
             }
             return model;
+        }
+        public DepartmentChildrenDto GetUsersForDepartment(int departmentId)
+        {
+            IUser user = AuthenticationService.CurrentUser;
+            IList<IdNameDto> users = UserDao.GetUsersForManager
+                (user.Id, user.UserRole, departmentId);
+            return new DepartmentChildrenDto { Error = string.Empty, Children = users.ToList() };
         }
         protected IList<IdNameDto> GetRequestTypes()
         {

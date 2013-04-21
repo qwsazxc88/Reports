@@ -6,9 +6,9 @@
 {
     <table>
         <tr>
-            <td>
+            <td colspan="2">
                 @Html.HiddenFor(m => m.ManagerId)
-                @Html.HiddenFor(m => m.IsEditable)
+                @*@Html.HiddenFor(m => m.IsEditable)*@
                 @Html.LabelFor(m => m.Month):
                 @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name"), new { onchange = "ChangeMonth();"}) 
                 @Html.LabelFor(m => m.Year):
@@ -16,9 +16,28 @@
             </td>
         </tr>
         <tr>
+            <td style="width:200px">
+                @Html.LabelFor(m => m.DepartmentName):
+            </td>
+            <td>
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                @if (!Model.DepartmentReadOnly)
+                {
+                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                }            
+            </td>
+        </tr>
+        <tr>
             @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
             {
-                <td style="text-align:left">
+                <td colspan="2" style="text-align:left">
                     @for (int i = 1; i <= Model.NumberOfPages; i++)
                     {
                         if (i == Model.CurrentPage)
@@ -34,19 +53,19 @@
             }
          </tr>
         <tr>
-            <td>
+            <td colspan="2">
                 @Html.EditorFor(model => model.TimesheetDtos)
             </td>
         </tr>
         <tr>
-        <td>
-            <hr style="width:100%"/>
-        </td>
+            <td colspan="2">
+                <hr style="width:100%"/>
+            </td>
         </tr>
         <tr>
             @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
             {
-                <td style="text-align:left">
+                <td colspan="2" style="text-align:left">
                     <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
                     @for (int i = 1; i <= Model.NumberOfPages; i++)
                     {
@@ -65,8 +84,10 @@
     </table>
 }
 <script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
     function ChangeMonth() {
-        window.location.href = '@Url.Action("TimesheetList", "Employee")?managerId=' + $("#ManagerId").val() + '&month=' + $("#Month").val() + '&year=' + $("#Year").val();
+        submitForm();
     }
     function OnPageClick(pageNumber) {
         $("#CurrentPage").val(pageNumber);

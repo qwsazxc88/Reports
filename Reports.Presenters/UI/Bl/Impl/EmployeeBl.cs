@@ -612,6 +612,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void GetTimesheetListModel(TimesheetListModel model)
         {
             SetListboxes(model);
+            //SetupDepartment(model);
             SetTimesheetsInfo(model);
             //int timesheetsCount = model.TimesheetDtos.Count;
             //int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
@@ -630,6 +631,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    .Take(TimesheetPageSize).ToList();
             //model.CurrentPage = currentPage;
             //model.NumberOfPages = numberOfPages;
+        }
+        public void SetupDepartment(TimesheetListModel model)
+        {
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+            {
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                IdNameReadonlyDto dep = GetDepartmentDto(user);
+                model.DepartmentName = dep.Name;
+                model.DepartmentId = dep.Id;
+                model.DepartmentReadOnly = dep.IsReadOnly;
+            }
         }
         protected IList<DayRequestsDto> GetDayDtoList(int month, int year)
         {
@@ -652,7 +664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
             IList<IdNameDtoWithDates> uDtoList =
                 UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,
-                                                        dayDtoList.First().Day, dayDtoList.Last().Day);
+                        dayDtoList.First().Day, dayDtoList.Last().Day,model.DepartmentId);
             Log.Debug("After GetUsersForManagerWithDatePaged");
             int userCount = uDtoList.Count;
             int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
