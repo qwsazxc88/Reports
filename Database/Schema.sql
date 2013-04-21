@@ -97,6 +97,12 @@ alter table Sicklist  drop constraint FK_Sicklist_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ChiefToUser_Chief]') AND parent_object_id = OBJECT_ID('ChiefToUser'))
+alter table ChiefToUser  drop constraint FK_ChiefToUser_Chief
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ChiefToUser_User]') AND parent_object_id = OBJECT_ID('ChiefToUser'))
+alter table ChiefToUser  drop constraint FK_ChiefToUser_User
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_EmploymentComment_User]') AND parent_object_id = OBJECT_ID('EmploymentComment'))
 alter table EmploymentComment  drop constraint FK_EmploymentComment_User
 
@@ -246,6 +252,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'DismissalType') a
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
+if exists (select * from dbo.sysobjects where id = object_id(N'ChiefToUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChiefToUser
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkType
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
@@ -512,6 +519,12 @@ create table SicklistPaymentPercent (
   SortOrder INT null,
   constraint PK_SicklistPaymentPercent  primary key (Id)
 )
+create table ChiefToUser (
+ Id INT IDENTITY NOT NULL,
+  ChiefId INT not null,
+  UserId INT not null,
+  constraint PK_ChiefToUser  primary key (Id)
+)
 create table EmploymentComment (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -676,6 +689,10 @@ create table Department (
   Version INT not null,
   Code NVARCHAR(10) null,
   Name NVARCHAR(128) null,
+  Code1C INT null,
+  ParentId INT null,
+  Path NVARCHAR(128) null,
+  ItemLevel INT null,
   constraint PK_Department  primary key (Id)
 )
 create table EmploymentAddition (
@@ -903,6 +920,10 @@ alter table Sicklist add constraint FK_Sicklist_SicklistPaymentRestrictType fore
 alter table Sicklist add constraint FK_Sicklist_User foreign key (UserId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_CreatorUser foreign key (CreatorId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_ChiefToUser_Chief_Id on ChiefToUser (ChiefId)
+create index IX_ChiefToUser_User_Id on ChiefToUser (UserId)
+alter table ChiefToUser add constraint FK_ChiefToUser_Chief foreign key (ChiefId) references [Users]
+alter table ChiefToUser add constraint FK_ChiefToUser_User foreign key (UserId) references [Users]
 create index IX_EmploymentComment_User_Id on EmploymentComment (UserId)
 create index IX_EmploymentComment_Employment_Id on EmploymentComment (EmploymentId)
 alter table EmploymentComment add constraint FK_EmploymentComment_User foreign key (UserId) references [Users]

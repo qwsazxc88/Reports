@@ -285,6 +285,10 @@ namespace Reports.Core
                     ImplementedBy(typeof(InspectorToUserDao)).
                     LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IChiefToUserDao)).
+                ImplementedBy(typeof(ChiefToUserDao)).
+                LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

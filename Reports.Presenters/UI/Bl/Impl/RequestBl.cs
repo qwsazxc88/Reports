@@ -72,6 +72,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IRequestPrintFormDao requestPrintFormDao;
 
         protected IInspectorToUserDao inspectorToUserDao;
+        protected IChiefToUserDao chiefToUserDao;
+
 
        
         public IVacationTypeDao VacationTypeDao
@@ -267,6 +269,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(inspectorToUserDao); }
             set { inspectorToUserDao = value; }
         }
+
+        public IChiefToUserDao ChiefToUserDao
+        {
+            get { return Validate.Dependency(chiefToUserDao); }
+            set { chiefToUserDao = value; }
+        }
+
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -3561,6 +3570,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(isSave)
                         throw new ArgumentException("Вам запрещено редактировать заявки.");
                     return InspectorToUserDao.IsInspectorToUserRecordExists(current.Id, user.Id);
+                case UserRole.Chief:
+                    if (entityId == 0)
+                        throw new ArgumentException("Вам запрещено создавать новые заявки.");
+                    if (isSave)
+                        throw new ArgumentException("Вам запрещено редактировать заявки.");
+                    return ChiefToUserDao.IsChiefToUserRecordExists(current.Id, user.Id);
             }
             return true;
         }

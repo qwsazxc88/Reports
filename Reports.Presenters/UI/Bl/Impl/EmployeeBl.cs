@@ -678,6 +678,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .Take(TimesheetPageSize).ToList();
             model.CurrentPage = currentPage;
             model.NumberOfPages = numberOfPages;
+            if (userCount == 0)
+            {
+                model.TimesheetDtos = new List<TimesheetDto>();
+                return;
+            }
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
                 (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList);

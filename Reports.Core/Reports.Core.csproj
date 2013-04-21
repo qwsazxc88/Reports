@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IEmploymentAdditionDao.cs" />
     <Compile Include="Dao\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\IEmploymentDao.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
+    <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
     <Compile Include="Dao\Impl\DepartmentDao.cs" />
@@ -202,6 +204,7 @@
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Attachment.cs" />
+    <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Department.cs" />
     <Compile Include="Domain\Dismissal.cs" />
@@ -493,6 +496,9 @@
     <EmbeddedResource Include="Domain\AcceptRequestDate.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ChiefToUser.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
