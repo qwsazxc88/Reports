@@ -1014,6 +1014,12 @@ namespace WebMvc.Controllers
                      ModelState.Remove("IsApprovedByUser");
                  model.IsApprovedByUser = model.IsApprovedByUserHidden;
              }
+             if (model.IsApprovedByUserEnable && model.IsApprovedByUserChecked)
+             {
+                 if (ModelState.ContainsKey("IsApprovedByUser"))
+                     ModelState.Remove("IsApprovedByUser");
+                 model.IsApprovedByUser = true;
+             }
              if (!model.IsPostedTo1CEnable && model.IsPostedTo1CHidden)
              {
                  if (ModelState.ContainsKey("IsPostedTo1C"))

@@ -2510,7 +2510,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PaymentRestrictTypeId = sicklist.RestrictType == null ? 0 : sicklist.RestrictType.Id;
                 model.PaymentDecreaseDate = sicklist.PaymentDecreaseDate;
                 model.IsPreviousPaymentCounted = sicklist.IsPreviousPaymentCounted;
-                model.Is2010Calculate = sicklist.Is2010Calculate;
+                //model.Is2010Calculate = sicklist.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
                 SetHiddenFields(model);
                 if (sicklist.DeleteDate.HasValue)
@@ -2528,7 +2528,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DaysCountHidden = model.DaysCount;
             model.PaymentPercentTypeIdHidden = model.PaymentPercentTypeId;
             model.PaymentRestrictTypeIdHidden = model.PaymentRestrictTypeId;
-            model.Is2010CalculateHidden = model.Is2010Calculate;
+            //model.Is2010CalculateHidden = model.Is2010Calculate;
             model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
             model.IsAddToFullPaymentHidden = model.IsAddToFullPaymentHidden;
         }
@@ -2652,7 +2652,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !sicklist.UserDateAccept.HasValue
                 && model.IsApprovedByUser)
+            {
                 sicklist.UserDateAccept = DateTime.Now;
+                //!!! need to send e-mail
+            }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id
                 && !sicklist.ManagerDateAccept.HasValue)
@@ -2707,7 +2710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
             sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
             sicklist.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
-            sicklist.Is2010Calculate = model.Is2010Calculate;
+            //sicklist.Is2010Calculate = model.Is2010Calculate;
             sicklist.IsAddToFullPayment = model.IsAddToFullPayment;
         }
         protected int? GetIntFromModel(string modelValue)
@@ -2800,7 +2803,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Employee:
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByUserEnable = true;
+                        if(model.AttachmentId > 0)
+                            model.IsApprovedByUserEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsDatesEditable = true;
                     }

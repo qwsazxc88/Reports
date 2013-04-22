@@ -10,6 +10,7 @@ namespace Reports.Presenters.UI.ViewModel
          bool IsApprovedByUser { get; set; }
          bool IsApprovedByUserHidden { get; set; }
          bool IsApprovedByUserEnable { get; set; }
+         bool IsApprovedByUserChecked { get; set; }
          bool IsApprovedByManager { get; set; }
          bool IsApprovedByManagerHidden { get; set; }
          bool IsApprovedByManagerEnable { get; set; }

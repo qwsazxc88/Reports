@@ -77,9 +77,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsPreviousPaymentCounted { get; set; }
         public bool IsPreviousPaymentCountedHidden { get; set; }
 
-        [Display(Name = "Рассчитывать заработок по правилам 2010 года")]
-        public bool Is2010Calculate { get; set; }
-        public bool Is2010CalculateHidden { get; set; }
+        //[Display(Name = "Рассчитывать заработок по правилам 2010 года")]
+        //public bool Is2010Calculate { get; set; }
+        //public bool Is2010CalculateHidden { get; set; }
 
         [Display(Name = "Доплачивать до полного среднего заработка")]
         public bool IsAddToFullPayment { get; set; }
@@ -93,15 +93,16 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsTimesheetStatusEditable { get; set; }
 
 
-        [Display(Name = "Согласен Сотрудник")]
+        [Display(Name = "Сотрудник cогласен ")]
         public bool IsApprovedByUser { get; set; }
         public bool IsApprovedByUserHidden { get; set; }
         public bool IsApprovedByUserEnable { get; set; }
-        [Display(Name = "Согласен Руководитель")]
+        public bool IsApprovedByUserChecked { get; set; }
+        [Display(Name = "Руководитель cогласен ")]
         public bool IsApprovedByManager { get; set; }
         public bool IsApprovedByManagerHidden { get; set; }
         public bool IsApprovedByManagerEnable { get; set; }
-        [Display(Name = "Согласен Кадровик")]
+        [Display(Name = "Кадровик cогласен ")]
         public bool IsApprovedByPersonnelManager { get; set; }
         public bool IsApprovedByPersonnelManagerHidden { get; set; }
         public bool IsApprovedByPersonnelManagerEnable { get; set; }

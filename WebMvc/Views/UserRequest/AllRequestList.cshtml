@@ -9,7 +9,12 @@
 {
     <table style="width:100%">
     <tr>
-        <td colspan="4">
+        <td colspan="2">
+            <b>Выбор параметров</b>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
             @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
@@ -35,13 +40,12 @@
         <td>
             @Html.DropDownListFor(model => model.GraphicTypeId, new SelectList(Model.GraphicTypes, "ID", "Name")) 
          </td>
-*@      <td>
+*@      <td style="width:100px">
             @Html.LabelFor(m => m.StatusId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
          </td>
-
     </tr>
     <tr>
         <td colspan="2">
@@ -75,16 +79,19 @@
     </tr>*@
     <tr>
       <td colspan="2">
-        <input type="submit" value="Применить"/>
-        <input type="button" value="Сбросить" onclick="resetFilter();"/>
+        <input type="submit" value="Выбрать"/>
+        <input type="button" value="Очистить" onclick="resetFilter();"/>
       </td>
     </tr>
      <tr>
         <td colspan="2">
         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
         {
-         if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
-         { @Html.ActionLink("Создать новую заявку", "CreateRequest") }  
+            if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+            { 
+            @* @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "UserRequest")'"/>
+            }
         }                                                                                             
         </td>
     </tr>
