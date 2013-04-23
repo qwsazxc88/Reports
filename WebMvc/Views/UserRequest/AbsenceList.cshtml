@@ -130,9 +130,12 @@
         $("#BeginDate").val('');
         $("#EndDate").val('');
         //if ($('#DepartmentId option').length > 1)
-        $("#DepartmentId").val('0');
-        $("#DepartmentNameLabel").val('');
-        $("#DepartmentName").text('');
+        if($("#DepartmentReadOnly").val() == "False")
+        {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#AbsenceTypeId").val('0');

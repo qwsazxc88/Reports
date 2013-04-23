@@ -18,7 +18,7 @@
                 else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
                         || dto.UserRole == UserRole.Inspector || dto.UserRole == UserRole.Chief)
                 {
-                        if (dto.UserRole == UserRole.PersonnelManager)
+                        if (dto.UserRole != UserRole.Employee)
                         {
                             <li>@Html.ActionLink("Все заявки", "AllRequestList", "UserRequest")</li>
                         }

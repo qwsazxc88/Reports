@@ -10,8 +10,11 @@ namespace Reports.Presenters.UI.ViewModel
         public int UserId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
-        [AutoComplete("AutoComplete", "Departments", "searchText")]
-        public IdNameReadonlyDto Department { get; set; }
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public bool DepartmentReadOnly { get; set; }
+        //[AutoComplete("AutoComplete", "Departments", "searchText")]
+        //public IdNameReadonlyDto Department { get; set; }
         /*public int DepartmentId { get; set; }
         public IList<IdNameDto> Departments;*/
         [Display(Name = "Должность")]
@@ -21,18 +24,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeId { get; set; }
         public IList<IdNameDto> Types;
 
-        [Display(Name = "Процент оплаты заработка")]
-        public int PaymentPercentType { get; set; }
-        public IList<IdNameDtoSort> PaymentPercentTypes;
+        //[Display(Name = "Процент оплаты заработка")]
+        //public int PaymentPercentType { get; set; }
+        //public IList<IdNameDtoSort> PaymentPercentTypes;
 
         [Display(Name = "Период с")]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Статус заявки")]
-        public int StatusId { get; set; }
-        public IList<IdNameDto> Statuses;
+        //[Display(Name = "Статус заявки")]
+        //public int StatusId { get; set; }
+        //public IList<IdNameDto> Statuses;
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }

@@ -332,15 +332,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 UserId = AuthenticationService.CurrentUser.Id,
             };
+            SetDepartmentToModel(model,user);
             SetDictionariesToModel(model, user);
             return model;   
+        }
+        protected void SetDepartmentToModel(AllRequestListModel model,User user)
+        {
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            model.DepartmentName = dep.Name;
+            model.DepartmentId = dep.Id;
+            model.DepartmentReadOnly = dep.IsReadOnly;
         }
         protected void SetDictionariesToModel(AllRequestListModel model, User user)
         {
             //model.Departments = GetDepartments(user);
             //model.Types = GetEmploymentTypes(true);
             //model.GraphicTypes = GetEmploymentGraphicTypes(true);
-            model.Statuses = GetRequestStatuses();
+
+            //model.Statuses = GetRequestStatuses();
             //model.Positions = GetPositions(user);
         }
         public void SetAllRequestListModel(AllRequestListModel model, bool hasError)
@@ -363,7 +372,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             result.AddRange(SicklistDao.GetDocuments(
                 user.Id,
                 role,
-                0,
+                model.DepartmentId,
                 0,
                 0,
                 model.StatusId,
@@ -380,7 +389,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             result.AddRange(MissionDao.GetDocuments(
                user.Id,
                role,
-               0,
+               model.DepartmentId,
                0,
                0,
                model.StatusId,
@@ -396,7 +405,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             result.AddRange(TimesheetCorrectionDao.GetDocuments(
                user.Id,
                role,
-               0,
+               model.DepartmentId,
                0,
                0,
                model.StatusId,
@@ -412,7 +421,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             result.AddRange(AbsenceDao.GetDocuments(
                user.Id,
                role,
-               0,
+               model.DepartmentId,
                0,
                0,
                model.StatusId,
@@ -425,10 +434,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                    Name = x.Name,
                    UserId = x.UserId
                }));
-            result.AddRange(HolidayWorkDao.GetDocuments(
+            /*result.AddRange(HolidayWorkDao.GetDocuments(
               user.Id,
               role,
-              0,
+              model.DepartmentId,
               0,
               0,
               model.StatusId,
@@ -440,11 +449,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                   Id = x.Id,
                   Name = x.Name,
                   UserId = x.UserId
-              }));
+              }));*/
             result.AddRange(VacationDao.GetDocuments(
               user.Id,
               role,
-              0,
+              model.DepartmentId,
               0,
               0,
               model.StatusId,
@@ -457,10 +466,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                   Name = x.Name,
                   UserId = x.UserId
               }));
-            result.AddRange(EmploymentDao.GetDocuments(
+            /*result.AddRange(EmploymentDao.GetDocuments(
                user.Id,
                role,
-               0,
+               model.DepartmentId,
                0,
                0,
                model.StatusId,
@@ -472,11 +481,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                    Id = x.Id,
                    Name = x.Name,
                    UserId = x.UserId
-               }));
+               }));*/
             result.AddRange(DismissalDao.GetDocuments(
               user.Id,
               role,
-              0,
+              model.DepartmentId,
               0,
               0,
               model.StatusId,
@@ -2385,10 +2394,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public SicklistListModel GetSicklistListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             SicklistListModel model = new SicklistListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model,user);
             return model;
@@ -2451,9 +2464,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Department = GetDepartments(user);
             model.Types = GetSicklistTypes(true,false);
-            model.Statuses = GetRequestStatuses();
+            //model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
-            model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
+            //model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
        }
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
@@ -2461,11 +2474,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = SicklistDao.GetDocuments(
                 user.Id,
                 role,
-                GetDepartmentId(model.Department),
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                model.StatusId,
-                model.PaymentPercentType,
+                0,
+                0,
                 model.BeginDate,
                 model.EndDate);
         }
