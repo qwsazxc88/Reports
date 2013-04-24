@@ -987,10 +987,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public TimesheetCorrectionListModel GetTimesheetCorrectionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             TimesheetCorrectionListModel model = new TimesheetCorrectionListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -999,7 +1003,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetTimesheetCorrectionTypes(true);
-            model.Statuses = GetRequestStatuses();
+            //model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetTimesheetCorrectionTypes(bool addAll)
@@ -1025,10 +1029,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = TimesheetCorrectionDao.GetDocuments(
                 user.Id,
                 role,
-                GetDepartmentId(model.Department),
+                model.DepartmentId,
+                //GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
-                model.StatusId,
+                0,
+                //model.StatusId,
                 model.BeginDate,
                 model.EndDate);
         }
@@ -1690,10 +1696,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public MissionListModel GetMissionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             MissionListModel model = new MissionListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -1711,7 +1721,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetMissionTypes(true);
-            model.Statuses = GetRequestStatuses();
+            //model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetMissionTypes(bool addAll)
@@ -1727,10 +1737,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Documents = MissionDao.GetDocuments(
                 user.Id,
                 role,
-                GetDepartmentId(model.Department),
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                model.StatusId,
+                0,
+                //model.StatusId,
                 model.BeginDate,
                 model.EndDate);
         }
@@ -2899,7 +2911,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 DepartmentId = dep.Id,
                 DepartmentReadOnly = dep.IsReadOnly,
                 AbsenceTypes = GetAbsenceTypes(true),
-                RequestStatuses = GetRequestStatuses(),
+                //RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
             };
             return model;
@@ -2917,7 +2929,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             //model.Departments = GetDepartments(user);
-            model.RequestStatuses = GetRequestStatuses();
+            //model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.AbsenceTypes = GetAbsenceTypes(true);
             if(hasError)
@@ -2936,7 +2948,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.AbsenceTypeId,
-                model.RequestStatusId,
+                0,
+                //model.RequestStatusId,
                 model.BeginDate,
                 model.EndDate);
         }
@@ -3256,12 +3269,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         public VacationListModel GetVacationListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             VacationListModel model = new VacationListModel
                                           {
                                               UserId = AuthenticationService.CurrentUser.Id,
-                                              Department = GetDepartmentDto(user),
+                                              //Department = GetDepartmentDto(user),
+                                              DepartmentName = dep.Name,
+                                              DepartmentId = dep.Id,
+                                              DepartmentReadOnly = dep.IsReadOnly,
                                               VacationTypes = GetVacationTypes(true),
-                                              RequestStatuses = GetRequestStatuses(),
+                                              //RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)
                                           };
             return model;
@@ -3270,7 +3287,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             //model.Departments = GetDepartments(user);
-            model.RequestStatuses = GetRequestStatuses();
+            //model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
             if(hasError)
@@ -3286,10 +3303,12 @@ namespace Reports.Presenters.UI.Bl.Impl
              dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
             model.Documents = VacationDao.GetDocuments(user.Id,
                 role,
-                GetDepartmentId(model.Department),
+                model.DepartmentId,
+                //GetDepartmentId(model.Department),
                 model.PositionId,
                 model.VacationTypeId,
-                model.RequestStatusId,
+                0,
+                //model.RequestStatusId,
                 model.BeginDate,
                 model.EndDate);
         }

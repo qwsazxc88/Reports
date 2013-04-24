@@ -27,7 +27,6 @@
             <label id="DepartmentNameLabel">@Model.DepartmentName</label>
             <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
             <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
-            @*@Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) *@
         </td>
     </tr>
     <tr>
@@ -47,14 +46,14 @@
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-    <tr>
+@*    <tr>
          <td>
             @Html.LabelFor(m => m.RequestStatusId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
-    </tr>
+    </tr>*@
     <tr>
         <td>
             @Html.LabelFor(m => m.AbsenceTypeId):
@@ -139,7 +138,7 @@
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#AbsenceTypeId").val('0');
-        $("#RequestStatusId").val('0');
+        //$("#RequestStatusId").val('0');
     }
 //    function changeDepartment() {
 //        createDepartmentDialog();

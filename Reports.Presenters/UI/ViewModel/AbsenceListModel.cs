@@ -34,9 +34,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Статус заявки")]
-        public int RequestStatusId { get; set; }
-        public IList<IdNameDto> RequestStatuses;
+        //[Display(Name = "Статус заявки")]
+        //public int RequestStatusId { get; set; }
+        //public IList<IdNameDto> RequestStatuses;
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }

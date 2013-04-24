@@ -19,29 +19,39 @@
             @Html.HiddenFor(m => m.UserId)
         </td>
     </tr>
-    <tr>
+@*    <tr>
         <td style="width:200px">
             @Html.LabelFor(m => m.Department):
         </td>
         <td>
             @Html.EditorFor(model => model.Department)
-            @*@Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) *@
         </td>
-    </tr>
+    </tr>*@
+    <tr>
+        <td style="width:200px">
+            @Html.LabelFor(m => m.DepartmentName):
+        </td>
+        <td>
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+            <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+        </td>
+    </tr>     
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+            @if (!Model.DepartmentReadOnly)
+            {
+                <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+            }            
+        </td>
+    </tr>    
     <tr>
         <td>
             @Html.LabelFor(m => m.PositionId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
-         </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.StatusId):
-        </td>
-        <td>
-            @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
          </td>
     </tr>
     <tr>
@@ -68,7 +78,8 @@
     </tr>
      <tr>
         <td colspan="4">
-        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector)
+        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+            ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
         {
             if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
             {
@@ -106,7 +117,9 @@
         </td>
     </tr>
 </table> 
-    <script type="text/javascript">
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
         $(document).ready(function () {
             $("#BeginDate").datepicker();
             $("#EndDate").datepicker();
@@ -116,11 +129,17 @@
         $("#BeginDate").val('');
         $("#EndDate").val('');
 //        if ($('#DepartmentId option').length > 1)
-        $("#Department").val('');
+//        $("#Department").val('');
+        if($("#DepartmentReadOnly").val() == "False")
+        {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#TypeId").val('0');
-        $("#StatusId").val('0');
+//        $("#StatusId").val('0');
     }
  </script>   
 }

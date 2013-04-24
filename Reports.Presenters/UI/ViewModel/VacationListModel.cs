@@ -11,8 +11,12 @@ namespace Reports.Presenters.UI.ViewModel
 
         
         [Display(Name = "Структурное подразделение")]
-        [AutoComplete("AutoComplete", "Departments", "searchText")]
-        public IdNameReadonlyDto Department { get; set; }
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public bool DepartmentReadOnly { get; set; }
+
+        //[AutoComplete("AutoComplete", "Departments", "searchText")]
+        //public IdNameReadonlyDto Department { get; set; }
         /*public int DepartmentId { get; set; }
         public IList<IdNameDto> Departments;*/
 
@@ -29,9 +33,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Статус заявки")]
-        public int RequestStatusId { get; set; }
-        public IList<IdNameDto> RequestStatuses;
+        //[Display(Name = "Статус заявки")]
+        //public int RequestStatusId { get; set; }
+        //public IList<IdNameDto> RequestStatuses;
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }
