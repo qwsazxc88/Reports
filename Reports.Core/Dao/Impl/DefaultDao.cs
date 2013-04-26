@@ -294,11 +294,30 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
-        public virtual string GetSqlQueryOrdered(string sqlQuery, string whereString)
+        public virtual string GetSqlQueryOrdered(string sqlQuery, string whereString,
+            int sortedBy,
+            bool? sortDescending)
         {
             if (!string.IsNullOrEmpty(whereString))
                 sqlQuery += @" where " + whereString;
-            sqlQuery += @" order by Date DESC,Name ";
+            if (!sortDescending.HasValue)
+                return sqlQuery;
+            switch (sortedBy)
+            {
+                case 0:
+                    return sqlQuery;
+                case 1:
+                    sqlQuery += @" order by Name";
+                    break;
+                case 2:
+                    sqlQuery += @" order by Date";
+                    break;
+            }
+            if (sortDescending.Value)
+                sqlQuery += " DESC ";
+            else
+                sqlQuery += " ASC ";
+            //sqlQuery += @" order by Date DESC,Name ";
             return sqlQuery;
         }
         public virtual IQuery CreateQuery(string sqlQuery)
@@ -321,7 +340,9 @@ namespace Reports.Core.Dao.Impl
                                 int statusId,
                                 DateTime? beginDate,
                                 DateTime? endDate,
-                                string sqlQuery
+                                string sqlQuery,
+                                int sortedBy,
+                                bool? sortDescending
             )
         {
             string whereString = GetWhereForUserRole(role, userId);
@@ -330,7 +351,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,sortedBy,sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate);

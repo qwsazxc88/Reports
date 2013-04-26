@@ -110,7 +110,7 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += @"v.[HoursTypeId] = :hoursTypeId ";
             }
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,0, null);
             /*if (whereString.Length > 0)
                 sqlQuery += @" where " + whereString;
             sqlQuery += @" order by Date DESC,Name ";*/

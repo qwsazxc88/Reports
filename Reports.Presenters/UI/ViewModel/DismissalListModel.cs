@@ -10,8 +10,12 @@ namespace Reports.Presenters.UI.ViewModel
         public int UserId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
-        [AutoComplete("AutoComplete", "Departments", "searchText")]
-        public IdNameReadonlyDto Department { get; set; }
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public bool DepartmentReadOnly { get; set; }
+
+        //[AutoComplete("AutoComplete", "Departments", "searchText")]
+        //public IdNameReadonlyDto Department { get; set; }
         //public int DepartmentId { get; set; }
         //public IList<IdNameDto> Departments;
         [Display(Name = "Должность")]
@@ -28,12 +32,15 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Статус заявки")]
-        public int StatusId { get; set; }
-        public IList<IdNameDto> Statuses;
+        //[Display(Name = "Статус заявки")]
+        //public int StatusId { get; set; }
+        //public IList<IdNameDto> Statuses;
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }
+
+        public int SortBy { get; set; }
+        public bool? SortDescending { get; set; } 
 
     }
 

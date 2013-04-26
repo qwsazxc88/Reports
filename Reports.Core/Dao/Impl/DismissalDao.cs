@@ -23,7 +23,10 @@ namespace Reports.Core.Dao.Impl
             int typeId,
             int statusId,
             DateTime? beginDate,
-            DateTime? endDate)
+            DateTime? endDate,
+            int sortedBy,
+            bool? sortDescending
+            )
         {
             string sqlQuery =
                 string.Format(@"select v.Id as Id,
@@ -35,16 +38,16 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, sqlQuery);
+                statusId, beginDate, endDate, sqlQuery,sortedBy,sortDescending);
 
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
-            string whereString = GetWhereForUserRole(role, userId);
-            whereString = GetTypeWhere(whereString, typeId);
-            whereString = GetStatusWhere(whereString, statusId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
-            whereString = GetPositionWhere(whereString, positionId);
-            whereString = GetDepartmentWhere(whereString, departmentId);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            //string whereString = GetWhereForUserRole(role, userId);
+            //whereString = GetTypeWhere(whereString, typeId);
+            //whereString = GetStatusWhere(whereString, statusId);
+            //whereString = GetDatesWhere(whereString, beginDate, endDate);
+            //whereString = GetPositionWhere(whereString, positionId);
+            //whereString = GetDepartmentWhere(whereString, departmentId);
+            //sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
             /*if (statusId != 0)
             {
                 string statusWhere;
@@ -121,14 +124,14 @@ namespace Reports.Core.Dao.Impl
                 sqlQuery += @" where " + whereString;
             sqlQuery += @" order by Date DESC,Name ";
             */
-            IQuery query = CreateQuery(sqlQuery);
+            //IQuery query = CreateQuery(sqlQuery);
                 /*Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("Date", NHibernateUtil.DateTime);*/
 
-            AddDatesToQuery(query, beginDate, endDate);
+            //AddDatesToQuery(query, beginDate, endDate);
             /*if (typeId != 0)
                 query.SetInt32("typeId", typeId);
             if (beginDate.HasValue)
@@ -139,7 +142,7 @@ namespace Reports.Core.Dao.Impl
                 query.SetInt32("positionId", positionId);
             if (departmentId != 0)
                 query.SetInt32("departmentId", departmentId);*/
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
+            //return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
         }
     }
 }

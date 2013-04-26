@@ -396,3 +396,24 @@ div#title
     font-weight: bold;
     background-color: rgb(240, 249, 255);
     }
+    
+.sort-off
+{
+width:100%;
+display:inline-block;
+background:none;
+}
+ 
+.sort-desc
+{
+width:100%;
+display:inline-block;
+background:transparent url('icon_down_sort_arrow.png') no-repeat right center;
+}
+ 
+.sort-asc
+{
+width:100%;
+display:inline-block;
+background:transparent url('icon_up_sort_arrow.png') no-repeat right center;
+}

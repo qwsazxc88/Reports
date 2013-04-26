@@ -92,7 +92,7 @@ namespace Reports.Core.Dao.Impl
                     whereString += @" and ";
                 whereString += @"v.[PaymentPercentId] = :paymentPercentTypeId ";
             }
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,0, null);
             /*if (beginDate.HasValue)
             {
                 if (whereString.Length > 0)

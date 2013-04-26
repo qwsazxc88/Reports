@@ -35,19 +35,19 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, sqlQuery);
+                statusId, beginDate, endDate, sqlQuery,0,null);
             
-            string whereString = GetWhereForUserRole(role, userId);
-            whereString = GetTypeWhere(whereString, typeId);
-            whereString = GetStatusWhere(whereString, statusId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
-            whereString = GetPositionWhere(whereString, positionId);
-            whereString = GetDepartmentWhere(whereString, departmentId);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
+            //string whereString = GetWhereForUserRole(role, userId);
+            //whereString = GetTypeWhere(whereString, typeId);
+            //whereString = GetStatusWhere(whereString, statusId);
+            //whereString = GetDatesWhere(whereString, beginDate, endDate);
+            //whereString = GetPositionWhere(whereString, positionId);
+            //whereString = GetDepartmentWhere(whereString, departmentId);
+            //sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString);
 
-            IQuery query = CreateQuery(sqlQuery);
-            AddDatesToQuery(query, beginDate, endDate);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+            //IQuery query = CreateQuery(sqlQuery);
+            //AddDatesToQuery(query, beginDate, endDate);
+            //return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
     }
 }

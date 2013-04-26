@@ -490,7 +490,7 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   EditUrl = "DismissalEdit",
@@ -1331,10 +1331,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         public DismissalListModel GetDismissalListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
             DismissalListModel model = new DismissalListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
-                Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                SortBy = 0,
+                SortDescending = null,
+                //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
             return model;
@@ -1356,18 +1362,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 user.Id,
                 role,
                 //model.DepartmentId,
-                GetDepartmentId(model.Department),
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                model.StatusId,
+                //model.StatusId,
+                0,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         protected void SetDictionariesToModel(DismissalListModel model, User user)
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetDismissalTypes(true);
-            model.Statuses = GetRequestStatuses();
+            //model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetDismissalTypes(bool addAll)
