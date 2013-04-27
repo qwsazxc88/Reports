@@ -54,14 +54,14 @@
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-@*    <tr>
+    <tr>
         <td>
             @Html.LabelFor(m => m.StatusId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
          </td>
-    </tr>*@
+    </tr>
     <tr>
        <td>
             @Html.LabelFor(m => m.TypeId):
@@ -109,10 +109,19 @@
             <table class="grid" style="width:100%">
                 <tr>
                     <th>
-                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Название документа</a></div>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Дата</a></div>
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -123,7 +132,10 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("DismissalEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
+                            <td>@doc.UserName</td>
                             <td>@doc.Date</td>
+                            <td>@doc.RequestType</td>
+                            <td>@doc.RequestStatus</td>
                             </tr>
                     }
                 }
@@ -159,7 +171,7 @@
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#TypeId").val('0');
-        //$("#StatusId").val('0');
+        $("#StatusId").val('0');
     }
     function SortChanged(sortedBy)
     {

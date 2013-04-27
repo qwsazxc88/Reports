@@ -29,12 +29,11 @@ namespace Reports.Core.Dao.Impl
             )
         {
             string sqlQuery =
-                string.Format(@"select v.Id as Id,
-                         u.Id as UserId,
-                         'Увольнение '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
-                         v.[CreateDate] as Date    
-            from [dbo].[Dismissal] v
-            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+                string.Format(sqlSelectForList, 
+                                DeleteRequestText,
+                                "dbo.DismissalType",
+                                "v.[CreateDate]",
+                                "Увольнение");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

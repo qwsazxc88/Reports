@@ -126,7 +126,38 @@ namespace Reports.Core.Dao.Impl
         where TEntity : IEntity<int>
     {
         protected const string ObjectPropertyFormat = "{0}.{1}";
-        protected const string DeleteRequestText = "заявка отклонена";
+        protected const string DeleteRequestText = "Заявка отклонена";
+
+        protected const string sqlSelectForList =
+                                @"select v.Id as Id,
+                                u.Id as UserId,
+                                '{3}' as Name,
+                                {2} as Date,    
+                                u.Name as UserName,
+                                t.Name as RequestType,
+                                case when v.SendTo1C is not null then 'Отправлено в 1с' 
+                                     when v.DeleteDate is not null then '{0}'
+                                     when v.PersonnelManagerDateAccept is not null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Согласовано кадровиком'
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено кадровику'    
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено руководителю'    
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is null 
+                                          then 'Черновик сотрудника'    
+                                    else ''
+                                end as RequestStatus        
+                                from [dbo].[Dismissal] v
+                                inner join {1} t on v.TypeId = t.Id
+                                inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }
@@ -287,9 +318,14 @@ namespace Reports.Core.Dao.Impl
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
+                statusWhere += " and DeleteDate is null ";
+                if (statusId != 9)
+                    statusWhere += " and SendTo1C is null ";
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @" " + statusWhere + " ";
+                whereString += @" " + statusWhere;
+                
+
                 return whereString;
             }
             return whereString;
@@ -310,7 +346,16 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery += @" order by Name";
                     break;
                 case 2:
+                    sqlQuery += @" order by UserName";
+                    break;
+                case 3:
                     sqlQuery += @" order by Date";
+                    break;
+                case 4:
+                    sqlQuery += @" order by RequestType";
+                    break;
+                case 5:
+                    sqlQuery += @" order by RequestStatus";
                     break;
             }
             if (sortDescending.Value)
@@ -322,11 +367,14 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual IQuery CreateQuery(string sqlQuery)
         {
-            return  Session.CreateSQLQuery(sqlQuery).
+            return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
-                AddScalar("Date", NHibernateUtil.DateTime);
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String);
         }
 
 

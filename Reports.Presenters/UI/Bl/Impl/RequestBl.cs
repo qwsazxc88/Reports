@@ -1366,8 +1366,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                //model.StatusId,
-                0,
+                model.StatusId,
+                //0,
                 model.BeginDate,
                 model.EndDate,
                 model.SortBy,
@@ -1377,7 +1377,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetDismissalTypes(true);
-            //model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetDismissalTypes(bool addAll)
