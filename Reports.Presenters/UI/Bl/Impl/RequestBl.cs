@@ -378,7 +378,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 0,
                 model.BeginDate,
-                model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+                model.EndDate,
+                0,null).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
                     EditUrl = "SicklistEdit",
@@ -394,7 +395,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "MissionEdit",
@@ -410,7 +411,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, 0, null).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "TimesheetCorrectionEdit",
@@ -426,7 +427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "AbsenceEdit",
@@ -458,7 +459,7 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   EditUrl = "VacationEdit",
@@ -1003,7 +1004,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetTimesheetCorrectionTypes(true);
-            //model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetTimesheetCorrectionTypes(bool addAll)
@@ -1033,10 +1034,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //GetDepartmentId(model.Department),
                 model.PositionId,
                 model.TypeId,
-                0,
-                //model.StatusId,
+                //0,
+                model.StatusId,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         public TimesheetCorrectionEditModel GetTimesheetCorrectionEditModel(int id, int userId)
         {
@@ -1731,7 +1734,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetMissionTypes(true);
-            //model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetMissionTypes(bool addAll)
@@ -1751,10 +1754,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                0,
-                //model.StatusId,
+                //0,
+                model.StatusId,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         public MissionEditModel GetMissionEditModel(int id, int userId)
         {
@@ -2486,7 +2491,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Department = GetDepartments(user);
             model.Types = GetSicklistTypes(true,false);
-            //model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             //model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
        }
@@ -2500,10 +2505,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.TypeId,
-                0,
+                model.StatusId,
                 0,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         public SicklistEditModel GetSicklistEditModel(int id, int userId)
         {
@@ -2921,7 +2928,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 DepartmentId = dep.Id,
                 DepartmentReadOnly = dep.IsReadOnly,
                 AbsenceTypes = GetAbsenceTypes(true),
-                //RequestStatuses = GetRequestStatuses(),
+                RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
             };
             return model;
@@ -2939,7 +2946,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             //model.Departments = GetDepartments(user);
-            //model.RequestStatuses = GetRequestStatuses();
+            model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.AbsenceTypes = GetAbsenceTypes(true);
             if(hasError)
@@ -2958,10 +2965,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 model.AbsenceTypeId,
-                0,
-                //model.RequestStatusId,
+                //0,
+                model.RequestStatusId,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         public AbsenceEditModel GetAbsenceEditModel(int id, int userId)
         {
@@ -3288,7 +3297,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                               DepartmentId = dep.Id,
                                               DepartmentReadOnly = dep.IsReadOnly,
                                               VacationTypes = GetVacationTypes(true),
-                                              //RequestStatuses = GetRequestStatuses(),
+                                              RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)
                                           };
             return model;
@@ -3297,7 +3306,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             //model.Departments = GetDepartments(user);
-            //model.RequestStatuses = GetRequestStatuses();
+            model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
             if(hasError)
@@ -3317,10 +3326,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //GetDepartmentId(model.Department),
                 model.PositionId,
                 model.VacationTypeId,
-                0,
-                //model.RequestStatusId,
+                //0,
+                model.RequestStatusId,
                 model.BeginDate,
-                model.EndDate);
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
         public List<IdNameDto> GetDepartments(User user)
         {

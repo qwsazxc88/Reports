@@ -33,13 +33,15 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
-        //[Display(Name = "Статус заявки")]
-        //public int StatusId { get; set; }
-        //public IList<IdNameDto> Statuses;
+        [Display(Name = "Статус заявки")]
+        public int StatusId { get; set; }
+        public IList<IdNameDto> Statuses;
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }
 
+        public int SortBy { get; set; }
+        public bool? SortDescending { get; set; } 
     }
 
     

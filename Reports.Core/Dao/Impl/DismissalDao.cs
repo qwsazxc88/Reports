@@ -33,7 +33,8 @@ namespace Reports.Core.Dao.Impl
                                 DeleteRequestText,
                                 "dbo.DismissalType",
                                 "v.[CreateDate]",
-                                "Увольнение");
+                                "Увольнение",
+                                "[dbo].[Dismissal]");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

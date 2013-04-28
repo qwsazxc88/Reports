@@ -143,6 +143,7 @@
         </td>
     </tr>
 </table> 
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
@@ -150,13 +151,7 @@
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
-        if(($("#SortBy").val() != 0) && ($("#SortDescending").val() != ''))
-        {
-            if($("#SortDescending").val() == 'True')
-                $("#sort"+$("#SortBy").val()).addClass("sort-desc");
-            else        
-                $("#sort"+$("#SortBy").val()).addClass("sort-asc");
-        }
+        setSortFields();
     });
     function resetFilter() {
         $("#BeginDate").val('');
@@ -173,40 +168,6 @@
         $("#TypeId").val('0');
         $("#StatusId").val('0');
     }
-    function SortChanged(sortedBy)
-    {
-        if($("#SortBy").val() != sortedBy)
-        {
-//            if($("#SortBy").val() != 0)
-//            {
-//                $("#sort"+$("#SortBy").val()).addClass("sort-off");
-//            }
-            $("#SortDescending").val(''); 
-        }
-        $("#SortBy").val(sortedBy);
-        if($("#SortDescending").val() == '')
-        {
-            $("#SortDescending").val('True');
-            //$("#sort"+$("#SortBy").val()).addClass("sort-desc");
-        }
-        else if($("#SortDescending").val() == 'True')
-        {
-            $("#SortDescending").val('False');
-            //$("#sort"+$("#SortBy").val()).addClass("sort-asc");
-        }
-        else
-        {
-            $("#SortDescending").val('True');
-            //$("#sort"+$("#SortBy").val()).addClass("sort-desc");
-        }
-         submitForm();
-         return false;
-    }
-    function submitForm() {
-        if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
-            return;
-        document.forms[0].submit();
-    }   
  </script>   
 }
 

@@ -16,7 +16,9 @@ namespace Reports.Core.Dao
             int statusId,
             int paymentPercentTypeId,
             DateTime? beginDate,
-            DateTime? endDate
+            DateTime? endDate,
+            int sortedBy,
+            bool? sortDescending
             );
     }
 }

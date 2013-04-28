@@ -22,18 +22,31 @@ namespace Reports.Core.Dao.Impl
                int typeId,
                int requestStatusId,
                DateTime? beginDate,
-               DateTime? endDate)
+               DateTime? endDate,
+               int sortedBy,
+               bool? sortDescending)
         {
-            string sqlQuery =
-                string.Format(@"select v.Id as Id,
-                         u.Id as UserId,
-                         'Командировка '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
-                         v.[CreateDate] as Date    
-            from [dbo].[Mission] v
-            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+            string sqlQuery = string.Format(sqlSelectForList,
+                                            DeleteRequestText,
+                                            "dbo.MissionType",
+                                            "v.[CreateDate]",
+                                            "Командировка",
+                                            "[dbo].[Mission]");
+
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                requestStatusId, beginDate, endDate, sqlQuery, 0, null);
+                requestStatusId, beginDate, endDate, sqlQuery, sortedBy, sortDescending);
+
+//            string sqlQuery =
+//                string.Format(@"select v.Id as Id,
+//                         u.Id as UserId,
+//                         'Командировка '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
+//                         v.[CreateDate] as Date    
+//            from [dbo].[Mission] v
+//            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+//            return GetDefaultDocuments(userId, role, departmentId,
+//                positionId, typeId,
+//                requestStatusId, beginDate, endDate, sqlQuery, 0, null);
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             //string whereString = GetWhereForUserRole(role, userId);
             //whereString = GetTypeWhere(whereString, typeId);

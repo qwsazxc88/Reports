@@ -15,6 +15,8 @@ namespace Reports.Core.Dao
             int typeId,
             int requestStatusId,
             DateTime? beginDate,
-            DateTime? endDate);
+            DateTime? endDate,
+            int sortedBy,
+            bool? sortDescending);
     }
 }

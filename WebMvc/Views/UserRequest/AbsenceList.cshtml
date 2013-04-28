@@ -9,12 +9,12 @@
 {
     <table style="width:100%">
     <tr>
-        <td colspan="4">
+        <td colspan="2">
             <b>Выбор параметров</b>
         </td>
     </tr>
     <tr>
-        <td colspan="4">
+        <td colspan="2">
             @Html.ValidationSummary(false)
             @Html.HiddenFor(m => m.UserId)
         </td>
@@ -46,14 +46,14 @@
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-@*    <tr>
+    <tr>
          <td>
             @Html.LabelFor(m => m.RequestStatusId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
          </td>
-    </tr>*@
+    </tr>
     <tr>
         <td>
             @Html.LabelFor(m => m.AbsenceTypeId):
@@ -71,13 +71,13 @@
          </td>
     </tr>
     <tr>
-      <td colspan="4">
+      <td colspan="2">
         <input type="submit" value="Выбрать"/>
         <input type="button" value="Очистить" onclick="resetFilter();"/>
       </td>
     </tr>
      <tr>
-        <td colspan="4">
+        <td colspan="2">
         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
             ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
         {
@@ -90,11 +90,28 @@
         </td>
     </tr>
     <tr>
-        <td colspan="4">
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%">
                 <tr>
-                    <th>Название документа</th>
-                    <th>Дата</th>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -104,12 +121,10 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("AbsenceEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
+                            <td>@doc.UserName</td>
                             <td>@doc.Date</td>
-                            @*<td>@if (doc.IsApproved)
-                                {<text>Да</text>}
-                                else
-                                {<text>Нет</text>}
-                            </td>*@
+                            <td>@doc.RequestType</td>
+                            <td>@doc.RequestStatus</td>
                         </tr>
                     }
                 }
@@ -117,6 +132,7 @@
         </td>
     </tr>
 </table> 
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
@@ -124,6 +140,7 @@
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
+        setSortFields();
     });
     function resetFilter() {
         $("#BeginDate").val('');
@@ -138,57 +155,9 @@
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#AbsenceTypeId").val('0');
-        //$("#RequestStatusId").val('0');
+        $("#RequestStatusId").val('0');
     }
-//    function changeDepartment() {
-//        createDepartmentDialog();
-//    }
-//    function createDepartmentDialog() 
-//    {
-//        var elem = document.createElement('div');
-//        elem.id = "divDepartmentDialog";
-//        var newDiv = $(elem);
-//        var departmentId = $("#DepartmentId").val();
-//        //var typeId = $("#RequestTypeId").val();
 
-//        var title =  "Выбор структурного подразделения";
-//        $(newDiv).text('Подождите, идет загрузка данных ...'); 
-//        $.ajaxSetup({cache: false});
-//        $(newDiv).load("@Url.Action("DepartmentDialog", "UserRequest")?id=" + departmentId +" #DialogTable"
-//        , function(response, status, xhr) {
-//                    if (status == "error") {
-//                        var msg = "Произошла ошибка: ";
-//                        $(newDiv).html("<div style='color:Red'>"+msg + xhr.status + " " + xhr.statusText+"</div>");
-//                    }
-//            }
-//        );
-//        $(newDiv).dialog(
-//        { // initialize dialog box
-//            autoOpen: true,
-//            modal: true,
-//            title: title,
-//            // fix IE6  
-//            bgiframe: true, 
-//            draggable: false,
-//            resizable: false,
-//            width: 550,
-//	        height: 260,
-//            close: function (event, ui) {
-//                $(this).dialog("destroy").remove();
-//            },
-//            buttons:
-//            {
-//                "Сохранить": function () {
-//                    if (!ValidateDepartment())
-//                        return;
-//                    SaveDepartment();
-//                },
-//                "Отмена": function () {
-//                    $(this).dialog("close");
-//                }
-//            }
-//        });
-//    }
  </script>   
 }
 

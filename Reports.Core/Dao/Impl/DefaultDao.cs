@@ -155,7 +155,7 @@ namespace Reports.Core.Dao.Impl
                                           then 'Черновик сотрудника'    
                                     else ''
                                 end as RequestStatus        
-                                from [dbo].[Dismissal] v
+                                from {4} v
                                 inner join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)

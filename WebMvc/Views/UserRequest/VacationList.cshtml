@@ -54,14 +54,22 @@
             @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
          </td>
     </tr>
-@*    <tr>
+    <tr>
+         <td>
+            @Html.LabelFor(m => m.RequestStatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
+         </td>
+    </tr>
+    <tr>
         <td>
             @Html.LabelFor(m => m.VacationTypeId):
         </td>
         <td>
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
         </td>
-    </tr>*@
+    </tr>
      <tr>
         <td colspan="2">
             @Html.LabelFor(m => m.BeginDate):
@@ -96,10 +104,27 @@
     </tr>
     <tr>
         <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%">
                 <tr>
-                    <th>Название документа</th>
-                    <th>Дата</th>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -109,12 +134,10 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("VacationEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
+                            <td>@doc.UserName</td>
                             <td>@doc.Date</td>
-                            @*<td>@if (doc.IsApproved)
-                                {<text>Да</text>}
-                                else
-                                {<text>Нет</text>}
-                            </td>*@
+                            <td>@doc.RequestType</td>
+                            <td>@doc.RequestStatus</td>
                         </tr>
                     }
                 }
@@ -122,6 +145,7 @@
         </td>
     </tr>
 </table> 
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
@@ -129,6 +153,7 @@
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
+         setSortFields();
     });
     function resetFilter() {
         $("#BeginDate").val('');
@@ -143,7 +168,7 @@
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#VacationTypeId").val('0');
-        //$("#RequestStatusId").val('0');
+        $("#RequestStatusId").val('0');
     }
  </script>   
 }
