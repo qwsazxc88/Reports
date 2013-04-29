@@ -324,7 +324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }.OrderBy(x => x.Name).ToList();
         }
         #endregion
-
+        #region All requests
         public AllRequestListModel GetAllRequestListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -349,7 +349,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Types = GetEmploymentTypes(true);
             //model.GraphicTypes = GetEmploymentGraphicTypes(true);
 
-            //model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses();
             //model.Positions = GetPositions(user);
         }
         public void SetAllRequestListModel(AllRequestListModel model, bool hasError)
@@ -379,13 +379,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 0,
                 model.BeginDate,
                 model.EndDate,
-                0,null).ToList().ConvertAll(x => new AllRequestDto
+                model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
                     EditUrl = "SicklistEdit",
                     Id = x.Id,
                     Name = x.Name,
-                    UserId = x.UserId
+                    UserId = x.UserId,
+                    UserName = x.UserName,
+                    RequestStatus = x.RequestStatus,
+                    RequestType = x.RequestType
                 }));
             result.AddRange(MissionDao.GetDocuments(
                user.Id,
@@ -395,13 +398,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "MissionEdit",
                    Id = x.Id,
                    Name = x.Name,
-                   UserId = x.UserId
+                   UserId = x.UserId,
+                   UserName = x.UserName,
+                   RequestStatus = x.RequestStatus,
+                   RequestType = x.RequestType
                }));
             result.AddRange(TimesheetCorrectionDao.GetDocuments(
                user.Id,
@@ -411,13 +417,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate, 0, null).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "TimesheetCorrectionEdit",
                    Id = x.Id,
                    Name = x.Name,
-                   UserId = x.UserId
+                   UserId = x.UserId,
+                   UserName = x.UserName,
+                   RequestStatus = x.RequestStatus,
+                   RequestType = x.RequestType
                }));
             result.AddRange(AbsenceDao.GetDocuments(
                user.Id,
@@ -427,13 +436,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    EditUrl = "AbsenceEdit",
                    Id = x.Id,
                    Name = x.Name,
-                   UserId = x.UserId
+                   UserId = x.UserId,
+                   UserName = x.UserName,
+                   RequestStatus = x.RequestStatus,
+                   RequestType = x.RequestType
                }));
             /*result.AddRange(HolidayWorkDao.GetDocuments(
               user.Id,
@@ -459,13 +471,16 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   EditUrl = "VacationEdit",
                   Id = x.Id,
                   Name = x.Name,
-                  UserId = x.UserId
+                  UserId = x.UserId,
+                  UserName = x.UserName,
+                  RequestStatus = x.RequestStatus,
+                  RequestType = x.RequestType
               }));
             /*result.AddRange(EmploymentDao.GetDocuments(
                user.Id,
@@ -491,17 +506,51 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate,0,null).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   EditUrl = "DismissalEdit",
                   Id = x.Id,
                   Name = x.Name,
-                  UserId = x.UserId
+                  UserId = x.UserId,
+                  UserName = x.UserName,
+                  RequestStatus = x.RequestStatus,
+                  RequestType = x.RequestType
               }));
-            
-            model.Documents = result;
+            IEnumerable<AllRequestDto> res = SortResults(model, result);   
+            model.Documents = res.ToList();
         }
+        protected IEnumerable<AllRequestDto> SortResults(AllRequestListModel model, List<AllRequestDto> result)
+        {
+            if (model.SortBy == 0 || !model.SortDescending.HasValue)
+                return result;
+            switch (model.SortBy)
+            {
+                case 1:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.Name);
+                    return result.OrderBy(x => x.Name);
+                case 2:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.UserName);
+                    return result.OrderBy(x => x.UserName);
+                case 3:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.Date);
+                    return result.OrderBy(x => x.Date);
+                case 4:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.RequestType);
+                    return result.OrderBy(x => x.RequestType);
+                case 5:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.RequestStatus);
+                    return result.OrderBy(x => x.RequestStatus);
+                default:
+                    throw new ArgumentException(string.Format("Неправильное поля сортировки {0}",model.SortBy));
+            }
+        }
+        #endregion
         #region Employment
         public EmploymentListModel GetEmploymentListModel()
         {
