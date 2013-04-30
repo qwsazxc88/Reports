@@ -1140,7 +1140,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetTimesheetStatusesForTimesheetCorrection()
         {
-            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> dtos = TimesheetStatusDao.LoadAllSorted().
+                Where(x => 
+                    (
+                        x.Name == "Вечерние часы" ||
+                        x.Name == "Время простоя по вине работодателя" ||
+                        x.Name == "Выходные и нерабочие дни" ||
+                        x.Name == "Неявки по невыясненным причинам" ||
+                        x.Name == "Ночные часы" ||
+                        x.Name == "Прогулы (отсутствие на рабочем месте без уваж. причин в теч. времени, уст. законодательством)" ||
+                        x.Name == "Продолжительность работы в выходные и нерабочие, праздничные дни" ||
+                        x.Name == "Продолжительность сверхурочной работы" ||
+                        x.Name == "Простои по вине сотрудника" ||
+                        x.Name == "Явка" 
+                    )
+                ). 
+                ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
                 dtos.Insert(0, new IdNameDto(0, string.Empty));
             return dtos;
