@@ -74,6 +74,12 @@ namespace Reports.Core.Dao.Impl
             Session.Save(entity);
             Session.Flush();
         }
+        public virtual TEntity SaveFlush(TEntity entity)
+        {
+            TEntity ret = (TEntity)Session.Save(entity);
+            Session.Flush();
+            return ret;
+        }
         public virtual TEntity MergeAndFlush(TEntity entity)
         {
             TEntity result = (TEntity)Session.Merge(entity);
@@ -156,7 +162,7 @@ namespace Reports.Core.Dao.Impl
                                     else ''
                                 end as RequestStatus        
                                 from {4} v
-                                inner join {1} t on v.TypeId = t.Id
+                                left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {

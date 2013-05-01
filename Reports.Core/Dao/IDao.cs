@@ -11,6 +11,7 @@ namespace Reports.Core.Dao
         TEntity Get(TIdentifier id);
         void Save(TEntity entity);
         void SaveAndFlush(TEntity entity);
+        TEntity SaveFlush(TEntity entity);
         TEntity Merge(TEntity entity);
         TEntity MergeAndFlush(TEntity entity);
         void Flush();

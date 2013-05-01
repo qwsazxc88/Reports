@@ -2697,6 +2697,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         sicklist.DeleteDate = DateTime.Now;
+                        sicklist.CreateDate = DateTime.Now;
                         SicklistDao.SaveAndFlush(sicklist);
                         model.IsDelete = false;
                         model.AttachmentId = 0;
@@ -2704,8 +2705,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
-                        ChangeEntityProperties(current,sicklist,model,user);   
+                        ChangeEntityProperties(current,sicklist,model,user);
                         SicklistDao.SaveAndFlush(sicklist);
+                        if(sicklist.Version != model.Version)
+                        {
+                            sicklist.CreateDate = DateTime.Now;
+                            SicklistDao.SaveAndFlush(sicklist);
+                        }
                     }
                     if (sicklist.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -2758,7 +2764,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !sicklist.UserDateAccept.HasValue
-                && model.IsApprovedByUser)
+                && model.IsApproved)
             {
                 sicklist.UserDateAccept = DateTime.Now;
                 //!!! need to send e-mail
@@ -2770,8 +2776,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
                     sicklist.UserDateAccept = DateTime.Now;
                 sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApprovedByManager)
+                if (model.IsApproved)
                     sicklist.ManagerDateAccept = DateTime.Now;
+                    //!!! need to send e-mail
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                 && current.Id == user.PersonnelManager.Id*/
@@ -2785,8 +2792,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                     if (model.IsPersonnelFieldsEditable)
                         SetPersonnelDataFromModel(sicklist, model);
-                    if (model.IsApprovedByPersonnelManager)
+                    if (model.IsApproved)
                         sicklist.PersonnelManagerDateAccept = DateTime.Now;
+                    //!!! need to send e-mail
                 }
             }
             if(model.IsDatesEditable)
@@ -2878,6 +2886,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 model.IsBabyMindingTypeEditable = false;
                 model.IsDatesEditable = true;
+                model.IsApprovedEnable = false;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2911,7 +2920,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if(model.AttachmentId > 0)
-                            model.IsApprovedByUserEnable = true;
+                            model.IsApprovedEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsDatesEditable = true;
                     }
@@ -2919,7 +2928,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        //model.IsApprovedByManagerEnable = true;
                         if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                         {
                             model.IsDatesEditable = true;
@@ -2930,7 +2941,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManager:
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        //model.IsApprovedByPersonnelManagerEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -2945,9 +2958,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);
+            //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+            //model.IsApprovedByPersonnelManagerEnable 
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
-                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
-                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable || model.IsDatesEditable;
+                                    || model.IsPersonnelFieldsEditable  || model.IsApprovedEnable
+                                    || model.IsDatesEditable;
         }
         protected void SetFlagsState(SicklistEditModel model, bool state)
         {
@@ -2977,6 +2992,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteAvailable = state;
 
             model.IsPersonnelFieldsEditable = state;
+
+            model.IsApprovedEnable = false;
         }
         #endregion
         #region Absence

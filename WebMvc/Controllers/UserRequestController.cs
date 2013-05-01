@@ -998,32 +998,32 @@ namespace WebMvc.Controllers
          {
              if (!model.IsApprovedByManagerEnable && model.IsApprovedByManagerHidden)
              {
-                 if (ModelState.ContainsKey("IsApprovedByManager"))
-                     ModelState.Remove("IsApprovedByManager");
+                 //if (ModelState.ContainsKey("IsApprovedByManager"))
+                 //    ModelState.Remove("IsApprovedByManager");
                  model.IsApprovedByManager = model.IsApprovedByManagerHidden;
              }
              if (!model.IsApprovedByPersonnelManagerEnable && model.IsApprovedByPersonnelManagerHidden)
              {
-                 if (ModelState.ContainsKey("IsApprovedByPersonnelManager"))
-                     ModelState.Remove("IsApprovedByPersonnelManager");
+                 //if (ModelState.ContainsKey("IsApprovedByPersonnelManager"))
+                 //    ModelState.Remove("IsApprovedByPersonnelManager");
                  model.IsApprovedByPersonnelManager = model.IsApprovedByPersonnelManagerHidden;
              }
              if (!model.IsApprovedByUserEnable && model.IsApprovedByUserHidden)
              {
-                 if (ModelState.ContainsKey("IsApprovedByUser"))
-                     ModelState.Remove("IsApprovedByUser");
+                 //if (ModelState.ContainsKey("IsApprovedByUser"))
+                 //    ModelState.Remove("IsApprovedByUser");
                  model.IsApprovedByUser = model.IsApprovedByUserHidden;
              }
-             if (model.IsApprovedByUserEnable && model.IsApprovedByUserChecked)
-             {
-                 if (ModelState.ContainsKey("IsApprovedByUser"))
-                     ModelState.Remove("IsApprovedByUser");
-                 model.IsApprovedByUser = true;
-             }
+             //if (model.IsApprovedByUserEnable && model.IsApprovedByUserChecked)
+             //{
+             //    if (ModelState.ContainsKey("IsApprovedByUser"))
+             //        ModelState.Remove("IsApprovedByUser");
+             //    model.IsApprovedByUser = true;
+             //}
              if (!model.IsPostedTo1CEnable && model.IsPostedTo1CHidden)
              {
-                 if (ModelState.ContainsKey("IsPostedTo1C"))
-                     ModelState.Remove("IsPostedTo1C");
+                 //if (ModelState.ContainsKey("IsPostedTo1C"))
+                 //    ModelState.Remove("IsPostedTo1C");
                  model.IsPostedTo1C = model.IsPostedTo1CHidden;
              }
          }

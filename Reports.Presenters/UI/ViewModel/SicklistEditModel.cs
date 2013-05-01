@@ -97,7 +97,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApprovedByUser { get; set; }
         public bool IsApprovedByUserHidden { get; set; }
         public bool IsApprovedByUserEnable { get; set; }
-        public bool IsApprovedByUserChecked { get; set; }
+        //public bool IsApprovedByUserChecked { get; set; }
         [Display(Name = "Руководитель cогласен ")]
         public bool IsApprovedByManager { get; set; }
         public bool IsApprovedByManagerHidden { get; set; }
@@ -114,7 +114,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
 
-        [Display(Name = "Скан больничного")]
+        [Display(Name = "Скан документа")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
         //public int AttachmentTypeId { get; set; }
@@ -126,5 +126,8 @@ namespace Reports.Presenters.UI.ViewModel
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public bool IsApproved { get; set; }
+        public bool IsApprovedEnable { get; set; }
     }
 }
