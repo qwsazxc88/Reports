@@ -106,7 +106,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApprovedByPersonnelManager { get; set; }
         public bool IsApprovedByPersonnelManagerHidden { get; set; }
         public bool IsApprovedByPersonnelManagerEnable { get; set; }
-        [Display(Name = "Выгружен в 1с8")]
+        [Display(Name = "Выгружен в 1C")]
         public bool IsPostedTo1C { get; set; }
         public bool IsPostedTo1CHidden { get; set; }
         public bool IsPostedTo1CEnable { get; set; }
