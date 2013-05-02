@@ -1533,17 +1533,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSaveAvailable = true;
                 model.IsTypeEditable = true;
+                model.IsApprovedEnable = false;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = false;
+                        //model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = false;
+                        //model.IsApprovedByManagerEnable = false;
                         //model.IsStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = false;
+                        //model.IsApprovedByPersonnelManagerEnable = false;
                         //model.IsStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
                         break;
@@ -1566,7 +1567,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPrintAvailable = form != null;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByUserEnable = true;
+                        if(model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsTypeEditable = true;
                     }
@@ -1576,7 +1578,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsPrintAvailable = formMan != null;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                         if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -1584,11 +1587,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.PersonnelManager:
-                  
+                case UserRole.PersonnelManager:      
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -1600,9 +1603,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsTypeEditable /*|| model.IsStatusEditable*/
-                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
-                                    model.IsApprovedByPersonnelManagerEnable || model.IsPersonnelFieldsEditable;
+            model.IsSaveAvailable = model.IsTypeEditable /*|| model.IsStatusEditable*/|| model.IsPersonnelFieldsEditable;
+            //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+            //model.IsApprovedByPersonnelManagerEnable ;
         }
         protected void SetFlagsState(DismissalEditModel model, bool state)
         {
@@ -1630,6 +1633,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
             model.IsPrintAvailable = state;
+
+            model.IsApproved = state;
+            model.IsApprovedEnable = state;
         }
         public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
@@ -1681,7 +1687,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
-
+                        dismissal.CreateDate = DateTime.Now;
                         dismissal.DeleteDate = DateTime.Now;
                         DismissalDao.SaveAndFlush(dismissal);
                         model.IsDelete = false;
@@ -1690,6 +1696,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         ChangeEntityProperties(current, dismissal, model, user);
                         DismissalDao.SaveAndFlush(dismissal);
+                        if (dismissal.Version != model.Version)
+                        {
+                            dismissal.CreateDate = DateTime.Now;
+                            DismissalDao.SaveAndFlush(dismissal);
+                        }
+
                     }
                     if (dismissal.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -1720,7 +1732,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
-                && model.IsApprovedByUser)
+                && model.IsApproved)
                 entity.UserDateAccept = DateTime.Now;
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id)
@@ -1730,7 +1742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.UserDateAccept = DateTime.Now;
                 if (!entity.ManagerDateAccept.HasValue)
                 {
-                    if (model.IsApprovedByManager)
+                    if (model.IsApproved)
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
@@ -1749,7 +1761,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Compensation = string.IsNullOrEmpty(model.Compensation)
                                               ? new decimal?()
                                               : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
-                    if (model.IsApprovedByPersonnelManager)
+                    if (model.IsApproved)
                         entity.PersonnelManagerDateAccept = DateTime.Now;
                 }
             }
@@ -3137,17 +3149,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSaveAvailable = true;
                 model.IsAbsenceTypeEditable = true;
+                model.IsApprovedEnable = true;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = true;
+                        //model.IsApprovedByUserEnable = true;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = true;
+                        //model.IsApprovedByManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
@@ -3167,7 +3180,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Employee:
                     if (!absence.UserDateAccept.HasValue && !absence.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByUserEnable = true;
+                        //model.IsApprovedByUserEnable = true;
+                        model.IsApprovedEnable = true;
                         //model.IsSaveAvailable = true;
                         if (!absence.ManagerDateAccept.HasValue && !absence.PersonnelManagerDateAccept.HasValue && !absence.SendTo1C.HasValue)
                             model.IsAbsenceTypeEditable = true;
@@ -3176,7 +3190,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (!absence.ManagerDateAccept.HasValue && !absence.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByManagerEnable = true;
+                        //model.IsApprovedByManagerEnable = true;
+                        model.IsApprovedEnable = true;
                         if (!absence.PersonnelManagerDateAccept.HasValue && !absence.SendTo1C.HasValue)
                         {
                             model.IsAbsenceTypeEditable = true;
@@ -3187,7 +3202,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManager:
                     if (!absence.PersonnelManagerDateAccept.HasValue)
                     {
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        //model.IsApprovedByPersonnelManagerEnable = true;
+                        model.IsApprovedEnable = true;
                         if (!absence.SendTo1C.HasValue)
                         {
                             model.IsAbsenceTypeEditable = true;
@@ -3198,9 +3214,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsDeleteAvailable = true;
                     break;
             }
-            model.IsSaveAvailable = model.IsAbsenceTypeEditable || model.IsTimesheetStatusEditable
-                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
-                                    model.IsApprovedByPersonnelManagerEnable;
+            model.IsSaveAvailable = model.IsAbsenceTypeEditable || model.IsTimesheetStatusEditable;
+            //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+            //model.IsApprovedByPersonnelManagerEnable;
         }
         protected void SetFlagsState(AbsenceEditModel model, bool state)
         {
@@ -3226,6 +3242,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
+
+            model.IsApproved = state;
+            model.IsApprovedEnable = state;
         }
         public void ReloadDictionariesToModel(AbsenceEditModel model)
         {
@@ -3282,7 +3301,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
                         User = user
                     };
-                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApprovedByUser)
+                    if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApproved)
                         absence.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
@@ -3290,7 +3309,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
                             absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                        if(model.IsApprovedByManager)
+                        if(model.IsApproved)
                             absence.ManagerDateAccept = DateTime.Now;
                     }
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -3301,7 +3320,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
                             absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                        if (model.IsApprovedByPersonnelManager)
+                        if (model.IsApproved)
                             absence.PersonnelManagerDateAccept = DateTime.Now;
                     }
                     AbsenceDao.SaveAndFlush(absence);
@@ -3318,6 +3337,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        absence.CreateDate = DateTime.Now;
                         absence.DeleteDate = DateTime.Now;
                         AbsenceDao.SaveAndFlush(absence);
                         //model.TimesheetStatusId = absence.TimesheetStatus == null? 0:absence.TimesheetStatus.Id;
@@ -3328,14 +3348,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                             && !absence.UserDateAccept.HasValue
-                            && model.IsApprovedByUser)
+                            && model.IsApproved)
                             absence.UserDateAccept = DateTime.Now;
                         if (current.UserRole == UserRole.Manager && user.Manager != null
                             && current.Id == user.Manager.Id
                             && !absence.ManagerDateAccept.HasValue)
                         {
                             absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if(model.IsApprovedByManager)
+                            if(model.IsApproved)
                                 absence.ManagerDateAccept = DateTime.Now;
                         }
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -3345,7 +3365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             )
                         {
                             absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if (model.IsApprovedByPersonnelManager)
+                            if (model.IsApproved)
                                 absence.PersonnelManagerDateAccept = DateTime.Now;
 
                         }
@@ -3359,6 +3379,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
                         }
                         AbsenceDao.SaveAndFlush(absence);
+                        if (absence.Version != model.Version)
+                        {
+                            absence.CreateDate = DateTime.Now;
+                            AbsenceDao.SaveAndFlush(absence);
+                        }
+
                     }
                     if (absence.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -3591,7 +3617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 //UserFullNameForPrint = user.FullName, 
                                              };
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                        && model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
+                        && model.IsApproved && !vacation.UserDateAccept.HasValue)
                         vacation.UserDateAccept = DateTime.Now;
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
@@ -3599,7 +3625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
                             vacation.UserDateAccept = DateTime.Now;
-                        if (model.IsApprovedByManager && !vacation.ManagerDateAccept.HasValue)
+                        if (model.IsApproved && !vacation.ManagerDateAccept.HasValue)
                             vacation.ManagerDateAccept = DateTime.Now;
                     }
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -3610,7 +3636,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
                             vacation.UserDateAccept = DateTime.Now;
-                        if (model.IsApprovedByPersonnelManager && !vacation.PersonnelManagerDateAccept.HasValue)
+                        if (model.IsApproved && !vacation.PersonnelManagerDateAccept.HasValue)
                             vacation.PersonnelManagerDateAccept = DateTime.Now;
                     }
 
@@ -3639,6 +3665,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        vacation.CreateDate = DateTime.Now;
                         vacation.DeleteDate = DateTime.Now;
                         VacationDao.SaveAndFlush(vacation);
                         model.IsDelete = false;
@@ -3649,7 +3676,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                             && !vacation.UserDateAccept.HasValue 
-                            && model.IsApprovedByUser)
+                            && model.IsApproved)
                             vacation.UserDateAccept = DateTime.Now;
                         
                         if (current.UserRole == UserRole.Manager && user.Manager != null
@@ -3657,7 +3684,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && !vacation.ManagerDateAccept.HasValue )
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if(model.IsApprovedByManager)
+                            if(model.IsApproved)
                                 vacation.ManagerDateAccept = DateTime.Now;
                         }
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -3666,7 +3693,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && !vacation.PersonnelManagerDateAccept.HasValue)
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if (model.IsApprovedByPersonnelManager)
+                            if (model.IsApproved)
                                 vacation.PersonnelManagerDateAccept = DateTime.Now;
 
                         }
@@ -3681,6 +3708,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         //vacation.UserFullNameForPrint = user.FullName;
                         VacationDao.SaveAndFlush(vacation);
+                        if (vacation.Version != model.Version)
+                        {
+                            vacation.CreateDate = DateTime.Now;
+                            VacationDao.SaveAndFlush(vacation);
+                        }
+
                     }
                     if (vacation.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -3794,6 +3827,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
             model.IsPrintAvailable = state;
+
+            model.IsApproved = state;
+            model.IsApprovedEnable = state;
         }
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
@@ -3803,17 +3839,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.IsSaveAvailable = true;
                 model.IsVacationTypeEditable = true;
+                model.IsApprovedEnable = false;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
-                        model.IsApprovedByUserEnable = false;
+                        //model.IsApprovedByUserEnable = false;
                         break;
                     case UserRole.Manager:
-                        model.IsApprovedByManagerEnable = false;
+                        //model.IsApprovedByManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
-                        model.IsApprovedByPersonnelManagerEnable = false;
+                        //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         break;
                 }
@@ -3839,7 +3876,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Employee:
                     if (!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByUserEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                         if(!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
                             model.IsVacationTypeEditable = true;
                     }
@@ -3847,7 +3885,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
-                        model.IsApprovedByManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                        if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
                         {
                             model.IsVacationTypeEditable = true;
@@ -3858,7 +3897,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManager:
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
-                        model.IsApprovedByPersonnelManagerEnable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
                         if (!vacation.SendTo1C.HasValue)
                         {
                             model.IsVacationTypeEditable = true;
@@ -3871,9 +3911,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     
                     break;
             }
-            model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable
-                                    || model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
-                                    model.IsApprovedByPersonnelManagerEnable;
+            model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable;
+            //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+            //model.IsApprovedByPersonnelManagerEnable;
         }
         protected void SetUserInfoModel(User user,UserInfoModel model)
         {

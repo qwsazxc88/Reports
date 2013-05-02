@@ -340,6 +340,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              if (!ValidateTimesheetCorrectionEditModel(model))
              {
+                 model.IsApproved = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -412,6 +413,7 @@ namespace WebMvc.Controllers
              UploadFileDto fileDto = GetFileContext();
              if (!ValidateDismissalEditModel(model,fileDto))
              {
+                 model.IsApproved = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -525,6 +527,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              if (!ValidateMissionEditModel(model))
              {
+                 model.IsApproved = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -669,6 +672,7 @@ namespace WebMvc.Controllers
              //string error;
              if (!ValidateSicklistEditModel(model, fileDto/*,out needToReload,out error*/))
              {
+                 model.IsApproved = false;
                  //if(needToReload)
                  //{
                  //    ModelState.Clear();
@@ -835,6 +839,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              if (!ValidateAbsenceEditModel(model))
              {
+                 model.IsApproved = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -916,6 +921,7 @@ namespace WebMvc.Controllers
              UploadFileDto fileDto = GetFileContext();
              if (!ValidateVacationEditModel(model,fileDto))
              {
+                 model.IsApproved = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
