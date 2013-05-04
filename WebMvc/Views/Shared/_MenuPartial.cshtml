@@ -5,14 +5,63 @@
 @using Reports.Core
 @if (Request.IsAuthenticated)
 {
-<ul class="menu" id="menu">
+        <input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
+        <table class="menu"  style="width:100% ;border:1px solid">
+            <tr>
+                <td id="liTimesheet" class="mainOn"><a href="#"><span>Табель</span></a>
+                </td>  
+                <td id="liCharge">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                </td> 
+                <td id="liMember">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                </td> 
+            </tr>
+            <tr style="border-top:1px solid">
+                <td colspan="3">
+                <table style="width:100%">
+                <tr>
+                @if (dto.UserRole == UserRole.Admin)
+                {
+                     <td class="menuitem" id="adminUsers" >@Html.ActionLink("Пользователи", "UserList", "Admin")</td>
+                     <td class="menuitem" id="adminSettings" >@Html.ActionLink("Настройки", "Settings", "Admin")</td>
+                     <td class="menuitem" id="adminInfo" >@Html.ActionLink("Информация", "InformationsList", "Admin")</td>
+                }
+                else if (dto.UserRole == UserRole.Chief)
+                {
+                    <td class="menuitem" id="userTimesheet">@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td>
+                }
+                else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
+                        || dto.UserRole == UserRole.Inspector)
+                {
+                        if (dto.UserRole != UserRole.Employee)
+                        {
+                            <td class="menuitem" id="userAllRequest">@Html.ActionLink("Все заявки", "AllRequestList", "UserRequest")</td>
+                        }
+                        <td class="menuitem" id="userSicklist">@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</td>
+                        <td class="menuitem" id="userMission">@Html.ActionLink("Командировки", "MissionList", "UserRequest")</td>
+                        <td class="menuitem" id="userTimesheetCorrection">@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</td>
+                        <td class="menuitem" id="userAbsence">@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</td>
+                        <td class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</td>
+                        <td class="menuitem" id="userDismissal">@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td>
+                        if (dto.UserRole != UserRole.Inspector)
+                        {
+                            <td class="menuitem" id="userTimesheet">@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td>
+                        }
+                        if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
+                        {
+                            <td class="menuitem" id="userAccept">@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</td>
+                        }
+                }
+                <td>@Html.ActionLink("На главную страницу", "Index", "Home")</td>
+                </tr>
+                </table>
+                </td>
+            </tr>
+        </table>
+@*<ul class="menu" id="menu">
                 @if (dto.UserRole == UserRole.Admin)
                 {
                      <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
-                     @*<li>@Html.ActionLink("Типы заявок", "DocumentTypeList", "Admin")</li>*@
                      <li>@Html.ActionLink("Настройки", "Settings", "Admin")</li>
-@*                     <li>@Html.ActionLink("Импорт", "ActionsList", "Admin", new { type = 1 }, null)</li>
-                     <li>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</li>*@
                      <li>@Html.ActionLink("Информация", "InformationsList", "Admin")</li>
                 }
                 else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
@@ -26,9 +75,7 @@
                         <li>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</li>
                         <li>@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</li>
                         <li>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</li>
-                        @*<li>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</li>*@
                         <li>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</li>
-                        @*<li>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</li>*@
                         <li>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</li>
                        if (dto.UserRole != UserRole.Inspector)
                        {
@@ -38,14 +85,11 @@
                        {
                             <li>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</li>
                        }
-                       @*if (dto.UserRole == UserRole.PersonnelManager)
-                       {
-                            <li>@Html.ActionLink("Пользователи", "UserList", "Admin")</li>
-                       }*@
-
-
                 }
                 <li></li>
                 <li>@Html.ActionLink("На главную страницу", "Index", "Home")</li>
-</ul>
+</ul>*@
 }
+<script type="text/javascript">
+
+</script>

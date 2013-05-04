@@ -73,7 +73,10 @@
     </tr>
 </table>    
 <script type="text/javascript">
-    function OnPageClick(pageNumber) {
+    $(document).ready(function () {
+        setActiveMenuItem("adminUsers");
+    });
+function OnPageClick(pageNumber) {
         $("#CurrentPage").val(pageNumber);
         submitForm();
         return false;

@@ -86,6 +86,9 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
+     $(document).ready(function () {
+        setActiveMenuItem("userTimesheet");
+    });
     function ChangeMonth() {
         submitForm();
     }

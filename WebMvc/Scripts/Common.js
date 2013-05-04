@@ -27,4 +27,16 @@ function clearErrors() {
 }
 function escapeJson(value) {
     return escape(value); //value.replace('"','\x22');
+}
+function setActiveMenuItem(menuName) {
+    $(".on").each(function () {
+        $("#" + this).attr("class", "menuitem");
+    });
+    $("#" + menuName).attr("class", "on");
+}
+function setMainActiveMenuItem(menuName) {
+    $(".mainOn").each(function () {
+        $("#" + this).attr("class", "mainMenuItem");
+    });
+    $("#" + menuName).attr("class", "mainOn");
 }  

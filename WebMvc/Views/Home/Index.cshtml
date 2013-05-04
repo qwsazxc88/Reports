@@ -1,4 +1,5 @@
-﻿@{
+﻿@model WebMvc.Models.HomeModel
+@{
    
     Layout = "~/Views/Shared/_LayoutWithoutMenu.cshtml";
     ViewBag.Title = "Главная страница";
@@ -11,18 +12,42 @@
 {
     if (Request.IsAuthenticated)
     {
-    <table style="width:100%">
+        <table class="menu" style="width:100%">
+            <tr>
+                <td class="mainMenuItem" id="mainTimesheet">
+                    @if (dto.UserRole == UserRole.Admin)
+                    {
+                        @Html.ActionLink("Табель", "UserList", "Admin")
+                    }
+                    else if (dto.UserRole == UserRole.Employee)
+                    {
+                        @Html.ActionLink("Табель", "SicklistList", "UserRequest")
+                    }
+                    else if (dto.UserRole == UserRole.Chief)
+                    {
+                        @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
+                    }
+                </td>  
+                <td @if(Model.menuId == 1){<text>class="mainOn"</text>} id="mainCharge">
+                        @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                </td> 
+                <td @if(Model.menuId == 2){<text>class="mainOn"</text>} id="mainMember">
+                        @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                </td> 
+            </tr>
+        </table>
+@*    <table style="width:100%">
                 <tr>
                     <td>
                         <table>
-
                 @if (dto.UserRole == UserRole.Admin)
                 {
                      <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>
-                     @*<tr><td>@Html.ActionLink("Типы заявок", "DocumentTypeList", "Admin")</td></tr>*@
                      <tr><td>@Html.ActionLink("Настройки", "Settings", "Admin")</td></tr>
-                     @*<tr><td>@Html.ActionLink("Импорт", "ActionsList", "Admin", new { type = 1 }, null)</td></tr>
-                     <tr><td>@Html.ActionLink("Экспорт", "ActionsList", "Admin", new { type = 2 }, null)</td></tr>*@
                      <tr><td>@Html.ActionLink("Информация", "InformationsList", "Admin")</td></tr>
                 }
                 else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
@@ -37,10 +62,8 @@
                         <tr><td>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</td></tr>
                         <tr><td>@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</td></tr>
                         <tr><td>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</td></tr>
-                        @*<tr><td>@Html.ActionLink("Оплата вых. дней", "HolidayWorkList", "UserRequest")</td></tr>*@
                         <tr><td>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</td></tr>
-                       @* <tr><td>@Html.ActionLink("Прием на работу", "EmploymentList", "UserRequest")</td></tr>*@
-                        <tr><td>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td></tr>
+                       <tr><td>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td></tr>
                         if (dto.UserRole != UserRole.Inspector)
                         {
                         <tr><td>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td></tr>
@@ -49,15 +72,16 @@
                        {
                             <tr><td>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</td></tr>
                        }
-
-@*                           if (dto.UserRole == UserRole.PersonnelManager)
-                           {
-                            <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>
-                           }*@
                 }
                   </table> 
                  </td>
             </tr>
-    </table>
+    </table>*@
     }
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+        //var pathname = window.location.pathname;
+        //setMainActiveMenuItem($.url().param('mainMenuItem'));
+    });
+</script>

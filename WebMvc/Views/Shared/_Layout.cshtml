@@ -63,13 +63,16 @@
 @*        <div id="main">*@
             <table style="width:100%">
                 <tr>
-                    <td style="width:20%;vertical-align:top">
+                    <td style="vertical-align:top">
                         @Html.Partial("_MenuPartial")
                     </td>
+                </tr>
+                <tr>
                     <td style="padding-top:10px;vertical-align:top">
                         @RenderBody()
                     </td>
                 </tr>
+               
             </table>    
 @*        </div>*@
     </div>

@@ -202,12 +202,12 @@
             </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td>
             @Html.LabelFor(m => m.TimesheetStatusId):
         </td>
-    </tr>
-    <tr>
-        <td colspan="2">
+@*    </tr>
+    <tr>*@
+        <td>
             @Html.DropDownListFor(model => model.TimesheetStatusId, new SelectList(Model.TimesheetStatuses, "ID", "Name"), Model.IsTimesheetStatusEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
@@ -348,7 +348,7 @@
             $("#TypeId").change(function () {
                 OnChangeType(this.value);
             });
-
+            setActiveMenuItem("userSicklist");
 
         });
         function OnChangeType(value) {

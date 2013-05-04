@@ -364,7 +364,7 @@ div#title
 	width:50px !important;
 }*/
 
- .menu { border: 1px solid rgb(0, 109, 181);
+ /*.menu { border: 1px solid rgb(0, 109, 181);
     padding: 10px 10px 10px 30px;
     list-style-image: url();
     list-style-type: none;
@@ -373,7 +373,7 @@ div#title
     width: 150px;
     font-weight: bold;
     background-color: rgb(240, 249, 255);
-    }
+    }*/
 
 /* Styles for RUSCONSALT
 ----------------------------------------------------------*/
@@ -387,16 +387,30 @@ div#title
 }
 
  .menu { border: 1px solid rgb(0, 109, 181);
-    padding: 10px 10px 10px 30px;
-    list-style-image: url();
-    list-style-type: none;
-    display: block;
-    line-height: 30px;
-    width: 150px;
+    /*padding: 10px 10px 10px 30px;*/
+    /*list-style-image: url();
+    list-style-type: none;*/
+    /*display: block;*/
+    /*line-height: 30px;*/
+    /*width: 150px;*/
     font-weight: bold;
     background-color: rgb(240, 249, 255);
     }
     
+table.menu a
+{
+	text-decoration:none;
+}    
+table.menu td.mainOn a
+{
+	color: Black;
+} 
+table.menu td.on a
+{
+	color: Black;
+}    
+   
+
 .sort-off
 {
 width:100%;

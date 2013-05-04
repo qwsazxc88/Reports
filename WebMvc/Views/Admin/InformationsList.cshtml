@@ -72,6 +72,9 @@
     </tr>
 </table>    
 <script type="text/javascript">
+$(document).ready(function () {
+        setActiveMenuItem("adminInfo");
+    });
 function submitForm() {
     if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
         return;

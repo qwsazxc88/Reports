@@ -97,6 +97,10 @@
 *@    </table>
 }
 <script type="text/javascript">
+    
+    $(document).ready(function () {
+        setActiveMenuItem("userAccept");
+    });
     function ChangeMonth() {
         window.location.href = '@Url.Action("AcceptRequests", "UserRequest")?month=' + $("#Month").val() + '&year=' + $("#Year").val();
     }
