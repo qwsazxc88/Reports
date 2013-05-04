@@ -12,9 +12,10 @@
 {
     if (Request.IsAuthenticated)
     {
-        <table class="menu" style="width:100%">
-            <tr>
-                <td class="mainMenuItem" id="mainTimesheet">
+@*        <table class="menu" style="width:100%">
+            <tr>*@
+             <div class="menu">   
+                <div class="mainMenuItem" id="mainTimesheet">
                     @if (dto.UserRole == UserRole.Admin)
                     {
                         @Html.ActionLink("Табель", "UserList", "Admin")
@@ -31,15 +32,22 @@
                     {
                         @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                     }
-                </td>  
-                <td @if(Model.menuId == 1){<text>class="mainOn"</text>} id="mainCharge">
+                </div>  
+                <div @if(Model.menuId == 1){<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>} id="mainCharge">
                         @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
-                </td> 
-                <td @if(Model.menuId == 2){<text>class="mainOn"</text>} id="mainMember">
+                </div> 
+                <div @if (Model.menuId == 2)
+                     {<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>}
+                     id="mainMember">
                         @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                </td> 
-            </tr>
-        </table>
+                </div> 
+             </div>
+@*            </tr>
+        </table>*@
 @*    <table style="width:100%">
                 <tr>
                     <td>

@@ -386,29 +386,96 @@ div#title
           background-image: url("logobg.gif");
 }
 
- .menu { border: 1px solid rgb(0, 109, 181);
-    /*padding: 10px 10px 10px 30px;*/
-    /*list-style-image: url();
-    list-style-type: none;*/
-    /*display: block;*/
-    /*line-height: 30px;*/
-    /*width: 150px;*/
+ .menu  
+ {
+ 	border: 1px solid rgb(0, 109, 181);
     font-weight: bold;
     background-color: rgb(240, 249, 255);
-    }
+    /*display: block;*/
+    overflow:hidden;
+  }
     
-table.menu a
+/*table.menu a
 {
 	text-decoration:none;
-}    
-table.menu td.mainOn a
+} */
+.mainOn
 {
-	color: Black;
+	float:left;
+	margin-left:10px;
 } 
-table.menu td.on a
+.mainMenuItem 
+{
+	float:left;
+	margin-left:10px;
+}    
+.mainOn a
+{
+	text-decoration:none;
+	color: Black;
+	
+} 
+.mainMenuItem a
+{
+	text-decoration:none;
+} 
+
+.on
+{
+	float:left;
+	margin-left:10px;
+} 
+.menuitem 
+{
+	float:left;
+	margin-left:10px;
+}    
+
+.on a
 {
 	color: Black;
+	text-decoration:none;
+	white-space:nowrap;
 }    
+.menuitem a
+{
+	text-decoration:none;
+	white-space:nowrap;
+}
+.menuitem a:link
+{
+    color: #034af3;
+}
+.menuitem a:visited
+{
+    color: #034af3;
+}
+.menuitem a:hover
+{
+	color: #034af3;
+}
+.menuitem a:active
+{
+    color: #034af3;
+}
+.mainMenuItem a:link
+{
+    color: #034af3;
+}
+.mainMenuItem a:visited
+{
+    color: #034af3;
+}
+.mainMenuItem a:hover
+{
+	color: #034af3;
+}
+.mainMenuItem a:active
+{
+    color: #034af3;
+}
+
+
    
 
 .sort-off
