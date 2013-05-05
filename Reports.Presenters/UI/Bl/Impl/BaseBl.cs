@@ -103,6 +103,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
+            User creator,bool isDeleted,
             int requestId,int requestNumber,
             RequestTypeEnum requestType,bool isFromComment)
         {
@@ -118,10 +119,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     to = user.Manager.Email;
                     break;
                 case UserRole.Manager:
-                    //if (user.PersonnelManager == null || string.IsNullOrEmpty(user.PersonnelManager.Email))
-                    //    Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to personnel manager - no manager or empty email", requestId, requestType, current.Id);
-                    //else
-                    //    to = user.PersonnelManager.Email;
                     foreach (User u in user.Personnels)
                     {
                         if (string.IsNullOrEmpty(u.Email))
@@ -134,33 +131,44 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 to += ";" + u.Email;
                         }
                     }
-
-                    if (string.IsNullOrEmpty(user.Email))
-                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from manager {2} to user - empty email", requestId, requestType, current.Id);
-                    else
+                    if (creator.UserRole == UserRole.Manager)
                     {
-                        if (string.IsNullOrEmpty(to))
-                            to = user.Email;
+                        if (string.IsNullOrEmpty(user.Email))
+                            Log.ErrorFormat(
+                                "Cannot send e-mail (request {0},requestType {1}) from manager {2} to user - empty email",
+                                requestId, requestType, current.Id);
                         else
-                            to += ";" + user.Email;
+                        {
+                            if (string.IsNullOrEmpty(to))
+                                to = user.Email;
+                            else
+                                to += ";" + user.Email;
+                        }
                     }
                     if (string.IsNullOrEmpty(to))
                         return null;
                     break;
                 case UserRole.PersonnelManager:
-                    if (user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
-                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to manager - no manager or empty email", requestId, requestType, current.Id);
-                    else
-                        to = user.Manager.Email;
-
-                    if (string.IsNullOrEmpty(user.Email))
-                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to user - empty email", requestId, requestType, current.Id);
-                    else
+                    if (creator.UserRole == UserRole.PersonnelManager || isDeleted)
                     {
-                        if (string.IsNullOrEmpty(to))
-                            to = user.Email;
+                        if (user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
+                            Log.ErrorFormat(
+                                "Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to manager - no manager or empty email",
+                                requestId, requestType, current.Id);
                         else
-                            to += ";" + user.Email;
+                            to = user.Manager.Email;
+
+                        if (string.IsNullOrEmpty(user.Email))
+                            Log.ErrorFormat(
+                                "Cannot send e-mail (request {0},requestType {1}) from personnel manager {2} to user - empty email",
+                                requestId, requestType, current.Id);
+                        else
+                        {
+                            if (string.IsNullOrEmpty(to))
+                                to = user.Email;
+                            else
+                                to += ";" + user.Email;
+                        }
                     }
                     if (string.IsNullOrEmpty(to))
                         return null;
@@ -168,11 +176,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             string body;
             string subject = GetSubjectAndBody(current, requestId, requestNumber, 
-                requestType,out body);
+                requestType,isDeleted,out body);
             return SendEmail(to, subject, body);
         }
         protected string GetSubjectAndBody(IUser current,int requestId,int requestNumber,
-            RequestTypeEnum requestType,out string body)
+            RequestTypeEnum requestType, bool isDeleted, out string body)
         {
             string requestTypeStr;
             switch(requestType)
@@ -204,8 +212,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     throw new ArgumentException(string.Format("Unknown request type {0}",(int)requestType));
             }
-            body = requestTypeStr + " номер " + requestNumber + " изменена пользователем " + current.Name;
-            const string subject = "Изменение заявки";
+            string acceptOrReject = isDeleted ? " отклонена" : " одобрена";
+            body = requestTypeStr + " номер " + requestNumber + acceptOrReject + " пользователем " + current.Name;
+            string subject = isDeleted ? "Отклонение заявки" : "Одобрение заявки";
             return subject;
         }
 

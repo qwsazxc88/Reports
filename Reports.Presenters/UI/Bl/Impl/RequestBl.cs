@@ -707,8 +707,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     };
                     ChangeEntityProperties(current, employment, model, user);
                     EmploymentDao.SaveAndFlush(employment);
-                    SendEmailForUserRequest(user, current, employment.Id, employment.Number,
-                                            RequestTypeEnum.Employment, false);
+                    /*SendEmailForUserRequest(user, current, employment.Id, employment.Number,
+                                            RequestTypeEnum.Employment, false);*/
                     model.Id = employment.Id;
                 }
                 else
@@ -727,14 +727,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         RequestAttachmentDao.DeleteForEntityId(model.Id);
                         EmploymentDao.SaveAndFlush(employment);
                         model.IsDelete = false;
+
                     }
                     else
                     {
                         ChangeEntityProperties(current, employment, model, user);
                         EmploymentDao.SaveAndFlush(employment);
-                        if(model.Version != employment.Version)
-                            SendEmailForUserRequest(user, current, employment.Id, employment.Number,
-                                            RequestTypeEnum.Employment, false);
+                        //if(model.Version != employment.Version)
+                            /*SendEmailForUserRequest(user, current, employment.Id, employment.Number,
+                                            RequestTypeEnum.Employment, false);*/
                     }
                     if (employment.DeleteDate.HasValue)
                         model.IsDeleted = true;
@@ -815,14 +816,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApprovedByUser)
+            {
                 entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                                        entity.Number, RequestTypeEnum.Employment, false);
+            }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id
                 && !entity.ManagerDateAccept.HasValue)
             {
                 entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsApprovedByManager)
+                {
                     entity.ManagerDateAccept = DateTime.Now;
+                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                                        entity.Number, RequestTypeEnum.Employment, false);
+                }
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                 && current.Id == user.PersonnelManager.Id*/
@@ -831,7 +840,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsApprovedByPersonnelManager)
+                {
                     entity.PersonnelManagerDateAccept = DateTime.Now;
+                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                                        entity.Number, RequestTypeEnum.Employment, false);
+                }
             }
             if (model.IsTypeEditable)
             {
@@ -2655,7 +2668,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PaymentRestrictTypeId = sicklist.RestrictType == null ? 0 : sicklist.RestrictType.Id;
                 model.PaymentDecreaseDate = sicklist.PaymentDecreaseDate;
                 model.IsPreviousPaymentCounted = sicklist.IsPreviousPaymentCounted;
-                //model.Is2010Calculate = sicklist.Is2010Calculate;
+                //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
                 SetHiddenFields(model);
                 if (sicklist.DeleteDate.HasValue)
@@ -2737,6 +2750,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         sicklist.DeleteDate = DateTime.Now;
                         sicklist.CreateDate = DateTime.Now;
                         SicklistDao.SaveAndFlush(sicklist);
+                        SendEmailForUserRequest(sicklist.User, current, sicklist.Creator, true, sicklist.Id,
+                            sicklist.Number, RequestTypeEnum.Sicklist, false);
                         model.IsDelete = false;
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
@@ -2798,60 +2813,70 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    model.Attachment = attach.FileName;
         //}
        
-        protected void ChangeEntityProperties(IUser current, Sicklist sicklist,SicklistEditModel model,User user)
+        protected void ChangeEntityProperties(IUser current, Sicklist entity,SicklistEditModel model,User user)
         {
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                && !sicklist.UserDateAccept.HasValue
+                && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
             {
-                sicklist.UserDateAccept = DateTime.Now;
+                entity.UserDateAccept = DateTime.Now;
                 //!!! need to send e-mail
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.Sicklist, false);
             }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id
-                && !sicklist.ManagerDateAccept.HasValue)
+                && !entity.ManagerDateAccept.HasValue)
             {
-                if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
-                    sicklist.UserDateAccept = DateTime.Now;
-                sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsApproved)
-                    sicklist.ManagerDateAccept = DateTime.Now;
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
                     //!!! need to send e-mail
+                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                        entity.Number, RequestTypeEnum.Sicklist, false);
+                }
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                 && current.Id == user.PersonnelManager.Id*/
                 && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 )
             {
-                if (model.IsApprovedByUser && !sicklist.UserDateAccept.HasValue)
-                    sicklist.UserDateAccept = DateTime.Now;
-                if (!sicklist.PersonnelManagerDateAccept.HasValue)
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
                 {
-                    sicklist.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                     if (model.IsPersonnelFieldsEditable)
-                        SetPersonnelDataFromModel(sicklist, model);
+                        SetPersonnelDataFromModel(entity, model);
                     if (model.IsApproved)
-                        sicklist.PersonnelManagerDateAccept = DateTime.Now;
-                    //!!! need to send e-mail
+                    {
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                        //!!! need to send e-mail
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Sicklist, false);
+                    }
                 }
             }
             if(model.IsDatesEditable)
             {
                 // ReSharper disable PossibleInvalidOperationException
-                sicklist.BeginDate = model.BeginDate.Value;
-                sicklist.EndDate = model.EndDate.Value;
+                entity.BeginDate = model.BeginDate.Value;
+                entity.EndDate = model.EndDate.Value;
                 // ReSharper restore PossibleInvalidOperationException
-                sicklist.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
+                entity.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
             }
             if (model.IsTypeEditable)
             {
-                sicklist.Type = SicklistTypeDao.Load(model.TypeId);
+                entity.Type = SicklistTypeDao.Load(model.TypeId);
                 if (model.TypeId == sicklistTypeDao.SicklistTypeIdBabyMinding)
-                    sicklist.BabyMindingType = model.BabyMindingTypeId.HasValue 
+                    entity.BabyMindingType = model.BabyMindingTypeId.HasValue 
                         ? SicklistBabyMindingTypeDao.Load(model.BabyMindingTypeId.Value)
                         : null;
                 else
-                    sicklist.BabyMindingType = null;
+                    entity.BabyMindingType = null;
             }
         }
         protected void SetPersonnelDataFromModel(Sicklist sicklist,SicklistEditModel model)
@@ -2863,7 +2888,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
             sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
             sicklist.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
-            //sicklist.Is2010Calculate = model.Is2010Calculate;
+            //entity.Is2010Calculate = model.Is2010Calculate;
             sicklist.IsAddToFullPayment = model.IsAddToFullPayment;
         }
         protected int? GetIntFromModel(string modelValue)
@@ -4177,8 +4202,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         EmploymentCommentDao.MergeAndFlush(employmentComment);
-                        SendEmailForUserRequest(employment.User, AuthenticationService.CurrentUser, employment.Id,
-                                                employment.Number, RequestTypeEnum.Employment, true);
+                        /*SendEmailForUserRequest(employment.User, AuthenticationService.CurrentUser, employment.Id,
+                                                employment.Number, RequestTypeEnum.Employment, true);*/
                         break;
                 }
                 //doc.Comments.Add(comment);
