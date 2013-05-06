@@ -1321,6 +1321,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         timesheetCorrection.DeleteDate = DateTime.Now;
                         TimesheetCorrectionDao.SaveAndFlush(timesheetCorrection);
                         model.IsDelete = false;
+                        SendEmailForUserRequest(timesheetCorrection.User, current, 
+                         timesheetCorrection.Creator, true, timesheetCorrection.Id,
+                         timesheetCorrection.Number, RequestTypeEnum.TimesheetCorrection, false);
                     }
                     else
                     {
@@ -1362,7 +1365,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
+            {
                 entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                           entity.Number, RequestTypeEnum.TimesheetCorrection, false);
+            }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id)
             {
@@ -1372,7 +1379,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                     if (model.IsApproved)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                         entity.Number, RequestTypeEnum.TimesheetCorrection, false);
+                    }
                 }
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -1387,7 +1398,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                     //entity.Compensation = string.IsNullOrEmpty(model.Compensation) ? new decimal?() : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
                     if (model.IsApproved)
+                    {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                         entity.Number, RequestTypeEnum.TimesheetCorrection, false);
+                    }
                 }
             }
             if (model.IsTypeEditable)
@@ -1704,6 +1719,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         dismissal.DeleteDate = DateTime.Now;
                         DismissalDao.SaveAndFlush(dismissal);
                         model.IsDelete = false;
+                        SendEmailForUserRequest(dismissal.User, current, dismissal.Creator, true, dismissal.Id,
+                            dismissal.Number, RequestTypeEnum.Dismissal, false);
                     }
                     else
                     {
@@ -1746,7 +1763,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
+            {
                 entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.Dismissal, false);
+            }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id)
             {
@@ -1756,7 +1777,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!entity.ManagerDateAccept.HasValue)
                 {
                     if (model.IsApproved)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Dismissal, false);
+                    }
                 }
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -1775,7 +1800,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                               ? new decimal?()
                                               : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
                     if (model.IsApproved)
+                    {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Dismissal, false);
+                    }
                 }
             }
             if (model.IsTypeEditable)
@@ -2084,6 +2113,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         mission.CreateDate = DateTime.Now;
                         MissionDao.SaveAndFlush(mission);
                         model.IsDelete = false;
+                        SendEmailForUserRequest(mission.User, current, mission.Creator, true, mission.Id,
+                            mission.Number, RequestTypeEnum.Mission, false);
                     }
                     else
                     {
@@ -2144,7 +2175,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
+            {
                 entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.Mission, false);
+            }
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id)
             {
@@ -2154,7 +2189,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                     if (model.IsApproved)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Mission, false);
+                    }
                 }
             }
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
@@ -2169,7 +2208,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                     entity.Reason = model.Reason;
                     if (model.IsApproved)
+                    {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Mission, false);
+                    }
                 }
             }
             if (model.IsTypeEditable)
@@ -3327,15 +3370,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                         User = user
                     };
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApproved)
+                    {
                         absence.UserDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                         absence.Number, RequestTypeEnum.Absence, false);
+                    }
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
                     {
                         if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
                             absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                        if(model.IsApproved)
+                        if (model.IsApproved)
+                        {
                             absence.ManagerDateAccept = DateTime.Now;
+                            SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                                absence.Number, RequestTypeEnum.Absence, false);
+                        }
                     }
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id*/
@@ -3346,7 +3397,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             absence.UserDateAccept = DateTime.Now;
                         absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApproved)
+                        {
                             absence.PersonnelManagerDateAccept = DateTime.Now;
+                            SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                                absence.Number, RequestTypeEnum.Absence, false);
+                        }
                     }
                     AbsenceDao.SaveAndFlush(absence);
                     model.Id = absence.Id;
@@ -3368,20 +3423,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.TimesheetStatusId = absence.TimesheetStatus == null? 0:absence.TimesheetStatus.Id;
                         //model.AbsenceTypeId = absence.Type.Id;
                         model.IsDelete = false;
+                        SendEmailForUserRequest(absence.User, current, absence.Creator, true, absence.Id,
+                            absence.Number, RequestTypeEnum.Absence, false);
                     }
                     else
                     {
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                             && !absence.UserDateAccept.HasValue
                             && model.IsApproved)
+                        {
                             absence.UserDateAccept = DateTime.Now;
+                            SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                                absence.Number, RequestTypeEnum.Absence, false);
+                        }
                         if (current.UserRole == UserRole.Manager && user.Manager != null
                             && current.Id == user.Manager.Id
                             && !absence.ManagerDateAccept.HasValue)
                         {
                             absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if(model.IsApproved)
+                            if (model.IsApproved)
+                            {
                                 absence.ManagerDateAccept = DateTime.Now;
+                                SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                                    absence.Number, RequestTypeEnum.Absence, false);
+                            }
                         }
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                             && current.Id == user.PersonnelManager.Id*/
@@ -3391,8 +3456,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                             if (model.IsApproved)
+                            {
                                 absence.PersonnelManagerDateAccept = DateTime.Now;
-
+                                SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
+                                    absence.Number, RequestTypeEnum.Absence, false);
+                            }
                         }
                         if (model.IsAbsenceTypeEditable)
                         {
@@ -3643,7 +3711,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                              };
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                         && model.IsApproved && !vacation.UserDateAccept.HasValue)
+                    {
                         vacation.UserDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                            vacation.Number, RequestTypeEnum.Vacation, false);
+                    }
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
                     {
@@ -3651,7 +3723,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
                             vacation.UserDateAccept = DateTime.Now;
                         if (model.IsApproved && !vacation.ManagerDateAccept.HasValue)
+                        {
                             vacation.ManagerDateAccept = DateTime.Now;
+                            SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                vacation.Number, RequestTypeEnum.Vacation, false);
+                        }
                     }
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id*/
@@ -3662,7 +3738,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
                             vacation.UserDateAccept = DateTime.Now;
                         if (model.IsApproved && !vacation.PersonnelManagerDateAccept.HasValue)
+                        {
                             vacation.PersonnelManagerDateAccept = DateTime.Now;
+                            SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                vacation.Number, RequestTypeEnum.Vacation, false);
+                        }
                     }
 
                     VacationDao.SaveAndFlush(vacation);
@@ -3694,23 +3774,32 @@ namespace Reports.Presenters.UI.Bl.Impl
                         vacation.DeleteDate = DateTime.Now;
                         VacationDao.SaveAndFlush(vacation);
                         model.IsDelete = false;
+                        SendEmailForUserRequest(vacation.User, current, vacation.Creator, true, vacation.Id,
+                            vacation.Number, RequestTypeEnum.Vacation, false);
                         //model.VacationTypeId = vacation.Type.Id;
                         //model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
                     }
                     else
                     {
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                            && !vacation.UserDateAccept.HasValue 
+                            && !vacation.UserDateAccept.HasValue
                             && model.IsApproved)
+                        {
                             vacation.UserDateAccept = DateTime.Now;
-                        
+                            SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                vacation.Number, RequestTypeEnum.Vacation, false);
+                        }
                         if (current.UserRole == UserRole.Manager && user.Manager != null
                             && current.Id == user.Manager.Id
                             && !vacation.ManagerDateAccept.HasValue )
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if(model.IsApproved)
+                            if (model.IsApproved)
+                            {
                                 vacation.ManagerDateAccept = DateTime.Now;
+                                SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                    vacation.Number, RequestTypeEnum.Vacation, false);
+                            }
                         }
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                             && current.Id == user.PersonnelManager.Id*/
@@ -3719,7 +3808,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                             if (model.IsApproved)
+                            {
                                 vacation.PersonnelManagerDateAccept = DateTime.Now;
+                                SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                    vacation.Number, RequestTypeEnum.Vacation, false);
+                            }
 
                         }
                         if (model.IsVacationTypeEditable)
