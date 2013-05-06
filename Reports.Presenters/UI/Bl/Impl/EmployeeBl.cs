@@ -730,6 +730,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     userDayList.Add(new TimesheetDayDto
                                                  {
                                                      Number = dayRequestsDto.Day.Day,
+                                                     isHoliday = 
+                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Sunday || 
+                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday,
                                                      Status = status.Substring(0,status.Length -1),
                                                      Hours = hours.Substring(0, hours.Length - 1),
                                                  });

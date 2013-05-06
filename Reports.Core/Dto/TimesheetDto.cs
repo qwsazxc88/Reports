@@ -22,6 +22,7 @@ namespace Reports.Core.Dto
         //public int StatusId { get; set; }
         public string Status { get; set; }
         public string Hours { get; set; }
+        public bool isHoliday { get; set; }
     }
 
     public class RequestDto
