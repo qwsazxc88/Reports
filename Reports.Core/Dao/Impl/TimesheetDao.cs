@@ -377,9 +377,9 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery =
                 string.Format(@"select v.EndDate as BeginDate,
                          v.EndDate as EndDate,
-                         0  as TimesheetStatusId,
-                         ' ' as TimesheetCode,
-                         null as TimesheetHours,
+                         1  as TimesheetStatusId,
+                         N'Я' as TimesheetCode,
+                         8 as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName
                          from dbo.Dismissal v");
