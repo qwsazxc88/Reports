@@ -669,6 +669,8 @@ namespace Reports.Core.Dao.Impl
                       && (idNameDto.DateRelease.Value.Month >= month))))
                     )
                 {
+                    List<int> userStats = new List<int> { 0,0,0,0,0 };
+                    List<int> userStatsDays = new List<int> { 0, 0, 0, 0, 0 }; 
                     foreach (var dayRequestsDto in dtoList)
                     {
                         DateTime date = dayRequestsDto.Day;
@@ -680,22 +682,74 @@ namespace Reports.Core.Dao.Impl
                             DayOfWeek dayOfweek = date.DayOfWeek;
                             bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                             bool isDayInFuture = DateTime.Today < date;
-                            dayRequestsDto.Requests.Add(new RequestDto
-                                                            {
-                                                                BeginDate = date,
-                                                                EndDate = date,
-                                                                TimesheetCode =
-                                                                    isHoliday ? HolidayStatusCode : isDayInFuture? EmptyStatusCode: PresenceStatusCode,
-                                                                TimesheetHours = isHoliday ? new int?() : isDayInFuture? new int?() : 8,
-                                                                UserId = idNameDto.Id,
-                                                                UserName = idNameDto.Name
-                                                            });
+                            RequestDto newDto = new RequestDto
+                       {
+                        BeginDate = date,
+                        EndDate = date,
+                        TimesheetCode = isHoliday ? HolidayStatusCode
+                                : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
+                        TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : 8,
+                        UserId = idNameDto.Id,
+                        UserName = idNameDto.Name
+                       };
+                            dayRequestsDto.Requests.Add(newDto);
+                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto});
+                        }
+                        else
+                        {
+                            AddToUserStats(userStats,userStatsDays,userRequestList);
                         }
                         dayRequestsDto.Requests.AddRange(userRequestList);
                     }
+                    idNameDto.userStats = userStats;
+                    idNameDto.userStatsDays = userStatsDays;
                 }
+
             }
             return dtoList;
+        }
+        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, List<RequestDto> userRequestList)
+        {
+            foreach (RequestDto dto in userRequestList)
+            {
+                switch(dto.TimesheetCode)
+                {
+                    case "Я":
+                        //userStats[0] += dto.TimesheetHours.HasValue?dto.TimesheetHours.Value:0;     
+                        //break;
+                    case "ВЧ":
+                    case "Н":
+                    case "РВ":
+                    case "С":
+                        userStats[0] += dto.TimesheetHours.HasValue?dto.TimesheetHours.Value:0;
+                        userStatsDays[0]++;
+                    break;
+                    case "Б":
+                    case "Т":
+                        userStats[2] += 8;
+                        userStatsDays[2]++;
+                        break;
+                    case "К":
+                        userStats[3] += 8;
+                        userStatsDays[3]++;
+                        break;
+                    case "ОТ":
+                    case "ОЗ":
+                    case "ДО":
+                    case "Р":
+                    case "ОЖ":
+                        userStats[1] += 8;
+                        userStatsDays[1]++;
+                        break;
+                    case "В":
+                    case EmptyStatusCode:
+                        break;
+                    default:
+                        userStats[4] += dto.TimesheetHours.HasValue ? dto.TimesheetHours.Value : 8;
+                        userStatsDays[4]++;
+                        break;
+                }
+            }
         }
     }
 }

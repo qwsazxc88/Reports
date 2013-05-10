@@ -1636,7 +1636,80 @@ namespace WebMvc.Controllers
                  ModelState.AddModelError(string.Empty,model.Error);
              return View(model);
          }
+
+         [HttpGet]
+         public ActionResult ConstantList(int? year)
+         {
+             if (!year.HasValue)
+                 year = DateTime.Today.Year;
+             ConstantListModel model = new ConstantListModel
+             {
+                 Year = year.Value,
+             };
+             RequestBl.GetConstantListModel(model);
+             return View(model);
+         }
+         [HttpGet]
+         public ActionResult ConstantEdit(int? entityId,int? month,int? year)
+         {
+             ConstantEditModel model = new ConstantEditModel
+                                           {
+                                               Id = entityId.HasValue ? entityId.Value : 0,
+                                               Month = month.HasValue?month.Value:0,
+                                               Year = year.HasValue?year.Value:0,
+                                           };
+             RequestBl.GetConstantEditModel(model);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult ConstantEdit(ConstantEditModel model)
+         {
+             if (!ValidateConstantEditModel(model))
+             {
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+             string error;
+             if (!RequestBl.SaveConstantEditModel(model, out error))
+             {
+
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     RequestBl.GetConstantEditModel(model);
+                     return View(model);
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+
+         }
+         protected bool ValidateConstantEditModel(ConstantEditModel model)
+         {
+            if(!string.IsNullOrEmpty(model.Days))
+            {
+                int days;
+                if (!Int32.TryParse(model.Days, out days))
+                    ModelState.AddModelError("Days", "Поле <Баланс мес.(дней)> должно быть целым числом.");
+                else if (days < 1 || days > 31)
+                    ModelState.AddModelError("Days", "Поле <Баланс мес.(дней)> должно быть целым числом от 1 до 31.");
+                
+            }
+            if (!string.IsNullOrEmpty(model.Hours))
+            {
+                int hours;
+                if (!Int32.TryParse(model.Hours, out hours))
+                    ModelState.AddModelError("Hours", "Поле <Баланс мес.(часов)> должно быть целым числом.");
+                else if (hours < 1 || hours > 248)
+                    ModelState.AddModelError("Hours", "Поле <Баланс мес.(часов)> должно быть целым числом от 1 до 248.");
+            }
+            return ModelState.IsValid;
+         }
     }
+
 
     /*struct keyWordEntry
     {

@@ -73,6 +73,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected IInspectorToUserDao inspectorToUserDao;
         protected IChiefToUserDao chiefToUserDao;
+        protected IWorkingDaysConstantDao workingDaysConstantDao;
 
 
        
@@ -274,6 +275,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(chiefToUserDao); }
             set { chiefToUserDao = value; }
+        }
+
+        public IWorkingDaysConstantDao WorkingDaysConstantDao
+        {
+            get { return Validate.Dependency(workingDaysConstantDao); }
+            set { workingDaysConstantDao = value; }
         }
 
         #endregion
@@ -4857,7 +4864,135 @@ namespace Reports.Presenters.UI.Bl.Impl
             return list;
         }
 
-
+        public void GetConstantListModel(ConstantListModel model)
+        {
+            SetListboxes(model);
+            SetMonthList(model);
+        }
+        protected void SetListboxes(ConstantListModel model)
+        {
+            //model.Monthes = GetMonthesList();
+            model.Years = GetYearsList();
+        }
+        protected void SetMonthList(ConstantListModel model)
+        {
+            List<WorkingDaysConstant> list = workingDaysConstantDao.LoadDataForYear(model.Year);
+            model.Months = list.ConvertAll(x => new MonthConstModel
+                                                    {
+                                                        Days = x.Days,
+                                                        Hours = x.Hours,
+                                                        Month = x.Month.Month,
+                                                        MonthName = GetMonth(x.Month),
+                                                        Year = x.Month.Year,
+                                                        Id = x.Id,
+                                                    });
+            int firstAvailableAddMonth = 0;
+            for (int i = 1; i < 13; i++)
+            {
+                WorkingDaysConstant entity = list.Where(x => x.Month == new DateTime(model.Year, i, 1)).FirstOrDefault();
+                if (entity == null)
+                {
+                    firstAvailableAddMonth = i;
+                    break;
+                }
+            }
+            model.FirtsAvailableAddMonth = firstAvailableAddMonth;
+        }
+        public void GetConstantEditModel(ConstantEditModel model)
+        {
+            ReloadDictionariesToModel(model);
+            WorkingDaysConstant entity; 
+            if(model.Id != 0)
+            {
+                entity = WorkingDaysConstantDao.Load(model.Id);
+                if(entity == null)
+                    throw new ArgumentException(string.Format("Не могу загрузить константу (id {0}) из базы данных",model.Id));
+                model.Year = entity.Month.Year;
+                model.Month = entity.Month.Month;
+            }
+            else if(model.Month != 0)
+                entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+            else
+            {
+                model.Month = DateTime.Today.Month;
+                entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+            }
+            if(entity != null)
+            {
+                model.Id = entity.Id;
+                model.TS = entity.Version;
+                model.Days = entity.Days.ToString();
+                model.Hours = entity.Hours.ToString();
+            } 
+            else
+            {
+                model.Id = 0;
+                model.TS = 0;
+                model.Days = string.Empty;
+                model.Hours = string.Empty;
+            }
+        }
+        public void ReloadDictionariesToModel(ConstantEditModel model)
+        {
+            model.Months = GetMonthesList();
+        }
+        public bool SaveConstantEditModel(ConstantEditModel model,out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                int days;
+                Int32.TryParse(model.Days, out days);
+                int hours;
+                Int32.TryParse(model.Hours, out hours);
+                WorkingDaysConstant entity;
+                if (model.Id == 0)
+                {
+                    entity = new WorkingDaysConstant
+                                 {
+                                     Days = days,
+                                     Hours = hours,
+                                     Month = new DateTime(model.Year, model.Month, 1),
+                                 };
+                    //ChangeEntityProperties(current, mission, model, user);
+                    WorkingDaysConstantDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                }
+                else
+                {
+                    entity = WorkingDaysConstantDao.Load(model.Id);
+                    if (model.TS != entity.Version)
+                    {
+                        error = "Константа была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    entity.Days = days;
+                    entity.Hours = hours;
+                    //ChangeEntityProperties(current, mission, model, user);
+                    WorkingDaysConstantDao.SaveAndFlush(entity);
+                }
+                //model.DocumentNumber = mission.Number.ToString();
+                model.TS = entity.Version;
+                //model.DaysCount = mission.DaysCount;
+                //model.CreatorLogin = mission.Creator.Login;
+                //model.DateCreated = mission.CreateDate.ToShortDateString();
+                //SetFlagsState(mission.Id, user, mission, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                WorkingDaysConstantDao.RollbackTran();
+                Log.Error("Error on SaveConstantEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                ReloadDictionariesToModel(model);
+            }
+        }
     }
 
 }

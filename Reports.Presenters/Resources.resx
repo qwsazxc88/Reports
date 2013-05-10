@@ -335,5 +335,10 @@
   </data>
   <data name="SicklistEditModel_SicklistNumber_Required" xml:space="preserve">
     <value>Номер больничного листа - обязательное поле</value>
+  <data name="ConstantEditModel_Days_Required" xml:space="preserve">
+    <value>Баланс мес.(дней) - обязательное поле</value>
+  </data>
+  <data name="ConstantEditModel_Hours_Required" xml:space="preserve">
+    <value>Баланс мес.(часов) - обязательное поле</value>
   </data>
 </root>

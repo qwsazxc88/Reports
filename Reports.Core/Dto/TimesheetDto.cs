@@ -28,6 +28,8 @@ namespace Reports.Core.Dto
         public bool isHoliday { get; set; }
         public string Graphic { get; set; }
         public bool isStatRecord { get; set; }
+
+        public string StatCode { get; set; }
     }
 
     public class RequestDto

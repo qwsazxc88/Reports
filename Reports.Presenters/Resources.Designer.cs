@@ -169,6 +169,24 @@ namespace Reports.Presenters {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Баланс мес.(дней) - обязательное поле.
+        /// </summary>
+        internal static string ConstantEditModel_Days_Required {
+            get {
+                return ResourceManager.GetString("ConstantEditModel_Days_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Баланс мес.(часов) - обязательное поле.
+        /// </summary>
+        internal static string ConstantEditModel_Hours_Required {
+            get {
+                return ResourceManager.GetString("ConstantEditModel_Hours_Required", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Версия базы данных: {0}.
         /// </summary>
         internal static string DatabaseVersion {

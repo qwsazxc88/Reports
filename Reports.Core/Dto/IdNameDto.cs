@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Dto
 {
@@ -29,6 +30,8 @@ namespace Reports.Core.Dto
     {
         public DateTime? DateAccept { get; set; }
         public DateTime? DateRelease { get; set; }
+        public List<int> userStats { get; set; }
+        public List<int> userStatsDays { get; set; }
     }
     
 }

@@ -22,6 +22,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetDayDao timesheetDayDao;
         protected IDocumentCommentDao documentCommentDao;
         protected IWorkingGraphicDao workingGraphicDao;
+        protected IWorkingDaysConstantDao workingDaysConstantDao;
         protected IWorkingGraphicTypeDao workingGraphicTypeDao;
 
         protected IConfigurationService configurationService;
@@ -733,6 +734,42 @@ namespace Reports.Presenters.UI.Bl.Impl
                 TimesheetDto dto = new TimesheetDto();
                 List<RequestDto> userDtoList = new List<RequestDto>();
                 List<TimesheetDayDto> userDayList = new List<TimesheetDayDto>();
+                IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
+
+                if (user.UserRole != UserRole.Employee && uDto != null)
+                {
+
+                    WorkingDaysConstant wdk = workingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+                    if(wdk == null)
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            Status = string.Empty,
+                            Hours = string.Empty,
+                            StatCode = "Б",
+                        });
+                    else
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            Status = wdk.Days.ToString(),
+                            Hours = wdk.Hours.ToString(),
+                            StatCode = "Б",
+                        });
+                    for (int i = 0; i < 5; i++)
+                    {
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            Status = uDto.userStatsDays[i].ToString(),
+                            Hours = uDto.userStats[i].ToString(),
+                            StatCode = GetStatCodeName(i),
+                        });
+                    }
+                }
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
@@ -784,6 +821,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TimesheetDtos = list;
             model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
 
+        }
+        protected string GetStatCodeName(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return "Ф";
+                case 1:
+                    return "О";
+                case 2:
+                    return "Б";
+                case 3:
+                    return "К";
+                case 4:
+                    return "П";
+                default:
+                    return string.Empty;
+            }
         }
         protected float? GetDefaultGraphicsForUser(IList<WorkingGraphicTypeDto>  wgtList,int userId,DateTime day)
         {

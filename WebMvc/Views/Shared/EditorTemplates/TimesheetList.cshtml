@@ -51,9 +51,11 @@
                                             <tr>
                                                 <td @if (day.isHoliday)
                                                     {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;color:Red"</text>}
+                                                    else if (day.Number != 0)
+                                                    {<text>style="border:1px solid black;padding:0px;width:25px;text-align:center;"</text>}
                                                     else
                                                     {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;"</text>}>
-                                                    @day.Number
+                                                    @if (day.Number == 0)
                                                     <input type="hidden" id="@timesheetDayIdPrefix" name="@timesheetDayIdPrefix" value="@day.Id"/>
                                                     <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number"/>
                                                     <input type="hidden" id="@timesheetDayIsHolidayPrefix" name="@timesheetDayIsHolidayPrefix" value="@day.isHoliday"/>

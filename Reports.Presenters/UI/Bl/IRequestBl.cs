@@ -85,5 +85,10 @@ namespace Reports.Presenters.UI.Bl
 
         DepartmentTreeModel GetDepartmentTreeModel(int departmentId);
         DepartmentChildrenDto GetChildren(int parentId, int level);
+
+        void GetConstantListModel(ConstantListModel model);
+        void GetConstantEditModel(ConstantEditModel model);
+        void ReloadDictionariesToModel(ConstantEditModel model);
+        bool SaveConstantEditModel(ConstantEditModel model, out string error);
     }
 }

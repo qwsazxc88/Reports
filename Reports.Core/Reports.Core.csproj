@@ -170,6 +170,7 @@
     <Compile Include="Dao\Impl\VacationDao.cs" />
     <Compile Include="Dao\Impl\VacationTypeDao.cs" />
     <Compile Include="Dao\Impl\WorkingGraphicDao.cs" />
+    <Compile Include="Dao\Impl\WorkingDaysConstantDao.cs" />
     <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Dao\IVacationDao.cs" />
     <Compile Include="Dao\IVacationTypeDao.cs" />
     <Compile Include="Dao\IWorkingGraphicDao.cs" />
+    <Compile Include="Dao\IWorkingDaysConstantDao.cs" />
     <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
@@ -264,6 +266,7 @@
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationType.cs" />
     <Compile Include="Domain\WorkingGraphic.cs" />
+    <Compile Include="Domain\WorkingDaysConstant.cs" />
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
@@ -510,6 +513,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\WorkingGraphic.hbm.xml" />
+    <EmbeddedResource Include="Domain\WorkingDaysConstant.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\WorkingGraphicType.hbm.xml" />

@@ -292,6 +292,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IWorkingGraphicDao)).
                ImplementedBy(typeof(WorkingGraphicDao)).
                LifeStyle.Is(type));
+            Register(Component.For(typeof(IWorkingDaysConstantDao)).
+                ImplementedBy(typeof(WorkingDaysConstantDao)).
+                LifeStyle.Is(type));
 
             Register(Component.For(typeof(IWorkingGraphicTypeDao)).
               ImplementedBy(typeof(WorkingGraphicTypeDao)).

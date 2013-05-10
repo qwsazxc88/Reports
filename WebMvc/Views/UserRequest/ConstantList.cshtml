@@ -1,0 +1,64 @@
+﻿@model Reports.Presenters.UI.ViewModel.ConstantListModel
+@{
+    ViewBag.Title = "Константы";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+     <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+        </td>
+    </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Year):
+                @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"), new { onchange = "ChangeMonth();"})
+            </td>
+      @*  </tr>
+        <tr>*@
+            <td style="text-align:right">
+                @if (Model.FirtsAvailableAddMonth != 0)
+                {
+                    <input type="button" value="Добавить" onclick="location.href='@Url.Action("ConstantEdit", "UserRequest", new { month = @Model.FirtsAvailableAddMonth, year = @Model.Year })'"/>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="grid" style="width:100%">
+                    <tr>
+                        <th>Месяц</th>
+                        <th>Баланс дней</th>
+                        <th>Баланс часов</th>
+                    </tr>
+                    
+                        @if (Model.Months != null && Model.Months.Count > 0)
+                        {
+                            foreach (var month in Model.Months)
+                            {
+                                <tr>
+                                    <td><a class="ui-notify-close" href='@Url.Action("ConstantEdit", new { entityId = month.Id })' style="cursor:hand">@month.MonthName</a></td>
+                                    <td>@month.Days</td>
+                                    <td>@month.Hours</td>
+                                </tr>
+                            }
+                        }
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        setActiveMenuItem("constantList");
+    });
+    function ChangeMonth() {
+        window.location.href = '@Url.Action("ConstantList", "UserRequest")?year=' + $("#Year").val();
+    }
+</script>
+
+

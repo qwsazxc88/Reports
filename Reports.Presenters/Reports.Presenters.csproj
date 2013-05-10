@@ -128,6 +128,8 @@
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />
+    <Compile Include="UI\ViewModel\ConstantEditModel.cs" />
+    <Compile Include="UI\ViewModel\ConstantListModel.cs" />
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
     <Compile Include="UI\ViewModel\DepartmentTreeModel.cs" />
