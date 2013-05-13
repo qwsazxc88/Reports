@@ -165,7 +165,7 @@ namespace Reports.Core.Dao.Impl
                             .UniqueResult();
         }
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
-            DateTime beginDate,DateTime endDate,int departmentId)
+            DateTime beginDate,DateTime endDate,int departmentId, string userName)
         {
             string sqlQuery =
                         @"select 
@@ -189,6 +189,8 @@ namespace Reports.Core.Dao.Impl
             ";
             string sqlWhere = string.Empty;
             sqlWhere += " DateAccept <= :endDate and ( DateRelease is null or DateRelease >= :beginDate ) AND ";
+            if (!string.IsNullOrEmpty(userName))
+                sqlWhere += " u.Name like :userName AND ";
             switch (managerRole)
             {
                 case UserRole.Employee:
@@ -220,6 +222,8 @@ namespace Reports.Core.Dao.Impl
                 SetDateTime("beginDate",beginDate).
                 SetDateTime("endDate", endDate).
                 SetInt32("userId", managerId);
+            if(!string.IsNullOrEmpty(userName))
+                query.SetString("userName", "%"+userName+"%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
 

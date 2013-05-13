@@ -664,7 +664,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
             IList<IdNameDtoWithDates> uDtoList =
                 UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,
-                        dayDtoList.First().Day, dayDtoList.Last().Day,model.DepartmentId);
+                        dayDtoList.First().Day, dayDtoList.Last().Day
+                        ,model.DepartmentId,model.UserName);
             Log.Debug("After GetUsersForManagerWithDatePaged");
             int userCount = uDtoList.Count;
             int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
@@ -741,7 +742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
                 dto.Days = userDayList;
-                dto.IsHoursVisible = user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
+                dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
                 list.Add(dto);
             }
             Log.Debug("After foreach");

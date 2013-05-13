@@ -22,7 +22,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
 
-
+        [Display(Name = "ФИО пользователя")]
+        public string UserName { get; set; }
 
         //[Display(Name = "Дата")]
         //public DateTime Date { get; set; }
