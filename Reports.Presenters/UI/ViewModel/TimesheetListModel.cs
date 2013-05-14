@@ -22,7 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
 
-        [Display(Name = "ФИО пользователя")]
+        [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
 
         //[Display(Name = "Дата")]
