@@ -31,7 +31,7 @@ function createDepartmentDialog()
         draggable: false,
         resizable: false,
         width: 750,
-	    height: 260,
+	    height: 320,
         close: function (event, ui) {
             $(this).dialog("destroy").remove();
         },

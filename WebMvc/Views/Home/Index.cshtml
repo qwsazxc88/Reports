@@ -14,6 +14,7 @@
     {
 @*        <table class="menu" style="width:100%">
             <tr>*@
+            <div class="menu-wrap">
              <div class="menu">   
                 <div class="mainMenuItem" id="mainTimesheet">
                     @if (dto.UserRole == UserRole.Admin)
@@ -46,9 +47,20 @@
                         @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div> 
              </div>
-             <div style="text-align:center;font-size:larger;height:300px;line-height: 300px;">   
-                <h6 >Кадровый портал ООО "Совкомбанк"</h6>
             </div>
+            
+            <div style="text-align:center;font-size:larger;height:100px;line-height: 100px;"> 
+            </div>
+             
+             <div style="text-align:center;font-size:larger;"> 
+                <img style="width: 181px; height: 49px;" src="@Url.Content("~/Content/logo-skb.jpg")"/>
+                <div class="portala-name">Кадровый портал</div>
+                <div class="portala-support">
+                   Техническая поддержка: help@ruscount.ru<br>
+                   Общие вопросы: help@ruscount.ru
+                </div>
+            </div>
+            
 @*            </tr>
         </table>*@
 @*    <table style="width:100%">

@@ -4,9 +4,15 @@
 }
 @using (Html.BeginForm())
 {
-    <table>
-        <tr>
-            <td colspan="2">
+
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b><br><br>
                 @Html.HiddenFor(m => m.ManagerId)
                 @*@Html.HiddenFor(m => m.IsEditable)*@
                 @Html.LabelFor(m => m.Month):
@@ -34,18 +40,10 @@
                 }            
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                @Html.LabelFor(m => m.UserName):
-                @Html.TextBoxFor(model => model.UserName)
-            </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="submit" value="Применить"/>
-            <input type="button" value="Сбросить" onclick="resetFilter();"/>
-          </td>
-        </tr>
+        
+         </table>
+        </div>          
+        
         <tr>
             @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
             {
@@ -94,6 +92,7 @@
             }
         </tr>
     </table>
+
 }
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
@@ -102,7 +101,7 @@
         setActiveMenuItem("userTimesheet");
     });
     function ChangeMonth() {
-        //submitForm();
+        submitForm();
     }
     function OnPageClick(pageNumber) {
         $("#CurrentPage").val(pageNumber);
@@ -114,13 +113,5 @@
             return;
         document.forms[0].submit();
     }                                
-    function resetFilter() {
-        $("#UserName").val('');
-        if ($("#DepartmentReadOnly").val() == "False") {
-            $("#DepartmentId").val('0');
-            $("#DepartmentNameLabel").text('');
-            $("#DepartmentName").val('');
-        }
-    }
 </script>
 

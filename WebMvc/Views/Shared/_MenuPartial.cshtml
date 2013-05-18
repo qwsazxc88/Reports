@@ -6,6 +6,7 @@
 @if (Request.IsAuthenticated)
 {
         <input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
+        <div class="menu-wrap">
         <div class="menu">
 @*            <tr>*@
                 <div id="liTimesheet" class="mainOn"><a href="#"><span>Табель</span></a>
@@ -15,7 +16,7 @@
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
         </div>  
-        <div class="menu">        
+        <div class="podmenu">        
 @*            </tr>*@
 @*            <tr style="border-top:1px solid">
                 <td colspan="3">
@@ -54,7 +55,8 @@
                         }
                 }
                 <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
-            </div>    
+            </div> 
+            </div>   
 @*                </tr>
                 </table>
                 </div>
