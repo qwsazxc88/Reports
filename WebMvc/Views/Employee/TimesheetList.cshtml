@@ -12,38 +12,50 @@
             <table style="width:100%">
                 <tr>
                     <td colspan="2">
-                    <b>Выбор параметров</b><br><br>
+                    <b>Выбор параметров</b><br/><br/>
                 @Html.HiddenFor(m => m.ManagerId)
                 @*@Html.HiddenFor(m => m.IsEditable)*@
                 @Html.LabelFor(m => m.Month):
                 @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name"), new { onchange = "ChangeMonth();"}) 
                 @Html.LabelFor(m => m.Year):
                 @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"), new { onchange = "ChangeMonth();"})
-            </td>
-        </tr>
-        <tr>
-            <td style="width:200px">
-                @Html.LabelFor(m => m.DepartmentName):
-            </td>
-            <td>
-                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
-                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
-                @if (!Model.DepartmentReadOnly)
-                {
-                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
-                }            
-            </td>
-        </tr>
-        
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:202px">
+                        @Html.LabelFor(m => m.DepartmentName):
+                    </td>
+                    <td>
+                        <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                        <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                        <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                        @if (!Model.DepartmentReadOnly)
+                        {
+                            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                        }            
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.LabelFor(m => m.UserName):
+                        @Html.TextBoxFor(model => model.UserName)
+                    </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <input type="submit" value="Применить"/>
+                    <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                  </td>
+                </tr>
          </table>
         </div>          
-        
+        </td>
+        </tr>
         <tr>
             @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
             {
@@ -101,7 +113,7 @@
         setActiveMenuItem("userTimesheet");
     });
     function ChangeMonth() {
-        submitForm();
+        //submitForm();
     }
     function OnPageClick(pageNumber) {
         $("#CurrentPage").val(pageNumber);
@@ -112,6 +124,14 @@
         if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
             return;
         document.forms[0].submit();
-    }                                
+    }   
+    function resetFilter() {
+        $("#UserName").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+    }                             
 </script>
 
