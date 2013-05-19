@@ -2873,7 +2873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
-                entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsApproved)
                 {
                     entity.ManagerDateAccept = DateTime.Now;
@@ -3000,7 +3000,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                     case UserRole.Manager:
                         model.IsApprovedByManagerEnable = false;
-                        model.IsTimesheetStatusEditable = true;
+                        //model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
@@ -3040,7 +3040,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                         {
                             model.IsDatesEditable = true;
-                            model.IsTimesheetStatusEditable = true;
+                            //model.IsTimesheetStatusEditable = true;
                         }
                     }
                     break;
