@@ -151,7 +151,7 @@
             @Html.LabelFor(m => m.PaymentRestrictTypeId):
         </td>
         <td>
-            @Html.DropDownListFor(model => model.PaymentRestrictTypeId, new SelectList(Model.PaymentRestrictTypes, "ID", "Name"), Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" }) 
+            @Html.DropDownListFor(model => model.PaymentRestrictTypeId, new SelectList(Model.PaymentRestrictTypes, "ID", "Name"), (object)new { disabled = "disabled" }) 
             <input type="hidden" id="PaymentRestrictTypeIdHidden" name="PaymentRestrictTypeIdHidden" value="@Model.PaymentRestrictTypeIdHidden" />
         </td>
     </tr>
@@ -160,15 +160,15 @@
             @Html.LabelFor(m => m.PaymentDecreaseDate):
         </td>
         <td>
-            @if (Model.IsPersonnelFieldsEditable)
+@*            @if (Model.IsPersonnelFieldsEditable)
             {
                 @Html.EditorFor(model => model.PaymentDecreaseDate)
             }
             else
             {
-                @Html.DisplayFor(model => model.PaymentDecreaseDate)
+*@              @Html.DisplayFor(model => model.PaymentDecreaseDate)
                 @Html.HiddenFor(model => model.PaymentDecreaseDate)
-            } 
+@*            } *@
          </td>
     </tr>
     <tr>

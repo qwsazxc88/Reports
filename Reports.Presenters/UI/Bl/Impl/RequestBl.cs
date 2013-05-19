@@ -2928,8 +2928,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             sicklist.ExperienceYears = GetIntFromModel(model.ExperienceYears);
             sicklist.ExperienceMonthes = GetIntFromModel(model.ExperienceMonthes); 
             sicklist.PaymentPercent = model.PaymentPercentTypeId == 0 ? null : SicklistPaymentPercentDao.Load(model.PaymentPercentTypeId);
-            sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
-            sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
+            //sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
+            //sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
             sicklist.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
             //entity.Is2010Calculate = model.Is2010Calculate;
             sicklist.IsAddToFullPayment = model.IsAddToFullPayment;
