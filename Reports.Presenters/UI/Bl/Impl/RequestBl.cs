@@ -621,7 +621,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Employment employment = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -648,7 +648,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.LongWorkAddition = GetModelValue(employment.LongWorkAddition);
                 model.Probaion = employment.Probaion.ToString();
                 model.Reason = employment.Reason;
-                model.CreatorLogin = employment.Creator.Login;
+                model.CreatorLogin = employment.Creator.Name;
                 model.DocumentNumber = employment.Number.ToString();
                 model.DateCreated = employment.CreateDate.ToShortDateString();
                 SetHiddenFields(model);
@@ -671,13 +671,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Employment employment = EmploymentDao.Load(model.Id);
-                model.CreatorLogin = employment.Creator.Login;
+                model.CreatorLogin = employment.Creator.Name;
                 model.DocumentNumber = employment.Number.ToString();
                 model.DateCreated = employment.CreateDate.ToShortDateString();
             }
@@ -742,7 +742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.DocumentNumber = employment.Number.ToString();
                 model.Version = employment.Version;
-                model.CreatorLogin = employment.Creator.Login;
+                model.CreatorLogin = employment.Creator.Name;
                 model.DateCreated = employment.CreateDate.ToShortDateString();
                 SetFlagsState(employment.Id, user, employment, model);
                 return true;
@@ -1114,7 +1114,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             TimesheetCorrection timesheetCorrection = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -1129,7 +1129,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.Compensation = timesheetCorrection.Compensation.HasValue ? timesheetCorrection.Compensation.Value.ToString() : string.Empty;
                 model.StatusId = timesheetCorrection.TimesheetStatus == null ? 0 : timesheetCorrection.TimesheetStatus.Id;
                 model.Hours = timesheetCorrection.Hours.ToString();
-                model.CreatorLogin = timesheetCorrection.Creator.Login;
+                model.CreatorLogin = timesheetCorrection.Creator.Name;
                 model.DocumentNumber = timesheetCorrection.Number.ToString();
                 model.DateCreated = timesheetCorrection.CreateDate.ToShortDateString();
                 SetHiddenFields(model);
@@ -1341,7 +1341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = timesheetCorrection.Number.ToString();
                 model.Version = timesheetCorrection.Version;
                 //model.DaysCount = dismissal.DaysCount;
-                model.CreatorLogin = timesheetCorrection.Creator.Login;
+                model.CreatorLogin = timesheetCorrection.Creator.Name;
                 model.DateCreated = timesheetCorrection.CreateDate.ToShortDateString();
                 SetFlagsState(timesheetCorrection.Id, user, timesheetCorrection, model);
                 return true;
@@ -1422,13 +1422,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 TimesheetCorrection timesheetCorrection = TimesheetCorrectionDao.Load(model.Id);
-                model.CreatorLogin = timesheetCorrection.Creator.Login;
+                model.CreatorLogin = timesheetCorrection.Creator.Name;
                 model.DocumentNumber = timesheetCorrection.Number.ToString();
                 model.DateCreated = timesheetCorrection.CreateDate.ToShortDateString();
             }
@@ -1507,7 +1507,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Dismissal dismissal = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -1522,7 +1522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Compensation = dismissal.Compensation.HasValue? dismissal.Compensation.Value.ToString():string.Empty;
                 //model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
                 model.Reason = dismissal.Reason;
-                model.CreatorLogin = dismissal.Creator.Login;
+                model.CreatorLogin = dismissal.Creator.Name;
                 model.DocumentNumber = dismissal.Number.ToString();
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetHiddenFields(model);
@@ -1739,7 +1739,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = dismissal.Number.ToString();
                 model.Version = dismissal.Version;
                 //model.DaysCount = dismissal.DaysCount;
-                model.CreatorLogin = dismissal.Creator.Login;
+                model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
                 return true;
@@ -1823,13 +1823,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Dismissal dismissal = DismissalDao.Load(model.Id);
-                model.CreatorLogin = dismissal.Creator.Login;
+                model.CreatorLogin = dismissal.Creator.Name;
                 model.DocumentNumber = dismissal.Number.ToString();
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
             }
@@ -1902,7 +1902,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Mission mission = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -1922,7 +1922,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Goal = mission.Goal;
                 model.FinancesSource = mission.FinancesSource;
                 model.Reason = mission.Reason;
-                model.CreatorLogin = mission.Creator.Login;
+                model.CreatorLogin = mission.Creator.Name;
                 model.DocumentNumber = mission.Number.ToString();
                 model.DateCreated = mission.CreateDate.ToShortDateString();
                 SetHiddenFields(model);
@@ -2132,7 +2132,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = mission.Number.ToString();
                 model.Version = mission.Version;
                 model.DaysCount = mission.DaysCount;
-                model.CreatorLogin = mission.Creator.Login;
+                model.CreatorLogin = mission.Creator.Name;
                 model.DateCreated = mission.CreateDate.ToShortDateString();
                 SetFlagsState(mission.Id, user, mission, model);
                 return true;
@@ -2159,13 +2159,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Mission mission = MissionDao.Load(model.Id);
-                model.CreatorLogin = mission.Creator.Login;
+                model.CreatorLogin = mission.Creator.Name;
                 model.DocumentNumber = mission.Number.ToString();
                 model.DateCreated = mission.CreateDate.ToShortDateString();
             }
@@ -2292,7 +2292,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             HolidayWork holidayWork = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -2307,7 +2307,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatusId = holidayWork.TimesheetStatus == null ? 0 : holidayWork.TimesheetStatus.Id;
                 //model.Rate = holidayWork.Rate.ToString();
                 model.Hours = holidayWork.Hours.ToString();
-                model.CreatorLogin = holidayWork.Creator.Login;
+                model.CreatorLogin = holidayWork.Creator.Name;
                 model.DocumentNumber = holidayWork.Number.ToString();
                 model.DateCreated = holidayWork.CreateDate.ToShortDateString();
 
@@ -2377,7 +2377,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = holidayWork.Number.ToString();
                 model.Version = holidayWork.Version;
                 //model.DaysCount = holidayWork.DaysCount;
-                model.CreatorLogin = holidayWork.Creator.Login;
+                model.CreatorLogin = holidayWork.Creator.Name;
                 model.DateCreated = holidayWork.CreateDate.ToShortDateString();
                 SetFlagsState(holidayWork.Id, user, holidayWork, model);
                 return true;
@@ -2563,13 +2563,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 HolidayWork holidayWork = HolidayWorkDao.Load(model.Id);
-                model.CreatorLogin = holidayWork.Creator.Login;
+                model.CreatorLogin = holidayWork.Creator.Name;
                 model.DocumentNumber = holidayWork.Number.ToString();
                 model.DateCreated = holidayWork.CreateDate.ToShortDateString();
             }
@@ -2681,7 +2681,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Sicklist sicklist = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -2697,7 +2697,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EndDate = sicklist.EndDate;
                 model.TimesheetStatusId = sicklist.TimesheetStatus == null ? 0 : sicklist.TimesheetStatus.Id;
                 model.DaysCount = sicklist.DaysCount;
-                model.CreatorLogin = sicklist.Creator.Login;
+                model.CreatorLogin = sicklist.Creator.Name;
                 model.DocumentNumber = sicklist.Number.ToString();
                 model.DateCreated = sicklist.CreateDate.ToShortDateString();
 
@@ -2814,7 +2814,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = sicklist.Number.ToString();
                 model.Version = sicklist.Version;
                 model.DaysCount = sicklist.DaysCount;
-                model.CreatorLogin = sicklist.Creator.Login;
+                model.CreatorLogin = sicklist.Creator.Name;
                 model.DateCreated = sicklist.CreateDate.ToShortDateString();
                 SetFlagsState(sicklist.Id, user, sicklist, model);
                 //throw new ArgumentException("Test exception");
@@ -2952,13 +2952,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Sicklist sicklist = SicklistDao.Load(model.Id);
-                model.CreatorLogin = sicklist.Creator.Login;
+                model.CreatorLogin = sicklist.Creator.Name;
                 model.DocumentNumber = sicklist.Number.ToString();
                 model.DateCreated = sicklist.CreateDate.ToShortDateString();
             }
@@ -3172,7 +3172,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Absence absence = null;
             if (id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -3190,7 +3190,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId;
                 model.DaysCount = absence.DaysCount;
                 model.DaysCountHidden = model.DaysCount;
-                model.CreatorLogin = absence.Creator.Login;
+                model.CreatorLogin = absence.Creator.Name;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 if (absence.DeleteDate.HasValue)
@@ -3323,13 +3323,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.AbsenceTypes = GetAbsenceTypes(false);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Absence absence = AbsenceDao.Load(model.Id);
-                model.CreatorLogin = absence.Creator.Login;
+                model.CreatorLogin = absence.Creator.Name;
                 model.DocumentNumber = absence.Number.ToString();
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 model.DaysCount = absence.DaysCount;
@@ -3484,7 +3484,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = absence.Number.ToString();
                 model.Version = absence.Version;
                 model.DaysCount = absence.DaysCount;
-                model.CreatorLogin = absence.Creator.Login;
+                model.CreatorLogin = absence.Creator.Name;
                 model.DateCreated = absence.CreateDate.ToShortDateString();
                 SetFlagsState(absence.Id, user, absence, model);
                 //throw new ArgumentException("Test exception");
@@ -3650,7 +3650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             Vacation vacation = null; 
             if(id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.Version = 0;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
@@ -3668,7 +3668,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId; 
                 model.DaysCount = vacation.DaysCount;
                 model.DaysCountHidden = model.DaysCount;
-                model.CreatorLogin = vacation.Creator.Login;
+                model.CreatorLogin = vacation.Creator.Name;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 if (vacation.DeleteDate.HasValue)
@@ -3838,7 +3838,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = vacation.Number.ToString();
                 model.Version = vacation.Version;
                 model.DaysCount = vacation.DaysCount;
-                model.CreatorLogin = vacation.Creator.Login;
+                model.CreatorLogin = vacation.Creator.Name;
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 SetFlagsState(vacation.Id,user,vacation,model);
                 return true;
@@ -3904,13 +3904,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.VacationTypes = GetVacationTypes(false);
             if (model.Id == 0)
             {
-                model.CreatorLogin = current.Login;
+                model.CreatorLogin = current.Name;
                 model.DateCreated = DateTime.Today.ToShortDateString();
             }
             else
             {
                 Vacation vacation = VacationDao.Load(model.Id);
-                model.CreatorLogin = vacation.Creator.Login;
+                model.CreatorLogin = vacation.Creator.Name;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 model.DaysCount = vacation.DaysCount;
