@@ -141,7 +141,7 @@ namespace Reports.Core.Dao.Impl
                                 {2} as Date,    
                                 u.Name as UserName,
                                 t.Name as RequestType,
-                                case when v.SendTo1C is not null then 'Отправлено в 1с' 
+                                case when v.SendTo1C is not null then 'Выгружено в 1с' 
                                      when v.DeleteDate is not null then '{0}'
                                      when v.PersonnelManagerDateAccept is not null 
                                           and v.ManagerDateAccept is not null 
