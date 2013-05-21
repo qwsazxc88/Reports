@@ -5,7 +5,7 @@
 
 @using (Html.BeginForm())
 {
-    
+    <div class="doc-wrap">
     <table style="width:100%">
     <tr>
         <td colspan="2">
@@ -218,13 +218,20 @@
                 }
             </td>
     </tr>
-    <tr>
+    </table>
+    </div>
+    
+    <br />
+    <div class="comment-wrap">
+    <table style="width:100%">
+     <tr>
         <td colspan="2">
             <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
         </td>
     </tr>
-
     </table>
+    </div>
+    
     <script type="text/javascript">
         $(document).ready(function () {
             $("#BeginDate").datepicker();

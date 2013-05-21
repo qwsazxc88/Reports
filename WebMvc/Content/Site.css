@@ -443,6 +443,32 @@ div#title
     padding: 10px;
 }
 
+.doc-wrap  
+{
+    padding: 10px;
+    background-color: #E9FFE9;
+}
+
+.comment-wrap  
+{
+    padding: 10px;
+    
+}
+
+.comment-author
+{
+    color: #5B5B5B;
+    background-color: #F6F6F6;
+    font-weight: bold;
+}
+
+.comment-text
+{
+    background-color: #FFFFFF;
+    padding-left: 30px;
+    padding-bottom: 30px;
+}
+
 .action-wrap  
 {
     background-color: #CCFFCC;

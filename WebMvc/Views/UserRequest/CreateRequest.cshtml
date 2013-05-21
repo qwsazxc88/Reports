@@ -4,9 +4,18 @@
 }
 @using (Html.BeginForm())
 {
-    <table>
-        <tr>
-            <td colspan="2">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table>
+                <tr>
+                    <td colspan="2">
+                       <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
                 @Html.ValidationSummary(false, "")
                 <div id="Error" visible="false" style="color:Red"/>
             </td>
@@ -46,11 +55,24 @@
                @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
             </td>
         </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit"  onclick="return ValidateForm();" value="Создать"/>
-            </td>
-        </tr>
+        </table>
+        </div>                          
+      </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+                <table>
+                     <tr>
+                        <td colspan="2">
+                            <input type="submit"  onclick="return ValidateForm();" value="Создать"/>
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </td>
+    </tr> 
+       
     </table>
 }
 
