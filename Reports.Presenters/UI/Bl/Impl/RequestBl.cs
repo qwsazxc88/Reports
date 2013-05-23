@@ -2699,6 +2699,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DaysCount = sicklist.DaysCount;
                 model.CreatorLogin = sicklist.Creator.Name;
                 model.DocumentNumber = sicklist.Number.ToString();
+                model.SicklistNumber = sicklist.SicklistNumber;
                 model.DateCreated = sicklist.CreateDate.ToShortDateString();
 
                 model.PaymentBeginDate = sicklist.PaymentBeginDate;
@@ -2909,6 +2910,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.EndDate = model.EndDate.Value;
                 // ReSharper restore PossibleInvalidOperationException
                 entity.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
+                entity.SicklistNumber = model.SicklistNumber;
             }
             if (model.IsTypeEditable)
             {

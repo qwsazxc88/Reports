@@ -23,6 +23,8 @@ namespace Reports.Core.Domain
         public virtual SicklistType Type { get; set; }
         public virtual SicklistBabyMindingType BabyMindingType { get; set; }
         public virtual SicklistPaymentPercent PaymentPercent { get; set; }
+
+        public virtual string SicklistNumber { get; set; }
         //public virtual SicklistPaymentType PaymentType { get; set; }
 
         

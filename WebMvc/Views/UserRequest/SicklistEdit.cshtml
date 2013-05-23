@@ -58,6 +58,14 @@
     </tr>
     <tr>
         <td style="width:300px">
+            @Html.LabelFor(m => m.SicklistNumber):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.SicklistNumber, Model.IsDatesEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
             @Html.LabelFor(m => m.BeginDate):
         </td>
         <td>

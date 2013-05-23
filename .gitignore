@@ -12,6 +12,8 @@ Logs
 _ReleasePackage/*
 Thumbs.db
 WebMvc/Presentations/*
+WebMvc/db.config
 
 # mstest test results
 TestResults
+

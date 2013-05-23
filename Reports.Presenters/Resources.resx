@@ -333,4 +333,7 @@
   <data name="LoginRecoveryModel_Email_Required" xml:space="preserve">
     <value>Адрес электронной почты - обязательное поле</value>
   </data>
+  <data name="SicklistEditModel_SicklistNumber_Required" xml:space="preserve">
+    <value>Номер больничного листа - обязательное поле</value>
+  </data>
 </root>

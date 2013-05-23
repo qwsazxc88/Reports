@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -742,7 +743,15 @@ namespace WebMvc.Controllers
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate > model.EndDate)
                  ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-             
+
+             if (!string.IsNullOrEmpty(model.SicklistNumber))
+             {
+                 Regex r = new Regex(@"^\d{12}$");
+                 if(!r.IsMatch(model.SicklistNumber))
+                    ModelState.AddModelError("SicklistNumber", "Номер больничного листа должен содержать 12 цифр");
+             }
+
+
              if (model.IsPersonnelFieldsEditable)
              {
                  if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))

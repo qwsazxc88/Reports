@@ -40,6 +40,12 @@ namespace Reports.Presenters.UI.ViewModel
         [LocalizationDisplayName("SicklistEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
 
+        [Display(Name = "Номер больничного листа")]
+        [Required(ErrorMessageResourceName = "SicklistEditModel_SicklistNumber_Required",
+         ErrorMessageResourceType = typeof(Resources))]
+        [LocalizationDisplayName("SicklistEditModel_SicklistNumber_Required", typeof(Resources))]
+        public string SicklistNumber { get; set; }
+
 
         public bool IsPersonnelFieldsEditable { get; set; }
 
