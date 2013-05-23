@@ -30,6 +30,8 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.Inspector;
                 if (IsInRole(ReportRoleConstants.Chief))
                     return UserRole.Chief;
+                if (IsInRole(ReportRoleConstants.OutsourcingManager))
+                    return UserRole.OutsourcingManager;
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))

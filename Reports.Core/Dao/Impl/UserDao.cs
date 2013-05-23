@@ -205,6 +205,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Chief:
                     sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
                     break;
+                case UserRole.OutsourcingManager:
+                    sqlWhere = sqlWhere.Substring(0, sqlWhere.Length - 5);
+                    break;
                 default:
                     break;
             }
@@ -219,9 +222,10 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DateAccept", NHibernateUtil.DateTime).
                 AddScalar("DateRelease", NHibernateUtil.DateTime);
             query.
-                SetDateTime("beginDate",beginDate).
-                SetDateTime("endDate", endDate).
-                SetInt32("userId", managerId);
+                SetDateTime("beginDate", beginDate).
+                SetDateTime("endDate", endDate);
+            if(managerRole != UserRole.OutsourcingManager)
+                query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
@@ -468,8 +472,10 @@ namespace Reports.Core.Dao.Impl
                     sqlWhere += " and u.Id = :userId";
                     break;
                 case UserRole.PersonnelManager:
-                    sqlQuery+= " inner join UserToPersonnel up on u.Id = up.UserId ";
+                    sqlQuery += " inner join UserToPersonnel up on u.Id = up.UserId ";
                     sqlWhere += " and up.PersonnelId = :userId ";
+                    break;
+                case UserRole.OutsourcingManager:
                     break;
                 default:
                     throw new ArgumentException(string.Format("Invalid role {0} of user {1}",managerRole,userId)); 
@@ -480,7 +486,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("DateAccept", NHibernateUtil.DateTime);
-            query.SetInt32("userId", userId);
+            if (managerRole != UserRole.OutsourcingManager)
+                query.SetInt32("userId", userId);
             query.SetDateTime("beginDate", beginDate);
             query.SetDateTime("endDate", endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(AcceptRequestDateDto))).List<AcceptRequestDateDto>();

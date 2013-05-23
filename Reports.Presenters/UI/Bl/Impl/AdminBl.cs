@@ -1054,7 +1054,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     return "Руководитель";
                 case UserRole.OutsourcingManager:
-                    return "Отусорсинг";
+                    return "Аутсорсинг";
                 case UserRole.PersonnelManager:
                     return "Кадровик";
                 case UserRole.Inspector:

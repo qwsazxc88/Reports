@@ -220,6 +220,8 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" exists ( select * from InspectorToUser iu where iu.InspectorId = {0} and u.Id = iu.UserId ) ", userId);
                 case UserRole.Chief:
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
+                case UserRole.OutsourcingManager:
+                    return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
