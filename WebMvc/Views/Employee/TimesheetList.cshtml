@@ -48,7 +48,8 @@
                 </tr>
                 <tr>
                   <td colspan="2">
-                    <input type="submit" value="Применить"/>
+                  <input type="submit" value="Применить"/>
+                   @* <input type="button" value="Применить" onclick="OnPageClick(0);"/>*@
                     <input type="button" value="Сбросить" onclick="resetFilter();"/>
                   </td>
                 </tr>
@@ -77,6 +78,11 @@
         <tr>
             <td colspan="2">
                 @Html.EditorFor(model => model.TimesheetDtos)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Записать"/>
             </td>
         </tr>
         <tr>
@@ -117,6 +123,10 @@
     }
     function OnPageClick(pageNumber) {
         $("#CurrentPage").val(pageNumber);
+        /*window.location.href = '@Url.Action("TimesheetList", "Employee")?managerId='
+        + $("#ManagerId").val() +'&month=' + $("#Month").val() + '&year=' + $("#Year").val()+
+        '&currentPage='+pageNumber +'&departmentId=' + $("#DepartmentId").val() +
+        '&userName=' + $("#UserName").val()+ '&departmentName=' + $("#DepartmentName").val();*/
         submitForm();
         return false;
     }

@@ -256,19 +256,25 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ActionResult TimesheetList(int managerId,int? month,int? year)
+        public ActionResult TimesheetList(int managerId, int? month, int? year
+            /*, int? currentPage, int? departmentId, string userName,
+            string departmentName*/)
         {
             if (!month.HasValue)
                 month = DateTime.Today.Month;
             if(!year.HasValue)
                 year = DateTime.Today.Year;
             TimesheetListModel model = new TimesheetListModel
-                                           {
-                                               ManagerId = managerId,
-                                               Month = month.Value,
-                                               Year = year.Value,
-                                               //IsEditable = false,
-                                           };
+                {
+                    ManagerId = managerId,
+                    Month = month.Value,
+                    Year = year.Value,
+                    //DepartmentId = departmentId.HasValue? departmentId.Value:0,
+                    //DepartmentName = departmentName,
+                    //CurrentPage = currentPage.HasValue?currentPage.Value:0,
+                    //UserName = userName,
+                    //IsEditable = false,
+                };
             EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);

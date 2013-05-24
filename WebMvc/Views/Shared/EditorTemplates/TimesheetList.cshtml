@@ -24,12 +24,17 @@
         <td style="padding:0px;">        
             <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px;">
                 <tr>
-                  @foreach (TimesheetDayDto day in dto.Days)
-                  {
+                  @{ int j = 0;
+                     foreach (TimesheetDayDto day in dto.Days)
+                     {
+                         var timesheetDayNumberPrefix = "TimesheetDtos["+ @i.ToString()+"].Days[" + @j.ToString() + "].Number";
+                         var timesheetDayGraphicPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Graphic";
+                         var timesheetDayGraphicJQueryPrefix = "TimesheetDtos" + @i.ToString() + "Days" + @j.ToString() + "Graphic";
+                         
                                    <td style="padding:0px;margin:0px">
                                         <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
                                             <tr>
-                                                <td @if(day.isHoliday)
+                                                <td @if (day.isHoliday)
                                                     {<text>style="border:1px solid black;padding:0px;width:25px;text-align:center;color:Red"</text>}
                                                     else
                                                     {<text>style="border:1px solid black;padding:0px;width:25px;text-align:center;"</text>}>
@@ -43,20 +48,27 @@
                                             </tr>
                                             @if (dto.IsHoursVisible)
                                             {
-                                            <tr>
-                                                <td style="border:1px solid black;padding:0px;width:25px;text-align:center;height:15px;">
-                                                @day.Hours
-                                                </td>
-                                            </tr>
+                                                <tr>
+                                                    <td style="border:1px solid black;padding:0px;width:25px;text-align:center;height:15px;">
+                                                    @day.Hours
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border:1px solid black;padding:0px;width:25px;text-align:center;">
+                                                         <input type="text" style="width:20px;" id="@timesheetDayGraphicJQueryPrefix" name="@timesheetDayGraphicPrefix"/>
+                                                    </td>
+                                                </tr>
                                             }
                                         </table >
                                    </td> 
+                                            j++;
+                     }
                   }
                 </tr>
             </table>
         </td>
     </tr>
  </table>
-        i++;
-        }
+                     i++;
+    }
 }
