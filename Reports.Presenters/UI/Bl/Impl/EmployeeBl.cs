@@ -21,6 +21,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetDao timesheetDao;
         protected ITimesheetDayDao timesheetDayDao;
         protected IDocumentCommentDao documentCommentDao;
+        protected IWorkingGraphicDao workingGraphicDao;
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -73,6 +74,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(timesheetDayDao); }
             set { timesheetDayDao = value; }
+        }
+        public IWorkingGraphicDao WorkingGraphicDao
+        {
+            get { return Validate.Dependency(workingGraphicDao); }
+            set { workingGraphicDao = value; }
         }
 
         public EmployeeDocumentListModel GetModel(int? ownerId, bool? viewHeader,
@@ -694,7 +700,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                         current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
                                             .ToList());
             Log.Debug("After aggregate");
-            IList<IdNameDto> userNameDtoList = new List<IdNameDto>();
+            List<IdNameDto> userNameDtoList = new List<IdNameDto>();
             foreach (int userId in allUserIds)
             {
                 foreach (var dayRequestsDto in dtos)
@@ -711,6 +717,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             allUserIds = userNameDtoList.ToList().ConvertAll(x => x.Id).ToList();
             Log.Debug("After create ordered user dto list ");
             List<TimesheetDto> list = new List<TimesheetDto>();
+            //List<int> userIds = userNameDtoList.ConvertAll(x => x.Id);
+            IList<WorkingGraphic> wgList = WorkingGraphicDao.LoadForIdsList(allUserIds,
+                                                                            model.Month, model.Year);
             foreach (int userId in allUserIds)
             {
                 //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
@@ -728,6 +737,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                       (requestDto.TimesheetHours.HasValue
                                                            ? requestDto.TimesheetHours.Value.ToString()
                                                            : " ") + "/");
+                    float? wgHours; 
+                    WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
+                                                               x.Day == dayRequestsDto.Day).FirstOrDefault();
+                    wgHours = graphicEntity == null ?
+                        GetDefaultGraphicsForUser(userId, dayRequestsDto.Day) 
+                        : graphicEntity.Hours;
+
+                    string graphic = string.Empty;
+                    if(wgHours.HasValue)
+                    {
+                         graphic = (int)wgHours.Value == wgHours.Value 
+                                ? ((int)wgHours.Value).ToString() 
+                                : wgHours.Value.ToString("0.00");
+                    }
                     userDayList.Add(new TimesheetDayDto
                                                  {
                                                      Number = dayRequestsDto.Day.Day,
@@ -736,6 +759,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                      dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday,
                                                      Status = status.Substring(0,status.Length -1),
                                                      Hours = hours.Substring(0, hours.Length - 1),
+                                                     Graphic = graphic,
+                                                     Id = graphicEntity == null?0:graphicEntity.Id,
                                                  });
                     userDtoList.AddRange(userList);
                 }
@@ -752,6 +777,57 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TimesheetDtos = list;
             model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
 
+        }
+        protected float? GetDefaultGraphicsForUser(int userId,DateTime day)
+        {
+            if (day.DayOfWeek == DayOfWeek.Sunday ||
+                day.DayOfWeek == DayOfWeek.Saturday)
+                return null;
+            return 8;
+        }
+        public void SaveGraphicsRecord(TimesheetListModel model)
+        {
+            Log.Debug("Before save WorkingGraphic records.");
+            List<int> userIds = model.TimesheetDtos.ToList().ConvertAll(x => x.UserId);
+            IList<WorkingGraphic> list = WorkingGraphicDao.LoadForIdsList(userIds,
+                                                          model.Month, model.Year);
+            foreach (TimesheetDto dto in model.TimesheetDtos)
+            {
+                foreach (TimesheetDayDto day in dto.Days)
+                {
+                    if (day.isStatRecord)
+                        continue;
+                    float? graphicHours = null;
+                    if (!string.IsNullOrEmpty(day.Graphic))
+                    {
+                        double value;
+                        if (double.TryParse(day.Graphic, out value))
+                            graphicHours = (float) value;
+                        else
+                            Log.WarnFormat("Cannot parse day.Graphic {0}", day.Graphic);
+                    }
+                    WorkingGraphic entity;
+                    if(day.Id == 0)
+                    {
+                        entity = new WorkingGraphic
+                        {
+                            Day = new DateTime(model.Year, model.Month, day.Number),
+                            Hours = graphicHours,
+                            UserId = dto.UserId,
+                        };
+                    }
+                    else
+                    {
+                        entity = list.Where(x => x.Id == day.Id).FirstOrDefault();
+                        if(entity == null)
+                            throw new ArgumentException(string.Format("Не могу найти запись о рабочем графике с Id {0}",day.Id));
+                        entity.Hours = graphicHours;
+                    }
+                    WorkingGraphicDao.Save(entity);
+                }
+                WorkingGraphicDao.Flush();
+            }
+            Log.Debug("After save WorkingGraphic records.");
         }
         //public void SetTimesheetsHours(TimesheetListModel model)
         //{

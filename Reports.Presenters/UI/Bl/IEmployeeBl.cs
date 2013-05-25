@@ -31,5 +31,6 @@ namespace Reports.Presenters.UI.Bl
 
         void SetupDepartment(TimesheetListModel model);
         void SetListboxes(TimesheetListModel model /*,IList<DateTime> dates*/);
+        void SaveGraphicsRecord(TimesheetListModel model);
     }
 }

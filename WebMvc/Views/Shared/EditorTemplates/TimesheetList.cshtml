@@ -40,6 +40,7 @@
                          var timesheetDayIsHolidayPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isHoliday";
                          var timesheetDayStatusPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Status";
                          var timesheetDayHoursPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Hours";
+                         var timesheetDayIsStatRecordPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isStatRecord";
                          
                          var timesheetDayGraphicPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Graphic";
                          var timesheetDayGraphicJQueryPrefix = "TimesheetDtos" + @i.ToString() + "Days" + @j.ToString() + "Graphic";
@@ -57,6 +58,7 @@
                                                     <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number"/>
                                                     <input type="hidden" id="@timesheetDayIsHolidayPrefix" name="@timesheetDayIsHolidayPrefix" value="@day.isHoliday"/>
                                                     <input type="hidden" id="@timesheetDayStatusPrefix" name="@timesheetDayStatusPrefix" value="@day.Status"/>
+                                                    <input type="hidden" id="@timesheetDayIsStatRecordPrefix" name="@timesheetDayIsStatRecordPrefix" value="@day.isStatRecord"/>
                                                     @*<input type="hidden" id="@timesheetDayIsHoursVisiblePrefix" name="@timesheetDayIsHoursVisiblePrefix" value="@day.IsHoursVisible"/>*@
                                                     <input type="hidden" id="@timesheetDayHoursPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours"/>
                                                 </td>
@@ -78,9 +80,9 @@
                                              {
                                                 <tr>
                                                     <td style="border:1px solid black;padding:0px;width:25px;text-align:center;height:16px;">
-                                                         @if (dto.IsGraphicEditable)
+                                                         @if (dto.IsGraphicEditable && !day.isStatRecord)
                                                          {
-                                                            <input type="text" is_edit="1" style="width:20px;" id="@timesheetDayGraphicPrefix" name="@timesheetDayGraphicPrefix" onblur="ValidateHours(this);"/>
+                                                            <input type="text" is_edit="1" style="width:20px;" id="@timesheetDayGraphicPrefix" name="@timesheetDayGraphicPrefix" onblur="ValidateHours(this);" value="@day.Graphic"/>
                                                          }
                                                          else
                                                          {

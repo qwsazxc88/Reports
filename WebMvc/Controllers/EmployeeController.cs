@@ -289,7 +289,9 @@ namespace WebMvc.Controllers
                     EmployeeBl.SetListboxes(model);
                     return View(model);
                 }
+
                 model.IsSaveNeed = false;
+                EmployeeBl.SaveGraphicsRecord(model);
             }
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
@@ -318,7 +320,7 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(TimesheetListModel model)
         {
             if(!ValidateTimeSheets(model.TimesheetDtos))
-                ModelState.AddModelError(string.Empty,"Указаны недопустимые значения рабочего времени.Значения должны быть от 0 до 24.");
+                ModelState.AddModelError(string.Empty, "Указаны недопустимые значения рабочего времени.Значения должны быть от 0 до 24 или пустыми.");
             return ModelState.IsValid;
         }
         protected bool ValidateTimeSheets(IList<TimesheetDto> dtos)
