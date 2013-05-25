@@ -6,6 +6,7 @@
 {
 
     <table style="width:100%">
+    
     <tr>
         <td colspan="2">
           <div class="filter-wrap">
@@ -58,6 +59,12 @@
         </td>
         </tr>
         <tr>
+        <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+            </td>
+        </tr>
+        <tr>
             @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
             {
                 <td colspan="2" style="text-align:left">
@@ -77,12 +84,18 @@
          </tr>
         <tr>
             <td colspan="2">
+                
                 @Html.EditorFor(model => model.TimesheetDtos)
             </td>
         </tr>
         <tr>
             <td colspan="2">
-                <input type="submit" value="Записать"/>
+                <input type="hidden" id="IsSaveVisible" name="IsSaveVisible" value="@Model.IsSaveVisible" />
+                <input type="hidden" id="IsSaveNeed" name="IsSaveNeed" value="@Model.IsSaveNeed" />
+                @if (Model.IsSaveVisible)
+                {
+                    <input type="submit" value="Записать" onclick="return onSaveClick();"/>
+                }
             </td>
         </tr>
         <tr>
@@ -142,6 +155,73 @@
             $("#DepartmentNameLabel").text('');
             $("#DepartmentName").val('');
         }
-    }                             
-</script>
+    } 
+    function onSaveClick() {
+        if(!Validate())
+            return false;
+        $("#IsSaveNeed").val('true');
+        return true;
+    }  
+    function Validate()
+    {
+        var isValid = 1;
+        jQuery( "[is_edit='1']" ).each(function( index,control) {
+            if(!ValidateHours(control))
+            {
+                isValid = 0;
+                return false;
+            }       
+        });
+        if(isValid == 0)
+        {
+            addError("Указаны недопустимые значения рабочего времени.Значения должны быть от 0 до 24.");
+            return false;
+        }
+        else
+        {
+            clearErrors();
+            return true;
+        }
+    }
+    function ValidateHours(control)
+     {
+        var hours = $(control).val();
+        if(hours == "")
+        {
+            //addError("Часы - обязательное поле.");
+             $(control).removeClass("editError");
+            return true;
+        }
+        var hourValue = getFloatValue(hours);
+        if(isNaN(hourValue) || (hourValue < 0) || (hourValue > 24) ||
+        !/^[0-9\.,]+$/.test(hours))
+        {
+            $(control).addClass("editError");
+            //addError('Недопустимое значение поля "Часы".');
+            return false;
+        }
+        $(control).removeClass("editError");
+        hourValue = GetTwoDigitValue(hourValue);
+        //hours = ReplaceToRussianDecimalPoint(hourValue.toString());
+        //$("#Hours").val(hours);
+        //clearErrors();
+        return true;
+     }
+
+    function getFloatValue(textValue) 
+    {
+        var value = trimSpaces(textValue);
+        value = ReplaceDecimalPoint(value); 
+        return parseFloat(value);
+    }
+    function ReplaceDecimalPoint(value) {
+         return value.replace(/,/g, '.');
+
+    }
+    function ReplaceToRussianDecimalPoint(value) {
+           return value.replace('.', ',');
+
+    }
+
+</script>                          
 

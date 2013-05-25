@@ -589,3 +589,9 @@ width:100%;
 display:inline-block;
 background:transparent url('icon_up_sort_arrow.png') no-repeat right center;
 }
+
+
+.editError
+{
+    background-color:Red;
+}

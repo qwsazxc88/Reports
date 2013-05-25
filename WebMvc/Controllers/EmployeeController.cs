@@ -282,6 +282,15 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult TimesheetList(TimesheetListModel model)
         {
+            if(model.IsSaveNeed)
+            {
+                if(!ValidateModel(model))
+                {
+                    EmployeeBl.SetListboxes(model);
+                    return View(model);
+                }
+                model.IsSaveNeed = false;
+            }
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
             //if(!ValidateModel(model))
@@ -293,6 +302,8 @@ namespace WebMvc.Controllers
             ////EmployeeBl.SetTimesheetsHours(model);
             //return View(model);
         }
+        
+
         /*protected void CorrectHours(TimesheetListModel model)
         {
             float hours = model.Hours;
@@ -306,9 +317,36 @@ namespace WebMvc.Controllers
         }*/
         protected bool ValidateModel(TimesheetListModel model)
         {
-            /*if(model.Hours < 0 || model.Hours > 24)
-                ModelState.AddModelError("Hours","Значение поля <Часы> должно быть от 0 до 24");*/
+            if(!ValidateTimeSheets(model.TimesheetDtos))
+                ModelState.AddModelError(string.Empty,"Указаны недопустимые значения рабочего времени.Значения должны быть от 0 до 24.");
             return ModelState.IsValid;
+        }
+        protected bool ValidateTimeSheets(IList<TimesheetDto> dtos)
+        {
+            foreach (TimesheetDto dto in dtos)
+            {
+                foreach (TimesheetDayDto dayDto in dto.Days)
+                {
+                    if (!ValidateDay(dayDto))
+                        return false;
+                }
+            }
+            return true;
+        }
+        protected bool ValidateDay(TimesheetDayDto dto)
+        {
+            string workHours = dto.Graphic;
+            if (string.IsNullOrEmpty(workHours))
+                return true;
+            double value;
+            if (Double.TryParse(workHours, out value) || Double.TryParse(workHours.Replace(".",","), out value))
+            {
+                dto.Graphic = (int)value == value 
+                    ? ((int)value).ToString() 
+                    : value.ToString("0.00");
+                return true;
+            }
+            return false;
         }
 
         //[HttpGet]

@@ -741,12 +741,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
+                dto.UserId = userId;
                 dto.Days = userDayList;
                 dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
+                dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
+                dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
                 list.Add(dto);
             }
             Log.Debug("After foreach");
             model.TimesheetDtos = list;
+            model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
 
         }
         //public void SetTimesheetsHours(TimesheetListModel model)
@@ -776,7 +780,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    //SetDaysToListbox(model);
         //}
         
-        protected void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
+        public void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
         {
             model.Monthes = GetMonthesList();
             model.Years = GetYearsList();
