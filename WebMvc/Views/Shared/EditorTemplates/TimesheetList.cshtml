@@ -41,6 +41,7 @@
                          var timesheetDayStatusPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Status";
                          var timesheetDayHoursPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Hours";
                          var timesheetDayIsStatRecordPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isStatRecord";
+                         var timesheetDayStatCodePrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].StatCode";
                          
                          var timesheetDayGraphicPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Graphic";
                          var timesheetDayGraphicJQueryPrefix = "TimesheetDtos" + @i.ToString() + "Days" + @j.ToString() + "Graphic";
@@ -68,6 +69,7 @@
                                                     <input type="hidden" id="@timesheetDayIsHolidayPrefix" name="@timesheetDayIsHolidayPrefix" value="@day.isHoliday"/>
                                                     <input type="hidden" id="@timesheetDayStatusPrefix" name="@timesheetDayStatusPrefix" value="@day.Status"/>
                                                     <input type="hidden" id="@timesheetDayIsStatRecordPrefix" name="@timesheetDayIsStatRecordPrefix" value="@day.isStatRecord"/>
+                                                    <input type="hidden" id="@timesheetDayStatCodePrefix" name="@timesheetDayStatCodePrefix" value="@day.StatCode"/>
                                                     @*<input type="hidden" id="@timesheetDayIsHoursVisiblePrefix" name="@timesheetDayIsHoursVisiblePrefix" value="@day.IsHoursVisible"/>*@
                                                     <input type="hidden" id="@timesheetDayHoursPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours"/>
                                                 </td>

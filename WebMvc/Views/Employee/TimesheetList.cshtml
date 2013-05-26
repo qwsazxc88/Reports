@@ -59,6 +59,16 @@
         </td>
         </tr>
         <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsSaveVisible" name="IsSaveVisible" value="@Model.IsSaveVisible" />
+                <input type="hidden" id="IsSaveNeed" name="IsSaveNeed" value="@Model.IsSaveNeed" />
+                @if (Model.IsSaveVisible)
+                {
+                    <input type="submit" value="Записать" onclick="return onSaveClick();"/>
+                }
+            </td>
+        </tr>
+        <tr>
         <td colspan="2">
                 @Html.ValidationSummary(false)
                 <div id="Error" style="color:Red;display:none;"></div>
@@ -86,16 +96,6 @@
             <td colspan="2">
                 
                 @Html.EditorFor(model => model.TimesheetDtos)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="hidden" id="IsSaveVisible" name="IsSaveVisible" value="@Model.IsSaveVisible" />
-                <input type="hidden" id="IsSaveNeed" name="IsSaveNeed" value="@Model.IsSaveNeed" />
-                @if (Model.IsSaveVisible)
-                {
-                    <input type="submit" value="Записать" onclick="return onSaveClick();"/>
-                }
             </td>
         </tr>
         <tr>
