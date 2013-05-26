@@ -19,7 +19,7 @@
 @*    <tr>
     </tr>*@
     <tr>
-        <td style="width:140px">
+        <td style="width:140">
            <input type="hidden" id="@dtoUserIdPrefix" name="@dtoUserIdPrefix" value="@dto.UserId" />
            <input type="hidden" id="@dtoMonthAndYearPrefix" name="@dtoMonthAndYearPrefix" value="@dto.MonthAndYear" />
            <input type="hidden" id="@dtoIsHoursVisible" name="@dtoIsHoursVisible" value="@dto.IsHoursVisible" />
@@ -49,13 +49,20 @@
 
                                         <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
                                             <tr>
-                                                <td @if (day.isHoliday)
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;color:Red"</text>}
-                                                    else if (day.Number != 0)
-                                                    {<text>style="border:1px solid black;padding:0px;width:25px;text-align:center;"</text>}
+                                                <td nowrap @if (day.isHoliday)
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;color:Red"</text>}
+                                                    else if (day.isStatRecord)
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;color:Green"</text>}
                                                     else
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;"</text>}>
-                                                    @if (day.Number == 0)
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;"</text>}>
+                                                     @if (day.isStatRecord)
+                                                     {
+                                                        @day.StatCode
+                                                     }
+                                                     else
+                                                     {
+                                                        @day.Number
+                                                     }
                                                     <input type="hidden" id="@timesheetDayIdPrefix" name="@timesheetDayIdPrefix" value="@day.Id"/>
                                                     <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number"/>
                                                     <input type="hidden" id="@timesheetDayIsHolidayPrefix" name="@timesheetDayIsHolidayPrefix" value="@day.isHoliday"/>
@@ -66,14 +73,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
+                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
                                                     @day.Status
                                                 </td>
                                             </tr>
                                             @if (dto.IsHoursVisible)
                                             {
                                                 <tr>
-                                                    <td style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
                                                     @day.Hours
                                                     </td>
                                                 </tr>
@@ -81,10 +88,10 @@
                                              @if (dto.IsGraphicVisible)
                                              {
                                                 <tr>
-                                                    <td style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
+                                                    <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
                                                          @if (dto.IsGraphicEditable && !day.isStatRecord)
                                                          {
-                                                            <input type="text" is_edit="1" style="width:28px;" id="@timesheetDayGraphicPrefix" name="@timesheetDayGraphicPrefix" onblur="ValidateHours(this);" value="@day.Graphic"/>
+                                                            <input type="text" is_edit="1" style="width:28px;padding:0px;margin:0px" id="@timesheetDayGraphicPrefix" name="@timesheetDayGraphicPrefix" onblur="ValidateHours(this);" value="@day.Graphic"/>
                                                          }
                                                          else
                                                          {

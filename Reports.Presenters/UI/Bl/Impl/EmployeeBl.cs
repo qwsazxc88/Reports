@@ -87,6 +87,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(workingGraphicTypeDao); }
             set { workingGraphicTypeDao = value; }
         }
+        public IWorkingDaysConstantDao WorkingDaysConstantDao
+        {
+            get { return Validate.Dependency(workingDaysConstantDao); }
+            set { workingDaysConstantDao = value; }
+        }
 
         public EmployeeDocumentListModel GetModel(int? ownerId, bool? viewHeader,
             bool? showNew, int? subtypeId)
@@ -736,40 +741,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 List<TimesheetDayDto> userDayList = new List<TimesheetDayDto>();
                 IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
 
-                if (user.UserRole != UserRole.Employee && uDto != null)
-                {
-
-                    WorkingDaysConstant wdk = workingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
-                    if(wdk == null)
-                        userDayList.Add(new TimesheetDayDto
-                        {
-                            Number = 0,
-                            isHoliday = false,
-                            Status = string.Empty,
-                            Hours = string.Empty,
-                            StatCode = "Б",
-                        });
-                    else
-                        userDayList.Add(new TimesheetDayDto
-                        {
-                            Number = 0,
-                            isHoliday = false,
-                            Status = wdk.Days.ToString(),
-                            Hours = wdk.Hours.ToString(),
-                            StatCode = "Б",
-                        });
-                    for (int i = 0; i < 5; i++)
-                    {
-                        userDayList.Add(new TimesheetDayDto
-                        {
-                            Number = 0,
-                            isHoliday = false,
-                            Status = uDto.userStatsDays[i].ToString(),
-                            Hours = uDto.userStats[i].ToString(),
-                            StatCode = GetStatCodeName(i),
-                        });
-                    }
-                }
+                float wgHoursSum = 0;
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
@@ -787,7 +759,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     wgHours = graphicEntity == null ?
                         GetDefaultGraphicsForUser(wgtList, userId, dayRequestsDto.Day) 
                         : graphicEntity.Hours;
-
+                    wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     string graphic = string.Empty;
                     if(wgHours.HasValue)
                     {
@@ -807,6 +779,75 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                      Id = graphicEntity == null?0:graphicEntity.Id,
                                                  });
                     userDtoList.AddRange(userList);
+                }
+                if (user.UserRole != UserRole.Employee && uDto != null)
+                {
+                    WorkingDaysConstant wdk = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+                    if (wdk == null)
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isStatRecord = true,
+                            isHoliday = false,
+                            Status = string.Empty,
+                            Hours = string.Empty,
+                            StatCode = "Б",
+                        });
+                    else
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isStatRecord = true,
+                            isHoliday = false,
+                            Status = wdk.Days.ToString(),
+                            Hours = wdk.Hours.ToString(),
+                            StatCode = "Б",
+                        });
+                    int sumDays = 0;
+                    int sum = 0;
+                    string graphic = null;
+                    for (int i = 0; i < 5; i++)
+                    {
+                      
+                        if(i == 0)
+                        {
+                            graphic = (int)wgHoursSum == wgHoursSum
+                               ? ((int)wgHoursSum).ToString()
+                               : wgHoursSum.ToString("0.00");
+                        }
+                        sum += uDto.userStats[i];
+                        sumDays += uDto.userStatsDays[i];
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            isStatRecord = true,
+                            Status = uDto.userStatsDays[i].ToString(),
+                            Hours = uDto.userStats[i].ToString(),
+                            StatCode = GetStatCodeName(i),
+                            Graphic = i == 0?graphic:null,
+                        });
+                    }
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = sumDays.ToString(),
+                        Hours = sum.ToString(),
+                        StatCode = "Итого",
+                        Graphic = graphic,
+                    });
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = "Дней",
+                        Hours = "График/ ч.",
+                        StatCode = "Инф.",
+                        Graphic = "Факт/ ч."
+                    });
                 }
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
@@ -831,11 +872,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 1:
                     return "О";
                 case 2:
-                    return "Б";
+                    return "Б/л";
                 case 3:
                     return "К";
                 case 4:
-                    return "П";
+                    return "Прочие";
                 default:
                     return string.Empty;
             }

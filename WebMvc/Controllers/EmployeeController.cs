@@ -337,6 +337,8 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateDay(TimesheetDayDto dto)
         {
+            if (dto.isStatRecord)
+                return true;
             string workHours = dto.Graphic;
             if (string.IsNullOrEmpty(workHours))
                 return true;

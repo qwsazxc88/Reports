@@ -674,30 +674,30 @@ namespace Reports.Core.Dao.Impl
                     foreach (var dayRequestsDto in dtoList)
                     {
                         DateTime date = dayRequestsDto.Day;
+                        DayOfWeek dayOfweek = date.DayOfWeek;
+                        bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                         List<RequestDto> userRequestList = requests.Where(x =>
                                                                           (date >= x.BeginDate && date <= x.EndDate &&
                                                                            idNameDto.Id == x.UserId)).ToList();
                         if (userRequestList.Count == 0)
                         {
-                            DayOfWeek dayOfweek = date.DayOfWeek;
-                            bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                             bool isDayInFuture = DateTime.Today < date;
                             RequestDto newDto = new RequestDto
-                       {
-                        BeginDate = date,
-                        EndDate = date,
-                        TimesheetCode = isHoliday ? HolidayStatusCode
-                                : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
-                        TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : 8,
-                        UserId = idNameDto.Id,
-                        UserName = idNameDto.Name
-                       };
+                               {
+                                BeginDate = date,
+                                EndDate = date,
+                                TimesheetCode = isHoliday ? HolidayStatusCode
+                                        : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
+                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : 8,
+                                UserId = idNameDto.Id,
+                                UserName = idNameDto.Name
+                               };
                             dayRequestsDto.Requests.Add(newDto);
-                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto});
+                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto},isHoliday);
                         }
                         else
                         {
-                            AddToUserStats(userStats,userStatsDays,userRequestList);
+                            AddToUserStats(userStats,userStatsDays,userRequestList,isHoliday);
                         }
                         dayRequestsDto.Requests.AddRange(userRequestList);
                     }
@@ -708,8 +708,10 @@ namespace Reports.Core.Dao.Impl
             }
             return dtoList;
         }
-        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, List<RequestDto> userRequestList)
+        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, List<RequestDto> userRequestList,bool isHoliday)
         {
+            if (isHoliday)
+                return;
             foreach (RequestDto dto in userRequestList)
             {
                 switch(dto.TimesheetCode)
