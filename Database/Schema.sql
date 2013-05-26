@@ -232,12 +232,19 @@ alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_CreatorU
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrection_TimesheetStatus]') AND parent_object_id = OBJECT_ID('TimesheetCorrection'))
 alter table TimesheetCorrection  drop constraint FK_TimesheetCorrection_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_WorkingGraphicTypeToUser_WorkingGraphicType]') AND parent_object_id = OBJECT_ID('WorkingGraphicTypeToUser'))
+alter table WorkingGraphicTypeToUser  drop constraint FK_WorkingGraphicTypeToUser_WorkingGraphicType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_WorkingGraphicType_User]') AND parent_object_id = OBJECT_ID('WorkingGraphicTypeToUser'))
+alter table WorkingGraphicTypeToUser  drop constraint FK_WorkingGraphicType_User
+
 if exists (select * from dbo.sysobjects where id = object_id(N'AcceptRequestDate') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AcceptRequestDate
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
 if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Dismissal
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestPrintForm') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestPrintForm
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
@@ -246,6 +253,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and 
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'WorkingGraphicType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingGraphicType
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'WorkingGraphic') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingGraphic
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalComment
@@ -287,7 +295,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrecti
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
-if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
+if exists (select * from dbo.sysobjects where id = object_id(N'WorkingGraphicTypeToUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingGraphicTypeToUser
 
 create table AcceptRequestDate (
  Id INT IDENTITY NOT NULL,
@@ -358,6 +366,14 @@ create table TimesheetStatus (
   ShortName NVARCHAR(2) not null,
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
+)
+create table TimesheetCorrectionType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(16) not null,
+  Name NVARCHAR(128) not null,
+  Reason NVARCHAR(512) not null,
+  constraint PK_TimesheetCorrectionType  primary key (Id)
 )
 create table RequestPrintForm (
  Id INT IDENTITY NOT NULL,
@@ -439,6 +455,13 @@ create table Role (
   Version INT not null,
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
+)
+create table WorkingGraphicType (
+ Id INT IDENTITY NOT NULL,
+  Code NVARCHAR(16) null,
+  Name NVARCHAR(128) null,
+  FillDays BIT not null,
+  constraint PK_WorkingGraphicType  primary key (Id)
 )
 create table EmploymentComment (
  Id INT IDENTITY NOT NULL,
@@ -857,13 +880,11 @@ create table VacationType (
   Name NVARCHAR(128) not null,
   constraint PK_VacationType  primary key (Id)
 )
-create table TimesheetCorrectionType (
+create table WorkingGraphicTypeToUser (
  Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(16) not null,
-  Name NVARCHAR(128) not null,
-  Reason NVARCHAR(512) not null,
-  constraint PK_TimesheetCorrectionType  primary key (Id)
+  WorkingGraphicTypeId INT not null,
+  UserId INT not null,
+  constraint PK_WorkingGraphicTypeToUser  primary key (Id)
 )
 create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)
 alter table AcceptRequestDate add constraint FK_AcceptRequestDate_User foreign key (UserId) references [Users]
@@ -1018,6 +1039,10 @@ alter table TimesheetCorrection add constraint FK_TimesheetCorrection_TimesheetC
 alter table TimesheetCorrection add constraint FK_TimesheetCorrection_User foreign key (UserId) references [Users]
 alter table TimesheetCorrection add constraint FK_TimesheetCorrection_CreatorUser foreign key (CreatorId) references [Users]
 alter table TimesheetCorrection add constraint FK_TimesheetCorrection_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_WorkingGraphicTypeToUser_WorkingGraphicType_Id on WorkingGraphicTypeToUser (WorkingGraphicTypeId)
+create index IX_WorkingGraphicType_User_Id on WorkingGraphicTypeToUser (UserId)
+alter table WorkingGraphicTypeToUser add constraint FK_WorkingGraphicTypeToUser_WorkingGraphicType foreign key (WorkingGraphicTypeId) references WorkingGraphicType
+alter table WorkingGraphicTypeToUser add constraint FK_WorkingGraphicType_User foreign key (UserId) references [Users]
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 

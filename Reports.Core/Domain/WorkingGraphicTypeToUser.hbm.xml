@@ -1,0 +1,10 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="WorkingGraphicTypeToUser">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<version name="Version" column= "Version"/>-->
+	<many-to-one name="WorkingGraphicType" class="WorkingGraphicType" column="WorkingGraphicTypeId" foreign-key="FK_WorkingGraphicTypeToUser_WorkingGraphicType" index="IX_WorkingGraphicTypeToUser_WorkingGraphicType_Id"  not-null="true"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_WorkingGraphicType_User" index="IX_WorkingGraphicType_User_Id"  not-null="true"/>  
+   </class>
+</hibernate-mapping>

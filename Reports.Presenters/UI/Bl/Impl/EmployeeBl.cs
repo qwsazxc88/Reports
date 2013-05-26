@@ -22,6 +22,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetDayDao timesheetDayDao;
         protected IDocumentCommentDao documentCommentDao;
         protected IWorkingGraphicDao workingGraphicDao;
+        protected IWorkingGraphicTypeDao workingGraphicTypeDao;
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -79,6 +80,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(workingGraphicDao); }
             set { workingGraphicDao = value; }
+        }
+        public IWorkingGraphicTypeDao WorkingGraphicTypeDao
+        {
+            get { return Validate.Dependency(workingGraphicTypeDao); }
+            set { workingGraphicTypeDao = value; }
         }
 
         public EmployeeDocumentListModel GetModel(int? ownerId, bool? viewHeader,
@@ -720,6 +726,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //List<int> userIds = userNameDtoList.ConvertAll(x => x.Id);
             IList<WorkingGraphic> wgList = WorkingGraphicDao.LoadForIdsList(allUserIds,
                                                                             model.Month, model.Year);
+            IList<WorkingGraphicTypeDto>  wgtList = WorkingGraphicTypeDao.GetWorkingGraphicTypeDtoForUsers(allUserIds);
             foreach (int userId in allUserIds)
             {
                 //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
@@ -741,7 +748,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        GetDefaultGraphicsForUser(userId, dayRequestsDto.Day) 
+                        GetDefaultGraphicsForUser(wgtList, userId, dayRequestsDto.Day) 
                         : graphicEntity.Hours;
 
                     string graphic = string.Empty;
@@ -778,12 +785,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
 
         }
-        protected float? GetDefaultGraphicsForUser(int userId,DateTime day)
+        protected float? GetDefaultGraphicsForUser(IList<WorkingGraphicTypeDto>  wgtList,int userId,DateTime day)
         {
             if (day.DayOfWeek == DayOfWeek.Sunday ||
                 day.DayOfWeek == DayOfWeek.Saturday)
                 return null;
-            return 8;
+            if(wgtList.Count == 0)
+                return null;
+           WorkingGraphicTypeDto dto = wgtList.Where(x => x.UserId == userId)
+                                        .FirstOrDefault();
+           if (dto == null)
+               return null;
+            return dto.FillDays.HasValue && dto.FillDays.Value? 8: new float?();
         }
         public void SaveGraphicsRecord(TimesheetListModel model)
         {

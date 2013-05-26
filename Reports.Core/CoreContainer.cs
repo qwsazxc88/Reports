@@ -293,6 +293,10 @@ namespace Reports.Core
                ImplementedBy(typeof(WorkingGraphicDao)).
                LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IWorkingGraphicTypeDao)).
+              ImplementedBy(typeof(WorkingGraphicTypeDao)).
+              LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)
