@@ -410,6 +410,14 @@ div#title
     padding: 10px;
 }
 
+.portala-help
+{
+    font-size: 20px;
+    color: #989898;
+    font-weight: normal;
+    padding: 10px;
+}
+
 .menu-wrap  
 {
     font-size: 12px;
@@ -589,8 +597,6 @@ width:100%;
 display:inline-block;
 background:transparent url('icon_up_sort_arrow.png') no-repeat right center;
 }
-
-
 .editError
 {
     background-color:Red;
