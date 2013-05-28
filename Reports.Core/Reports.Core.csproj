@@ -516,7 +516,9 @@
     <EmbeddedResource Include="Domain\WorkingDaysConstant.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\WorkingGraphicType.hbm.xml" />
+    <EmbeddedResource Include="Domain\WorkingGraphicType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\WorkingGraphicTypeToUser.hbm.xml" />

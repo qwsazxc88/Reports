@@ -700,6 +700,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (userCount == 0)
             {
                 model.TimesheetDtos = new List<TimesheetDto>();
+                model.IsSaveVisible = false;
                 return;
             }
 
