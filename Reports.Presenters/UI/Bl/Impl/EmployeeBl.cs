@@ -836,10 +836,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         isStatRecord = true,
                         Status = sumDays.ToString(),
                         Hours = sum.ToString(),
-                        StatCode = "Итого",
+                        StatCode = "Всего",
                         Graphic = graphic,
                     });
-                    userDayList.Add(new TimesheetDayDto
+                    /*userDayList.Add(new TimesheetDayDto
                     {
                         Number = 0,
                         isHoliday = false,
@@ -848,7 +848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Hours = "График/ ч.",
                         StatCode = "Инф.",
                         Graphic = "Факт/ ч."
-                    });
+                    });*/
                 }
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
@@ -877,7 +877,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 3:
                     return "К";
                 case 4:
-                    return "Прочие";
+                    return "Пр";
                 default:
                     return string.Empty;
             }
