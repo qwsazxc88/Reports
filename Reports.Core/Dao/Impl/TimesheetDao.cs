@@ -9,6 +9,7 @@ using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Core.Services;
+using Reports.Core.Utils;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -626,7 +627,7 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<DayRequestsDto> GetRequestsForMonth(
             int month, int year, int managerId, UserRole managerRole,
-            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,IList<WorkingCalendar> workDays
             )
         {
             //DateTime current = new DateTime(year,month, 1);
@@ -674,8 +675,9 @@ namespace Reports.Core.Dao.Impl
                     foreach (var dayRequestsDto in dtoList)
                     {
                         DateTime date = dayRequestsDto.Day;
-                        DayOfWeek dayOfweek = date.DayOfWeek;
-                        bool isHoliday = (dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
+                        //DayOfWeek dayOfweek = date.DayOfWeek;
+                        int? workHours = CoreUtils.GetHoursForDay(workDays, date);
+                        bool isHoliday = CoreUtils.IsDayHoliday(workDays, date);//(dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                         List<RequestDto> userRequestList = requests.Where(x =>
                                                                           (date >= x.BeginDate && date <= x.EndDate &&
                                                                            idNameDto.Id == x.UserId)).ToList();
@@ -688,7 +690,7 @@ namespace Reports.Core.Dao.Impl
                                 EndDate = date,
                                 TimesheetCode = isHoliday ? HolidayStatusCode
                                         : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
-                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : 8,
+                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours.Value,
                                 UserId = idNameDto.Id,
                                 UserName = idNameDto.Name
                                };

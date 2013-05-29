@@ -6,6 +6,7 @@ using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
+using Reports.Core.Utils;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -24,6 +25,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IWorkingGraphicDao workingGraphicDao;
         protected IWorkingDaysConstantDao workingDaysConstantDao;
         protected IWorkingGraphicTypeDao workingGraphicTypeDao;
+        protected IWorkingCalendarDao workingCalendarDao;
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -91,6 +93,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(workingDaysConstantDao); }
             set { workingDaysConstantDao = value; }
+        }
+        public IWorkingCalendarDao WorkingCalendarDao
+        {
+            get { return Validate.Dependency(workingCalendarDao); }
+            set { workingCalendarDao = value; }
         }
 
         public EmployeeDocumentListModel GetModel(int? ownerId, bool? viewHeader,
@@ -679,6 +686,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             IUser user = AuthenticationService.CurrentUser;
             Log.Debug("Before GetRequestsForMonth");
+
             IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
             IList<IdNameDtoWithDates> uDtoList =
                 UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,
@@ -703,9 +711,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveVisible = false;
                 return;
             }
+            IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList);
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -758,7 +767,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        GetDefaultGraphicsForUser(wgtList, userId, dayRequestsDto.Day) 
+                        GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
                         : graphicEntity.Hours;
                     wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     string graphic = string.Empty;
@@ -771,9 +780,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     userDayList.Add(new TimesheetDayDto
                                                  {
                                                      Number = dayRequestsDto.Day.Day,
-                                                     isHoliday = 
-                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Sunday || 
-                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday,
+                                                     isHoliday = CoreUtils.IsDayHoliday(workDays,dayRequestsDto.Day),
+                                                     /*dayRequestsDto.Day.DayOfWeek == DayOfWeek.Sunday || 
+                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday*/
                                                      Status = status.Substring(0,status.Length -1),
                                                      Hours = hours.Substring(0, hours.Length - 1),
                                                      Graphic = graphic,
@@ -882,10 +891,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return string.Empty;
             }
         }
-        protected float? GetDefaultGraphicsForUser(IList<WorkingGraphicTypeDto>  wgtList,int userId,DateTime day)
+        protected float? GetDefaultGraphicsForUser(IList<WorkingGraphicTypeDto> wgtList, IList<WorkingCalendar> workDays, int userId, DateTime day)
         {
-            if (day.DayOfWeek == DayOfWeek.Sunday ||
+            /*if (day.DayOfWeek == DayOfWeek.Sunday ||
                 day.DayOfWeek == DayOfWeek.Saturday)
+                return null;*/
+            int? workHours = CoreUtils.GetHoursForDay(workDays, day);
+            if (!workHours.HasValue)
                 return null;
             if(wgtList.Count == 0)
                 return null;
@@ -893,7 +905,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                         .FirstOrDefault();
            if (dto == null)
                return null;
-            return dto.FillDays.HasValue && dto.FillDays.Value? 8: new float?();
+            return dto.FillDays.HasValue && dto.FillDays.Value? workHours.Value: new float?();
         }
         public void SaveGraphicsRecord(TimesheetListModel model)
         {

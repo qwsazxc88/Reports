@@ -1,12 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 //using Acr3S.Core.Domain;
 //using Acr3S.Core.Dto;
 //using Acr3S.Core.Properties;
 //using Lucene.Net.Analysis;
 //using Lucene.Net.Analysis.Standard;
+using log4net;
 using NHibernate;
 using NHibernate.Transform;
 using Reports.Core.Domain;
@@ -41,6 +44,7 @@ namespace Reports.Core.Utils
 	//}
     public sealed class CoreUtils
     {
+        private static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);        
         public const string ViewStateVersionName = "Version";
 
         #region Constants
@@ -255,6 +259,26 @@ namespace Reports.Core.Utils
             if (str1 == null)
                 return str2 != null; 
             return str1.CompareTo(str2) == 0;
+        }
+        public static int? GetHoursForDay(IList<WorkingCalendar> list, DateTime day)
+        {
+            WorkingCalendar wday = list.ToList().Where(x => x.Date == day).FirstOrDefault();
+            if (wday == null)
+            {
+                Log.WarnFormat("Cannot find {0} in calendar", day);
+                return null;
+            }
+            return wday.IsWorkingHours;
+        }
+        public static bool IsDayHoliday(IList<WorkingCalendar> list, DateTime day)
+        {
+            WorkingCalendar wday = list.ToList().Where(x => x.Date == day).FirstOrDefault();
+            if (wday == null)
+            {
+                Log.WarnFormat("Cannot find {0} in calendar", day);
+                return false;
+            }
+            return !wday.IsWorkingHours.HasValue;
         }
     }
 }
