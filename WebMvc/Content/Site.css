@@ -248,13 +248,14 @@ table.grid
 table.grid td 
 {
   border: 1px solid Black;
-  text-align: center;
+  text-align: left;
 }
 
 table.grid th
 {
   border: 1px solid Black;
   text-align: center;
+  white-space:nowrap;
 }
 
 /* MISC  
@@ -582,6 +583,8 @@ hr
 width:100%;
 display:inline-block;
 background:none;
+margin-left:0px;
+margin-right:5px;
 }
  
 .sort-desc
@@ -589,6 +592,8 @@ background:none;
 width:100%;
 display:inline-block;
 background:transparent url('icon_down_sort_arrow.png') no-repeat right center;
+margin-left:0px;
+margin-right:5px;
 }
  
 .sort-asc
@@ -596,6 +601,8 @@ background:transparent url('icon_down_sort_arrow.png') no-repeat right center;
 width:100%;
 display:inline-block;
 background:transparent url('icon_up_sort_arrow.png') no-repeat right center;
+margin-left:0px;
+margin-right:5px;
 }
 .editError
 {

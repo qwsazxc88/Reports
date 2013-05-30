@@ -138,7 +138,10 @@ namespace Reports.Core.Dao.Impl
                                 @"select v.Id as Id,
                                 u.Id as UserId,
                                 '{3}' as Name,
-                                {2} as Date,    
+                                {2} as Date,  
+                                {5} as BeginDate,  
+                                {6} as EndDate,  
+                                v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType,
                                 case when v.SendTo1C is not null then 'Выгружено в 1с' 
@@ -323,10 +326,14 @@ namespace Reports.Core.Dao.Impl
                     case 9:
                         statusWhere = @"SendTo1C is not null";
                         break;
+                    case 10:
+                        statusWhere = @"[DeleteDate] is not null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
-                statusWhere += " and DeleteDate is null ";
+                if (statusId != 10)
+                    statusWhere += " and DeleteDate is null ";
                 if (statusId != 9)
                     statusWhere += " and SendTo1C is null ";
                 if (whereString.Length > 0)
@@ -365,6 +372,15 @@ namespace Reports.Core.Dao.Impl
                 case 5:
                     sqlQuery += @" order by RequestStatus";
                     break;
+                case 6:
+                    sqlQuery += @" order by Number";
+                    break;
+                case 7:
+                    sqlQuery += @" order by BeginDate";
+                    break;
+                case 8:
+                    sqlQuery += @" order by EndDate";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
@@ -380,6 +396,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String);

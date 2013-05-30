@@ -31,7 +31,9 @@ namespace Reports.Core.Dao.Impl
                     "dbo.TimesheetCorrectionType",
                     "v.[CreateDate]",
                     "Корректировка табеля",
-                    "[dbo].[TimesheetCorrection]");
+                    "[dbo].[TimesheetCorrection]",
+                    "v.[EventDate]",
+                    "v.[EventDate]");
 
 //            string sqlQuery =
 //                string.Format(@"select v.Id as Id,

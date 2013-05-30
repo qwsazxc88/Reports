@@ -389,9 +389,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
+                    BeginDate = x.BeginDate,
+                    EndDate = x.EndDate,
                     EditUrl = "SicklistEdit",
                     Id = x.Id,
                     Name = x.Name,
+                    Number = x.Number,
                     UserId = x.UserId,
                     UserName = x.UserName,
                     RequestStatus = x.RequestStatus,
@@ -408,9 +411,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
+                   BeginDate = x.BeginDate,
+                   EndDate = x.EndDate,
                    EditUrl = "MissionEdit",
                    Id = x.Id,
                    Name = x.Name,
+                   Number = x.Number,
                    UserId = x.UserId,
                    UserName = x.UserName,
                    RequestStatus = x.RequestStatus,
@@ -427,9 +433,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
+                   BeginDate = x.BeginDate,
+                   EndDate = x.EndDate,
                    EditUrl = "TimesheetCorrectionEdit",
                    Id = x.Id,
                    Name = x.Name,
+                   Number = x.Number,
                    UserId = x.UserId,
                    UserName = x.UserName,
                    RequestStatus = x.RequestStatus,
@@ -446,9 +455,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
+                   BeginDate = x.BeginDate,
+                   EndDate = x.EndDate,
                    EditUrl = "AbsenceEdit",
                    Id = x.Id,
                    Name = x.Name,
+                   Number = x.Number,
                    UserId = x.UserId,
                    UserName = x.UserName,
                    RequestStatus = x.RequestStatus,
@@ -481,9 +493,12 @@ namespace Reports.Presenters.UI.Bl.Impl
               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
+                  BeginDate = x.BeginDate,
+                  EndDate = x.EndDate,
                   EditUrl = "VacationEdit",
                   Id = x.Id,
                   Name = x.Name,
+                  Number = x.Number,
                   UserId = x.UserId,
                   UserName = x.UserName,
                   RequestStatus = x.RequestStatus,
@@ -516,9 +531,12 @@ namespace Reports.Presenters.UI.Bl.Impl
               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
+                  BeginDate = x.BeginDate,
+                  EndDate = x.EndDate,
                   EditUrl = "DismissalEdit",
                   Id = x.Id,
                   Name = x.Name,
+                  Number = x.Number,
                   UserId = x.UserId,
                   UserName = x.UserName,
                   RequestStatus = x.RequestStatus,
@@ -553,6 +571,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.SortDescending.Value)
                         return result.OrderByDescending(x => x.RequestStatus);
                     return result.OrderBy(x => x.RequestStatus);
+                case 6:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.Number);
+                    return result.OrderBy(x => x.Number);
+                case 7:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.BeginDate);
+                    return result.OrderBy(x => x.BeginDate);
+                case 8:
+                    if (model.SortDescending.Value)
+                        return result.OrderByDescending(x => x.EndDate);
+                    return result.OrderBy(x => x.EndDate);
                 default:
                     throw new ArgumentException(string.Format("Неправильное поля сортировки {0}",model.SortBy));
             }
@@ -3621,7 +3651,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(7, "Не одобренные кадровиком"),
                                                            new IdNameDto(8, "Одобренные всеми"),
                                                            new IdNameDto(9, "Выгруженные в 1С"),
-                                                       };
+                                                           new IdNameDto(10, "Отклоненные"),
+                                                       }.OrderBy(x =>x.Name).ToList();
             requestStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return requestStatusesList;
         }

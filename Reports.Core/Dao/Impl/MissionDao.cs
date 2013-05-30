@@ -31,7 +31,9 @@ namespace Reports.Core.Dao.Impl
                                             "dbo.MissionType",
                                             "v.[CreateDate]",
                                             "Командировка",
-                                            "[dbo].[Mission]");
+                                            "[dbo].[Mission]",
+                                            "v.[BeginDate]",
+                                            "v.[EndDate]");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

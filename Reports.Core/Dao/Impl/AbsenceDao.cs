@@ -38,7 +38,9 @@ namespace Reports.Core.Dao.Impl
                                 "dbo.AbsenceType",
                                 "v.[CreateDate]",
                                 "Неявка",
-                                "[dbo].[Absence]");
+                                "[dbo].[Absence]",
+                                "v.[BeginDate]",
+                                "v.[EndDate]");
 
 
             return GetDefaultDocuments(userId, role, departmentId, 

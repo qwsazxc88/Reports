@@ -34,7 +34,9 @@ namespace Reports.Core.Dao.Impl
                                 "dbo.DismissalType",
                                 "v.[CreateDate]",
                                 "Увольнение",
-                                "[dbo].[Dismissal]");
+                                "[dbo].[Dismissal]",
+                                "v.[EndDate]",
+                                "v.[EndDate]");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

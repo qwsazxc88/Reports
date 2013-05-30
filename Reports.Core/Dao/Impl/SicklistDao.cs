@@ -33,7 +33,9 @@ namespace Reports.Core.Dao.Impl
                     "dbo.SicklistType",
                     "v.[CreateDate]",
                     "Болезнь (неявка)",
-                    "[dbo].[Sicklist]");
+                    "[dbo].[Sicklist]",
+                    "v.[BeginDate]",
+                    "v.[EndDate]");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,

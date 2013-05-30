@@ -123,7 +123,9 @@ namespace Reports.Core.Dao.Impl
                                 "dbo.VacationType",
                                 "v.[CreateDate]",
                                 "Отпуск",
-                                "[dbo].[Vacation]");
+                                "[dbo].[Vacation]",
+                                 "v.[BeginDate]",
+                                 "v.[EndDate]");
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, vacationTypeId,
