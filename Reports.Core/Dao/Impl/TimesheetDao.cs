@@ -695,11 +695,11 @@ namespace Reports.Core.Dao.Impl
                                 UserName = idNameDto.Name
                                };
                             dayRequestsDto.Requests.Add(newDto);
-                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto},isHoliday);
+                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto},isHoliday,workHours);
                         }
                         else
                         {
-                            AddToUserStats(userStats,userStatsDays,userRequestList,isHoliday);
+                            AddToUserStats(userStats,userStatsDays,userRequestList,isHoliday,workHours);
                         }
                         dayRequestsDto.Requests.AddRange(userRequestList);
                     }
@@ -710,7 +710,8 @@ namespace Reports.Core.Dao.Impl
             }
             return dtoList;
         }
-        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, List<RequestDto> userRequestList,bool isHoliday)
+        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, 
+            List<RequestDto> userRequestList,bool isHoliday,int? workHours)
         {
             if (isHoliday)
                 return;
@@ -730,11 +731,11 @@ namespace Reports.Core.Dao.Impl
                     break;
                     case "Б":
                     case "Т":
-                        userStats[2] += 8;
+                        userStats[2] += workHours.Value;
                         userStatsDays[2]++;
                         break;
                     case "К":
-                        userStats[3] += 8;
+                        userStats[3] += workHours.Value;
                         userStatsDays[3]++;
                         break;
                     case "ОТ":
@@ -742,14 +743,14 @@ namespace Reports.Core.Dao.Impl
                     case "ДО":
                     case "Р":
                     case "ОЖ":
-                        userStats[1] += 8;
+                        userStats[1] += workHours.Value;
                         userStatsDays[1]++;
                         break;
                     case "В":
                     case EmptyStatusCode:
                         break;
                     default:
-                        userStats[4] += dto.TimesheetHours.HasValue ? dto.TimesheetHours.Value : 8;
+                        userStats[4] += dto.TimesheetHours.HasValue ? dto.TimesheetHours.Value : workHours.Value;
                         userStatsDays[4]++;
                         break;
                 }
