@@ -31,7 +31,7 @@
         </td>
         <td style="padding:0px;">        
             <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px;">
-                <tr>
+                <tr style="padding:0px;margin:0px;">
                   @{ int j = 0;
                      foreach (TimesheetDayDto day in dto.Days)
                      {
@@ -51,11 +51,11 @@
                                         <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
                                             <tr>
                                                 <td nowrap @if (day.isHoliday)
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;color:Red"</text>}
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Red"</text>}
                                                     else if (day.isStatRecord)
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;color:Green"</text>}
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Green"</text>}
                                                     else
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;"</text>}>
+                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;"</text>}>
                                                      @if (day.isStatRecord)
                                                      {
                                                         @day.StatCode
@@ -75,14 +75,14 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
+                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
                                                     @day.Status
                                                 </td>
                                             </tr>
                                             @if (dto.IsHoursVisible)
                                             {
                                                 <tr>
-                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:16px;">
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
                                                     @day.Hours
                                                     </td>
                                                 </tr>
