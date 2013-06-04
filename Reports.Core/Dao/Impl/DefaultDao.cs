@@ -151,8 +151,8 @@ namespace Reports.Core.Dao.Impl
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
                                           then 'Отправлено кадровику'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
+                                    when  -- v.PersonnelManagerDateAccept is null and 
+                                          v.ManagerDateAccept is null 
                                           and v.UserDateAccept is not null 
                                           then 'Отправлено руководителю'    
                                     when  v.PersonnelManagerDateAccept is null 
