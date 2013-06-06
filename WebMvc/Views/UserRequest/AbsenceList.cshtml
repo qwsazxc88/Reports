@@ -2,67 +2,142 @@
 @using Reports.Presenters.Services.Impl
 @model Reports.Presenters.UI.ViewModel.AbsenceListModel
 @{
-    ViewBag.Title = "Неявки";
+    ViewBag.Title = "Невыходы";
 }
 
 @using (Html.BeginForm())
 {
     <table style="width:100%">
     <tr>
-        <td>
-            @Html.HiddenFor(m => m.UserId)
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.DepartmentId):
-            @Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) 
-        </td>
-        <td>
-            @Html.LabelFor(m => m.PositionId):
-            @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
-         </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.AbsenceTypeId):
-            @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name")) 
-        </td>
-        <td>
-            @Html.LabelFor(m => m.RequestStatusId):
-            @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
-         </td>
-    </tr>
-     <tr>
-        <td>
-            @Html.LabelFor(m => m.BeginDate):
-            @Html.EditorFor(model => model.BeginDate) 
-        </td>
-        <td>
-            @Html.LabelFor(m => m.EndDate):
-            @Html.EditorFor(model => model.EndDate) 
-         </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <input type="submit" value="Применить"/>
-        <input type="button" value="Сбросить" onclick="resetFilter();"/>
-      </td>
-    </tr>
-     <tr>
         <td colspan="2">
-         @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-         {@Html.ActionLink("Создать новую заявку", "AbsenceEdit", new { id = 0, userId = Model.UserId })}
-         else
-         {@Html.ActionLink("Создать новую заявку", "CreateRequest") }                                                                                               
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:200px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PositionId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                             <td>
+                                @Html.LabelFor(m => m.RequestStatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.RequestStatusId, new SelectList(Model.RequestStatuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AbsenceTypeId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.AbsenceTypeId, new SelectList(Model.AbsenceTypes, "ID", "Name")) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+            </div>
         </td>
     </tr>
     <tr>
         <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                 <tr>
+                    <td colspan="2">
+                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
+                            {
+                                if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                                {
+                                    @*@Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest","UserRequest")'"/>
+                                }
+                            }                                                                                             
+                            </td>
+                        </tr>
+              </table>  
+           </div>                        
+        </td>
+    </tr>                    
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%">
                 <tr>
-                    <th>Название документа</th>
-                    <th>Дата</th>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                    <th style="width:80px">
+                        <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
+                    </th>
+                     <th>
+                        Период
+                    </th>
+                   @* <th>
+                        Дата окончания
+                    </th>*@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -72,12 +147,14 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("AbsenceEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
+                            <td>@doc.UserName</td>
                             <td>@doc.Date</td>
-                            @*<td>@if (doc.IsApproved)
-                                {<text>Да</text>}
-                                else
-                                {<text>Нет</text>}
-                            </td>*@
+                            <td>@doc.Number</td>
+                            <td>@doc.RequestType</td>
+                            <td>@doc.RequestStatus</td>
+                            <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
+                            @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                            <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
                     }
                 }
@@ -85,22 +162,33 @@
         </td>
     </tr>
 </table> 
-    <script type="text/javascript">
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "UserRequest")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "UserRequest")";
     $(document).ready(function () {
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("userAbsence");
     });
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
-        if ($('#DepartmentId option').length > 1)
+        //if ($('#DepartmentId option').length > 1)
+        if($("#DepartmentReadOnly").val() == "False")
+        {
             $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
         if ($('#PositionId option').length > 1)
             $("#PositionId").val('0');
         $("#AbsenceTypeId").val('0');
         $("#RequestStatusId").val('0');
     }
+
  </script>   
 }
 

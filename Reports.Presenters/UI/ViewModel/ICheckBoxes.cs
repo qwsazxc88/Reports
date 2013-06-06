@@ -10,6 +10,7 @@ namespace Reports.Presenters.UI.ViewModel
          bool IsApprovedByUser { get; set; }
          bool IsApprovedByUserHidden { get; set; }
          bool IsApprovedByUserEnable { get; set; }
+         //bool IsApprovedByUserChecked { get; set; }
          bool IsApprovedByManager { get; set; }
          bool IsApprovedByManagerHidden { get; set; }
          bool IsApprovedByManagerEnable { get; set; }
@@ -19,5 +20,13 @@ namespace Reports.Presenters.UI.ViewModel
          bool IsPostedTo1C { get; set; }
          bool IsPostedTo1CHidden { get; set; }
          bool IsPostedTo1CEnable { get; set; }
+
+         bool IsApproved { get; set; }
+         bool IsApprovedEnable { get; set; }
+    }
+    public interface IAttachment
+    {
+        string Attachment { get; set; }
+        int AttachmentId { get; set; }
     }
 }

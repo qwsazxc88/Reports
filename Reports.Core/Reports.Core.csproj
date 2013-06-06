@@ -64,6 +64,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\Iesi.Collections.dll</HintPath>
@@ -84,6 +87,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IChiefToUserDao.cs" />
+    <Compile Include="Dao\IEmploymentAdditionDao.cs" />
+    <Compile Include="Dao\IEmploymentCommentDao.cs" />
+    <Compile Include="Dao\IEmploymentDao.cs" />
+    <Compile Include="Dao\IEmploymentTypeDao.cs" />
     <Compile Include="Dao\IAbsenceCommentDao.cs" />
     <Compile Include="Dao\IAbsenceDao.cs" />
     <Compile Include="Dao\IAbsenceTypeDao.cs" />
@@ -91,30 +99,68 @@
     <Compile Include="Dao\IDao.cs" />
     <Compile Include="Dao\IDbVersionDao.cs" />
     <Compile Include="Dao\IDepartmentDao.cs" />
+    <Compile Include="Dao\IDismissalCommentDao.cs" />
+    <Compile Include="Dao\IDismissalDao.cs" />
     <Compile Include="Dao\IDocumentCommentDao.cs" />
     <Compile Include="Dao\IDocumentDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\IEmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentHoursTypeDao.cs" />
     <Compile Include="Dao\IExportImportActionDao.cs" />
+    <Compile Include="Dao\IHolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\IHolidayWorkDao.cs" />
+    <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\IInspectorToUserDao.cs" />
+    <Compile Include="Dao\IMissionCommentDao.cs" />
+    <Compile Include="Dao\IMissionDao.cs" />
+    <Compile Include="Dao\IMissionTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
+    <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
     <Compile Include="Dao\Impl\DepartmentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalCommentDao.cs" />
+    <Compile Include="Dao\Impl\DismissalDao.cs" />
+    <Compile Include="Dao\Impl\DismissalTypeDao.cs" />
     <Compile Include="Dao\Impl\DocumentCommentDao.cs" />
     <Compile Include="Dao\Impl\DocumentDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentSubTypeDao.cs" />
     <Compile Include="Dao\Impl\EmployeeDocumentTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentAdditionDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentHoursTypeDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentTypeDao.cs" />
     <Compile Include="Dao\Impl\ExportImportActionDao.cs" />
     <Compile Include="Dao\IInformationDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkCommentDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkDao.cs" />
+    <Compile Include="Dao\Impl\HolidayWorkTypeDao.cs" />
+    <Compile Include="Dao\Impl\IDismissalTypeDao.cs" />
+    <Compile Include="Dao\Impl\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\Impl\InformationDao.cs" />
+    <Compile Include="Dao\Impl\InspectorToUserDao.cs" />
+    <Compile Include="Dao\Impl\MissionCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionDao.cs" />
+    <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
+    <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
     <Compile Include="Dao\Impl\RequestNextNumberDao.cs" />
+    <Compile Include="Dao\Impl\RequestPrintFormDao.cs" />
     <Compile Include="Dao\Impl\RequestStatusDao.cs" />
     <Compile Include="Dao\Impl\RoleDao.cs" />
     <Compile Include="Dao\Impl\SettingsDao.cs" />
+    <Compile Include="Dao\Impl\SicklistBabyMindingTypeDao.cs" />
+    <Compile Include="Dao\Impl\SicklistCommentDao.cs" />
+    <Compile Include="Dao\Impl\SicklistDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
+    <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionCommentDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionDao.cs" />
+    <Compile Include="Dao\Impl\TimesheetCorrectionTypeDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDao.cs" />
     <Compile Include="Dao\Impl\TimesheetDayDao.cs" />
     <Compile Include="Dao\Impl\TimesheetStatusDao.cs" />
@@ -123,13 +169,28 @@
     <Compile Include="Dao\Impl\VacationCommentDao.cs" />
     <Compile Include="Dao\Impl\VacationDao.cs" />
     <Compile Include="Dao\Impl\VacationTypeDao.cs" />
+    <Compile Include="Dao\Impl\WorkingCalendarDao.cs" />
+    <Compile Include="Dao\Impl\WorkingGraphicDao.cs" />
+    <Compile Include="Dao\Impl\WorkingDaysConstantDao.cs" />
+    <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
+    <Compile Include="Dao\IRequestAttachmentDao.cs" />
     <Compile Include="Dao\IRequestNextNumberDao.cs" />
+    <Compile Include="Dao\IRequestPrintFormDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
+    <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
+    <Compile Include="Dao\ISicklistCommentDao.cs" />
+    <Compile Include="Dao\ISicklistDao.cs" />
+    <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
+    <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
+    <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionCommentDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionDao.cs" />
+    <Compile Include="Dao\ITimesheetCorrectionTypeDao.cs" />
     <Compile Include="Dao\ITimesheetDao.cs" />
     <Compile Include="Dao\ITimesheetDayDao.cs" />
     <Compile Include="Dao\ITimesheetStatusDao.cs" />
@@ -139,41 +200,81 @@
     <Compile Include="Dao\IVacationCommentDao.cs" />
     <Compile Include="Dao\IVacationDao.cs" />
     <Compile Include="Dao\IVacationTypeDao.cs" />
+    <Compile Include="Dao\IWorkingCalendarDao.cs" />
+    <Compile Include="Dao\IWorkingGraphicDao.cs" />
+    <Compile Include="Dao\IWorkingDaysConstantDao.cs" />
+    <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
+    <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Attachment.cs" />
+    <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Department.cs" />
+    <Compile Include="Domain\Dismissal.cs" />
+    <Compile Include="Domain\DismissalComment.cs" />
+    <Compile Include="Domain\DismissalType.cs" />
     <Compile Include="Domain\Document.cs" />
     <Compile Include="Domain\DocumentComment.cs" />
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
+    <Compile Include="Domain\Employment.cs" />
+    <Compile Include="Domain\EmploymentAddition.cs" />
+    <Compile Include="Domain\EmploymentComment.cs" />
+    <Compile Include="Domain\EmploymentHoursType.cs" />
+    <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
+    <Compile Include="Domain\HolidayWork.cs" />
+    <Compile Include="Domain\HolidayWorkComment.cs" />
+    <Compile Include="Domain\HolidayWorkType.cs" />
     <Compile Include="Domain\IAbstractUsedEntity.cs" />
     <Compile Include="Domain\IEntity.cs" />
     <Compile Include="Domain\Information.cs" />
+    <Compile Include="Domain\InspectorToUser.cs" />
+    <Compile Include="Domain\Mission.cs" />
+    <Compile Include="Domain\MissionComment.cs" />
+    <Compile Include="Domain\MissionType.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
+    <Compile Include="Domain\RequestAttachment.cs" />
     <Compile Include="Domain\RequestNextNumber.cs" />
+    <Compile Include="Domain\RequestPrintForm.cs" />
     <Compile Include="Domain\RequestStatus.cs" />
     <Compile Include="Domain\Role.cs" />
     <Compile Include="Domain\Settings.cs" />
+    <Compile Include="Domain\Sicklist.cs" />
+    <Compile Include="Domain\SicklistBabyMindingType.cs" />
+    <Compile Include="Domain\SicklistComment.cs" />
+    <Compile Include="Domain\SicklistPaymentPercent.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
+    <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\Timesheet.cs" />
+    <Compile Include="Domain\TimesheetCorrection.cs" />
+    <Compile Include="Domain\TimesheetCorrectionComment.cs" />
+    <Compile Include="Domain\TimesheetCorrectionType.cs" />
     <Compile Include="Domain\TimesheetDay.cs" />
     <Compile Include="Domain\TimesheetStatus.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserLogin.cs" />
-    <Compile Include="Domain\UserToDepartment.cs" />
     <Compile Include="Domain\Vacation.cs" />
     <Compile Include="Domain\VacationComment.cs" />
     <Compile Include="Domain\VacationType.cs" />
+    <Compile Include="Domain\WorkingCalendar.cs" />
+    <Compile Include="Domain\WorkingGraphic.cs" />
+    <Compile Include="Domain\WorkingDaysConstant.cs" />
+    <Compile Include="Domain\WorkingGraphicType.cs" />
+    <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
+    <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
+    <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -183,6 +284,7 @@
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\NameDto.cs" />
+    <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
     <Compile Include="Dto\TimesheetDaysDto.cs" />
     <Compile Include="Dto\TimesheetDto.cs" />
@@ -191,6 +293,7 @@
     <Compile Include="Dto\UserLoginItemDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
+    <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
@@ -220,6 +323,7 @@
     <Compile Include="Validate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentPercent.hbm.xml" />
     <EmbeddedResource Include="Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
@@ -295,13 +399,17 @@
     <EmbeddedResource Include="Domain\DocumentComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\VacationType.hbm.xml" />
+    <EmbeddedResource Include="Domain\VacationType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Organization.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Department.hbm.xml" />
+    <EmbeddedResource Include="Domain\Department.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Position.hbm.xml" />
@@ -313,9 +421,6 @@
     <EmbeddedResource Include="Domain\Vacation.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\UserToDepartment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\VacationComment.hbm.xml" />
@@ -331,6 +436,98 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Domain\AbsenceComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Sicklist.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistPaymentRestrictType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestAttachment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWorkType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HolidayWork.hbm.xml" />
+    <EmbeddedResource Include="Domain\HolidayWorkComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Mission.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentHoursType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\EmploymentAddition.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DismissalType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Dismissal.hbm.xml" />
+    <EmbeddedResource Include="Domain\DismissalComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetCorrectionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TimesheetCorrection.hbm.xml" />
+    <EmbeddedResource Include="Domain\TimesheetCorrectionComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\EmploymentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\RequestPrintForm.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\SicklistBabyMindingType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\InspectorToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AcceptRequestDate.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ChiefToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphic.hbm.xml" />
+    <EmbeddedResource Include="Domain\WorkingDaysConstant.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphicType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingGraphicTypeToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\WorkingCalendar.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,12 +8,15 @@ namespace Reports.Core.Dao
     public interface IAbsenceDao : IDao<Absence>
     {
         IList<VacationDto> GetDocuments(
+            int userId, 
             UserRole role,
             int departmentId,
             int positionId,
             int absenceTypeId,
             int requestStatusId,
             DateTime? beginDate,
-            DateTime? endDate);
+            DateTime? endDate,
+            int sortedBy,
+            bool? sortDescending);
     }
 }

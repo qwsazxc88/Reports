@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class VacationEditModel : UserInfoModel, ICheckBoxes
+    public class VacationEditModel : UserInfoModel, ICheckBoxes, IAttachment
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -40,22 +40,28 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> TimesheetStatuses;
         public bool IsTimesheetStatusEditable { get; set; }
 
-        [Display(Name = "Согласен Сотрудник")]
+        [Display(Name = "Сотрудник cогласен")]
         public bool IsApprovedByUser { get; set; }
         public bool IsApprovedByUserHidden { get; set; }
         public bool IsApprovedByUserEnable { get; set; }
-        [Display(Name = "Согласен Руководитель")]
+        //public bool IsApprovedByUserChecked { get; set; }
+        [Display(Name = "Руководитель cогласен")]
         public bool IsApprovedByManager { get; set; }
         public bool IsApprovedByManagerHidden { get; set; }
         public bool IsApprovedByManagerEnable { get; set; }
-        [Display(Name = "Согласен Кадровик")]
+        [Display(Name = "Кадровик cогласен")]
         public bool IsApprovedByPersonnelManager { get; set; }
         public bool IsApprovedByPersonnelManagerHidden { get; set; }
         public bool IsApprovedByPersonnelManagerEnable { get; set; }
-        [Display(Name = "Выгружен в 1с8")]
+        [Display(Name = "Выгружен в 1C")]
         public bool IsPostedTo1C { get; set; }
         public bool IsPostedTo1CHidden { get; set; }
         public bool IsPostedTo1CEnable { get; set; }
+
+        [Display(Name = "Скан документа")]
+        public string Attachment { get; set; }
+        public int AttachmentId { get; set; }
+
 
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
@@ -64,8 +70,12 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDeleteAvailable { get; set; }
         public bool IsDelete { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsPrintAvailable { get; set; }
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public bool IsApproved { get; set; }
+        public bool IsApprovedEnable { get; set; }
     }
 }

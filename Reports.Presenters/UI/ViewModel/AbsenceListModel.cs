@@ -5,23 +5,33 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class AbsenceListModel
+    public interface BeginEndCreateDate
+    {
+        DateTime? BeginDate { get; }
+        DateTime? EndDate { get; }
+    }
+    public class AbsenceListModel : BeginEndCreateDate
     {
         public int UserId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
+        //[AutoComplete("AutoComplete", "Departments", "searchText")]
+        public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
-        public IList<IdNameDto> Departments;
+        public bool DepartmentReadOnly { get; set; }
+        //public int DepartmentId { get; set; }
+        //public IList<IdNameDto> Departments;
+
         [Display(Name = "Должность")]
         public int PositionId { get; set; }
         public IList<IdNameDto> Positions;
-        [Display(Name = "Вид неявки")]
+        [Display(Name = "Вид невыхода")]
         public int AbsenceTypeId { get; set; }
         public IList<IdNameDto> AbsenceTypes;
 
-        [Display(Name = "Дата начало неявки")]
+        [Display(Name = "Период с")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания неявки")]
+        [Display(Name = "по")]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]
@@ -30,6 +40,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }
+
+        public int SortBy { get; set; }
+        public bool? SortDescending { get; set; } 
 
     }
 

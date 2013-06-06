@@ -276,4 +276,70 @@
   <data name="AbsenceEditModel_EndDate_Required" xml:space="preserve">
     <value>Дата окончания - обязательное поле</value>
   </data>
+  <data name="SicklistEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала больничного - обязательное поле</value>
+  </data>
+  <data name="SicklistEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания больничного - обязательное поле</value>
+  </data>
+  <data name="HolidayWorkEditModel_Date_Required" xml:space="preserve">
+    <value>Работа в выходной /праздничный день - обязательное поле</value>
+  </data>
+  <data name="HolidayWorkEditModel_Hours_Required" xml:space="preserve">
+    <value>Кол-во отработанных часов - обязательное поле</value>
+  </data>
+  <data name="HolidayWorkEditModel_Rate_Required" xml:space="preserve">
+    <value>Часовая тарифная ставка - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Country_Required" xml:space="preserve">
+    <value>Страна, город командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_FinancesSource_Required" xml:space="preserve">
+    <value>Источник финансирования командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Goal_Required" xml:space="preserve">
+    <value>Цель командировки - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Organization_Required" xml:space="preserve">
+    <value>Организация, куда командировка - обязательное поле</value>
+  </data>
+  <data name="MissionEditModel_Reason_Required" xml:space="preserve">
+    <value>Основание командировки - обязательное поле</value>
+  </data>
+  <data name="DismissalEditModel_EndDate_Required" xml:space="preserve">
+    <value>Дата окончания Т. Д. - обязательное поле</value>
+  </data>
+  <data name="DismissalEditModel_Reason_Required" xml:space="preserve">
+    <value>Основание документ - обязательное поле</value>
+  </data>
+  <data name="TimesheetCorrectionEditModel_Date_Required" xml:space="preserve">
+    <value>Дата  - обязательное поле</value>
+  </data>
+  <data name="TimesheetCorrectionEditModel_Hours_Required" xml:space="preserve">
+    <value>Часы  - обязательное поле</value>
+  </data>
+  <data name="EmploymentEditModel_BeginDate_Required" xml:space="preserve">
+    <value>Дата начала Т Д - обязательное поле</value>
+  </data>
+  <data name="EmploymentEditModel_Salary_Required" xml:space="preserve">
+    <value>Оклад (тарифная ставка) - обязательное поле</value>
+  </data>
+  <data name="LoginRecoveryModel_Email_Required" xml:space="preserve">
+    <value>Адрес электронной почты - обязательное поле</value>
+  </data>
+  <data name="SicklistEditModel_SicklistNumber_Required" xml:space="preserve">
+    <value>Номер больничного листа - обязательное поле</value>
+  </data>
+  <data name="ConstantEditModel_Days_Required" xml:space="preserve">
+    <value>Баланс мес.(дней) - обязательное поле</value>
+  </data>
+  <data name="ConstantEditModel_Hours_Required" xml:space="preserve">
+    <value>Баланс мес.(часов) - обязательное поле</value>
+  </data>
 </root>

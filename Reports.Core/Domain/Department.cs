@@ -9,8 +9,13 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual int Code { get; set; }
+        public virtual string Code { get; set; }
         public virtual string Name { get; set; }
+        public virtual int? Code1C { get; set; }
+        public virtual int? ParentId { get; set; }
+        //public virtual Department Parent { get; set; }
+        public virtual string Path { get; set; }
+        public virtual int? ItemLevel { get; set; }
         #endregion
 
         #region Constructors

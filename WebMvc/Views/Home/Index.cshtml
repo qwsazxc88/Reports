@@ -1,4 +1,113 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model WebMvc.Models.HomeModel
+@{
+   
+    Layout = "~/Views/Shared/_LayoutWithoutMenu.cshtml";
+    ViewBag.Title = "Главная страница";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+   
 }
-
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@using (Html.BeginForm())
+{
+    if (Request.IsAuthenticated)
+    {
+@*        <table class="menu" style="width:100%">
+            <tr>*@
+            <div class="menu-wrap">
+             <div class="menu">   
+                <div class="mainMenuItem" id="mainTimesheet">
+                    @if (dto.UserRole == UserRole.Admin)
+                    {
+                        @Html.ActionLink("Табель", "UserList", "Admin")
+                    }
+                    else if (dto.UserRole == UserRole.Employee)
+                    {
+                        @Html.ActionLink("Табель", "SicklistList", "UserRequest")
+                    }
+                    else if (dto.UserRole == UserRole.Chief)
+                    {
+                        @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
+                    }
+                </div>  
+                <div @if(Model.menuId == 1){<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>} id="mainCharge">
+                        @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                </div> 
+                <div @if (Model.menuId == 2)
+                     {<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>}
+                     id="mainMember">
+                        @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                </div> 
+             </div>
+            </div>
+            
+            <div style="text-align:center;font-size:larger;height:100px;line-height: 100px;"> 
+            </div>
+             
+             <div style="text-align:center;font-size:larger;"> 
+                <img style="width: 181px; height: 49px;" src="@Url.Content("~/Content/logo-skb.jpg")"/>
+                <div class="portala-name">Кадровый портал</div>
+                <div class="portala-support">
+                   Техническая поддержка: info@ruscount.ru<br>
+                   Общие вопросы: info@ruscount.ru
+                </div>
+                <div class="portala-help">
+                   <a href="/Content/user-manual-sotrudnik.pdf" target="_blank">Руководство по использованию</a>
+                </div>
+            </div>
+            
+@*            </tr>
+        </table>*@
+@*    <table style="width:100%">
+                <tr>
+                    <td>
+                        <table>
+                @if (dto.UserRole == UserRole.Admin)
+                {
+                     <tr><td>@Html.ActionLink("Пользователи", "UserList", "Admin")</td></tr>
+                     <tr><td>@Html.ActionLink("Настройки", "Settings", "Admin")</td></tr>
+                     <tr><td>@Html.ActionLink("Информация", "InformationsList", "Admin")</td></tr>
+                }
+                else if (dto.UserRole == UserRole.Employee || dto.UserRole == UserRole.Manager || dto.UserRole == UserRole.PersonnelManager
+                || dto.UserRole == UserRole.Inspector || dto.UserRole == UserRole.Chief)
+                {
+                        <tr><td style="font-weight:bold">Табель</td></tr>
+                        if (dto.UserRole != UserRole.Employee)
+                        {
+                            <tr><td>@Html.ActionLink("Все заявки", "AllRequestList", "UserRequest")</td></tr>
+                        }
+                        <tr><td>@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Командировки", "MissionList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</td></tr>
+                        <tr><td>@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</td></tr>
+                       <tr><td>@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</td></tr>
+                        if (dto.UserRole != UserRole.Inspector)
+                        {
+                        <tr><td>@Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)</td></tr>
+                        }
+                       if (dto.UserRole == UserRole.PersonnelManager || dto.UserRole == UserRole.Manager)
+                       {
+                            <tr><td>@Html.ActionLink("Контроль ввода", "AcceptRequests", "UserRequest")</td></tr>
+                       }
+                }
+                  </table> 
+                 </td>
+            </tr>
+    </table>*@
+    }
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //var pathname = window.location.pathname;
+        //setMainActiveMenuItem($.url().param('mainMenuItem'));
+    });
+</script>

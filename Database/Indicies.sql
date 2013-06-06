@@ -5,6 +5,7 @@ INSERT INTO [Role] (Id,[Name],Version) values (4,'Руководитель',1)
 INSERT INTO [Role] (Id,[Name],Version) values (8,'Кадровик',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (16,'Бюджет',1) 
 INSERT INTO [Role] (Id,[Name],Version) values (32,'Отусорсинг',1)
+INSERT INTO [Role] (Id,[Name],Version) values (64,'Контролер',1)
 set identity_insert  [Role] off 
 
 set identity_insert  [RequestStatus] on
@@ -17,48 +18,214 @@ set identity_insert  [RequestStatus] off
 
 declare @OrganizationId int
 declare @Organization1Id int
-INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (1,'Тестовая организация',1)	
+INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values ('1','Тестовая организация',1)	
 set @OrganizationId = @@Identity
-INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values (2,'Тестовая организация 1',1)	
+INSERT INTO [dbo].[Organization]  ([Code],[Name],Version) values ('2','Тестовая организация 1',1)	
 set @Organization1Id = @@Identity	
 	
 
 declare @DepartmentId int
 declare @Department1Id int
-INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values (1,'Тестовый департамент',1)		
+INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values ('1','Тестовый департамент',1)		
 set @DepartmentId = @@Identity	
-INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values (2,'Тестовый департамент 1',1)		
+INSERT INTO [dbo].[Department]  ([Code],[Name],Version) values ('2','Тестовый департамент 1',1)		
 set @Department1Id = @@Identity	
 
 
 declare @PositionId int
 declare @Position1Id int
-INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values (1,'Тестовая должность',1)		
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('1','Тестовая должность',1)		
 set @PositionId = @@Identity
-INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values (2,'Тестовая должность 1',1)		
-set @Position1Id = @@Identity	
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('2','Тестовая должность 1',1)		
+set @Position1Id = @@Identity
+declare @ManPositionId int
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('3','Руководитель',1)		
+set @ManPositionId = @@Identity	
+declare @PerPositionId int
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('4','Кадровик',1)		
+set @PerPositionId = @@Identity	
+declare @InsPositionId int
+INSERT INTO [dbo].[Position]  ([Code],[Name],Version) values ('5','Контролер',1)		
+set @InsPositionId = @@Identity	
 	
 
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (31,'Оплата дня сдачи крови и доп. дня отдыха донорам #1125',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата дополнительного отпуска по календарным дням #1207',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (32,'Оплата дополнительных выходных дней по уходу за детьми - инвалидами #1504',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата отпуска по календарным дням #1201',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (42,'Оплата отпуска по шестидневке #1202',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (41,'Оплата учебного отпуска по календарным дням #1204',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет #1206',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (23,'Отпуск по беременности и родам #1501',1)			
-INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values (52,'Отпуск по уходу за ребенком без оплаты #1802',1)		
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('51','Дополнительный учебный отпуск без оплаты #1203',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('31','Оплата дня сдачи крови и доп. дня отдыха донорам #1125',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('41','Оплата дополнительного отпуска по календарным дням #1207',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('32','Оплата дополнительных выходных дней по уходу за детьми - инвалидами #1504',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('41','Оплата отпуска по календарным дням #1201',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('42','Оплата отпуска по шестидневке #1202',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('41','Оплата учебного отпуска по календарным дням #1204',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('53','Отпуск без оплаты согласно ТК РФ #1205',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('54','Отпуск за свой счет #1206',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('23','Отпуск по беременности и родам #1501',1)			
+INSERT INTO [dbo].[VacationType]  ([Code],[Name],Version) values ('52','Отпуск по уходу за ребенком без оплаты #1802',1)		
 
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (51,'Дополнительный учебный отпуск без оплаты #1203',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (53,'Отпуск без оплаты согласно ТК РФ #1205',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (54,'Отпуск за свой счет#1206',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (10023,'Отсутствие по болезни #1803',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (55,'Отсутствие по невыясненной причине #1806',1)	
-INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values (56,'Прогул, простой по вине работника #1807',1)	
-	
+
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('51','Дополнительный учебный отпуск без оплаты #1203',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('53','Отпуск без оплаты согласно ТК РФ #1205',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('54','Отпуск за свой счет#1206',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('10024','Отсутствие по болезни (по беременности и родам) #1804',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('10023','Отсутствие по болезни #1803',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('55','Отсутствие по невыясненной причине #1806',1)	
+INSERT INTO [dbo].[AbsenceType]  ([Code],[Name],Version) values ('56','Прогул, простой по вине работника #1807',1)	
+
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('25','БЛ по травме в быту (не оплачивается) #1805',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('26','Доплата по больничным листам #1402',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('22','Оплата БЛ по травме на производстве #1403',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('25','Оплата больничных листов за счет работодателя #1426',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('21','Оплата больничных листов #1469',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('10024','Отсутствие по болезни (по беременности и родам) #1804',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('10023','Отсутствие по болезни #1803',1)
+INSERT INTO [dbo].[SicklistType]  ([Code],[Name],Version) values ('55','Отсутствие по невыясненной причине #1806',1)
+set identity_insert  [dbo].[SicklistType] on
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (9,'71','Пособие по уходу за ребёнком до 1.5 лет #1502',1)
+INSERT INTO [dbo].[SicklistType]  (Id,[Code],[Name],Version) values (10,'72','Пособие по уходу за ребёнком до 3 лет #1503',1)
+set identity_insert [dbo].[SicklistType] off 
+
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values ('1','Тестовый уход за ребенком 1',1)
+INSERT INTO [dbo].[SicklistBabyMindingType]  ([Code],[Name],Version) values ('2','Тестовый уход за ребенком 2',1)
+
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values ('13','Доплата за работу в праздники и выходные #1107',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values ('12','Оплата праздничных и выходных дней #1106',1)
+INSERT INTO [dbo].[HolidayWorkType]  ([Code],[Name],Version) values (null,'Отгул',1)
+
+INSERT INTO [dbo].[MissionType]  ([Code],[Name],Version) values ('1','Командировку по России',1)
+INSERT INTO [dbo].[MissionType]  ([Code],[Name],Version) values ('2','Командировку по СНГ',1)
+INSERT INTO [dbo].[MissionType]  ([Code],[Name],Version) values ('3','Командировку  за рубеж',1)
+
+INSERT INTO [dbo].[EmploymentType]  ([Code],[Name],Version) values ('1','По совместительству',1)
+INSERT INTO [dbo].[EmploymentType]  ([Code],[Name],Version) values ('2','На основное место работы',1)
+INSERT INTO [dbo].[EmploymentType]  ([Code],[Name],Version) values ('3','По срочному трудовому договору',1)
+INSERT INTO [dbo].[EmploymentType]  ([Code],[Name],Version) values ('4','Переводом',1)
+
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('1','Пятидневка   0,2 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('2','0,001',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('3','0,01',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('4','0,01',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('5','0,1',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('6','0,16',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('7','0,2 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('8','0,55 ставки',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('9','0,68 ставки (27,2 часа)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('10','0,7 ставки (28 часов)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('11','0,8 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('12','0.8',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('13','1 час',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('14','10 часов (0,25)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('15','10-часовая',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('16','12 ч (0,3ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('17','14ч (0,35 ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('18','16 ч (0,4ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('19','16,8 ч (0,42 ставки)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('20','20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('21','20 часов (0,5 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('22','24 ч(0,6ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('23','25 (0,625)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('24','29,2 часа (0.73 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('25','30 (0,75ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('26','32 часа ( 0.8ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('27','33.6 часа ( 0.84ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('28','34,8 часа ( 0,87 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('29','35 часов (0,87 ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('30','35,6 часа (0,89ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('31','36,4 часа ( 0,91ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('32','36.8 часа  (0,92ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('33','37,5 часов (0,94 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('34','38,4 часа (0,96ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('35','39.6 часа ( 0.99ст.)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('36','4 часа (0,1 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('37','6,4 часа (0,16 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('38','6,8 часа (0,17 ст)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('39','График 15ч/н (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('40','график 2 через 2 2смена',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('41','график 2 через 2 по 11 часов 1смена',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('42','График 25ч/н (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('43','Основной',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('44','Основной график',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('45','Основной график (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('46','Основной график 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('47','Основной график 20часов неделя (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('48','Основной график 40часов неделя',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('49','Пятидневка',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('50','Пятидневка (30 часов)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('51','Пятидневка 0.4ст',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('52','пятидневка 10часов (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('53','Пятидневка 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('54','Пятидневка 20 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('55','Пятидневка 30 часов',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('56','Пятидневка 32 часа',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('57','Пятидневка 35',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('58','Пятидневка 35 часов (Иваново)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('59','Пятидневка 37,5',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('60','Сменный',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('61','Сокращенный день по 7 часов (Ярославль)',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('61','Сум. учет раб. времени',1)
+INSERT INTO [dbo].[EmploymentHoursType]  ([Code],[Name],Version) values ('63','Суммированный учет',1)
+
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за выслугу лет рабочим и служащим #1114','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за квалификацию #1115','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка за разъездной характер работы #1116','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка Персональная #1117','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00002','Надбавка территориальная #1123','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00070','Районный коэффициент #1301','Процентом Зависимое второго уровня',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values (null,'Расширение зоны обслуживания #1120','По месячной тарифной ставке по часам Первичное',1)
+INSERT INTO [dbo].[EmploymentAddition]  ([Code],[Name],[CalculationMethod],Version) values ('00070','Северная надбавка 1 #1302','Процентом Зависимое второго уровня',1)
+
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Заявление работника',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Служебная записка',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Распоряжение руководителя',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Медицинское заключение',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Приказ руководителя',1)
+--INSERT INTO [dbo].[DismissalType]  ([Name],[Reason],Version) values ('Справка о смерти',1)
+
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('1','п. 1 ст. 81 ТК','Ликвидация',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('2','п. 1 части 1 ст. 77 ТК','Соглашение сторон.',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('3','п. 2 ст. 77 ТК','Истечение срока трудового договора.',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('4','п. 2 части 1 ст. 81 ТК','Сокращение численности штата',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('5','п. 3 ст. 77 ТК','Расторжение трудового договора по инициативе работника.',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('6','п. 4 ст. 77 ТК','Расторжение трудового договора по инициативе работодателя',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('7','п. 5 ст. 77 ТК','Перевод работника на другую работу к другому работодателю',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('8','п. 5 части первой ст. 77','Перевод работника на выборную должность',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('9','п. 6 ст. 81 ТК','Расторжение трудового договора по инициативе работодателя за прогул.',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('10','п. 6 ст.83 ТК','Смерть  работника  либо работодателя - физ. лица, а также признание судом работника либо работодателя - физ. лица умершим',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('11','п. 7 ч. 1 ст.81 ТК РФ','Трудовой договор расторгнут в связи с совершением виновных действий работником',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('12','п. 7 части 1 ст. 77','Отказ работника от продолжения работы в связи с изменением определенных сторонами условий ТД',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('13','п.3 части 1 ст. 77 ТК РФ','Собственное желание',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('14','п.5 части первой ст. 83 ТК РФ','Трудовой договор прекращен в связи с признанием работника полностью неспособным к трудовой деятельности в соответствии с медицинским заключением',1)
+INSERT INTO [dbo].[DismissalType]  ([Code],[Name],[Reason],Version) values ('15','п.6 ч.1 ст. 83','Трудовой договор прекращен в связи со смертью работника',1)
+
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values ('2','Оклад по часам #1102','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values ('3','Оплата по часовому тарифу #1103','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values ('66','Оплата почасового простоя от оклада по часам #1707','По месячной тарифной ставке по часам',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values ('67','Оплата почасового простоя по часовому тарифу# 1708','По часовой тарифной ставке',1)
+INSERT INTO [dbo].[TimesheetCorrectionType]  ([Code],[Name],[Reason],Version) values ('68','Почасовой простой по вине работодателя #1702','По среднему заработку',1)
+
+
+
+--INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 1',1)
+--INSERT INTO [dbo].[DismissalCompensationType]  ([Name],Version) values ('Тест 2',1)
+
+
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Code],[Name],Version) values ('1','В размере ММОТ',1)
+INSERT INTO [dbo].[SicklistPaymentRestrictType] ([Code],[Name],Version) values ('2','Общее, в соответствии с Законом о бюджете ФСС',1)
+
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'БЛ по травме в быту (не оплачивается) #1805','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (26,'Доплата по больничным листам #1402','Доплата до среднего заработка ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (22,'Оплата БЛ по травме на производстве #1403','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (25,'Оплата больничных листов за счет работодателя #1426','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (21,'Оплата больничных листов #1469','По среднему заработку ФСС',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10024,'Отсутствие по болезни (по беременности и родам) #1804','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (10023,'Отсутствие по болезни #1803','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (55,'Отсутствие по невыясненной причине #1806','Нулевая сумма',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (71,'Пособие по уходу за ребёнком до 1.5 лет #1502','Пособие по уходу за ребенком до 1.5 лет',1)
+--INSERT INTO [dbo].[SicklistPaymentType]  ([Code],[Name],[PaymentMethod],Version) values (72,'Пособие по уходу за ребёнком до 3 лет #1503','Пособие по уходу за ребенком до 3 лет',1)
+
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (60,3,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (80,2,1)
+INSERT INTO [dbo].[SicklistPaymentPercent]  ([SicklistPercent],SortOrder,Version) values (100,1,1)
+
+
 
 set identity_insert  [TimesheetStatus] on
 INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (1,1,'Я','Явка')
@@ -82,7 +249,7 @@ INSERT INTO [TimesheetStatus] (Id,Version,ShortName,Name) values (18,1,'РП','Вре
 set identity_insert  [TimesheetStatus] off
 
 
-declare @typeId int
+/*declare @typeId int
 declare @firstTypeId int
 declare @firstSubTypeId int
 INSERT INTO [EmployeeDocumentType] ([Name],Version) values ('Отпуск',1) 
@@ -157,45 +324,89 @@ INSERT INTO [EmployeeDocumentSubType] ([Name],Version,TypeId) values ('Сотовая с
 INSERT INTO [EmployeeDocumentSubType] ([Name],Version,TypeId) values ('Исполнительный лист',1,@typeId) 
 INSERT INTO [EmployeeDocumentSubType] ([Name],Version,TypeId) values ('Обслуживание авто',1,@typeId) 
 INSERT INTO [EmployeeDocumentSubType] ([Name],Version,TypeId) values ('Налоговый вычет',1,@typeId) 
-
+*/
 
 -- User
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]			 ) 
-VALUES			   (1,       		0               ,'admin','adminadmin' ,	GetDate(),      N'Администратор',             1,		  null ,          1,           'АА0000000001' )
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]		, [IsNew]	 ) 
+VALUES			   (1,       		0               ,'admin','adminadmin' ,	GetDate(),      N'Администратор',             1,		  null ,          1,           'АА0000000001' , 0)
 declare @managerId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 4,		   'АВ0000000001')
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'manager' ,'manager'  ,	'2008-12-01 15:13:25:000',  N'Руководитель',              1,         null								, 4,		   'АВ0000000001' , 0, @ManPositionId)
 set @managerId = @@Identity
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@DepartmentId,1)
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@Department1Id,1)
+
+declare @managerId1 int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                         Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'manager1' ,'manager1'  ,	'2008-12-01 15:13:25:000',  N'Руководитель 1',              1,         null								, 4,		   'АВ0000000002' , 0, @ManPositionId)
+set @managerId1 = @@Identity
+
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@DepartmentId,1)
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@managerId,@Department1Id,1)
 declare @personnelId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001')
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'personnel' ,'personnel'  ,	'2008-12-01 15:13:25:000',    N'Кадровик',                    1,         null								, 8,		   'АГ0000000001' , 0, @PerPositionId)
 set @personnelId = @@Identity
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
-declare @budgetId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,              Name,               Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'budget' ,'budget'  ,	'2008-12-01 15:13:25:000',       N'Бюджет',           1,         null								        , 16,		   'АГ0000000001')
+
+declare @personnel1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'personnel1' ,'personnel1'  ,	'2008-12-01 15:13:25:000',    N'Кадровик1',                    1,         null								, 8,		   'АГ0000000002' , 0, @PerPositionId)
+set @personnel1Id = @@Identity
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@managerId1)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@managerId)
+
+
+declare @inspectorId int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector' ,'inspector'  ,	'2008-12-01 15:13:25:000',    N'Контролер',                    1,         null								, 64,		   'АЕ0000000001' , 0, @InsPositionId)
+set @inspectorId = @@Identity
+
+declare @inspector1Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,               Name,                          Version,  [DateRelease]    , [RoleId],      [Code]  , [IsNew], PositionId) 
+VALUES			   (1,       	0              ,'inspector1' ,'inspector1'  ,	'2008-12-01 15:13:25:000',    N'Контролер 1',                    1,         null								, 64,		   'АЖ0000000001' , 0, @InsPositionId)
+set @inspector1Id = @@Identity
+
+
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@DepartmentId,1)
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@personnelId,@Department1Id,1)
+/*declare @budgetId int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,              Name,               Version,  [DateRelease]    , [RoleId],      [Code] , [IsNew]) 
+VALUES			   (1,       	0              ,'budget' ,'budget'  ,	'2008-12-01 15:13:25:000',       N'Бюджет',           1,         null								        , 16,		   'АГ0000000001' , 0)
 set @budgetId = @@Identity
 declare @outsorsingId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,                       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] ) 
-VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              32,		       'АД0000000001')
-set @outsorsingId = @@Identity
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,                       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , [IsNew] ) 
+VALUES			   (1,       	0              ,'outsorsing' ,'outsorsing'  ,	'2008-12-01 15:13:25:000',       N'Аутсорсинг',                        1,         null,              32,		       'АД0000000001' , 0)
+set @outsorsingId = @@Identity*/
 declare @userId int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         PersonnelManagerId, OrganizationId,/*DepartmentId,*/PositionId) 
-VALUES			   (1,       	0              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       @personnelId,       @OrganizationId,/*@DepartmentId,*/@PositionId)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                        Version,  [DateRelease]    , [RoleId],      [Code] ,             ManagerId,         /*PersonnelManagerId,*/ OrganizationId,DepartmentId,PositionId , [IsNew]) 
+VALUES			   (1,       	0              ,'user' ,'user'  ,	'2008-12-01 15:13:25:000',    N'Пользователь',                   1,         null            , 2,		   'АБ0000000001' ,  @managerId,       /*@personnelId,*/       @OrganizationId,@DepartmentId,@PositionId , 0)
 set @userId = @@Identity
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@userId,@DepartmentId,1)
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@userId,@DepartmentId,1)
 
 declare @user1Id int
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId,            OrganizationId,/*DepartmentId,*/PositionId) 
-VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       @personnelId,@Organization1Id,/*@Department1Id,*/@Position1Id)
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,       Name,                           Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,/*PersonnelManagerId,*/            OrganizationId,DepartmentId,PositionId , [IsNew]) 
+VALUES			   (1,       	0              ,'ivanov' ,'ivanov'  ,	'2008-12-01 15:13:25:000',N'Иванов Иван Иванович',            1,         null            , 2,		   'АЕ0000000001' ,  @managerId,       /*@personnelId,*/@Organization1Id,@Department1Id,@Position1Id , 0)
 set @user1Id = @@Identity
-INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
+--INSERT INTO UserToDepartment (UserId,DepartmentId,Version) values (@user1Id,@Department1Id,1)
 
-INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,PersonnelManagerId) 
-VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       @personnelId)
+declare @user2Id int
+INSERT INTO [Users] (IsActive,IsFirstTimeLogin, Login ,Password,DateAccept                ,            Name,                         Version,  [DateRelease]    , [RoleId],      [Code] , ManagerId,/*PersonnelManagerId ,*/ [IsNew], OrganizationId,DepartmentId,PositionId) 
+VALUES			   (1,       	0              ,'petrov' ,'petrov'  ,	'2008-12-01 15:13:25:000',      N'Петров Петр Петрович',         1,         null            , 2,		   'АЖ0000000001' ,  @managerId,       /*@personnelId ,*/ 0 ,  @OrganizationId,@DepartmentId, @PositionId )
+set @user2Id = @@Identity
+
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user1Id)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspectorId,@user2Id)
+
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@userId)
+insert into [dbo].[InspectorToUser] (InspectorId,UserId) values (@inspector1Id,@user1Id)
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@userId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@user1Id)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnelId,@user2Id)
+
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@userId)
+insert into [dbo].[UserToPersonnel] (PersonnelId,UserId) values (@personnel1Id,@user1Id)
 
  
 INSERT INTO DBVERSION (Version) VALUES('1.0.0.1')

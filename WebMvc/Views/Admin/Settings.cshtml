@@ -151,6 +151,7 @@
     $(document).ready(function () {
         $("#ReleaseEmployeeDeleteDate").datepicker({ maxDate: -1 });
         $(".hasDatepicker").width("75px");
+        setActiveMenuItem("adminSettings");
     });
     function OnDelete() {
         var deleteDate = $("#ReleaseEmployeeDeleteDate");

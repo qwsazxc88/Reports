@@ -10,7 +10,7 @@
             </td>
         </tr>
         <tr>
-            <td style="font-weight:bold">Комментарии:</td>
+            <td style="font-weight:bold">Комментарии</td>
         </tr>
         <tr>
             <td>
@@ -22,10 +22,10 @@
             foreach (var attach in Model.Comments)
             {
             <tr>
-                <td style="border-bottom:1px solid gray">@attach.Creator  @attach.CreatedDate</td>
+                <td class="comment-author">@attach.Creator  @attach.CreatedDate</td>
             </tr>
             <tr>
-                <td style="border-bottom:1px solid black">@attach.Comment</td>
+                <td class="comment-text">@attach.Comment</td>
             </tr>   
             }
         }

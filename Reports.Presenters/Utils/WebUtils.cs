@@ -1,9 +1,4 @@
-using System;
-using System.Data;
-using System.Configuration;
 using System.Web;
-using System.Web.Security;
-using System.Web.SessionState;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Reports.Core;
@@ -12,22 +7,22 @@ namespace Reports.Presenters.Utils
 {
     public class WebUtils
     {
-		public const string ChangePasswordPageName = "ChangePassword.aspx";
-		public const string UserPropertiesPageName = "UserProperties.aspx";
+        public const string ChangePasswordPageName = "ChangePassword.aspx";
+        public const string UserPropertiesPageName = "UserProperties.aspx";
         private static string ControlIdInMasterPage = "hMakePageExpired";
         public static string ControlTrueValue = "true";
-        private static string ControlFalseValue = "false"; 
+        private static string ControlFalseValue = "false";
 
-		//public static void DisableMasterPageStamp(Page page)
-		//{
-		//    Validate.NotNull(page, "page");
-		//    if (page.Master != null)
-		//    {
-		//        Control ctrl = page.Master.FindControl(DoubleSubmitStamp.MasterPageControlName);
-		//        if (ctrl != null)
-		//            ((DoubleSubmitStamp) ctrl).RenderStamp = false;
-		//    }
-		//}
+        //public static void DisableMasterPageStamp(Page page)
+        //{
+        //    Validate.NotNull(page, "page");
+        //    if (page.Master != null)
+        //    {
+        //        Control ctrl = page.Master.FindControl(DoubleSubmitStamp.MasterPageControlName);
+        //        if (ctrl != null)
+        //            ((DoubleSubmitStamp) ctrl).RenderStamp = false;
+        //    }
+        //}
         public static void MakePageExpired(HttpResponse response)
         {
             Validate.NotNull(response, "response");
@@ -35,6 +30,7 @@ namespace Reports.Presenters.Utils
             response.Cache.SetNoStore();
             response.AppendHeader("Pragma", "no-cache");
         }
+
         public static void MakePageUnexpired(Page page)
         {
             Validate.NotNull(page, "page");
@@ -42,9 +38,10 @@ namespace Reports.Presenters.Utils
             {
                 Control ctrl = page.Master.FindControl(ControlIdInMasterPage);
                 if (ctrl != null)
-                    ((HiddenField)ctrl).Value = ControlFalseValue ;
+                    ((HiddenField) ctrl).Value = ControlFalseValue;
             }
         }
+
         //public static void SetSortParams(ISortedGridView view, GridViewSortEventArgs e)
         //{
         //    Validate.NotNull(view, "view");

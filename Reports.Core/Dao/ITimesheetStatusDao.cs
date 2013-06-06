@@ -5,6 +5,6 @@ namespace Reports.Core.Dao
 {
     public interface ITimesheetStatusDao : IDao<TimesheetStatus>
     {
-        IList<TimesheetStatus> LoadAllSorted();
+        //IList<TimesheetStatus> LoadAllSorted();
     }
 }

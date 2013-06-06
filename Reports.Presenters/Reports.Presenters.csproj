@@ -72,6 +72,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="NHibernate, Version=1.2.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Lib\NHibernate.dll</HintPath>
@@ -81,9 +84,9 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 3\Assemblies\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -104,9 +107,11 @@
     <Compile Include="Services\IUser.cs" />
     <Compile Include="UI\Attributes.cs" />
     <Compile Include="UI\Bl\IAdminBl.cs" />
+    <Compile Include="UI\Bl\IAutoComplete.cs" />
     <Compile Include="UI\Bl\IBaseBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
     <Compile Include="UI\Bl\Impl\AdminBl.cs" />
+    <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
@@ -115,14 +120,22 @@
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
     <Compile Include="UI\ViewModel\AbsenceEditModel.cs" />
     <Compile Include="UI\ViewModel\AbsenceListModel.cs" />
+    <Compile Include="UI\ViewModel\AcceptRequestsModel.cs" />
     <Compile Include="UI\ViewModel\AccountModels.cs" />
+    <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
+    <Compile Include="UI\ViewModel\AllRequestListModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />
+    <Compile Include="UI\ViewModel\ConstantEditModel.cs" />
+    <Compile Include="UI\ViewModel\ConstantListModel.cs" />
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
+    <Compile Include="UI\ViewModel\DepartmentTreeModel.cs" />
     <Compile Include="UI\ViewModel\DialogErrorModel.cs" />
+    <Compile Include="UI\ViewModel\DismissalEditModel.cs" />
+    <Compile Include="UI\ViewModel\DismissalListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentCommentsModel.cs" />
     <Compile Include="UI\ViewModel\DocumentSubtypeListModel.cs" />
     <Compile Include="UI\ViewModel\DocumentTypeListModel.cs" />
@@ -135,16 +148,27 @@
     <Compile Include="UI\ViewModel\EmployeeListModel.cs" />
     <Compile Include="UI\ViewModel\EmployeeTimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
+    <Compile Include="UI\ViewModel\EmploymentEditModel.cs" />
+    <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
+    <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
+    <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
     <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\MissionEditModel.cs" />
+    <Compile Include="UI\ViewModel\MissionListModel.cs" />
+    <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
     <Compile Include="UI\ViewModel\SettingsModel.cs" />
+    <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
+    <Compile Include="UI\ViewModel\SicklistListModel.cs" />
+    <Compile Include="UI\ViewModel\TimesheetCorrectionEditModel.cs" />
+    <Compile Include="UI\ViewModel\TimesheetCorrectionListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetEditModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetModel.cs" />
@@ -154,6 +178,7 @@
     <Compile Include="UI\ViewModel\UserModel.cs" />
     <Compile Include="UI\ViewModel\VacationEditModel.cs" />
     <Compile Include="UI\ViewModel\VacationListModel.cs" />
+    <Compile Include="UI\ViewModel\VacationPrintModel.cs" />
     <Compile Include="Utils\WebUtils.cs" />
   </ItemGroup>
   <ItemGroup>

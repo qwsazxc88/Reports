@@ -7,9 +7,17 @@ namespace Reports.Core.Dto
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Name { get; set; }
-        //public string Type { get; set; }
         public DateTime Date { get; set; }
-        //public bool IsApproved { get; set; }
-        //public int OwnerId { get; set; }
+        public DateTime BeginDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public int Number { get; set; }
+
+        public string UserName { get; set; }
+        public string RequestType { get; set; }
+        public string RequestStatus { get; set; }
+    }
+    public class AllRequestDto : VacationDto
+    {
+        public string EditUrl { get; set; }
     }
 }

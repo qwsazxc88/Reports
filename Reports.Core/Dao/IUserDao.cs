@@ -9,10 +9,14 @@ namespace Reports.Core.Dao
     public interface IUserDao : IDao<User>
     {
         User FindByLogin(string login);
+        IList<User> FindByEmail(string email);
         bool IsLoginWithOtherIdExists(string login, int id);
         IList<User> GetUsersWithRole(UserRole role);
         IList<User> LoadUserByCodes(List<string> codes);
-        IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole);
+        IList<IdNameDto> GetUsersForManager(int managerId, UserRole managerRole,int departmentId);
+        IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole);
+        IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
+                           DateTime beginDate, DateTime endDate, int departmentId, string userName);
 		//User FindByEmail(string email);
 		//User FindByCustomerId(string masterCustomerId, string subCustomerId);
         //IList<User> FindByFilter(UserListFilter filter, out int count);
@@ -35,6 +39,11 @@ namespace Reports.Core.Dao
             out int numberOfPages);
         IList<User> GetUsersForAdmin(string userName, int role,
                                      ref int currentPage, out int numberOfPages);
+
+        IList<User> GetUsersForPersonnel(string userName, int personnelId, ref int currentPage, out int numberOfPages);
+
+        IList<AcceptRequestDateDto> GetAcceptDatesForManager(int userId, UserRole managerRole,
+                                                             DateTime beginDate, DateTime endDate);
 
         int DeleteEmployees(DateTime date);
     }

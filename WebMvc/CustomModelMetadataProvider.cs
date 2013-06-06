@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web.Mvc;
+using Reports.Presenters.UI;
 
 namespace WebMvc
 {
@@ -35,7 +36,7 @@ namespace WebMvc
             //    if (m.DataType.Equals(DataType.Custom) && (m.CustomDataType == "DropdownDto"))
             //        modelMetadata.TemplateHint = "Dropdown";
             //});
-            //attributes.OfType<AutoCompleteAttribute>().ToList().ForEach(x => x.Process(modelMetadata));
+            attributes.OfType<MetadataAttribute>().ToList().ForEach(x => x.Process(modelMetadata));
 
             return modelMetadata;
         }

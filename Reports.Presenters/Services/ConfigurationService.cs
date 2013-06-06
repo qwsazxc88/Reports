@@ -180,7 +180,11 @@ namespace Reports.Presenters.Services
         public const int defaultUsersDocumentsDelayInDays = 45;
 
         public const string keyPageSize = "PageSize";
+        public const string keyTimesheetPageSize = "TimesheetPageSize";
         public const int defaultPageSize = 100;
+        public const int defaultTimesheetPageSize = 50;
+
+        public const string keySicklistTypeIdBabyMinding = "SicklistTypeIdBabyMinding";
 
         #region IConfigurationService Members
 
@@ -197,6 +201,32 @@ namespace Reports.Presenters.Services
                 return pageSize;
             }
         }
+        public int TimesheetPageSize
+        {
+            get
+            {
+                int pageSize;
+                if (!Int32.TryParse(ConfigurationManager.AppSettings[keyTimesheetPageSize], out pageSize) || (pageSize < 0))
+                {
+                    Log.WarnFormat("No or incorrect {0} setting on configuration file. Use {1} as default value.", keyTimesheetPageSize, defaultTimesheetPageSize);
+                    return defaultTimesheetPageSize;
+                }
+                return pageSize;
+            }
+        }
+
+        public int SicklistTypeIdBabyMinding
+        {
+            get
+            {
+                int sicklistTypeIdBabyMinding;
+                if (!Int32.TryParse(ConfigurationManager.AppSettings[keySicklistTypeIdBabyMinding], out sicklistTypeIdBabyMinding) || (sicklistTypeIdBabyMinding < 0))
+                    throw new ArgumentException("No or incorrect {0} setting on configuration file.", keyPageSize);
+                return sicklistTypeIdBabyMinding;
+            }
+        }
+
+
 
         public int UsersDocumentsDelayInDays
         {

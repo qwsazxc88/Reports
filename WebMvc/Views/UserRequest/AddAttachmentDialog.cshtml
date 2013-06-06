@@ -1,0 +1,34 @@
+﻿@model Reports.Presenters.UI.ViewModel.AddAttachmentModel
+<html>
+<head>
+    <title/>
+   
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:100px">
+                <tr>
+                    <td colspan="3"><div id="AddAttachmentError" style="color:Red;display:none;"/></td>
+                    @Html.HiddenFor(model => model.DocumentId)
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Description):</td>
+                    <td>
+                       @Html.TextBoxFor(model => model.Description)
+                    </td>
+                @*</tr>
+                <tr>*@
+                    <td>
+                        <div id="file-uploader">
+                            <noscript>
+                                <p>Please enable JavaScript to use file uploader.</p>
+                                <!-- or put a simple form for upload here -->
+                            </noscript>
+                        </div>
+                    </td>
+                </tr>
+    </table>
+</body>
+</html>
+<script type="text/javascript">
+ 
+</script>

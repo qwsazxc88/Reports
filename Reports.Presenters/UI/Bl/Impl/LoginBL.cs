@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -161,45 +163,47 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                User user = UserDao.FindByLogin(model.Login);
-                if (user == null)
+                IList<User> users = UserDao.FindByEmail(model.Email);
+                if (users.Count == 0)
                 {
                     model.Error =
-                        "Не найден пользователь с таким логином.Вы можете обратиться в тех. поддержку через форму ниже.";
-                    model.IsSupportFormVisible = true;
+                        "Не найден пользователь с таким адресом электронной почты.";
+                    //model.IsSupportFormVisible = true;
                     model.Subject = string.Empty;
                     model.Text = string.Empty;
                     return;
                 }
-                if (!user.IsActive)
-                {
-                    model.Error =
-                        "Пользователь с данным логином неактивен.Вы можете обратиться в тех. поддержку через форму ниже.";
-                    model.IsSupportFormVisible = true;
-                    model.Subject = string.Empty;
-                    model.Text = string.Empty;
-                    return;
-                }
-                if (string.IsNullOrEmpty(user.Email))
-                {
-                    model.Error =
-                        "У пользователя с данным логином не указан e-mail.Вы можете обратиться в тех. поддержку через форму ниже.";
-                    model.IsSupportFormVisible = true;
-                    model.Subject = string.Empty;
-                    model.Text = string.Empty;
-                    return;
-                }
+                //if (!user.IsActive)
+                //{
+                //    model.Error =
+                //        "Пользователь с данным логином неактивен.Вы можете обратиться в тех. поддержку через форму ниже.";
+                //    model.IsSupportFormVisible = true;
+                //    model.Subject = string.Empty;
+                //    model.Text = string.Empty;
+                //    return;
+                //}
+                //if (string.IsNullOrEmpty(user.Email))
+                //{
+                //    model.Error =
+                //        "У пользователя с данным логином не указан e-mail.Вы можете обратиться в тех. поддержку через форму ниже.";
+                //    model.IsSupportFormVisible = true;
+                //    model.Subject = string.Empty;
+                //    model.Text = string.Empty;
+                //    return;
+                //}
+                string message = string.Format("Информация для пользователя с адресом электронной почты {0}:<br/>",model.Email);
+                message = users.Aggregate(message, (current, user) => current + string.Format("Логин {0} - пароль {1}<br/>", user.Login, user.Password));
                 SendEmail(model,/*EmailType.UserPasswordRecovered,*/
-                    user.Email,
+                    model.Email,
                     "Восстановление пароля",
-                    string.Format("Ваш пароль - {0} ",user.Password));
+                    message);
                 if (!string.IsNullOrEmpty(model.EmailDto.Error))
                 {
-                    model.Error = "Ошибка при отправке письма c паролем: " + model.EmailDto.Error +
-                                  " Вы можете обратиться в тех. поддержку через форму ниже.";
-                    model.IsSupportFormVisible = true;
-                    model.Subject = string.Empty;
-                    model.Text = string.Empty;
+                    model.Error = "Ошибка при отправке письма: " + model.EmailDto.Error; 
+                                  //" Вы можете обратиться в тех. поддержку через форму ниже.";
+                    //model.IsSupportFormVisible = true;
+                    //model.Subject = string.Empty;
+                    //model.Text = string.Empty;
                 }
                 else
                     model.IsRecoverySuccess = true;

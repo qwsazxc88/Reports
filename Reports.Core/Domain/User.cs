@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -82,6 +83,7 @@ namespace Reports.Core.Domain
         //    set { _isAdministrator = value; }
         //}
         public virtual bool IsActive { get; set; }
+        public virtual bool IsNew { get; set; }
         //{
         //    get { return _isActive; }
         //    set { _isActive = value; }
@@ -135,13 +137,21 @@ namespace Reports.Core.Domain
         //}
 
         public virtual User Manager { get; set; }
-        public virtual User PersonnelManager { get; set; }
+        //public virtual User PersonnelManager { get; set; }
+        private IList<User> personnels = new List<User>();
+        public virtual IList<User> Personnels
+        {
+            get { return personnels; }
+            set { personnels = value; }
+        }
+        public virtual IList<AcceptRequestDate> AcceptRequests { get; set; }
         //public virtual User BudgetManager { get; set; }
         //public virtual User OutsourcingManager { get; set; }
 
         public virtual Organization Organization { get; set; }
         //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
+        public virtual Department Department { get; set; }
         #endregion
 
         #region Constructors

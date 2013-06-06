@@ -1,0 +1,243 @@
+﻿@model Reports.Presenters.UI.ViewModel.DismissalEditModel
+@{
+    ViewBag.Title = "Редактирование увольнения";
+}
+
+@using (Html.BeginForm("DismissalEdit", "UserRequest", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+            @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.Partial("../UserInfoView", Model)
+        </td>
+    </tr>
+     @if (Model.IsDeleted)
+    { 
+        <tr>
+            <td colspan="2" style="color:Red">Заявка отклонена</td>
+        </tr>
+    }
+     <tr>
+        <td style="width:205px">
+            @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
+            @if (Model.IsTypeEditable)
+            {
+                @Html.EditorFor(model => model.EndDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.EndDate)
+                @Html.HiddenFor(model => model.EndDate)
+            } 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Compensation):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Compensation, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Reason):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reason, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+            <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+            @*<input type="hidden" id="IsStatusEditable" name="IsStatusEditable" value="@Model.IsStatusEditable" />*@
+           @* <input type="hidden" id="StatusIdHidden" name="StatusIdHidden" value="@Model.StatusIdHidden" />*@
+            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+            <input type="hidden" id="IsTypeEditable" name="IsTypeEditable" value="@Model.IsTypeEditable" />
+            <input type="hidden" id="IsPersonnelFieldsEditable" name="IsPersonnelFieldsEditable" value="@Model.IsPersonnelFieldsEditable" />
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    @*<tr>
+        <td style="width:210px">
+            @Html.LabelFor(m => m.BeginDate):
+        </td>
+        <td>
+            @if (Model.IsAbsenceTypeEditable)
+            {
+                @Html.EditorFor(model => model.BeginDate) 
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.BeginDate)
+                @Html.HiddenFor(model => model.BeginDate)
+            } 
+        </td>
+     </tr>*@
+     @*<tr>
+        <td>
+            @Html.LabelFor(m => m.StatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name"), Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>*@
+    <tr>
+        <td colspan="2">
+           
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.LabelFor(m => m.CreatorLogin):
+            @Html.DisplayFor(model => model.CreatorLogin) 
+         </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="height:5px">
+        </td>
+    </tr>
+    <tr>
+        <td>@Html.LabelFor(model => model.Attachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.Attachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+               @* <input type="hidden" id="AttachmentTypeId" name="AttachmentTypeId" value="@Model.AttachmentTypeId" />*@
+            }
+        </td>
+    </tr>
+    <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsTypeEditable) || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан документа</td>
+        <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+    </tr>
+     <tr>
+        <td colspan="2">
+            <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+            <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+            <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 2 })';" 
+                                                                @if (!Model.IsPrintAvailable)
+                                                                {<text>style="display:none"</text>}  />
+            
+         </td>
+    </tr>
+    <tr>
+             <td colspan="2" style="height:15px">
+             </td>
+    </tr>
+    <tr>
+             <td colspan="2">
+                        <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
+                        <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
+                        <input type="submit" value="Отправить" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
+                                                                        {<text>style="display:none"</text>}/>                    
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
+                @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) *@
+                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser) {<text>checked="checked"</text>} />
+                @Html.LabelFor(model => model.IsApprovedByUser)
+                @if (!Model.IsApprovedByUserEnable)
+                {
+                    <input type="hidden" id="IsApprovedByUserHidden" name="IsApprovedByUserHidden" value="@Model.IsApprovedByUser" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
+                @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
+                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager) {<text>checked="checked"</text>} />
+                @Html.LabelFor(model => model.IsApprovedByManager)
+                @if (!Model.IsApprovedByManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
+                @*@Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) *@
+                <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager) {<text>checked="checked"</text>} />
+                @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
+                @if (!Model.IsApprovedByPersonnelManagerEnable)
+                {
+                    <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />
+                }
+            </td>
+    </tr>
+     <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsPostedTo1CEnable" name="IsPostedTo1CEnable" value="@Model.IsPostedTo1CEnable" />
+                @*@Html.CheckBox("IsPostedTo1C", Model.IsPostedTo1C, Model.IsPostedTo1CEnable ? null : (object)new { disabled = "disabled" }) *@
+                <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C) {<text>checked="checked"</text>} />
+                @Html.LabelFor(model => model.IsPostedTo1C)
+                @if (!Model.IsPostedTo1CEnable)
+                {
+                    <input type="hidden" id="IsPostedTo1CHidden" name="IsPostedTo1CHidden" value="@Model.IsPostedTo1C" />
+                }
+            </td>
+    </tr>
+    </table>
+    </div>
+    
+    <br />
+    <div class="comment-wrap">
+    <table style="width:100%">
+     <tr>
+        <td colspan="2">
+            <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+        </td>
+    </tr>
+    </table>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#BeginDate").datepicker();
+            $("#EndDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#Compensation").width("50px");
+            $("#Reason").width("350px");
+            setActiveMenuItem("userDismissal");
+        });    
+    function ValidateForm()
+    {
+        return true;
+    }
+    function SetApprovedAndValidateForm() {
+        $("#IsApproved").val('true');
+        return true;
+    }
+    function Delete() {
+        $("#IsDelete").val("true");
+        return true;
+    }
+    </script>
+}
+

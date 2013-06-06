@@ -17,25 +17,37 @@ namespace Reports.Presenters.UI.ViewModel
         public int Year { get; set; }
         public IList<IdNameDto> Years;
 
+        [Display(Name = "Структурное подразделение")]
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public bool DepartmentReadOnly { get; set; }
 
-        [Display(Name = "Дата")]
-        public DateTime Date { get; set; }
-        public IList<DateDto> Dates;
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
 
-        [Display(Name = "Значение")]
-        public int Status { get; set; }
-        public IList<IdNameDto> Statuses;
+        //[Display(Name = "Дата")]
+        //public DateTime Date { get; set; }
+        //public IList<DateDto> Dates;
 
-        [Required(ErrorMessageResourceName = "TimesheetListModel_Hours_Required",
-            ErrorMessageResourceType = typeof(Resources))]
-        [LocalizationDisplayName("TimesheetListModel_Hours_Required", typeof(Resources))]
-        //[Range(0.00, 24.00, ErrorMessage = "Часы должно быть от {1} до {2}")]
-        [Display(Name = "Часы")]
-        public float Hours { get; set; }
+        //[Display(Name = "Значение")]
+        //public int Status { get; set; }
+        //public IList<IdNameDto> Statuses;
 
-        public bool IsEditable { get; set; }
+        //[Required(ErrorMessageResourceName = "TimesheetListModel_Hours_Required",
+        //    ErrorMessageResourceType = typeof(Resources))]
+        //[LocalizationDisplayName("TimesheetListModel_Hours_Required", typeof(Resources))]
+        //[Display(Name = "Часы")]
+        //public float Hours { get; set; }
+
+        //public bool IsEditable { get; set; }
 
         [DataType("TimesheetDtoList")]
         public IList<TimesheetDto> TimesheetDtos { get; set; }
+
+        public int NumberOfPages { get; set; }
+        public int CurrentPage { get; set; }
+
+        public bool IsSaveVisible { get; set; }
+        public bool IsSaveNeed { get; set; }
     }
 }

@@ -7,6 +7,10 @@ namespace Reports.Core.Dto
     {
         //public int Id { get; set; }
         //public bool IsEditable { get; set; }
+        public int UserId { get; set; }
+        public bool IsHoursVisible  { get; set; }
+        public bool IsGraphicVisible { get; set; }
+        public bool IsGraphicEditable { get; set; }
         public string MonthAndYear { get; set; }
         public string UserNameAndCode { get; set; }
         //public int OwnerId { get; set; }
@@ -16,11 +20,16 @@ namespace Reports.Core.Dto
     }
     public class TimesheetDayDto
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public int Number { get; set; }
         //public int StatusId { get; set; }
         public string Status { get; set; }
         public string Hours { get; set; }
+        public bool isHoliday { get; set; }
+        public string Graphic { get; set; }
+        public bool isStatRecord { get; set; }
+
+        public string StatCode { get; set; }
     }
 
     public class RequestDto

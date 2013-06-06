@@ -40,14 +40,14 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult UserList(UserListModel model)
         {
-            CheckUserRole();
+            CheckUserRole(true);
             AdminBl.GetUserListModel(model);
             return View(model);
         }
         [HttpGet]
         public ActionResult UserEdit(int id)
         {
-            CheckUserRole();
+            CheckUserRole(true);
             UserEditModel model = new UserEditModel{Id = id};
             AdminBl.GetUserEditModel(model);
             return View(model);
@@ -57,7 +57,7 @@ namespace WebMvc.Controllers
         {
             if (!ValidateModel(model))
             {
-                AdminBl.SetStaticToModel(model);
+                AdminBl.SetStaticToModel(model,true);
                 return View(model);
             }
             AdminBl.SaveUser(model);
@@ -77,9 +77,9 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("ManagerId"))
                     ModelState.Remove("ManagerId");
                 model.ManagerId = 0;
-                if (ModelState.ContainsKey("PersonnelId"))
+                /*if (ModelState.ContainsKey("PersonnelId"))
                     ModelState.Remove("PersonnelId");
-                model.PersonnelId = 0;
+                model.PersonnelId = 0;*/
             }
             return View(model);
         }
@@ -87,7 +87,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Settings()
         {
-            CheckUserRole();
+            CheckUserRole(false);
             SettingsModel model = new SettingsModel();
             AdminBl.SetModel(model);
             return View(model);
@@ -95,7 +95,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Settings(SettingsModel model)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             if(!ValidateModel(model))
                 return View(model);
             AdminBl.SaveSettings(model);
@@ -145,7 +145,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult ActionsList(int type)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             ActionListModel model = new ActionListModel {Type = (ExportImportType)type};
             AdminBl.SetModel(model);
             ViewBag.Title = "Список " + (model.Type == ExportImportType.Import ? "загрузок" : "выгрузок"); 
@@ -154,7 +154,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult ActionsList(ActionListModel model)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             if (model.Type == ExportImportType.Import)
             {
                 AdminBl.ImportFile(model);
@@ -171,7 +171,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult AutoImport()
         {
-            CheckUserRole();
+            CheckUserRole(false);
             AutoImportModel model = new AutoImportModel();
             AdminBl.AutoImport(model);
             return View(model);
@@ -179,7 +179,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult AutoExport(string month)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             AutoImportModel model = new AutoImportModel();
             if (!ParseMonth(model, month))
                 return View(model); 
@@ -228,7 +228,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult DocumentTypeList()
         {
-            CheckUserRole();
+            CheckUserRole(false);
             DocumentTypeListModel model = new DocumentTypeListModel();
             AdminBl.SetModel(model);
             return View(model);
@@ -236,7 +236,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult DocumentSubTypeList(int typeId)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             DocumentSubtypeListModel model = new DocumentSubtypeListModel {DocumentTypeId = typeId};
             AdminBl.SetModel(model);
             return View(model);
@@ -244,7 +244,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult DocumentSubTypeList(DocumentSubtypeListModel model)
         {
-            CheckUserRole();
+            CheckUserRole(false);
             AdminBl.SetModel(model);
             return View(model);
         }
@@ -326,7 +326,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult InformationsList()
         {
-            CheckUserRole();
+            CheckUserRole(false);
             InformationListModel model = new InformationListModel();
             AdminBl.GetInformationListModel(model);
             return View(model);
@@ -375,12 +375,18 @@ namespace WebMvc.Controllers
 
         protected bool ValidateModel(UserEditModel model)
         {
-            CheckUserRole();
+            CheckUserRole(true);
             return ModelState.IsValid;
         }
-        protected void CheckUserRole()
+        protected void CheckUserRole(bool checkPersonnel)
         {
-            if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+            if(checkPersonnel)
+            {
+                if ((AuthenticationService.CurrentUser.UserRole != UserRole.Admin) &&
+                    (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager))
+                    throw new ArgumentException("Доступ к документу запрещен.");            
+            }
+            else if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
                 throw new ArgumentException("Доступ к документу запрещен.");            
         }
 
@@ -392,7 +398,7 @@ namespace WebMvc.Controllers
             string error;
             try
             {
-                CheckUserRole();
+                CheckUserRole(false);
                 DateTime deleteDate;
                 if (!DateTime.TryParse(date, out deleteDate))
                     error = "Неправильная дата";

@@ -1,0 +1,123 @@
+﻿@model Reports.Presenters.UI.ViewModel.AcceptRequestsModel
+@{
+    ViewBag.Title = "Контроль ввода заявок";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+     <tr>
+        <td>
+            @Html.ValidationSummary(false)
+        </td>
+    </tr>
+        <tr>
+            <td>
+                @*@Html.HiddenFor(m => m.ManagerId)
+                @Html.HiddenFor(m => m.IsEditable)
+*@              @Html.LabelFor(m => m.Month):
+                @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name"), new { onchange = "ChangeMonth();"}) 
+                @Html.LabelFor(m => m.Year):
+                @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"), new { onchange = "ChangeMonth();"})
+                <input type="hidden" id="AcceptDate" name="AcceptDate" value="@Model.AcceptDate" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="grid" style="width:100%">
+                    <tr>
+                        @if (Model.WeeksList != null && Model.WeeksList.Count > 0)
+                        {
+                            <td>
+                            </td>
+                            foreach (var week in Model.WeeksList)
+                            {
+                                <td>@week.Monday.ToString("dd MMM") - @week.Friday.ToString("dd MMM")</td>
+                            }
+                        }
+                    </tr>
+                    @if (Model.UsersList != null && Model.UsersList.Count > 0)
+                    {
+                        foreach (var user in Model.UsersList)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                @foreach (var dto in user.dtos)
+                                {
+                                    if(dto.IsHidden)
+                                    {
+                                        <td></td>
+                                    }
+                                    else if (dto.IsAccepted)
+                                    {
+                                        <td>Подтвержден</td>
+                                    }
+                                    else
+                                    {
+                                        if (!dto.IsEditable)
+                                        {
+                                            <td>Не подтвержден</td>
+                                        }
+                                        else
+                                        {
+                                            <td><input type="submit" value="Подтвердить" onclick="return Accept('@dto.Friday.ToShortDateString()');" /></td>
+                                        }
+                                    }
+                                }
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+  @*      <tr>
+        <td>
+            <hr style="width:100%"/>
+        </td>
+        </tr>
+        <tr>
+            @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
+            {
+                <td style="text-align:left">
+                    <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                    @for (int i = 1; i <= Model.NumberOfPages; i++)
+                    {
+                        if (i == Model.CurrentPage)
+                        {
+                            <text>@i</text>
+                        }
+                        else
+                        {    
+                            <a href="" onclick="return OnPageClick(@i);">@i</a>
+                        }
+                    }
+                </td>
+            }
+        </tr>
+*@    </table>
+}
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        setActiveMenuItem("userAccept");
+    });
+    function ChangeMonth() {
+        window.location.href = '@Url.Action("AcceptRequests", "UserRequest")?month=' + $("#Month").val() + '&year=' + $("#Year").val();
+    }
+    function Accept(acceptDate) {
+        $("#AcceptDate").val(acceptDate);
+        return true;
+    }
+//    function OnPageClick(pageNumber) {
+//        $("#CurrentPage").val(pageNumber);
+//        submitForm();
+//        return false;
+//    }
+//    function submitForm() {
+//        if (document.forms[0].onsubmit && !document.forms[0].onsubmit())
+//            return;
+//        document.forms[0].submit();
+//    }                                
+</script>
+
+

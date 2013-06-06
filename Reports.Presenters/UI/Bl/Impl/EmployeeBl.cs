@@ -5,6 +5,8 @@ using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Services;
+using Reports.Core.Utils;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -20,6 +22,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected ITimesheetDao timesheetDao;
         protected ITimesheetDayDao timesheetDayDao;
         protected IDocumentCommentDao documentCommentDao;
+        protected IWorkingGraphicDao workingGraphicDao;
+        protected IWorkingDaysConstantDao workingDaysConstantDao;
+        protected IWorkingGraphicTypeDao workingGraphicTypeDao;
+        protected IWorkingCalendarDao workingCalendarDao;
+
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
+        }
+
+        public int TimesheetPageSize
+        {
+            get { return ConfigurationService.TimesheetPageSize; }
+        }
 
         public IEmployeeDocumentTypeDao EmployeeDocumentTypeDao
         {
@@ -60,6 +78,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(timesheetDayDao); }
             set { timesheetDayDao = value; }
+        }
+        public IWorkingGraphicDao WorkingGraphicDao
+        {
+            get { return Validate.Dependency(workingGraphicDao); }
+            set { workingGraphicDao = value; }
+        }
+        public IWorkingGraphicTypeDao WorkingGraphicTypeDao
+        {
+            get { return Validate.Dependency(workingGraphicTypeDao); }
+            set { workingGraphicTypeDao = value; }
+        }
+        public IWorkingDaysConstantDao WorkingDaysConstantDao
+        {
+            get { return Validate.Dependency(workingDaysConstantDao); }
+            set { workingDaysConstantDao = value; }
+        }
+        public IWorkingCalendarDao WorkingCalendarDao
+        {
+            get { return Validate.Dependency(workingCalendarDao); }
+            set { workingCalendarDao = value; }
         }
 
         public EmployeeDocumentListModel GetModel(int? ownerId, bool? viewHeader,
@@ -213,7 +251,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsSaveAvailable = !model.IsApprovedByBudgetManager;
                     break;
                 case UserRole.PersonnelManager:
-                    if (owner.PersonnelManager.Id != CurrentUser.Id)
+                    if (owner.Personnels.Where(x => x.Id == CurrentUser.Id).FirstOrDefault() == null )
                         throw new ArgumentException("Доступ к документу запрещен.");
                     model.IsApprovedByPersonnelManagerEnable = !model.IsApprovedByPersonnelManager;
                     model.IsSaveAvailable = !model.IsApprovedByPersonnelManager;
@@ -308,7 +346,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else if (user.UserRole == UserRole.PersonnelManager)
                 {
-                    if (user.Id != owner.PersonnelManager.Id)
+                    if (owner.Personnels.Where(x => x.Id == user.Id).FirstOrDefault() == null)
                         throw new ArgumentException("Доступ к документу запрещен.");
                     if (doc.PersonnelManagerDateAccept.HasValue)
                     {
@@ -598,29 +636,122 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Timesheet List
         public void GetTimesheetListModel(TimesheetListModel model)
         {
-            //SetDaysToModel(model);
-            //SetTimesheets(model);
-            //SetControlsState(model);
             SetListboxes(model);
+            //SetupDepartment(model);
             SetTimesheetsInfo(model);
-            //model.TimesheetDtos = new List<TimesheetDto>();
+            //int timesheetsCount = model.TimesheetDtos.Count;
+            //int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
+            //int currentPage = model.CurrentPage;
+            //if (currentPage > numberOfPages)
+            //    currentPage = numberOfPages;
+            ////if (numberOfPages == 0)
+            ////{
+            ////    currentPage = 1;
+            ////    return new List<User>();
+            ////}
+            //if (currentPage == 0)
+            //    currentPage = 1;
+            //model.TimesheetDtos = model.TimesheetDtos
+            //    .Skip((currentPage - 1) * TimesheetPageSize)
+            //    .Take(TimesheetPageSize).ToList();
+            //model.CurrentPage = currentPage;
+            //model.NumberOfPages = numberOfPages;
+        }
+        public void SetupDepartment(TimesheetListModel model)
+        {
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
+            {
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                IdNameReadonlyDto dep = GetDepartmentDto(user);
+                model.DepartmentName = dep.Name;
+                model.DepartmentId = dep.Id;
+                model.DepartmentReadOnly = dep.IsReadOnly;
+            }
+        }
+        protected IList<DayRequestsDto> GetDayDtoList(int month, int year)
+        {
+            DateTime current = new DateTime(year, month, 1);
+            IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
+            for (int i = 0; i < 31; i++)
+            {
+                DayRequestsDto dto = new DayRequestsDto { Day = current };
+                if (current.Month != month)
+                    break;
+                dtoList.Add(dto);
+                current = current.AddDays(1);
+            }
+            return dtoList;
         }
         protected void SetTimesheetsInfo(TimesheetListModel model)
         {
             IUser user = AuthenticationService.CurrentUser;
-            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth(model.Month, model.Year, user.Id, user.UserRole);
+            Log.Debug("Before GetRequestsForMonth");
+
+            IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
+            IList<IdNameDtoWithDates> uDtoList =
+                UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,
+                        dayDtoList.First().Day, dayDtoList.Last().Day
+                        ,model.DepartmentId,model.UserName);
+            Log.Debug("After GetUsersForManagerWithDatePaged");
+            int userCount = uDtoList.Count;
+            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
+            int currentPage = model.CurrentPage;
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            if (currentPage == 0)
+                currentPage = 1;
+            uDtoList = uDtoList
+                .Skip((currentPage - 1) * TimesheetPageSize)
+                .Take(TimesheetPageSize).ToList();
+            model.CurrentPage = currentPage;
+            model.NumberOfPages = numberOfPages;
+            if (userCount == 0)
+            {
+                model.TimesheetDtos = new List<TimesheetDto>();
+                model.IsSaveVisible = false;
+                return;
+            }
+            IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
+
+            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays);
+            Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
                                         (current, dayRequestsDto) =>
                                         current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
                                             .ToList());
+            Log.Debug("After aggregate");
+            List<IdNameDto> userNameDtoList = new List<IdNameDto>();
+            foreach (int userId in allUserIds)
+            {
+                foreach (var dayRequestsDto in dtos)
+                {
+                    RequestDto dto = dayRequestsDto.Requests.Where(y => y.UserId == userId).FirstOrDefault();
+                    if(dto != null)
+                    {
+                        userNameDtoList.Add(new IdNameDto{Id = userId,Name = dto.UserName});
+                        break;
+                    }
+                }
+            }
+            userNameDtoList = userNameDtoList.OrderBy(x => x.Name).ToList();
+            allUserIds = userNameDtoList.ToList().ConvertAll(x => x.Id).ToList();
+            Log.Debug("After create ordered user dto list ");
             List<TimesheetDto> list = new List<TimesheetDto>();
+            //List<int> userIds = userNameDtoList.ConvertAll(x => x.Id);
+            IList<WorkingGraphic> wgList = WorkingGraphicDao.LoadForIdsList(allUserIds,
+                                                                            model.Month, model.Year);
+            IList<WorkingGraphicTypeDto>  wgtList = WorkingGraphicTypeDao.GetWorkingGraphicTypeDtoForUsers(allUserIds);
             foreach (int userId in allUserIds)
             {
                 //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
                 TimesheetDto dto = new TimesheetDto();
                 List<RequestDto> userDtoList = new List<RequestDto>();
                 List<TimesheetDayDto> userDayList = new List<TimesheetDayDto>();
+                IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
+
+                float wgHoursSum = 0;
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
@@ -632,20 +763,193 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                       (requestDto.TimesheetHours.HasValue
                                                            ? requestDto.TimesheetHours.Value.ToString()
                                                            : " ") + "/");
+                    float? wgHours; 
+                    WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
+                                                               x.Day == dayRequestsDto.Day).FirstOrDefault();
+                    wgHours = graphicEntity == null ?
+                        GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
+                        : graphicEntity.Hours;
+                    wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
+                    string graphic = string.Empty;
+                    if(wgHours.HasValue)
+                    {
+                         graphic = (int)wgHours.Value == wgHours.Value 
+                                ? ((int)wgHours.Value).ToString() 
+                                : wgHours.Value.ToString("0.00");
+                    }
                     userDayList.Add(new TimesheetDayDto
                                                  {
                                                      Number = dayRequestsDto.Day.Day,
+                                                     isHoliday = CoreUtils.IsDayHoliday(workDays,dayRequestsDto.Day),
+                                                     /*dayRequestsDto.Day.DayOfWeek == DayOfWeek.Sunday || 
+                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday*/
                                                      Status = status.Substring(0,status.Length -1),
                                                      Hours = hours.Substring(0, hours.Length - 1),
+                                                     Graphic = graphic,
+                                                     Id = graphicEntity == null?0:graphicEntity.Id,
                                                  });
                     userDtoList.AddRange(userList);
                 }
+                if (user.UserRole != UserRole.Employee && uDto != null)
+                {
+                    WorkingDaysConstant wdk = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+                    if (wdk == null)
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isStatRecord = true,
+                            isHoliday = false,
+                            Status = string.Empty,
+                            Hours = string.Empty,
+                            StatCode = "Б",
+                        });
+                    else
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isStatRecord = true,
+                            isHoliday = false,
+                            Status = wdk.Days.ToString(),
+                            Hours = wdk.Hours.ToString(),
+                            StatCode = "Б",
+                        });
+                    int sumDays = 0;
+                    int sum = 0;
+                    string graphic = null;
+                    for (int i = 0; i < 5; i++)
+                    {
+                      
+                        if(i == 0)
+                        {
+                            graphic = (int)wgHoursSum == wgHoursSum
+                               ? ((int)wgHoursSum).ToString()
+                               : wgHoursSum.ToString("0.00");
+                        }
+                        sum += uDto.userStats[i];
+                        sumDays += uDto.userStatsDays[i];
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            isStatRecord = true,
+                            Status = uDto.userStatsDays[i].ToString(),
+                            Hours = uDto.userStats[i].ToString(),
+                            StatCode = GetStatCodeName(i),
+                            Graphic = i == 0?graphic:null,
+                        });
+                    }
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = sumDays.ToString(),
+                        Hours = sum.ToString(),
+                        StatCode = "Всего",
+                        Graphic = graphic,
+                    });
+                    /*userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = "Дней",
+                        Hours = "График/ ч.",
+                        StatCode = "Инф.",
+                        Graphic = "Факт/ ч."
+                    });*/
+                }
                 dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
                 dto.UserNameAndCode = userDtoList.First().UserName;
+                dto.UserId = userId;
                 dto.Days = userDayList;
+                dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
+                dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
+                dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
                 list.Add(dto);
             }
+            Log.Debug("After foreach");
             model.TimesheetDtos = list;
+            model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
+
+        }
+        protected string GetStatCodeName(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return "Ф";
+                case 1:
+                    return "О";
+                case 2:
+                    return "Б/л";
+                case 3:
+                    return "К";
+                case 4:
+                    return "Пр";
+                default:
+                    return string.Empty;
+            }
+        }
+        protected float? GetDefaultGraphicsForUser(IList<WorkingGraphicTypeDto> wgtList, IList<WorkingCalendar> workDays, int userId, DateTime day)
+        {
+            /*if (day.DayOfWeek == DayOfWeek.Sunday ||
+                day.DayOfWeek == DayOfWeek.Saturday)
+                return null;*/
+            int? workHours = CoreUtils.GetHoursForDay(workDays, day);
+            if (!workHours.HasValue)
+                return null;
+            if(wgtList.Count == 0)
+                return null;
+           WorkingGraphicTypeDto dto = wgtList.Where(x => x.UserId == userId)
+                                        .FirstOrDefault();
+           if (dto == null)
+               return null;
+            return dto.FillDays.HasValue && dto.FillDays.Value? workHours.Value: new float?();
+        }
+        public void SaveGraphicsRecord(TimesheetListModel model)
+        {
+            Log.Debug("Before save WorkingGraphic records.");
+            List<int> userIds = model.TimesheetDtos.ToList().ConvertAll(x => x.UserId);
+            IList<WorkingGraphic> list = WorkingGraphicDao.LoadForIdsList(userIds,
+                                                          model.Month, model.Year);
+            foreach (TimesheetDto dto in model.TimesheetDtos)
+            {
+                foreach (TimesheetDayDto day in dto.Days)
+                {
+                    if (day.isStatRecord)
+                        continue;
+                    float? graphicHours = null;
+                    if (!string.IsNullOrEmpty(day.Graphic))
+                    {
+                        double value;
+                        if (double.TryParse(day.Graphic, out value))
+                            graphicHours = (float) value;
+                        else
+                            Log.WarnFormat("Cannot parse day.Graphic {0}", day.Graphic);
+                    }
+                    WorkingGraphic entity;
+                    if(day.Id == 0)
+                    {
+                        entity = new WorkingGraphic
+                        {
+                            Day = new DateTime(model.Year, model.Month, day.Number),
+                            Hours = graphicHours,
+                            UserId = dto.UserId,
+                        };
+                    }
+                    else
+                    {
+                        entity = list.Where(x => x.Id == day.Id).FirstOrDefault();
+                        if(entity == null)
+                            throw new ArgumentException(string.Format("Не могу найти запись о рабочем графике с Id {0}",day.Id));
+                        entity.Hours = graphicHours;
+                    }
+                    WorkingGraphicDao.Save(entity);
+                }
+                WorkingGraphicDao.Flush();
+            }
+            Log.Debug("After save WorkingGraphic records.");
         }
         //public void SetTimesheetsHours(TimesheetListModel model)
         //{
@@ -673,39 +977,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    SetListboxes(model);
         //    //SetDaysToListbox(model);
         //}
-        protected static string GetMonthName(int month)
-        {
-            switch(month)
-            {
-                case 1:
-                    return "Январь";
-                case 2:
-                    return "Февраль";
-                case 3:
-                    return "Март";
-                case 4:
-                    return "Апрель";
-                case 5:
-                    return "Май";
-                case 6:
-                    return "Июнь";
-                case 7:
-                    return "Июль";
-                case 8:
-                    return "Август";
-                case 9:
-                    return "Сентябрь";
-                case 10:
-                    return "Октябрь";
-                case 11:
-                    return "Ноябрь";
-                case 12:
-                    return "Декабрь";
-                default:
-                    throw new ArgumentException(string.Format("Неизвестный месяц {0}",month));
-            }
-        }
-        protected void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
+        
+        public void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
         {
             model.Monthes = GetMonthesList();
             model.Years = GetYearsList();
@@ -724,31 +997,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             //        x.ToString("MMMM") + " " + x.Year.ToString(),
             //});
             //model.Monthes = dtoMonth;
-        }
-        protected IList<IdNameDto> GetYearsList()
-        {
-            IList<IdNameDto> list = new List<IdNameDto>();
-            for(int i=2012;i<2015;i++)
-                list.Add(new IdNameDto(i,i.ToString()));
-            return list;
-        }
-        protected IList<IdNameDto> GetMonthesList()
-        {
-            return new List<IdNameDto>
-                       {
-                           new IdNameDto(1,"Январь"),
-                           new IdNameDto(2,"Февраль"),
-                           new IdNameDto(3,"Март"),
-                           new IdNameDto(4,"Апрель"),
-                           new IdNameDto(5,"Май"),
-                           new IdNameDto(6,"Июнь"),
-                           new IdNameDto(7,"Июль"),
-                           new IdNameDto(8,"Август"),
-                           new IdNameDto(9,"Сентябрь"),
-                           new IdNameDto(10,"Октябрь"),
-                           new IdNameDto(11,"Ноябрь"),
-                           new IdNameDto(12,"Декабрь"),
-                       };
         }
         //protected void SetDaysToListbox(TimesheetListModel model)
         //{

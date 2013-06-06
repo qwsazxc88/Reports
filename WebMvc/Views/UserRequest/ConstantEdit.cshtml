@@ -1,0 +1,77 @@
+﻿@model Reports.Presenters.UI.ViewModel.ConstantEditModel
+@{
+    ViewBag.Title = "Константа";
+}
+
+@using (Html.BeginForm())
+{
+    
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+            </td>
+    </tr>
+    <tr>
+        <td style="width:150px">
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="TS" name="TS" value="@Model.TS" />
+            <input type="hidden" id="Year" name="Year" value="@Model.Year" />
+            @Html.LabelFor(m => m.Year):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Year)
+        </td>
+    </tr>
+    <tr>
+            <td>
+                @Html.LabelFor(m => m.Month):
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.Month, new SelectList(Model.Months, "Id", "Name"), new { onchange = "ChangeMonth();"})
+            </td>
+    </tr> 
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Days):
+        </td>
+        <td>
+            <input type="text" id="Days" name="Days" value="@Model.Days" />
+            @*@Html.TextBoxFor(model => model.Days) *@
+        </td>
+    </tr>   
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Hours):
+        </td>
+        <td>
+            <input type="text" id="Hours" name="Hours" value="@Model.Hours" />
+            @*@Html.TextBoxFor(model => model.Hours) *@
+        </td>
+    </tr>   
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Записать" onclick="return ValidateForm();" />
+        </td>
+    </tr>
+    </table>
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        setActiveMenuItem("constantList");
+        $("#Days").width("50px");
+        $("#Hours").width("50px");
+    });
+    function ChangeMonth() {
+        $("#Id").val("0");
+        window.location.href = '@Url.Action("ConstantEdit", "UserRequest")?month=' + $("#Month").val() + '&year=' + $("#Year").val();
+    }
+    function ValidateForm() {
+        return true;
+    }
+</script>
+
+
+

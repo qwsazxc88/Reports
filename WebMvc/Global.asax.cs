@@ -3,12 +3,13 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Web;
+using System.Web.Configuration;
+using System.Web.Management;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using Reports.CommonWeb;
 using Reports.Core;
-using Reports.Core.Dao;
 using Reports.Presenters;
 using Reports.Presenters.Services;
 using Reports.Presenters.Services.Impl;
@@ -24,6 +25,64 @@ namespace WebMvc
         public const string AuthorizedErrorPageUrl = "~/ErrorPage.aspx";
         public const string UnauthorizedErrorPageUrl = "~/UnautorizedErrorPage.aspx";
 
+        public override void Init()
+        {
+            base.Init();
+            Error += ErrorHandler;
+        }
+        private void ErrorHandler(object sender, EventArgs e)
+        {
+            var ex = Server.GetLastError().InnerException as HttpException ?? 
+                     Server.GetLastError() as HttpException;
+            if (ex != null && ex.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge)
+            {
+                HttpRuntimeSection runTime = (HttpRuntimeSection)WebConfigurationManager.GetSection("system.web/httpRuntime");
+                int maxRequestLength = (runTime.MaxRequestLength - 100) * 1024;
+                // или другой свой код обработки
+                HttpContext context = ((HttpApplication)sender).Context;
+                if (context.Request.ContentLength > maxRequestLength)
+                {
+                    IServiceProvider provider = context;
+                    HttpWorkerRequest workerRequest =
+                        (HttpWorkerRequest) provider.GetService(typeof (HttpWorkerRequest));
+
+                    // Check if body contains data
+                    if (workerRequest.HasEntityBody())
+                    {
+                        // get the total body length
+                        int requestLength = workerRequest.GetTotalEntityBodyLength();
+
+                        // Get the initial bytes loaded
+                        int initialBytes = 0;
+
+                        if (workerRequest.GetPreloadedEntityBody() != null)
+                            initialBytes = workerRequest.GetPreloadedEntityBody().Length;
+
+                        if (!workerRequest.IsEntireEntityBodyIsPreloaded())
+                        {
+                            byte[] buffer = new byte[512000];
+
+                            // Set the received bytes to initial bytes before start reading
+                            int receivedBytes = initialBytes;
+
+                            while (requestLength - receivedBytes >= initialBytes)
+                            {
+                                // Read another set of bytes
+                                initialBytes = workerRequest.ReadEntityBody(buffer, buffer.Length);
+
+                                // Update the received bytes
+                                receivedBytes += initialBytes;
+                            }
+                            //initialBytes = 
+                            workerRequest.ReadEntityBody(buffer, requestLength - receivedBytes);
+                        }
+                    }
+                }
+                context.Server.ClearError();
+                context.Response.Redirect("~/FileSizeTooLarge.htm", true);
+            }
+        }
+
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
@@ -32,6 +91,12 @@ namespace WebMvc
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            routes.MapRoute(
+                "AutoComplete", // Route name
+                "AutoComplete/{action}", // URL with parameters
+                new { controller = "AutoComplete", action = "Countries" } // Parameter defaults
+            );
 
             routes.MapRoute(
                 "Default", // Route name
@@ -167,51 +232,28 @@ namespace WebMvc
         {
             Exception ex = Server.GetLastError();
             log4net.LogManager.GetLogger(GetType()).Error("Error occured: ", ex);
-            if (ex != null)
+            /*if (ex != null)
             {
-                if (ex is HttpUnhandledException /*&& ex.InnerException != null*/)
+                if (ex is HttpUnhandledException)
                     ex = ex.GetBaseException();
-                Guid guid = Guid.NewGuid();
+                //Guid guid = Guid.NewGuid();
                 try
                 {
-                    HttpContext.Current.Cache.Insert(guid.ToString(), ex);
+                    HttpException httpEx = ex as HttpException;
+                    //HttpContext.Current.Cache.Insert(guid.ToString(), ex);
+                    if (httpEx != null && ((httpEx.GetHttpCode() == 500 || httpEx.GetHttpCode() == 400) 
+                        && httpEx.WebEventCode == WebEventCodes.RuntimeErrorPostTooLarge))
+                    {
+                        Server.ClearError();
+                        Server.Transfer("~/FileSizeTooLarge.htm",false);
+                        //Response.Redirect("~/FileSizeTooLarge.htm", true);
+                    }
                 }
                 catch (Exception ex1)
                 {
                     log4net.LogManager.GetLogger(GetType()).Error("exception while set exception to session: ", ex1);
                 }
-                //try
-                //{
-                //    IAuthenticationService service = Ioc.Resolve<IAuthenticationService>();
-                //    if (service != null)
-                //    {
-                //        User user = service.CurrentUser;
-                //        if (user != null)
-                //        {
-                //            log4net.LogManager.GetLogger(GetType()).Error(string.Format("User: " + user.Id));
-                //            Response.Redirect(string.Format("{0}?{1}={2}", AuthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                            guid));
-                //        }
-                //        else
-                //            Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                            guid));
-                //    }
-                //    else
-                //        Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                        guid));
-                //}
-                //catch (Exception ex1)
-                //{
-                //    log4net.LogManager.GetLogger(GetType()).Error("Error while show error page: ", ex1);
-                //    Response.Redirect(string.Format("{0}?{1}={2}", UnauthorizedErrorPageUrl, CommonConstants.ErrorPageExceptionKey,
-                //                                    guid));
-                //}
-                //try
-                //{
-                //    //TODO: Send errorString by E-Mail.
-                //}
-                //catch (Exception) { }
-            }
+            }*/
         }
         protected void SetCulture()
         {

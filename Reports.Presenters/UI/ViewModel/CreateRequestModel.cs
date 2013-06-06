@@ -13,6 +13,12 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsUserVisible { get; set; }
 
+        [Display(Name = "Структурное подразделение")]
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+        public bool DepartmentReadOnly { get; set; }
+
+
         [Display(Name = "За пользователя")]
         public int UserId { get; set; }
         public IList<IdNameDto> Users;

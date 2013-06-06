@@ -1,0 +1,10 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="EmploymentType" dynamic-update="true" table="EmploymentType">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+	<property name="Code" length="16"  not-null="true"/>
+    <property name="Name" length="128" not-null="true"/>
+  </class>
+</hibernate-mapping>

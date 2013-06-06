@@ -25,6 +25,7 @@ namespace Reports.Presenters.UI.ViewModel
         ErrorMessageResourceType = typeof(Resources))]
         [ValidatePasswordLength]
         public string Password { get; set; }
+        public bool IsPasswordHide { get; set; }
         [Email]
         [Display(Name = "Адрес эл. почты")]
         public string Email { get; set; }
@@ -38,14 +39,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int ManagerId { get; set; }
         public IList<IdNameDto> Managers;
         public bool IsManagerEditable { get; set; }
-        [Display(Name = "Кадровик")]
-        public int PersonnelId { get; set; }
-        public IList<IdNameDto> Personnels;
+        [Display(Name = "Кадровик(и)")]
+        public string PersonnelName { get; set; }
+        //public int PersonnelId { get; set; }
+        //public IList<IdNameDto> Personnels;
         public bool IsPersonnelEditable { get; set; }
         [Display(Name = "Активный")]
         public bool IsActive { get; set; }
         public bool IsActiveEditable { get; set; }
         public bool IsActiveHidden { get; set; }
+
+        public bool IsNew { get; set; }
+        //public bool IsNewHidden { get; set; }
 
         public string Error { get; set; }
         public bool NeedToReload { get; set; }

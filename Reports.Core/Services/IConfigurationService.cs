@@ -6,6 +6,8 @@ namespace Reports.Core.Services
     {
         int UsersDocumentsDelayInDays { get; }
         int PageSize { get; }
+        int SicklistTypeIdBabyMinding { get; }
+        int TimesheetPageSize { get; }
 		//string ImageStorageDir { get; }
 		//string MailNotificationSubject { get; }
 		//string MailNoticeSubject { get; }

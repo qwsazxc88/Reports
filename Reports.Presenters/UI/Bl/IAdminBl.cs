@@ -7,7 +7,7 @@ namespace Reports.Presenters.UI.Bl
         void GetUserListModel(UserListModel model);
         void GetUserEditModel(UserEditModel model);
         void SaveUser(UserEditModel model);
-        void SetStaticToModel(UserEditModel model);
+        void SetStaticToModel(UserEditModel model,bool setStatic);
         void SetModel(DocumentTypeListModel model);
 
         void GetEditTypeModel(EditTypeModel model);

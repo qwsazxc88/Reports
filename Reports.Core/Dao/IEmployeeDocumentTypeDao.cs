@@ -5,7 +5,7 @@ namespace Reports.Core.Dao
 {
     public interface IEmployeeDocumentTypeDao : IDao<EmployeeDocumentType>
     {
-        IList<EmployeeDocumentType> LoadAllSorted();
+        //IList<EmployeeDocumentType> LoadAllSorted();
         IList<EmployeeDocumentSubType> LoadAllSubtype();
         bool IsTypeWithNameAndOtherIdExists(string name, int id);
 

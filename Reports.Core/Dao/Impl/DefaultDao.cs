@@ -5,10 +5,12 @@ using System.Reflection;
 using log4net;
 using NHibernate;
 using System.Collections;
+using NHibernate.Criterion;
+using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
-using Reports.Core.Utils;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -72,6 +74,12 @@ namespace Reports.Core.Dao.Impl
             Session.Save(entity);
             Session.Flush();
         }
+        public virtual TEntity SaveFlush(TEntity entity)
+        {
+            TEntity ret = (TEntity)Session.Save(entity);
+            Session.Flush();
+            return ret;
+        }
         public virtual TEntity MergeAndFlush(TEntity entity)
         {
             TEntity result = (TEntity)Session.Merge(entity);
@@ -86,6 +94,11 @@ namespace Reports.Core.Dao.Impl
 
         public virtual void Delete(TEntity entity)
         {
+            Session.Delete(entity);
+        }
+        public virtual void Delete(TIdentifier entityId)
+        {
+            TEntity entity = Session.Load<TEntity>(entityId);
             Session.Delete(entity);
         }
         public virtual void Flush()
@@ -119,8 +132,50 @@ namespace Reports.Core.Dao.Impl
         where TEntity : IEntity<int>
     {
         protected const string ObjectPropertyFormat = "{0}.{1}";
+        protected const string DeleteRequestText = "Заявка отклонена";
+
+        protected const string sqlSelectForList =
+                                @"select v.Id as Id,
+                                u.Id as UserId,
+                                '{3}' as Name,
+                                {2} as Date,  
+                                {5} as BeginDate,  
+                                {6} as EndDate,  
+                                v.Number as Number,
+                                u.Name as UserName,
+                                t.Name as RequestType,
+                                case when v.SendTo1C is not null then 'Выгружено в 1с' 
+                                     when v.DeleteDate is not null then '{0}'
+                                     when v.PersonnelManagerDateAccept is not null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Согласовано кадровиком'
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено кадровику'    
+                                    when  -- v.PersonnelManagerDateAccept is null and 
+                                          v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено руководителю'    
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is null 
+                                          then 'Черновик сотрудника'    
+                                    else ''
+                                end as RequestStatus        
+                                from {4} v
+                                left join {1} t on v.TypeId = t.Id
+                                inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
+        }
+
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
         }
 
         public TEntity Load(string id)
@@ -142,6 +197,431 @@ namespace Reports.Core.Dao.Impl
                 return FindById(entityId);
             return default(TEntity);
         }
+        public IList<TEntity> LoadAll()
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(TEntity));
+            //criteria.AddOrder(new Order("Name", true));
+            return criteria.List<TEntity>();
+        }
+        public virtual IList<TEntity> LoadAllSorted()
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(TEntity));
+            criteria.AddOrder(new Order("Name", true));
+            return criteria.List<TEntity>();
+        }
+        public virtual string GetWhereForUserRole(UserRole role,int userId)
+        {
+            switch (role)
+            {
+                case UserRole.Employee:
+                    return string.Format(" u.Id = {0} ", userId);
+                case UserRole.Manager:
+                    return string.Format(" u.ManagerId = {0} ", userId);
+                case UserRole.PersonnelManager:
+                    return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
+                case UserRole.Inspector:
+                    return string.Format(" exists ( select * from InspectorToUser iu where iu.InspectorId = {0} and u.Id = iu.UserId ) ", userId);
+                case UserRole.Chief:
+                    return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
+                case UserRole.OutsourcingManager:
+                    return string.Empty;
+                default:
+                    throw new ArgumentException(string.Format("Invalid user role {0}",role));
+            }
+        }
+        public virtual string GetDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[CreateDate] < :endDate ";
+            }
+            return whereString;
+        }
+        public virtual void AddDatesToQuery( IQuery query,DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+                query.SetDateTime("beginDate", beginDate.Value);
+            if (endDate.HasValue)
+                query.SetDateTime("endDate", endDate.Value.AddDays(1));
+        }
+
+        public virtual string GetPositionWhere(string whereString, int positionId)
+        {
+            if (positionId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("u.[PositionId] = {0} ",positionId);
+            }
+            return whereString;
+        }
+        public virtual string GetTypeWhere(string whereString, int typeId)
+        {
+            if (typeId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format("v.[TypeId] = {0} ",typeId);
+            }
+            return whereString;
+        }
+        public virtual string GetDepartmentWhere(string whereString, int departmentId)
+        {
+            if (departmentId != 0)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += string.Format(@"exists 
+                    (select d1.ID from dbo.Department d
+                     inner join dbo.Department d1 on d1.Path like d.Path +'%'
+                     and u.DepartmentID = d1.ID and d1.ItemLevel = 7 
+                     and d.Id = {0}) "
+                    , departmentId);
+            }
+            return whereString;
+        }
+        public virtual string GetStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    case 1:
+                        statusWhere =
+                            @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
+                        break;
+                    case 2:
+                        statusWhere = @"UserDateAccept is not null";
+                        break;
+                    case 3:
+                        statusWhere = @"UserDateAccept is null";
+                        break;
+                    case 4:
+                        statusWhere = @"ManagerDateAccept is not null";
+                        break;
+                    case 5:
+                        statusWhere = @"ManagerDateAccept is null";
+                        break;
+                    case 6:
+                        statusWhere = @"PersonnelManagerDateAccept is not null";
+                        break;
+                    case 7:
+                        statusWhere = @"PersonnelManagerDateAccept is null";
+                        break;
+                    case 8:
+                        statusWhere =
+                            @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
+                        break;
+                    case 9:
+                        statusWhere = @"SendTo1C is not null";
+                        break;
+                    case 10:
+                        statusWhere = @"[DeleteDate] is not null";
+                        break;
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                if (statusId != 10)
+                    statusWhere += " and DeleteDate is null ";
+                if (statusId != 9)
+                    statusWhere += " and SendTo1C is null ";
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere;
+                
+
+                return whereString;
+            }
+            return whereString;
+        }
+        public virtual string GetSqlQueryOrdered(string sqlQuery, string whereString,
+            int sortedBy,
+            bool? sortDescending)
+        {
+            if (!string.IsNullOrEmpty(whereString))
+                sqlQuery += @" where " + whereString;
+            if (!sortDescending.HasValue)
+                return sqlQuery;
+            switch (sortedBy)
+            {
+                case 0:
+                    return sqlQuery;
+                case 1:
+                    sqlQuery += @" order by Name";
+                    break;
+                case 2:
+                    sqlQuery += @" order by UserName";
+                    break;
+                case 3:
+                    sqlQuery += @" order by Date";
+                    break;
+                case 4:
+                    sqlQuery += @" order by RequestType";
+                    break;
+                case 5:
+                    sqlQuery += @" order by RequestStatus";
+                    break;
+                case 6:
+                    sqlQuery += @" order by Number";
+                    break;
+                case 7:
+                    sqlQuery += @" order by BeginDate";
+                    break;
+                case 8:
+                    sqlQuery += @" order by EndDate";
+                    break;
+            }
+            if (sortDescending.Value)
+                sqlQuery += " DESC ";
+            else
+                sqlQuery += " ASC ";
+            //sqlQuery += @" order by Date DESC,Name ";
+            return sqlQuery;
+        }
+        public virtual IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String);
+        }
+
+
+
+        public virtual IList<VacationDto> GetDefaultDocuments(
+                                int userId,
+                                UserRole role,
+                                int departmentId,
+                                int positionId,
+                                int typeId,
+                                int statusId,
+                                DateTime? beginDate,
+                                DateTime? endDate,
+                                string sqlQuery,
+                                int sortedBy,
+                                bool? sortDescending
+            )
+        {
+            string whereString = GetWhereForUserRole(role, userId);
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,sortedBy,sortDescending);
+
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+        }
+        protected int GetRequestsCountForTypeOneDay(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
+                int userId, UserRole userRole)
+        {
+            string sqlQuery = string.Format(@"select count(Id) ");
+            switch (type)
+            {
+                case RequestTypeEnum.HolidayWork:
+                    sqlQuery += @" from [dbo].[HolidayWork] v ";
+                    break;
+                case RequestTypeEnum.TimesheetCorrection:
+                    sqlQuery += @" from [dbo].[TimesheetCorrection] v ";
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип заявки {0}", type));
+
+            }
+            sqlQuery += string.Format(@" where 
+                          v.{0} between :beginDate and :endDate
+                          and v.DeleteDate is null ",
+                          type == RequestTypeEnum.HolidayWork ? "WorkDate" : "EventDate");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                Session.CreateSQLQuery(sqlQuery)
+                , beginDate
+                , endDate, userId);
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+
+        protected virtual int GetRequestsCountForDismissal(DateTime endDate,
+            int userId, UserRole userRole)
+        {
+            string sqlQuery =
+                string.Format(@"select count(Id)
+                         from dbo.Dismissal v");
+            sqlQuery += string.Format(@" where 
+                          v.EndDate <= :endDate
+                          and v.DeleteDate is null");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                Session.CreateSQLQuery(sqlQuery)
+                , new DateTime?()
+                , endDate, userId);
+
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+        protected virtual int GetRequestsCountForEmployment(DateTime beginDate, DateTime endDate,
+        int userId, UserRole userRole)
+        {
+            string sqlQuery =
+                string.Format(@"select count(Id)
+                         from dbo.Employment v");
+            sqlQuery += string.Format(@" where 
+                          v.BeginDate between :beginDate and :endDate
+                          and v.DeleteDate is null ");
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                            Session.CreateSQLQuery(sqlQuery)
+                            , beginDate
+                            , endDate, userId);
+            //IQuery query = Session.CreateSQLQuery(sqlQuery).
+            //   AddScalar("BeginDate", NHibernateUtil.DateTime).
+            //   AddScalar("EndDate", NHibernateUtil.DateTime).
+            //   SetDateTime("beginDate", beginDate).
+            //   SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+
+        protected virtual int GetRequestsCountForType(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
+                int userId, UserRole userRole,int vacationId)
+        {
+            string sqlQuery =
+                @"select count(Id)";
+            switch (type)
+            {
+                case RequestTypeEnum.Vacation:
+                    sqlQuery += @" from [dbo].[Vacation] v ";
+                    break;
+                case RequestTypeEnum.Absence:
+                    sqlQuery += @" from [dbo].[Absence] v ";
+                    break;
+                case RequestTypeEnum.Sicklist:
+                    sqlQuery += @" from [dbo].[Sicklist] v ";
+                    break;
+                case RequestTypeEnum.Mission:
+                    sqlQuery += @" from [dbo].[Mission] v ";
+                    break;
+
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип заявки {0}", type));
+
+            }
+            sqlQuery += @" where ((v.BeginDate between :beginDate and :endDate) or
+                                 (v.EndDate between :beginDate and :endDate) or 
+                                 (:beginDate between v.BeginDate and v.EndDate) or
+                                 (:endDate between v.BeginDate and v.EndDate))
+                          and v.DeleteDate is null";
+            if (type == RequestTypeEnum.Vacation)
+                sqlQuery += string.Format(" and v.Id != {0} ",vacationId);
+            switch (userRole)
+            {
+                case UserRole.Employee:
+                    sqlQuery += " and v.UserId = :userId ";
+                    break;
+                //case UserRole.Manager:
+                //    sqlQuery += " and u.ManagerId = :userId ";
+                //    break;
+                //case UserRole.PersonnelManager:
+                //    sqlQuery += " and u.PersonnelManagerId = :userId ";
+                //    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}", userRole));
+            }
+            IQuery query = AddDatesAndUserIdToQuery(
+                    Session.CreateSQLQuery(sqlQuery)
+                    ,beginDate
+                    ,endDate,userId);
+               //AddScalar("BeginDate", NHibernateUtil.DateTime).
+               //AddScalar("EndDate", NHibernateUtil.DateTime).
+               //SetDateTime("beginDate", beginDate).
+               //SetDateTime("endDate", endDate);
+            return query.UniqueResult<int>();
+        }
+        protected virtual IQuery AddDatesAndUserIdToQuery(ISQLQuery query, DateTime? beginDate,
+                            DateTime endDate,int userId)
+        {
+                IQuery q = query.
+                      SetDateTime("endDate", endDate).
+                      SetInt32("userId", userId);
+                return !beginDate.HasValue 
+                    ? q 
+                    : q.SetDateTime("beginDate", beginDate.Value);
+        }
+
+
+        
+
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{
 		//    Validate.NotNull(type,"type"); 

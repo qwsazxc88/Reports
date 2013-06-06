@@ -7,6 +7,7 @@
     <!--<property name="IsAdministrator" not-null="true" />-->
     <property name="IsFirstTimeLogin" not-null="true" />
     <property name="IsActive" not-null="true" />
+    <property name="IsNew" not-null="true" />
     <property name="Login" length="64" not-null="true" unique="true"/>
     <property name="_password" length="64" column="Password" not-null="false" access="field"/>
 	<property name="Code" length="32" not-null="false"/>
@@ -24,11 +25,21 @@
 	<property name="Birthday" not-null="false"/>-->
 	<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>
 	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>
-	<many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_User_PersonnelManager" index="IX_User_PersonnelManager_Id"  not-null="false"/>
+	<!--<many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_User_PersonnelManager" index="IX_User_PersonnelManager_Id"  not-null="false"/>-->
+	<bag name="Personnels" lazy="true" table="UserToPersonnel" cascade="all">
+		<key column="UserId" foreign-key="FK_UserToPersonnel_User"/>
+		<many-to-many class="User" column="PersonnelId" foreign-key="FK_UserToPersonnel_Personnel"/>
+	</bag>
   <many-to-one name="Organization" class="Organization" column="OrganizationId" foreign-key="FK_User_Organization" index="IX_User_Organization_Id"  not-null="false"/>
   <!--<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_User_Department" index="IX_User_Department_Id"  not-null="false"/>-->
   <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_User_Position" index="IX_User_Position_Id"  not-null="false"/>
+  <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_User_Department" index="IX_User_Department_Id"  not-null="false"/>
 	<!--<many-to-one name="BudgetManager" class="User" column="BudgetManagerId" foreign-key="FK_User_BudgetManager" index="IX_User_BudgetManager_Id"  not-null="false"/>
 	<many-to-one name="OutsourcingManager" class="User" column="OutsourcingManagerId" foreign-key="FK_User_OutsourcingManager" index="IX_User_OutsourcingManager_Id"  not-null="false"/>-->
+
+	<bag name="AcceptRequests" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<key column="UserId" foreign-key="FK_AcceptRequestDate_User"/>
+		<one-to-many class="AcceptRequestDate"/>
+	</bag>  
   </class>
 </hibernate-mapping>

@@ -1,0 +1,38 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Dismissal">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<property name="Id_1C" length="50" not-null="true"/>-->
+    <!--<property name="ReportType" not-null="true" />-->
+    <!--<property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>-->
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <!--<property name="BeginDate" not-null="true"/>-->
+    <property name="EndDate" not-null="true"/>
+    <!--<property name="DaysCount"  not-null="true"/>-->
+    
+    <property name="Number"  not-null="true"/>
+	
+	<many-to-one name="Type" class="DismissalType" column="TypeId" foreign-key="FK_Dismissal_DismissalType" index="Dismissal_DismissalType"  not-null="false"/>
+  <!--<many-to-one name="CompensationType" class="DismissalCompensationType" column="CompensationTypeId" foreign-key="FK_Dismissal_DismissalCompensationType" index="Dismissal_DismissalCompensationType"  not-null="false"/>-->
+  <property name="Compensation" precision="19" scale="2" not-null="false"/>
+  <property name="Reason"   length="256" not-null="false"/>
+	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_Dismissal_User" index="IX_Dismissal_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Dismissal_CreatorUser" index="IX_Dismissal_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+    <property name="DeleteDate" not-null="false"/>
+
+  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>
+
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="DismissalId" foreign-key="FK_DismissalComment_Dismissal"/>
+    <one-to-many class="DismissalComment"/>
+  </bag>
+	</class>
+</hibernate-mapping>

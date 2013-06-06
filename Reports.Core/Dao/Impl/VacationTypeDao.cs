@@ -17,12 +17,12 @@ namespace Reports.Core.Dao.Impl
 
         #region IVacationTypeDao Members
 
-        public IList<VacationType> LoadAllSorted()
-        {
-            ICriteria criteria = Session.CreateCriteria(typeof (VacationType));
-            criteria.AddOrder(new Order(NameFieldName, true));
-            return criteria.List<VacationType>();
-        }
+        //public IList<VacationType> LoadAllSorted()
+        //{
+        //    ICriteria criteria = Session.CreateCriteria(typeof (VacationType));
+        //    criteria.AddOrder(new Order(NameFieldName, true));
+        //    return criteria.List<VacationType>();
+        //}
 
         #endregion
     }

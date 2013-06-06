@@ -256,35 +256,57 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ActionResult TimesheetList(int managerId,int? month,int? year)
+        public ActionResult TimesheetList(int managerId, int? month, int? year
+            /*, int? currentPage, int? departmentId, string userName,
+            string departmentName*/)
         {
             if (!month.HasValue)
                 month = DateTime.Today.Month;
             if(!year.HasValue)
                 year = DateTime.Today.Year;
             TimesheetListModel model = new TimesheetListModel
-                                           {
-                                               ManagerId = managerId,
-                                               Month = month.Value,
-                                               Year = year.Value,
-                                               IsEditable = false,
-                                           };
+                {
+                    ManagerId = managerId,
+                    Month = month.Value,
+                    Year = year.Value,
+                    //DepartmentId = departmentId.HasValue? departmentId.Value:0,
+                    //DepartmentName = departmentName,
+                    //CurrentPage = currentPage.HasValue?currentPage.Value:0,
+                    //UserName = userName,
+                    //IsEditable = false,
+                };
+            EmployeeBl.SetupDepartment(model);
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
         }
         [HttpPost]
         public ActionResult TimesheetList(TimesheetListModel model)
         {
-            if(!ValidateModel(model))
+            if(model.IsSaveNeed)
             {
-                EmployeeBl.GetTimesheetListModel(model);
-                return View(model);
+                if(!ValidateModel(model))
+                {
+                    EmployeeBl.SetListboxes(model);
+                    return View(model);
+                }
+
+                model.IsSaveNeed = false;
+                EmployeeBl.SaveGraphicsRecord(model);
             }
-            CorrectHours(model);
-            //EmployeeBl.SetTimesheetsHours(model);
+            EmployeeBl.GetTimesheetListModel(model);
             return View(model);
+            //if(!ValidateModel(model))
+            //{
+            //    EmployeeBl.GetTimesheetListModel(model);
+            //    return View(model);
+            //}
+            //CorrectHours(model);
+            ////EmployeeBl.SetTimesheetsHours(model);
+            //return View(model);
         }
-        protected void CorrectHours(TimesheetListModel model)
+        
+
+        /*protected void CorrectHours(TimesheetListModel model)
         {
             float hours = model.Hours;
             hours = (float)Math.Round(hours * 100) / 100;
@@ -294,12 +316,41 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("Hours"))
                     ModelState.Remove("Hours");
             }
-        }
+        }*/
         protected bool ValidateModel(TimesheetListModel model)
         {
-            if(model.Hours < 0 || model.Hours > 24)
-                ModelState.AddModelError("Hours","Значение поля <Часы> должно быть от 0 до 24");
+            if(!ValidateTimeSheets(model.TimesheetDtos))
+                ModelState.AddModelError(string.Empty, "Указаны недопустимые значения рабочего времени.Значения должны быть от 0 до 24 или пустыми.");
             return ModelState.IsValid;
+        }
+        protected bool ValidateTimeSheets(IList<TimesheetDto> dtos)
+        {
+            foreach (TimesheetDto dto in dtos)
+            {
+                foreach (TimesheetDayDto dayDto in dto.Days)
+                {
+                    if (!ValidateDay(dayDto))
+                        return false;
+                }
+            }
+            return true;
+        }
+        protected bool ValidateDay(TimesheetDayDto dto)
+        {
+            if (dto.isStatRecord)
+                return true;
+            string workHours = dto.Graphic;
+            if (string.IsNullOrEmpty(workHours))
+                return true;
+            double value;
+            if (Double.TryParse(workHours, out value) || Double.TryParse(workHours.Replace(".",","), out value))
+            {
+                dto.Graphic = (int)value == value 
+                    ? ((int)value).ToString() 
+                    : value.ToString("0.00");
+                return true;
+            }
+            return false;
         }
 
         //[HttpGet]

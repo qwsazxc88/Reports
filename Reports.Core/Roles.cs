@@ -14,6 +14,8 @@ namespace Reports.Core
         PersonnelManager = 8,
         BudgetManager = 16,
         OutsourcingManager = 32,
+        Inspector = 64,
+        Chief = 128,
     }
     public class ReportRoleConstants
     {
@@ -21,6 +23,9 @@ namespace Reports.Core
         public const string Employee = "2";
         public const string Manager = "4";
         public const string PersonnelManager = "8";
+        public const string OutsourcingManager = "32";
+        public const string Inspector = "64";
+        public const string Chief = "128";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -35,6 +40,9 @@ namespace Reports.Core
                              {UserRole.Employee, Employee},
                              {UserRole.Manager, Manager},
                              {UserRole.PersonnelManager, PersonnelManager},
+                             {UserRole.OutsourcingManager, OutsourcingManager},
+                             {UserRole.Inspector, Inspector},
+                             {UserRole.Chief, Chief},
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}

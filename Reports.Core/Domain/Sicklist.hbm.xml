@@ -1,0 +1,45 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Sicklist">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>
+    <property name="DaysCount"  not-null="true"/>
+    
+    <property name="Number"  not-null="true"/>
+	<property name="SicklistNumber"  not-null="true"/>
+	  
+  <many-to-one name="Type" class="SicklistType" column="TypeId" foreign-key="FK_Sicklist_SicklistType" index="Sicklist_SicklistType"  not-null="false"/>
+  <many-to-one name="BabyMindingType" class="SicklistBabyMindingType" column="BabyMindingTypeId" foreign-key="FK_Sicklist_BabyMindingType" index="Sicklist_BabyMindingType"  not-null="false"/>
+  <many-to-one name="PaymentPercent" class="SicklistPaymentPercent" column="PaymentPercentId" foreign-key="FK_Sicklist_SicklistPaymentPercent" index="Sicklist_SicklistPaymentPercent"  not-null="false"/>
+  <!--<many-to-one name="PaymentType" class="SicklistPaymentType" column="PaymentTypeId" foreign-key="FK_Sicklist_SicklistPaymentType" index="Sicklist_SicklistPaymentType"  not-null="true"/>-->
+  <many-to-one name="RestrictType" class="SicklistPaymentRestrictType" column="PaymentRestrictTypeId" foreign-key="FK_Sicklist_SicklistPaymentRestrictType" index="Sicklist_SicklistPaymentRestrictType"  not-null="false"/>
+  <property name="PaymentBeginDate" not-null="false"/>
+  <property name="ExperienceYears" not-null="false"/>
+  <property name="ExperienceMonthes" not-null="false"/>
+  <!--<property name="PaymentLimit" not-null="false"/>-->
+  <property name="PaymentDecreaseDate" not-null="false"/>
+  <property name="IsPreviousPaymentCounted" not-null="true"/>
+  <property name="Is2010Calculate" not-null="true"/>
+  <property name="IsAddToFullPayment" not-null="true"/>
+  <many-to-one name="User" class="User" column="UserId" foreign-key="FK_Sicklist_User" index="IX_Sicklist_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Sicklist_CreatorUser" index="IX_Sicklist_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+  <property name="DeleteDate" not-null="false"/>
+
+
+
+  <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Sicklist_TimesheetStatus" index="Sicklist_TimesheetStatus"  not-null="false"/>
+
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="SicklistId" foreign-key="FK_SicklistComment_Sicklist"/>
+    <one-to-many class="SicklistComment"/>
+  </bag>
+	</class>
+</hibernate-mapping>
