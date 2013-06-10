@@ -839,11 +839,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                    RequestType = (int)type,
                    CreatorRole = RoleDao.Load((int)CurrentUser.UserRole),
                };
-
+            if(id == 0)
+            {
+                RequestAttachment existingAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entityId, type);
+                if (existingAttach != null)
+                {
+                    Log.InfoFormat("Found existing attachment for request id {0} and type {1} (id {2})", entityId, type,existingAttach.Id);
+                    attach = existingAttach;
+                }
+            }
             attach.DateCreated = DateTime.Now;
             attach.UncompressContext = dto.Context;
             attach.ContextType = dto.ContextType;
             attach.FileName = dto.FileName;
+            attach.CreatorRole = RoleDao.Load((int) CurrentUser.UserRole);
             RequestAttachmentDao.SaveAndFlush(attach);
             attachment = attach.FileName;
             return attach.Id;
