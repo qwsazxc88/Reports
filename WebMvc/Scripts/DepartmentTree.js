@@ -53,9 +53,9 @@ function createDepartmentDialog()
     });
 }
 function ValidateDepartment() {
-    if (($('#Level4ID').val() == 0) &&
-    (($('#Level3ID').val() != 0) || ($('#Level2ID').val() != 0))) {
-        addDepSelError("Необходимо выбрать структурное подразделение не менее 3 уровня");
+    if (($('#Level3ID').val() == 0) &&
+    (/*($('#Level3ID').val() != 0) ||*/ ($('#Level2ID').val() != 0))) {
+        addDepSelError("Необходимо выбрать структурное подразделение не менее 2 уровня");
         return false;
     }
     return true;
@@ -63,30 +63,22 @@ function ValidateDepartment() {
 function SaveDepartment() {
     if ($('#Level7ID').val() != 0) {
         setDepartmentValues('Level7ID');
-//        $('#DepartmentId').val($('#Level7ID').val());
-//        $('#DepartmentName').val($("#Level7ID option:selected").text());
-//        $('#DepartmentNameLabel').text($("#Level7ID option:selected").text());
         return;
     }
     if ($('#Level6ID').val() != 0) {
         setDepartmentValues('Level6ID');
-//        $('#DepartmentId').val($('#Level6ID').val());
-//        $('#DepartmentName').val($("#Level6ID option:selected").text());
-//        $('#DepartmentNameLabel').text($("#Level6ID option:selected").text());
         return;
     }
     if ($('#Level5ID').val() != 0) {
         setDepartmentValues('Level5ID');
-//        $('#DepartmentId').val($('#Level5ID').val());
-//        $('#DepartmentName').val($("#Level5ID option:selected").text());
-//        $('#DepartmentNameLabel').text($("#Level5ID option:selected").text());
         return;
     }
     if ($('#Level4ID').val() != 0) {
         setDepartmentValues('Level4ID');
-//        $('#DepartmentId').val($('#Level4ID').val());
-//        $('#DepartmentName').val($("#Level4ID option:selected").text());
-//        $('#DepartmentNameLabel').text($("#Level4ID option:selected").text());
+        return;
+    }
+    if ($('#Level3ID').val() != 0) {
+        setDepartmentValues('Level3ID');
         return;
     }
     $('#DepartmentId').val("0");
