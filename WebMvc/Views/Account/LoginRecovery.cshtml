@@ -11,6 +11,7 @@
         <tr>
             <td colspan="2">    
                 @Html.ValidationSummary(false, "")
+                <div id="Error" style="color:Red;display:none;"></div>
             </td>
         </tr>    
         <tr>
@@ -29,9 +30,14 @@
                 @Html.TextBoxFor(m => m.Email, new { maxlength = 64 })
             </td>
         </tr>
+          <tr>
+            <td colspan="2">    
+                <div>Поле "Адрес электронной почты" не должно содержать символов "<" и ">"</div>
+            </td>
+        </tr>
         <tr>
             <td colspan="2">    
-                <input type="submit" value="Напомнить пароль"/>
+                <input type="submit" onclick="return Validate();" value="Напомнить пароль"/>
             </td>
         </tr>
         <tr>
@@ -39,9 +45,9 @@
                 <br/>
             </td>
         </tr>    
-        <tr>
+        @*<tr>
             <td colspan="2"><div id="Error" style="color:Red;display:none;"/></td>
-        </tr>    
+        </tr>   *@ 
         <tr>
             <td colspan="2"><div id="Success" style="color:Green;display:none;">Письмо в техподдержку отправлено.</div></td>
         </tr>    
@@ -96,6 +102,16 @@
                                             }    
                                   });
     }
-
+    function Validate()
+    {
+       
+        if(($("#Email").val().indexOf('<') !== -1) || ($("#Email").val().indexOf('>') !== -1))
+        {
+            addError('Поле "Адрес электронной почты" содержит символ(ы) "<" или ">"');
+            return false;
+       }
+        clearErrors();
+        return true;
+    }
     </script>
 }
