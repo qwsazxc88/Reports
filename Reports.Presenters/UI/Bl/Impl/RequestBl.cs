@@ -3916,25 +3916,36 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.Employee:
                     if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1}",user.Id,current.Id);
                         return false;
+                    }
                     break;
                 case UserRole.Manager:
                     if (user.Manager != null && user.Manager.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1} user.Manager.Id {2}", user.Id, current.Id, user.Manager.Id);
                         return false;
+                    }
                     break;
                 case UserRole.PersonnelManager:
                     if (/*user.PersonnelManager != null && user.PersonnelManager.Id != current.Id*/
                         user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() == null
                         )
+                    {
+                        Log.ErrorFormat("CheckUserRights  PersonnelManager user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
+                    }
                     break;
                 case UserRole.Inspector:
+                    Log.WarnFormat("CheckUserRights Inspector user.Id {0} current.Id {1}", user.Id, current.Id);
                     if (entityId == 0)
                         throw new ArgumentException("Вам запрещено создавать новые заявки.");
                     if(isSave)
                         throw new ArgumentException("Вам запрещено редактировать заявки.");
                     return InspectorToUserDao.IsInspectorToUserRecordExists(current.Id, user.Id);
                 case UserRole.Chief:
+                    Log.WarnFormat("CheckUserRights Chief user.Id {0} current.Id {1}", user.Id, current.Id);
                     if (entityId == 0)
                         throw new ArgumentException("Вам запрещено создавать новые заявки.");
                     if (isSave)
