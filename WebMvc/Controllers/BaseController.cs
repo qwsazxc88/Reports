@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using System.Web.Helpers;
 using System.Web.Mvc;
 using log4net;
 using Reports.Core;
-using Reports.Core.Dto;
 using Reports.Presenters.Services;
 
 namespace WebMvc.Controllers
@@ -38,8 +36,10 @@ namespace WebMvc.Controllers
         //        return Validate.Dependency(baseBl);
         //    }
         //}
-        public static string WriteErrorToLog(Exception ex)
+        public static string WriteErrorToLog(Exception ex,Uri url)
         {
+            if(url != null)
+                Log.ErrorFormat("Uri {0}",url.AbsoluteUri);
             if (ex != null)
                 Log.Error("Error(MVC error page):", ex);
             else

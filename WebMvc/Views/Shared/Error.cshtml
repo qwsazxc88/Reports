@@ -10,7 +10,7 @@
 </head>
 <body>
         <p style="color:Red">В приложении произошла ошибка.</p>
-        @BaseController.WriteErrorToLog(Model.Exception)
+        @BaseController.WriteErrorToLog(Model.Exception,HttpContext.Current.Request.Url)
         <p>Контроллер: @Model.ControllerName </p>
         <p>Action: @Model.ActionName</p>
         <p>Сообщение: @Model.Exception.Message</p>
