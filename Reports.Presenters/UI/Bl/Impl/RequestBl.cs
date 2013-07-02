@@ -2757,6 +2757,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PaymentRestrictTypeId = sicklist.RestrictType == null ? 0 : sicklist.RestrictType.Id;
                 model.PaymentDecreaseDate = sicklist.PaymentDecreaseDate;
                 model.IsPreviousPaymentCounted = sicklist.IsPreviousPaymentCounted;
+                model.IsContinued = sicklist.IsContinued;
                 //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
                 SetHiddenFields(model);
@@ -2777,6 +2778,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PaymentRestrictTypeIdHidden = model.PaymentRestrictTypeId;
             //model.Is2010CalculateHidden = model.Is2010Calculate;
             model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
+            model.IsContinuedHidden = model.IsContinued;
             model.IsAddToFullPaymentHidden = model.IsAddToFullPaymentHidden;
         }
         protected void SetAttachmentToModel(IAttachment model, int id,RequestAttachmentTypeEnum type)
@@ -2797,7 +2799,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current,model.Id,true) || !CheckUserRightsForEntity(user,current,model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2834,6 +2836,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            sicklist.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         sicklist.DeleteDate = DateTime.Now;
@@ -2952,6 +2956,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(model.IsDatesEditable)
             {
                 // ReSharper disable PossibleInvalidOperationException
+                entity.IsContinued = model.IsContinued;
                 entity.BeginDate = model.BeginDate.Value;
                 entity.EndDate = model.EndDate.Value;
                 // ReSharper restore PossibleInvalidOperationException
@@ -3067,6 +3072,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -3108,6 +3118,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.OutsourcingManager:
+                    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
             }
 
             model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);
@@ -3147,6 +3161,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelFieldsEditable = state;
 
             model.IsApprovedEnable = false;
+
         }
         #endregion
         #region Absence
@@ -3909,6 +3924,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId;
                 model.DaysCountHidden = model.DaysCount;
             }
+        }
+        public bool CheckUserRightsForEntity(User user, IUser current, SicklistEditModel model)
+        {
+            if (current.UserRole == UserRole.OutsourcingManager)
+            {
+                if (model.IsDeleteAvailable && model.IsDelete)
+                    return true;
+                throw new ArgumentException("Вам запрещено редактировать заявки.");
+            }
+            return true;
         }
         public bool CheckUserRights(User user, IUser current,int entityId,bool isSave)
         {

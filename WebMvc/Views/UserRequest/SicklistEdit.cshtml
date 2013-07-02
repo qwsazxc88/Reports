@@ -181,6 +181,16 @@
     </tr>
     <tr>
             <td colspan="2">
+                @Html.CheckBox("IsContinued", Model.IsContinued, Model.IsDatesEditable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsContinued)
+                @if (!Model.IsDatesEditable)
+                {
+                    <input type="hidden" id="IsContinuedHidden" name="IsContinuedHidden" value="@Model.IsContinuedHidden" />
+                }
+            </td>
+    </tr>
+    <tr>
+            <td colspan="2">
                 @Html.CheckBox("IsPreviousPaymentCounted", Model.IsPreviousPaymentCounted, Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsPreviousPaymentCounted)
                 @if (!Model.IsPersonnelFieldsEditable)

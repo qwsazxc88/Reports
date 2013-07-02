@@ -800,6 +800,8 @@ namespace WebMvc.Controllers
                  model.TypeId = model.TypeIdHidden;
                  model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;
              }
+             if(!model.IsDatesEditable)
+                 model.IsContinued = model.IsContinuedHidden;
              /*if (!model.IsBabyMindingTypeEditable)
                  model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;*/
              if (!model.IsTimesheetStatusEditable)
