@@ -5,7 +5,12 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class SicklistEditModel : UserInfoModel, ICheckBoxes, IAttachment
+    public interface ICheckForEntity
+    {
+        bool IsDeleteAvailable { get; set; }
+        bool IsDelete { get; set; }
+    }
+    public class SicklistEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntity
     {
         public int Id { get; set; }
         public int Version { get; set; }

@@ -2015,6 +2015,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
 
+            // hack to uncheck checkbox on UI
+            if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.MissionOrder);
             model.IsPrintOrderAvailable = form != null;
             RequestPrintForm formCertificate = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.MissionCertificate);
@@ -2058,6 +2062,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
+                    break;
+                    case UserRole.OutsourcingManager:
+                        if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
                     break;
             }
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
@@ -2125,7 +2133,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2155,6 +2163,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            mission.DeleteAfterSendTo1C = true;
                         mission.DeleteDate = DateTime.Now;
                         mission.CreateDate = DateTime.Now;
                         MissionDao.SaveAndFlush(mission);
@@ -3305,6 +3315,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = absence.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = absence.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = absence.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (absence.DeleteDate.HasValue && !absence.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -3341,6 +3356,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     else if (!absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
+                    break;
+                    case UserRole.OutsourcingManager:
+                        if (absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                             model.IsDeleteAvailable = true;
                     break;
             }
@@ -3409,7 +3428,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3479,6 +3498,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            absence.DeleteAfterSendTo1C = true;
                         absence.CreateDate = DateTime.Now;
                         absence.DeleteDate = DateTime.Now;
                         AbsenceDao.SaveAndFlush(absence);
@@ -3925,7 +3946,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DaysCountHidden = model.DaysCount;
             }
         }
-        public bool CheckUserRightsForEntity(User user, IUser current, SicklistEditModel model)
+        public bool CheckUserRightsForEntity(User user, IUser current, ICheckForEntity model)
         {
             if (current.UserRole == UserRole.OutsourcingManager)
             {
