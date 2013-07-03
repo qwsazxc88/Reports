@@ -1999,6 +1999,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 model.IsTypeEditable = true;
                 model.IsApprovedEnable = true;
+                model.IsApprovedForAllEnable = true;
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2064,6 +2065,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -2114,6 +2116,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedEnable = state;
+            model.IsApprovedForAllEnable = state;
         }
         protected void LoadDictionaries(MissionEditModel model)
         {
@@ -2280,6 +2285,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Mission, false);
                     }
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if (model.IsTypeEditable)
@@ -3184,8 +3191,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsPersonnelFieldsEditable = state;
 
-            model.IsApprovedEnable = false;
-            model.IsApprovedForAllEnable = false;
+            model.IsApprovedEnable = state;
+            model.IsApprovedForAllEnable = state;
 
         }
         #endregion
