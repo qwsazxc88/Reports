@@ -2953,8 +2953,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id*/
+            if (current.UserRole == UserRole.PersonnelManager
                 && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 )
             {
@@ -2968,10 +2967,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
-                        //!!! need to send e-mail
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Sicklist, false);
                     }
+                    if(model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if(model.IsDatesEditable)
@@ -3126,7 +3126,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
@@ -3182,6 +3185,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelFieldsEditable = state;
 
             model.IsApprovedEnable = false;
+            model.IsApprovedForAllEnable = false;
 
         }
         #endregion
