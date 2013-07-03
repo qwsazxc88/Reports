@@ -1638,12 +1638,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
                 model.IsApprovedByPersonnelManager = false;
 
-
+            RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+            model.IsPrintAvailable = form != null;
+                   
             switch (currentUserRole)
             {
                 case UserRole.Employee:
-                    RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
-                    model.IsPrintAvailable = form != null;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if(model.AttachmentId > 0)
@@ -1653,8 +1653,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
-                    model.IsPrintAvailable = formMan != null;
+                    //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+                    //model.IsPrintAvailable = formMan != null;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
