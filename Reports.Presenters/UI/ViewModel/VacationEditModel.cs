@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class VacationEditModel : UserInfoModel, ICheckBoxes, IAttachment
+    public class VacationEditModel : UserInfoModel, ICheckBoxes, IAttachment,ICheckForEntity
     {
         public int Id { get; set; }
         public int Version { get; set; }
