@@ -1670,7 +1670,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -1719,6 +1722,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
@@ -1862,6 +1868,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Dismissal, false);
                     }
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if (model.IsTypeEditable)
@@ -3862,6 +3870,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                                 vacation.Number, RequestTypeEnum.Vacation, false);
                         }
+                        if (model.IsApprovedForAll && !vacation.ManagerDateAccept.HasValue)
+                            vacation.ManagerDateAccept = DateTime.Now;
                     }
 
                     VacationDao.SaveAndFlush(vacation);
@@ -3934,6 +3944,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                                     vacation.Number, RequestTypeEnum.Vacation, false);
                             }
+                            if (model.IsApprovedForAll && !vacation.ManagerDateAccept.HasValue)
+                                vacation.ManagerDateAccept = DateTime.Now;
 
                         }
                         if (model.IsVacationTypeEditable)
@@ -4090,6 +4102,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
@@ -4162,7 +4177,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         if (!vacation.SendTo1C.HasValue)
                         {
                             model.IsVacationTypeEditable = true;
