@@ -74,5 +74,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsApproved { get; set; }
         public bool IsApprovedEnable { get; set; }
+
+        public bool IsApprovedForAll { get; set; }
+        public bool IsApprovedForAllEnable { get; set; }
     }
 }

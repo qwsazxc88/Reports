@@ -1999,7 +1999,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 model.IsTypeEditable = true;
                 model.IsApprovedEnable = true;
-                model.IsApprovedForAllEnable = true;
+               
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2012,6 +2012,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
+                        model.IsApprovedForAllEnable = true;
                         model.IsReasonEditable = true;
                         break;
                 }
@@ -2117,7 +2118,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApproved = state;
             model.IsApprovedEnable = state;
 
-            model.IsApprovedEnable = state;
+            model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
         protected void LoadDictionaries(MissionEditModel model)
@@ -3191,7 +3192,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsPersonnelFieldsEditable = state;
 
+            model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
 
         }
@@ -3324,6 +3328,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
+                        model.IsApprovedForAllEnable = true;
                         break;
                 }
                 if(currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
@@ -3371,6 +3376,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;
                         if (!absence.SendTo1C.HasValue)
                         {
                             model.IsAbsenceTypeEditable = true;
@@ -3416,6 +3422,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         public void ReloadDictionariesToModel(AbsenceEditModel model)
         {
@@ -3505,6 +3514,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                 absence.Number, RequestTypeEnum.Absence, false);
                         }
+                        if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
+                            absence.ManagerDateAccept = DateTime.Now;
                     }
                     AbsenceDao.SaveAndFlush(absence);
                     model.Id = absence.Id;
@@ -3566,6 +3577,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                     absence.Number, RequestTypeEnum.Absence, false);
                             }
+                            if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
+                                absence.ManagerDateAccept = DateTime.Now;
                         }
                         if (model.IsAbsenceTypeEditable)
                         {
