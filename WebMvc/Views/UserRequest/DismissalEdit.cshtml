@@ -51,6 +51,14 @@
     </tr>
     <tr>
         <td>
+            @Html.LabelFor(m => m.Reduction):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reduction, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
             @Html.LabelFor(m => m.Reason):
         </td>
         <td>
@@ -227,6 +235,7 @@
             $("#EndDate").datepicker();
             $(".hasDatepicker").width("75px");
             $("#Compensation").width("50px");
+            $("#Reduction").width("50px");
             $("#Reason").width("350px");
             setActiveMenuItem("userDismissal");
         });    

@@ -27,6 +27,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Кол-во дней компенсации")]
         public string Compensation { get; set; }
+        [Display(Name = "Кол-во дней удержания")]
+        public string Reduction { get; set; }
         public bool IsPersonnelFieldsEditable { get; set; }
 
         /*[Required(ErrorMessageResourceName = "DismissalEditModel_Reason_Required",

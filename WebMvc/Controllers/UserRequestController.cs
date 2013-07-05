@@ -488,9 +488,19 @@ namespace WebMvc.Controllers
              {
                  decimal compensation;
                  if(!Decimal.TryParse(model.Compensation,out compensation) ||
-                     compensation <= 0)
-                     ModelState.AddModelError("Compensation", "Кол-во дней компенсации должно быть положительным десятичным числом.");
+                     compensation < 0)
+                     ModelState.AddModelError("Compensation", "Кол-во дней компенсации должно быть неотрицательным десятичным числом.");
              }
+             if (!string.IsNullOrEmpty(model.Reduction))
+             {
+                 decimal reduction;
+                 if (!Decimal.TryParse(model.Reduction, out reduction) ||
+                     reduction < 0)
+                     ModelState.AddModelError("Reduction", "Кол-во дней удержания должно быть неотрицательным десятичным числом.");
+             }
+             if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Compensation) && string.IsNullOrEmpty(model.Reduction))
+                 ModelState.AddModelError("Compensation", "Укажите \"Кол-во дней компенсации\" и/или \"Кол-во дней удержания\"");
+             
              return ModelState.IsValid;
          }
 

@@ -1566,6 +1566,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId = dismissal.Type == null? 0 : dismissal.Type.Id;
                 model.EndDate = dismissal.EndDate;
                 model.Compensation = dismissal.Compensation.HasValue? dismissal.Compensation.Value.ToString():string.Empty;
+                model.Reduction = dismissal.Reduction.HasValue ? dismissal.Reduction.Value.ToString() : string.Empty;
                 //model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
                 model.Reason = dismissal.Reason;
                 model.CreatorLogin = dismissal.Creator.Name;
@@ -1847,8 +1848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id*/
+            if (current.UserRole == UserRole.PersonnelManager 
                 && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 )
             {
@@ -1862,6 +1862,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Compensation = string.IsNullOrEmpty(model.Compensation)
                                               ? new decimal?()
                                               : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
+                    entity.Reduction = string.IsNullOrEmpty(model.Reduction)
+                                             ? new decimal?()
+                                             : (decimal)((int)(decimal.Parse(model.Reduction) * 100)) / 100;
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;

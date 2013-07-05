@@ -21,6 +21,7 @@ namespace Reports.Core.Domain
         public virtual DismissalType Type { get; set; }
         //public virtual DismissalCompensationType CompensationType { get; set; }
         public virtual decimal? Compensation { get; set; }
+        public virtual decimal? Reduction { get; set; }
         public virtual string Reason { get; set; }
         
         public virtual TimesheetStatus TimesheetStatus { get; set; }
