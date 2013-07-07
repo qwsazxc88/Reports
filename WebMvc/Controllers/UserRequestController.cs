@@ -415,6 +415,7 @@ namespace WebMvc.Controllers
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -539,6 +540,7 @@ namespace WebMvc.Controllers
              if (!ValidateMissionEditModel(model))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -684,6 +686,7 @@ namespace WebMvc.Controllers
              if (!ValidateSicklistEditModel(model, fileDto/*,out needToReload,out error*/))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  //if(needToReload)
                  //{
                  //    ModelState.Clear();
@@ -861,6 +864,7 @@ namespace WebMvc.Controllers
              if (!ValidateAbsenceEditModel(model))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -943,6 +947,7 @@ namespace WebMvc.Controllers
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
