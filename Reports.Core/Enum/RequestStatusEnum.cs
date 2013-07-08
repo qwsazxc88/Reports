@@ -19,6 +19,7 @@
         Dismissal = 6,
         TimesheetCorrection = 7,
         Employment = 8,
+        ChildVacation = 9,
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -35,6 +36,7 @@
         //EmploymentPen = 3,
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
+        ChildVacation = 4,
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
@@ -49,6 +51,7 @@
         Dismissal = 2,
         Employment = 3,
         MissionOrder = 4,
-        MissionCertificate = 5
+        MissionCertificate = 5,
+        ChildVacation = 6,
     }
 }

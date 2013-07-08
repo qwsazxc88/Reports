@@ -8,5 +8,9 @@ namespace WebMvc.Controllers
         {
             return View();
         }
+        public ActionResult DoubleSubmitError()
+        {
+            return View();
+        }
     }
 }

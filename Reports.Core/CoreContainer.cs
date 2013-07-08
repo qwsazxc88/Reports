@@ -304,6 +304,14 @@ namespace Reports.Core
               ImplementedBy(typeof(WorkingCalendarDao)).
               LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IChildVacationDao)).
+                  ImplementedBy(typeof(ChildVacationDao)).
+                  LifeStyle.Is(type));
+
+            Register(Component.For(typeof(IChildVacationCommentDao)).
+                 ImplementedBy(typeof(ChildVacationCommentDao)).
+                 LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

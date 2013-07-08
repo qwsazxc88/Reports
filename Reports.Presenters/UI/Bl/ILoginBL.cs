@@ -11,5 +11,6 @@ namespace Reports.Presenters.UI.Bl
         void OnLoginRecovery(LoginRecoveryModel model);
         bool SendToSupport(SendToSupportModel model);
         void LogOff();
+        void OnChangePwd(ChangePwdModel model);
     }
 }

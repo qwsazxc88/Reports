@@ -775,7 +775,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                          graphic = (int)wgHours.Value == wgHours.Value 
                                 ? ((int)wgHours.Value).ToString() 
-                                : wgHours.Value.ToString("0.00");
+                                : wgHours.Value.ToString("0.0");
                     }
                     userDayList.Add(new TimesheetDayDto
                                                  {
@@ -823,7 +823,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             graphic = (int)wgHoursSum == wgHoursSum
                                ? ((int)wgHoursSum).ToString()
-                               : wgHoursSum.ToString("0.00");
+                               : wgHoursSum.ToString("0.0");
                         }
                         sum += uDto.userStats[i];
                         sumDays += uDto.userStatsDays[i];

@@ -13,6 +13,13 @@ namespace Reports.Core.Dao.Impl
         {
 
         }
+        public virtual TimesheetStatus GetStatusForShortName(string  shortName)
+        {
+            return (TimesheetStatus)Session.CreateCriteria(typeof(TimesheetStatus))
+                  .Add(Restrictions.Eq("ShortName", shortName))
+                //                  .Add(Restrictions.Eq("IsActive", true))
+                  .UniqueResult();
+        }
         //public IList<TimesheetStatus> LoadAllSorted()
         //{
         //    ICriteria criteria = Session.CreateCriteria(typeof(TimesheetStatus));

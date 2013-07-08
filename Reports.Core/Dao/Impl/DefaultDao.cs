@@ -167,6 +167,39 @@ namespace Reports.Core.Dao.Impl
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
+        protected const string sqlSelectForListChildVacation =
+                               @"select v.Id as Id,
+                                u.Id as UserId,
+                                N'{3}' as Name,
+                                {2} as Date,  
+                                {5} as BeginDate,  
+                                {6} as EndDate,  
+                                v.Number as Number,
+                                u.Name as UserName,
+                                N'Отпуск по уходу за ребенком'  as RequestType,
+                                case when v.DeleteDate is not null then '{0}'
+                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
+                                     when v.PersonnelManagerDateAccept is not null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Согласовано кадровиком'
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено кадровику'    
+                                    when  -- v.PersonnelManagerDateAccept is null and 
+                                          v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено руководителю'    
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is null 
+                                          then 'Черновик сотрудника'    
+                                    else ''
+                                end as RequestStatus        
+                                from {4} v
+                                -- left join {1} t on v.TypeId = t.Id
+                                inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }
@@ -563,6 +596,9 @@ namespace Reports.Core.Dao.Impl
                 case RequestTypeEnum.Vacation:
                     sqlQuery += @" from [dbo].[Vacation] v ";
                     break;
+                case RequestTypeEnum.ChildVacation:
+                    sqlQuery += @" from [dbo].[ChildVacation] v ";
+                    break;
                 case RequestTypeEnum.Absence:
                     sqlQuery += @" from [dbo].[Absence] v ";
                     break;
@@ -582,7 +618,7 @@ namespace Reports.Core.Dao.Impl
                                  (:beginDate between v.BeginDate and v.EndDate) or
                                  (:endDate between v.BeginDate and v.EndDate))
                           and v.DeleteDate is null";
-            if (type == RequestTypeEnum.Vacation)
+            if (type == RequestTypeEnum.Vacation || type == RequestTypeEnum.ChildVacation)
                 sqlQuery += string.Format(" and v.Id != {0} ",vacationId);
             switch (userRole)
             {

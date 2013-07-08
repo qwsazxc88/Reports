@@ -1,0 +1,62 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="ChildVacation">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<property name="Id_1C" length="50" not-null="true"/>-->
+    <!--<property name="ReportType" not-null="true" />-->
+    <!--<property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>-->
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+    <property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>
+    <!--<property name="DaysCount"  not-null="true"/>-->
+    <property name="FreeRate" not-null="true"/>
+    <property name="PaidToDate" not-null="false"/>
+    
+    <property name="IsPreviousPaymentCounted" not-null="true"/>
+    <property name="ChildrenCount" not-null="false"/>
+    <property name="IsFirstChild" not-null="true"/>
+    <property name="PaidToDate1" not-null="false"/>
+    
+    <property name="Number"  not-null="true"/>
+	
+	<!--<property name="Comment" type="StringClob" not-null="false"/>-->  
+    <!--<property name="Number" length="50" not-null="true"/>-->
+	<!--<many-to-one name="Type" class="ChildVacationType" column="TypeId" foreign-key="FK_ChildVacation_ChildVacationType" index="ChildVacation_ChildVacationType"  not-null="true"/>-->
+  <!--<many-to-one name="Status" class="RequestStatus" column="StatusId" foreign-key="FK_ChildVacation_RequestStatus" index="ChildVacation_RequestStatus"  not-null="true"/>-->
+	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
+  <many-to-one name="User" class="User" column="UserId" foreign-key="FK_ChildVacation_User" index="IX_ChildVacation_User_Id"  not-null="true"/>
+  <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_ChildVacation_CreatorUser" index="IX_ChildVacation_CreatorUser_Id"  not-null="true"/>
+  <property name="UserDateAccept" not-null="false"/>
+  <property name="ManagerDateAccept" not-null="false"/>
+  <property name="PersonnelManagerDateAccept" not-null="false"/>
+  <property name="SendTo1C" not-null="false"/>
+  <property name="DeleteDate" not-null="false"/>
+  <property name="DeleteAfterSendTo1C" not-null="true"/>
+  <property name="ExportFrom1C" not-null="false"/>
+	  <!--<property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
+	  <property name="ManagerPositionForPrint"  length="128" not-null="false"/>
+	  <property name="UserFullNameForPrint" length="512" not-null="false"/>-->
+
+
+    <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_ChildVacation_TimesheetStatus" index="ChildVacation_TimesheetStatus"  not-null="false"/>
+
+  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="ChildVacationId" foreign-key="FK_ChildVacationComment_ChildVacation"/>
+    <one-to-many class="ChildVacationComment"/>
+  </bag>
+	<!--<property name="BudgetManagerDateAccept" not-null="false"/>
+	<property name="OutsourcingManagerDateAccept" not-null="false"/>
+  <property name="SendEmailToBilling" not-null="true" />-->
+	  
+	
+	<!--<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="DocumentId" foreign-key="FK_DocumentComment_Document"/>
+		  <one-to-many class="DocumentComment"/>
+	</bag>-->
+	  <!--<property name="Html" length="1073741823" not-null="true"/>-->
+    <!--<property name="Branch" column="[branch]" length="100" not-null="false"/>-->
+  </class>
+</hibernate-mapping>

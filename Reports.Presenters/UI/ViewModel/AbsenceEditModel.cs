@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class AbsenceEditModel : UserInfoModel, ICheckBoxes,ICheckForEntity
+    public class AbsenceEditModel : UserInfoModel, ICheckBoxes,ICheckForEntityBeginDate,IContainId
     {
         public int Id { get; set; }
         public int Version { get; set; }

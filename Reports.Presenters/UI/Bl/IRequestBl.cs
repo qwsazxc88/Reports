@@ -21,7 +21,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(VacationEditModel model);
 
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
-                                    DateTime endDate, int userId, int vacationId);
+                                    DateTime endDate, int userId, int vacationId, bool isChildVacantion);
 
         RequestCommentsModel GetCommentsModel(int id, int typeId);
         bool SaveComment(SaveCommentModel model);
@@ -90,5 +90,11 @@ namespace Reports.Presenters.UI.Bl
         void GetConstantEditModel(ConstantEditModel model);
         void ReloadDictionariesToModel(ConstantEditModel model);
         bool SaveConstantEditModel(ConstantEditModel model, out string error);
+
+        ChildVacationListModel GetChildVacationListModel();
+        void SetChildVacationListModel(ChildVacationListModel model, bool hasError);
+        ChildVacationEditModel GetChildVacationEditModel(int id, int userId);
+        void ReloadDictionariesToModel(ChildVacationEditModel model);
+        bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error);
     }
 }

@@ -159,6 +159,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Error = "Исключение:" + ex.GetBaseException().Message;
             }
         }
+        public void OnChangePwd(ChangePwdModel model)
+        {
+            try
+            {
+                User user = UserDao.Load(CurrentUser.Id);
+                user.Password = model.NewPassword;
+                UserDao.MergeAndFlush(user);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception:", ex);
+                model.Error = "Исключение:" + ex.GetBaseException().Message;
+            }
+        }
         public void OnLoginRecovery(LoginRecoveryModel model)
         {
             try

@@ -16,16 +16,26 @@ namespace Reports.Core.Dao.Impl
         {
         }
         public int GetRequestCountsForUserAndDates(DateTime beginDate,
-            DateTime endDate,int userId,int vacationId)
+            DateTime endDate,int userId,int vacationId,bool isChildVacantion)
         {
             int requestCount = GetRequestsCountForType(beginDate,
                                     endDate, RequestTypeEnum.Vacation, userId,
-                                    UserRole.Employee, vacationId);
+                                    UserRole.Employee, isChildVacantion? 0: vacationId);
             if (requestCount > 0)
             {
                 Log.DebugFormat("Fount {0} Vacation requests for {1} {2} {3} {4}"
                     ,requestCount
                     ,beginDate,endDate,userId,vacationId);
+                return requestCount;
+            }
+            requestCount = GetRequestsCountForType(beginDate,
+                                    endDate, RequestTypeEnum.ChildVacation, userId,
+                                    UserRole.Employee, isChildVacantion ? vacationId : 0);
+            if (requestCount > 0)
+            {
+                Log.DebugFormat("Fount {0} ChildVacation requests for {1} {2} {3} {4}"
+                    , requestCount
+                    , beginDate, endDate, userId, vacationId);
                 return requestCount;
             }
             requestCount = GetRequestsCountForType(beginDate,

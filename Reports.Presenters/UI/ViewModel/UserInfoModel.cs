@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class UserInfoModel
+    public class UserInfoModel:PreventDCModel
     {
         [Display(Name = "Дата составления")]
         public string DateCreated { get; set; }
@@ -31,5 +31,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Кадровик(и)")]
         public string PersonnelName { get; set; }
+    }
+    public class PreventDCModel
+    {
+        public string Guid { get; set; }
     }
 }

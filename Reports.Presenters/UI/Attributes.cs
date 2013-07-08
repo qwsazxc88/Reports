@@ -12,7 +12,7 @@ namespace Reports.Presenters.UI
     public sealed class ValidatePasswordLengthAttribute : ValidationAttribute, IClientValidatable
     {
         private const string DefaultErrorMessage = "Поле '{0}' должно быть не менее {1} символов.";
-        private const int MinCharacters = 7; //Membership.Provider.MinRequiredPasswordLength;
+        private const int MinCharacters = 8; //Membership.Provider.MinRequiredPasswordLength;
 
         public ValidatePasswordLengthAttribute()
             : base(DefaultErrorMessage)

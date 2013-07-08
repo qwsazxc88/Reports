@@ -29,4 +29,17 @@ namespace Reports.Presenters.UI.ViewModel
         string Attachment { get; set; }
         int AttachmentId { get; set; }
     }
+    public interface ICheckForEntity
+    {
+        bool IsDeleteAvailable { get; set; }
+        bool IsDelete { get; set; }
+    }
+    public interface ICheckForEntityBeginDate:ICheckForEntity
+    {
+        DateTime? BeginDate { get; set; }
+    }
+    public interface ICheckForEntityEndDate : ICheckForEntity
+    {
+        DateTime? EndDate { get; set; }
+    }
 }

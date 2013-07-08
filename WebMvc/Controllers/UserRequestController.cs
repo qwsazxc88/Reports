@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
-using System.Web.Security;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -19,6 +15,7 @@ using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
+    [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager)]
     public class UserRequestController : BaseController
     {
@@ -75,6 +72,12 @@ namespace WebMvc.Controllers
              {
                  case RequestTypeEnum.Vacation:
                      return RedirectToAction("VacationEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
+                 case RequestTypeEnum.ChildVacation:
+                     return RedirectToAction("ChildVacationEdit",
                                              new RouteValueDictionary {
                                                                         {"id", 0}, 
                                                                         {"userId", model.UserId}
@@ -501,7 +504,8 @@ namespace WebMvc.Controllers
              }
              if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Compensation) && string.IsNullOrEmpty(model.Reduction))
                  ModelState.AddModelError("Compensation", "Укажите \"Кол-во дней компенсации\" и/или \"Кол-во дней удержания\"");
-             
+
+             CheckEndDate(model);
              return ModelState.IsValid;
          }
 
@@ -523,7 +527,7 @@ namespace WebMvc.Controllers
          {
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate.Value > model.EndDate.Value)
-                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
              return ModelState.IsValid;
          }
          [HttpGet]
@@ -576,6 +580,7 @@ namespace WebMvc.Controllers
              UserRole role = AuthenticationService.CurrentUser.UserRole;
              if(role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Reason))
                  ModelState.AddModelError("Reason", "Основание командировки - обязательное поле.");
+             CheckBeginDate(model);
              return ModelState.IsValid;
          }
          #endregion
@@ -846,7 +851,7 @@ namespace WebMvc.Controllers
          {
              if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                  model.BeginDate.Value > model.EndDate.Value)
-                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
              return ModelState.IsValid;
          }
          [HttpGet]
@@ -905,6 +910,7 @@ namespace WebMvc.Controllers
              //    if (dayCounts <= 0)
              //        ModelState.AddModelError("DaysCount", "Количество дней (часов) должно быть положительным числом.");
              //}
+             CheckBeginDate(model);
              return ModelState.IsValid;
          }
          #endregion
@@ -927,7 +933,7 @@ namespace WebMvc.Controllers
          {
              if(model.BeginDate.HasValue && model.EndDate.HasValue && 
                  model.BeginDate.Value > model.EndDate.Value)
-                 ModelState.AddModelError("BeginDate", "Дата в поле <Дата создания заявки с> не может быть больше даты в поле <Дата создания заявки по>.");
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
              return ModelState.IsValid;
          }
 
@@ -1010,12 +1016,13 @@ namespace WebMvc.Controllers
                  {
                      int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
                          (model.BeginDate.Value, model.EndDate.Value, 
-                         model.UserId, model.Id);
+                         model.UserId, model.Id, false);
                      if(requestCount > 0)
                          ModelState.AddModelError("BeginDate", 
                       "Для данного пользователя существуют другие заявки в указанном интервале дат.");
                  }
              }
+             CheckBeginDate(model);
              return ModelState.IsValid;
          }
          protected void CorrectDropdowns(VacationEditModel model)
@@ -1059,6 +1066,162 @@ namespace WebMvc.Controllers
                  model.IsPostedTo1C = model.IsPostedTo1CHidden;
              }
          }
+         #endregion
+         #region Child Vacation
+         [HttpGet]
+         public ActionResult ChildVacationList()
+         {
+             //int? userId = new int?();
+             ChildVacationListModel model = RequestBl.GetChildVacationListModel();
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult ChildVacationList(ChildVacationListModel model)
+         {
+             RequestBl.SetChildVacationListModel(model, !ValidateModel(model));
+             return View(model);
+         }
+         protected bool ValidateModel(ChildVacationListModel model)
+         {
+             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                 model.BeginDate.Value > model.EndDate.Value)
+                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+             return ModelState.IsValid;
+         }
+
+
+         [HttpGet]
+         public ActionResult ChildVacationEdit(int id, int userId)
+         {
+             //int? userId = new int?();
+             ChildVacationEditModel model = RequestBl.GetChildVacationEditModel(id, userId);
+             return View(model);
+         }
+         [HttpPost]
+         public ActionResult ChildVacationEdit(ChildVacationEditModel model)
+         {
+             CorrectCheckboxes(model);
+             CorrectDropdowns(model);
+             UploadFileDto fileDto = GetFileContext();
+             if (!ValidateChildVacationEditModel(model, fileDto))
+             {
+                 model.IsApproved = false;
+                 model.IsApprovedForAll = false;
+                 RequestBl.ReloadDictionariesToModel(model);
+                 return View(model);
+             }
+
+             string error;
+             if (!RequestBl.SaveChildVacationEditModel(model, fileDto, out error))
+             {
+
+                 if (model.ReloadPage)
+                 {
+                     ModelState.Clear();
+                     if (!string.IsNullOrEmpty(error))
+                         ModelState.AddModelError("", error);
+                     return View(RequestBl.GetChildVacationEditModel(model.Id, model.UserId));
+                 }
+                 if (!string.IsNullOrEmpty(error))
+                     ModelState.AddModelError("", error);
+             }
+             return View(model);
+         }
+         protected bool ValidateChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto)
+         {
+             UserRole role = AuthenticationService.CurrentUser.UserRole;
+             if (model.Id > 0 && fileDto == null)
+             {
+                 int attachmentCount = RequestBl.GetAttachmentsCount(model.Id, RequestAttachmentTypeEnum.ChildVacation);
+                 if (attachmentCount <= 0)
+                 {
+                     if ((role == UserRole.Employee && model.IsApprovedByUser) ||
+                         (role == UserRole.Manager && model.IsApprovedByManager) ||
+                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                     {
+
+                         ModelState.AddModelError(string.Empty,
+                                                  "Заявка не может быть согласована без прикрепленого документа.");
+                         if (role == UserRole.Employee && model.IsApprovedByUser)
+                         {
+                             ModelState.Remove("IsApprovedByUser");
+                             model.IsApprovedByUser = false;
+                         }
+                         if (role == UserRole.Manager && model.IsApprovedByManager)
+                         {
+                             ModelState.Remove("IsApprovedByManager");
+                             model.IsApprovedByManager = false;
+                         }
+                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
+                         {
+                             ModelState.Remove("IsApprovedByPersonnelManager");
+                             model.IsApprovedByPersonnelManager = false;
+                         }
+                     }
+                 }
+             }
+             if (model.BeginDate.HasValue && model.EndDate.HasValue)
+             {
+                 if (model.BeginDate > model.EndDate)
+                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
+                 else if (!model.IsDelete)
+                 {
+                     int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
+                         (model.BeginDate.Value, model.EndDate.Value,
+                         model.UserId, model.Id,true);
+                     if (requestCount > 0)
+                         ModelState.AddModelError("BeginDate","Для данного пользователя существуют другие заявки в указанном интервале дат.");
+                 }
+             }
+             if (model.PaidToDate.HasValue && model.EndDate.HasValue && model.EndDate.Value < model.PaidToDate.Value)
+                 ModelState.AddModelError("PaidToDate","Поле 'Выплачивать по' не должно быть больше поля 'Дата окончания'.");
+             if (model.PaidToDate1.HasValue && model.EndDate.HasValue && model.EndDate.Value < model.PaidToDate1.Value)
+                 ModelState.AddModelError("PaidToDate1", "Поле 'Выплачивать по' не должно быть больше поля 'Дата окончания'.");
+
+             if (model.IsPersonnelFieldsEditable)
+             {
+                 if (!string.IsNullOrEmpty(model.ChildrenCount))
+                 {
+                     int childrenCount;
+                     if (!Int32.TryParse(model.ChildrenCount, out childrenCount))
+                         ModelState.AddModelError("ChildrenCount", "Неправильно указано количество детей.");
+                     else if (childrenCount <= 0)
+                         ModelState.AddModelError("ChildrenCount", "Количество детей должно быть целым положительным числом.");
+                 }
+             }
+             CheckBeginDate(model);
+             return ModelState.IsValid;
+         }
+         protected void CorrectDropdowns(ChildVacationEditModel model)
+         {
+             if (!model.IsPersonnelFieldsEditable)
+             {
+                 if (!model.IsFirstChild && model.IsFirstChildHidden)
+                 {
+                     if (ModelState.ContainsKey("IsFirstChild"))
+                         ModelState.Remove("IsFirstChild");
+                     model.IsFirstChild = model.IsFirstChildHidden;
+                 }
+                 if (!model.IsFreeRate && model.IsFreeRateHidden)
+                 {
+                     if (ModelState.ContainsKey("IsFreeRate"))
+                         ModelState.Remove("IsFreeRate");
+                     model.IsFreeRate = model.IsFreeRateHidden;
+                 }
+                 if (!model.IsPreviousPaymentCounted && model.IsPreviousPaymentCountedHidden)
+                 {
+                     if (ModelState.ContainsKey("IsPreviousPaymentCounted"))
+                         ModelState.Remove("IsPreviousPaymentCounted");
+                     model.IsPreviousPaymentCounted = model.IsPreviousPaymentCountedHidden;
+                 }
+             }
+         }
+         protected void CorrectCheckBox()
+         {
+             
+         }
+
+  
          #endregion
          #region Comments
          [HttpGet]
@@ -1589,6 +1752,33 @@ namespace WebMvc.Controllers
              }
          }*/
          #endregion
+
+         protected void CheckBeginDate(ICheckForEntityBeginDate model)
+         {
+            CheckRequestDate(model.IsDelete,model.BeginDate);
+         }
+         protected void CheckEndDate(ICheckForEntityEndDate model)
+         {
+            CheckRequestDate(model.IsDelete, model.EndDate);
+         }
+        protected void CheckRequestDate(bool isDelete,DateTime? date)
+        {
+            if (isDelete || !date.HasValue)
+                return;
+            DateTime beginDate = date.Value;
+            DateTime current = DateTime.Today;
+            DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
+            if ((current.Day != 1) && monthBegin > beginDate)
+            {
+                ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
+                return;
+            }
+            if ((current.Day == 1) && monthBegin.AddMonths(-1) > beginDate)
+            {
+                ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
+                return;
+            }
+        }
 
          [HttpGet]
          public ActionResult DepartmentDialog(int id/*, int typeId*/)
