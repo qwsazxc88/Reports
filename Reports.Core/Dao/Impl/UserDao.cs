@@ -464,8 +464,8 @@ namespace Reports.Core.Dao.Impl
             ,u.Name as UserName
             ,ard.DateAccept
             from dbo.Users u
-            left join AcceptRequestDate ard on ard.UserId = u.Id ";
-            string sqlWhere = string.Format(" (ard.DateAccept is null  or ard.DateAccept between :beginDate and :endDate) and u.RoleId = {0} ", (int)UserRole.Manager);
+            left join AcceptRequestDate ard on ard.UserId = u.Id and ard.DateAccept between :beginDate and :endDate";
+            string sqlWhere = string.Format(" u.RoleId = {0} ", (int)UserRole.Manager);
             switch (managerRole)
             {
                 case UserRole.Manager:
