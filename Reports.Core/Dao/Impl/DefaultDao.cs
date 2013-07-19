@@ -144,8 +144,8 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as Number,
                                 u.Name as UserName,
                                 t.Name as RequestType,
-                                case when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.DeleteDate is not null then '{0}'
+                                case when v.DeleteDate is not null then '{0}'
+                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
                                      when v.PersonnelManagerDateAccept is not null 
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
@@ -323,18 +323,18 @@ namespace Reports.Core.Dao.Impl
                         statusWhere =
                             @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
                         break;
-                    case 9:
-                        statusWhere = @"SendTo1C is not null";
-                        break;
                     case 10:
                         statusWhere = @"[DeleteDate] is not null";
+                        break;
+                    case 9:
+                        statusWhere = @"SendTo1C is not null";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
                 if (statusId != 10)
                     statusWhere += " and DeleteDate is null ";
-                if (statusId != 9)
+                if (statusId != 9 && statusId != 10)
                     statusWhere += " and SendTo1C is null ";
                 if (whereString.Length > 0)
                     whereString += @" and ";

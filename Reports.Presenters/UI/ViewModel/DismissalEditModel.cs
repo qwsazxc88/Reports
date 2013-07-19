@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class DismissalEditModel : UserInfoModel, ICheckBoxes,IAttachment
+    public class DismissalEditModel : UserInfoModel, ICheckBoxes,IAttachment,ICheckForEntity
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -27,6 +27,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Кол-во дней компенсации")]
         public string Compensation { get; set; }
+        [Display(Name = "Кол-во дней удержания")]
+        public string Reduction { get; set; }
         public bool IsPersonnelFieldsEditable { get; set; }
 
         /*[Required(ErrorMessageResourceName = "DismissalEditModel_Reason_Required",
@@ -78,5 +80,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsApproved { get; set; }
         public bool IsApprovedEnable { get; set; }
+
+        public bool IsApprovedForAll { get; set; }
+        public bool IsApprovedForAllEnable { get; set; }
     }
 }

@@ -415,6 +415,7 @@ namespace WebMvc.Controllers
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -488,9 +489,19 @@ namespace WebMvc.Controllers
              {
                  decimal compensation;
                  if(!Decimal.TryParse(model.Compensation,out compensation) ||
-                     compensation <= 0)
-                     ModelState.AddModelError("Compensation", "Кол-во дней компенсации должно быть положительным десятичным числом.");
+                     compensation < 0)
+                     ModelState.AddModelError("Compensation", "Кол-во дней компенсации должно быть неотрицательным десятичным числом.");
              }
+             if (!string.IsNullOrEmpty(model.Reduction))
+             {
+                 decimal reduction;
+                 if (!Decimal.TryParse(model.Reduction, out reduction) ||
+                     reduction < 0)
+                     ModelState.AddModelError("Reduction", "Кол-во дней удержания должно быть неотрицательным десятичным числом.");
+             }
+             if (role == UserRole.PersonnelManager && string.IsNullOrEmpty(model.Compensation) && string.IsNullOrEmpty(model.Reduction))
+                 ModelState.AddModelError("Compensation", "Укажите \"Кол-во дней компенсации\" и/или \"Кол-во дней удержания\"");
+             
              return ModelState.IsValid;
          }
 
@@ -529,6 +540,7 @@ namespace WebMvc.Controllers
              if (!ValidateMissionEditModel(model))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -674,6 +686,7 @@ namespace WebMvc.Controllers
              if (!ValidateSicklistEditModel(model, fileDto/*,out needToReload,out error*/))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  //if(needToReload)
                  //{
                  //    ModelState.Clear();
@@ -800,6 +813,8 @@ namespace WebMvc.Controllers
                  model.TypeId = model.TypeIdHidden;
                  model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;
              }
+             if(!model.IsDatesEditable)
+                 model.IsContinued = model.IsContinuedHidden;
              /*if (!model.IsBabyMindingTypeEditable)
                  model.BabyMindingTypeId = model.BabyMindingTypeIdHidden;*/
              if (!model.IsTimesheetStatusEditable)
@@ -849,6 +864,7 @@ namespace WebMvc.Controllers
              if (!ValidateAbsenceEditModel(model))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -931,6 +947,7 @@ namespace WebMvc.Controllers
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
+                 model.IsApprovedForAll = false;
                  RequestBl.ReloadDictionariesToModel(model);
                  return View(model);
              }
@@ -989,7 +1006,7 @@ namespace WebMvc.Controllers
              {
                  if(model.BeginDate > model.EndDate)
                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-                 else
+                 else if(!model.IsDelete)
                  {
                      int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
                          (model.BeginDate.Value, model.EndDate.Value, 

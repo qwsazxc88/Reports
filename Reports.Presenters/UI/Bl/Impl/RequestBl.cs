@@ -1566,6 +1566,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId = dismissal.Type == null? 0 : dismissal.Type.Id;
                 model.EndDate = dismissal.EndDate;
                 model.Compensation = dismissal.Compensation.HasValue? dismissal.Compensation.Value.ToString():string.Empty;
+                model.Reduction = dismissal.Reduction.HasValue ? dismissal.Reduction.Value.ToString() : string.Empty;
                 //model.StatusId = dismissal.TimesheetStatus == null ? 0 : dismissal.TimesheetStatus.Id;
                 model.Reason = dismissal.Reason;
                 model.CreatorLogin = dismissal.Creator.Name;
@@ -1634,11 +1635,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+            // hack to uncheck checkbox on UI
+            if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
+            RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+            model.IsPrintAvailable = form != null;
+                   
             switch (currentUserRole)
             {
                 case UserRole.Employee:
-                    RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
-                    model.IsPrintAvailable = form != null;
                     if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if(model.AttachmentId > 0)
@@ -1648,8 +1654,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
-                    model.IsPrintAvailable = formMan != null;
+                    //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
+                    //model.IsPrintAvailable = formMan != null;
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -1665,7 +1671,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -1674,6 +1683,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+                case UserRole.OutsourcingManager:
+                    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
             }
@@ -1710,6 +1723,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
@@ -1719,7 +1735,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -1761,6 +1777,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
                         dismissal.DeleteDate = DateTime.Now;
                         DismissalDao.SaveAndFlush(dismissal);
@@ -1830,8 +1848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id*/
+            if (current.UserRole == UserRole.PersonnelManager 
                 && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 )
             {
@@ -1845,12 +1862,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Compensation = string.IsNullOrEmpty(model.Compensation)
                                               ? new decimal?()
                                               : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
+                    entity.Reduction = string.IsNullOrEmpty(model.Reduction)
+                                             ? new decimal?()
+                                             : (decimal)((int)(decimal.Parse(model.Reduction) * 100)) / 100;
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Dismissal, false);
                     }
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if (model.IsTypeEditable)
@@ -1988,6 +2010,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveAvailable = true;
                 model.IsTypeEditable = true;
                 model.IsApprovedEnable = true;
+               
                 switch (currentUserRole)
                 {
                     case UserRole.Employee:
@@ -2000,6 +2023,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
+                        model.IsApprovedForAllEnable = true;
                         model.IsReasonEditable = true;
                         break;
                 }
@@ -2014,6 +2038,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
 
             RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.MissionOrder);
             model.IsPrintOrderAvailable = form != null;
@@ -2049,6 +2077,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
@@ -2058,6 +2087,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
+                    break;
+                    case UserRole.OutsourcingManager:
+                        if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
                     break;
             }
             model.IsSaveAvailable = model.IsTypeEditable || model.IsTimesheetStatusEditable
@@ -2095,6 +2128,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         protected void LoadDictionaries(MissionEditModel model)
         {
@@ -2125,7 +2161,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2155,6 +2191,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            mission.DeleteAfterSendTo1C = true;
                         mission.DeleteDate = DateTime.Now;
                         mission.CreateDate = DateTime.Now;
                         MissionDao.SaveAndFlush(mission);
@@ -2259,6 +2297,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Mission, false);
                     }
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if (model.IsTypeEditable)
@@ -2757,6 +2797,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PaymentRestrictTypeId = sicklist.RestrictType == null ? 0 : sicklist.RestrictType.Id;
                 model.PaymentDecreaseDate = sicklist.PaymentDecreaseDate;
                 model.IsPreviousPaymentCounted = sicklist.IsPreviousPaymentCounted;
+                model.IsContinued = sicklist.IsContinued;
                 //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
                 SetHiddenFields(model);
@@ -2777,6 +2818,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PaymentRestrictTypeIdHidden = model.PaymentRestrictTypeId;
             //model.Is2010CalculateHidden = model.Is2010Calculate;
             model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
+            model.IsContinuedHidden = model.IsContinued;
             model.IsAddToFullPaymentHidden = model.IsAddToFullPaymentHidden;
         }
         protected void SetAttachmentToModel(IAttachment model, int id,RequestAttachmentTypeEnum type)
@@ -2797,7 +2839,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current,model.Id,true) || !CheckUserRightsForEntity(user,current,model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -2834,6 +2876,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            sicklist.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         sicklist.DeleteDate = DateTime.Now;
@@ -2928,8 +2972,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
-                && current.Id == user.PersonnelManager.Id*/
+            if (current.UserRole == UserRole.PersonnelManager
                 && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
                 )
             {
@@ -2943,15 +2986,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
-                        //!!! need to send e-mail
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Sicklist, false);
                     }
+                    if(model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
                 }
             }
             if(model.IsDatesEditable)
             {
                 // ReSharper disable PossibleInvalidOperationException
+                entity.IsContinued = model.IsContinued;
                 entity.BeginDate = model.BeginDate.Value;
                 entity.EndDate = model.EndDate.Value;
                 // ReSharper restore PossibleInvalidOperationException
@@ -3067,6 +3112,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = entity.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = entity.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = entity.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -3095,7 +3145,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         if (!entity.SendTo1C.HasValue)
                         {
@@ -3106,6 +3159,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+                case UserRole.OutsourcingManager:
+                    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
             }
@@ -3146,7 +3203,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsPersonnelFieldsEditable = state;
 
-            model.IsApprovedEnable = false;
+            model.IsApproved = state;
+            model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
+
         }
         #endregion
         #region Absence
@@ -3277,6 +3339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case UserRole.PersonnelManager:
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsTimesheetStatusEditable = true;
+                        model.IsApprovedForAllEnable = true;
                         break;
                 }
                 if(currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
@@ -3290,6 +3353,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedByManagerHidden = model.IsApprovedByManager = absence.ManagerDateAccept.HasValue;
             model.IsApprovedByPersonnelManagerHidden = model.IsApprovedByPersonnelManager = absence.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = absence.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (absence.DeleteDate.HasValue && !absence.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -3319,6 +3387,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         //model.IsApprovedByPersonnelManagerEnable = true;
                         model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;
                         if (!absence.SendTo1C.HasValue)
                         {
                             model.IsAbsenceTypeEditable = true;
@@ -3326,6 +3395,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     else if (!absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
+                            model.IsDeleteAvailable = true;
+                    break;
+                    case UserRole.OutsourcingManager:
+                        if (absence.SendTo1C.HasValue && !absence.DeleteDate.HasValue)
                             model.IsDeleteAvailable = true;
                     break;
             }
@@ -3360,6 +3433,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         public void ReloadDictionariesToModel(AbsenceEditModel model)
         {
@@ -3394,7 +3470,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3449,6 +3525,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                 absence.Number, RequestTypeEnum.Absence, false);
                         }
+                        if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
+                            absence.ManagerDateAccept = DateTime.Now;
                     }
                     AbsenceDao.SaveAndFlush(absence);
                     model.Id = absence.Id;
@@ -3464,6 +3542,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (model.IsDelete)
                     {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            absence.DeleteAfterSendTo1C = true;
                         absence.CreateDate = DateTime.Now;
                         absence.DeleteDate = DateTime.Now;
                         AbsenceDao.SaveAndFlush(absence);
@@ -3508,6 +3588,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                     absence.Number, RequestTypeEnum.Absence, false);
                             }
+                            if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
+                                absence.ManagerDateAccept = DateTime.Now;
                         }
                         if (model.IsAbsenceTypeEditable)
                         {
@@ -3734,7 +3816,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true))
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3791,6 +3873,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                                 vacation.Number, RequestTypeEnum.Vacation, false);
                         }
+                        if (model.IsApprovedForAll && !vacation.ManagerDateAccept.HasValue)
+                            vacation.ManagerDateAccept = DateTime.Now;
                     }
 
                     VacationDao.SaveAndFlush(vacation);
@@ -3818,6 +3902,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            vacation.DeleteAfterSendTo1C = true;
                         vacation.CreateDate = DateTime.Now;
                         vacation.DeleteDate = DateTime.Now;
                         VacationDao.SaveAndFlush(vacation);
@@ -3861,6 +3947,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                                     vacation.Number, RequestTypeEnum.Vacation, false);
                             }
+                            if (model.IsApprovedForAll && !vacation.ManagerDateAccept.HasValue)
+                                vacation.ManagerDateAccept = DateTime.Now;
 
                         }
                         if (model.IsVacationTypeEditable)
@@ -3909,6 +3997,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId;
                 model.DaysCountHidden = model.DaysCount;
             }
+        }
+        public bool CheckUserRightsForEntity(User user, IUser current, ICheckForEntity model)
+        {
+            if (current.UserRole == UserRole.OutsourcingManager)
+            {
+                if (model.IsDeleteAvailable && model.IsDelete)
+                    return true;
+                throw new ArgumentException("Вам запрещено редактировать заявки.");
+            }
+            return true;
         }
         public bool CheckUserRights(User user, IUser current,int entityId,bool isSave)
         {
@@ -4007,6 +4105,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
         }
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
@@ -4045,6 +4146,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsApprovedByPersonnelManager = vacation.PersonnelManagerDateAccept.HasValue;
             model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.SendTo1C.HasValue;
 
+            // hack to uncheck checkbox on UI
+            if (vacation.DeleteDate.HasValue && !vacation.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
             RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
             model.IsPrintAvailable = form != null;
 
@@ -4075,7 +4180,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
+                        {
                             model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
                         if (!vacation.SendTo1C.HasValue)
                         {
                             model.IsVacationTypeEditable = true;
@@ -4086,6 +4194,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                              !vacation.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     
+                    break;
+                case UserRole.OutsourcingManager:
+                    if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
                     break;
             }
             model.IsSaveAvailable = model.IsVacationTypeEditable || model.IsTimesheetStatusEditable;

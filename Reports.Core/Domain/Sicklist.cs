@@ -54,6 +54,9 @@ namespace Reports.Core.Domain
         public virtual DateTime? DeleteDate { get; set; }
 
         public virtual IList<SicklistComment> Comments { get; set; }
+
+        public virtual bool DeleteAfterSendTo1C { get; set; }
+        public virtual bool IsContinued { get; set; }
         
         
         #endregion

@@ -150,7 +150,11 @@
                         <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
                         <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
                         <input type="submit" value="Отправить" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
-                                                                        {<text>style="display:none"</text>}/>                    
+                                                                        {<text>style="display:none"</text>}/>     
+                        <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
+                        <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
+                        <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
+                                                                        {<text>style="display:none"</text>}/>               
             </td>
     </tr>
     <tr>
@@ -223,6 +227,11 @@
         });    
     function ValidateForm()
     {
+        return true;
+    }
+    function SetApprovedForAllAndValidateForm() {
+        SetApprovedAndValidateForm();
+        $("#IsApprovedForAll").val('true');
         return true;
     }
     function SetApprovedAndValidateForm() {

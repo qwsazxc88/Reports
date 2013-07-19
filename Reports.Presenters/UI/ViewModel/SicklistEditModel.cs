@@ -5,7 +5,12 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class SicklistEditModel : UserInfoModel, ICheckBoxes, IAttachment
+    public interface ICheckForEntity
+    {
+        bool IsDeleteAvailable { get; set; }
+        bool IsDelete { get; set; }
+    }
+    public class SicklistEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntity
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -83,6 +88,10 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsPreviousPaymentCounted { get; set; }
         public bool IsPreviousPaymentCountedHidden { get; set; }
 
+        [Display(Name = "Больничный имеет продолжение")]
+        public bool IsContinued { get; set; }
+        public bool IsContinuedHidden { get; set; }
+
         //[Display(Name = "Рассчитывать заработок по правилам 2010 года")]
         //public bool Is2010Calculate { get; set; }
         //public bool Is2010CalculateHidden { get; set; }
@@ -135,5 +144,10 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsApproved { get; set; }
         public bool IsApprovedEnable { get; set; }
+
+        public bool IsApprovedForAll { get; set; }
+        public bool IsApprovedForAllEnable { get; set; }
+
+
     }
 }
