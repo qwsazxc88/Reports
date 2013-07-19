@@ -1006,7 +1006,7 @@ namespace WebMvc.Controllers
              {
                  if(model.BeginDate > model.EndDate)
                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-                 else
+                 else if(!model.IsDelete)
                  {
                      int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
                          (model.BeginDate.Value, model.EndDate.Value, 
