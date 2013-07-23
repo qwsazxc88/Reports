@@ -1,0 +1,43 @@
+﻿@model Reports.Presenters.UI.ViewModel.ChangePwdModel
+@{
+    ViewBag.Title = "Изменение пароля";
+}
+
+@using (Html.BeginForm()) {
+    <table style="width:100%">
+           <tr>
+                <td colspan="2">     
+                    @Html.ValidationSummary(false, "")
+                     <div id="Success" style="color:Green;">@Model.Success</div>
+
+                </td>
+            </tr>
+            <tr>
+                <td style="width:100px">
+                    @Html.LabelFor(m => m.NewPassword)
+                </td>
+                <td>
+                    @Html.PasswordFor(m => m.NewPassword)
+                </td>
+            </tr>
+            <tr>
+                <td  colspan="2">Пароль должен состоять не менее чем из восьми символов и содержать буквы и цифры</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Сохранить" onclick="return OnSaveClick();"/>
+                </td>
+            </tr>    
+    </table>
+    <script type="text/javascript">
+//        $(document).ready(function () {
+//            clearMainActiveMenuItem();
+//        });
+        function OnSaveClick() {
+            $("#Success").text('');
+            return true;
+        }
+    </script>
+}
+
+

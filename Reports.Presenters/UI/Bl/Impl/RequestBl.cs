@@ -17,6 +17,7 @@ namespace Reports.Presenters.UI.Bl.Impl
     {
         protected string SelectAll = "Все";
         protected string EmptyDepartmentName = string.Empty;
+        protected string ChildVacationTimesheetStatusShortName = "ОЖ";
 
         public const int VacationFirstTimesheetStatisId = 8;
         public const int VacationLastTimesheetStatisId = 12;
@@ -74,6 +75,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IInspectorToUserDao inspectorToUserDao;
         protected IChiefToUserDao chiefToUserDao;
         protected IWorkingDaysConstantDao workingDaysConstantDao;
+
+        protected IChildVacationDao childVacationDao;
+        protected IChildVacationCommentDao childVacationCommentDao;
 
 
        
@@ -283,6 +287,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { workingDaysConstantDao = value; }
         }
 
+        public IChildVacationDao ChildVacationDao
+        {
+            get { return Validate.Dependency(childVacationDao); }
+            set { childVacationDao = value; }
+        }
+        public IChildVacationCommentDao ChildVacationCommentDao
+        {
+            get { return Validate.Dependency(childVacationCommentDao); }
+            set { childVacationCommentDao = value; }
+        }
         #endregion
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
@@ -321,6 +335,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new List<IdNameDto>
                        {
                            new IdNameDto((int) RequestTypeEnum.Vacation, "Заявка на отпуск"),
+                           new IdNameDto((int) RequestTypeEnum.ChildVacation, "Заявка на отпуск по уходу за ребенком"),
                            new IdNameDto((int) RequestTypeEnum.Absence, "Заявка на неявку"),
                            new IdNameDto((int) RequestTypeEnum.Sicklist, "Заявка на больничный"),
                            //new IdNameDto((int) RequestTypeEnum.HolidayWork, "Заявка на оплату праздничных и выходных дней"),
@@ -504,6 +519,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                   RequestStatus = x.RequestStatus,
                   RequestType = x.RequestType
               }));
+
+            result.AddRange(ChildVacationDao.GetDocuments(
+             user.Id,
+             role,
+             model.DepartmentId,
+             0,
+             0,
+             model.StatusId,
+             model.BeginDate,
+             model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+             {
+                 Date = x.Date,
+                 BeginDate = x.BeginDate,
+                 EndDate = x.EndDate,
+                 EditUrl = "ChildVacationEdit",
+                 Id = x.Id,
+                 Name = x.Name,
+                 Number = x.Number,
+                 UserId = x.UserId,
+                 UserName = x.UserName,
+                 RequestStatus = x.RequestStatus,
+                 RequestType = x.RequestType
+             }));
             /*result.AddRange(EmploymentDao.GetDocuments(
                user.Id,
                role,
@@ -3020,8 +3058,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             sicklist.ExperienceYears = GetIntFromModel(model.ExperienceYears);
             sicklist.ExperienceMonthes = GetIntFromModel(model.ExperienceMonthes); 
             sicklist.PaymentPercent = model.PaymentPercentTypeId == 0 ? null : SicklistPaymentPercentDao.Load(model.PaymentPercentTypeId);
-            //sicklist.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
-            //sicklist.PaymentDecreaseDate = model.PaymentDecreaseDate;
+            //entity.RestrictType = model.PaymentRestrictTypeId == 0 ? null : SicklistPaymentRestrictTypeDao.Load(model.PaymentRestrictTypeId);
+            //entity.PaymentDecreaseDate = model.PaymentDecreaseDate;
             sicklist.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
             //entity.Is2010Calculate = model.Is2010Calculate;
             sicklist.IsAddToFullPayment = model.IsAddToFullPayment;
@@ -4233,11 +4271,450 @@ namespace Reports.Presenters.UI.Bl.Impl
             return dtos;
         }
         public int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
-            DateTime endDate,int userId,int vacationId)
+            DateTime endDate,int userId,int vacationId, bool isChildVacantion)
         {
             return VacationDao.GetRequestCountsForUserAndDates(beginDate, endDate
-                                                               , userId, vacationId);
+                                                               , userId, vacationId,isChildVacantion);
         }
+        #endregion
+        #region Child Vacation 
+        public ChildVacationListModel GetChildVacationListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            ChildVacationListModel model = new ChildVacationListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                //Department = GetDepartmentDto(user),
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //VacationTypes = GetVacationTypes(true),
+                RequestStatuses = GetRequestStatuses(),
+                Positions = GetPositions(user)
+            };
+            return model;
+        }
+        public void SetChildVacationListModel(ChildVacationListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            //model.Departments = GetDepartments(user);
+            model.RequestStatuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+            //model.VacationTypes = GetVacationTypes(true);
+            if (hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(ChildVacationListModel model, User user)
+        {
+            UserRole role = (UserRole)user.Role.Id;
+            /*Department dep = null;
+            if(model.Department.Id != 0)
+             dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
+            model.Documents = ChildVacationDao.GetDocuments(user.Id,
+                role,
+                model.DepartmentId,
+                //GetDepartmentId(model.Department),
+                model.PositionId,
+                0,
+                //0,
+                model.RequestStatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
+        }
+        public ChildVacationEditModel GetChildVacationEditModel(int id, int userId)
+        {
+            ChildVacationEditModel model = new ChildVacationEditModel { Id = id, UserId = userId };
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current, id, false))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.ChildVacation);
+            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.ChildVacation);
+            //model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+            //model.VacationTypes = GetVacationTypes(false);
+            ChildVacation vacation = null;
+            if (id == 0)
+            {
+                model.CreatorLogin = current.Name;
+                model.Version = 0;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                vacation = ChildVacationDao.Load(id);
+                if (vacation == null)
+                    throw new ArgumentException(string.Format("Заявка на отпуск (id {0}) не найдена в базе данных.", id));
+                model.Version = vacation.Version;
+                //model.VacationTypeId = vacation.Type.Id;
+                //model.VacationTypeIdHidden = model.VacationTypeId;
+                model.BeginDate = vacation.BeginDate;//new DateTimeDto(vacation.BeginDate);//
+                model.EndDate = vacation.EndDate;
+                model.ChildrenCount = vacation.ChildrenCount.HasValue ? vacation.ChildrenCount.ToString() : string.Empty;
+                model.PaidToDate = vacation.PaidToDate;
+                model.PaidToDate1 = vacation.PaidToDate1;
+                model.IsFirstChild = vacation.IsFirstChild;
+                
+                model.IsFreeRate = vacation.FreeRate;
+               
+                model.IsPreviousPaymentCounted = vacation.IsPreviousPaymentCounted;
+                //model.IsPreviousPaymentCountedHidden = vacation.IsPreviousPaymentCounted;
+                //model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
+                //model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+                //model.DaysCount = vacation.DaysCount;
+                //model.DaysCountHidden = model.DaysCount;
+                model.CreatorLogin = vacation.Creator.Name;
+                model.DocumentNumber = vacation.Number.ToString();
+                model.DateCreated = vacation.CreateDate.ToShortDateString();
+                if (vacation.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+                SetHiddenFields(model);
+            }
+            SetFlagsState(id, user, vacation, model);
+            return model;
+        }
+        protected void SetHiddenFields(ChildVacationEditModel model)
+        {
+            model.IsFirstChildHidden = model.IsFirstChild;
+            model.IsFreeRateHidden = model.IsFreeRate;
+            model.IsPreviousPaymentCountedHidden = model.IsPreviousPaymentCounted;
+        }
+        protected void SetFlagsState(int id, User user, ChildVacation vacation, ChildVacationEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if (id == 0)
+            {
+                model.IsSaveAvailable = true;
+                model.IsVacationDatesEditable = true;
+                model.IsApprovedEnable = false;
+                switch (currentUserRole)
+                {
+                    case UserRole.Employee:
+                        //model.IsApprovedByUserEnable = false;
+                        break;
+                    case UserRole.Manager:
+                        //model.IsApprovedByManagerEnable = false;
+                        //model.IsTimesheetStatusEditable = true;
+                        break;
+                    case UserRole.PersonnelManager:
+                        //model.IsApprovedByPersonnelManagerEnable = false;
+                        model.IsPersonnelFieldsEditable = true;
+                        break;
+                }
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                {
+                    model.IsApprovedByUserEnable = false;
+                    model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
+                }
+                return;
+            }
+
+            model.IsApprovedByUserHidden = model.IsApprovedByUser = vacation.UserDateAccept.HasValue;
+            model.IsApprovedByManagerHidden = model.IsApprovedByManager = vacation.ManagerDateAccept.HasValue;
+            model.IsApprovedByPersonnelManagerHidden =
+                model.IsApprovedByPersonnelManager = vacation.PersonnelManagerDateAccept.HasValue;
+            model.IsPostedTo1CHidden = model.IsPostedTo1C = vacation.SendTo1C.HasValue;
+
+            // hack to uncheck checkbox on UI
+            if (vacation.DeleteDate.HasValue && !vacation.DeleteAfterSendTo1C)
+                model.IsApprovedByPersonnelManager = false;
+
+            RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.ChildVacation);
+            model.IsPrintAvailable = form != null;
+
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if (!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        if (!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                            model.IsVacationDatesEditable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (!vacation.ManagerDateAccept.HasValue && !vacation.DeleteDate.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                        {
+                            model.IsVacationDatesEditable = true;
+                            //model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!vacation.PersonnelManagerDateAccept.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                        {
+                            model.IsApprovedEnable = true;
+                            model.IsApprovedForAllEnable = true;
+                        }
+                        if (!vacation.SendTo1C.HasValue)
+                        {
+                            model.IsPersonnelFieldsEditable = true;
+                            model.IsVacationDatesEditable = true;
+                            //model.IsTimesheetStatusEditable = true;
+                        }
+                    }
+                    else if (!vacation.SendTo1C.HasValue &&
+                             !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+
+                    break;
+                case UserRole.OutsourcingManager:
+                    if (vacation.SendTo1C.HasValue && !vacation.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsVacationDatesEditable || model.IsPersonnelFieldsEditable;
+            //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
+            //model.IsApprovedByPersonnelManagerEnable;
+        }
+        protected void SetFlagsState(ChildVacationEditModel model, bool state)
+        {
+            model.IsApprovedByManager = state;
+            model.IsApprovedByManagerHidden = state;
+            model.IsApprovedByManagerEnable = state;
+
+            model.IsApprovedByPersonnelManager = state;
+            model.IsApprovedByPersonnelManagerHidden = state;
+            model.IsApprovedByPersonnelManagerEnable = state;
+
+            model.IsApprovedByUser = state;
+            model.IsApprovedByUserHidden = state;
+            model.IsApprovedByUserEnable = state;
+
+            model.IsPostedTo1C = state;
+            model.IsPostedTo1CHidden = state;
+            model.IsPostedTo1CEnable = state;
+
+            model.IsSaveAvailable = state;
+            //model.IsTimesheetStatusEditable = state;
+            model.IsVacationDatesEditable = state;
+            model.IsPersonnelFieldsEditable = state;
+
+            model.IsDelete = state;
+            model.IsDeleteAvailable = state;
+            model.IsPrintAvailable = state;
+
+            model.IsApproved = state;
+            model.IsApprovedEnable = state;
+
+            model.IsApprovedForAll = state;
+            model.IsApprovedForAllEnable = state;
+        }
+        public void ReloadDictionariesToModel(ChildVacationEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            SetUserInfoModel(user, model);
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.ChildVacation);
+            //model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+            //model.VacationTypes = GetVacationTypes(false);
+            if (model.Id == 0)
+            {
+                model.CreatorLogin = current.Name;
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                ChildVacation childVacation = ChildVacationDao.Load(model.Id);
+                model.CreatorLogin = childVacation.Creator.Name;
+                model.DocumentNumber = childVacation.Number.ToString();
+                model.DateCreated = childVacation.CreateDate.ToShortDateString();
+                //model.DaysCount = vacation.DaysCount;
+                //model.DaysCountHidden = model.DaysCount;
+                if (childVacation.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
+        }
+
+        public bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
+                ChildVacation childVacation;
+                if (model.Id == 0)
+                {
+                    childVacation = new ChildVacation
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.ChildVacation),
+                        User = user,
+                        TimesheetStatus = TimesheetStatusDao.GetStatusForShortName(ChildVacationTimesheetStatusShortName), 
+                    };
+                    ChangeEntityProperties(current, childVacation, model, user);
+                    ChildVacationDao.SaveAndFlush(childVacation);
+                    model.Id = childVacation.Id;
+                }
+                else
+                {
+                    childVacation = ChildVacationDao.Load(model.Id);
+                    string fileName;
+                    int? attachmentId = SaveAttachment(childVacation.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.ChildVacation, out fileName);
+                    if (attachmentId.HasValue)
+                    {
+                        model.AttachmentId = attachmentId.Value;
+                        model.Attachment = fileName;
+                    }
+                    if (childVacation.Version != model.Version)
+                    {
+                        error = "Заявка была изменена другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            childVacation.DeleteAfterSendTo1C = true;
+                        if (model.AttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.AttachmentId);
+                        childVacation.DeleteDate = DateTime.Now;
+                        childVacation.CreateDate = DateTime.Now;
+                        ChildVacationDao.SaveAndFlush(childVacation);
+                        SendEmailForUserRequest(childVacation.User, current, childVacation.Creator, true, childVacation.Id,
+                            childVacation.Number, RequestTypeEnum.ChildVacation, false);
+                        model.IsDelete = false;
+                        model.AttachmentId = 0;
+                        model.Attachment = string.Empty;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, childVacation, model, user);
+                        ChildVacationDao.SaveAndFlush(childVacation);
+                        if (childVacation.Version != model.Version)
+                        {
+                            childVacation.CreateDate = DateTime.Now;
+                            ChildVacationDao.SaveAndFlush(childVacation);
+                        }
+                    }
+                    if (childVacation.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = childVacation.Number.ToString();
+                model.Version = childVacation.Version;
+                //model.DaysCount = childVacation.DaysCount;
+                model.CreatorLogin = childVacation.Creator.Name;
+                model.DateCreated = childVacation.CreateDate.ToShortDateString();
+                SetFlagsState(childVacation.Id, user, childVacation, model);
+                //throw new ArgumentException("Test exception");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ChildVacationDao.RollbackTran();
+                Log.Error("Error on SaveChildVacationEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, ChildVacation entity, ChildVacationEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                //!!! need to send e-mail
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.ChildVacation, false);
+            }
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsApproved)
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
+                    //!!! need to send e-mail
+                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                        entity.Number, RequestTypeEnum.ChildVacation, false);
+                }
+            }
+            if (current.UserRole == UserRole.PersonnelManager
+                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                )
+            {
+                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
+                if (!entity.PersonnelManagerDateAccept.HasValue)
+                {
+                    //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                    if (model.IsPersonnelFieldsEditable)
+                        SetPersonnelDataFromModel(entity, model);
+                    if (model.IsApproved)
+                    {
+                        entity.PersonnelManagerDateAccept = DateTime.Now;
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.ChildVacation, false);
+                    }
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                        entity.ManagerDateAccept = DateTime.Now;
+                }
+            }
+            if (model.IsVacationDatesEditable)
+            {
+                // ReSharper disable PossibleInvalidOperationException
+                entity.BeginDate = model.BeginDate.Value;
+                entity.EndDate = model.EndDate.Value;
+                // ReSharper restore PossibleInvalidOperationException
+            }
+            //if (model.IsTypeEditable)
+            //{
+            //    entity.Type = SicklistTypeDao.Load(model.TypeId);
+            //    if (model.TypeId == sicklistTypeDao.SicklistTypeIdBabyMinding)
+            //        entity.BabyMindingType = model.BabyMindingTypeId.HasValue
+            //            ? SicklistBabyMindingTypeDao.Load(model.BabyMindingTypeId.Value)
+            //            : null;
+            //    else
+            //        entity.BabyMindingType = null;
+            //}
+        }
+        protected void SetPersonnelDataFromModel(ChildVacation entity, ChildVacationEditModel model)
+        {
+            entity.FreeRate = model.IsFreeRate;
+            entity.IsFirstChild = model.IsFirstChild;
+            entity.IsPreviousPaymentCounted = model.IsPreviousPaymentCounted;
+            entity.PaidToDate = model.PaidToDate;
+            entity.PaidToDate1 = model.PaidToDate1;
+            entity.ChildrenCount = string.IsNullOrEmpty(model.ChildrenCount)
+                                       ? new int?()
+                                       : Int32.Parse(model.ChildrenCount);
+        }
+        protected void LoadDictionaries(ChildVacationEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, (int) RequestTypeEnum.ChildVacation);
+        }
+
         #endregion
         #region Comments
         public  RequestCommentsModel GetCommentsModel(int id,int typeId)
@@ -4267,6 +4744,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                         Creator = x.User.FullName,
                                                     });
                         }
+                    break;
+                    case (int)RequestTypeEnum.ChildVacation:
+                    ChildVacation childVacation = ChildVacationDao.Load(id);
+                    if ((childVacation.Comments != null) && (childVacation.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = childVacation.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
                     break;
                     case (int)RequestTypeEnum.Absence:
                     Absence absence = AbsenceDao.Load(id);
@@ -4382,6 +4872,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                           User = user,
                                                       };
                         VacationCommentDao.MergeAndFlush(comment);
+                        break;
+                    case (int)RequestTypeEnum.ChildVacation:
+                        ChildVacation childVacation = ChildVacationDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        ChildVacationComment childVacationComment = new ChildVacationComment
+                        {
+                            Comment = model.Comment,
+                            ChildVacation = childVacation,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        ChildVacationCommentDao.MergeAndFlush(childVacationComment);
                         break;
                     case (int)RequestTypeEnum.Absence:
                         Absence absence = AbsenceDao.Load(model.DocumentId);

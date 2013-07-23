@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
@@ -156,6 +157,45 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
+        [HttpGet]
+        public ActionResult ChangePwd()
+        {
+            ChangePwdModel model = new ChangePwdModel();
+            return View(model);
+        }
+
+        //[Authorize]
+        [HttpPost]
+        public ActionResult ChangePwd(ChangePwdModel model)
+        {
+            if (!ValidateModel(model))
+                return View(model);
+            LoginBl.OnChangePwd(model);
+            if (!string.IsNullOrEmpty(model.Error))
+                ModelState.AddModelError("", model.Error);
+            else
+                model.Success = "Пароль успешно изменен.";
+            return View(model);
+        }
+        protected bool ValidateModel(ChangePwdModel model)
+        {
+            if(!string.IsNullOrEmpty(model.NewPassword))
+            {
+                bool containDigit = false;
+                bool containLetter = false;
+                string password = model.NewPassword;
+                foreach (char c in password)
+                {
+                    if (Char.IsDigit(c))
+                        containDigit = true;
+                    else if (Char.IsLetter(c))
+                        containLetter = true;
+                }
+                if(!containDigit || !containLetter)
+                    ModelState.AddModelError("NewPassword", "Поле 'Новый пароль' должен содержать буквы и цифры");
+            }
+            return ModelState.IsValid;
+        }
 
         [HttpGet]
         public ActionResult LoginRecovery()

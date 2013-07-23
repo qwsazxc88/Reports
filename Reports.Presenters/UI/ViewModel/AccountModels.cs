@@ -79,6 +79,20 @@ namespace Reports.Presenters.UI.ViewModel
         public string ConfirmPassword { get; set; }
     }
 
+    public class ChangePwdModel 
+    {
+        //public int UserId { get; set; }
+        [Required(ErrorMessageResourceName = "ChangePasswordModel_Password_Required",
+        ErrorMessageResourceType = typeof(Resources))]
+        [ValidatePasswordLength]
+        [DataType(DataType.Password)]
+        [Display(Name = "Новый пароль")]
+        public string NewPassword { get; set; }
+
+        public string Error { get; set; }
+        public string Success { get; set; }
+
+    }
     #endregion
 
     //#region Services

@@ -30,13 +30,19 @@ function escapeJson(value) {
 }
 function setActiveMenuItem(menuName) {
     $(".on").each(function () {
-        $("#" + this).attr("class", "menuitem");
+        jQuery(this).attr("class", "menuitem");
     });
     $("#" + menuName).attr("class", "on");
 }
 function setMainActiveMenuItem(menuName) {
-    $(".mainOn").each(function () {
-        $("#" + this).attr("class", "mainMenuItem");
-    });
+//    $(".mainOn").each(function () {
+//        $("#" + this).attr("class", "mainMenuItem");
+    //    });
+    clearMainActiveMenuItem();
     $("#" + menuName).attr("class", "mainOn");
+}
+function clearMainActiveMenuItem() {
+    $(".mainOn").each(function () {
+        jQuery(this).attr("class", "mainMenuItem");
+    });
 }  

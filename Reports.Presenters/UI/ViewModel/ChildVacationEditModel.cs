@@ -1,44 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Reports.Core.Dto;
+using System.Linq;
+using System.Text;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class VacationEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntityBeginDate, IContainId
+    public class ChildVacationEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntityBeginDate, IContainId
     {
         public int Id { get; set; }
         public int Version { get; set; }
         public int UserId { get; set; }
 
 
-        [Display(Name = "Вид отпуска")]
-        public int VacationTypeId { get; set; }
-        public int VacationTypeIdHidden { get; set; }
-        public IList<IdNameDto> VacationTypes;
-        public bool IsVacationTypeEditable { get; set; }
-        [Display(Name = "Дата начала отпуска")]
-        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",ApplyFormatInEditMode = true)]
+        //[Display(Name = "Вид отпуска")]
+        //public int VacationTypeId { get; set; }
+        //public int VacationTypeIdHidden { get; set; }
+        //public IList<IdNameDto> VacationTypes;
+        //public bool IsVacationTypeEditable { get; set; }
+        [Display(Name = "Дата начала")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_BeginDate_Required",
          ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("VacationEditModel_BeginDate_Required", typeof(Resources))]
         //[DataType("DateTimeDto")]
         public DateTime? BeginDate { get; set; }
-        [Display(Name = "Дата окончания отпуска")]
+        [Display(Name = "Дата окончания")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_EndDate_Required",
         ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
-        [Display(Name = "Длительность отпуска (календарных дней)")]
-        public int? DaysCount { get; set; }
-        public int? DaysCountHidden { get; set; }
+        public bool IsVacationDatesEditable { get; set; }
 
-        [Display(Name = "Заполнение табеля")]
-        public int TimesheetStatusId { get; set; }
-        public int TimesheetStatusIdHidden { get; set; }
-        public IList<IdNameDto> TimesheetStatuses;
-        public bool IsTimesheetStatusEditable { get; set; }
+        public bool IsPersonnelFieldsEditable { get; set; }
+
+        [Display(Name = "Освободить на период отпуска ставку в штатном расписании")]
+        public bool IsFreeRate { get; set; }
+        public bool IsFreeRateHidden { get; set; }
+        //public bool IsFreeRateHidden { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Выплачивать по")]
+        public DateTime? PaidToDate { get; set; }
+
+        [Display(Name = "Учитывать заработок предыдущих страхователей")]
+        public bool IsPreviousPaymentCounted { get; set; }
+        public bool IsPreviousPaymentCountedHidden { get; set; }
+
+        [Display(Name = "Количество детей")]
+        public string ChildrenCount { get; set; }
+
+        [Display(Name = "Это первый ребенок")]
+        public bool IsFirstChild { get; set; }
+        public bool IsFirstChildHidden { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Выплачивать по")]
+        public DateTime? PaidToDate1 { get; set; }
+        
+
+        //[Display(Name = "Длительность отпуска (календарных дней)")]
+        //public int? DaysCount { get; set; }
+        //public int? DaysCountHidden { get; set; }
+
+        //[Display(Name = "Заполнение табеля")]
+        //public int TimesheetStatusId { get; set; }
+        //public int TimesheetStatusIdHidden { get; set; }
+        //public IList<IdNameDto> TimesheetStatuses;
+        //public bool IsTimesheetStatusEditable { get; set; }
 
         [Display(Name = "Сотрудник cогласен")]
         public bool IsApprovedByUser { get; set; }

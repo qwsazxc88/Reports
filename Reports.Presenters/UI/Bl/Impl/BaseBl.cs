@@ -209,6 +209,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case RequestTypeEnum.Vacation:
                     requestTypeStr = "Заявка на отпуск";
                     break;
+                case RequestTypeEnum.ChildVacation:
+                    requestTypeStr = "Заявка на отпуск по уходу за ребенком";
+                    break;
                 default:
                     throw new ArgumentException(string.Format("Unknown request type {0}",(int)requestType));
             }

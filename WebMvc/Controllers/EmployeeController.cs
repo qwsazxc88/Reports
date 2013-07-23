@@ -347,7 +347,7 @@ namespace WebMvc.Controllers
             {
                 dto.Graphic = (int)value == value 
                     ? ((int)value).ToString() 
-                    : value.ToString("0.00");
+                    : value.ToString("0.0");
                 return true;
             }
             return false;

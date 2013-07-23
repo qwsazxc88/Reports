@@ -92,6 +92,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Attributes\PreventSpamAttribute.cs" />
     <Compile Include="Attributes\ReportAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -437,6 +438,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\UserRequest\ConstantEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Error\DoubleSubmitError.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\ChildVacationList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\ChildVacationEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Account\ChangePwd.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

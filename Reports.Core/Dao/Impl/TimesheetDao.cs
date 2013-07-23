@@ -554,6 +554,9 @@ namespace Reports.Core.Dao.Impl
                 case RequestTypeEnum.Vacation:
                     sqlQuery += @" from [dbo].[Vacation] v ";
                     break;
+                case RequestTypeEnum.ChildVacation:
+                    sqlQuery += @" from [dbo].[ChildVacation] v ";
+                    break;
                 case RequestTypeEnum.Absence:
                     sqlQuery += @" from [dbo].[Absence] v ";
                     break;
@@ -615,6 +618,7 @@ namespace Reports.Core.Dao.Impl
             List<int> userIds = users.ToList().ConvertAll(x => x.Id).ToList();
             List<RequestDto> allList = new List<RequestDto>();
             allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Vacation, managerId, managerRole, userIds));
+            allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.ChildVacation, managerId, managerRole, userIds));
             allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Absence, managerId, managerRole, userIds));
             allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Sicklist, managerId, managerRole, userIds));
             allList.AddRange(GetRequestsForType(beginDate, endDate, RequestTypeEnum.Mission, managerId, managerRole, userIds));

@@ -88,6 +88,8 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IChiefToUserDao.cs" />
+    <Compile Include="Dao\IChildVacationCommentDao.cs" />
+    <Compile Include="Dao\IChildVacationDao.cs" />
     <Compile Include="Dao\IEmploymentAdditionDao.cs" />
     <Compile Include="Dao\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\IEmploymentDao.cs" />
@@ -119,6 +121,8 @@
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
+    <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
+    <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
     <Compile Include="Dao\Impl\DepartmentDao.cs" />
@@ -213,6 +217,8 @@
     <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
+    <Compile Include="Domain\ChildVacation.cs" />
+    <Compile Include="Domain\ChildVacationComment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Department.cs" />
     <Compile Include="Domain\Dismissal.cs" />
@@ -528,6 +534,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\WorkingCalendar.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ChildVacation.hbm.xml" />
+    <EmbeddedResource Include="Domain\ChildVacationComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
