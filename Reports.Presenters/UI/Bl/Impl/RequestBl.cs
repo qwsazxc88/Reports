@@ -356,6 +356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetDepartmentToModel(model,user);
             SetDictionariesToModel(model, user);
+            SetInitialDates(model);
             return model;   
         }
         protected void SetDepartmentToModel(AllRequestListModel model,User user)
@@ -1534,6 +1535,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
+            SetInitialDates(model);
             return model;
         }
         public void SetDismissalListModel(DismissalListModel model, bool hasError)
@@ -1955,6 +1957,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
+            SetInitialDates(model);
             return model;
         }
         public void SetMissionListModel(MissionListModel model,bool hasError)
@@ -2713,6 +2716,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model,user);
+            SetInitialDates(model);
             return model;
         }
         protected List<IdNameDto> GetSicklistTypes(bool addAll,bool addEmpty)
@@ -3265,7 +3269,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
             };
+            SetInitialDates(model);
             return model;
+        }
+        protected void SetInitialDates(BeginEndCreateDate model)
+        {
+            DateTime today = DateTime.Today;
+            model.BeginDate = new DateTime(today.Year,today.Month,1);
+            model.EndDate = today;
         }
         protected List<IdNameDto> GetAbsenceTypes(bool addAll)
         {
@@ -3693,6 +3704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                               RequestStatuses = GetRequestStatuses(),
                                               Positions = GetPositions(user)
                                           };
+            SetInitialDates(model);
             return model;
         }
         public void SetVacationListModel(VacationListModel model,bool hasError)
@@ -4293,6 +4305,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
             };
+            SetInitialDates(model);
             return model;
         }
         public void SetChildVacationListModel(ChildVacationListModel model, bool hasError)

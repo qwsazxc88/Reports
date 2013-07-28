@@ -7,8 +7,8 @@ namespace Reports.Presenters.UI.ViewModel
 {
     public interface BeginEndCreateDate
     {
-        DateTime? BeginDate { get; }
-        DateTime? EndDate { get; }
+        DateTime? BeginDate { get; set; }
+        DateTime? EndDate { get; set; }
     }
     public class AbsenceListModel : BeginEndCreateDate
     {
@@ -30,8 +30,10 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> AbsenceTypes;
 
         [Display(Name = "Период с")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BeginDate { get; set; }
         [Display(Name = "по")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]
