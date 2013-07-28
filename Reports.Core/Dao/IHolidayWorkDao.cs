@@ -15,6 +15,7 @@ namespace Reports.Core.Dao
             int typeId,
             int statusId,
             DateTime? beginDate,
-            DateTime? endDate);
+            DateTime? endDate,
+            string userName);
     }
 }

@@ -24,6 +24,7 @@ namespace Reports.Core.Dao.Impl
                int paymentPercentTypeId,
                DateTime? beginDate,
                DateTime? endDate,
+               string userName, 
                int sortedBy,
                bool? sortDescending
             )
@@ -39,7 +40,8 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, sqlQuery, sortedBy, sortDescending);
+                statusId, beginDate, endDate,userName,
+                sqlQuery, sortedBy, sortDescending);
 
 //            string sqlQuery =
 //                string.Format(@"select v.Id as Id,

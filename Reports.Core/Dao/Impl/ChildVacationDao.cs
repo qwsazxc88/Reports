@@ -23,6 +23,7 @@ namespace Reports.Core.Dao.Impl
             int requestStatusId,
             DateTime? beginDate,
             DateTime? endDate,
+            string userName, 
             int sortedBy,
             bool? sortDescending)
         {
@@ -37,7 +38,8 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, vacationTypeId,
-                requestStatusId, beginDate, endDate, sqlQuery, sortedBy, sortDescending);
+                requestStatusId, beginDate, endDate,userName, 
+                sqlQuery, sortedBy, sortDescending);
         }
     }
 }

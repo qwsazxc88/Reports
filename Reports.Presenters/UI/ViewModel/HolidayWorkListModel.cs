@@ -41,6 +41,9 @@ namespace Reports.Presenters.UI.ViewModel
         //[Display(Name = "Документы")]
         public IList<VacationDto> Documents { get; set; }
 
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
+
     }
 
     

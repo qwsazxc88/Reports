@@ -24,6 +24,7 @@ namespace Reports.Core.Dao.Impl
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,
+            string userName, 
             int sortedBy,
             bool? sortDescending
             )
@@ -40,7 +41,8 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, sqlQuery,sortedBy,sortDescending);
+                statusId, beginDate, endDate,userName, 
+                sqlQuery,sortedBy,sortDescending);
 
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             //string whereString = GetWhereForUserRole(role, userId);

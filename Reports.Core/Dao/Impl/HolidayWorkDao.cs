@@ -22,7 +22,8 @@ namespace Reports.Core.Dao.Impl
               int typeId,
               int statusId,
             DateTime? beginDate,
-            DateTime? endDate
+            DateTime? endDate,
+              string userName
            )
         {
             string sqlQuery =
@@ -35,7 +36,7 @@ namespace Reports.Core.Dao.Impl
 
             return GetDefaultDocuments(userId, role, departmentId,
                 positionId, typeId,
-                statusId, beginDate, endDate, sqlQuery,0,null);
+                statusId, beginDate, endDate,userName, sqlQuery,0,null);
             
             //string whereString = GetWhereForUserRole(role, userId);
             //whereString = GetTypeWhere(whereString, typeId);

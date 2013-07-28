@@ -280,12 +280,14 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
         public virtual void AddDatesToQuery( IQuery query,DateTime? beginDate,
-            DateTime? endDate)
+            DateTime? endDate,string userName)
         {
             if (beginDate.HasValue)
                 query.SetDateTime("beginDate", beginDate.Value);
             if (endDate.HasValue)
                 query.SetDateTime("endDate", endDate.Value.AddDays(1));
+            if (!string.IsNullOrEmpty(userName))
+                query.SetString("userName", "%"+userName.ToLower()+"%");
         }
 
         public virtual string GetPositionWhere(string whereString, int positionId)
@@ -305,6 +307,16 @@ namespace Reports.Core.Dao.Impl
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString += string.Format("v.[TypeId] = {0} ",typeId);
+            }
+            return whereString;
+        }
+        public virtual string GetUserNameWhere(string whereString, string userName)
+        {
+            if(!string.IsNullOrEmpty(userName))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += "LOWER(u.[Name]) like :userName";
             }
             return whereString;
         }
@@ -448,6 +460,7 @@ namespace Reports.Core.Dao.Impl
                                 int statusId,
                                 DateTime? beginDate,
                                 DateTime? endDate,
+                                string userName, 
                                 string sqlQuery,
                                 int sortedBy,
                                 bool? sortDescending
@@ -459,10 +472,11 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,sortedBy,sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
-            AddDatesToQuery(query, beginDate, endDate);
+            AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
         protected int GetRequestsCountForTypeOneDay(DateTime beginDate, DateTime endDate, RequestTypeEnum type,

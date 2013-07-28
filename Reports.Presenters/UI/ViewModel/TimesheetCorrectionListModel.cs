@@ -41,7 +41,10 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<VacationDto> Documents { get; set; }
 
         public int SortBy { get; set; }
-        public bool? SortDescending { get; set; } 
+        public bool? SortDescending { get; set; }
+
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
     }
 
     

@@ -86,7 +86,20 @@
                     <td colspan="2">
                     </td>
                  </tr>
-            *@   <tr>
+
+            *@   
+                @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                {
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.UserName):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.UserName)
+                        </td>
+                    </tr>
+                }
+                <tr>
                     <td colspan="2">
                         @Html.LabelFor(m => m.BeginDate):
                         @Html.EditorFor(model => model.BeginDate) 
@@ -94,6 +107,7 @@
                         @Html.EditorFor(model => model.EndDate) 
                      </td>
                 </tr>
+                
                 <tr>
                   <td colspan="2">
                     <input type="submit" value="Выбрать"/>
@@ -212,6 +226,7 @@
             $("#PositionId").val('0');
         $("#TypeId").val('0');
         $("#StatusId").val('0');
+         $("#UserName").val('');
         //$("#PaymentPercentType").val('0');
     }
  </script>   

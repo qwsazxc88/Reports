@@ -131,7 +131,7 @@ namespace Reports.Core.Dao.Impl
                 query.SetDateTime("endDate", endDate.Value.AddDays(1));
             if (positionId != 0)
                 query.SetInt32("positionId", positionId);*/
-            AddDatesToQuery(query, beginDate, endDate);
+            AddDatesToQuery(query, beginDate, endDate, null);
             if (graphicTypeId != 0)
                 query.SetInt32("hoursTypeId", graphicTypeId);
 

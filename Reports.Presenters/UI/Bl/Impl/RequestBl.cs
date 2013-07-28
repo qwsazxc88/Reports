@@ -402,6 +402,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 0,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
@@ -424,7 +425,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate,
+               model.UserName,
+               model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    BeginDate = x.BeginDate,
@@ -446,7 +449,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, 
+               model.UserName,
+               model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    BeginDate = x.BeginDate,
@@ -468,7 +473,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                0,
                model.StatusId,
                model.BeginDate,
-               model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+               model.EndDate, 
+               model.UserName,
+               model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                {
                    Date = x.Date,
                    BeginDate = x.BeginDate,
@@ -506,7 +513,9 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate, 
+              model.UserName,
+              model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   BeginDate = x.BeginDate,
@@ -529,7 +538,9 @@ namespace Reports.Presenters.UI.Bl.Impl
              0,
              model.StatusId,
              model.BeginDate,
-             model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+             model.EndDate, 
+             model.UserName,
+             model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
              {
                  Date = x.Date,
                  BeginDate = x.BeginDate,
@@ -567,7 +578,9 @@ namespace Reports.Presenters.UI.Bl.Impl
               0,
               model.StatusId,
               model.BeginDate,
-              model.EndDate, model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
+              model.EndDate, 
+              model.UserName,
+              model.SortBy, model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
               {
                   Date = x.Date,
                   BeginDate = x.BeginDate,
@@ -1185,6 +1198,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -1563,6 +1577,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //0,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -1997,6 +2012,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StatusId,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -2390,7 +2406,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TypeId,
                 model.StatusId,
                 model.BeginDate,
-                model.EndDate
+                model.EndDate,
+                model.UserName
                 //model.PaymentPercentType
                 );
         }
@@ -2794,6 +2811,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 0,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -3314,6 +3332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestStatusId,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -3735,6 +3754,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestStatusId,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -4336,6 +4356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestStatusId,
                 model.BeginDate,
                 model.EndDate,
+                model.UserName,
                 model.SortBy,
                 model.SortDescending);
         }

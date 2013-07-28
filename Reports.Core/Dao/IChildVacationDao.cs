@@ -9,7 +9,7 @@ namespace Reports.Core.Dao
     {
         IList<VacationDto> GetDocuments(int userId, UserRole role, int departmentId, int positionId, int vacationTypeId,
                                         int requestStatusId,
-                                        DateTime? beginDate, DateTime? endDate,
+                                        DateTime? beginDate, DateTime? endDate, string userName, 
                                         int sortedBy, bool? sortDescending);
     }
 }
