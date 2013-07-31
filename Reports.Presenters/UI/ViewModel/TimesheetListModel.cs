@@ -5,7 +5,13 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class TimesheetListModel
+    public interface IDepartmentSelect
+    {
+        string DepartmentName { get; set; }
+        int DepartmentId { get; set; }
+        bool DepartmentReadOnly { get; set; }
+    }
+    public class TimesheetListModel:IDepartmentSelect
     {
         public int ManagerId { get; set; }
 

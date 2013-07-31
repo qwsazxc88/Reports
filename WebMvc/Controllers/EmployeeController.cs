@@ -256,9 +256,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ActionResult TimesheetList(int managerId, int? month, int? year
-            /*, int? currentPage, int? departmentId, string userName,
-            string departmentName*/)
+        public ActionResult TimesheetList(int managerId, int? month, int? year)
         {
             if (!month.HasValue)
                 month = DateTime.Today.Month;
@@ -279,6 +277,7 @@ namespace WebMvc.Controllers
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
         }
+        
         [HttpPost]
         public ActionResult TimesheetList(TimesheetListModel model)
         {
@@ -353,6 +352,29 @@ namespace WebMvc.Controllers
             return false;
         }
 
+
+        [HttpGet]
+        public ActionResult TimesheetYearList(int managerId)
+        {
+            TimesheetYearListModel model = new TimesheetYearListModel
+            {
+                ManagerId = managerId,
+            };
+            EmployeeBl.SetupDepartment(model);
+            EmployeeBl.GetTimesheetListModel(model);
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult TimesheetYearList(TimesheetYearListModel model)
+        {
+            //TimesheetYearListModel model = new TimesheetYearListModel
+            //{
+            //    ManagerId = managerId,
+            //};
+            //EmployeeBl.SetupDepartment(model);
+            EmployeeBl.GetTimesheetListModel(model);
+            return View(model);
+        }
         //[HttpGet]
         //public ActionResult TimesheetEdit(int Id)
         //{
@@ -392,6 +414,8 @@ namespace WebMvc.Controllers
                 model.IsNotApprovedByPersonnel = model.IsNotApprovedByPersonnelHidden;
             }
         }
+
+
 
 
         [HttpGet]

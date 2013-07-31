@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Reports.Core.Domain;
 
 namespace Reports.Core.Dao
@@ -7,5 +8,6 @@ namespace Reports.Core.Dao
     {
         List<WorkingDaysConstant> LoadDataForYear(int year);
         WorkingDaysConstant LoadDataForMonth(int month, int year);
+        List<WorkingDaysConstant> LoadDataForDates(DateTime beginDate, DateTime endDate);
     }
 }

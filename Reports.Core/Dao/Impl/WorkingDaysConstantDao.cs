@@ -27,5 +27,13 @@ namespace Reports.Core.Dao.Impl
                    .Add(Restrictions.Eq("Month", new DateTime(year, month, 1)))
                    .List<WorkingDaysConstant>().FirstOrDefault();
         }
+        public List<WorkingDaysConstant> LoadDataForDates(DateTime beginDate,DateTime endDate)
+        {
+            return Session.CreateCriteria(typeof(WorkingDaysConstant))
+                   .Add(Restrictions.Between("Month", new DateTime(beginDate.Year, beginDate.Month, beginDate.Day),
+                                             new DateTime(endDate.Year, endDate.Month, endDate.Day)))
+                   .AddOrder(new Order("Month", true))
+                   .List<WorkingDaysConstant>().ToList();
+        }
     }
 }
