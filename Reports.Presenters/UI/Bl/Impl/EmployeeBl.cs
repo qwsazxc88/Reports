@@ -1075,14 +1075,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetYearTimesheetsInfo(TimesheetYearListModel model)
         {
             IUser user = AuthenticationService.CurrentUser;
+
             Log.Debug("Before GetRequestsForMonth");
-
-            IList<DayRequestsDto> dayDtoList = GetDayDtoList();
-            DateTime beginDate = dayDtoList.First().Day;
-            DateTime endDate = dayDtoList.Last().Day;
-            model.DatesPeriod = string.Format("{0} - {1} {2}", GetMonthName(beginDate.Month),
-                                              GetMonthName(endDate.Month), beginDate.Year);
-
+            DateTime beginDate = model.BeginDate.Value;
+            DateTime endDate = model.EndDate.Value;
+            IList<DayRequestsDto> dayDtoList = GetDayDtoList(beginDate,endDate);
+            model.DatesPeriod = string.Format("Период: {0} - {1}", beginDate.ToString("dd MMMM yyyy"), endDate.ToString("dd MMMM yyyy"));
             IList<IdNameDtoWithDates> uDtoList =
                 UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,beginDate, endDate, model.DepartmentId, model.UserName);
             Log.Debug("After GetUsersForManagerWithDatePaged");
@@ -1257,10 +1255,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
 
         }
-        protected IList<DayRequestsDto> GetDayDtoList()
+        protected IList<DayRequestsDto> GetDayDtoList(DateTime beginDate, DateTime endDate)
         {
-            DateTime endDate = new DateTime(DateTime.Today.Year,DateTime.Today.Month,1).AddMonths(1).AddDays(-1);
-            DateTime beginDate = new DateTime(endDate.Year, 1, 1);
+            //DateTime endDate = new DateTime(DateTime.Today.Year,DateTime.Today.Month,1).AddMonths(1).AddDays(-1);
+            //DateTime beginDate = new DateTime(endDate.Year, 1, 1);
             IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
             DateTime current = beginDate;
             while(current <= endDate) 

@@ -3290,7 +3290,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             return model;
         }
-        protected void SetInitialDates(BeginEndCreateDate model)
+        public static void SetInitialDates(BeginEndCreateDate model)
         {
             DateTime today = DateTime.Today;
             model.BeginDate = new DateTime(today.Year,today.Month,1);

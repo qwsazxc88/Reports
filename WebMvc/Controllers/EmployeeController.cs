@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -361,19 +360,48 @@ namespace WebMvc.Controllers
                 ManagerId = managerId,
             };
             EmployeeBl.SetupDepartment(model);
+            SetInitialDates(model); 
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
+        }
+        public static void SetInitialDates(BeginEndCreateDate model)
+        {
+            DateTime today = DateTime.Today;
+            model.BeginDate = new DateTime(today.Year, today.Month, 1);
+            model.EndDate = new DateTime(model.BeginDate.Value.Year, model.BeginDate.Value.Month, 1).AddMonths(1).AddDays(-1); 
         }
         [HttpPost]
         public ActionResult TimesheetYearList(TimesheetYearListModel model)
         {
-            //TimesheetYearListModel model = new TimesheetYearListModel
-            //{
-            //    ManagerId = managerId,
-            //};
-            //EmployeeBl.SetupDepartment(model);
+            if(!ValidateModel(model))
+            {
+                model.DatesPeriod = string.Empty;
+                model.CurrentPage = 0;
+                model.NumberOfPages = 0;
+                model.TimesheetDtos = new List<TimesheetDto>();
+                return View(model);
+            }
             EmployeeBl.GetTimesheetListModel(model);
             return View(model);
+        }
+        protected bool ValidateModel(TimesheetYearListModel model)
+        {
+            DateTime today = DateTime.Today;
+            if (!model.BeginDate.HasValue)
+            {
+                ModelState.Remove("BeginDate");
+                model.BeginDate = model.EndDate.HasValue ? 
+                    new DateTime(model.EndDate.Value.Year, model.EndDate.Value.Month, 1) : 
+                    new DateTime(today.Year, today.Month, 1);
+            }
+            if (!model.EndDate.HasValue)
+            {
+                ModelState.Remove("EndDate");
+                model.EndDate = new DateTime(model.BeginDate.Value.Year, model.BeginDate.Value.Month, 1).AddMonths(1).AddDays(-1);
+            }
+            if (model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            return ModelState.IsValid;
         }
         //[HttpGet]
         //public ActionResult TimesheetEdit(int Id)
