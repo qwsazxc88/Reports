@@ -15,6 +15,8 @@
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
+                <div id="liMember" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
+                </div> 
         </div>  
         <div class="podmenu">        
 @*            </tr>*@
@@ -61,6 +63,7 @@
                             <div class="menuitem" id="constantList">@Html.ActionLink("Константы", "ConstantList", "UserRequest")</div>
                         }*@
                 }
+                @*<div class="menuitem" id="templatesList">@Html.ActionLink("Шаблоны документов", "TemplatesList", "UserRequest")</div>*@
                 <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
             </div> 
             </div>   

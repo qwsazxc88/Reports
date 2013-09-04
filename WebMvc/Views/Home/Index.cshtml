@@ -14,6 +14,7 @@
     {
 @*        <table class="menu" style="width:100%">
             <tr>*@
+            <input type="hidden" id="menuId" name="menuId" value="@Model.menuId" />
             <div class="menu-wrap">
              <div class="menu">   
                 <div class="mainMenuItem" id="mainTimesheet">
@@ -34,7 +35,8 @@
                         @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                     }
                 </div>  
-                <div @if(Model.menuId == 1){<text>class="mainOn"</text>}
+                <div @if (Model.menuId == 1)
+                     {<text>class="mainOn"</text>}
                      else
                      {<text>class="mainMenuItem"</text>} id="mainCharge">
                         @Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
@@ -45,6 +47,13 @@
                      {<text>class="mainMenuItem"</text>}
                      id="mainMember">
                         @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                </div> 
+                <div @if (Model.menuId == 3)
+                     {<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>}
+                     id="mainTemplate">
+                        @Html.ActionLink("Шаблоны", "Index", "Template")
                 </div> 
              </div>
             </div>
