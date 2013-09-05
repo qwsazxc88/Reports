@@ -1,20 +1,21 @@
 ﻿@model Reports.Presenters.UI.ViewModel.TemplatesListModel
 @{
-    ViewBag.Title = "Шаблоны документов";
+    Layout = "~/Views/Shared/_LayoutTemplate.cshtml";
+    ViewBag.Title = "Шаблоны";
 }
 
 @using (Html.BeginForm())
 {
 <table style="width:100%">
     <tr>
+        <td style="font-weight:bold">Секция документов</td>
+    </tr>
+    <tr>
         <td>
             <a href="@Url.Content("~/Templates/Test.pdf")" target="_blank">Тестовый документ</a>
         </td>
     </tr>
 </table> 
-    <script type="text/javascript">
-    $(document).ready(function () {
-        setActiveMenuItem("templatesList");
-    });
+ <script type="text/javascript">
  </script>   
 }

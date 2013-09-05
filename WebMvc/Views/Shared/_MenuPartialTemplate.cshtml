@@ -1,0 +1,45 @@
+﻿@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@if (Request.IsAuthenticated)
+{
+        <input type="hidden" id="ActiveMenuItem" name="ActiveMenuItem" value="" />
+        <div class="menu-wrap">
+        <div class="menu">
+@*            <tr>*@
+                <div id="liTimesheet" class="mainMenuItem">
+                    @if (dto.UserRole == UserRole.Admin)
+                    {
+                        @Html.ActionLink("Табель", "UserList", "Admin")
+                    }
+                    else if (dto.UserRole == UserRole.Employee)
+                    {
+                        @Html.ActionLink("Табель", "SicklistList", "UserRequest")
+                    }
+                    else if (dto.UserRole == UserRole.Chief)
+                    {
+                        @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
+                    }
+                </div> 
+                <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                </div> 
+                <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                </div>  
+                 <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
+                </div>  
+        </div>  
+         <div class="podmenu">    
+            <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+         </div> 
+        </div> 
+
+}
+<script type="text/javascript">
+
+</script>

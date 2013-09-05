@@ -48,6 +48,13 @@
                      id="mainMember">
                         @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div> 
+                <div @if (Model.menuId == 3)
+                     {<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>}
+                     id="mainTemplate">
+                        @Html.ActionLink("Шаблоны", "Index", "Template")
+                </div> 
              </div>
             </div>
             
