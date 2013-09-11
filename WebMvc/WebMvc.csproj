@@ -98,6 +98,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AutoCompleteController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DeductionController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -462,6 +463,13 @@
   <ItemGroup>
     <Content Include="Views\Shared\_LayoutTemplate.cshtml" />
     <Content Include="Views\Shared\_MenuPartialTemplate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Deduction\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutDeduction.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialDeduction.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
