@@ -1,5 +1,11 @@
-﻿@if(Request.IsAuthenticated) {
+﻿@using Reports.Presenters.Services.Impl
+@if(Request.IsAuthenticated) 
+{
     <text><b>@Context.User.Identity.Name</b>
+    @{
+         var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+        <text><b>Роль: @Html.ActionLink(UserDto.GetUserRole(dto), "ChangeRole", "Account")</b></text>
+     }
     [ @Html.ActionLink("Изменить пароль", "ChangePwd", "Account") ]
     [ @Html.ActionLink("Выход", "LogOff", "Account") ]
     </text>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Reports.Core;
@@ -19,6 +20,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IFormsAuthenticationService formsAuthenticationService;
         //protected IUserDao userDao;
         protected IUserLoginDao userLoginDao;
+        protected IRoleDao roleDao;
         
 
         #endregion
@@ -43,6 +45,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { userLoginDao = value; }
         }
 
+        public IRoleDao RoleDao
+        {
+            get { return Validate.Dependency(roleDao); }
+            set { roleDao = value; }
+        }
 
 
         public IFormsAuthenticationService FormsAuthenticationService
@@ -82,11 +89,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             if (user.IsActive)
                             {
+
                                 //AuthenticationService.CurrentUser = AuthenticationService.CreateUser(user);
                                 if (user.IsFirstTimeLogin &&
-                                    (user.UserRole == UserRole.Employee ||
-                                     user.UserRole == UserRole.Manager ||
-                                     user.UserRole == UserRole.PersonnelManager))
+                                    ((user.UserRole & UserRole.Employee) > 0 ||
+                                     (user.UserRole & UserRole.Manager) > 0 ||
+                                     (user.UserRole & UserRole.PersonnelManager) > 0))
                                 {
                                     model.IsFirstTimeLogin = user.IsFirstTimeLogin;
                                     model.UserId = user.Id;
@@ -95,10 +103,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 }
                                 else
                                 {
+                                    List<UserRole> roles = GetUserRoles(user);
                                     formsAuthenticationService.SignIn(model.UserName, false);
+                                    if (roles.Count > 1)
+                                    {
+                                        model.NeedToSelectRole = true;
+                                        user.RoleId = (int)UserRole.NoRole;
+                                    }
+                                    else
+                                        AddRecordToUserLogin(user);
                                     IUser dto = AuthenticationService.CreateUser(user);
                                     AuthenticationService.setAuthTicket(dto);
-                                    AddRecordToUserLogin(user);
                                 }
                             }
                             else
@@ -117,7 +132,40 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ErrorMessage = "Exception:" + ex.GetBaseException().Message;
             }
         }
-
+        protected List<UserRole> GetUserRoles(User user)
+        {
+            List<UserRole> roles = new List<UserRole>();
+            if(!string.IsNullOrEmpty(user.Email))
+            {
+                IList<User> list = UserDao.FindByEmail(user.Email);
+                foreach (User usr in list.Where(x => x.IsActive))
+                    GetRolesForUser(roles, usr);
+            }
+            else
+               GetRolesForUser(roles,user);
+            return roles;
+        }
+        protected void GetRolesForUser(List<UserRole> roles,User user)
+        {
+            if((user.UserRole & UserRole.Accountant) > 0 && !roles.Contains(UserRole.Accountant))
+                    roles.Add(UserRole.Accountant);
+            if ((user.UserRole & UserRole.Admin) > 0 && !roles.Contains(UserRole.Admin))
+                roles.Add(UserRole.Admin);
+            if ((user.UserRole & UserRole.BudgetManager) > 0 && !roles.Contains(UserRole.BudgetManager))
+                roles.Add(UserRole.BudgetManager);
+            if ((user.UserRole & UserRole.Chief) > 0 && !roles.Contains(UserRole.Chief))
+                roles.Add(UserRole.Chief);
+            if ((user.UserRole & UserRole.Employee) > 0 && !roles.Contains(UserRole.Employee))
+                roles.Add(UserRole.Employee);
+            if ((user.UserRole & UserRole.Inspector) > 0 && !roles.Contains(UserRole.Inspector))
+                roles.Add(UserRole.Inspector);
+            if ((user.UserRole & UserRole.Manager) > 0 && !roles.Contains(UserRole.Manager))
+                roles.Add(UserRole.Manager);
+            if ((user.UserRole & UserRole.OutsourcingManager) > 0 && !roles.Contains(UserRole.OutsourcingManager))
+                roles.Add(UserRole.OutsourcingManager);
+            if ((user.UserRole & UserRole.PersonnelManager) > 0 && !roles.Contains(UserRole.PersonnelManager))
+                roles.Add(UserRole.PersonnelManager);
+        }
         public void CheckAndSetUserId(ChangePasswordModel model)
         {
             int? userId = AuthenticationService.GetUserIdFromChangePasswordCookue();
@@ -256,6 +304,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             formsAuthenticationService.SignOut();
         }
 
+        public ChangeRoleModel GetChangeRoleModel()
+        {
+            int userId = AuthenticationService.CurrentUser.Id;
+            User user = UserDao.FindById(userId);
+            if(user == null)
+                throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}",userId));
+            List<UserRole> roles = GetUserRoles(user);
+            if(roles.Count == 0)
+                throw new ArgumentException("Отсутствуют роли в системе");
+            ChangeRoleModel model = new ChangeRoleModel { Roles = RoleDao.LoadRolesForList(roles) };
+            return model;
+        }
+        public void SetUserRole(ChangeRoleModel model)
+        {
+            int userId = AuthenticationService.CurrentUser.Id;
+            User user = UserDao.FindById(userId);
+            if (user == null)
+                throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", userId));
+            User first = GetFirstUserWithRole(user, model.RoleId);
+            if(first == null)
+                throw new ValidationException("Не найдено активных пользователей с указанной ролью.");
+            IUser dto = AuthenticationService.CreateUser(first);
+            AuthenticationService.setAuthTicket(dto);
+            AddRecordToUserLogin(first);
+        }
+        protected User GetFirstUserWithRole(User user,int role)
+        {
+            if (!string.IsNullOrEmpty(user.Email))
+            {
+                IList<User> list = UserDao.FindByEmail(user.Email);
+                return list.Where(x => x.IsActive).FirstOrDefault(usr => (usr.RoleId & role) > 0);
+            }
+            if (user.IsActive && (user.RoleId & role) > 0)
+                return user;
+            return null;
+        }
         #endregion
 
         protected void AddRecordToUserLogin(User user)

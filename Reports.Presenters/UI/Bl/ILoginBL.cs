@@ -12,5 +12,7 @@ namespace Reports.Presenters.UI.Bl
         bool SendToSupport(SendToSupportModel model);
         void LogOff();
         void OnChangePwd(ChangePwdModel model);
+        ChangeRoleModel GetChangeRoleModel();
+        void SetUserRole(ChangeRoleModel model);
     }
 }

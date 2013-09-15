@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Security.Principal;
 using log4net;
 using Reports.Core;
 using Reports.Core.Domain;
+using Reports.Presenters.UI.Bl.Impl;
 
 namespace Reports.Presenters.Services.Impl
 {
@@ -101,6 +104,30 @@ namespace Reports.Presenters.Services.Impl
                 Log.Error(string.Format("Ошибка определения пользователя: {0}", data), ex);
                 throw new ArgumentException("Ошибка определения пользователя.");
             }
+        }
+        public static string GetUserRole(IUser dto)
+        {
+            if(dto.UserRole == 0)
+                return "Нет роли";
+            if((dto.UserRole & UserRole.Accountant) > 0)
+                return "Бухгалтер";
+            if ((dto.UserRole & UserRole.Admin) > 0)
+                return "Администратор";
+            if ((dto.UserRole & UserRole.BudgetManager) > 0)
+                return "Бюджет";
+            if ((dto.UserRole & UserRole.Chief) > 0)
+                return "Начальник";
+            if ((dto.UserRole & UserRole.Employee) > 0)
+                return "Сотрудник";
+            if ((dto.UserRole & UserRole.Inspector) > 0)
+                return "Контролер";
+            if ((dto.UserRole & UserRole.Manager) > 0)
+                return "Руководитель";
+            if ((dto.UserRole & UserRole.OutsourcingManager) > 0)
+                return "Аутсорсинг";
+            if  ((dto.UserRole & UserRole.PersonnelManager) > 0)
+                return "Кадровик";
+            throw new ValidationException(string.Format("Неизвестная роль {0}",(int)dto.UserRole));
         }
     }
 }
