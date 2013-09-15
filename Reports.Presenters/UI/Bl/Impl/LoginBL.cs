@@ -166,6 +166,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             if ((user.UserRole & UserRole.PersonnelManager) > 0 && !roles.Contains(UserRole.PersonnelManager))
                 roles.Add(UserRole.PersonnelManager);
         }
+        public string GetUserRole(IUser dto,out bool isLinkAvailable)
+        {
+            //int userId = AuthenticationService.CurrentUser.Id;
+            isLinkAvailable = false;
+            User user = UserDao.FindById(dto.Id);
+            if (user == null)
+                throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", dto.Id));
+            List<UserRole> roles = GetUserRoles(user);
+            if(roles.Count == 0)
+                throw new ValidationException(string.Format("Отсутствуют роли для пользователя с id {0}", dto.Id));
+            if(dto.UserRole == 0)
+            {
+                isLinkAvailable = true;
+                return "Нет роли";
+            }
+            if(roles.Count == 1)
+            {
+                if((roles[0]) != dto.UserRole)
+                    throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id,dto.UserRole));
+            }
+            else
+            {
+                UserRole current = roles.Where(x => x == dto.UserRole).FirstOrDefault();
+                if(current == 0)
+                    throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id, dto.UserRole));
+                isLinkAvailable = true;
+            }
+            Role role = RoleDao.Load((int)dto.UserRole);
+            if (role == null)
+                throw new ValidationException(string.Format("Не могу загрузить роль с id {0}", (int)dto.UserRole));
+            return role.Name; 
+        }
         public void CheckAndSetUserId(ChangePasswordModel model)
         {
             int? userId = AuthenticationService.GetUserIdFromChangePasswordCookue();
@@ -173,7 +205,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new FormatException("Доступ к странице запрещен.");
             model.UserId = userId.Value;
         }
-
         public void OnChangePassword(ChangePasswordModel model)
         {
             try

@@ -4,12 +4,22 @@
     <text><b>@Context.User.Identity.Name</b>
     @{
          var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
-        <text><b>Роль: @Html.ActionLink(UserDto.GetUserRole(dto), "ChangeRole", "Account")</b></text>
+         bool isLinkAvailable = false;
+         string roleName = UserDto.GetUserRole(dto,out isLinkAvailable);
+         if(isLinkAvailable)
+         {
+            <text><b>Роль: @Html.ActionLink(roleName, "ChangeRole", "Account")</b></text>
+         }
+         else
+         {
+            <text><b>Роль: @roleName</b></text>
+         }
      }
     [ @Html.ActionLink("Изменить пароль", "ChangePwd", "Account") ]
     [ @Html.ActionLink("Выход", "LogOff", "Account") ]
     </text>
 }
-else {
+else
+{
     @:[ @Html.ActionLink("Вход", "LogOn", "Account") ]
 }

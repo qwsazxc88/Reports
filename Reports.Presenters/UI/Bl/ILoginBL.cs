@@ -1,4 +1,5 @@
-﻿using Reports.Presenters.UI.ViewModel;
+﻿using Reports.Presenters.Services;
+using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -14,5 +15,7 @@ namespace Reports.Presenters.UI.Bl
         void OnChangePwd(ChangePwdModel model);
         ChangeRoleModel GetChangeRoleModel();
         void SetUserRole(ChangeRoleModel model);
+
+        string GetUserRole(IUser dto, out bool isLinkAvailable);
     }
 }
