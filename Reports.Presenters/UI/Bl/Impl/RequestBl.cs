@@ -5692,6 +5692,77 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ReloadDictionariesToModel(model);
             }
         }
+        #region Deduction
+        public DeductionListModel GetDeductionListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            DeductionListModel model = new DeductionListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                RequestStatuses = GetDeductionStatuses(true),
+                Types = GetDeductionTypes(true)
+            };
+            SetInitialDates(model);
+            return model;
+        }
+        public List<IdNameDto> GetDeductionStatuses(bool addAll)
+        {
+            List<IdNameDto> deductionStatuses = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Записана"),
+                                                           new IdNameDto(2, "Выгружена в 1С"),
+                                                           new IdNameDto(3, "Отклонена"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            if(addAll)
+                deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
+            return deductionStatuses;
+        }
+        public List<IdNameDto> GetDeductionTypes(bool addAll)
+        {
+            List<IdNameDto> deductionStatuses = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Удержание"),
+                                                           new IdNameDto(2, "Удержание ПРИ увольнении"),
+                                                           new IdNameDto(3, "Удержание ПОСЛЕ увольнения"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            if(addAll)
+                deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
+            return deductionStatuses;
+        }
+        public void SetDeductionListModel(DeductionListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            model.RequestStatuses = GetDeductionStatuses(true);
+            model.Types = GetDeductionTypes(true);
+            if (hasError)
+                model.Documents = new List<DeductionDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(DeductionListModel model, User user)
+        {
+            UserRole role = (UserRole)user.RoleId;
+            model.Documents = new List<DeductionDto>();
+            /*Department dep = null;
+            if(model.Department.Id != 0)
+             dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
+            //model.Documents = ChildVacationDao.GetDocuments(user.Id,
+            //    role,
+            //    model.DepartmentId,
+            //    model.PositionId,
+            //    0,
+            //    model.RequestStatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    model.UserName,
+            //    model.SortBy,
+            //    model.SortDescending);
+        }
+        #endregion
     }
 
 }

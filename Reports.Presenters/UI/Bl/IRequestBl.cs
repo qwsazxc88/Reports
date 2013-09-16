@@ -96,5 +96,8 @@ namespace Reports.Presenters.UI.Bl
         ChildVacationEditModel GetChildVacationEditModel(int id, int userId);
         void ReloadDictionariesToModel(ChildVacationEditModel model);
         bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error);
+
+        DeductionListModel GetDeductionListModel();
+        void SetDeductionListModel(DeductionListModel model, bool hasError);
     }
 }
