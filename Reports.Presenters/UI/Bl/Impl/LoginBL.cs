@@ -98,21 +98,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     model.IsFirstTimeLogin = user.IsFirstTimeLogin;
                                     model.UserId = user.Id;
-                                    IUser dto = AuthenticationService.CreateUser(user);
+                                    IUser dto = AuthenticationService.CreateUser(user,user.UserRole);
                                     AuthenticationService.SetChangePasswordCookie(dto);
                                 }
                                 else
                                 {
-                                    List<UserRole> roles = GetUserRoles(user);
                                     formsAuthenticationService.SignIn(model.UserName, false);
+                                    List<UserRole> roles = GetUserRoles(user);
+                                    if (roles.Count == 0)
+                                        throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
+                                    UserRole role = user.UserRole;
                                     if (roles.Count > 1)
                                     {
                                         model.NeedToSelectRole = true;
-                                        user.RoleId = (int)UserRole.NoRole;
+                                        role = UserRole.NoRole;
                                     }
-                                    else
-                                        AddRecordToUserLogin(user);
-                                    IUser dto = AuthenticationService.CreateUser(user);
+                                    AddRecordToUserLogin(user,role);
+                                    IUser dto = AuthenticationService.CreateUser(user,role);
                                     AuthenticationService.setAuthTicket(dto);
                                 }
                             }
@@ -216,7 +218,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 user.Email = model.Email;
                 UserDao.MergeAndFlush(user);
                 formsAuthenticationService.SignIn(user.Login, false);
-                IUser dto = AuthenticationService.CreateUser(user);
+                List<UserRole> roles = GetUserRoles(user);
+                if(roles.Count == 0)
+                    throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
+                UserRole role = user.UserRole;
+                if (roles.Count > 1)
+                    role = roles[0];
+                IUser dto = AuthenticationService.CreateUser(user,role);
                 AuthenticationService.setAuthTicket(dto);
                 AuthenticationService.ClearChangePasswordCookue();
                 SendEmail(model,
@@ -343,7 +351,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}",userId));
             List<UserRole> roles = GetUserRoles(user);
             if(roles.Count == 0)
-                throw new ArgumentException("Отсутствуют роли в системе");
+                throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
             ChangeRoleModel model = new ChangeRoleModel { Roles = RoleDao.LoadRolesForList(roles) };
             return model;
         }
@@ -356,9 +364,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             User first = GetFirstUserWithRole(user, model.RoleId);
             if(first == null)
                 throw new ValidationException("Не найдено активных пользователей с указанной ролью.");
-            IUser dto = AuthenticationService.CreateUser(first);
+            IUser dto = AuthenticationService.CreateUser(first,first.UserRole);
             AuthenticationService.setAuthTicket(dto);
-            AddRecordToUserLogin(first);
+            AddRecordToUserLogin(first,first.UserRole);
         }
         protected User GetFirstUserWithRole(User user,int role)
         {
@@ -373,9 +381,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
-        protected void AddRecordToUserLogin(User user)
+        protected void AddRecordToUserLogin(User user,UserRole roleId)
         {
-            var userLogin = new UserLogin(user);
+            var userLogin = new UserLogin(user) {RoleId = (int) roleId};
             UserLoginDao.MergeAndFlush(userLogin);
         }
 

@@ -62,14 +62,14 @@ namespace Reports.Presenters.Services.Impl
         public UserRole UserRole { get; set; }
         public bool IsAdministrator { get; set; }
 
-        public static IUser CreateUser(User user )
+        public static IUser CreateUser(User user,UserRole roleId)
         {
             return new UserDto
                        {
                            Id = user.Id,
                            Login = user.Login,
                            Name = user.FullName,
-                           UserRole = user.UserRole,
+                           UserRole = roleId,
                            IsAdministrator = user.IsAdministrator
                            
                        };

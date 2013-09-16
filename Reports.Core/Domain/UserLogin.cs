@@ -28,6 +28,8 @@ namespace Reports.Core.Domain
 			get { return _date; }
 			set { _date = value; }
 		}
+        public virtual int? RoleId { get; set; }
+
         #endregion
 
         #region Constructors
@@ -40,6 +42,7 @@ namespace Reports.Core.Domain
         {
             _user = user;
             _date = DateTime.Now;
+            //RoleId = user.RoleId;
         }
 
         #endregion

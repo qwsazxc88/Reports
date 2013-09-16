@@ -112,9 +112,9 @@ namespace Reports.Presenters.Services.Impl
             }
 //            set { _httpContextService.Items[SessionStorageKey] = value; }
         }
-        public IUser CreateUser(User user)
+        public IUser CreateUser(User user,UserRole roleId)
         {
-            return UserDto.CreateUser(user);
+            return UserDto.CreateUser(user,roleId);
         }
 
         #endregion
