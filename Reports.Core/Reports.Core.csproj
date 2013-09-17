@@ -90,6 +90,8 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IDeductionKindDao.cs" />
+    <Compile Include="Dao\IDeductionTypeDao.cs" />
     <Compile Include="Dao\IEmploymentAdditionDao.cs" />
     <Compile Include="Dao\IEmploymentCommentDao.cs" />
     <Compile Include="Dao\IEmploymentDao.cs" />
@@ -124,6 +126,8 @@
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
+    <Compile Include="Dao\Impl\DeductionKindDao.cs" />
+    <Compile Include="Dao\Impl\DeductionTypeDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
     <Compile Include="Dao\Impl\DepartmentDao.cs" />
     <Compile Include="Dao\Impl\DismissalCommentDao.cs" />
@@ -220,6 +224,8 @@
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
+    <Compile Include="Domain\DeductionKind.cs" />
+    <Compile Include="Domain\DeductionType.cs" />
     <Compile Include="Domain\Department.cs" />
     <Compile Include="Domain\Dismissal.cs" />
     <Compile Include="Domain\DismissalComment.cs" />
@@ -538,6 +544,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\ChildVacation.hbm.xml" />
     <EmbeddedResource Include="Domain\ChildVacationComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DeductionKind.hbm.xml" />
+    <EmbeddedResource Include="Domain\DeductionType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

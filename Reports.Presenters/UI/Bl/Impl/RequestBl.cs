@@ -79,6 +79,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IChildVacationDao childVacationDao;
         protected IChildVacationCommentDao childVacationCommentDao;
 
+        protected IDeductionTypeDao deductionTypeDao;
+
 
        
         public IVacationTypeDao VacationTypeDao
@@ -296,6 +298,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(childVacationCommentDao); }
             set { childVacationCommentDao = value; }
+        }
+        public IDeductionTypeDao DeductionTypeDao
+        {
+            get { return Validate.Dependency(deductionTypeDao); }
+            set { deductionTypeDao = value; }
         }
         #endregion
         #region Create Request
@@ -5723,15 +5730,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetDeductionTypes(bool addAll)
         {
-            List<IdNameDto> deductionStatuses = new List<IdNameDto>
-                                                       {
-                                                           new IdNameDto(1, "Удержание"),
-                                                           new IdNameDto(2, "Удержание ПРИ увольнении"),
-                                                           new IdNameDto(3, "Удержание ПОСЛЕ увольнения"),
-                                                       }.OrderBy(x => x.Name).ToList();
+            //List<IdNameDto> deductionStatuses = new List<IdNameDto>
+            //                                           {
+            //                                               new IdNameDto(1, "Удержание"),
+            //                                               new IdNameDto(2, "Удержание ПРИ увольнении"),
+            //                                               new IdNameDto(3, "Удержание ПОСЛЕ увольнения"),
+            //                                           }.OrderBy(x => x.Name).ToList();
+            List<IdNameDto> deductionTypes = DeductionTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name}).ToList();
             if(addAll)
-                deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
-            return deductionStatuses;
+                deductionTypes.Insert(0, new IdNameDto(0, SelectAll));
+            return deductionTypes;
         }
         public void SetDeductionListModel(DeductionListModel model, bool hasError)
         {

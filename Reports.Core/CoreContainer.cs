@@ -312,6 +312,14 @@ namespace Reports.Core
                  ImplementedBy(typeof(ChildVacationCommentDao)).
                  LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IDeductionTypeDao)).
+                       ImplementedBy(typeof(DeductionTypeDao)).
+                       LifeStyle.Is(type));
+
+            Register(Component.For(typeof(IDeductionKindDao)).
+                      ImplementedBy(typeof(DeductionKindDao)).
+                      LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)
