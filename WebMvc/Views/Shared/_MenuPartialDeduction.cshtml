@@ -22,7 +22,7 @@
                     {
                         @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                     }
-                    else if ((dto.UserRole & UserRole.Manager) > 0
+                    else if ((dto.UserRole & UserRole.Manager) > 0 
                           || (dto.UserRole & UserRole.PersonnelManager) > 0
                           || (dto.UserRole & UserRole.Inspector) > 0
                           || (dto.UserRole & UserRole.OutsourcingManager) > 0)
@@ -34,17 +34,18 @@
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
-                <div id="liDeduction" class="mainMenuItem">
-                @if ((dto.UserRole & UserRole.Accountant) > 0 
-                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                {
-                    @Html.ActionLink("Удержания", "Index", "Deduction")
-                }
+                <div id="liDeduction" class="mainOn">
+                    @if ((dto.UserRole & UserRole.Accountant) > 0 || 
+                         (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                        @Html.ActionLink("Удержания", "Index", "Deduction")
+                    }
                 </div> 
-                 <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
+                <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>  
         </div>  
          <div class="podmenu">    
+            <div class="on" id="deductionsAll" >@Html.ActionLink("Все заявки", "Index", "Deduction")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
          </div> 
         </div> 

@@ -72,6 +72,8 @@ namespace WebMvc.Controllers
                 {
                     if(model.IsFirstTimeLogin)
                         return RedirectToAction("ChangePassword");
+                    if(model.NeedToSelectRole)
+                        return RedirectToAction("ChangeRole");
                     if (Url.IsLocalUrl(returnUrl))
                         return Redirect(returnUrl);
                     return RedirectToAction("Index", "Home");
@@ -262,6 +264,17 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
 
+        [HttpGet]
+        public ActionResult ChangeRole()
+        {
+            return View(LoginBl.GetChangeRoleModel());
+        }
+        [HttpPost]
+        public ActionResult ChangeRole(ChangeRoleModel model)
+        {
+            LoginBl.SetUserRole(model);
+            return RedirectToAction("Index", "Home");  
+        }
 
 
         // **************************************

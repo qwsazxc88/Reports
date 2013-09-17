@@ -131,7 +131,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 to += ";" + u.Email;
                         }
                     }
-                    if (creator.UserRole == UserRole.Manager)
+                    if ((creator.UserRole & UserRole.Manager) > 0)
                     {
                         if (string.IsNullOrEmpty(user.Email))
                             Log.ErrorFormat(
@@ -149,7 +149,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return null;
                     break;
                 case UserRole.PersonnelManager:
-                    if (creator.UserRole == UserRole.PersonnelManager || isDeleted)
+                    if ((creator.UserRole & UserRole.PersonnelManager) > 0 || isDeleted)
                     {
                         if (user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
                             Log.ErrorFormat(

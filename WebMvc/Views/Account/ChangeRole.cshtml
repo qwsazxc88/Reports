@@ -1,0 +1,29 @@
+﻿@model Reports.Presenters.UI.ViewModel.ChangeRoleModel
+
+@{
+    ViewBag.Title = "Изменение роли";
+    Layout = "~/Views/Shared/_SimpleLayout.cshtml";
+}
+
+@using (Html.BeginForm()) {
+    <table style="width:100%">
+           <tr>
+                <td colspan="2">
+                    Выберите роль для работы в системе
+                </td>
+           </tr>
+           <tr>
+                <td style="width:120px">
+                    @Html.LabelFor(m => m.RoleId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name")) 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Выбрать роль" />
+                </td>
+            </tr>    
+    </table>
+}

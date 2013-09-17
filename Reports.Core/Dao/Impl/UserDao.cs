@@ -63,7 +63,7 @@ namespace Reports.Core.Dao.Impl
         public virtual IList<User> GetUsersWithRole(UserRole role)
         {
             return Session.CreateCriteria(typeof(User))
-                  .Add(Restrictions.Eq("Role.Id",(int)role))
+                  .Add(Restrictions.Eq("RoleId",(int)role))
 //                  .Add(Restrictions.Eq("IsActive", true))
                   .Add(Restrictions.IsNull("DateRelease"))
                   .List<User>();

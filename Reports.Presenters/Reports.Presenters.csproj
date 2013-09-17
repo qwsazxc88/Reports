@@ -133,6 +133,9 @@
     <Compile Include="UI\ViewModel\ConstantEditModel.cs" />
     <Compile Include="UI\ViewModel\ConstantListModel.cs" />
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
+    <Compile Include="UI\ViewModel\DeductionDto.cs" />
+    <Compile Include="UI\ViewModel\DeductionListModel.cs" />
+    <Compile Include="UI\ViewModel\DeductionsListModel.cs" />
     <Compile Include="UI\ViewModel\DeleteEmployeesModel.cs" />
     <Compile Include="UI\ViewModel\DepartmentTreeModel.cs" />
     <Compile Include="UI\ViewModel\DialogErrorModel.cs" />

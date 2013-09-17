@@ -1,0 +1,1 @@
+﻿alter table dbo.UserLogin add RoleId int null

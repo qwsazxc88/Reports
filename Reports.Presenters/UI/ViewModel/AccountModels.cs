@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Reports.Core.Dto;
 
@@ -51,6 +52,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsFirstTimeLogin { get; set; }
         public int UserId { get; set; }
 
+        public bool NeedToSelectRole { get; set; }
+
         //[Display(Name = "Remember me?")]
         //public bool RememberMe { get; set; }
     }
@@ -92,6 +95,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string Error { get; set; }
         public string Success { get; set; }
 
+    }
+
+    public class ChangeRoleModel
+    {
+        [Display(Name = "Доступные роли")]
+        public int RoleId { get; set; }
+        public IList<IdNameDto> Roles;
     }
     #endregion
 

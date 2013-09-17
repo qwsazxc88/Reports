@@ -18,19 +18,22 @@
             <div class="menu-wrap">
              <div class="menu">   
                 <div class="mainMenuItem" id="mainTimesheet">
-                    @if (dto.UserRole == UserRole.Admin)
+                    @if ((dto.UserRole & UserRole.Admin) > 0)
                     {
                         @Html.ActionLink("Табель", "UserList", "Admin")
                     }
-                    else if (dto.UserRole == UserRole.Employee)
+                    else if ((dto.UserRole & UserRole.Employee) > 0)
                     {
                         @Html.ActionLink("Табель", "SicklistList", "UserRequest")
                     }
-                    else if (dto.UserRole == UserRole.Chief)
+                    else if ((dto.UserRole & UserRole.Chief) > 0)
                     {
                         @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                     }
-                    else
+                    else if ((dto.UserRole & UserRole.Manager) > 0
+                          || (dto.UserRole & UserRole.PersonnelManager) > 0
+                          || (dto.UserRole & UserRole.Inspector) > 0
+                          || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                     {
                         @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                     }
@@ -48,6 +51,17 @@
                      id="mainMember">
                         @Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div> 
+                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                {
+                    <div @if (Model.menuId == 4)
+                     {<text>class="mainOn"</text>}
+                     else
+                     {<text>class="mainMenuItem"</text>}
+                     id="mainDeduction">
+                        @Html.ActionLink("Удержания", "Index", "Deduction")
+                    </div>
+                }
                 <div @if (Model.menuId == 3)
                      {<text>class="mainOn"</text>}
                      else

@@ -16,6 +16,7 @@ namespace Reports.Core
         OutsourcingManager = 32,
         Inspector = 64,
         Chief = 128,
+        Accountant = 256,
     }
     public class ReportRoleConstants
     {

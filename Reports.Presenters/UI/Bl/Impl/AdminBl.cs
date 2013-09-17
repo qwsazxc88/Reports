@@ -139,7 +139,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsNew = user.IsNew;
                 model.Login = user.Login;
                 model.Password = user.Password;
-                model.RoleId = user.Role.Id;
+                model.RoleId = user.RoleId;
                 model.UserName = user.FullName;
                 model.UserNameStatic = user.FullName;
                 model.Version = user.Version;
@@ -201,7 +201,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     user.Name = model.UserName;
                     user.Password = model.Password;
                     user.IsNew = true;
-                    user.Role = RoleDao.Load(model.RoleId);
+                    user.RoleId = model.RoleId;//RoleDao.Load(model.RoleId);
                     if (IsUserFrom1C((UserRole)(model.RoleId)))
                         user.IsFirstTimeLogin = true;
                     user.Code = string.Empty;
@@ -231,7 +231,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsNew = user.IsNew;
                 model.Version = user.Version;
                 model.UserNameStatic = model.UserName;
-                if ((user.Role.Id != (int) UserRole.Employee) &&
+                if ((user.RoleId != (int) UserRole.Employee) &&
                     ((model.ManagerId != 0) /*|| (model.PersonnelId != 0)*/))
                     model.ClearManagers = true;
 
@@ -546,7 +546,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(isNewManager)
                 {
                     Role role = roles.Where(x => x.Id == (int) dto.Role).FirstOrDefault();
-                    manager.Role = role;
+                    manager.RoleId = role.Id;
                     manager.IsActive = true;
                     manager.IsFirstTimeLogin = true;
                 }
@@ -586,7 +586,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isNewPersonnel)
                 {
                     Role role = roles.Where(x => x.Id == (int)dto.Role).FirstOrDefault();
-                    personnel.Role = role;
+                    personnel.RoleId = role.Id;
                     personnel.IsActive = true;
                     personnel.IsFirstTimeLogin = true;
                 }
@@ -641,7 +641,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isNewEmployee)
                 {
                     Role role = roles.Where(x => x.Id == (int)dto.Role).FirstOrDefault();
-                    employee.Role = role;
+                    employee.RoleId = role.Id;
                     employee.IsActive = !employee.DateRelease.HasValue;
                     employee.IsFirstTimeLogin = true;
                 }

@@ -5,6 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
     <many-to-one name="User" column="UserId" foreign-key="FK_UserLogin_User" ></many-to-one>  
-    <property name="Date" not-null="true" update="true" />
+	<property name="Date" not-null="true" update="true" />
+	<property name="RoleId" not-null="false" update="true" />
   </class>
 </hibernate-mapping>

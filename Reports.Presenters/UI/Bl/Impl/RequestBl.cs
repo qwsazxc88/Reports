@@ -305,7 +305,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 userId = AuthenticationService.CurrentUser.Id;
 
             User user = UserDao.Load(userId.Value);
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             CreateRequestModel model = new CreateRequestModel
             {
                 IsUserVisible = role != UserRole.Employee,
@@ -389,7 +389,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Documents = new List<VacationDto>();
 
             List<AllRequestDto> result = new List<AllRequestDto>();
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
 
            
             result.AddRange(SicklistDao.GetDocuments(
@@ -664,7 +664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Documents = new List<VacationDto>();
 
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = EmploymentDao.GetDocuments(
                 user.Id,
                 role,
@@ -1186,7 +1186,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(TimesheetCorrectionListModel model, User user)
         {
 
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = TimesheetCorrectionDao.GetDocuments(
                 user.Id,
                 role,
@@ -1564,7 +1564,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(DismissalListModel model, User user)
         {
 
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = DismissalDao.GetDocuments(
                 user.Id,
                 role,
@@ -2000,7 +2000,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(MissionListModel model, User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = MissionDao.GetDocuments(
                 user.Id,
                 role,
@@ -2397,7 +2397,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(HolidayWorkListModel model, User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = HolidayWorkDao.GetDocuments(
                 user.Id,
                 role,
@@ -2799,7 +2799,7 @@ namespace Reports.Presenters.UI.Bl.Impl
        }
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = SicklistDao.GetDocuments(
                 user.Id,
                 role,
@@ -3319,7 +3319,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(AbsenceListModel model, User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             model.Documents = AbsenceDao.GetDocuments(
                 user.Id,
                 role,
@@ -3740,7 +3740,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(VacationListModel model,User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             /*Department dep = null;
             if(model.Department.Id != 0)
              dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
@@ -3763,7 +3763,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             //departmentList.Insert(0,new IdNameDto(0,SelectAll));
             //var departmentList = UserToDepartmentDao.GetByUserId(user.Id).ToList();
-            if((UserRole)user.Role.Id != UserRole.Employee)
+            if((UserRole)user.RoleId != UserRole.Employee)
             {
                 var departmentList = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
                 departmentList.Insert(0,new IdNameDto(0,SelectAll));
@@ -3820,7 +3820,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public List<IdNameDto> GetPositions(User user)
         {
             List<IdNameDto> positionList;
-            if ((UserRole)user.Role.Id != UserRole.Employee)
+            if ((UserRole)user.RoleId != UserRole.Employee)
             {
                 positionList = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
                 positionList.Insert(0, new IdNameDto(0, SelectAll));
@@ -4342,7 +4342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(ChildVacationListModel model, User user)
         {
-            UserRole role = (UserRole)user.Role.Id;
+            UserRole role = (UserRole)user.RoleId;
             /*Department dep = null;
             if(model.Department.Id != 0)
              dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
@@ -5692,6 +5692,77 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ReloadDictionariesToModel(model);
             }
         }
+        #region Deduction
+        public DeductionListModel GetDeductionListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            DeductionListModel model = new DeductionListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                RequestStatuses = GetDeductionStatuses(true),
+                Types = GetDeductionTypes(true)
+            };
+            SetInitialDates(model);
+            return model;
+        }
+        public List<IdNameDto> GetDeductionStatuses(bool addAll)
+        {
+            List<IdNameDto> deductionStatuses = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Записана"),
+                                                           new IdNameDto(2, "Выгружена в 1С"),
+                                                           new IdNameDto(3, "Отклонена"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            if(addAll)
+                deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
+            return deductionStatuses;
+        }
+        public List<IdNameDto> GetDeductionTypes(bool addAll)
+        {
+            List<IdNameDto> deductionStatuses = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Удержание"),
+                                                           new IdNameDto(2, "Удержание ПРИ увольнении"),
+                                                           new IdNameDto(3, "Удержание ПОСЛЕ увольнения"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            if(addAll)
+                deductionStatuses.Insert(0, new IdNameDto(0, SelectAll));
+            return deductionStatuses;
+        }
+        public void SetDeductionListModel(DeductionListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            model.RequestStatuses = GetDeductionStatuses(true);
+            model.Types = GetDeductionTypes(true);
+            if (hasError)
+                model.Documents = new List<DeductionDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(DeductionListModel model, User user)
+        {
+            UserRole role = (UserRole)user.RoleId;
+            model.Documents = new List<DeductionDto>();
+            /*Department dep = null;
+            if(model.Department.Id != 0)
+             dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
+            //model.Documents = ChildVacationDao.GetDocuments(user.Id,
+            //    role,
+            //    model.DepartmentId,
+            //    model.PositionId,
+            //    0,
+            //    model.RequestStatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    model.UserName,
+            //    model.SortBy,
+            //    model.SortDescending);
+        }
+        #endregion
     }
 
 }

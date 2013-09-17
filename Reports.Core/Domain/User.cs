@@ -126,10 +126,11 @@ namespace Reports.Core.Domain
         //    set { birthday = value; }
         //}
 
-        public virtual Role Role { get; set; }
+        //public virtual Role Role { get; set; }
+        public virtual int RoleId { get; set; }
         public virtual UserRole UserRole 
         { 
-            get { return (UserRole)Role.Id; }
+            get { return (UserRole)RoleId; }
         }
         //public virtual bool IsUserResponser
         //{
