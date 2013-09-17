@@ -51,7 +51,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Количество детей")]
         public string ChildrenCount { get; set; }
 
-        [Display(Name = "Это первый ребенок")]
+        [Display(Name = "Среди детей есть первый ребенок")]
         public bool IsFirstChild { get; set; }
         public bool IsFirstChildHidden { get; set; }
 

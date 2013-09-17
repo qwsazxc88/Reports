@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Reports.Core;
@@ -637,27 +638,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void GetTimesheetListModel(TimesheetListModel model)
         {
             SetListboxes(model);
-            //SetupDepartment(model);
             SetTimesheetsInfo(model);
-            //int timesheetsCount = model.TimesheetDtos.Count;
-            //int numberOfPages = Convert.ToInt32(Math.Ceiling((double)timesheetsCount / TimesheetPageSize));
-            //int currentPage = model.CurrentPage;
-            //if (currentPage > numberOfPages)
-            //    currentPage = numberOfPages;
-            ////if (numberOfPages == 0)
-            ////{
-            ////    currentPage = 1;
-            ////    return new List<User>();
-            ////}
-            //if (currentPage == 0)
-            //    currentPage = 1;
-            //model.TimesheetDtos = model.TimesheetDtos
-            //    .Skip((currentPage - 1) * TimesheetPageSize)
-            //    .Take(TimesheetPageSize).ToList();
-            //model.CurrentPage = currentPage;
-            //model.NumberOfPages = numberOfPages;
         }
-        public void SetupDepartment(TimesheetListModel model)
+        public void SetupDepartment(IDepartmentSelect model)
         {
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
             {
@@ -752,6 +735,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
 
                 float wgHoursSum = 0;
+                DateTime beginUserDate = dayDtoList.First().Day;
+                DateTime endUserDate = dayDtoList.Last().Day;
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
@@ -789,30 +774,47 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                      Id = graphicEntity == null?0:graphicEntity.Id,
                                                  });
                     userDtoList.AddRange(userList);
+                    RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
+                    if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
+                        beginUserDate = employmentDay.BeginDate;
+                    RequestDto dismissalDay = userList.Where(x => x.IsDismissalDay).FirstOrDefault();
+                    if (dismissalDay != null && dismissalDay.EndDate < endUserDate)
+                        endUserDate = dismissalDay.EndDate;
                 }
                 if (user.UserRole != UserRole.Employee && uDto != null)
                 {
-                    WorkingDaysConstant wdk = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
-                    if (wdk == null)
-                        userDayList.Add(new TimesheetDayDto
-                        {
-                            Number = 0,
-                            isStatRecord = true,
-                            isHoliday = false,
-                            Status = string.Empty,
-                            Hours = string.Empty,
-                            StatCode = "Б",
-                        });
-                    else
-                        userDayList.Add(new TimesheetDayDto
-                        {
-                            Number = 0,
-                            isStatRecord = true,
-                            isHoliday = false,
-                            Status = wdk.Days.ToString(),
-                            Hours = wdk.Hours.ToString(),
-                            StatCode = "Б",
-                        });
+                    int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
+                    int daySum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate && x.IsWorkingHours.HasValue).Count();
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isStatRecord = true,
+                        isHoliday = false,
+                        Status = daySum.ToString(),
+                        Hours = workdaysSum.Value.ToString(),
+                        StatCode = "Б",
+                    });
+                    //WorkingDaysConstant wdk = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
+                    //if (wdk == null)
+                    //    userDayList.Add(new TimesheetDayDto
+                    //    {
+                    //        Number = 0,
+                    //        isStatRecord = true,
+                    //        isHoliday = false,
+                    //        Status = string.Empty,
+                    //        Hours = string.Empty,
+                    //        StatCode = "Б",
+                    //    });
+                    //else
+                    //    userDayList.Add(new TimesheetDayDto
+                    //    {
+                    //        Number = 0,
+                    //        isStatRecord = true,
+                    //        isHoliday = false,
+                    //        Status = wdk.Days.ToString(),
+                    //        Hours = wdk.Hours.ToString(),
+                    //        StatCode = "Б",
+                    //    });
                     int sumDays = 0;
                     int sum = 0;
                     string graphic = null;
@@ -977,7 +979,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    SetListboxes(model);
         //    //SetDaysToListbox(model);
         //}
-        
         public void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
         {
             model.Monthes = GetMonthesList();
@@ -1064,6 +1065,210 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    }
         //    model.TimesheetDtos = modelDtos;
         //}
+        #endregion
+        #region Timesheet Year List
+        public void GetTimesheetListModel(TimesheetYearListModel model)
+        {
+            //SetListboxes(model);
+            SetYearTimesheetsInfo(model);
+        }
+        protected void SetYearTimesheetsInfo(TimesheetYearListModel model)
+        {
+            IUser user = AuthenticationService.CurrentUser;
+
+            Log.Debug("Before GetRequestsForMonth");
+            DateTime beginDate = model.BeginDate.Value;
+            DateTime endDate = model.EndDate.Value;
+            IList<DayRequestsDto> dayDtoList = GetDayDtoList(beginDate,endDate);
+            model.DatesPeriod = string.Format("Период: {0} - {1}", beginDate.ToString("dd MMMM yyyy"), endDate.ToString("dd MMMM yyyy"));
+            IList<IdNameDtoWithDates> uDtoList =
+                UserDao.GetUsersForManagerWithDatePaged(user.Id, user.UserRole,beginDate, endDate, model.DepartmentId, model.UserName);
+            Log.Debug("After GetUsersForManagerWithDatePaged");
+            int userCount = uDtoList.Count;
+            int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
+            int currentPage = model.CurrentPage;
+            if (currentPage > numberOfPages)
+                currentPage = numberOfPages;
+            if (currentPage == 0)
+                currentPage = 1;
+            uDtoList = uDtoList
+                .Skip((currentPage - 1) * TimesheetPageSize)
+                .Take(TimesheetPageSize).ToList();
+            model.CurrentPage = currentPage;
+            model.NumberOfPages = numberOfPages;
+            if (userCount == 0)
+            {
+                model.TimesheetDtos = new List<TimesheetDto>();
+                //model.IsSaveVisible = false;
+                return;
+            }
+            IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(beginDate, endDate);
+
+            IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForYear
+                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays);
+            Log.Debug("After GetRequestsForMonth");
+            List<int> allUserIds = new List<int>();
+            allUserIds = dtos.Aggregate(allUserIds,
+                                        (current, dayRequestsDto) =>
+                                        current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
+                                            .ToList());
+            Log.Debug("After aggregate");
+            List<IdNameDto> userNameDtoList = new List<IdNameDto>();
+            foreach (int userId in allUserIds)
+            {
+                foreach (var dayRequestsDto in dtos)
+                {
+                    RequestDto dto = dayRequestsDto.Requests.Where(y => y.UserId == userId).FirstOrDefault();
+                    if (dto != null)
+                    {
+                        userNameDtoList.Add(new IdNameDto { Id = userId, Name = dto.UserName });
+                        break;
+                    }
+                }
+            }
+            userNameDtoList = userNameDtoList.OrderBy(x => x.Name).ToList();
+            allUserIds = userNameDtoList.ToList().ConvertAll(x => x.Id).ToList();
+            Log.Debug("After create ordered user dto list ");
+            List<TimesheetDto> list = new List<TimesheetDto>();
+            IList<WorkingGraphic> wgList = WorkingGraphicDao.LoadForIdsList(allUserIds,beginDate, endDate);
+            IList<WorkingGraphicTypeDto> wgtList = WorkingGraphicTypeDao.GetWorkingGraphicTypeDtoForUsers(allUserIds);
+            foreach (int userId in allUserIds)
+            {
+                TimesheetDto dto = new TimesheetDto();
+                List<RequestDto> userDtoList = new List<RequestDto>();
+                List<TimesheetDayDto> userDayList = new List<TimesheetDayDto>();
+                IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
+
+                float wgHoursSum = 0;
+                DateTime beginUserDate = beginDate;
+                DateTime endUserDate = endDate;
+                foreach (var dayRequestsDto in dtos)
+                {
+                    List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
+                    float? wgHours;
+                    WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
+                                                               x.Day == dayRequestsDto.Day).FirstOrDefault();
+                    wgHours = graphicEntity == null ?
+                        GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
+                        : graphicEntity.Hours;
+                    wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
+                    userDtoList.AddRange(userList);
+                    RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
+                    if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
+                        beginUserDate = employmentDay.BeginDate;
+                    RequestDto dismissalDay = userList.Where(x => x.IsDismissalDay).FirstOrDefault();
+                    if (dismissalDay != null && dismissalDay.EndDate < endUserDate)
+                        endUserDate = dismissalDay.EndDate;
+                }
+                if (user.UserRole != UserRole.Employee && uDto != null)
+                {
+                    int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
+                    int daySum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate && x.IsWorkingHours.HasValue).Count();
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isStatRecord = true,
+                        isHoliday = false,
+                        Status = daySum.ToString(),
+                        Hours = workdaysSum.Value.ToString(),
+                        StatCode = "Б",
+                    });
+
+                    //List<WorkingDaysConstant> wdk = WorkingDaysConstantDao.LoadDataForDates(beginDate,endDate);
+                    //if (wdk == null || wdk.Count == 0)
+                    //    userDayList.Add(new TimesheetDayDto
+                    //    {
+                    //        Number = 0,
+                    //        isStatRecord = true,
+                    //        isHoliday = false,
+                    //        Status = string.Empty,
+                    //        Hours = string.Empty,
+                    //        StatCode = "Б",
+                    //    });
+                    //else
+                    //    userDayList.Add(new TimesheetDayDto
+                    //    {
+                    //        Number = 0,
+                    //        isStatRecord = true,
+                    //        isHoliday = false,
+                    //        Status = wdk.Sum(x => x.Days).ToString(),
+                    //        Hours = wdk.Sum(x => x.Hours).ToString(),
+                    //        StatCode = "Б",
+                    //    });
+                    int sumDays = 0;
+                    int sum = 0;
+                    string graphic = null;
+                    for (int i = 0; i < 5; i++)
+                    {
+
+                        if (i == 0)
+                        {
+                            graphic = (int)wgHoursSum == wgHoursSum
+                               ? ((int)wgHoursSum).ToString()
+                               : wgHoursSum.ToString("0.0");
+                        }
+                        sum += uDto.userStats[i];
+                        sumDays += uDto.userStatsDays[i];
+                        userDayList.Add(new TimesheetDayDto
+                        {
+                            Number = 0,
+                            isHoliday = false,
+                            isStatRecord = true,
+                            Status = uDto.userStatsDays[i].ToString(),
+                            Hours = uDto.userStats[i].ToString(),
+                            StatCode = GetStatCodeName(i),
+                            Graphic = i == 0 ? graphic : null,
+                        });
+                    }
+                    userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = sumDays.ToString(),
+                        Hours = sum.ToString(),
+                        StatCode = "Всего",
+                        Graphic = graphic,
+                    });
+                    /*userDayList.Add(new TimesheetDayDto
+                    {
+                        Number = 0,
+                        isHoliday = false,
+                        isStatRecord = true,
+                        Status = "Дней",
+                        Hours = "График/ ч.",
+                        StatCode = "Инф.",
+                        Graphic = "Факт/ ч."
+                    });*/
+                }
+                //dto.MonthAndYear = GetMonthName(model.Month) + " " + model.Year;
+                dto.UserNameAndCode = userDtoList.First().UserName;
+                dto.UserId = userId;
+                dto.Days = userDayList;
+                dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
+                dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
+                dto.IsGraphicEditable = false;
+                list.Add(dto);
+            }
+            Log.Debug("After foreach");
+            model.TimesheetDtos = list;
+            //model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
+
+        }
+        protected IList<DayRequestsDto> GetDayDtoList(DateTime beginDate, DateTime endDate)
+        {
+            //DateTime endDate = new DateTime(DateTime.Today.Year,DateTime.Today.Month,1).AddMonths(1).AddDays(-1);
+            //DateTime beginDate = new DateTime(endDate.Year, 1, 1);
+            IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
+            DateTime current = beginDate;
+            while(current <= endDate) 
+            {
+                DayRequestsDto dto = new DayRequestsDto { Day = current };
+                dtoList.Add(dto);
+                current = current.AddDays(1);
+            }
+            return dtoList;
+        }
         #endregion
         public IList<IdNameDto> GetRoleList()
         {

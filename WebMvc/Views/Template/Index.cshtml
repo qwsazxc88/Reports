@@ -1,0 +1,65 @@
+﻿@model Reports.Presenters.UI.ViewModel.TemplatesListModel
+@{
+    Layout = "~/Views/Shared/_LayoutTemplate.cshtml";
+    ViewBag.Title = "Шаблоны";
+}
+
+@using (Html.BeginForm())
+{
+<table style="width:100%">
+    <tr>
+        <td style="font-weight:bold">Шаблоны документов</td>
+    </tr>
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zayavlenie-na-otpusk-bez-soderzhaniya.doc")" target="_blank">Заявление на отпуск без содержания</a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zajavlenie-na-otpusk-ezhegodnyj.doc")" target="_blank">Заявление на отпуск ежегодный</a>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zajavlenie-na-otpusk-s-posledushhim-uvolneniem.doc")" target="_blank">Заявление на отпуск с последущим увольнением</a>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zajavlenie-na-soglasie-uderzhanija-pri-uvolnenii.doc")" target="_blank">Заявление на согласие удержания при увольнении</a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zajavlenie-na-uvolnenie-po-sobstvennomu-zhelaniju.doc")" target="_blank">Заявление на увольнение по собственному желанию</a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Zajavlenie-na-uvolnenie-po-soglasheniju-storon.doc")" target="_blank">Заявление на увольнение по соглашению сторон</a>
+        </td>
+    </tr> 
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Tipovoj-DMO.xls")" target="_blank">Типовой ДМО</a>
+        </td>
+    </tr> 
+    
+    <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/Tipovoj-TD.xls")" target="_blank">Типовой ТД</a>
+        </td>
+    </tr>      
+    
+</table> 
+ <script type="text/javascript">
+ </script>   
+}

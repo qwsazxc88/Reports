@@ -289,15 +289,23 @@ namespace Reports.Core.Dao.Impl
             foreach (RequestDto requestDto in requestList)
             {
                     List<RequestDto> otherUser = list.Where(x => x.UserId == requestDto.UserId).ToList();
-                    if(otherUser.Count == 0)
+                    if (otherUser.Count == 0)
+                    {
+                        requestDto.IsDismissalDay = true;
                         list.Add(requestDto);
+                        break;
+                    }
             }
             foreach (RequestDto requestDto in requestList)
             {
                 RequestDto dto =
                     list.Where(x => x.UserId == requestDto.UserId && x.BeginDate > requestDto.BeginDate).FirstOrDefault();
                 if (dto != null)
+                {
                     dto.BeginDate = requestDto.BeginDate;
+                    dto.EndDate = requestDto.EndDate;
+                    break;
+                }
             }
             //foreach (RequestDto requestDto in list)
             //{
@@ -333,10 +341,12 @@ namespace Reports.Core.Dao.Impl
                          u.DateRelease as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         8 as TimesheetHours,
+                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
                          u.Id as UserId,
-                         u.Name as UserName
-                         from [dbo].[Users] u");
+                         u.Name as UserName,
+                         1 as IsDismissalDay
+                         from [dbo].[Users] u
+                         inner join [dbo].[WorkingCalendar] wc on wc.Date = u.DateRelease");
             //sqlQuery += @" inner join [dbo].[Users] u on u.Id = v.UserId ";
             sqlQuery += string.Format(@" where 
                           u.DateRelease between :beginDate and :endDate");
@@ -365,6 +375,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("TimesheetHours", NHibernateUtil.Int32).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
+               AddScalar("IsDismissalDay", NHibernateUtil.Boolean).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
                SetParameterList("userList", userIds);
@@ -380,10 +391,11 @@ namespace Reports.Core.Dao.Impl
                          v.EndDate as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         8 as TimesheetHours,
+                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName
-                         from dbo.Dismissal v");
+                         from dbo.Dismissal v
+                         inner join [dbo].[WorkingCalendar] wc on wc.Date = v.EndDate");
             sqlQuery += @" inner join [dbo].[Users] u on u.Id = v.UserId ";
             sqlQuery += string.Format(@" where 
                           v.EndDate between :beginDate and :endDate
@@ -463,10 +475,12 @@ namespace Reports.Core.Dao.Impl
                          u.DateAccept as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         8 as TimesheetHours,
+                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
                          u.Id as UserId,
-                         u.Name as UserName
-                         from [dbo].[Users] u");
+                         u.Name as UserName,
+                         1 as IsEmploymentDay
+                         from [dbo].[Users] u
+                         inner join [dbo].[WorkingCalendar] wc on wc.Date = u.DateAccept");
             sqlQuery += string.Format(@" where 
                           u.DateAccept between :beginDate and :endDate");
             sqlQuery += " and u.Id in (:userList)";
@@ -479,6 +493,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("TimesheetHours", NHibernateUtil.Int32).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
+               AddScalar("IsEmploymentDay", NHibernateUtil.Boolean).
                SetDateTime("beginDate", beginDate).
                SetDateTime("endDate", endDate).
                SetParameterList("userList", userIds);
@@ -493,10 +508,12 @@ namespace Reports.Core.Dao.Impl
                          v.BeginDate as EndDate,
                          v.TimesheetStatusId  as TimesheetStatusId,
                          ts.[ShortName] as TimesheetCode,
-                         null as TimesheetHours,
+                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
                          u.Id as UserId,
-                         u.Name as UserName
-                         from dbo.Employment v");
+                         u.Name as UserName,
+                         1 as IsEmploymentDay,
+                         from dbo.Employment v
+                         inner join [dbo].[WorkingCalendar] wc on wc.Date = v.BeginDate");
             sqlQuery += @" inner join [dbo].[TimesheetStatus] ts on ts.Id = v.TimesheetStatusId
                            inner join [dbo].[Users] u on u.Id = v.UserId ";
             sqlQuery += string.Format(@" where 
@@ -634,34 +651,8 @@ namespace Reports.Core.Dao.Impl
             IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,IList<WorkingCalendar> workDays
             )
         {
-            //DateTime current = new DateTime(year,month, 1);
-            //IList<DayRequestsDto> dtoList = new List<DayRequestsDto>();
-            //for (int i = 0; i < 31; i++)
-            //{
-            //    DayRequestsDto dto = new DayRequestsDto {Day = current};
-            //    if (current.Month != month)
-            //        break;
-            //    dtoList.Add(dto);
-            //    current = current.AddDays(1);
-            //}
-            //DateTime minDate = dtoList.First().Day;
-            //DateTime maxDate = dtoList.Last().Day;
-            //IList<IdNameDtoWithDates> users = UserDao.GetUsersForManagerWithDate(userId, userRole);
             IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
                 managerId, managerRole, users);
-            
-            //switch(userRole)
-            //{
-            //    case UserRole.Employee:
-            //        users = new List<IdNameDto>{ new IdNameDto(userId,UserDao.Load(userId).FullName)};
-            //        break;
-            //    case UserRole.Manager:
-            //    case UserRole.PersonnelManager:
-            //        users = UserDao.GetUsersForManager(userId, userRole); 
-            //        break;
-            //    default:
-            //        throw new ArgumentException(string.Format("Неизвестная роль пользователя {0}",userRole));
-            //}
             foreach (var idNameDto in users)
             {
                 if ((idNameDto.DateAccept.HasValue &&
@@ -714,6 +705,64 @@ namespace Reports.Core.Dao.Impl
             }
             return dtoList;
         }
+        public IList<DayRequestsDto> GetRequestsForYear(DateTime beginDate, DateTime year, int managerId, UserRole managerRole,
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays
+            )
+        {
+            IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
+                managerId, managerRole, users);
+            foreach (var idNameDto in users)
+            {
+                //if ((idNameDto.DateAccept.HasValue &&
+                //    ((idNameDto.DateAccept.Value.Year < year) ||
+                //    ((idNameDto.DateAccept.Value.Year == year)
+                //      && (idNameDto.DateAccept.Value.Month <= month)))) &&
+                //    (!idNameDto.DateRelease.HasValue ||
+                //    ((idNameDto.DateRelease.Value.Year > year) ||
+                //    ((idNameDto.DateRelease.Value.Year == year)
+                //      && (idNameDto.DateRelease.Value.Month >= month))))
+                //    )
+                //{
+                    List<int> userStats = new List<int> { 0, 0, 0, 0, 0 };
+                    List<int> userStatsDays = new List<int> { 0, 0, 0, 0, 0 };
+                    foreach (var dayRequestsDto in dtoList)
+                    {
+                        DateTime date = dayRequestsDto.Day;
+                        int? workHours = CoreUtils.GetHoursForDay(workDays, date);
+                        bool isHoliday = CoreUtils.IsDayHoliday(workDays, date);//(dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
+                        List<RequestDto> userRequestList = requests.Where(x =>
+                                                                          (date >= x.BeginDate && date <= x.EndDate &&
+                                                                           idNameDto.Id == x.UserId)).ToList();
+                        if (userRequestList.Count == 0)
+                        {
+                            bool isDayInFuture = DateTime.Today < date;
+                            RequestDto newDto = new RequestDto
+                            {
+                                BeginDate = date,
+                                EndDate = date,
+                                TimesheetCode = isHoliday ? HolidayStatusCode
+                                        : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
+                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours.Value,
+                                UserId = idNameDto.Id,
+                                UserName = idNameDto.Name
+                            };
+                            dayRequestsDto.Requests.Add(newDto);
+                            AddToUserStats(userStats, userStatsDays, new List<RequestDto> { newDto }, isHoliday, workHours);
+                        }
+                        else
+                        {
+                            AddToUserStats(userStats, userStatsDays, userRequestList, isHoliday, workHours);
+                        }
+                        dayRequestsDto.Requests.AddRange(userRequestList);
+                    }
+                    idNameDto.userStats = userStats;
+                    idNameDto.userStatsDays = userStatsDays;
+                }
+
+            //}
+            return dtoList;
+        }
+   
         protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, 
             List<RequestDto> userRequestList,bool isHoliday,int? workHours)
         {
@@ -730,16 +779,16 @@ namespace Reports.Core.Dao.Impl
                     case "Н":
                     case "РВ":
                     case "С":
-                        userStats[0] += dto.TimesheetHours.HasValue?dto.TimesheetHours.Value:0;
+                        userStats[0] += workHours.HasValue?workHours.Value:0;//dto.TimesheetHours.HasValue?dto.TimesheetHours.Value:0;
                         userStatsDays[0]++;
                     break;
                     case "Б":
                     case "Т":
-                        userStats[2] += workHours.Value;
+                    userStats[2] += workHours.HasValue ? workHours.Value : 0;
                         userStatsDays[2]++;
                         break;
                     case "К":
-                        userStats[3] += workHours.Value;
+                        userStats[3] += workHours.HasValue ? workHours.Value : 0;
                         userStatsDays[3]++;
                         break;
                     case "ОТ":
@@ -747,14 +796,14 @@ namespace Reports.Core.Dao.Impl
                     case "ДО":
                     case "Р":
                     case "ОЖ":
-                        userStats[1] += workHours.Value;
+                        userStats[1] += workHours.HasValue ? workHours.Value : 0;
                         userStatsDays[1]++;
                         break;
                     case "В":
                     case EmptyStatusCode:
                         break;
                     default:
-                        userStats[4] += dto.TimesheetHours.HasValue ? dto.TimesheetHours.Value : workHours.Value;
+                        userStats[4] += workHours.HasValue?workHours.Value:0;//dto.TimesheetHours.HasValue ? dto.TimesheetHours.Value : workHours.Value;
                         userStatsDays[4]++;
                         break;
                 }

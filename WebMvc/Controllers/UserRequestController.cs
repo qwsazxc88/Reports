@@ -1915,6 +1915,11 @@ namespace WebMvc.Controllers
             }
             return ModelState.IsValid;
          }
+         [HttpGet]
+         public ActionResult TemplatesList()
+         {
+             return View(new TemplatesListModel());
+         }
     }
 
 

@@ -5,14 +5,18 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class AllRequestListModel : BeginEndCreateDate
+    public class TimesheetYearListModel : IDepartmentSelect, BeginEndCreateDate
     {
-        public int UserId { get; set; }
+        public int ManagerId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
+
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
+
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
 
         [Display(Name = "Период с")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
@@ -21,18 +25,13 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
-        [Display(Name = "Статус заявки")]
-        public int StatusId { get; set; }
-        public IList<IdNameDto> Statuses;
 
-        public IList<AllRequestDto> Documents { get; set; }
+        public string DatesPeriod { get; set; }
 
-        public int SortBy { get; set; }
-        public bool? SortDescending { get; set; }
+        [DataType("TimesheetDtoList")]
+        public IList<TimesheetDto> TimesheetDtos { get; set; }
 
-        [Display(Name = "ФИО сотрудника")]
-        public string UserName { get; set; }
+        public int NumberOfPages { get; set; }
+        public int CurrentPage { get; set; }
     }
-
-    
 }

@@ -29,6 +29,14 @@ namespace Reports.Core.Dao.Impl
             return criteria.List<WorkingGraphic>();
         }
 
+        public IList<WorkingGraphic> LoadForIdsList(List<int> userIds,DateTime beginDate,DateTime endDate)
+        {
+            ICriteria criteria = Session.CreateCriteria(typeof(WorkingGraphic));
+            criteria.Add(Restrictions.In("UserId", userIds))
+                .Add(Restrictions.Between("Day", beginDate, endDate));
+            return criteria.List<WorkingGraphic>();
+        }
+
         #endregion
     }
 }

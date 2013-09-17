@@ -41,6 +41,8 @@ namespace Reports.Core.Dto
         public int? TimesheetHours { get; set; }
         public int UserId { get; set; }
         public string UserName { get; set; }
+        public bool IsDismissalDay { get; set; }
+        public bool IsEmploymentDay { get; set; }
     }
     public class DayRequestsDto
     {

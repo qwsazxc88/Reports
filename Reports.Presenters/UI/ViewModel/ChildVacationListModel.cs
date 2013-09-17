@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class ChildVacationListModel
+    public class ChildVacationListModel:BeginEndCreateDate
     {
         public IList<IdNameDto> Positions;
         public IList<IdNameDto> RequestStatuses;
@@ -32,9 +32,11 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> VacationTypes;*/
 
         [Display(Name = "Период с")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BeginDate { get; set; }
 
         [Display(Name = "по")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
         [Display(Name = "Статус заявки")]
@@ -45,5 +47,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
+
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
     }
 }

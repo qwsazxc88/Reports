@@ -74,14 +74,26 @@
                                 @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name")) 
                             </td>
                         </tr>
-                         <tr>
+                        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.UserName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.UserName)
+                                </td>
+                            </tr>
+                        }
+                        <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
                                 @Html.EditorFor(model => model.BeginDate) 
                                 @Html.LabelFor(m => m.EndDate):
                                 @Html.EditorFor(model => model.EndDate) 
-                             </td>
+                                </td>
                         </tr>
+                       
                         <tr>
                           <td colspan="2">
                             <input type="submit" value="Выбрать"/>
@@ -198,6 +210,7 @@
             $("#PositionId").val('0');
         $("#VacationTypeId").val('0');
         $("#RequestStatusId").val('0');
+        $("#UserName").val('');
     }
  </script>   
 }
