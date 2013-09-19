@@ -153,6 +153,8 @@ namespace Reports.Core.Domain
         //public virtual Department Department { get; set; }
         public virtual Position Position { get; set; }
         public virtual Department Department { get; set; }
+
+        public virtual string Cnilc { get; set; }
         #endregion
 
         #region Constructors

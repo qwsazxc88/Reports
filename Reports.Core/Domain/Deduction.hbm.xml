@@ -1,0 +1,31 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Deduction">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+  <version name="Version" column= "Version"/>
+  <property name="EditDate" not-null="true"/>
+  <property name="DeductionDate" not-null="true"/>
+  <property name="Number"  not-null="true"/>
+	
+	<many-to-one name="Type" class="DeductionType" column="TypeId" foreign-key="FK_Deduction_DeductionType" index="Deduction_DeductionType"  not-null="true"/>
+  <many-to-one name="Kind" class="DeductionKind" column="KindId" foreign-key="FK_Deduction_DeductionKind" index="Deduction_DeductionKind"  not-null="true"/>
+  <property name="Sum" precision="19" scale="2" not-null="true"/>
+  <property name="DismissalDate" not-null="false"/>
+  <property name="IsFastDismissal" not-null="false"/>
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_Deduction_User" index="IX_Deduction_User_Id"  not-null="true"/>
+  <many-to-one name="Editor" class="User" column="CreatorId" foreign-key="FK_Deduction_EditorUser" index="IX_Deduction_EditorUser_Id"  not-null="true"/>
+  <property name="SendTo1C" not-null="false"/>
+  <property name="DeleteDate" not-null="false"/>
+  <property name="DeleteAfterSendTo1C" not-null="true"/>
+
+  <property name="IsEmailSendToUser" not-null="false"/>
+
+  <!--<many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Dismissal_TimesheetStatus" index="Dismissal_TimesheetStatus"  not-null="false"/>-->
+
+  <!--<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+    <key column="DismissalId" foreign-key="FK_DismissalComment_Dismissal"/>
+    <one-to-many class="DismissalComment"/>
+  </bag>-->
+	</class>
+</hibernate-mapping>

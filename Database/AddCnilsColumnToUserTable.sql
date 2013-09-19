@@ -1,0 +1,1 @@
+﻿alter table dbo.Users add Cnilc nvarchar(14) null

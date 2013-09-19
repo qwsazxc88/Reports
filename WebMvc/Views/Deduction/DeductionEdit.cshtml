@@ -1,0 +1,215 @@
+﻿@model Reports.Presenters.UI.ViewModel.DeductionEditModel
+@{
+    ViewBag.Title = "Редактирование удержания";
+}
+
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+            @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.Partial("../DeductionUserInfoView", Model)
+        </td>
+    </tr>
+     @if (Model.IsDeleted)
+    { 
+        <tr>
+            <td colspan="2" style="color:Red">Заявка отклонена</td>
+        </tr>
+    }
+    @* <tr>
+        <td style="width:205px">
+            @Html.LabelFor(m => m.EndDate):
+        </td>
+        <td>
+            @if (Model.IsEditable)
+            {
+                @Html.EditorFor(model => model.EndDate)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.EndDate)
+                @Html.HiddenFor(model => model.EndDate)
+            } 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Compensation):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Compensation, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Reduction):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reduction, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Reason):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Reason, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>*@
+     <tr>
+        <td>
+            <input type="hidden" id="KindIdHidden" name="KindIdHidden" value="@Model.KindIdHidden" />
+            @Html.LabelFor(m => m.KindId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.KindId, new SelectList(Model.Kindes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="hidden" id="MonthIdHidden" name="MonthIdHidden" value="@Model.MonthIdHidden" />
+            @Html.LabelFor(m => m.MonthId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.MonthesId, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.Sum):
+        </td>
+        <td>
+            @Html.TextBoxFor(model => model.Sum, Model.IsEditable ? null : (object)new { @readonly = "readonly" })
+        </td>
+    </tr>
+    <tr>
+        <td>
+          @*  <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />*@
+            <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+            <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+            <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+            <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+            <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+            <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+         @*   <input type="hidden" id="IsPersonnelFieldsEditable" name="IsPersonnelFieldsEditable" value="@Model.IsPersonnelFieldsEditable" />*@
+            @Html.LabelFor(m => m.TypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+    <tr>
+        <td style="width:210px">
+            @Html.LabelFor(m => m.DismissalDate):
+        </td>
+        <td>
+            @if (Model.IsEditable)
+            {
+                @Html.EditorFor(model => model.DismissalDate) 
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.DismissalDate)
+                @Html.HiddenFor(model => model.DismissalDate)
+            } 
+        </td>
+     </tr>
+     @*<tr>
+        <td>
+            @Html.LabelFor(m => m.StatusId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name"), Model.IsPersonnelFieldsEditable ? null : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>*@
+    <tr>
+            <td colspan="2">
+                @*<input type="hidden" id="IsFastDismissalEnabled" name="IsFastDismissalEnabled" value="@Model.IsFastDismissalEnabled" />*@
+                <input type="checkbox" id="IsFastDismissal" name="IsFastDismissal" @if (Model.IsFastDismissal) {<text>checked="checked"</text>} />
+                @Html.LabelFor(model => model.IsFastDismissal)
+                @if (!Model.IsEditable)
+                {
+                    <input type="hidden" id="IsFastDismissalHidden" name="IsFastDismissalHidden" value="@Model.IsFastDismissalHidden" />
+                }
+            </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.LabelFor(m => m.Editor):
+            @Html.DisplayFor(model => model.Editor) 
+         </td>
+    </tr>
+  @*  <tr>
+        <td colspan="2" style="height:5px">
+        </td>
+    </tr>
+   <tr>
+        <td>@Html.LabelFor(model => model.Attachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.Attachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                <input type="hidden" id="AttachmentTypeId" name="AttachmentTypeId" value="@Model.AttachmentTypeId" />
+            }
+        </td>
+    </tr>
+    <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsTypeEditable) || (Model.Id == 0))
+        {<text>style="display:none"</text>}>    
+        <td>Прикрепить скан документа</td>
+        <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+    </tr>*@
+    <tr>
+        <td colspan="2">
+            <input type="submit" value="Записать" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+            <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+                                                                                    {<text>style="display:none"</text>}/>
+         @*   <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 2 })';" 
+                                                                @if (!Model.IsPrintAvailable)
+                                                                {<text>style="display:none"</text>}  />*@
+            
+         </td>
+    </tr>
+    </table>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#BeginDate").datepicker();
+            $("#DismissalDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#Sum").width("50px");
+//            $("#Reduction").width("50px");
+//            $("#Reason").width("350px");
+//            setActiveMenuItem("userDismissal");
+        });
+        function ValidateForm() {
+            return true;
+        }
+//        function SetApprovedForAllAndValidateForm() {
+//            SetApprovedAndValidateForm();
+//            $("#IsApprovedForAll").val('true');
+//            return true;
+//        }
+//        function SetApprovedAndValidateForm() {
+//            $("#IsApproved").val('true');
+//            return true;
+//        }
+        function Delete() {
+            $("#IsDelete").val("true");
+            return true;
+        }
+    </script>
+}
+

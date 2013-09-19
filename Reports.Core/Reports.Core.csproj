@@ -224,6 +224,7 @@
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
     <Compile Include="Domain\DBVersion.cs" />
+    <Compile Include="Domain\Deduction.cs" />
     <Compile Include="Domain\DeductionKind.cs" />
     <Compile Include="Domain\DeductionType.cs" />
     <Compile Include="Domain\Department.cs" />
@@ -548,6 +549,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\DeductionKind.hbm.xml" />
     <EmbeddedResource Include="Domain\DeductionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Deduction.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

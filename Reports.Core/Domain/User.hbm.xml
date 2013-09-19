@@ -20,7 +20,8 @@
     <property name="Position" length="100" not-null="true" />
     <property name="Department" length="100" not-null="true" />-->
     <property name="DateRelease" not-null="false"/>
-	<property name="Comment" length="512" not-null="false"/>  
+	<property name="Comment" length="512" not-null="false"/>
+  <property name="Cnilc" length="512" not-null="false" />
 	<!--<property name="CanAnswer" not-null="true"/>
 	<property name="Birthday" not-null="false"/>-->
 	<property name="RoleId" not-null="true"/>
