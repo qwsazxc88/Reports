@@ -32,7 +32,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{19
 	ProjectSection(SolutionItems) = preProject
 		Database\CreateScript20130420.sql = Database\CreateScript20130420.sql
 		Database\Indicies.sql = Database\Indicies.sql
-		Database\Schema.sql = Database\Schema.sql
 		Database\UpdateScript.sql = Database\UpdateScript.sql
 	EndProjectSection
 EndProject

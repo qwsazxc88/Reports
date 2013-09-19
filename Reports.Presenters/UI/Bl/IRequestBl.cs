@@ -99,5 +99,6 @@ namespace Reports.Presenters.UI.Bl
 
         DeductionListModel GetDeductionListModel();
         void SetDeductionListModel(DeductionListModel model, bool hasError);
+        DeductionEditModel GetDeductionEditModel(int id);
     }
 }

@@ -38,5 +38,13 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
+
+        [HttpGet]
+        public ActionResult DeductionEdit(int id)
+        {
+            //int? userId = new int?();
+            DeductionEditModel model = RequestBl.GetDeductionEditModel(id);
+            return View(model);
+        }
     }
 }

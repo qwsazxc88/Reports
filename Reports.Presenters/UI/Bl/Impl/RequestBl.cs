@@ -5770,6 +5770,68 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    model.SortBy,
             //    model.SortDescending);
         }
+
+        public DeductionEditModel GetDeductionEditModel(int id)
+        {
+            DeductionEditModel model = new DeductionEditModel { Id = id };
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckDeductionUserRights(current))
+                throw new ArgumentException("Доступ запрещен.");
+            User user;
+            //if(id > 0)
+            //user = UserDao.Load(userId);
+            //SetUserInfoModel(user, model);
+            //SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.ChildVacation);
+            //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.ChildVacation);
+            //model.TimesheetStatuses = GetTimesheetStatusesForVacation();
+            //model.VacationTypes = GetVacationTypes(false);
+            Deduction deduction = null;
+            if (id == 0)
+            {
+                model.Editor = current.Name;
+                model.Version = 0;
+                model.DateEdited = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                //deduction = DeductionDao.Load(id);
+                //if (deduction == null)
+                //    throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
+                //model.Version = deduction.Version;
+                ////model.VacationTypeId = vacation.Type.Id;
+                ////model.VacationTypeIdHidden = model.VacationTypeId;
+                //model.BeginDate = deduction.BeginDate;//new DateTimeDto(vacation.BeginDate);//
+                //model.EndDate = deduction.EndDate;
+                //model.ChildrenCount = deduction.ChildrenCount.HasValue ? deduction.ChildrenCount.ToString() : string.Empty;
+                //model.PaidToDate = deduction.PaidToDate;
+                //model.PaidToDate1 = deduction.PaidToDate1;
+                //model.IsFirstChild = deduction.IsFirstChild;
+
+                //model.IsFreeRate = deduction.FreeRate;
+
+                //model.IsPreviousPaymentCounted = deduction.IsPreviousPaymentCounted;
+                ////model.IsPreviousPaymentCountedHidden = vacation.IsPreviousPaymentCounted;
+                ////model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
+                ////model.TimesheetStatusIdHidden = model.TimesheetStatusId;
+                ////model.DaysCount = vacation.DaysCount;
+                ////model.DaysCountHidden = model.DaysCount;
+                //model.CreatorLogin = deduction.Creator.Name;
+                //model.DocumentNumber = deduction.Number.ToString();
+                //model.DateCreated = deduction.CreateDate.ToShortDateString();
+                //if (deduction.DeleteDate.HasValue)
+                //    model.IsDeleted = true;
+                //SetHiddenFields(model);
+            }
+            //SetFlagsState(id, user, deduction, model);
+            return model;
+        }
+        public bool CheckDeductionUserRights(IUser current)
+        {
+            if((current.UserRole & UserRole.Accountant) > 0 ||
+               (current.UserRole & UserRole.OutsourcingManager) > 0)
+                return true;
+            return false;
+        }
         #endregion
     }
 
