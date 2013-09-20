@@ -46,6 +46,7 @@ namespace Reports.Core.Dao
                                                              DateTime beginDate, DateTime endDate);
 
         int DeleteEmployees(DateTime date);
+        IList<IdNameDto> GetUserListForDeduction();
     }
 }
 

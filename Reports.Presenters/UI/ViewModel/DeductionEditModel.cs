@@ -28,7 +28,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Период")]
         public int MonthId { get; set; }
         public int MonthIdHidden { get; set; }
-        public IList<IdNameDto> MonthesId;
+        public IList<IdNameDto> Monthes;
 
         public string Sum { get; set; }
 

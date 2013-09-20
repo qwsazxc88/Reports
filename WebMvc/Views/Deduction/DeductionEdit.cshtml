@@ -80,7 +80,7 @@
             @Html.LabelFor(m => m.MonthId):
         </td>
         <td>
-            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.MonthesId, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+            @Html.DropDownListFor(model => model.MonthId, new SelectList(Model.Monthes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
      <tr>

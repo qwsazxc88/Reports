@@ -54,4 +54,10 @@
         MissionCertificate = 5,
         ChildVacation = 6,
     }
+    public enum DeductionTypeEnum
+    {
+        Deduction = 1,
+        DeductionOnDismissal = 2,
+        DeductionAfterDismissal = 3,
+    }
 }

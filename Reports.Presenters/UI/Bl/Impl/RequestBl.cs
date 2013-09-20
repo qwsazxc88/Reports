@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using Reports.Core;
@@ -80,6 +81,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IChildVacationCommentDao childVacationCommentDao;
 
         protected IDeductionTypeDao deductionTypeDao;
+        protected IDeductionKindDao deductionKindDao;
+        protected IDeductionDao deductionDao;
 
 
        
@@ -303,6 +306,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(deductionTypeDao); }
             set { deductionTypeDao = value; }
+        }
+        public IDeductionKindDao DeductionKindDao
+        {
+            get { return Validate.Dependency(deductionKindDao); }
+            set { deductionKindDao = value; }
+        }
+        public IDeductionDao DeductionDao
+        {
+            get { return Validate.Dependency(deductionDao); }
+            set { deductionDao = value; }
         }
         #endregion
         #region Create Request
@@ -5730,12 +5743,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public List<IdNameDto> GetDeductionTypes(bool addAll)
         {
-            //List<IdNameDto> deductionStatuses = new List<IdNameDto>
-            //                                           {
-            //                                               new IdNameDto(1, "Удержание"),
-            //                                               new IdNameDto(2, "Удержание ПРИ увольнении"),
-            //                                               new IdNameDto(3, "Удержание ПОСЛЕ увольнения"),
-            //                                           }.OrderBy(x => x.Name).ToList();
             List<IdNameDto> deductionTypes = DeductionTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name}).ToList();
             if(addAll)
                 deductionTypes.Insert(0, new IdNameDto(0, SelectAll));
@@ -5778,53 +5785,85 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckDeductionUserRights(current))
                 throw new ArgumentException("Доступ запрещен.");
             User user;
-            //if(id > 0)
-            //user = UserDao.Load(userId);
-            //SetUserInfoModel(user, model);
-            //SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.ChildVacation);
-            //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.ChildVacation);
-            //model.TimesheetStatuses = GetTimesheetStatusesForVacation();
-            //model.VacationTypes = GetVacationTypes(false);
+            LoadDictionaries(model);
             Deduction deduction = null;
+            User editor;
             if (id == 0)
             {
-                model.Editor = current.Name;
+                editor = userDao.Load(current.Id);
+                if(editor == null)
+                    throw new ValidationException(string.Format("Не могу загрузить пользователя (id {0})",current.Id));
                 model.Version = 0;
                 model.DateEdited = DateTime.Today.ToShortDateString();
+                model.UserId = model.Users[0].Id;
             }
             else
             {
-                //deduction = DeductionDao.Load(id);
-                //if (deduction == null)
-                //    throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
-                //model.Version = deduction.Version;
-                ////model.VacationTypeId = vacation.Type.Id;
-                ////model.VacationTypeIdHidden = model.VacationTypeId;
-                //model.BeginDate = deduction.BeginDate;//new DateTimeDto(vacation.BeginDate);//
-                //model.EndDate = deduction.EndDate;
-                //model.ChildrenCount = deduction.ChildrenCount.HasValue ? deduction.ChildrenCount.ToString() : string.Empty;
-                //model.PaidToDate = deduction.PaidToDate;
-                //model.PaidToDate1 = deduction.PaidToDate1;
-                //model.IsFirstChild = deduction.IsFirstChild;
-
-                //model.IsFreeRate = deduction.FreeRate;
-
-                //model.IsPreviousPaymentCounted = deduction.IsPreviousPaymentCounted;
-                ////model.IsPreviousPaymentCountedHidden = vacation.IsPreviousPaymentCounted;
-                ////model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
-                ////model.TimesheetStatusIdHidden = model.TimesheetStatusId;
-                ////model.DaysCount = vacation.DaysCount;
-                ////model.DaysCountHidden = model.DaysCount;
-                //model.CreatorLogin = deduction.Creator.Name;
-                //model.DocumentNumber = deduction.Number.ToString();
-                //model.DateCreated = deduction.CreateDate.ToShortDateString();
-                //if (deduction.DeleteDate.HasValue)
-                //    model.IsDeleted = true;
-                //SetHiddenFields(model);
+                deduction = DeductionDao.Load(id);
+                if (deduction == null)
+                    throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
+                model.Version = deduction.Version;
+                model.UserId = deduction.User.Id;
+                model.KindId = deduction.Kind.Id;
+                model.Sum = deduction.Sum.ToString();
+                model.TypeId = deduction.Type.Id;
+                model.MonthId = deduction.DeductionDate.Year*100 + deduction.DeductionDate.Month;
+                if(deduction.Type.Id != (int) DeductionTypeEnum.Deduction)
+                {
+                    model.DismissalDate = deduction.DismissalDate;
+                    model.IsFastDismissal = deduction.IsFastDismissal.HasValue?deduction.IsFastDismissal.Value:false;
+                }
+                editor = deduction.Editor;
+                if (deduction.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+                SetHiddenFields(model);
             }
+            model.Editor = editor.Name + (string.IsNullOrEmpty(editor.Email) ? string.Empty : ", " + editor.Email);
+            SetDeductionUserInfoModel(model);
             //SetFlagsState(id, user, deduction, model);
             return model;
         }
+        protected void SetDeductionUserInfoModel(DeductionUserInfoModel model)
+        {
+            
+        }
+        protected void SetHiddenFields(DeductionEditModel model)
+        {
+            model.UserIdHidden = model.UserId;
+            model.KindIdHidden = model.KindId;
+            model.TypeIdHidden = model.TypeId;
+            model.MonthIdHidden = model.MonthId;
+            model.IsFastDismissalHidden = model.IsFastDismissalHidden;
+        }
+        protected void LoadDictionaries(DeductionEditModel model)
+        {
+            model.Types = GetDeductionTypes(false);
+            model.Kindes = GetDeductionKinds();
+            model.Monthes = GetDeductionMonthes();
+            model.Users = userDao.GetUserListForDeduction();
+        }
+        protected List<IdNameDto> GetDeductionKinds()
+        {
+            List<IdNameDto> deductionKinds = deductionKindDao.LoadAllSorted().ToList().
+                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToList();
+            return deductionKinds;
+        }
+        protected List<IdNameDto> GetDeductionMonthes()
+        {
+            List<IdNameDto> list = new List<IdNameDto>();
+            int currentYear = DateTime.Today.Year;
+            for (int i = 1; i < 13; i++)
+            {
+                
+                list.Add(new IdNameDto
+                             {
+                                 Id = currentYear*100+i,
+                                 Name = string.Format("{0} {1}",GetMonthName(i),currentYear),
+                             });
+            }
+            return list;
+        }
+
         public bool CheckDeductionUserRights(IUser current)
         {
             if((current.UserRole & UserRole.Accountant) > 0 ||

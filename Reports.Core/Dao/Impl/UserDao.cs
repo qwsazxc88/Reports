@@ -770,6 +770,25 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<User>();
         }
+        public IList<IdNameDto> GetUserListForDeduction()
+        {
+            string sqlQuery = @"select 
+                                u.id
+                                ,u.Name + N' (' + isnull(d.Name,N'')+ N', ' + isnull(d2.Name,N'')+ N' )' as Name
+                                from Users u
+                                left join Department d on d.Id = u.DepartmentId
+                                left join Department d2 on d.[Path] like d2.[Path]+N'%' and d2.ItemLevel = 2";
+            string sqlWhere = string.Format(" (u.RoleId & {0}) > 0 ", (int)UserRole.Employee);
+            sqlQuery += @" where " + sqlWhere;
+            sqlQuery += @" order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String);
+                //AddScalar("DateAccept", NHibernateUtil.DateTime);
+            //query.SetDateTime("beginDate", beginDate);
+            //query.SetDateTime("endDate", endDate);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
 		//protected static UserInstitutionLink FindInList(IList<UserInstitutionLink> list, int userId)
 		//{
 		//    foreach (UserInstitutionLink entity in list)

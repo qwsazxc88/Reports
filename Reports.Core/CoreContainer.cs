@@ -320,6 +320,10 @@ namespace Reports.Core
                       ImplementedBy(typeof(DeductionKindDao)).
                       LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IDeductionDao)).
+                      ImplementedBy(typeof(DeductionDao)).
+                      LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

@@ -90,6 +90,7 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IDeductionDao.cs" />
     <Compile Include="Dao\IDeductionKindDao.cs" />
     <Compile Include="Dao\IDeductionTypeDao.cs" />
     <Compile Include="Dao\IEmploymentAdditionDao.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
+    <Compile Include="Dao\Impl\DeductionDao.cs" />
     <Compile Include="Dao\Impl\DeductionKindDao.cs" />
     <Compile Include="Dao\Impl\DeductionTypeDao.cs" />
     <Compile Include="Dao\Impl\DefaultDao.cs" />
