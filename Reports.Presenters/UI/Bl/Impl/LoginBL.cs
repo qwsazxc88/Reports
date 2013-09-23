@@ -183,19 +183,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 isLinkAvailable = true;
                 return "Нет роли";
             }
+            UserRole current; 
             if(roles.Count == 1)
             {
-                if((roles[0]) != dto.UserRole)
+                if(((roles[0]) & dto.UserRole) == 0)
                     throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id,dto.UserRole));
+                current = roles[0];
             }
             else
             {
-                UserRole current = roles.Where(x => x == dto.UserRole).FirstOrDefault();
+
+                current = roles.Where(x => (x & dto.UserRole) > 0).FirstOrDefault();
                 if(current == 0)
                     throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id, dto.UserRole));
                 isLinkAvailable = true;
             }
-            Role role = RoleDao.Load((int)dto.UserRole);
+            Role role = RoleDao.Load((int)(dto.UserRole&current));
             if (role == null)
                 throw new ValidationException(string.Format("Не могу загрузить роль с id {0}", (int)dto.UserRole));
             return role.Name; 
@@ -364,7 +367,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User first = GetFirstUserWithRole(user, model.RoleId);
             if(first == null)
                 throw new ValidationException("Не найдено активных пользователей с указанной ролью.");
-            IUser dto = AuthenticationService.CreateUser(first,first.UserRole);
+            IUser dto = AuthenticationService.CreateUser(first,(UserRole)((int)first.UserRole&model.RoleId));
             AuthenticationService.setAuthTicket(dto);
             AddRecordToUserLogin(first,first.UserRole);
         }

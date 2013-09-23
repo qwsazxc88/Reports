@@ -777,7 +777,7 @@ namespace Reports.Core.Dao.Impl
                                 ,u.Name + N' (' + isnull(d.Name,N'')+ N', ' + isnull(d2.Name,N'')+ N' )' as Name
                                 from Users u
                                 left join Department d on d.Id = u.DepartmentId
-                                left join Department d2 on d.[Path] like d2.[Path]+N'%' and d2.ItemLevel = 2";
+                                left join Department d2 on d.[Path] like d2.[Path]+N'%' and d2.ItemLevel = 3";
             string sqlWhere = string.Format(" (u.RoleId & {0}) > 0 ", (int)UserRole.Employee);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by Name";

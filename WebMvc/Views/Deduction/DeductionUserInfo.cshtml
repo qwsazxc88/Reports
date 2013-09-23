@@ -1,40 +1,19 @@
 ﻿@model Reports.Presenters.UI.ViewModel.DeductionUserInfoModel
+<div id="UserInfo" >
 <table style="width:100%">
-    <tr>
-        <td colspan="2">
-          <input type="hidden" id="Guid" name="Guid" value="@Model.Guid" />
-           @* Реквизиты*@
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.DocumentNumber)
-        </td>
-        <td>
-            @Html.DisplayFor(m => m.DocumentNumber)
-            
-        </td>
-    </tr>
-    <tr>
-        <td style="width:18%">
-            @Html.LabelFor(m => m.DateEdited)
-        </td>
-        <td>
-            @Html.DisplayFor(m => m.DateEdited)
-            
-        </td>
-    </tr>
-     <tr>
-        <td>
-            @Html.LabelFor(m => m.Department)
+   <tr>
+        <td style="width:250px">
+            @Html.LabelFor(m => m.Department):
         </td>
         <td>
             @Html.DisplayFor(m => m.Department)
+            @Html.HiddenFor(m => m.DateRelease)
+            <input type="hidden" id="UserInfoError" name="UserInfoError" value="@Model.UserInfoError" />
         </td>
     </tr>
      <tr>
         <td>
-            @Html.LabelFor(m => m.Position)
+            @Html.LabelFor(m => m.Position):
         </td>
         <td>
             @Html.DisplayFor(m => m.Position)
@@ -42,7 +21,7 @@
     </tr>
     <tr>
         <td>
-            @Html.LabelFor(m => m.Cnilc)
+            @Html.LabelFor(m => m.Cnilc):
         </td>
         <td>
             @Html.DisplayFor(m => m.Cnilc)
@@ -84,8 +63,6 @@
             @Html.DisplayFor(m => m.PersonnelName)
         </td>
     </tr>*@
-    <tr>
-       <td colspan="2"/>
-    </tr>
 </table>
+</div>
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Transform;
 using Reports.Core.Domain;
@@ -148,5 +149,16 @@ namespace Reports.Core.Dao.Impl
                 query.SetInt32("departmentId", departmentId);*/
             //return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
         }
+        public DateTime? GetDismissalDateForUser(int userId)
+        {
+            string sqlQuery =
+                (@"select min(EndDate) from Dismissal
+                    where DeleteDate is null and SendTo1C is not null
+                    and UserId = :userId");
+            ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
+            query.SetInt32("userId", userId);
+            return query.List<DateTime?>().FirstOrDefault();
+        }
     }
+    
 }

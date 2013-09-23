@@ -117,7 +117,7 @@
                             {*@
                                 @if ((((ReportPrincipal)HttpContext.Current.User).UserRole & UserRole.Accountant) > 0)
                                 {
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "UserRequest", new { id = 0, userId = Model.UserId })'"/>   
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>   
                                 }
                                 @*else
                                 {
@@ -143,11 +143,11 @@
                         Номер порядковый №
                         @*</a></div>*@
                     </th>
-                    <th style="width:80px">
-                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Номер заявки</a></div>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                        <div id="sort3" style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
                     </th>
                      <th>
                         <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Подразделение уровня 3</a></div>

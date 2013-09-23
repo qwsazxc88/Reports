@@ -15,8 +15,26 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
-            @Html.Partial("../DeductionUserInfoView", Model)
+        <td style="width:250px">
+            @Html.LabelFor(m => m.DocumentNumber):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DocumentNumber)
+           
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.DateEdited):
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.DateEdited)
+            
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="padding-left:0px;padding-bottom:0px;padding-top:0px;">
+            @Html.Partial("DeductionUserInfo", Model)
         </td>
     </tr>
      @if (Model.IsDeleted)
@@ -66,6 +84,17 @@
         </td>
     </tr>*@
      <tr>
+        <td colspan="2">
+            <input type="hidden" id="UserIdHidden" name="UserIdHidden" value="@Model.UserIdHidden" />
+            @Html.LabelFor(m => m.UserId):
+        </td>
+     </tr>
+     <tr>
+        <td colspan="2">
+            @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "userChange();" } : (object)new { disabled = "disabled" }) 
+        </td>
+    </tr>
+     <tr>
         <td>
             <input type="hidden" id="KindIdHidden" name="KindIdHidden" value="@Model.KindIdHidden" />
             @Html.LabelFor(m => m.KindId):
@@ -105,7 +134,7 @@
             @Html.LabelFor(m => m.TypeId):
         </td>
         <td>
-            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+            @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "setDismissalDateState();" } : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
     <tr>
@@ -135,7 +164,8 @@
     <tr>
             <td colspan="2">
                 @*<input type="hidden" id="IsFastDismissalEnabled" name="IsFastDismissalEnabled" value="@Model.IsFastDismissalEnabled" />*@
-                <input type="checkbox" id="IsFastDismissal" name="IsFastDismissal" @if (Model.IsFastDismissal) {<text>checked="checked"</text>} />
+                @*<input type="checkbox" id="IsFastDismissal" name="IsFastDismissal" @if (Model.IsFastDismissal) {<text>checked="checked"</text>} />*@
+                @Html.CheckBox("IsFastDismissal", Model.IsFastDismissal, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsFastDismissal)
                 @if (!Model.IsEditable)
                 {
@@ -144,9 +174,19 @@
             </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td>
             @Html.LabelFor(m => m.Editor):
+        </td>
+        <td>
             @Html.DisplayFor(model => model.Editor) 
+         </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Status):
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Status) 
          </td>
     </tr>
   @*  <tr>
@@ -189,10 +229,11 @@
             //$("#BeginDate").datepicker();
             $("#DismissalDate").datepicker();
             $(".hasDatepicker").width("75px");
-            $("#Sum").width("50px");
-//            $("#Reduction").width("50px");
-//            $("#Reason").width("350px");
-//            setActiveMenuItem("userDismissal");
+            $("#Sum").width("75px");
+            setDismissalDateState();
+            //            $("#Reduction").width("50px");
+            //            $("#Reason").width("350px");
+            //            setActiveMenuItem("userDismissal");
         });
         function ValidateForm() {
             return true;
@@ -209,6 +250,49 @@
         function Delete() {
             $("#IsDelete").val("true");
             return true;
+        }
+        function setDismissalDateState() {
+            if ($("#IsEditable").val() == "False")
+                return;
+
+            if ($("#TypeId").val() == 1) {
+                $("#DismissalDate").attr("disabled", "disabled");
+                $("#DismissalDate").val("");
+                $("#IsFastDismissal").attr("disabled", "disabled");
+                $('#IsFastDismissal').removeAttr('checked');
+            }
+            else {
+                $("#DismissalDate").removeAttr("disabled");
+                if ($("#DismissalDate").val() == "")
+                    $("#DismissalDate").val($("#DateRelease").val());
+                $("#IsFastDismissal").removeAttr("disabled");
+            }
+        }
+        function userChange() {
+           clearErrors();
+            $.ajax(
+             {
+                 type: 'POST',
+                 contentType: 'application/json; charset=utf-8',
+                 data: "{'userId':" + "'" + $("#UserId").val() + "'}",
+                 dataType: 'html',
+                 url: "@Url.Action("UserChange", "Deduction")",
+                 success: function (result) {
+                      $("#UserInfo").html(result);
+                      if($("#UserInfoError").val() != "" ) {
+                        addError($("#UserInfoError").val());
+                      }
+                       if ($("#TypeId").val() != 1)
+                            $("#DismissalDate").val($("#DateRelease").val());
+                      //setDismissalDateState(); 
+                      //if ($("#DateRelease").val() != "")
+                      //$("#DismissalDate").val($("#DateRelease").val());
+                 },
+
+                 error: function (error) {
+                      addError(error);
+                 }
+             });
         }
     </script>
 }

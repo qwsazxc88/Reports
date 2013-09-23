@@ -12,6 +12,13 @@ namespace Reports.Presenters.UI.ViewModel
         public int Id { get; set; }
         public int Version { get; set; }
 
+        [Display(Name = "Номер служебной записки")]
+        public string DocumentNumber { get; set; }
+
+
+        [Display(Name = "Дата создания служебной записки")]
+        public string DateEdited { get; set; }
+
 
         [Display(Name = "ФИО")]
         public int UserId { get; set; }
@@ -30,6 +37,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int MonthIdHidden { get; set; }
         public IList<IdNameDto> Monthes;
 
+        [Display(Name = "Сумма")]
         public string Sum { get; set; }
 
         [Display(Name = "Тип заявки")]

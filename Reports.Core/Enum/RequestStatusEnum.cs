@@ -20,6 +20,7 @@
         TimesheetCorrection = 7,
         Employment = 8,
         ChildVacation = 9,
+        Deduction = 10,
     }
     public enum RequestAttachmentTypeEnum
     {

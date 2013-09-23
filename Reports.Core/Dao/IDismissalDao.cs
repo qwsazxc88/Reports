@@ -20,5 +20,7 @@ namespace Reports.Core.Dao
             int sortedBy,
             bool? sortDescending
             );
+
+        DateTime? GetDismissalDateForUser(int userId);
     }
 }

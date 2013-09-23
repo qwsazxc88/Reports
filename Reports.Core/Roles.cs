@@ -27,6 +27,7 @@ namespace Reports.Core
         public const string OutsourcingManager = "32";
         public const string Inspector = "64";
         public const string Chief = "128";
+        public const string Accountant = "256";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -44,6 +45,7 @@ namespace Reports.Core
                              {UserRole.OutsourcingManager, OutsourcingManager},
                              {UserRole.Inspector, Inspector},
                              {UserRole.Chief, Chief},
+                             {UserRole.Accountant, Accountant},
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}
