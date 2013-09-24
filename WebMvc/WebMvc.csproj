@@ -359,7 +359,7 @@
     <Content Include="Views\UserRequest\AddCommentDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\UserRequest\DialogError.cshtml" />
+    <Content Include="Views\Home\DialogError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Error\Unauthorized.cshtml" />
@@ -434,7 +434,7 @@
     <Content Include="Views\UserRequest\AcceptRequests.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\UserRequest\DepartmentDialog.cshtml" />
+    <Content Include="Views\Home\DepartmentDialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\UserRequest\ConstantList.cshtml" />
