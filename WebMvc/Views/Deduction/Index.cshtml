@@ -134,7 +134,7 @@
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
-            <table class="grid" style="width:100%">
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
                 <tr>
                     @*<th>Название документа</th>
                     <th>Дата</th>*@
@@ -185,20 +185,36 @@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
-                   @* foreach (var doc in Model.Documents)
+                    foreach (var doc in Model.Documents)
                     {
                         <tr>
+                            <td>@doc.Rn</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("ChildVacationEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
+                                <a class="ui-notify-close" href='@Url.Action("DeductionEdit", new { id = doc.Id })' style="cursor:hand">@doc.Number</a>
                             </td>
+                            <td>@doc.EditDate.ToShortDateString()</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Sum</td>
+                            <td>@doc.DeductionDate.ToShortDateString()</td>
                             <td>@doc.UserName</td>
-                            <td>@doc.Date</td>
-                             <td>@doc.Number</td>
-                            <td>@doc.RequestType</td>
-                            <td>@doc.RequestStatus</td>
-                            <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
+                            <td>@doc.Position</td>
+                            <td>@doc.Kind</td>
+                            <td>@doc.Dep7Name</td>
+                            <td>
+                            @if(doc.DismissalDate.HasValue)
+                            {
+                                @doc.DismissalDate.Value.ToShortDateString()
+                            }
+                            </td>
+                            <td>@doc.Status</td>
+                            <td>@doc.IsFastDismissal</td>
                         </tr>
-                    }*@
+                    }
+                    <tr>
+                        <td colspan="4">Общая сумма</td>
+                        <td>@Model.Total</td>       
+                        <td colspan="8" style="border:0px;"></td>          
+                    </tr>
                 }
             </table>
         </td>

@@ -5776,6 +5776,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName,
                 model.SortBy,
                 model.SortDescending);
+            if (model.Documents != null && model.Documents.Count > 0)
+                model.Total = model.Documents.Sum(x => x.Sum);
         }
 
         public DeductionEditModel GetDeductionEditModel(int id)
@@ -6067,7 +6069,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     entity.DismissalDate = null;
-                    entity.IsFastDismissal = false;
+                    entity.IsFastDismissal = null;
                 }
             }
         }

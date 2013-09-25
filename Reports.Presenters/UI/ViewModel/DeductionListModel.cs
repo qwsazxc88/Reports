@@ -44,6 +44,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         //[Display(Name = "Документы")]
         public IList<DeductionDto> Documents { get; set; }
+        public decimal Total { get; set; } 
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

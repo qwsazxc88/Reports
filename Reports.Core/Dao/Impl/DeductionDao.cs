@@ -31,8 +31,9 @@ namespace Reports.Core.Dao.Impl
                                      when v.SendTo1C is not null then N'Выгружена в 1С' 
                                      else N'Записана'
                                 end as Status,
-                                case when ((IsFastDismissal is null) or (IsFastDismissal = 0)) then N'Нет'
-                                else N'Да'
+                                case when IsFastDismissal is null then null  
+                                     when IsFastDismissal = 0 then N'Нет'
+                                     else N'Да'
                                 end as IsFastDismissal
                                 from dbo.Deduction v
                                 -- inner join dbo.DeductionType t on v.TypeId = t.Id
@@ -104,6 +105,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Position", NHibernateUtil.String).
                 AddScalar("Kind", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("DismissalDate", NHibernateUtil.DateTime).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("IsFastDismissal", NHibernateUtil.String);
         }
