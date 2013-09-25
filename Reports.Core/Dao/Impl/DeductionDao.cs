@@ -10,6 +10,9 @@ namespace Reports.Core.Dao.Impl
 {
     public class DeductionDao : DefaultDao<Deduction>, IDeductionDao
     {
+        protected const string sqlSelectForDeductionRn = @";with res as
+                                ({0})
+                                select {1} as Rn,* from res order by Rn";
         protected const string sqlSelectForDeduction =
                                @"select 
                                 v.Id as Id,
@@ -18,7 +21,7 @@ namespace Reports.Core.Dao.Impl
                                 v.EditDate,
                                 dep3.Name as Dep3Name,
                                 v.Sum,
-                                v.DeductionDate
+                                v.DeductionDate,
                                 u.Name as UserName,
                                 p.Name as Position,
                                 k.Name as Kind,
@@ -37,12 +40,13 @@ namespace Reports.Core.Dao.Impl
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 left join dbo.Position p on p.Id = u.PositionId
                                 left join dbo.Department dep on u.DepartmentId = dep.Id
-                                left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 ";
+                                left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
+                                ";
         public DeductionDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
         }
-        public virtual IList<VacationDto> GetDocuments(
+        public virtual IList<DeductionDto> GetDocuments(
                                 int userId,
                                 UserRole role,
                                 int departmentId,
@@ -68,7 +72,40 @@ namespace Reports.Core.Dao.Impl
 
             IQuery query = CreateQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(DeductionDto))).List<DeductionDto>();
+        }
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+        //    public int Id { get; set; }
+        //public int UserId { get; set; }
+        //public string Number { get; set; }
+        //public DateTime EditDate { get; set; }
+        //public string Dep3Name { get; set; }
+        //public decimal Sum { get; set; }
+        //public DateTime? DeductionDate { get; set; }
+        //public string UserName { get; set; }
+        //public string Position { get; set; }
+        //public string Kind { get; set; }
+        //public string Dep7Name { get; set; }
+        //public string Status { get; set; }
+        //public string IsFastDismissal { get; set; }
+        //public int Rn { get; set; }
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Rn", NHibernateUtil.Int32).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Sum", NHibernateUtil.Decimal).
+                AddScalar("DeductionDate", NHibernateUtil.DateTime).
+                //AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("Position", NHibernateUtil.String).
+                AddScalar("Kind", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("Status", NHibernateUtil.String).
+                AddScalar("IsFastDismissal", NHibernateUtil.String);
         }
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
@@ -77,13 +114,13 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[DeductionDate] >= :beginDate ";
+                whereString += @"v.[EditDate] >= :beginDate ";
             }
             if (endDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[DeductionDate] < :endDate ";
+                whereString += @"v.[EditDate] < :endDate ";
             }
             return whereString;
         }
@@ -129,60 +166,66 @@ namespace Reports.Core.Dao.Impl
             int sortedBy,
             bool? sortDescending)
         {
+            string orderBy = string.Empty;
             if (!string.IsNullOrEmpty(whereString))
                 sqlQuery += @" where " + whereString;
             if (!sortDescending.HasValue)
-                return sqlQuery;
+            {
+                orderBy = " ORDER BY UserName,EditDate DESC";
+                return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            }
             switch (sortedBy)
             {
                 case 0:
-                    return sqlQuery;
+                    orderBy = " ORDER BY UserName,EditDate DESC";
+                    return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    sqlQuery += @" order by Number";
+                    orderBy = @" order by Number";
                     break;
                 //case 2:
                 //    sqlQuery += @" order by EditDate";
                 //    break;
                 case 3:
-                    sqlQuery += @" order by EditDate";
+                    orderBy = @" order by EditDate";
                     break;
                 case 4:
-                    sqlQuery += @" order by Dep3Name";
+                    orderBy = @" order by Dep3Name";
                     break;
                 case 5:
-                    sqlQuery += @" order by Sum";
+                    orderBy = @" order by Sum";
                     break;
                 case 6:
-                    sqlQuery += @" order by DeductionDate";
+                    orderBy = @" order by DeductionDate";
                     break;
                 case 7:
-                    sqlQuery += @" order by UserName";
+                    orderBy = @" order by UserName";
                     break;
                 case 8:
-                    sqlQuery += @" order by Position";
+                    orderBy = @" order by Position";
                     break;
                 case 9:
-                    sqlQuery += @" order by Kind";
+                    orderBy = @" order by Kind";
                     break;
                 case 10:
-                    sqlQuery += @" order by Dep7Name";
+                    orderBy = @" order by Dep7Name";
                     break;
                 case 11:
-                    sqlQuery += @" order by DismissalDate";
+                    orderBy = @" order by DismissalDate";
                     break;
                 case 12:
-                    sqlQuery += @" order by Status";
+                    orderBy = @" order by Status";
                     break;
                 case 13:
-                    sqlQuery += @" order by IsFastDismissal";
+                    orderBy = @" order by IsFastDismissal";
                     break;
             }
             if (sortDescending.Value)
-                sqlQuery += " DESC ";
+                orderBy += " DESC ";
             else
-                sqlQuery += " ASC ";
+                orderBy += " ASC ";
+            return string.Format(sqlSelectForDeductionRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
             //sqlQuery += @" order by Date DESC,Name ";
-            return sqlQuery;
+            //return sqlQuery;
         }
     }
 }

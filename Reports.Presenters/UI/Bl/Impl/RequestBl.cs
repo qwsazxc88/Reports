@@ -5712,7 +5712,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ReloadDictionariesToModel(model);
             }
         }
-        #region Deduction
+         #region Deduction
         public DeductionListModel GetDeductionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -5761,21 +5761,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(DeductionListModel model, User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            model.Documents = new List<DeductionDto>();
+            //model.Documents = new List<DeductionDto>();
             /*Department dep = null;
             if(model.Department.Id != 0)
              dep = DepartmentDao.SearchByNameDistinct(model.Department.Name);*/
-            //model.Documents = ChildVacationDao.GetDocuments(user.Id,
-            //    role,
-            //    model.DepartmentId,
-            //    model.PositionId,
-            //    0,
-            //    model.RequestStatusId,
-            //    model.BeginDate,
-            //    model.EndDate,
-            //    model.UserName,
-            //    model.SortBy,
-            //    model.SortDescending);
+            model.Documents = DeductionDao.GetDocuments(user.Id,
+                role,
+                model.DepartmentId,
+                //model.PositionId,
+                model.TypeId,
+                model.RequestStatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
 
         public DeductionEditModel GetDeductionEditModel(int id)

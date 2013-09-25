@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Reports.Presenters.UI.ViewModel
+namespace Reports.Core.Dto
 {
     public class DeductionDto
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        public string Number { get; set; }
+        public int Number { get; set; }
         public DateTime EditDate { get; set; }
         public string Dep3Name { get; set; }
         public decimal Sum { get; set; }

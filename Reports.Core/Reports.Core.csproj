@@ -289,6 +289,7 @@
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
+    <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
