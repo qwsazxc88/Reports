@@ -37,7 +37,7 @@
         //EmploymentPen = 3,
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
-        ChildVacation = 4,
+        ChildVacation = 5,
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
