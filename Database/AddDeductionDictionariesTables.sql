@@ -55,7 +55,7 @@ create table Deduction (
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
-  IsEmailSendToUser BIT null,
+  EmailSendToUserDate DATETIME null,
   constraint PK_Deduction  primary key (Id)
 )
 create index Deduction_DeductionType on Deduction (TypeId)
