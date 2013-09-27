@@ -5712,7 +5712,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ReloadDictionariesToModel(model);
             }
         }
-         #region Deduction
+        #region Deduction
         public DeductionListModel GetDeductionListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -6062,7 +6062,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat("E-mail is empty for user {0}",user.Id);
                 return;
             }
-            
+            if(!deduction.DeleteDate.HasValue)
+            {
+                string to = "andreyu@migmail.ru";//user.Email;
+                string roubles = ((int)deduction.Sum) +" "+ GetRubleSumAsString((int)deduction.Sum);
+                int cp = ((int)(deduction.Sum * 100) % 100);
+                string copeck = (cp).ToString("D2") + " " + GetCopeckSumAsString(cp);
+                string body =
+                    string.Format(
+                        @"Из Вашей  заработной платы  будет произведено  удержание в сумме  {0} {1}, вид удержания - {2}. Автор:{3} E-mail: {4}.",
+                roubles,copeck,deduction.Kind.Name,deduction.Editor.FullName,deduction.Editor.Email);
+                EmailDto dto = SendEmail(to, "Удержание", body);
+                if (string.IsNullOrEmpty(dto.Error))
+                    deduction.EmailSendToUserDate = DateTime.Now;
+                else
+                    Log.ErrorFormat("Cannot send email to user {0}(email {1}) about deduction {2} : {3}",
+                        user.Id,to,deduction.Id,dto.Error);
+            }
         }
         protected void ChangeEntityProperties(Deduction entity, DeductionEditModel model)
         {
@@ -6072,7 +6088,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Kind = DeductionKindDao.Load(model.KindId);
                 entity.Type = DeductionTypeDao.Load(model.TypeId);
                 entity.User = UserDao.Load(model.UserId);
-                entity.Sum = Decimal.Parse(model.Sum);
+                entity.Sum = ((Decimal)((int)((Decimal.Parse(model.Sum))*100)))/100;
                 if(model.TypeId != (int)DeductionTypeEnum.Deduction)
                 {
                     entity.DismissalDate = model.DismissalDate;
@@ -6085,8 +6101,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
         }
-
-        
         #endregion
     }
 

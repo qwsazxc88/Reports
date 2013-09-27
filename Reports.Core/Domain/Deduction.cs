@@ -21,7 +21,7 @@ namespace Reports.Core.Domain
         public virtual decimal Sum { get; set; }
         public virtual DateTime? DismissalDate { get; set; }
         public virtual bool? IsFastDismissal { get; set; }
-        public virtual bool? IsEmailSendToUser { get; set; }
+        public virtual DateTime? EmailSendToUserDate { get; set; }
         
         public virtual User User { get; set; }
         public virtual User Editor { get; set; }
