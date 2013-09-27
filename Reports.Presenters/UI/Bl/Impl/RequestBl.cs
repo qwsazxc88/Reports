@@ -5996,6 +5996,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EditDate = DateTime.Now,
                     };
                     ChangeEntityProperties(deduction,model);
+                    SendEmailToUser(model, deduction);
                     DeductionDao.SaveAndFlush(deduction);
                     model.Id = deduction.Id;
                 }
@@ -6027,6 +6028,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         deduction.EditDate = DateTime.Now;
                         deduction.Editor = UserDao.Load(current.Id);
+                        SendEmailToUser(model, deduction);
                         DeductionDao.SaveAndFlush(deduction);
                     }
                     if (deduction.DeleteDate.HasValue)
@@ -6052,6 +6054,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        protected void SendEmailToUser(DeductionEditModel model,Deduction deduction)
+        {
+            User user = UserDao.Load(model.UserId);
+            if(string.IsNullOrEmpty(user.Email))
+            {
+                Log.ErrorFormat("E-mail is empty for user {0}",user.Id);
+                return;
+            }
+            
+        }
         protected void ChangeEntityProperties(Deduction entity, DeductionEditModel model)
         {
             if(model.IsEditable)
@@ -6074,6 +6086,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        
         #endregion
     }
 

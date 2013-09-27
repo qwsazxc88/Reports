@@ -15,8 +15,20 @@ using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
-    public class BaseBl:IBaseBl
+    public class BaseBl : IBaseBl
     {
+        public static string[] RublesWords =
+                                        {
+                                            "рубль",
+                                            "рубля",
+                                            "рублей",
+                                        };
+        public static string[] CopeckWords =
+                                        {
+                                            "копейка",
+                                            "копейки",
+                                            "копеек",
+                                        };
         protected static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         #region Fields
         protected IAuthenticationService authenticationService;
@@ -503,7 +515,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Неизвестный месяц {0}", month));
             }
         }
-
+        protected static string GetCopeckSumAsString(int sum)
+        {
+            return GetSumAsString(sum, CopeckWords);
+        }
+        protected static string GetRubleSumAsString(int sum)
+        {
+            return GetSumAsString(sum, RublesWords);
+        }
+        protected static string GetSumAsString(int sum, string[] words)
+        {
+            sum = sum % 100;
+            if (sum > 19)
+                sum = sum % 10;
+            switch (sum)
+            {
+                case 1:
+                    return words[0];
+                case 2:
+                case 3:
+                case 4:
+                    return words[1];
+                default:
+                    return words[2];
+            }
+        }
 
     }
     public class BlockGSSAPINTLMCredential : ICredentialsByHost
