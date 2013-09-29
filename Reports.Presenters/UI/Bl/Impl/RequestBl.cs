@@ -5808,6 +5808,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Удержание (id {0}) не найдена в базе данных.", id));
                 model.Version = deduction.Version;
                 model.UserId = deduction.User.Id;
+                IdNameDto dto = model.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
+                if(dto == null)
+                    throw new ArgumentException(
+               string.Format("Пользователь {0} не является сотрудником или уволен более 3 месяцев назад",deduction.User.Name));
                 model.KindId = deduction.Kind.Id;
                 model.Sum = deduction.Sum.ToString();
                 model.TypeId = deduction.Type.Id;
@@ -5868,16 +5872,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime? dateRelease = null;
             if(user.DateRelease.HasValue)
                 dateRelease = user.DateRelease.Value;
-            else
-            {
-                DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
-                if(releaseDate.HasValue)
-                    dateRelease = releaseDate.Value;
-            }
+            //else
+            //{
+            //    DateTime? releaseDate = dismissalDao.GetDismissalDateForUser(user.Id);
+            //    if(releaseDate.HasValue)
+            //        dateRelease = releaseDate.Value;
+            //}
             if (dateRelease.HasValue)
             {
                 model.DateRelease = dateRelease.Value.ToShortDateString();
-                if (dateRelease.Value < DateTime.Now.AddMonths(-3))
+                if (dateRelease.Value < DateTime.Today.AddMonths(-3))
                     model.UserInfoError = "Сотрудник уволен более 3 месяцев назад";
             }
         }

@@ -778,14 +778,15 @@ namespace Reports.Core.Dao.Impl
                                 from Users u
                                 left join Department d on d.Id = u.DepartmentId
                                 left join Department d2 on d.[Path] like d2.[Path]+N'%' and d2.ItemLevel = 3";
-            string sqlWhere = string.Format(" (u.RoleId & {0}) > 0 ", (int)UserRole.Employee);
+            string sqlWhere = string.Format(@" ((u.RoleId & {0}) > 0) 
+            and ((u.DateRelease is null) or (u.DateRelease >= :releaseDate))", (int)UserRole.Employee);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by Name";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
                 //AddScalar("DateAccept", NHibernateUtil.DateTime);
-            //query.SetDateTime("beginDate", beginDate);
+            query.SetDateTime("releaseDate", DateTime.Today.AddMonths(-3));
             //query.SetDateTime("endDate", endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }

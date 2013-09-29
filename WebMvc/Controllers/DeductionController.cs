@@ -88,14 +88,13 @@ namespace WebMvc.Controllers
         }
         protected void CorrectDropdowns(DeductionEditModel model)
         {
-            // todo ???
-            //if (!model.IsEditable)
-            //{
-            //    model.TypeId = model.TypeIdHidden;
-            //    model.KindId = model.KindIdHidden;
-            //    model.MonthId = model.MonthIdHidden;
-            //    model.UserId = model.UserIdHidden;
-            //}
+            if (!model.IsEditable)
+            {
+                //model.TypeId = model.TypeIdHidden;
+                //model.KindId = model.KindIdHidden;
+                //model.MonthId = model.MonthIdHidden;
+                model.UserId = model.UserIdHidden;
+            }
         }
         protected bool ValidateDeductionEditModel(DeductionEditModel model)
         {
