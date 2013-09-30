@@ -5760,7 +5760,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(DeductionListModel model, User user)
         {
-            UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            UserRole role = CurrentUser.UserRole;//(UserRole)(user.RoleId & (int)CurrentUser.UserRole);
             //model.Documents = new List<DeductionDto>();
             /*Department dep = null;
             if(model.Department.Id != 0)

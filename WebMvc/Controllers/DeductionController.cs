@@ -16,6 +16,7 @@ namespace WebMvc.Controllers
     public class DeductionController : BaseController
     {
         protected IRequestBl requestBl;
+        protected const string emptyValue = ""; 
         public IRequestBl RequestBl
         {
             get
@@ -137,23 +138,33 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        public ActionResult PrintDeductionList(DateTime? beginDate, DateTime? endDate, int? departmentId,
-                    int requestStatusId, int typeId, string userName, int? sortBy, bool? sortDescending)
+        public ActionResult PrintDeductionList(string beginDate,string endDate, int? departmentId,
+                    int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
         {
+            
 
             DeductionListModel model = new DeductionListModel
                                            {
-                                               BeginDate = beginDate,
-                                               EndDate = endDate,
+                                               BeginDate = parseDateTime(beginDate),
+                                               EndDate = parseDateTime(endDate),
                                                DepartmentId = departmentId.HasValue?departmentId.Value:0,
-                                               RequestStatusId = requestStatusId,
-                                               TypeId = typeId,
+                                               RequestStatusId = requestStatusId.HasValue?requestStatusId.Value:0,
+                                               TypeId = typeId.HasValue?typeId.Value:0,
                                                UserName = string.IsNullOrEmpty(userName)?string.Empty:Server.UrlDecode(userName),
                                                SortBy = sortBy.HasValue?sortBy.Value:0,
                                                SortDescending = sortDescending.HasValue?sortDescending.Value:new bool?(),
                                            };
             RequestBl.SetDeductionListModel(model, !ValidateModel(model));
             return View(model);
+        }
+        protected DateTime? parseDateTime(string value)
+        {
+            if(string.IsNullOrEmpty(value))
+                return new DateTime?();
+            DateTime result;
+            if(!DateTime.TryParse(value,out result))
+                return new DateTime?();
+            return result;
         }
         [HttpGet]
         public ActionResult RenderToPdf(DateTime? beginDate, DateTime? endDate, int? departmentId,
@@ -221,18 +232,40 @@ namespace WebMvc.Controllers
         {
             var localhostUrl = ConfigurationManager.AppSettings["localhost"];
             const string urlTemplate = "Deduction/PrintDeductionList";
-            string args =
-                string.Format(
-                    @"?beginDate={0}&endDate={1}&departmentId={2}&requestStatusId={3}&typeId={4}
-                        &userName={5}&sortBy={6}&sortDescending={7}",
-                    beginDate.HasValue?beginDate.Value.ToShortDateString():string.Empty,
-                    endDate.HasValue ? endDate.Value.ToShortDateString() : string.Empty,
-                    departmentId.HasValue?departmentId.Value.ToString():string.Empty,
-                    requestStatusId.HasValue?requestStatusId.Value:0, 
-                    typeId.HasValue?typeId.Value:0,
-                    string.IsNullOrEmpty(userName)?string.Empty:Server.UrlEncode(userName),
-                    sortBy.HasValue?sortBy.Value.ToString():string.Empty,
-                    sortDescending.HasValue ? sortDescending.Value.ToString() : string.Empty);
+            string args = @"";
+            if (beginDate.HasValue)
+                args += string.Format("beginDate={0}&", beginDate.Value.ToShortDateString());
+            if (endDate.HasValue)
+                args += string.Format("endDate={0}&", endDate.Value.ToShortDateString());
+            if (departmentId.HasValue)
+                args += string.Format("departmentId={0}&", departmentId.Value);
+            if (requestStatusId.HasValue)
+                args += string.Format("requestStatusId={0}&", requestStatusId.Value);
+            if (typeId.HasValue)
+                args += string.Format("typeId={0}&", typeId.Value);
+            if (!string.IsNullOrEmpty(userName))
+                args += string.Format("userName={0}&", Server.UrlEncode(userName));
+            if (sortBy.HasValue)
+                args += string.Format("sortBy={0}&", sortBy.Value);
+            if (sortDescending.HasValue)
+                args += string.Format("sortDescending={0}&", sortDescending.Value);
+            if (!string.IsNullOrEmpty(args))
+                args = args.Substring(0, args.Length - 1);
+            args = "?" + args;
+
+//            string args =
+//                string.Format(
+//                    @"?beginDate={0}&endDate={1}&departmentId={2}&requestStatusId={3}&typeId={4}
+//                        &userName={5}&sortBy={6}&sortDescending={7}",
+//                    beginDate.HasValue?beginDate.Value.ToShortDateString():emptyValue,
+//                    endDate.HasValue ? endDate.Value.ToShortDateString() : emptyValue,
+//                    departmentId.HasValue ? departmentId.Value.ToString() : emptyValue,
+//                    requestStatusId.HasValue?requestStatusId.Value:0, 
+//                    typeId.HasValue?typeId.Value:0,
+//                    string.IsNullOrEmpty(userName) ? emptyValue : Server.UrlEncode(userName),
+//                    sortBy.HasValue ? sortBy.Value.ToString() : emptyValue,
+//                    sortDescending.HasValue ? sortDescending.Value.ToString() : emptyValue);
+            //args = string.Empty;))
             return !string.IsNullOrEmpty(localhostUrl)
                        ? string.Format(@"{0}/{1}{2}",localhostUrl, urlTemplate,args)
                        : Url.Content(string.Format(@"{0}{1}",urlTemplate, args));
