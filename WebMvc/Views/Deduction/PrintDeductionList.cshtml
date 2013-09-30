@@ -1,0 +1,99 @@
+﻿@model Reports.Presenters.UI.ViewModel.DeductionListModel
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Печать удержаний";
+}
+
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+     <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+                               
+        </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+           <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        @*<div id="sort1"><a href="#" onclick = "SortChanged(1);">*@
+                        Номер порядковый №
+                        @*</a></div>*@
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3" style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort4" style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение уровня 3</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Сумма</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6" style="min-width:86px"><a href="#"  onclick = "SortChanged(6);">Период</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:90px"><a href="#"  onclick = "SortChanged(7);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" style="min-width:100px"><a href="#"  onclick = "SortChanged(8);">Должность</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:132px"><a href="#"  onclick = "SortChanged(9);">Вид удержания</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" style="min-width:222px"><a href="#"  onclick = "SortChanged(10);">Подразделение ККО/Отдел</a></div>
+                    </th>
+                     <th>
+                        <div id="sort11" style="min-width:148px"><a href="#"  onclick = "SortChanged(11);">Дата увольнения</a></div>
+                    </th>
+                    <th>
+                        <div id="sort12" style="min-width:96px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                    </th>
+                     <th>
+                        <div id="sort13"  style="min-width:74px"><a href="#"  onclick = "SortChanged(13);">Срочно</a></div>
+                    </th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@doc.Rn</td>
+                            <td>@doc.Number</td>
+                            <td>@doc.EditDate.ToShortDateString()</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Sum</td>
+                            <td>@doc.DeductionDate.ToShortDateString()</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                            <td>@doc.Kind</td>
+                            <td>@doc.Dep7Name</td>
+                            <td>
+                            @if(doc.DismissalDate.HasValue)
+                            {
+                                @doc.DismissalDate.Value.ToShortDateString()
+                            }
+                            </td>
+                            <td>@doc.Status</td>
+                            <td>@doc.IsFastDismissal</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td colspan="4">Общая сумма</td>
+                        <td>@Model.Total</td>       
+                        <td colspan="8" style="border:0px;"></td>          
+                    </tr>
+                }
+            </table>
+        </td>
+    </tr>
+ </table>
+}

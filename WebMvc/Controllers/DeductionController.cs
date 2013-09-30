@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Web.Mvc;
+using System.Web.Security;
 using Reports.Core;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
-using Reports.Presenters.UI.Bl.Impl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 
@@ -130,6 +134,135 @@ namespace WebMvc.Controllers
             }
             
             return PartialView("DeductionUserInfo",model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintDeductionList(DateTime? beginDate, DateTime? endDate, int? departmentId,
+                    int requestStatusId, int typeId, string userName, int? sortBy, bool? sortDescending)
+        {
+
+            DeductionListModel model = new DeductionListModel
+                                           {
+                                               BeginDate = beginDate,
+                                               EndDate = endDate,
+                                               DepartmentId = departmentId.HasValue?departmentId.Value:0,
+                                               RequestStatusId = requestStatusId,
+                                               TypeId = typeId,
+                                               UserName = string.IsNullOrEmpty(userName)?string.Empty:Server.UrlDecode(userName),
+                                               SortBy = sortBy.HasValue?sortBy.Value:0,
+                                               SortDescending = sortDescending.HasValue?sortDescending.Value:new bool?(),
+                                           };
+            RequestBl.SetDeductionListModel(model, !ValidateModel(model));
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult RenderToPdf(DateTime? beginDate, DateTime? endDate, int? departmentId,
+                    int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var argumrnts = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                    GetConverterCommandParam(beginDate, endDate, departmentId, 
+                    requestStatusId, typeId,userName,sortBy, sortDescending)
+                    , cookieName, authCookie.Value);
+                //argumrnts.AppendFormat("\"{0}\"", GetConverterCommandPtaram(id));
+                argumrnts.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = argumrnts.ToString(),
+                        UseShellExecute = true
+                    },
+                    EnableRaisingEvents = true
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(filePath, fileName, @"application/pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on RenderToPdf", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+        protected string GetConverterCommandParam(DateTime? beginDate, DateTime? endDate, int? departmentId, 
+                    int? requestStatusId, int? typeId,string userName,int? sortBy,bool? sortDescending)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            const string urlTemplate = "Deduction/PrintDeductionList";
+            string args =
+                string.Format(
+                    @"?beginDate={0}&endDate={1}&departmentId={2}&requestStatusId={3}&typeId={4}
+                        &userName={5}&sortBy={6}&sortDescending={7}",
+                    beginDate.HasValue?beginDate.Value.ToShortDateString():string.Empty,
+                    endDate.HasValue ? endDate.Value.ToShortDateString() : string.Empty,
+                    departmentId.HasValue?departmentId.Value.ToString():string.Empty,
+                    requestStatusId.HasValue?requestStatusId.Value:0, 
+                    typeId.HasValue?typeId.Value:0,
+                    string.IsNullOrEmpty(userName)?string.Empty:Server.UrlEncode(userName),
+                    sortBy.HasValue?sortBy.Value.ToString():string.Empty,
+                    sortDescending.HasValue ? sortDescending.Value.ToString() : string.Empty);
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}{2}",localhostUrl, urlTemplate,args)
+                       : Url.Content(string.Format(@"{0}{1}",urlTemplate, args));
+        }
+        protected ActionResult GetFile(string filePath, string fileName, string contentType)
+        {
+            byte[] value;
+            using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+            {
+                value = new byte[stream.Length];
+                stream.Read(value, 0, (int)stream.Length);
+            }
+
+            //const string contentType = "application/pdf";
+            Response.Clear();
+            if (Request.Browser.Browser == "IE")
+            {
+                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(fileName));
+                Response.AddHeader("Content-Disposition", attachment);
+            }
+            else
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+
+            Response.ContentType = contentType;
+            Response.Charset = "utf-8";
+            Response.HeaderEncoding = Encoding.UTF8;
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.BinaryWrite(value);
+            Response.End();
+            return null;
         }
     }
 }
