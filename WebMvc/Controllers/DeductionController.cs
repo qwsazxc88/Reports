@@ -278,16 +278,16 @@ namespace WebMvc.Controllers
                 value = new byte[stream.Length];
                 stream.Read(value, 0, (int)stream.Length);
             }
-
+            const string userFileName = "Удержание";
             //const string contentType = "application/pdf";
             Response.Clear();
             if (Request.Browser.Browser == "IE")
             {
-                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(fileName));
+                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(userFileName));
                 Response.AddHeader("Content-Disposition", attachment);
             }
             else
-                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + userFileName + "\"");
 
             Response.ContentType = contentType;
             Response.Charset = "utf-8";
