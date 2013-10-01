@@ -13,6 +13,8 @@ using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
+    [PreventSpamAttribute]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
     public class DeductionController : BaseController
     {
         protected IRequestBl requestBl;
@@ -25,8 +27,6 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(requestBl);
             }
         }
-
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
         public ActionResult Index()
         {
             DeductionListModel model = RequestBl.GetDeductionListModel();

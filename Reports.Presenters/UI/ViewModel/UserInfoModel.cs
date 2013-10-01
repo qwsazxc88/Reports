@@ -32,8 +32,12 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Кадровик(и)")]
         public string PersonnelName { get; set; }
     }
-    public class PreventDCModel
+    public class PreventDCModel : IPreventDCModel
     {
         public string Guid { get; set; }
+    }
+    public interface IPreventDCModel
+    {
+        string Guid { get; set; }
     }
 }

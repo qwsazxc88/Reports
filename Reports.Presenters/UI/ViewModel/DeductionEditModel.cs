@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class DeductionEditModel : DeductionUserInfoModel,IContainId
+    public class DeductionEditModel : DeductionUserInfoModel, IContainId, IPreventDCModel
     {
+        public string Guid { get; set; }
+
         public int Id { get; set; }
         public int Version { get; set; }
 

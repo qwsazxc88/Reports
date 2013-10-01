@@ -31,7 +31,7 @@ namespace WebMvc.Attributes
                 base.OnActionExecuting(filterContext);
                 return;
             }
-            var model = filterContext.ActionParameters["model"] as PreventDCModel;
+            var model = filterContext.ActionParameters["model"] as IPreventDCModel;
             var idModel = filterContext.ActionParameters["model"] as IContainId;
             if (model == null || idModel == null)
             {
@@ -140,7 +140,7 @@ namespace WebMvc.Attributes
                 // => no need to continue any further);
                 return;
             }
-            var model = result.Model as PreventDCModel;
+            var model = result.Model as IPreventDCModel;
             if (model == null)
             {
                 // there's no model or the model was not of the expected type 
