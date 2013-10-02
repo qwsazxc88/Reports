@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Transform;
 using Reports.Core.Domain;
@@ -229,5 +230,20 @@ namespace Reports.Core.Dao.Impl
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
         }
+
+        public DateTime? GetMinDeductionPeriod()
+        {
+            string sqlQuery = @"select min(DeductionDate) as DeductionDate from dbo.Deduction";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).AddScalar("DeductionDate", NHibernateUtil.DateTime);
+            IList<DeductionDateTimeDto> list = query.SetResultTransformer(Transformers.AliasToBean(typeof(DeductionDateTimeDto))).List<DeductionDateTimeDto>();
+            DeductionDateTimeDto dto = list.FirstOrDefault();
+            if(dto == null)
+                return new DateTime?();
+            return dto.DeductionDate;
+        }
+    }
+    public class DeductionDateTimeDto
+    {
+        public DateTime? DeductionDate { get; set; }
     }
 }

@@ -20,5 +20,7 @@ namespace Reports.Core.Dao
             //string sqlQuery,
             int sortedBy,
             bool? sortDescending);
+
+        DateTime? GetMinDeductionPeriod();
     }
 }

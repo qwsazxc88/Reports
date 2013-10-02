@@ -5942,16 +5942,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected List<IdNameDto> GetDeductionMonthes()
         {
             List<IdNameDto> list = new List<IdNameDto>();
-            int currentYear = DateTime.Today.Year;
-            for (int i = 1; i < 13; i++)
+            DateTime today = DateTime.Today;
+            DateTime beginDate = new DateTime(today.Year,1,1);
+            DateTime endDate = new DateTime(today.Year, 1, 1).AddYears(1).AddMilliseconds(-1);
+            DateTime? beginDateFromDb = deductionDao.GetMinDeductionPeriod();
+            if (beginDateFromDb.HasValue && beginDateFromDb.Value < beginDate)
+                beginDate = beginDateFromDb.Value;
+
+            DateTime currDate = beginDate;
+            while (currDate < endDate)
             {
-                
                 list.Add(new IdNameDto
                              {
-                                 Id = currentYear*100+i,
-                                 Name = string.Format("{0} {1}",GetMonthName(i),currentYear),
+                                 Id = currDate.Year * 100 + currDate.Month,
+                                 Name = string.Format("{0} {1}", GetMonthName(currDate.Month), currDate.Year),
                              });
+               currDate = currDate.AddMonths(1);
             }
+            //int currentYear = DateTime.Today.Year;
+            //for (int i = 1; i < 13; i++)
+            //{
+                
+            //    list.Add(new IdNameDto
+            //                 {
+            //                     Id = currentYear*100+i,
+            //                     Name = string.Format("{0} {1}",GetMonthName(i),currentYear),
+            //                 });
+            //}
             return list;
         }
         public void ReloadDictionariesToModel(DeductionEditModel model)
