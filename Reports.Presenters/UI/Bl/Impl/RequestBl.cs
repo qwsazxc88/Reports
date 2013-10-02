@@ -6091,8 +6091,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string copeck = (cp).ToString("D2") + " " + GetCopeckSumAsString(cp);
                 string body =
                     string.Format(
-                        @"Из Вашей  заработной платы  будет произведено  удержание в сумме  {0} {1}, вид удержания - {2}. Автор:{3} E-mail: {4}.",
-                roubles,copeck,deduction.Kind.Name,deduction.Editor.FullName,deduction.Editor.Email);
+                        @"Из Вашей  заработной платы  будет произведено  удержание  № {5} в сумме  {0} {1}, вид удержания - {2}. Автор:{3} E-mail: {4}.",
+                roubles,copeck,deduction.Kind.Name,deduction.Editor.FullName,deduction.Editor.Email,deduction.Number);
                 EmailDto dto = SendEmail(to, "Удержание", body);
                 if (string.IsNullOrEmpty(dto.Error))
                     deduction.EmailSendToUserDate = DateTime.Now;
