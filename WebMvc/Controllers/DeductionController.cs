@@ -278,7 +278,7 @@ namespace WebMvc.Controllers
                 value = new byte[stream.Length];
                 stream.Read(value, 0, (int)stream.Length);
             }
-            const string userFileName = "Удержание";
+            const string userFileName = "Deduction.pdf";
             //const string contentType = "application/pdf";
             Response.Clear();
             if (Request.Browser.Browser == "IE")
