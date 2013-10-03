@@ -185,6 +185,7 @@ namespace Reports.Presenters.Services
         public const int defaultTimesheetPageSize = 50;
 
         public const string keySicklistTypeIdBabyMinding = "SicklistTypeIdBabyMinding";
+        public const string keyDefaultDeductionEmail = "DefaultDeductionEmail";
 
         #region IConfigurationService Members
 
@@ -226,7 +227,10 @@ namespace Reports.Presenters.Services
             }
         }
 
-
+        public string DefaultDeductionEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyDefaultDeductionEmail]; }
+        }
 
         public int UsersDocumentsDelayInDays
         {

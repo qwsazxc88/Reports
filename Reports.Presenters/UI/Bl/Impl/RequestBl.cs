@@ -9,6 +9,7 @@ using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
+using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -316,6 +317,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(deductionDao); }
             set { deductionDao = value; }
+        }
+
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
         }
         #endregion
         #region Create Request
@@ -6085,7 +6093,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if(!deduction.DeleteDate.HasValue)
             {
-                string to = "andreyu@migmail.ru";//user.Email;
+                string defaultEmail = ConfigurationService.DefaultDeductionEmail;
+                string to = string.IsNullOrEmpty(defaultEmail)?user.Email:defaultEmail;
                 string roubles = ((int)deduction.Sum) +" "+ GetRubleSumAsString((int)deduction.Sum);
                 int cp = ((int)(deduction.Sum * 100) % 100);
                 string copeck = (cp).ToString("D2") + " " + GetCopeckSumAsString(cp);

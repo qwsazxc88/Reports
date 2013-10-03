@@ -8,6 +8,7 @@ namespace Reports.Core.Services
         int PageSize { get; }
         int SicklistTypeIdBabyMinding { get; }
         int TimesheetPageSize { get; }
+        string DefaultDeductionEmail { get; }
 		//string ImageStorageDir { get; }
 		//string MailNotificationSubject { get; }
 		//string MailNoticeSubject { get; }
