@@ -6,6 +6,18 @@
 
 @using (Html.BeginForm())
 {
+      if (Model.IsCreateButtonVisible)
+      { 
+        <div class="action-wrap">
+            <table style="width:100%">
+                <tr>
+                        <td colspan="2">
+                            <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DeductionEdit", "Deduction", new { id = 0 })'"/>   
+                        </td>
+                    </tr>
+            </table>  
+        </div>  
+      }       
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
@@ -40,11 +52,11 @@
         </td>
     </tr>
      @if (Model.IsDeleted)
-    { 
+     { 
         <tr>
             <td colspan="2" style="color:Red">Заявка отклонена</td>
         </tr>
-    }
+     }
     @* <tr>
         <td style="width:205px">
             @Html.LabelFor(m => m.EndDate):
@@ -202,9 +214,9 @@
     <tr>
         <td colspan="2">
             <input type="submit" value="Записать" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                   {<text>style="display:none"</text>}/>
             <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                     {<text>style="display:none"</text>}/>
          @*   <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 2 })';" 
                                                                 @if (!Model.IsPrintAvailable)
                                                                 {<text>style="display:none"</text>}  />*@

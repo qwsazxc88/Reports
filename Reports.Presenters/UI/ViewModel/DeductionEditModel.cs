@@ -67,5 +67,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDeleted { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public bool IsCreateButtonVisible { get; set; }
     }
 }
