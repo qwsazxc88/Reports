@@ -209,6 +209,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id,dto.UserRole));
                 current = r;
                 curUser = usersAndRoles[0].user;
+                 isLinkAvailable = usersAndRoles[0].roles.Count > 1;
             }
             else
             {
