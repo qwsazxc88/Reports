@@ -5915,6 +5915,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsEditable = true;
                         model.IsDeleteAvailable = true;
                     }
+                    model.IsCreateButtonVisible = true;
                     break;
             }
             model.IsSaveAvailable = model.IsEditable;
@@ -5925,6 +5926,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDelete = state;
             model.IsDeleteAvailable = state;
             model.IsEditable = state;
+            model.IsCreateButtonVisible = state;
         }
         protected void SetHiddenFields(DeductionEditModel model)
         {
