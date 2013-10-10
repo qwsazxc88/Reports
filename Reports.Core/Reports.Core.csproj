@@ -307,6 +307,7 @@
     <Compile Include="Dto\UploadFileDto.cs" />
     <Compile Include="Dto\UserDto.cs" />
     <Compile Include="Dto\UserLoginItemDto.cs" />
+    <Compile Include="Dto\UserRolesDto.cs" />
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
