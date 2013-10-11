@@ -6,6 +6,7 @@ using System.Reflection;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -104,11 +105,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 else
                                 {
                                     formsAuthenticationService.SignIn(model.UserName, false);
-                                    List<UserRole> roles = GetUserRoles(user);
-                                    if (roles.Count == 0)
+                                    List<UserRolesDto> usersAndRoles = GetUserRoles(user);
+                                    if (usersAndRoles.Count == 0)
                                         throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
                                     UserRole role = user.UserRole;
-                                    if (roles.Count > 1)
+                                    if (IsUserHaveManyRoles(usersAndRoles))
                                     {
                                         model.NeedToSelectRole = true;
                                         role = UserRole.NoRole;
@@ -134,18 +135,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ErrorMessage = "Exception:" + ex.GetBaseException().Message;
             }
         }
-        protected List<UserRole> GetUserRoles(User user)
+        public static bool IsUserHaveManyRoles(List<UserRolesDto> dtoList)
         {
-            List<UserRole> roles = new List<UserRole>();
-            if(!string.IsNullOrEmpty(user.Email))
+            if (dtoList == null && dtoList.Count == 0)
+                return false;
+            if (dtoList.Count > 1)
+                return true;
+            return dtoList[0].roles.Count > 1;
+        }
+        protected List<UserRolesDto> GetUserRoles(User user)
+        {
+            List<UserRolesDto> usersAndRoles = new List<UserRolesDto>();
+            if (!string.IsNullOrEmpty(user.Email))
             {
                 IList<User> list = UserDao.FindByEmail(user.Email);
                 foreach (User usr in list.Where(x => x.IsActive))
+                {
+                    List<UserRole> roles = new List<UserRole>();
                     GetRolesForUser(roles, usr);
+                    usersAndRoles.Add(new UserRolesDto {user = usr,roles = roles});
+                }
             }
             else
-               GetRolesForUser(roles,user);
-            return roles;
+            {
+                List<UserRole> roles = new List<UserRole>();
+                GetRolesForUser(roles, user);
+                usersAndRoles.Add(new UserRolesDto { user = user, roles = roles });
+            }
+            return usersAndRoles;
         }
         protected void GetRolesForUser(List<UserRole> roles,User user)
         {
@@ -175,33 +192,43 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.FindById(dto.Id);
             if (user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", dto.Id));
-            List<UserRole> roles = GetUserRoles(user);
-            if(roles.Count == 0)
+            List<UserRolesDto> usersAndRoles = GetUserRoles(user);
+            if(usersAndRoles.Count == 0)
                 throw new ValidationException(string.Format("Отсутствуют роли для пользователя с id {0}", dto.Id));
             if(dto.UserRole == 0)
             {
                 isLinkAvailable = true;
                 return "Нет роли";
             }
+            User curUser; 
             UserRole current; 
-            if(roles.Count == 1)
+            if(usersAndRoles.Count == 1)
             {
-                if(((roles[0]) & dto.UserRole) == 0)
+                UserRole r = usersAndRoles[0].roles.Where(x => (x & dto.UserRole) > 0).FirstOrDefault();
+                if(r == UserRole.NoRole)
                     throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id,dto.UserRole));
-                current = roles[0];
+                current = r;
+                curUser = usersAndRoles[0].user;
+                 isLinkAvailable = usersAndRoles[0].roles.Count > 1;
             }
             else
             {
 
-                current = roles.Where(x => (x & dto.UserRole) > 0).FirstOrDefault();
-                if(current == 0)
+                UserRolesDto urDto = usersAndRoles.Where(x => x.user.Id == dto.Id).FirstOrDefault();
+                if (urDto == null)
+                    throw new ValidationException(string.Format("Не найден пользователь с идом {0} при определении роли ", dto.Id));
+                UserRole r = urDto.roles.Where(x => (x & dto.UserRole) > 0).FirstOrDefault();
+                if (r == UserRole.NoRole)
                     throw new ValidationException(string.Format("Недопустимая роль {1} для пользователя с id {0}", dto.Id, dto.UserRole));
+                current = r;
+                curUser = urDto.user;
                 isLinkAvailable = true;
             }
             Role role = RoleDao.Load((int)(dto.UserRole&current));
             if (role == null)
                 throw new ValidationException(string.Format("Не могу загрузить роль с id {0}", (int)dto.UserRole));
-            return role.Name; 
+
+            return role.Name+ " "+ curUser.Login; 
         }
         public void CheckAndSetUserId(ChangePasswordModel model)
         {
@@ -221,12 +248,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 user.Email = model.Email;
                 UserDao.MergeAndFlush(user);
                 formsAuthenticationService.SignIn(user.Login, false);
-                List<UserRole> roles = GetUserRoles(user);
-                if(roles.Count == 0)
+                List<UserRolesDto> usersAndRoles = GetUserRoles(user);
+                if(usersAndRoles.Count == 0)
                     throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
+                UserRolesDto urDto = usersAndRoles.Where(x => x.user.Id == user.Id).FirstOrDefault();
+                if (urDto == null)
+                    throw new ValidationException(string.Format("Не найден пользователь с идом {0} при смене пароля роли ", user.Id));
                 UserRole role = user.UserRole;
-                if (roles.Count > 1)
-                    role = roles[0];
+                if (urDto.roles.Count > 1)
+                    role = urDto.roles[0];
                 IUser dto = AuthenticationService.CreateUser(user,role);
                 AuthenticationService.setAuthTicket(dto);
                 AuthenticationService.ClearChangePasswordCookue();
@@ -352,10 +382,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.FindById(userId);
             if(user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}",userId));
-            List<UserRole> roles = GetUserRoles(user);
-            if(roles.Count == 0)
+            List<UserRolesDto> usersAndRoles = GetUserRoles(user);
+            if(usersAndRoles.Count == 0)
                 throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
-            ChangeRoleModel model = new ChangeRoleModel { Roles = RoleDao.LoadRolesForList(roles) };
+            IList<Role> allRoles = RoleDao.LoadAll();
+            List<IdNameDto> roles = new List<IdNameDto>();
+            foreach (UserRolesDto dto in usersAndRoles)
+            {
+                foreach (UserRole role in dto.roles)
+                {
+                    Role r = allRoles.Where(x => x.Id == (int)role).FirstOrDefault();
+                    if(r == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить роль с id {0}",(int)role));
+                    roles.Add(new IdNameDto
+                                  {
+                                      Id = r.Id*100000+dto.user.Id,
+                                      Name = r.Name+" "+dto.user.Login,
+                                  }); 
+                }
+            }
+            ChangeRoleModel model = new ChangeRoleModel { Roles = roles};
             return model;
         }
         public void SetUserRole(ChangeRoleModel model)
@@ -364,12 +410,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.FindById(userId);
             if (user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", userId));
-            User first = GetFirstUserWithRole(user, model.RoleId);
-            if(first == null)
-                throw new ValidationException("Не найдено активных пользователей с указанной ролью.");
-            IUser dto = AuthenticationService.CreateUser(first,(UserRole)((int)first.UserRole&model.RoleId));
+            UserRole role = (UserRole)(model.RoleId/100000);
+            int modelUserId = model.RoleId%100000;
+            User modelUser = UserDao.FindById(modelUserId);
+            if (modelUser == null)
+                throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", modelUserId));
+            if((modelUser.RoleId & (int)role) == 0)
+                throw new ValidationException(string.Format("Пользователь с id {0} не имеет роли {1}", modelUserId,(int)role));
+            //User first = GetFirstUserWithRole(user, model.RoleId);
+            //if(first == null)
+            //    throw new ValidationException("Не найдено активных пользователей с указанной ролью.");
+            IUser dto = AuthenticationService.CreateUser(modelUser,role);
             AuthenticationService.setAuthTicket(dto);
-            AddRecordToUserLogin(first,first.UserRole);
+            AddRecordToUserLogin(modelUser,role);
         }
         protected User GetFirstUserWithRole(User user,int role)
         {

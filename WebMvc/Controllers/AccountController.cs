@@ -265,11 +265,13 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [AuthorizeAttribute]
         public ActionResult ChangeRole()
         {
             return View(LoginBl.GetChangeRoleModel());
         }
         [HttpPost]
+        [AuthorizeAttribute]
         public ActionResult ChangeRole(ChangeRoleModel model)
         {
             LoginBl.SetUserRole(model);
