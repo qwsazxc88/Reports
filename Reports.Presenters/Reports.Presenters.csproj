@@ -161,6 +161,7 @@
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
     <Compile Include="UI\ViewModel\IEmailDtoSupport.cs" />
     <Compile Include="UI\ViewModel\IExportImport.cs" />
+    <Compile Include="UI\ViewModel\InfoModel.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
