@@ -677,6 +677,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,model.DepartmentId,model.UserName);
             Log.Debug("After GetUsersForManagerWithDatePaged");
             int userCount = uDtoList.Count;
+            model.TotalRecordsCount = userCount;
             int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
             int currentPage = model.CurrentPage;
             if (currentPage > numberOfPages)

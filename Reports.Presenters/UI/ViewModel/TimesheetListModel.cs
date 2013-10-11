@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int NumberOfPages { get; set; }
         public int CurrentPage { get; set; }
+        public int TotalRecordsCount { get; set; }
 
         public bool IsSaveVisible { get; set; }
         public bool IsSaveNeed { get; set; }
