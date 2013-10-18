@@ -101,6 +101,7 @@
     <Compile Include="Controllers\DeductionController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GraphicsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\TemplateController.cs" />
@@ -496,6 +497,13 @@
   <ItemGroup>
     <Content Include="Views\Shared\_LayoutInfo.cshtml" />
     <Content Include="Views\Shared\_MenuPartialInfo.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutGraphics.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialGraphics.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Graphics\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

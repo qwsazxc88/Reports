@@ -156,6 +156,7 @@
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentEditModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
+    <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />

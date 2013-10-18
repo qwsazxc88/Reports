@@ -980,7 +980,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //    SetListboxes(model);
         //    //SetDaysToListbox(model);
         //}
-        public void SetListboxes(TimesheetListModel model/*,IList<DateTime> dates*/)
+        public void SetListboxes(IYearMonthSelection model/*,IList<DateTime> dates*/)
         {
             model.Monthes = GetMonthesList();
             model.Years = GetYearsList();
@@ -1464,5 +1464,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                                              });
             return model;
         }
+
+        #region Graphics List
+        public void GetGraphicsListModel(GraphicsListModel model)
+        {
+            SetListboxes(model);
+            SetGraphicsInfo(model);
+        }
+        public void SetGraphicsInfo(GraphicsListModel model)
+        {
+            
+        }
+        #endregion
     }
 }
