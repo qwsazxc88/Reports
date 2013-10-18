@@ -168,6 +168,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
+    <Compile Include="Dao\Impl\TerraPointDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionCommentDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionTypeDao.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Dao\ISicklistPaymentPercentDao.cs" />
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
+    <Compile Include="Dao\ITerraPointDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionCommentDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionTypeDao.cs" />
@@ -271,6 +273,8 @@
     </Compile>
     <Compile Include="Domain\SicklistPaymentRestrictType.cs" />
     <Compile Include="Domain\SicklistType.cs" />
+    <Compile Include="Domain\TerraGraphic.cs" />
+    <Compile Include="Domain\TerraPoint.cs" />
     <Compile Include="Domain\Timesheet.cs" />
     <Compile Include="Domain\TimesheetCorrection.cs" />
     <Compile Include="Domain\TimesheetCorrectionComment.cs" />
@@ -500,7 +504,7 @@
     <EmbeddedResource Include="Domain\DismissalComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\TimesheetCorrectionType.hbm.xml" />
+    <EmbeddedResource Include="Domain\WorkingGraphic.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\TimesheetCorrection.hbm.xml" />
@@ -532,7 +536,7 @@
     <EmbeddedResource Include="Domain\ChiefToUser.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\WorkingGraphic.hbm.xml" />
+    <EmbeddedResource Include="Domain\TimesheetCorrectionType.hbm.xml" />
     <EmbeddedResource Include="Domain\WorkingDaysConstant.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -556,6 +560,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Deduction.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraPoint.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraGraphic.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
