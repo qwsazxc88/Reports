@@ -48,15 +48,20 @@
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
-                    <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Графики ТЕРРАСОФТ", "Index", "Graphics")</div>
+                    <div id="liGraphics" class="mainOn">@Html.ActionLink("Графики ТЕРРАСОФТ", "Index", "Graphics")</div>
                 }
                 <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>  
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
         </div>  
-         <div class="podmenu">    
-            <div class="on" id="deductionsAll" >@Html.ActionLink("Все заявки", "Index", "Deduction")</div>
+         <div class="podmenu">   
+           @* @if ((dto.UserRole & UserRole.Employee) > 0
+                     || (dto.UserRole & UserRole.Manager) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    { 
+                        <div class="on" id="graphicsAll" >@Html.ActionLink("Все заявки", "Index", "Graphics")</div>
+                    }*@
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
          </div> 
         </div> 

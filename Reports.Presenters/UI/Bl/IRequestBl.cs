@@ -103,5 +103,15 @@ namespace Reports.Presenters.UI.Bl
         void SetDeductionUserInfoModel(DeductionUserInfoModel model, int userId);
         void ReloadDictionariesToModel(DeductionEditModel model);
         bool SaveDeductionEditModel(DeductionEditModel model, out string error);
+
+        TerraGraphicsSetShortNameModel SetShortNameModel();
+        TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);
+        TerraPointShortNameDto GetTerraPointShortName(int pointId);
+        TerraPointShortNameDto SaveTerraPointShortName(int pointId, string shortName);
+
+        void SetEditPointDialogModel(TerraGraphicsEditPointModel model);
+        TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId/*, int userId*/);
+        void SaveTerraPoint(TerraPointSaveModel model);
+        void DeleteTerraPoint(int id);
     }
 }

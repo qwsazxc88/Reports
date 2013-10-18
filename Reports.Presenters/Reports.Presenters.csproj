@@ -156,6 +156,7 @@
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentEditModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
+    <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
     <Compile Include="UI\ViewModel\ICheckBoxes.cs" />
@@ -175,6 +176,8 @@
     <Compile Include="UI\ViewModel\SicklistEditModel.cs" />
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\TemplatesListModel.cs" />
+    <Compile Include="UI\ViewModel\TerraGraphicsSetShortNameModel.cs" />
+    <Compile Include="UI\ViewModel\TerraPointSetDefaultTerraPointModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetCorrectionEditModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetCorrectionListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetEditModel.cs" />

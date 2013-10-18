@@ -30,6 +30,9 @@ namespace WebMvc
                 if (m.DataType.Equals(DataType.Custom) &&
                  (m.CustomDataType == "TimesheetDtoList"))
                     modelMetadata.TemplateHint = "TimesheetList";
+                if (m.DataType.Equals(DataType.Custom) &&
+                (m.CustomDataType == "TerraGraphicDtoList"))
+                    modelMetadata.TemplateHint = "TerraGraphicsList";
             });
             //attributes.OfType<DataTypeAttribute>().ToList().ForEach(m =>
             //{

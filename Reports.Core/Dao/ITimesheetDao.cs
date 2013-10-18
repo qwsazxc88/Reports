@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
-using Reports.Core.Enum;
 
 namespace Reports.Core.Dao
 {
@@ -20,11 +19,12 @@ namespace Reports.Core.Dao
         //IList<RequestDto> GetRequests(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
         //                              int userId, UserRole userRole);
         IList<DayRequestsDto> GetRequestsForMonth(int month, int year, int managerId, UserRole managerRole,
-            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays);
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays,
+            IList<TerraGraphicDbDto> tgList);
 
         IList<DayRequestsDto> GetRequestsForYear(DateTime beginDate, DateTime year, int managerId,
                                                         UserRole managerRole,
                                                         IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,
-                                                        IList<WorkingCalendar> workDays);
+                                                        IList<WorkingCalendar> workDays, IList<TerraGraphicDbDto> tgList);
     }
 }

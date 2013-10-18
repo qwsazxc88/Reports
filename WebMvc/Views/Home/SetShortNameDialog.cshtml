@@ -1,0 +1,50 @@
+﻿@model Reports.Presenters.UI.ViewModel.TerraGraphicsSetShortNameModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "SetShortNameTable" style="width:100%;height:100px">
+                <tr>
+                    <td>
+                    <div id="SetShortNameError" style="color:Red;display:none;"/></td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level1ID, new SelectList(Model.Level1, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsLevel1IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level2ID, new SelectList(Model.Level2, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsLevel2IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level3ID, new SelectList(Model.Level3, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsLevel3IDChange();" }) 
+                    </td>
+                </tr>
+@*                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level5ID, new SelectList(Model.Level5, "ID", "Name"), new { style = "width:95%", onchange = "Level5IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level6ID, new SelectList(Model.Level6, "ID", "Name"), new { style = "width:95%", onchange = "Level6IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DropDownListFor(model => model.Level7ID, new SelectList(Model.Level7, "ID", "Name"), new { style = "width:95%", onchange = "Level7IDChange();" }) 
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>
+                        @Html.TextBoxFor(model => model.ShortName, Model.IsShortNameEditable ? null : (object)new { @readonly = "readonly" }) 
+                    </td>
+                </tr>
+                
+    </table>
+</body>
+</html>

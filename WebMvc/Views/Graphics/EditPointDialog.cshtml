@@ -1,0 +1,55 @@
+﻿@model Reports.Presenters.UI.ViewModel.TerraGraphicsEditPointModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "EditPointTable" style="width:100%;height:100px">
+               <tr>
+                    <td colspan="2">
+                       <input type="button" value="Записать по умолчанию" name="SetDefaultPoint" onclick="return SetDefaultPoint();"/> 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.EpLevel1ID, new SelectList(Model.EpLevel1, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsEpLevel1IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.EpLevel2ID, new SelectList(Model.EpLevel2, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsEpLevel2IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.EpLevel3ID, new SelectList(Model.EpLevel3, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsEpLevel3IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:50px">
+                        @Html.LabelFor(m => m.Credit):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.Credit, new SelectList(Model.Credits, "ID", "Name"), Model.IsCreditsEditable ? null : (object)new { disabled = "disabled" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Hours):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Hours, new { style = "width:60px" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @*    @Html.ValidationSummary(false)*@
+                        <div id="EditPointError" style="color:Red;display:none;"/>
+                         <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                         <input type="hidden" id="Day" name="Day" value="@Model.Day" />
+                         <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                     </td>
+                </tr>
+    </table>
+</body>
+</html>

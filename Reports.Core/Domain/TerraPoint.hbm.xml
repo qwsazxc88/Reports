@@ -1,0 +1,19 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="TerraPoint" dynamic-update="true" table="TerraPoint">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+		<version name="Version" column= "Version"/>
+		<property name="Code" length="10" not-null="false"/>
+		<property name="Name" length="128" not-null="false"/>
+		<property name="ShortName" length="128" not-null="false"/>
+		<property name="Code1C" length="128" not-null="false"/>
+		<property name="ParentId" length="128" not-null="false"/>
+		<!--<many-to-one  name="Parent" class="Department" column="ParentId" property-ref="Code1C" foreign-key="FK_Department_Department" not-null="false" lazy="proxy" />-->
+		<property name="Path" length="128" not-null="false"/>
+		<property name="ItemLevel" not-null="false"/>
+		<property name="EndDate" not-null="false"/>
+	  <!--constrained="true"-->
+		<one-to-one name="TerraPointToUser" foreign-key="none" constrained="true" class="TerraPointToUser"/>
+  </class>
+</hibernate-mapping>

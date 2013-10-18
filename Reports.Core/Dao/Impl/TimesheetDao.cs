@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.Mapping;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -49,8 +48,7 @@ namespace Reports.Core.Dao.Impl
         //}
         public IList<DateTime> GetTimesheetDates()
         {
-            string sqlQuery =
-                (@"select distinct(Month)
+            const string sqlQuery = (@"select distinct(Month)
                         from dbo.Timesheet ts 
                         inner join dbo.Users u on u.Id = ts.UserId ");
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
@@ -648,7 +646,8 @@ namespace Reports.Core.Dao.Impl
         }
         public IList<DayRequestsDto> GetRequestsForMonth(
             int month, int year, int managerId, UserRole managerRole,
-            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,IList<WorkingCalendar> workDays
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,
+            IList<WorkingCalendar> workDays, IList<TerraGraphicDbDto> tgList
             )
         {
             IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
@@ -678,19 +677,35 @@ namespace Reports.Core.Dao.Impl
                                                                            idNameDto.Id == x.UserId)).ToList();
                         if (userRequestList.Count == 0)
                         {
+                            TerraGraphicDbDto tg =
+                                tgList.Where(x => x.UserId == idNameDto.Id && x.Day == date).FirstOrDefault();
                             bool isDayInFuture = DateTime.Today < date;
+                            int? timesheetHours;
+                            if (tg != null)
+                                timesheetHours = tg.Hours;
+                            else
+                                timesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours;
                             RequestDto newDto = new RequestDto
-                               {
-                                BeginDate = date,
-                                EndDate = date,
-                                TimesheetCode = isHoliday ? HolidayStatusCode
-                                        : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
-                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours.Value,
-                                UserId = idNameDto.Id,
-                                UserName = idNameDto.Name
-                               };
+                                                    {
+                                                        BeginDate = date,
+                                                        EndDate = date,
+                                                        TimesheetCode = isHoliday
+                                                                            ? HolidayStatusCode
+                                                                            : isDayInFuture
+                                                                                  ? EmptyStatusCode
+                                                                                  : PresenceStatusCode,
+                                                        TimesheetHours = timesheetHours,
+                                                        UserId = idNameDto.Id,
+                                                        UserName = idNameDto.Name
+                                                    };
                             dayRequestsDto.Requests.Add(newDto);
-                            AddToUserStats(userStats, userStatsDays,new List<RequestDto> {newDto},isHoliday,workHours);
+                            if(tg != null)
+                            {
+                                userStats[0] += tg.Hours;
+                                userStatsDays[0]++;
+                            }
+                            else
+                             AddToUserStats(userStats, userStatsDays, new List<RequestDto> {newDto}, isHoliday,workHours);
                         }
                         else
                         {
@@ -706,8 +721,8 @@ namespace Reports.Core.Dao.Impl
             return dtoList;
         }
         public IList<DayRequestsDto> GetRequestsForYear(DateTime beginDate, DateTime year, int managerId, UserRole managerRole,
-            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays
-            )
+            IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays,
+            IList<TerraGraphicDbDto> tgList)
         {
             IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
                 managerId, managerRole, users);
@@ -735,19 +750,33 @@ namespace Reports.Core.Dao.Impl
                                                                            idNameDto.Id == x.UserId)).ToList();
                         if (userRequestList.Count == 0)
                         {
+                            //bool isDayInFuture = DateTime.Today < date;
+                            TerraGraphicDbDto tg = tgList.Where(x => x.UserId == idNameDto.Id && x.Day == date).FirstOrDefault();
                             bool isDayInFuture = DateTime.Today < date;
+                            int? timesheetHours;
+                            if (tg != null)
+                                timesheetHours = tg.Hours;
+                            else
+                                timesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours;
+
                             RequestDto newDto = new RequestDto
                             {
                                 BeginDate = date,
                                 EndDate = date,
                                 TimesheetCode = isHoliday ? HolidayStatusCode
                                         : isDayInFuture ? EmptyStatusCode : PresenceStatusCode,
-                                TimesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours.Value,
+                                TimesheetHours = timesheetHours,//isHoliday ? new int?() : isDayInFuture ? new int?() : workHours.Value,
                                 UserId = idNameDto.Id,
                                 UserName = idNameDto.Name
                             };
                             dayRequestsDto.Requests.Add(newDto);
-                            AddToUserStats(userStats, userStatsDays, new List<RequestDto> { newDto }, isHoliday, workHours);
+                            if (tg != null)
+                            {
+                                userStats[0] += tg.Hours;
+                                userStatsDays[0]++;
+                            }
+                            else
+                                AddToUserStats(userStats, userStatsDays, new List<RequestDto> { newDto }, isHoliday, workHours);
                         }
                         else
                         {
@@ -784,7 +813,7 @@ namespace Reports.Core.Dao.Impl
                     break;
                     case "Б":
                     case "Т":
-                    userStats[2] += workHours.HasValue ? workHours.Value : 0;
+                        userStats[2] += workHours.HasValue ? workHours.Value : 0;
                         userStatsDays[2]++;
                         break;
                     case "К":

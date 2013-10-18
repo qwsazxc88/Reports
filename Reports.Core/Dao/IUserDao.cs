@@ -47,6 +47,12 @@ namespace Reports.Core.Dao
 
         int DeleteEmployees(DateTime date);
         IList<IdNameDto> GetUserListForDeduction();
+
+        IList<IdNameDtoWithDates> GetUsersForManagerWithDatePagedForGraphics(int managerId, UserRole managerRole,
+                                                                             DateTime beginDate, DateTime endDate,
+                                                                             int departmentId, string userName);
+
+        IList<User> LoadForIdsList(List<int> userIds);
     }
 }
 

@@ -1,10 +1,11 @@
 ﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
-  <class name="WorkingGraphic" dynamic-update="true" table="WorkingGraphic">
+  <class name="TimesheetCorrectionType" dynamic-update="true" table="TimesheetCorrectionType">
     <id name="Id">
       <generator class="native" />
     </id>
-    <property name="UserId" not-null="true"/>
-    <property name="Day" not-null="true"/>
-    <property name="Hours" not-null="false"/>
+    <version name="Version" column= "Version"/>
+	<property name="Code" length="16"  not-null="true"/>  
+	<property name="Name" length="128" not-null="true"/>
+    <property name="Reason" length="512" not-null="true"/>
   </class>
 </hibernate-mapping>

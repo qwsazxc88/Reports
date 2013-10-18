@@ -85,6 +85,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDeductionKindDao deductionKindDao;
         protected IDeductionDao deductionDao;
 
+        protected ITerraPointDao terraPointDao;
+        protected ITerraPointToUserDao terraPointToUserDao;
+        protected ITerraGraphicDao terraGraphicDao;
+
 
        
         public IVacationTypeDao VacationTypeDao
@@ -317,6 +321,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(deductionDao); }
             set { deductionDao = value; }
+        }
+
+        public ITerraPointDao TerraPointDao
+        {
+            get { return Validate.Dependency(terraPointDao); }
+            set { terraPointDao = value; }
+        }
+        public ITerraPointToUserDao TerraPointToUserDao
+        {
+            get { return Validate.Dependency(terraPointToUserDao); }
+            set { terraPointToUserDao = value; }
+        }
+        public ITerraGraphicDao TerraGraphicDao
+        {
+            get { return Validate.Dependency(terraGraphicDao); }
+            set { terraGraphicDao = value; }
         }
 
         protected IConfigurationService configurationService;
@@ -6135,6 +6155,277 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        public TerraGraphicsSetShortNameModel SetShortNameModel()
+        {
+            TerraGraphicsSetShortNameModel model = new TerraGraphicsSetShortNameModel();
+            List<TerraPoint> l1 = LoadTpListForLevelAndParentId(1, string.Empty);
+            model.Level1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            TerraPoint p1 = l1[0];
+            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, p1.Code1C);//TerraPointDao.FindByLevelAndParentId(2, p1.Code1C).ToList();
+            model.Level2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            TerraPoint p2 = l2[0];
+            List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
+            model.Level3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName)?" ( "+x.ShortName+" )":string.Empty ) });
+            TerraPoint p3 = l3[0];
+            model.ShortName = p3.ShortName;
+            UserRole role = CurrentUser.UserRole;
+            model.IsShortNameEditable = ((role & UserRole.Manager) > 0);
+            return model;
+        }
+        protected List<TerraPoint> LoadTpListForLevelAndParentId(int level, string parentId)
+        {
+            List<TerraPoint> l = TerraPointDao.FindByLevelAndParentId(level, parentId).ToList();
+            if (l.Count == 0)
+                throw new ArgumentException(string.Format("Не могу найти ни одной точки для уровня {0}",level));
+            return l;//l.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+        }
+        public TerraPointChildrenDto GetTerraPointChildren(int parentId, int level)
+        {
+            try
+            {
+                TerraPoint parent = TerraPointDao.Load(parentId);
+                if (parent == null)
+                    throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных",parentId));
+                List<IdNameDto> children;
+                List<IdNameDto> level3Children = new List<IdNameDto>();
+                string shortName;
+                if(level == 2)
+                {
+                    List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, parent.Code1C);//TerraPointDao.FindByLevelAndParentId(2, parent.Code1C).ToList();
+                    children = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    TerraPoint p2 = l2[0];
+                    List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
+                    level3Children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    TerraPoint p3 = l3[0];
+                    shortName = p3.ShortName;
+                }
+                else if(level == 3)
+                {
+                    List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, parent.Code1C);//TerraPointDao.FindByLevelAndParentId(3, parent.Code1C).ToList();
+                    children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    //if (l3.Count == 0)
+                    //    throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 3 и ParentId {0}", parent.Code1C));
+                    TerraPoint p3 = l3[0];
+                    shortName = p3.ShortName;
+                }
+                else
+                    throw new ValidationException(string.Format("Неизвестный уровень точки {0}",level));
+                return new TerraPointChildrenDto
+                           {
+                               Error = string.Empty, 
+                               Children = children,
+                               Level3Children = level3Children,
+                               ShortName = shortName,
+                           };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetTerraPointChildren:", ex);
+                return new TerraPointChildrenDto
+                {
+                    Error = string.Format("Ошибка: {0}",ex.GetBaseException().Message),
+                    Children = new List<IdNameDto>(),
+                };
+            }
+        }
+        public TerraPointShortNameDto GetTerraPointShortName(int pointId)
+        {
+            try
+            {
+                TerraPoint point = TerraPointDao.Load(pointId);
+                if (point == null)
+                    throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных", point));
+                return new TerraPointShortNameDto
+                           {
+                              Error = string.Empty,
+                              ShortName = point.ShortName,
+                           };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetTerraPointShortName:", ex);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", ex.GetBaseException().Message),
+                    ShortName = string.Empty,
+                };
+            }
+        }
+        public TerraPointShortNameDto SaveTerraPointShortName(int pointId,string shortName)
+        {
+            try
+            {
+                TerraPoint point = TerraPointDao.Load(pointId);
+                if (point == null)
+                    throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных", point));
+                point.ShortName = shortName;
+                TerraPointDao.SaveAndFlush(point);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Empty,
+                    ShortName = point.ShortName,
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveTerraPointShortName:", ex);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", ex.GetBaseException().Message),
+                    ShortName = string.Empty,
+                };
+            }
+        }
+        public void DeleteTerraPoint(int id)
+        {
+            if(id == 0)
+                throw new ArgumentException("Невозможно удалить новую точку");
+            //TerraGraphic tg = TerraGraphicDao.Load(id);
+            //if (tg == null)
+            //    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", id));
+            TerraGraphicDao.DeleteAndFlush(id);
+        }
+        public void SaveTerraPoint(TerraPointSaveModel model)
+        {
+            TerraGraphic tg;
+            if(model.Id == 0)
+            {
+                tg = new TerraGraphic();
+            }
+            else
+            {
+                tg = TerraGraphicDao.Load(model.Id);
+                if(tg == null)
+                    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", model.Id));
+            }
+            tg.Day = model.TpDay;
+            tg.Hours = model.TpHours;
+            tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
+            tg.PointId = model.PointId;
+            tg.UserId = model.UserId;
+            TerraGraphicDao.SaveAndFlush(tg);
+            model.Error = string.Empty;
+        }
+        public bool? GetIsCreditAvailable(int credits)
+        {
+            switch(credits)
+            {
+                case 0:
+                    return new bool?();
+                case 1:
+                    return true;
+                case 2:
+                    return false;
+                default:
+                    throw new ArgumentException("Неизвестное значение поля 'Кредиты'");
+            }
+        }
+        public int GetCredits(bool? isCreditAvailable)
+        {
+            if (!isCreditAvailable.HasValue)
+                return 0;
+            return isCreditAvailable.Value ? 1 : 2;
+        }
+        public TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId/*,int userId*/)
+        {
+            int userId = CurrentUser.Id;
+            TerraPoint tp = TerraPointDao.Load(pointId);
+            if( tp == null)
+                throw new ValidationException(string.Format("Точка (ID {0}) не найдена в базе данных",pointId));
+            TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(userId);
+            if (tpToUser == null)
+                tpToUser = new TerraPointToUser
+                               {
+                                   TerraPoint = tp,
+                                   UserId = userId,
+                               };
+
+            else
+                tpToUser.TerraPoint = tp;
+            TerraPointToUserDao.SaveAndFlush(tpToUser);
+            return new TerraPointSetDefaultTerraPointModel {Error = string.Empty, PointToUserId = tpToUser.Id};
+        }
+
+        public void SetEditPointDialogModel(TerraGraphicsEditPointModel model)
+        {
+            SetupCreditsCombo(model);
+            User user = UserDao.Load(model.UserId);
+            if(user == null)
+                throw new ArgumentException(string.Format("Сотрудник (Id {0}) не найден в базе данных", model.UserId));
+            if((user.RoleId & (int)UserRole.Employee) == 0)
+                throw new ArgumentException(string.Format("Пользователь {1}(Id {0}) не является сотрудником", model.UserId,user.Name));
+            model.IsCreditsEditable = user.GivesCredit;
+            List<TerraPoint> l1 = LoadTpListForLevelAndParentId(1, string.Empty);
+            model.EpLevel1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if(model.Id == 0)
+            {
+                TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(CurrentUser.Id);
+                if(tpToUser == null)
+                {
+                    TerraPoint p1 = l1[0];
+                    List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, p1.Code1C);//TerraPointDao.FindByLevelAndParentId(2, p1.Code1C).ToList();
+                    model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    TerraPoint p2 = l2[0];
+                    List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
+                    model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                }
+                else
+                {
+                    LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id,model);
+                    //List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3,tpToUser.TerraPoint.ParentId);
+                    //model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    //model.EpLevel3ID = tpToUser.TerraPoint.Id;
+                    //TerraPoint tp2 = LoadByCode1C(tpToUser.TerraPoint.ParentId);
+                    //List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+                    //model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    //model.EpLevel2ID = tp2.Id;
+                    //TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+                    //model.EpLevel1ID = tp1.Id;
+                }
+            }
+            else
+            {
+                TerraGraphic tg = TerraGraphicDao.Load(model.Id);
+                model.Credit = GetCredits(tg.IsCreditAvailable);
+                model.Day = tg.Day.ToString("dd.MM.yyyy");
+                model.IsEditable = true;
+                //model.UserId = tg.UserId;
+                model.Hours = tg.Hours.ToString();
+                TerraPoint tp = TerraPointDao.Load(tg.PointId);
+                if(tp == null)
+                    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", tg.PointId));
+                LoadTerraPoints23Level(tp.ParentId, tp.Id, model);
+            }
+        }
+        protected void LoadTerraPoints23Level(string parentId,int level3Id,TerraGraphicsEditPointModel model)
+        {
+            List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, parentId);
+            model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+            model.EpLevel3ID = level3Id;
+            TerraPoint tp2 = LoadByCode1C(parentId);
+            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+            model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.EpLevel2ID = tp2.Id;
+            TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+            model.EpLevel1ID = tp1.Id;
+        }
+        protected TerraPoint LoadByCode1C(string code1C)
+        {
+            TerraPoint terraPoint = TerraPointDao.FindByCode1C(code1C);
+            if (terraPoint == null)
+                throw new ArgumentException(string.Format("Точка с Code1C {0} отсутствует в базе данных", code1C));
+            return terraPoint;
+        }
+        protected void SetupCreditsCombo(TerraGraphicsEditPointModel model)
+        {
+            model.Credits = new List<IdNameDto>
+                                {
+                                    new IdNameDto{Id = 0,Name = string.Empty},
+                                    new IdNameDto{Id = 1,Name = "Да"},
+                                    new IdNameDto{Id = 2,Name = "Нет"},
+                                };
+        }
     }
 
 }

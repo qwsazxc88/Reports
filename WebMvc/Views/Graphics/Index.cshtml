@@ -1,0 +1,167 @@
+﻿@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@model Reports.Presenters.UI.ViewModel.GraphicsListModel
+@{
+    Layout = "~/Views/Shared/_LayoutGraphics.cshtml";
+    ViewBag.Title = "Графики ТЕРРАСОФТ";
+}
+
+@using (Html.BeginForm())
+{
+       <table style="width:100%">
+    
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b><br/><br/>
+                        @*@Html.HiddenFor(m => m.ManagerId)*@
+                        @*@Html.HiddenFor(m => m.IsEditable)*@
+                        @Html.LabelFor(m => m.Month):
+                        @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name")) 
+                        @Html.LabelFor(m => m.Year):
+                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"))
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:202px">
+                        @Html.LabelFor(m => m.DepartmentName):
+                    </td>
+                    <td>
+                        <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                        <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                        <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                        @if (!Model.DepartmentReadOnly)
+                        {
+                            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                        }            
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.LabelFor(m => m.UserName):
+                        @Html.TextBoxFor(model => model.UserName)
+                    </td>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                      <input type="submit" value="Применить"/>
+                      <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                  </td>
+                </tr>
+         </table>
+        </div>          
+        </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsSetShortNamesAvailable" name="IsSetShortNamesAvailable" value="@Model.IsSetShortNamesAvailable" />
+                <input type="hidden" id="IsShortNamesEditable" name="IsShortNamesEditable" value="@Model.IsShortNamesEditable" />
+                @if (Model.IsSetShortNamesAvailable)
+                {
+                    <input type="button" value="Установка коротких названий" onclick="return onSetShortNamesClick();"/>
+                }
+            </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+                <div id="LoadData" style="color:Green;display:none;"/>
+            </td>
+        </tr>
+    </table>
+    @*<input type="button" onclick="refreshTableBtn();" name="Resfesh" value="Resfesh"/>*@
+    @Html.Partial("Table")
+    
+} 
+<script type="text/javascript" src="@Url.Content("~/Scripts/TerraGraphicsShortNameDialog.js")"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionTerraPointChildUrl = "@Url.Action("GetTerraPointChildren", "Home")";
+    var actionSetShortNameDialogUrl = "@Url.Action("SetShortNameDialog", "Home")";
+    var actionTerraPointShortNameUrl = "@Url.Action("GetTerraPointShortName", "Home")";
+    var actionTerraPointSaveUrl = "@Url.Action("SaveTerraPointShortName", "Home")";
+    var actionEditPointDialogUrl = "@Url.Action("EditPointDialog", "Graphics")";
+    var  actionTerraPointSetDefaultUrl = "@Url.Action("SetDefaultTerraPoint", "Graphics")";
+    var  actionEditPointSaveUrl = "@Url.Action("SaveTerraPoint", "Graphics")";
+    var  actionEditPointDeleteUrl = "@Url.Action("DeleteTerraPoint", "Graphics")";
+     $(document).ready(function () {
+        //setActiveMenuItem("userTimesheet");
+    });
+    function resetFilter() {
+        $("#UserName").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+    }
+    function refreshTableBtn(closeDialog)
+    {
+        var currentPage = $('#CurrentPage').val();
+        if(currentPage == undefined)
+            currentPage = 1;
+         refreshTable(currentPage,closeDialog);
+    }
+    function refreshTable(currentPage,closeDialog) {
+            setLoadData()
+            $.ajax({
+                type: "GET",
+                data: {
+                    month: $('#Month').val(),
+                    year: $('#Year').val(),
+                    departmentId: $('#DepartmentId').val(),
+                    userName: $('#UserName').val(),
+                    currentPage: currentPage
+                },
+                url: "@Url.Action("Table", "Graphics")",
+                cache: false,
+                dataType: "html",
+                success: function(result) {
+                     clearLoadData();
+                     success(result);
+                     if(closeDialog)
+                        $("#divEditPointDialog").dialog("close");
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    if(closeDialog)
+                        $("#divEditPointDialog").dialog("close");
+                    clearLoadData();
+                    alert('Ошибка при получении ответа сервера:\r' + xhr.responseText);
+                }
+            });
+        }
+        function success(result) {
+            $("#Table").html(result);
+        } 
+        function OnPageClick(pageNumber) {
+           refreshTable(pageNumber,false);
+//        $("#CurrentPage").val(pageNumber);
+//        submitForm();
+            return false;
+        }
+ function EditPoint(id,day,userId)
+ {
+    createEditPointDialog(id, day, userId); 
+    return false;
+ }   
+ function clearLoadData() {
+    $("#LoadData").text("");
+    $("#LoadData").hide();
+}
+function setLoadData() {
+//    $("#LoadData").text("Идет загрузка данных, подождите ");
+//    $("#LoadData").show();
+}
+ </script>   
+
+

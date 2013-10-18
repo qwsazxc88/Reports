@@ -1,0 +1,149 @@
+﻿@using System.Globalization;
+@using Reports.Core.Dto;
+@{ 
+    int i = 0;
+    foreach (TerraGraphicDto dto in Model)
+    {
+        //var dtoUserIdPrefix = "TimesheetDtos[" + @i.ToString() + "].UserId";
+        //var dtoMonthAndYearPrefix = "TimesheetDtos[" + @i.ToString() + "].MonthAndYear";
+        //var dtoUserNameAndCodePrefix = "TimesheetDtos[" + @i.ToString() + "].UserNameAndCode";
+        //var dtoIsHoursVisible = "TimesheetDtos[" + @i.ToString() + "].IsHoursVisible";
+        //var dtoIsGraphicVisible = "TimesheetDtos[" + @i.ToString() + "].IsGraphicVisible";
+        //var dtoIsGraphicEditable = "TimesheetDtos[" + @i.ToString() + "].IsGraphicEditable";
+    <table>
+  @*  <tr>
+        <td>
+            <hr style="width:100%"/>
+        </td>
+    </tr>*@
+@*    <tr>
+    </tr>*@
+    <tr>
+        <td style="width:140px;overflow: hidden;display: inline-block;">
+          @* <input type="hidden" id="@dtoUserIdPrefix" name="@dtoUserIdPrefix" value="@dto.UserId" />
+           <input type="hidden" id="@dtoMonthAndYearPrefix" name="@dtoMonthAndYearPrefix" value="@dto.MonthAndYear" />*@
+          @* <input type="hidden" id="@dtoIsHoursVisible" name="@dtoIsHoursVisible" value="@dto.IsHoursVisible" />
+           <input type="hidden" id="@dtoIsGraphicVisible" name="@dtoIsGraphicVisible" value="@dto.IsGraphicVisible" />*@
+           @*<input type="hidden" id="@dtoIsGraphicEditable" name="@dtoIsGraphicEditable" value="@dto.IsGraphicEditable" />
+           <input type="hidden" id="@dtoUserNameAndCodePrefix" name="@dtoUserNameAndCodePrefix" value="@dto.UserNameAndCode" />*@
+           @dto.MonthAndYear <br/>
+           @dto.UserNameAndCode,<br/>
+           @dto.Postion,<br/>
+           @dto.Rate
+        </td>
+        <td style="padding:0px;">        
+            <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px;">
+                <tr style="padding:0px;margin:0px;">
+                  @{ int j = 0;
+                     foreach (TerraGraphicDayDto day in dto.Days)
+                     {
+                         //var timesheetDayIdPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Id";
+                         //var timesheetDayNumberPrefix = "TimesheetDtos["+ @i.ToString()+"].Days[" + @j.ToString() + "].Number";
+                         //var timesheetDayIsHolidayPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isHoliday";
+                         //var timesheetDayStatusPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Status";
+                         //var timesheetDayHoursPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Hours";
+                         //var timesheetDayIsStatRecordPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isStatRecord";
+                         //var timesheetDayStatCodePrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].StatCode";
+
+                         //var timesheetDayGraphicPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Graphic";
+                         //var timesheetDayGraphicJQueryPrefix = "TimesheetDtos" + @i.ToString() + "Days" + @j.ToString() + "Graphic";
+                         
+                                   <td style="padding:0px;margin:0px">
+                                        <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
+                                            <tr>
+                                                <td nowrap @if (day.isHoliday)
+                                                           {
+                                                               <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Red"</text>
+                                                           }
+                                                           else if (day.isStatRecord)
+                                                           {
+                                                        <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Green"</text>
+                                                           }
+                                                           else
+                                                           {
+                                                        <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;"</text>
+                                                           }>
+                                                     @if (day.isStatRecord)
+                                                     {
+                                                        @day.StatCode
+                                                     }
+                                                     else
+                                                     {
+                                                         if (day.IsEditable)
+                                                         {
+                                                            <a href="#" 
+                                                            @if (day.isHoliday)
+                                                            {
+                                                                <text>style="color:Red"</text>
+                                                            }
+                                                            onclick = "return EditPoint(@day.Id,'@day.Day',@dto.UserId)">@day.Number</a>
+                                                         }
+                                                         else
+                                                         {
+                                                            @day.Number
+                                                         }
+                                                     }
+                                                    @*<input type="hidden" id="@timesheetDayIdPrefix" name="@timesheetDayIdPrefix" value="@day.Id"/>
+                                                    <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number"/>
+                                                    <input type="hidden" id="@timesheetDayIsHolidayPrefix" name="@timesheetDayIsHolidayPrefix" value="@day.isHoliday"/>
+                                                    <input type="hidden" id="@timesheetDayStatusPrefix" name="@timesheetDayStatusPrefix" value="@day.Status"/>
+                                                    <input type="hidden" id="@timesheetDayIsStatRecordPrefix" name="@timesheetDayIsStatRecordPrefix" value="@day.isStatRecord"/>
+                                                    <input type="hidden" id="@timesheetDayStatCodePrefix" name="@timesheetDayStatCodePrefix" value="@day.StatCode"/>
+                                                    <input type="hidden" id="@timesheetDayIsHoursVisiblePrefix" name="@timesheetDayIsHoursVisiblePrefix" value="@day.IsHoursVisible"/>
+                                                    <input type="hidden" id="@timesheetDayHoursPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours"/>*@
+                                                </td>
+                                            </tr>
+                                           @* <tr>
+                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                    @day.Status
+                                                </td>
+                                            </tr>*@
+                                          @*  @if (dto.IsHoursVisible)
+                                            {*@
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                    @if (j == 0)
+                                                    {
+                                                        <text>План</text>
+                                                    }
+                                                    else
+                                                    {
+                                                     @day.Hours
+                                                    }
+                                                    </td>
+                                                </tr>
+                                           @* }*@
+                                            @* @if (dto.IsGraphicVisible)
+                                             {*@
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
+                                                        @if (string.IsNullOrEmpty(day.TerraPointTitle))
+                                                        {
+                                                            @day.TerraPointName
+                                                        }
+                                                        else
+                                                        {
+                                                            <div title="@day.TerraPointTitle">@day.TerraPointName</div>
+                                                        }
+                    
+                                                    </td>
+                                                </tr>
+                                            @* }*@
+                                            <tr>
+                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                    @day.IsCredits
+                                                 </td>
+                                            </tr>
+                                        </table >
+                                   </td> 
+                                                    j++;
+                     }
+                  }
+                </tr>
+            </table>
+        </td>
+    </tr>
+ </table>
+                     i++;
+    }
+}

@@ -96,10 +96,20 @@ namespace Reports.Core.Dao.Impl
         {
             Session.Delete(entity);
         }
+        public virtual void DeleteAndFlush(TEntity entity)
+        {
+            Session.Delete(entity);
+            Session.Flush();
+        }
         public virtual void Delete(TIdentifier entityId)
         {
             TEntity entity = Session.Load<TEntity>(entityId);
             Session.Delete(entity);
+        }
+        public virtual void DeleteAndFlush(TIdentifier entityId)
+        {
+            Delete(entityId);
+            Session.Flush();
         }
         public virtual void Flush()
         {

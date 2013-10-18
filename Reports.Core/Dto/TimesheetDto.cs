@@ -54,4 +54,40 @@ namespace Reports.Core.Dto
             Requests = new List<RequestDto>();
         }
     }
+
+    public class TerraGraphicDayDto
+    {
+        public int Id { get; set; }
+        public int Number { get; set; }
+        public string Day { get; set; }
+        //public int StatusId { get; set; }
+        //public string Status { get; set; }
+        public int? Hours { get; set; }
+        public int? TerraPointId { get; set; }
+        public string TerraPointName { get; set; }
+        public string TerraPointTitle { get; set; }
+        public string IsCredits { get; set; }
+        public bool isHoliday { get; set; }
+        //public string Graphic { get; set; }
+        public bool isStatRecord { get; set; }
+        public string StatCode { get; set; }
+        public bool IsEditable { get; set; }
+    }
+    public class TerraGraphicDto
+    {
+        //public int Id { get; set; }
+        //public bool IsEditable { get; set; }
+        public int UserId { get; set; }
+        //public bool IsHoursVisible { get; set; }
+        //public bool IsGraphicVisible { get; set; }
+        //public bool IsGraphicEditable { get; set; }
+        public string MonthAndYear { get; set; }
+        public string UserNameAndCode { get; set; }
+        public string Postion { get; set; }
+        public string Rate { get; set; }
+        //public int OwnerId { get; set; }
+        //public IList<IdNameDto> Statuses { get; set; }
+        public IList<TerraGraphicDayDto> Days { get; set; }
+
+    }
 }

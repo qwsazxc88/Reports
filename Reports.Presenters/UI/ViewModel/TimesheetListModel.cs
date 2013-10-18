@@ -11,17 +11,22 @@ namespace Reports.Presenters.UI.ViewModel
         int DepartmentId { get; set; }
         bool DepartmentReadOnly { get; set; }
     }
-    public class TimesheetListModel:IDepartmentSelect
+    public interface IYearMonthSelection
+    {
+        IList<IdNameDto> Monthes { get; set; }
+        IList<IdNameDto> Years { get; set; }
+    }
+    public class TimesheetListModel : IDepartmentSelect, IYearMonthSelection
     {
         public int ManagerId { get; set; }
 
         [Display(Name = "Месяц")]
         public int Month { get; set; }
-        public IList<IdNameDto> Monthes;
+        public IList<IdNameDto> Monthes { get; set; }
 
         [Display(Name = "Год")]
         public int Year { get; set; }
-        public IList<IdNameDto> Years;
+        public IList<IdNameDto> Years { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }

@@ -155,6 +155,11 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; }
 
         public virtual string Cnilc { get; set; }
+
+        public virtual string LoginAd { get; set; }
+        public virtual decimal? Rate { get; set; }
+        public virtual bool GivesCredit { get; set; }
+        public virtual int? Level { get; set; }
         #endregion
 
         #region Constructors

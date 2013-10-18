@@ -324,6 +324,16 @@ namespace Reports.Core
                       ImplementedBy(typeof(DeductionDao)).
                       LifeStyle.Is(type));
 
+            Register(Component.For(typeof(ITerraPointDao)).
+                      ImplementedBy(typeof(TerraPointDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(ITerraPointToUserDao)).
+                      ImplementedBy(typeof(TerraPointToUserDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(ITerraGraphicDao)).
+                    ImplementedBy(typeof(TerraGraphicDao)).
+                    LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

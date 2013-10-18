@@ -44,7 +44,13 @@
                     @Html.ActionLink("Удержания", "Index", "Deduction")
                 }
                 </div> 
-                 <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
+                @if ((dto.UserRole & UserRole.Employee) > 0
+                     || (dto.UserRole & UserRole.Manager) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                {
+                    <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Графики ТЕРРАСОФТ", "Index", "Graphics")</div>
+                }
+                <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
                 </div>  
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 

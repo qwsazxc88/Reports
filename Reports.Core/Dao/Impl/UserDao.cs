@@ -97,6 +97,15 @@ namespace Reports.Core.Dao.Impl
             .Add(Restrictions.In("Code", codes))
             .List<User>();
         }
+        public IList<User> LoadForIdsList(List<int> userIds)
+        {
+            if (userIds.Count == 0)
+                return new List<User>();
+            ICriteria criteria = Session.CreateCriteria(typeof(User));
+            criteria.Add(Restrictions.In("Id", userIds));
+            criteria.AddOrder(new Order("Name", true));
+            return criteria.List<User>();
+        }
         public virtual int DeleteEmployees(DateTime date)
         {
             const string sqlQuery =
@@ -228,6 +237,83 @@ namespace Reports.Core.Dao.Impl
                 query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
+        }
+        public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePagedForGraphics(int managerId, UserRole managerRole,
+            DateTime beginDate, DateTime endDate, int departmentId, string userName)
+        {
+            string sqlQuery =
+                        @"select 
+            u.Id 
+            ,u.Name
+            ,case when emp.BeginDate is not null then emp.BeginDate else u.DateAccept end as DateAccept
+            ,case when dis.EndDate is not null then dis.EndDate else u.DateRelease end as DateRelease
+            from dbo.Users u
+            left join dbo.Employment emp on emp.UserId = u.Id
+            and u.IsNew = 1
+            and emp.ManagerDateAccept is not null
+            and emp.UserDateAccept is not null
+            and emp.PersonnelManagerDateAccept is not null
+            and emp.DeleteDate is null
+            left join dbo.Dismissal dis on
+            dis.UserId = u.Id
+            and dis.ManagerDateAccept is not null
+            and dis.UserDateAccept is not null
+            and dis.PersonnelManagerDateAccept is not null
+            and dis.DeleteDate is null
+            ";
+            string sqlWhere = string.Empty;
+            sqlWhere += " DateAccept <= :endDate and ( DateRelease is null or DateRelease >= :beginDate ) AND ";
+            if (!string.IsNullOrEmpty(userName))
+                sqlWhere += " u.Name like :userName AND ";
+            switch (managerRole)
+            {
+                case UserRole.Employee:
+                    sqlWhere += "u.Id = :userId";
+                    break;
+                case UserRole.Manager:
+                    sqlWhere += @"u.Id in (select u2.Id from [dbo].[Users] u1 
+                                    inner join [dbo].[Department] d on u1.[DepartmentId] = d.Id and  u1.IsActive = 1 and u1.RoleId = 4 
+                                    inner join [dbo].[Department] d1 on d1.Path like d.Path+N'%' and d1.ItemLevel = 7
+                                    inner join [dbo].[Users] u2 on u2.[DepartmentId]  = d1.Id and ((u2.RoleId & 2) > 0) and u2.IsActive = 1
+                                    and (u2.Code + N'R' != u1.Code)
+                                    where u1.Id =  :userId 
+                                    and not exists 
+                                    (
+	                                    select Id from [dbo].[Users] u3 
+	                                    where u3.Code = u2.Code+N'R' and u3.RoleId = 4 and u3.IsActive = 1
+	                                    and u3.level < u1.level
+                                    ))";
+                    break;
+                /*case UserRole.PersonnelManager:
+                    sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
+                    break;
+                case UserRole.Chief:
+                    sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from ChiefToUser cu where cu.ChiefId = :userId and u.Id = cu.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
+                    break;*/
+                case UserRole.OutsourcingManager:
+                    sqlWhere = sqlWhere.Substring(0, sqlWhere.Length - 5);
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Неизвестная роль {0}",(int)managerRole));
+            }
+            if (departmentId != 0 && managerRole != UserRole.Employee)
+                sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
+
+            sqlQuery += @" where " + sqlWhere;
+            sqlQuery += @" order by u.Name,u.Id ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("DateAccept", NHibernateUtil.DateTime).
+                AddScalar("DateRelease", NHibernateUtil.DateTime);
+            query.
+                SetDateTime("beginDate", beginDate).
+                SetDateTime("endDate", endDate);
+            if (managerRole != UserRole.OutsourcingManager)
+                query.SetInt32("userId", managerId);
+            if (!string.IsNullOrEmpty(userName))
+                query.SetString("userName", "%" + userName + "%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
 

@@ -1,10 +1,13 @@
 ﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
-  <class name="WorkingGraphic" dynamic-update="true" table="WorkingGraphic">
+  <class name="TerraGraphic" dynamic-update="true" table="TerraGraphic">
     <id name="Id">
       <generator class="native" />
     </id>
     <property name="UserId" not-null="true"/>
     <property name="Day" not-null="true"/>
-    <property name="Hours" not-null="false"/>
+    <property name="Hours" not-null="true"/>
+    <property name="PointId" not-null="true"/>
+    <!--<property name="IsCreditAvailable" not-null="false"/>-->
+    <property name="IsCreditAvailable" not-null="false"/>
   </class>
 </hibernate-mapping>
