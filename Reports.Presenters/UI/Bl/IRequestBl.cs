@@ -103,5 +103,7 @@ namespace Reports.Presenters.UI.Bl
         void SetDeductionUserInfoModel(DeductionUserInfoModel model, int userId);
         void ReloadDictionariesToModel(DeductionEditModel model);
         bool SaveDeductionEditModel(DeductionEditModel model, out string error);
+
+        TerraGraphicsSetShortNameModel GetSetShortNameModel();
     }
 }

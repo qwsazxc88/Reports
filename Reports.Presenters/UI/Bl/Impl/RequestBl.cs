@@ -6134,6 +6134,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        public TerraGraphicsSetShortNameModel GetSetShortNameModel()
+        {
+            TerraGraphicsSetShortNameModel model = new TerraGraphicsSetShortNameModel();
+            model.Level1 = new List<IdNameDto>();
+            model.Level2 = new List<IdNameDto>();
+            model.Level3 = new List<IdNameDto>();
+            return model;
+        }
     }
 
 }

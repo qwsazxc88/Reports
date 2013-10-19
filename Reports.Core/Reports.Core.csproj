@@ -169,6 +169,7 @@
     <Compile Include="Dao\Impl\SicklistPaymentRestrictTypeDao.cs" />
     <Compile Include="Dao\Impl\SicklistTypeDao.cs" />
     <Compile Include="Dao\Impl\TerraPointDao.cs" />
+    <Compile Include="Dao\Impl\TerraPointToUserDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionCommentDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionDao.cs" />
     <Compile Include="Dao\Impl\TimesheetCorrectionTypeDao.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Dao\ISicklistRestrictTypeDao.cs" />
     <Compile Include="Dao\ISicklistTypeDao.cs" />
     <Compile Include="Dao\ITerraPointDao.cs" />
+    <Compile Include="Dao\ITerraPointToUserDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionCommentDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionDao.cs" />
     <Compile Include="Dao\ITimesheetCorrectionTypeDao.cs" />
@@ -275,6 +277,7 @@
     <Compile Include="Domain\SicklistType.cs" />
     <Compile Include="Domain\TerraGraphic.cs" />
     <Compile Include="Domain\TerraPoint.cs" />
+    <Compile Include="Domain\TerraPointToUser.cs" />
     <Compile Include="Domain\Timesheet.cs" />
     <Compile Include="Domain\TimesheetCorrection.cs" />
     <Compile Include="Domain\TimesheetCorrectionComment.cs" />
@@ -566,6 +569,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\TerraGraphic.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\TerraPointToUser.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

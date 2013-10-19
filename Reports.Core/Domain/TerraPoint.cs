@@ -19,6 +19,7 @@ namespace Reports.Core.Domain
         public virtual string Path { get; set; }
         public virtual int? ItemLevel { get; set; }
         public virtual DateTime? EndDate { get; set; }
+        public virtual TerraPointToUser TerraPointToUser { get; set; }
         #endregion
 
         #region Constructors

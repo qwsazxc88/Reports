@@ -54,6 +54,22 @@ namespace WebMvc.Controllers
                 return PartialView("DialogError", new DialogErrorModel {Error = error});
             }
         }
+        [HttpGet]
+        public ActionResult SetShortNameDialog()
+        {
+            try
+            {
+                //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
+                TerraGraphicsSetShortNameModel model = RequestBl.GetSetShortNameModel();
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("DialogError", new DialogErrorModel { Error = error });
+            }
+        }
 
         [HttpGet]
         public ContentResult GetChildren(int parentId, int level)

@@ -1,0 +1,9 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="TerraPointToUser" dynamic-update="true" table="TerraPointToUser">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+	  <many-to-one name="TerraPoint"  class="TerraPoint" column="TerraPointId" foreign-key="FK_TerraPointToUser_TerraPoint" unique="true" not-null="true"  />
+	  <property name="UserId" unique="true" not-null="true"/>
+  </class>
+</hibernate-mapping>

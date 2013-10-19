@@ -61,16 +61,16 @@
         </div>          
         </td>
         </tr>
-       @* <tr>
+        <tr>
             <td colspan="2">
-                <input type="hidden" id="IsSaveVisible" name="IsSaveVisible" value="@Model.IsSaveVisible" />
-                <input type="hidden" id="IsSaveNeed" name="IsSaveNeed" value="@Model.IsSaveNeed" />
-                @if (Model.IsSaveVisible)
+                <input type="hidden" id="IsSetShortNamesAvailable" name="IsSetShortNamesAvailable" value="@Model.IsSetShortNamesAvailable" />
+               @* <input type="hidden" id="IsShortNamesEditable" name="IsShortNamesEditable" value="@Model.IsShortNamesEditable" />*@
+                @if (Model.IsSetShortNamesAvailable)
                 {
-                    <input type="submit" value="Записать" onclick="return onSaveClick();"/>
+                    <input type="button" value="Установка коротких названий" onclick="return onSetShortNamesClick();"/>
                 }
             </td>
-        </tr>*@
+        </tr>
         <tr>
         <td colspan="2">
                 @Html.ValidationSummary(false)
@@ -132,10 +132,11 @@
         </tr>*@
     </table>
 } 
-<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/TerraGraphicsShortNameDialog.js")"></script>
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionSetShortNameDialogUrl = "@Url.Action("SetShortNameDialog", "Home")";
      $(document).ready(function () {
         //setActiveMenuItem("userTimesheet");
     });
