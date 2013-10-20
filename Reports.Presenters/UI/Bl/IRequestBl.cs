@@ -104,6 +104,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(DeductionEditModel model);
         bool SaveDeductionEditModel(DeductionEditModel model, out string error);
 
-        TerraGraphicsSetShortNameModel GetSetShortNameModel();
+        TerraGraphicsSetShortNameModel SetShortNameModel();
+        TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);
     }
 }

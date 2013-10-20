@@ -20,9 +20,9 @@
                         @*@Html.HiddenFor(m => m.ManagerId)*@
                         @*@Html.HiddenFor(m => m.IsEditable)*@
                         @Html.LabelFor(m => m.Month):
-                        @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name"), new { onchange = "ChangeMonth();" }) 
+                        @Html.DropDownListFor(model => model.Month, new SelectList(Model.Monthes, "Id", "Name")) 
                         @Html.LabelFor(m => m.Year):
-                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"), new { onchange = "ChangeMonth();" })
+                        @Html.DropDownListFor(model => model.Year, new SelectList(Model.Years, "Id", "Name"))
                     </td>
                 </tr>
                 <tr>
@@ -136,6 +136,7 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionTerraPointChildUrl = "@Url.Action("GetTerraPointChildren", "Home")";
     var actionSetShortNameDialogUrl = "@Url.Action("SetShortNameDialog", "Home")";
      $(document).ready(function () {
         //setActiveMenuItem("userTimesheet");

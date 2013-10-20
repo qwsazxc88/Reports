@@ -5,6 +5,7 @@ namespace Reports.Core.Dao
 {
     public interface ITerraPointDao : IDao<TerraPoint>
     {
-        IList<TerraPoint> GetDepartmentsTree(int tpId);
+        IList<TerraPoint> GetTerraPointTree(int tpId);
+        IList<TerraPoint> FindByLevelAndParentId(int level, string parentId);
     }
 }

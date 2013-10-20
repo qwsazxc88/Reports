@@ -156,10 +156,7 @@ function GetChilds(controlName,parentId,level) {
                 setValuesToDropdown(controlName, result.Children);
             }
         });
-//        fail(function () {
-//            addDepSelError("Произошла ошибка асинхронного запроса");
-//                                    
-//        });
+
 }
 
 function setValuesToDropdown(controlName,data)

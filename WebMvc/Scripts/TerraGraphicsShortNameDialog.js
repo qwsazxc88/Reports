@@ -56,3 +56,38 @@ function ValidateShortName() {
 function SaveShortName() {
     return;
 }
+function TerraGraphicsLevel1IDChange() {
+        GetChilds('Level2ID', $('#Level1ID').val(), 2);
+}
+function GetChilds(controlName, parentId, level) {
+    addTerraSelError();
+    var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
+        $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraSelError(result.Error);
+            }
+            else {
+                setValuesToDropdown(controlName, result.Children);
+            }
+        });
+
+}
+function setValuesToDropdown(controlName, data) {
+    var optionsValues = '<select style = "width:95%" onchange = TerraGraphics"' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+    optionsValues += '<option value="0"></option>';
+    $.each(data, function (item, data) {
+        optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+    })
+    optionsValues += '</select>';
+    var options = $('#' + controlName);
+    options.replaceWith(optionsValues);
+}
+function addTerraSelError(value) {
+    $("#SetShortNameError").text(value);
+    $("#SetShortNameError").show();
+}
+function clearTerraSelErrors() {
+    $("#SetShortNameError").text("");
+    $("#SetShortNameError").hide();
+}

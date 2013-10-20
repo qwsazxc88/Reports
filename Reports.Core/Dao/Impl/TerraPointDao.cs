@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Services;
@@ -12,7 +13,7 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public IList<TerraPoint> GetDepartmentsTree(int tpId)
+        public IList<TerraPoint> GetTerraPointTree(int tpId)
         {
             const string sqlQuery = (@";with Parents as
                 (select d1.Id,d1.Name
@@ -41,6 +42,18 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("tpId", tpId).
                 SetResultTransformer(Transformers.AliasToBean(typeof(Department))).
                 List<TerraPoint>();
+        }
+        public virtual IList<TerraPoint> FindByLevelAndParentId(int level,string parentId)
+        {
+            if(string.IsNullOrEmpty(parentId))
+                return Session.CreateCriteria(typeof(TerraPoint)).Add(Restrictions.Eq("ItemLevel", level)).List<TerraPoint>();
+            return
+                Session.CreateCriteria(typeof(TerraPoint))
+                .Add(Restrictions.And(
+                    Restrictions.Eq("ItemLevel", level),
+                    Restrictions.Eq("ParentId", parentId)
+                ))
+                .List<TerraPoint>();
         }
     }
 }
