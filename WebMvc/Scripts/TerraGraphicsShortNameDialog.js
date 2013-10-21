@@ -16,6 +16,9 @@ function createSetShortNameDialog() {
         if (status == "error") {
             var msg = "Произошла ошибка: ";
             $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+        } else if (status == "success") {
+            if ($('#ShortNameTableLoadError').val() != undefined)
+                disableSaveButton();
         }
     }
     );
@@ -39,6 +42,7 @@ function createSetShortNameDialog() {
         open: function (event, ui) {
                 if ($('#IsShortNamesEditable').val() != 'True')
                     disableSaveButton();
+                
         },
         buttons:
         {
@@ -64,7 +68,7 @@ function SaveShortName() {
     return;
 }
 function TerraGraphicsLevel3IDChange() {
-    addTerraSelError();
+    clearTerraSelErrors();
     var url = actionTerraPointShortNameUrl + '?pointId=' + $('#Level2ID').val();
     $.getJSON(url,
         function (result) {
@@ -83,7 +87,7 @@ function TerraGraphicsLevel1IDChange() {
     GetTgChilds('Level2ID', $('#Level1ID').val(), 2);
 }
 function GetTgChilds(controlName, parentId, level) {
-    addTerraSelError();
+    clearTerraSelErrors();
     var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
     $.getJSON(url,
         function (result) {

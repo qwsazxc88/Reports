@@ -30,7 +30,7 @@ create table TerraPointToUser (
 create table TerraPoint (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code NVARCHAR(10) null,
+  Code NVARCHAR(128) null,
   Name NVARCHAR(128) null,
   ShortName NVARCHAR(128) null,
   Code1C NVARCHAR(128) null,
