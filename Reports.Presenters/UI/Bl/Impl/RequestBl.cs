@@ -6178,12 +6178,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     List<TerraPoint> l2 = TerraPointDao.FindByLevelAndParentId(2, parent.Code1C).ToList();
                     children = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
                     if (l2.Count == 0)
-                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не могу найти ни одной точки для уровня 2 и ParentId {0}", parent.Code1C));
+                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 2 и ParentId {0}", parent.Code1C));
                     TerraPoint p2 = l2[0];
                     List<TerraPoint> l3 = TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
                     level3Children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
                     if (l3.Count == 0)
-                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не могу найти ни одной точки для уровня 3 и ParentId {0}", p2.Code1C));
+                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 3 и ParentId {0}", p2.Code1C));
                     TerraPoint p3 = l3[0];
                     shortName = p3.ShortName;
                 }
@@ -6192,7 +6192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     List<TerraPoint> l3 = TerraPointDao.FindByLevelAndParentId(3, parent.Code1C).ToList();
                     children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
                     if (l3.Count == 0)
-                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не могу найти ни одной точки для уровня 3 и ParentId {0}", parent.Code1C));
+                        throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 3 и ParentId {0}", parent.Code1C));
                     TerraPoint p3 = l3[0];
                     shortName = p3.ShortName;
                 }
@@ -6213,6 +6213,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     Error = string.Format("Ошибка: {0}",ex.GetBaseException().Message),
                     Children = new List<IdNameDto>(),
+                };
+            }
+        }
+        public TerraPointShortNameDto GetTerraPointShortName(int pointId)
+        {
+            try
+            {
+                TerraPoint point = TerraPointDao.Load(pointId);
+                if (point == null)
+                    throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных", point));
+                return new TerraPointShortNameDto
+                           {
+                              Error = string.Empty,
+                              ShortName = point.ShortName,
+                           };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetTerraPointChildren:", ex);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", ex.GetBaseException().Message),
+                    ShortName = string.Empty,
                 };
             }
         }

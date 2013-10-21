@@ -25,6 +25,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string UserName { get; set; }
 
         public bool IsSetShortNamesAvailable { get; set; }
-        //public bool IsShortNamesEditable { get; set; }
+        public bool IsShortNamesEditable { get; set; }
     }
 }

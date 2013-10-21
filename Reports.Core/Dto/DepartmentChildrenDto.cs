@@ -12,4 +12,9 @@ namespace Reports.Core.Dto
         public List<IdNameDto> Level3Children { get; set; }
         public string ShortName { get; set; }
     }
+    public class TerraPointShortNameDto 
+    {
+        public string ShortName { get; set; }
+        public string Error { get; set; }
+    }
 }

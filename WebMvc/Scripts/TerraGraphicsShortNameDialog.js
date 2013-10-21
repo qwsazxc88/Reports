@@ -19,6 +19,9 @@ function createSetShortNameDialog() {
         }
     }
     );
+//    if ($('#IsShortNamesEditable').val() != 'True')
+//        disableSaveButton();
+        
     $(newDiv).dialog(
     { // initialize dialog box
         autoOpen: true,
@@ -32,6 +35,10 @@ function createSetShortNameDialog() {
         height: 340,
         close: function (event, ui) {
             $(this).dialog("destroy").remove();
+        },
+        open: function (event, ui) {
+                if ($('#IsShortNamesEditable').val() != 'True')
+                    disableSaveButton();
         },
         buttons:
         {
@@ -56,22 +63,41 @@ function ValidateShortName() {
 function SaveShortName() {
     return;
 }
-function TerraGraphicsLevel1IDChange() {
-        GetChilds('Level2ID', $('#Level1ID').val(), 2);
+function TerraGraphicsLevel3IDChange() {
+    addTerraSelError();
+    var url = actionTerraPointShortNameUrl + '?pointId=' + $('#Level2ID').val();
+    $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraSelError(result.Error);
+            }
+            else {
+                $('#ShortName').val(result.ShortName)
+            }
+        });
 }
-function GetChilds(controlName, parentId, level) {
+function TerraGraphicsLevel2IDChange() {
+        GetTgChilds('Level3ID', $('#Level2ID').val(), 3);
+}
+function TerraGraphicsLevel1IDChange() {
+    GetTgChilds('Level2ID', $('#Level1ID').val(), 2);
+}
+function GetTgChilds(controlName, parentId, level) {
     addTerraSelError();
     var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
-        $.getJSON(url,
+    $.getJSON(url,
         function (result) {
             if (result.Error != "") {
                 addTerraSelError(result.Error);
             }
             else {
                 setValuesToDropdown(controlName, result.Children);
+                if (level == 2) {
+                    setValuesToDropdown('Level3ID', result.Level3Children);
+                }
+                $('#ShortName').val(result.ShortName)
             }
         });
-
 }
 function setValuesToDropdown(controlName, data) {
     var optionsValues = '<select style = "width:95%" onchange = TerraGraphics"' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
@@ -86,8 +112,12 @@ function setValuesToDropdown(controlName, data) {
 function addTerraSelError(value) {
     $("#SetShortNameError").text(value);
     $("#SetShortNameError").show();
+    disableSaveButton() 
 }
 function clearTerraSelErrors() {
     $("#SetShortNameError").text("");
     $("#SetShortNameError").hide();
+}
+function disableSaveButton() {
+    $(".ui-dialog-buttonpane button:contains('Установить')").button("disable");
 }

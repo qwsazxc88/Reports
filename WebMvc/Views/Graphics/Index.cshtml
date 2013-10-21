@@ -64,7 +64,7 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsSetShortNamesAvailable" name="IsSetShortNamesAvailable" value="@Model.IsSetShortNamesAvailable" />
-               @* <input type="hidden" id="IsShortNamesEditable" name="IsShortNamesEditable" value="@Model.IsShortNamesEditable" />*@
+                <input type="hidden" id="IsShortNamesEditable" name="IsShortNamesEditable" value="@Model.IsShortNamesEditable" />
                 @if (Model.IsSetShortNamesAvailable)
                 {
                     <input type="button" value="Установка коротких названий" onclick="return onSetShortNamesClick();"/>
@@ -138,6 +138,7 @@
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     var actionTerraPointChildUrl = "@Url.Action("GetTerraPointChildren", "Home")";
     var actionSetShortNameDialogUrl = "@Url.Action("SetShortNameDialog", "Home")";
+    var actionTerraPointShortNameUrl = "@Url.Action("GetTerraPointShortName", "Home")";
      $(document).ready(function () {
         //setActiveMenuItem("userTimesheet");
     });

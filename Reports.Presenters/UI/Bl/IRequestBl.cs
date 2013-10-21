@@ -106,5 +106,6 @@ namespace Reports.Presenters.UI.Bl
 
         TerraGraphicsSetShortNameModel SetShortNameModel();
         TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);
+        TerraPointShortNameDto GetTerraPointShortName(int pointId);
     }
 }

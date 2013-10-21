@@ -91,7 +91,7 @@ namespace WebMvc.Controllers
             {
                 Log.Error("Exception", ex);
                 string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
-                return PartialView("DialogError", new DialogErrorModel { Error = error });
+                return PartialView("TpDialogError", new DialogErrorModel { Error = error });
             }
         }
 
@@ -111,6 +111,28 @@ namespace WebMvc.Controllers
                 {
                     Error = string.Format("Ошибка: {0}", error),
                     Children = new List<IdNameDto>()
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        [HttpGet]
+        public ContentResult GetTerraPointShortName(int pointId)
+        {
+            TerraPointShortNameDto model;
+            try
+            {
+                model = RequestBl.GetTerraPointShortName(pointId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetTerraPointShortName:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                    ShortName = string.Empty,
                 };
             }
             var jsonSerializer = new JavaScriptSerializer();

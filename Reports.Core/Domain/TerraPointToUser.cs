@@ -4,7 +4,7 @@ namespace Reports.Core.Domain
     {
         #region Properties
 
-        public virtual TerraPoint TerraPointId { get; set; }
+        public virtual TerraPoint TerraPoint { get; set; }
         public virtual int UserId { get; set; }
 
         #endregion

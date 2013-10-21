@@ -1473,7 +1473,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.IsSetShortNamesAvailable = ((role & UserRole.Manager) > 0) ||
                                              ((role & UserRole.OutsourcingManager) > 0);
-            //model.IsShortNamesEditable = ((role & UserRole.Manager) > 0);
+            model.IsShortNamesEditable = ((role & UserRole.Manager) > 0);
         }
         public void SetGraphicsInfo(GraphicsListModel model)
         {
