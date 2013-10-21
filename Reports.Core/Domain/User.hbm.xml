@@ -25,6 +25,11 @@
 	<!--<property name="CanAnswer" not-null="true"/>
 	<property name="Birthday" not-null="false"/>-->
 	<property name="RoleId" not-null="true"/>
+    <property name="LoginAd" length="32" not-null="false" />
+    <property name="Rate" not-null="false" />
+    <property name="GivesCredit" not-null="true" />
+    <property name="Level" not-null="false" />
+    
 	<!--<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>-->
 	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>
 	<!--<many-to-one name="PersonnelManager" class="User" column="PersonnelManagerId" foreign-key="FK_User_PersonnelManager" index="IX_User_PersonnelManager_Id"  not-null="false"/>-->
