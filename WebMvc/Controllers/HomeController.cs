@@ -139,5 +139,27 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+        [HttpGet]
+        public ContentResult SaveTerraPointShortName(int pointId, string shortName)
+        {
+            TerraPointShortNameDto model;
+            try
+            {
+                model = RequestBl.SaveTerraPointShortName(pointId,shortName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveTerraPointShortName:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                    ShortName = string.Empty,
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
     }
 }

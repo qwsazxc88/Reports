@@ -24,7 +24,7 @@ function createSetShortNameDialog() {
     );
 //    if ($('#IsShortNamesEditable').val() != 'True')
 //        disableSaveButton();
-        
+
     $(newDiv).dialog(
     { // initialize dialog box
         autoOpen: true,
@@ -40,20 +40,20 @@ function createSetShortNameDialog() {
             $(this).dialog("destroy").remove();
         },
         open: function (event, ui) {
-                if ($('#IsShortNamesEditable').val() != 'True')
-                    disableSaveButton();
-                
+            if ($('#IsShortNamesEditable').val() != 'True')
+                disableSaveButton();
+
         },
         buttons:
         {
             "Установить": function () {
                 if (!ValidateShortName())
                     return;
+//                var result = SaveShortName();
+//                if(!result)
+//                    return;
+                //                $(this).dialog("close");
                 SaveShortName();
-                $(this).dialog("close");
-//                if (typeof ChangeMonth == 'function') {
-//                    ChangeMonth(); //call function
-//                }
             },
             "Отмена": function () {
                 $(this).dialog("close");
@@ -62,18 +62,37 @@ function createSetShortNameDialog() {
     });
 }
 function ValidateShortName() {
+    if ($('#ShortName').val() == '') {
+        addTerraSelError("Необходимо указать короткое название");
+        return false;
+    }
+    if ($('#ShortName').val().length > 3 ) {
+        addTerraSelError("Длина короткого названия не может превышать  3 символов");
+        return false;
+    }
     return true;
 }
 function SaveShortName() {
-    return;
-}
-function TerraGraphicsLevel3IDChange() {
     clearTerraSelErrors();
-    var url = actionTerraPointShortNameUrl + '?pointId=' + $('#Level2ID').val();
+    var url = actionTerraPointSaveUrl + '?pointId=' + $('#Level3ID').val() + "&shortName=" + escapeJson($('#ShortName').val());
     $.getJSON(url,
         function (result) {
             if (result.Error != "") {
                 addTerraSelError(result.Error);
+            }
+            else {
+                $("#divSetShortNameDialog").dialog("close");
+            }
+        });
+   
+}
+function TerraGraphicsLevel3IDChange() {
+    clearTerraSelErrors();
+    var url = actionTerraPointShortNameUrl + '?pointId=' + $('#Level3ID').val();
+    $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraSelError(result.Error,true);
             }
             else {
                 $('#ShortName').val(result.ShortName)
@@ -92,7 +111,7 @@ function GetTgChilds(controlName, parentId, level) {
     $.getJSON(url,
         function (result) {
             if (result.Error != "") {
-                addTerraSelError(result.Error);
+                addTerraSelError(result.Error,true);
             }
             else {
                 setValuesToDropdown(controlName, result.Children);
@@ -114,9 +133,13 @@ function setValuesToDropdown(controlName, data) {
     options.replaceWith(optionsValues);
 }
 function addTerraSelError(value) {
+    addTerraSelError(value, false);
+}
+function addTerraSelError(value,disableButton) {
     $("#SetShortNameError").text(value);
     $("#SetShortNameError").show();
-    disableSaveButton() 
+    if(disableButton)
+        disableSaveButton() 
 }
 function clearTerraSelErrors() {
     $("#SetShortNameError").text("");

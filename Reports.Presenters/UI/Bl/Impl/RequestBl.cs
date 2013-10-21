@@ -6161,6 +6161,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Не могу найти ни одной точки для уровня 3 и ParentId {0}", p2.Code1C));
             TerraPoint p3 = l3[0];
             model.ShortName = p3.ShortName;
+            UserRole role = CurrentUser.UserRole;
+            model.IsShortNameEditable = ((role & UserRole.Manager) > 0);
             return model;
         }
         public TerraPointChildrenDto GetTerraPointChildren(int parentId, int level)
@@ -6231,7 +6233,32 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                Log.Error("Exception on GetTerraPointChildren:", ex);
+                Log.Error("Exception on GetTerraPointShortName:", ex);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Format("Ошибка: {0}", ex.GetBaseException().Message),
+                    ShortName = string.Empty,
+                };
+            }
+        }
+        public TerraPointShortNameDto SaveTerraPointShortName(int pointId,string shortName)
+        {
+            try
+            {
+                TerraPoint point = TerraPointDao.Load(pointId);
+                if (point == null)
+                    throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных", point));
+                point.ShortName = shortName;
+                TerraPointDao.Save(point);
+                return new TerraPointShortNameDto
+                {
+                    Error = string.Empty,
+                    ShortName = point.ShortName,
+                };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveTerraPointShortName:", ex);
                 return new TerraPointShortNameDto
                 {
                     Error = string.Format("Ошибка: {0}", ex.GetBaseException().Message),
