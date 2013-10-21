@@ -6156,7 +6156,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Не могу найти ни одной точки для уровня 2 и ParentId {0}",p1.Code1C));
             TerraPoint p2 = l2[0];
             List<TerraPoint> l3 = TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
-            model.Level3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.Level3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName)?" ( "+x.ShortName+" )":string.Empty ) });
             if (l3.Count == 0)
                 throw new ArgumentException(string.Format("Не могу найти ни одной точки для уровня 3 и ParentId {0}", p2.Code1C));
             TerraPoint p3 = l3[0];
@@ -6183,7 +6183,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 2 и ParentId {0}", parent.Code1C));
                     TerraPoint p2 = l2[0];
                     List<TerraPoint> l3 = TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
-                    level3Children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    level3Children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
                     if (l3.Count == 0)
                         throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 3 и ParentId {0}", p2.Code1C));
                     TerraPoint p3 = l3[0];
@@ -6192,7 +6192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else if(level == 3)
                 {
                     List<TerraPoint> l3 = TerraPointDao.FindByLevelAndParentId(3, parent.Code1C).ToList();
-                    children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    children = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
                     if (l3.Count == 0)
                         throw new ArgumentException(string.Format("GetTerraPointChildren:Не найдено ни одной точки для уровня 3 и ParentId {0}", parent.Code1C));
                     TerraPoint p3 = l3[0];
