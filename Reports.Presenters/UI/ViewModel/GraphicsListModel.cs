@@ -26,5 +26,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsSetShortNamesAvailable { get; set; }
         public bool IsShortNamesEditable { get; set; }
+
+        public int NumberOfPages { get; set; }
+        public int CurrentPage { get; set; }
     }
 }

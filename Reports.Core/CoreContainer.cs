@@ -330,6 +330,9 @@ namespace Reports.Core
             Register(Component.For(typeof(ITerraPointToUserDao)).
                       ImplementedBy(typeof(TerraPointToUserDao)).
                       LifeStyle.Is(type));
+            Register(Component.For(typeof(ITerraGraphicDao)).
+                    ImplementedBy(typeof(TerraGraphicDao)).
+                    LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
