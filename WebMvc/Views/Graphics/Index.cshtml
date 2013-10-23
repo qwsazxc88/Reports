@@ -78,7 +78,7 @@
             </td>
         </tr>
     </table>
-   @* <input type="button" onclick="refreshTable();" name="Resfesh" value="Resfesh"/>*@
+    <input type="button" onclick="refreshTableBtn();" name="Resfesh" value="Resfesh"/>
     @Html.Partial("Table")
     
 } 
@@ -101,7 +101,14 @@
             $("#DepartmentName").val('');
         }
     }
-    function refreshTable() {
+    function refreshTableBtn()
+    {
+        var currentPage = $('#CurrentPage').val();
+        if(currentPage == undefined)
+            currentPage = 1;
+         refreshTable(currentPage);
+    }
+    function refreshTable(currentPage) {
             $.ajax({
                 type: "GET",
                 data: {
@@ -109,7 +116,7 @@
                     year: $('#Year').val(),
                     departmentId: $('#DepartmentId').val(),
                     userName: $('#UserName').val(),
-                    currentPage: $('#CurrentPage').val()
+                    currentPage: currentPage
                 },
                 url: "@Url.Action("Table", "Graphics")",
                 cache: false,
@@ -125,6 +132,13 @@
         function success(result) {
             $("#Table").html(result);
         } 
+        function OnPageClick(pageNumber) {
+            refreshTable(pageNumber);
+//        $("#CurrentPage").val(pageNumber);
+//        submitForm();
+            return false;
+        }
+    
  </script>   
 
 
