@@ -97,6 +97,15 @@ namespace Reports.Core.Dao.Impl
             .Add(Restrictions.In("Code", codes))
             .List<User>();
         }
+        public IList<User> LoadForIdsList(List<int> userIds)
+        {
+            if (userIds.Count == 0)
+                return new List<User>();
+            ICriteria criteria = Session.CreateCriteria(typeof(User));
+            criteria.Add(Restrictions.In("Id", userIds));
+            criteria.AddOrder(new Order("Name", true));
+            return criteria.List<User>();
+        }
         public virtual int DeleteEmployees(DateTime date)
         {
             const string sqlQuery =

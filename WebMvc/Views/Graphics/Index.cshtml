@@ -81,9 +81,9 @@
             <td style="font-weight:bold" colspan="2">
                Количество сотрудников: @Model.TotalRecordsCount
             </td>
-        </tr>
+        </tr>*@
         <tr>
-            @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
+            @if (Model.Dtos != null && Model.Dtos.Count > 0)
             {
                 <td colspan="2" style="text-align:left">
                     @for (int i = 1; i <= Model.NumberOfPages; i++)
@@ -103,7 +103,7 @@
         <tr>
             <td colspan="2">
                 
-                @Html.EditorFor(model => model.TimesheetDtos)
+                @Html.EditorFor(model => model.Dtos)
             </td>
         </tr>
         <tr>
@@ -112,7 +112,7 @@
             </td>
         </tr>
         <tr>
-            @if (Model.TimesheetDtos != null && Model.TimesheetDtos.Count > 0)
+            @if (Model.Dtos != null && Model.Dtos.Count > 0)
             {
                 <td colspan="2" style="text-align:left">
                     <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
@@ -129,7 +129,7 @@
                     }
                 </td>
             }
-        </tr>*@
+        </tr>
     </table>
 } 
 <script type="text/javascript" src="@Url.Content("~/Scripts/TerraGraphicsShortNameDialog.js")"></script>

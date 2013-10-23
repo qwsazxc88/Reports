@@ -36,5 +36,12 @@ namespace WebMvc.Controllers
             EmployeeBl.GetGraphicsListModel(model);
             return View(model);
         }
+        [HttpPost]
+        public ActionResult Index(GraphicsListModel model)
+        {
+            EmployeeBl.SetupDepartment(model);
+            EmployeeBl.GetGraphicsListModel(model);
+            return View(model);
+        }
     }
 }

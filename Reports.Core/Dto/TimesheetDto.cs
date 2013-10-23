@@ -59,11 +59,13 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int Number { get; set; }
+        public DateTime? Day { get; set; }
         //public int StatusId { get; set; }
         //public string Status { get; set; }
         public int? Hours { get; set; }
         public int? TerraPointId { get; set; }
-        public bool? IsCredits { get; set; }
+        public string TerraPointName { get; set; }
+        public string IsCredits { get; set; }
         public bool isHoliday { get; set; }
         //public string Graphic { get; set; }
         public bool isStatRecord { get; set; }

@@ -27,6 +27,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSetShortNamesAvailable { get; set; }
         public bool IsShortNamesEditable { get; set; }
 
+        [DataType("TerraGraphicDtoList")]
+        public IList<TerraGraphicDto> Dtos { get; set; }
+
         public int NumberOfPages { get; set; }
         public int CurrentPage { get; set; }
     }

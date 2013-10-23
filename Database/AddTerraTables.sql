@@ -15,7 +15,7 @@ create table TerraGraphic (
   UserId INT not null,
   Day DATETIME not null,
   Hours INT null,
-  PointId INT null,
+  PointId INT not null,
   IsCreditAvailable BIT null,
   constraint PK_TerraGraphic  primary key (Id)
 )

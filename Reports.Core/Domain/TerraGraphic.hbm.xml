@@ -6,7 +6,7 @@
     <property name="UserId" not-null="true"/>
     <property name="Day" not-null="true"/>
     <property name="Hours" not-null="false"/>
-    <property name="PointId" not-null="false"/>
+    <property name="PointId" not-null="true"/>
     <!--<property name="IsCreditAvailable" not-null="false"/>-->
     <property name="IsCreditAvailable" not-null="false"/>
   </class>

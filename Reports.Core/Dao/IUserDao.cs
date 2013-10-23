@@ -51,6 +51,8 @@ namespace Reports.Core.Dao
         IList<IdNameDtoWithDates> GetUsersForManagerWithDatePagedForGraphics(int managerId, UserRole managerRole,
                                                                              DateTime beginDate, DateTime endDate,
                                                                              int departmentId, string userName);
+
+        IList<User> LoadForIdsList(List<int> userIds);
     }
 }
 
