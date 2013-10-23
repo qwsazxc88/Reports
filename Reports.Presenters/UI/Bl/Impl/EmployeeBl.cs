@@ -1733,7 +1733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
                 //dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
                 dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
-                dto.Postion = usr.Position.Name;
+                dto.Postion = string.IsNullOrEmpty(usr.Position.Name) ? string.Empty : usr.Position.Name.Trim();
                 dto.Rate = usr.Rate.HasValue ? usr.Rate.Value.ToString() : string.Empty;
                 list.Add(dto);
             }
