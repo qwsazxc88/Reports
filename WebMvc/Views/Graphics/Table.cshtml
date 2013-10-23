@@ -1,0 +1,67 @@
+﻿@model Reports.Presenters.UI.ViewModel.GraphicsListModel
+    <div id="Table">
+    <table style="width:100%">
+@*        <tr>
+            <td style="font-weight:bold" colspan="2">
+               Количество сотрудников: @Model.TotalRecordsCount
+            </td>
+        </tr>*@
+        @if (Model.Dtos != null && Model.Dtos.Count > 0)
+        {
+            <tr>
+            
+                    <td colspan="2" style="text-align:left">
+                        @for (int i = 1; i <= Model.NumberOfPages; i++)
+                        {
+                            if (i == Model.CurrentPage)
+                            {
+                                <text>@i</text>
+                            }
+                            else
+                            {    
+                                <a href="" onclick="return OnPageClick(@i);">@i</a>
+                            }
+                        }
+                    </td>
+            
+             </tr>
+             <tr>
+                <td>
+                    <hr style="width:100%"/>
+                </td>
+            </tr>
+        //}
+            <tr>
+                <td>
+                
+                    @Html.EditorFor(model => model.Dtos)
+                </td>
+            </tr>
+       @*
+         @if (Model.Dtos != null && Model.Dtos.Count > 0)
+         {*@
+             <tr>
+                <td>
+                    <hr style="width:100%"/>
+                </td>
+            </tr>
+            <tr>
+           
+                <td colspan="2" style="text-align:left">
+                    <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
+                    @for (int i = 1; i <= Model.NumberOfPages; i++)
+                    {
+                        if (i == Model.CurrentPage)
+                        {
+                            <text>@i</text>
+                        }
+                        else
+                        {    
+                            <a href="" onclick="return OnPageClick(@i);">@i</a>
+                        }
+                    }
+                </td>
+            </tr>
+         }
+    </table>
+    </div>

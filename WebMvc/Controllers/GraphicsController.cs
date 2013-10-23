@@ -43,5 +43,21 @@ namespace WebMvc.Controllers
             EmployeeBl.GetGraphicsListModel(model);
             return View(model);
         }
+
+        [HttpGet]
+        public PartialViewResult Table(int month, int year, int departmentId, string userName,int? currentPage)
+        {
+            GraphicsListModel model = new GraphicsListModel
+            {
+               CurrentPage = currentPage.HasValue?currentPage.Value:0,
+               DepartmentId = departmentId,
+               Month = month,
+               UserName = userName,
+               Year = year,
+            };
+            EmployeeBl.GetGraphicsListModel(model);
+            return PartialView("Table", model);
+        }
+
     }
 }

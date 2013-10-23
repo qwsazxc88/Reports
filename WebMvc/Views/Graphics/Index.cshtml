@@ -77,60 +77,10 @@
                 <div id="Error" style="color:Red;display:none;"></div>
             </td>
         </tr>
-@*        <tr>
-            <td style="font-weight:bold" colspan="2">
-               Количество сотрудников: @Model.TotalRecordsCount
-            </td>
-        </tr>*@
-        <tr>
-            @if (Model.Dtos != null && Model.Dtos.Count > 0)
-            {
-                <td colspan="2" style="text-align:left">
-                    @for (int i = 1; i <= Model.NumberOfPages; i++)
-                    {
-                        if (i == Model.CurrentPage)
-                        {
-                            <text>@i</text>
-                        }
-                        else
-                        {    
-                            <a href="" onclick="return OnPageClick(@i);">@i</a>
-                        }
-                    }
-                </td>
-            }
-         </tr>
-        <tr>
-            <td colspan="2">
-                
-                @Html.EditorFor(model => model.Dtos)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <hr style="width:100%"/>
-            </td>
-        </tr>
-        <tr>
-            @if (Model.Dtos != null && Model.Dtos.Count > 0)
-            {
-                <td colspan="2" style="text-align:left">
-                    <input type="hidden" id="CurrentPage" name="CurrentPage" value="@Model.CurrentPage" />
-                    @for (int i = 1; i <= Model.NumberOfPages; i++)
-                    {
-                        if (i == Model.CurrentPage)
-                        {
-                            <text>@i</text>
-                        }
-                        else
-                        {    
-                            <a href="" onclick="return OnPageClick(@i);">@i</a>
-                        }
-                    }
-                </td>
-            }
-        </tr>
     </table>
+    <input type="button" onclick="refreshTable();" name="Resfesh" value="Resfesh"/>
+    @Html.Partial("Table")
+    
 } 
 <script type="text/javascript" src="@Url.Content("~/Scripts/TerraGraphicsShortNameDialog.js")"></script>
 <script type="text/javascript">
@@ -150,7 +100,31 @@
             $("#DepartmentNameLabel").text('');
             $("#DepartmentName").val('');
         }
-    } 
+    }
+    function refreshTable() {
+            $.ajax({
+                type: "GET",
+                data: {
+                    month: $('#Month').val(),
+                    year: $('#Year').val(),
+                    departmentId: $('#DepartmentId').val(),
+                    userName: $('#UserName').val(),
+                    currentPage: $('#CurrentPage').val()
+                },
+                url: "@Url.Action("Table", "Graphics")",
+                cache: false,
+                dataType: "html",
+                success: function(result) {
+                     success(result);
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alert('Ошибка при получении ответа сервера:\r' + xhr.responseText);
+                }
+            });
+        }
+        function success(result) {
+            $("#Table").html(result);
+        } 
  </script>   
 
 
