@@ -52,18 +52,31 @@
                                         <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
                                             <tr>
                                                 <td nowrap @if (day.isHoliday)
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Red"</text>}
+                                                    {
+                                                               <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Red"</text>
+                                                    }
                                                     else if (day.isStatRecord)
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Green"</text>}
+                                                    {
+                                                        <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Green"</text>
+                                                    }
                                                     else
-                                                    {<text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;"</text>}>
+                                                    {
+                                                        <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;"</text>
+                                                    }>
                                                      @if (day.isStatRecord)
                                                      {
                                                         @day.StatCode
                                                      }
                                                      else
                                                      {
-                                                        @day.Number
+                                                         if (day.IsEditable)
+                                                         {
+                                                            <a href="#"  onclick = "return EditPoint(@day.Id,'@day.Day',@dto.UserId)">@day.Number</a>
+                                                         }
+                                                         else
+                                                         {
+                                                            @day.Number
+                                                         }
                                                      }
                                                     @*<input type="hidden" id="@timesheetDayIdPrefix" name="@timesheetDayIdPrefix" value="@day.Id"/>
                                                     <input type="hidden" id="@timesheetDayNumberPrefix" name="@timesheetDayNumberPrefix" value="@day.Number"/>

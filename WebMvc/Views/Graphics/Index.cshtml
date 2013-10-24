@@ -90,6 +90,7 @@
     var actionSetShortNameDialogUrl = "@Url.Action("SetShortNameDialog", "Home")";
     var actionTerraPointShortNameUrl = "@Url.Action("GetTerraPointShortName", "Home")";
     var actionTerraPointSaveUrl = "@Url.Action("SaveTerraPointShortName", "Home")";
+     var actionEditPointDialogUrl = "@Url.Action("EditPointDialog", "Graphics")";
      $(document).ready(function () {
         //setActiveMenuItem("userTimesheet");
     });
@@ -138,7 +139,11 @@
 //        submitForm();
             return false;
         }
-    
+ function EditPoint(id,day,userId)
+ {
+    createEditPointDialog(id, day, userId); 
+    return false;
+ }   
  </script>   
 
 

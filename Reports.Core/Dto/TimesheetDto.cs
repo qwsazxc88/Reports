@@ -59,7 +59,7 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int Number { get; set; }
-        public DateTime? Day { get; set; }
+        public string Day { get; set; }
         //public int StatusId { get; set; }
         //public string Status { get; set; }
         public int? Hours { get; set; }
@@ -70,6 +70,7 @@ namespace Reports.Core.Dto
         //public string Graphic { get; set; }
         public bool isStatRecord { get; set; }
         public string StatCode { get; set; }
+        public bool IsEditable { get; set; }
     }
     public class TerraGraphicDto
     {
@@ -78,7 +79,7 @@ namespace Reports.Core.Dto
         public int UserId { get; set; }
         //public bool IsHoursVisible { get; set; }
         //public bool IsGraphicVisible { get; set; }
-        public bool IsGraphicEditable { get; set; }
+        //public bool IsGraphicEditable { get; set; }
         public string MonthAndYear { get; set; }
         public string UserNameAndCode { get; set; }
         public string Postion { get; set; }

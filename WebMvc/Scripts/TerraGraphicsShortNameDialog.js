@@ -1,16 +1,64 @@
-﻿function onSetShortNamesClick() {
+﻿function createEditPointDialog(id, day, userId) {
+    var elem = document.createElement('div');
+    elem.id = "divEditPointDialog";
+    var newDiv = $(elem);
+    var title = "Выбор точки ";
+    $(newDiv).text('Подождите, идет загрузка данных ...');
+    $.ajaxSetup({ cache: false });
+    $(newDiv).load(actionEditPointDialogUrl + '?id=' + id + '&day=' + day + '&userId=' + userId + " #EditPointTable"
+    , function (response, status, xhr) {
+        if (status == "error") {
+            var msg = "Произошла ошибка: ";
+            $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+        } else if (status == "success") {
+            if ($('#EditPointTableLoadError').val() != undefined)
+                disableEditPointSaveButton();
+        }
+    }
+    );
+    $(newDiv).dialog(
+    { // initialize dialog box
+        autoOpen: true,
+        modal: true,
+        title: title,
+        // fix IE6  
+        bgiframe: true,
+        draggable: false,
+        resizable: false,
+        width: 750,
+        height: 340,
+        close: function (event, ui) {
+            $(this).dialog("destroy").remove();
+        },
+        open: function (event, ui) {
+//            if ($('#IsShortNamesEditable').val() != 'True')
+//                disableSaveButton();
+
+        },
+        buttons:
+        {
+            "Установить": function () {
+/*                if (!ValidateShortName())
+                    return;
+                SaveShortName();*/
+            },
+            "Отмена": function () {
+                $(this).dialog("close");
+            }
+        }
+    });
+}
+
+function onSetShortNamesClick() {
     createSetShortNameDialog();
 }
 function createSetShortNameDialog() {
     var elem = document.createElement('div');
     elem.id = "divSetShortNameDialog";
     var newDiv = $(elem);
-    //var departmentId = $("#DepartmentId").val();
-    //var typeId = $("#RequestTypeId").val();
     var title = "Установка коротких названий";
     $(newDiv).text('Подождите, идет загрузка данных ...');
     $.ajaxSetup({ cache: false });
-    //var url = actionDepDialogUrl + '?parentId='+ parentId+'&level='+level;
     $(newDiv).load(actionSetShortNameDialogUrl + " #SetShortNameTable"
     , function (response, status, xhr) {
         if (status == "error") {
@@ -22,9 +70,6 @@ function createSetShortNameDialog() {
         }
     }
     );
-//    if ($('#IsShortNamesEditable').val() != 'True')
-//        disableSaveButton();
-
     $(newDiv).dialog(
     { // initialize dialog box
         autoOpen: true,
@@ -49,10 +94,6 @@ function createSetShortNameDialog() {
             "Установить": function () {
                 if (!ValidateShortName())
                     return;
-//                var result = SaveShortName();
-//                if(!result)
-//                    return;
-                //                $(this).dialog("close");
                 SaveShortName();
             },
             "Отмена": function () {

@@ -1593,13 +1593,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //           ? ((int)wgHours.Value).ToString()
                     //           : wgHours.Value.ToString("0.0");
                     //}
+                    RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
+                    if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
+                        beginUserDate = employmentDay.BeginDate;
+                    RequestDto dismissalDay = userList.Where(x => x.IsDismissalDay).FirstOrDefault();
+                    if (dismissalDay != null && dismissalDay.EndDate < endUserDate)
+                        endUserDate = dismissalDay.EndDate;
+
                     bool? isCredit = new bool?();
                     if (graphicEntity != null)
                         isCredit = graphicEntity.IsCreditAvailable;
                     userDayList.Add(new TerraGraphicDayDto
                                         {
                                             Number = dayRequestsDto.Day.Day,
-                                            Day = dayRequestsDto.Day,
+                                            Day = dayRequestsDto.Day.ToString("dd.MM.yyyy"),
                                             isHoliday = CoreUtils.IsDayHoliday(workDays, dayRequestsDto.Day),
                                             Hours = hours,
                                             //hours.Substring(0, hours.Length - 1),
@@ -1610,14 +1617,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                  : (string.IsNullOrEmpty(graphicEntity.PointName)
                                                                         ? "!"
                                                                         : graphicEntity.PointName),
+                                            IsEditable = true,//user.UserRole == UserRole.Manager,
                     });
                     //userDtoList.AddRange(userList);
-                    RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
-                    if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
-                        beginUserDate = employmentDay.BeginDate;
-                    RequestDto dismissalDay = userList.Where(x => x.IsDismissalDay).FirstOrDefault();
-                    if (dismissalDay != null && dismissalDay.EndDate < endUserDate)
-                        endUserDate = dismissalDay.EndDate;
+                 
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
                 {
@@ -1732,7 +1735,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.Days = userDayList;
                 //dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
                 //dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
-                dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
+                //dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
                 dto.Postion = string.IsNullOrEmpty(usr.Position.Name) ? string.Empty : usr.Position.Name.Trim();
                 dto.Rate = usr.Rate.HasValue ? usr.Rate.Value.ToString() : string.Empty;
                 list.Add(dto);

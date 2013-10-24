@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using Reports.Core;
+using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -57,6 +59,28 @@ namespace WebMvc.Controllers
             };
             EmployeeBl.GetGraphicsListModel(model);
             return PartialView("Table", model);
+        }
+
+        [HttpGet]
+        public ActionResult EditPointDialog(int id,string day,int userId)
+        {
+            try
+            {
+                TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel{Id = id,Day = day,UserId = userId};
+                model.Credits = new List<IdNameDto>();
+                model.EpLevel1 = new List<IdNameDto>();
+                model.EpLevel2 = new List<IdNameDto>();
+                model.EpLevel3 = new List<IdNameDto>();
+                //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
+                //TerraGraphicsSetShortNameModel model = RequestBl.SetShortNameModel();
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EpDialogError", new DialogErrorModel { Error = error });
+            }
         }
 
     }
