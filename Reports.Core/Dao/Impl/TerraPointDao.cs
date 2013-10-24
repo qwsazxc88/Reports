@@ -53,6 +53,7 @@ namespace Reports.Core.Dao.Impl
                     Restrictions.Eq("ItemLevel", level),
                     Restrictions.Eq("ParentId", parentId)
                 ))
+                .AddOrder( new Order("Name",true))
                 .List<TerraPoint>();
         }
     }

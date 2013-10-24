@@ -81,7 +81,8 @@ function SaveShortName() {
                 addTerraSelError(result.Error);
             }
             else {
-                $("#divSetShortNameDialog").dialog("close");
+                TerraGraphicsLevel2IDChange();
+                //$("#divSetShortNameDialog").dialog("close");
             }
         });
    
@@ -111,20 +112,28 @@ function GetTgChilds(controlName, parentId, level) {
     $.getJSON(url,
         function (result) {
             if (result.Error != "") {
-                addTerraSelError(result.Error,true);
+                addTerraSelError(result.Error, true);
             }
             else {
+                var selection;
+                if (level == 3) {
+                    var selection = $('#Level3ID').val();
+                }
                 setValuesToDropdown(controlName, result.Children);
                 if (level == 2) {
                     setValuesToDropdown('Level3ID', result.Level3Children);
                 }
-                $('#ShortName').val(result.ShortName)
+                else {
+                    $('#Level3ID').val(selection);
+                }
+                TerraGraphicsLevel3IDChange();
+                //$('#ShortName').val(result.ShortName)
             }
         });
 }
 function setValuesToDropdown(controlName, data) {
-    var optionsValues = '<select style = "width:95%" onchange = TerraGraphics"' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
-    optionsValues += '<option value="0"></option>';
+    var optionsValues = '<select style = "width:95%" onchange = TerraGraphics' + controlName + 'Change(); id="' + controlName + '" name="' + controlName + '">';
+//    optionsValues += '<option value="0"></option>';
     $.each(data, function (item, data) {
         optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
     })
