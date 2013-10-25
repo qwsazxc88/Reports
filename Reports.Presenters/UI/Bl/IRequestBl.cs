@@ -108,5 +108,7 @@ namespace Reports.Presenters.UI.Bl
         TerraPointChildrenDto GetTerraPointChildren(int parentId, int level);
         TerraPointShortNameDto GetTerraPointShortName(int pointId);
         TerraPointShortNameDto SaveTerraPointShortName(int pointId, string shortName);
+
+        void SetEditPointDialogModel(TerraGraphicsEditPointModel model);
     }
 }

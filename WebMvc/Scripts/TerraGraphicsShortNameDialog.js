@@ -12,7 +12,7 @@
             $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
         } else if (status == "success") {
             if ($('#EditPointTableLoadError').val() != undefined)
-                disableEditPointSaveButton();
+                disableEditSaveButton();
         }
     }
     );
@@ -37,7 +37,7 @@
         },
         buttons:
         {
-            "Установить": function () {
+            "Сохранить": function () {
 /*                if (!ValidateShortName())
                     return;
                 SaveShortName();*/
@@ -48,6 +48,48 @@
         }
     });
 }
+function TerraGraphicsEpLevel1IDChange() {
+    GetEditTgChilds('EpLevel2ID', $('#EpLevel1ID').val(), 2);
+}
+function TerraGraphicsEpLevel2IDChange() {
+    GetEditTgChilds('EpLevel3ID', $('#EpLevel2ID').val(), 3);
+}
+function TerraGraphicsEpLevel3IDChange() {
+}
+function GetEditTgChilds(controlName, parentId, level) {
+    clearTerraSelErrors();
+    var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
+    $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraEditError(result.Error, true);
+            }
+            else {
+                setValuesToDropdown(controlName, result.Children);
+                if (level == 2) {
+                    setValuesToDropdown('EpLevel3ID', result.Level3Children);
+                }
+            }
+        });
+    }
+    function addTerraEditError(value) {
+        addTerraEditError(value, false);
+    }
+    function addTerraEditError(value, disableButton) {
+        $("#EditPointError").text(value);
+        $("#EditPointError").show();
+        if (disableButton)
+            disableEditSaveButton()
+    }
+    function clearTerraEditErrors() {
+        $("#EditPointError").text("");
+        $("#EditPointError").hide();
+    }
+    function disableEditSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+    }
+
+
 
 function onSetShortNamesClick() {
     createSetShortNameDialog();

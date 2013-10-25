@@ -7,5 +7,6 @@ namespace Reports.Core.Dao
     {
         IList<TerraPoint> GetTerraPointTree(int tpId);
         IList<TerraPoint> FindByLevelAndParentId(int level, string parentId);
+        TerraPoint FindByCode1C(string code1C);
     }
 }

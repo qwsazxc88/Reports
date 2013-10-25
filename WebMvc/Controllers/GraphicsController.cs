@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using Reports.Core;
-using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -13,12 +11,21 @@ namespace WebMvc.Controllers
     public class GraphicsController : BaseController
     {
         protected IEmployeeBl employeeBl;
+        protected IRequestBl requestBl;
         public IEmployeeBl EmployeeBl
         {
             get
             {
                 employeeBl = Ioc.Resolve<IEmployeeBl>();
                 return Validate.Dependency(employeeBl);
+            }
+        }
+        public IRequestBl RequestBl
+        {
+            get
+            {
+                requestBl = Ioc.Resolve<IRequestBl>();
+                return Validate.Dependency(requestBl);
             }
         }
         [HttpGet]
@@ -67,10 +74,11 @@ namespace WebMvc.Controllers
             try
             {
                 TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel{Id = id,Day = day,UserId = userId};
-                model.Credits = new List<IdNameDto>();
-                model.EpLevel1 = new List<IdNameDto>();
-                model.EpLevel2 = new List<IdNameDto>();
-                model.EpLevel3 = new List<IdNameDto>();
+                RequestBl.SetEditPointDialogModel(model);
+                //model.Credits = new List<IdNameDto>();
+                //model.EpLevel1 = new List<IdNameDto>();
+                //model.EpLevel2 = new List<IdNameDto>();
+                //model.EpLevel3 = new List<IdNameDto>();
                 //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
                 //TerraGraphicsSetShortNameModel model = RequestBl.SetShortNameModel();
                 return PartialView(model);
