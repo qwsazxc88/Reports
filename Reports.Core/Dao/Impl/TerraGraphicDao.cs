@@ -41,6 +41,7 @@ namespace Reports.Core.Dao.Impl
                                 ,PointId
                                 ,IsCreditAvailable
                                 ,ShortName as PointName
+                                ,Name as PointTitle
                                 from dbo.TerraGraphic tg
                                 inner join dbo.TerraPoint tp on tp.Id = tg.PointId
                           where 
@@ -54,6 +55,7 @@ namespace Reports.Core.Dao.Impl
               AddScalar("PointId", NHibernateUtil.Int32).
               AddScalar("IsCreditAvailable", NHibernateUtil.Boolean).
               AddScalar("PointName", NHibernateUtil.String).
+              AddScalar("PointTitle", NHibernateUtil.String).
               SetDateTime("beginDate", beginDate).
               SetDateTime("endDate", endDate).
               SetParameterList("userList", userIds);

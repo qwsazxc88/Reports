@@ -117,8 +117,14 @@
                                              {*@
                                                 <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
-                                                        @*<input type="hidden" id="@timesheetDayGraphicPrefix" name="@timesheetDayGraphicPrefix" value="@day.Graphic"/>*@
-                                                        @day.TerraPointName
+                                                        @if (string.IsNullOrEmpty(day.TerraPointTitle))
+                                                        {
+                                                            @day.TerraPointName
+                                                        }
+                                                        else
+                                                        {
+                                                            <div title="@day.TerraPointTitle">@day.TerraPointName</div>
+                                                        }
                     
                                                     </td>
                                                 </tr>

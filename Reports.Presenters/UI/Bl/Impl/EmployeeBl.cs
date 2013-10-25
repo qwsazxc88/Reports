@@ -1617,6 +1617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                  : (string.IsNullOrEmpty(graphicEntity.PointName)
                                                                         ? "!"
                                                                         : graphicEntity.PointName),
+                                            TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
                                             IsEditable = true,//user.UserRole == UserRole.Manager,
                     });
                     //userDtoList.AddRange(userList);
