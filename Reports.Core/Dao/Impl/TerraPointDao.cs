@@ -56,5 +56,10 @@ namespace Reports.Core.Dao.Impl
                 .AddOrder( new Order("Name",true))
                 .List<TerraPoint>();
         }
+        public virtual TerraPoint FindByCode1C(string code1C)
+        {
+            return (TerraPoint)Session.CreateCriteria(typeof(TerraPoint))
+                .Add(Restrictions.Eq("Code1C", code1C)).UniqueResult();
+        }
     }
 }
