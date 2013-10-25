@@ -112,5 +112,6 @@ namespace Reports.Presenters.UI.Bl
         void SetEditPointDialogModel(TerraGraphicsEditPointModel model);
         TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId, int userId);
         void SaveTerraPoint(TerraPointSaveModel model);
+        void DeleteTerraPoint(int id);
     }
 }

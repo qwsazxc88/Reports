@@ -111,7 +111,31 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
-         [HttpGet]
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ContentResult DeleteTerraPoint(int id)
+        {
+            TerraPointSetDefaultTerraPointModel model = new TerraPointSetDefaultTerraPointModel {Error = string.Empty};
+            try
+            {
+                RequestBl.DeleteTerraPoint(id);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteTerraPoint:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new TerraPointSetDefaultTerraPointModel
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
         public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits)
         {
             TerraPointSaveModel model = new TerraPointSaveModel

@@ -44,7 +44,7 @@
                          //var timesheetDayHoursPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Hours";
                          //var timesheetDayIsStatRecordPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].isStatRecord";
                          //var timesheetDayStatCodePrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].StatCode";
-                         
+
                          //var timesheetDayGraphicPrefix = "TimesheetDtos[" + @i.ToString() + "].Days[" + @j.ToString() + "].Graphic";
                          //var timesheetDayGraphicJQueryPrefix = "TimesheetDtos" + @i.ToString() + "Days" + @j.ToString() + "Graphic";
                          
@@ -52,17 +52,17 @@
                                         <table cellpadding="0px" cellspacing="0px" style="padding:0px;margin:0px">
                                             <tr>
                                                 <td nowrap @if (day.isHoliday)
-                                                    {
+                                                           {
                                                                <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Red"</text>
-                                                    }
-                                                    else if (day.isStatRecord)
-                                                    {
+                                                           }
+                                                           else if (day.isStatRecord)
+                                                           {
                                                         <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;color:Green"</text>
-                                                    }
-                                                    else
-                                                    {
+                                                           }
+                                                           else
+                                                           {
                                                         <text>style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;"</text>
-                                                    }>
+                                                           }>
                                                      @if (day.isStatRecord)
                                                      {
                                                         @day.StatCode
@@ -71,7 +71,12 @@
                                                      {
                                                          if (day.IsEditable)
                                                          {
-                                                            <a href="#"  onclick = "return EditPoint(@day.Id,'@day.Day',@dto.UserId)">@day.Number</a>
+                                                            <a href="#" 
+                                                            @if (day.isHoliday)
+                                                            {
+                                                                <text>style="color:Red"</text>
+                                                            }
+                                                            onclick = "return EditPoint(@day.Id,'@day.Day',@dto.UserId)">@day.Number</a>
                                                          }
                                                          else
                                                          {
@@ -125,7 +130,7 @@
                                             </tr>
                                         </table >
                                    </td> 
-                                             j++;
+                                                    j++;
                      }
                   }
                 </tr>

@@ -51,6 +51,21 @@
         }
     });
 }
+function deletePoint() {
+    var id = $('#Id').val();
+    clearTerraEditErrors();
+    var url = actionEditPointDeleteUrl + "?id=" + $('#Id').val();
+    $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraEditError(result.Error);
+            }
+            else {
+                $("#divEditPointDialog").dialog("close");
+                refreshTableBtn();
+            }
+        });
+}
 function ValidateEditPoint() {
     //clearTerraEditErrors();
     if ($('#Hours').val() == '') {

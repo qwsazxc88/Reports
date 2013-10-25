@@ -6276,6 +6276,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 };
             }
         }
+        public void DeleteTerraPoint(int id)
+        {
+            if(id == 0)
+                throw new ArgumentException("Невозможно удалить новую точку");
+            //TerraGraphic tg = TerraGraphicDao.Load(id);
+            //if (tg == null)
+            //    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", id));
+            TerraGraphicDao.DeleteAndFlush(id);
+        }
         public void SaveTerraPoint(TerraPointSaveModel model)
         {
             TerraGraphic tg;
