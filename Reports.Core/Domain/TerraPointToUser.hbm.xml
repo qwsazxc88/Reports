@@ -4,6 +4,6 @@
       <generator class="native" />
     </id>
 	  <many-to-one name="TerraPoint"  class="TerraPoint" column="TerraPointId" foreign-key="FK_TerraPointToUser_TerraPoint" not-null="true"  />
-	  <property name="UserId" not-null="true"/>
+	  <property name="UserId" unique="true" not-null="true"/>
   </class>
 </hibernate-mapping>
