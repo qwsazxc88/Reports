@@ -52,9 +52,8 @@
                 </tr>
                 <tr>
                   <td colspan="2">
-                  <input type="submit" value="Применить"/>
-                   @* <input type="button" value="Применить" onclick="OnPageClick(0);"/>*@
-                    <input type="button" value="Сбросить" onclick="resetFilter();"/>
+                      <input type="submit" value="Применить"/>
+                      <input type="button" value="Сбросить" onclick="resetFilter();"/>
                   </td>
                 </tr>
          </table>
@@ -75,10 +74,11 @@
         <td colspan="2">
                 @Html.ValidationSummary(false)
                 <div id="Error" style="color:Red;display:none;"></div>
+                <div id="LoadData" style="color:Green;display:none;"/>
             </td>
         </tr>
     </table>
-    <input type="button" onclick="refreshTableBtn();" name="Resfesh" value="Resfesh"/>
+    @*<input type="button" onclick="refreshTableBtn();" name="Resfesh" value="Resfesh"/>*@
     @Html.Partial("Table")
     
 } 
@@ -113,6 +113,7 @@
          refreshTable(currentPage);
     }
     function refreshTable(currentPage) {
+            setLoadData()
             $.ajax({
                 type: "GET",
                 data: {
@@ -126,9 +127,11 @@
                 cache: false,
                 dataType: "html",
                 success: function(result) {
+                     clearLoadData();
                      success(result);
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
+                    clearLoadData();
                     alert('Ошибка при получении ответа сервера:\r' + xhr.responseText);
                 }
             });
@@ -147,6 +150,14 @@
     createEditPointDialog(id, day, userId); 
     return false;
  }   
+ function clearLoadData() {
+    $("#LoadData").text("");
+    $("#LoadData").hide();
+}
+function setLoadData() {
+    $("#LoadData").text("Идет загрзка данных, подождите ");
+    $("#LoadData").show();
+}
  </script>   
 
 
