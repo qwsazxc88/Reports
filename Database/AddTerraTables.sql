@@ -23,7 +23,7 @@ create table TerraGraphic (
 create table TerraPointToUser (
  Id INT IDENTITY NOT NULL,
   TerraPointId INT not null,
-  UserId INT not null,
+  UserId INT not null unique,
   constraint PK_TerraPointToUser  primary key (Id)
 )
 
