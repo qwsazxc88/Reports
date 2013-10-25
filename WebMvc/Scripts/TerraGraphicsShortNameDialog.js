@@ -11,8 +11,10 @@
             var msg = "Произошла ошибка: ";
             $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
         } else if (status == "success") {
-            if ($('#EditPointTableLoadError').val() != undefined)
+            if ($('#EditPointTableLoadError').val() != undefined) {
                 disableEditSaveButton();
+                disableEditClearButton();
+            }
         }
     }
     );
@@ -31,22 +33,54 @@
             $(this).dialog("destroy").remove();
         },
         open: function (event, ui) {
-//            if ($('#IsShortNamesEditable').val() != 'True')
-//                disableSaveButton();
-
+            if ($('#Id').val() == 0)
+                disableEditClearButton();
         },
         buttons:
         {
             "Сохранить": function () {
-/*                if (!ValidateShortName())
+                if (!ValidateEditPoint())
                     return;
-                SaveShortName();*/
+                SaveEditPoint();
+            },
+            "Очистить": function () {
+                deletePoint();
+                //$(this).dialog("close");
             },
             "Отмена": function () {
                 $(this).dialog("close");
             }
         }
     });
+}
+function ValidateEditPoint() {
+    //clearTerraEditErrors();
+    if ($('#Hours').val() == '') {
+        addTerraEditError("Необходимо указать поле 'План'");
+        return false;
+    }
+//    var hours = parseInt($("#Hours").val(), 10);
+//    if (isNaN(hours) || (hours < 2) || (hours > 24)) {
+//        addTerraEditError("Поле 'План' должно быть целым числом от 2 до 24");
+//        return false;
+//    }
+    return true;
+}
+function SaveEditPoint() {
+    clearTerraEditErrors();
+    var url = actionEditPointSaveUrl + '?pointId=' + $('#EpLevel3ID').val() + "&id=" + $('#Id').val() + "&userId=" + $('#UserId').val() + "&day=" + $('#Day').val()
+                + "&hours=" + $('#Hours').val() + "&credits=" + $('#Credit').val();
+    $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addTerraEditError(result.Error);
+            }
+            else {
+                //TerraGraphicsLevel2IDChange();
+                $("#divEditPointDialog").dialog("close");
+                refreshTableBtn();
+            }
+        });
 }
 function TerraGraphicsEpLevel1IDChange() {
     GetEditTgChilds('EpLevel2ID', $('#EpLevel1ID').val(), 2);
@@ -57,37 +91,55 @@ function TerraGraphicsEpLevel2IDChange() {
 function TerraGraphicsEpLevel3IDChange() {
 }
 function GetEditTgChilds(controlName, parentId, level) {
-    clearTerraSelErrors();
-    var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
+clearTerraEditErrors();
+var url = actionTerraPointChildUrl + '?parentId=' + parentId + '&level=' + level;
+$.getJSON(url,
+    function (result) {
+        if (result.Error != "") {
+            addTerraEditError(result.Error, true);
+        }
+        else {
+            setValuesToDropdown(controlName, result.Children);
+            if (level == 2) {
+                setValuesToDropdown('EpLevel3ID', result.Level3Children);
+            }
+        }
+    });
+}
+function SetDefaultPoint() {
+    clearTerraEditErrors();
+    var url = actionTerraPointSetDefaultUrl + '?pointId=' + $('#EpLevel3ID').val() + "&userId=" + $('#UserId').val();
     $.getJSON(url,
         function (result) {
             if (result.Error != "") {
-                addTerraEditError(result.Error, true);
+                addTerraEditError(result.Error);
             }
             else {
-                setValuesToDropdown(controlName, result.Children);
-                if (level == 2) {
-                    setValuesToDropdown('EpLevel3ID', result.Level3Children);
-                }
+                //TerraGraphicsLevel2IDChange();
+                //$("#divSetShortNameDialog").dialog("close");
             }
         });
-    }
-    function addTerraEditError(value) {
-        addTerraEditError(value, false);
-    }
-    function addTerraEditError(value, disableButton) {
-        $("#EditPointError").text(value);
-        $("#EditPointError").show();
-        if (disableButton)
-            disableEditSaveButton()
-    }
-    function clearTerraEditErrors() {
-        $("#EditPointError").text("");
-        $("#EditPointError").hide();
-    }
-    function disableEditSaveButton() {
-        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
-    }
+}
+
+function addTerraEditError(value) {
+    addTerraEditError(value, false);
+}
+function addTerraEditError(value, disableButton) {
+    $("#EditPointError").text(value);
+    $("#EditPointError").show();
+    if (disableButton)
+        disableEditSaveButton()
+}
+function clearTerraEditErrors() {
+    $("#EditPointError").text("");
+    $("#EditPointError").hide();
+}
+function disableEditSaveButton() {
+    $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+}
+function disableEditClearButton() {
+    $(".ui-dialog-buttonpane button:contains('Очистить')").button("disable");
+}
 
 
 

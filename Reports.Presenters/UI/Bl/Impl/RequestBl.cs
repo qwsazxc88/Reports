@@ -87,6 +87,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected ITerraPointDao terraPointDao;
         protected ITerraPointToUserDao terraPointToUserDao;
+        protected ITerraGraphicDao terraGraphicDao;
 
 
        
@@ -331,6 +332,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(terraPointToUserDao); }
             set { terraPointToUserDao = value; }
+        }
+        public ITerraGraphicDao TerraGraphicDao
+        {
+            get { return Validate.Dependency(terraGraphicDao); }
+            set { terraGraphicDao = value; }
         }
 
         protected IConfigurationService configurationService;
@@ -6253,7 +6259,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (point == null)
                     throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных", point));
                 point.ShortName = shortName;
-                TerraPointDao.Save(point);
+                TerraPointDao.SaveAndFlush(point);
                 return new TerraPointShortNameDto
                 {
                     Error = string.Empty,
@@ -6270,11 +6276,69 @@ namespace Reports.Presenters.UI.Bl.Impl
                 };
             }
         }
+        public void SaveTerraPoint(TerraPointSaveModel model)
+        {
+            TerraGraphic tg;
+            if(model.Id == 0)
+            {
+                tg = new TerraGraphic();
+            }
+            else
+            {
+                tg = TerraGraphicDao.Load(model.Id);
+                if(tg == null)
+                    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", model.Id));
+            }
+            tg.Day = model.TpDay;
+            tg.Hours = model.TpHours;
+            tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
+            tg.PointId = model.PointId;
+            tg.UserId = model.UserId;
+            TerraGraphicDao.SaveAndFlush(tg);
+            model.Error = string.Empty;
+        }
+        public bool? GetIsCreditAvailable(int credits)
+        {
+            switch(credits)
+            {
+                case 0:
+                    return new bool?();
+                case 1:
+                    return true;
+                case 2:
+                    return false;
+                default:
+                    throw new ArgumentException("Неизвестное значение поля 'Кредиты'");
+            }
+        }
+        public TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId,int userId)
+        {
+            TerraPoint tp = TerraPointDao.Load(pointId);
+            if( tp == null)
+                throw new ValidationException(string.Format("Точка (ID {0}) не найдена в базе данных",pointId));
+            TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(userId);
+            if (tpToUser == null)
+                tpToUser = new TerraPointToUser
+                               {
+                                   TerraPoint = tp,
+                                   UserId = userId,
+                               };
 
+            else
+                tpToUser.TerraPoint = tp;
+            TerraPointToUserDao.SaveAndFlush(tpToUser);
+            return new TerraPointSetDefaultTerraPointModel {Error = string.Empty, PointToUserId = tpToUser.Id};
+        }
 
         public void SetEditPointDialogModel(TerraGraphicsEditPointModel model)
         {
             SetupCreditsCombo(model);
+            User user = UserDao.Load(model.UserId);
+            if(user == null)
+                throw new ArgumentException(string.Format("Сотрудник (Id {0}) не найден в базе данных", model.UserId));
+            if((user.RoleId & (int)UserRole.Employee) == 0)
+                throw new ArgumentException(string.Format("Пользователь {1}(Id {0}) не является сотрудником", model.UserId,user.Name));
+            model.IsCreditsEditable = user.GivesCredit;
             List<TerraPoint> l1 = LoadTpListForLevelAndParentId(1, string.Empty);
             model.EpLevel1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             if(model.Id == 0)

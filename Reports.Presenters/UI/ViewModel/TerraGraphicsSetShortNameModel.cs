@@ -40,5 +40,6 @@ namespace Reports.Presenters.UI.ViewModel
 
        
         public bool IsEditable { get; set; }
+        public bool IsCreditsEditable { get; set; }
     }
 }

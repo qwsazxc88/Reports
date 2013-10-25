@@ -7,6 +7,7 @@ using Reports.Core.Dto;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 using WebMvc.Models;
 
 namespace WebMvc.Controllers
@@ -79,6 +80,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
         public ActionResult SetShortNameDialog()
         {
             try
@@ -96,6 +98,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        // [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
         public ContentResult GetTerraPointChildren(int parentId, int level)
         {
             TerraPointChildrenDto model;
@@ -118,6 +121,7 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
         public ContentResult GetTerraPointShortName(int pointId)
         {
             TerraPointShortNameDto model;
@@ -140,6 +144,7 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
         public ContentResult SaveTerraPointShortName(int pointId, string shortName)
         {
             TerraPointShortNameDto model;

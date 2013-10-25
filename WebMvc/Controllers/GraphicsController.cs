@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
@@ -73,14 +75,11 @@ namespace WebMvc.Controllers
         {
             try
             {
+                DateTime tpDay;
+                if(!DateTime.TryParse(day,CultureInfo.GetCultureInfo("ru-RU"),DateTimeStyles.None,out tpDay))
+                    throw new ArgumentException(string.Format("Неправильная дата {0}",day));
                 TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel{Id = id,Day = day,UserId = userId};
                 RequestBl.SetEditPointDialogModel(model);
-                //model.Credits = new List<IdNameDto>();
-                //model.EpLevel1 = new List<IdNameDto>();
-                //model.EpLevel2 = new List<IdNameDto>();
-                //model.EpLevel3 = new List<IdNameDto>();
-                //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
-                //TerraGraphicsSetShortNameModel model = RequestBl.SetShortNameModel();
                 return PartialView(model);
             }
             catch (Exception ex)
@@ -90,6 +89,81 @@ namespace WebMvc.Controllers
                 return PartialView("EpDialogError", new DialogErrorModel { Error = error });
             }
         }
-
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ContentResult SetDefaultTerraPoint(int pointId, int userId)
+        {
+            TerraPointSetDefaultTerraPointModel model;
+            try
+            {
+                model = RequestBl.SetDefaultTerraPoint(pointId, userId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SetDefaultTerraPoint:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new TerraPointSetDefaultTerraPointModel
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+         [HttpGet]
+        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits)
+        {
+            TerraPointSaveModel model = new TerraPointSaveModel
+                                            {
+                                                Id = id,
+                                                IsCreditAvailable = credits,
+                                                Day = day,
+                                                Hours = hours,
+                                                PointId = pointId,
+                                                UserId = userId,
+                                            };
+            try
+            {
+                if (ValidateSaveTpModel(model))
+                    RequestBl.SaveTerraPoint(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveTerraPoint:", ex);
+                string error = ex.GetBaseException().Message;
+                model.Error = string.Format("Ошибка: {0}", error);
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+        protected bool ValidateSaveTpModel(TerraPointSaveModel model)
+        {
+            DateTime tpDay;
+            if (!DateTime.TryParse(model.Day, CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.None, out tpDay))
+            {
+                //ModelState.AddModelError(string.Empty, "Неправильная дата");
+                model.Error = "Неправильная дата";
+            }
+            model.TpDay = tpDay;
+            if (string.IsNullOrEmpty(model.Hours))
+            {
+                //ModelState.AddModelError("Hours", "Необходимо указать поле 'План'");
+                model.Error = "Необходимо указать поле 'План'";
+            }
+            else
+            {
+                int hours;
+                if (!int.TryParse(model.Hours, out hours) || hours < 2 || hours > 24)
+                {
+                    //ModelState.AddModelError("Hours", "Поле 'План' должно быть целым числом от 2 до 24");
+                    model.Error = "Поле 'План' должно быть целым числом от 2 до 24";
+                }
+                else
+                    model.TpHours = hours;
+            }
+            return string.IsNullOrEmpty(model.Error);
+        }
     }
 }

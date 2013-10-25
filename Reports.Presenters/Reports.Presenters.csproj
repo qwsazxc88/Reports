@@ -177,6 +177,7 @@
     <Compile Include="UI\ViewModel\SicklistListModel.cs" />
     <Compile Include="UI\ViewModel\TemplatesListModel.cs" />
     <Compile Include="UI\ViewModel\TerraGraphicsSetShortNameModel.cs" />
+    <Compile Include="UI\ViewModel\TerraPointSetDefaultTerraPointModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetCorrectionEditModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetCorrectionListModel.cs" />
     <Compile Include="UI\ViewModel\TimesheetEditModel.cs" />
