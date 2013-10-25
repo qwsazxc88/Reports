@@ -6311,6 +6311,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException("Неизвестное значение поля 'Кредиты'");
             }
         }
+        public int GetCredits(bool? isCreditAvailable)
+        {
+            if (!isCreditAvailable.HasValue)
+                return 0;
+            return isCreditAvailable.Value ? 1 : 2;
+        }
         public TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId,int userId)
         {
             TerraPoint tp = TerraPointDao.Load(pointId);
@@ -6355,21 +6361,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3,tpToUser.TerraPoint.ParentId);
-                    model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
-                    model.EpLevel3ID = tpToUser.TerraPoint.Id;
-                    TerraPoint tp2 = LoadByCode1C(tpToUser.TerraPoint.ParentId);
-                    List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
-                    model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
-                    model.EpLevel2ID = tp2.Id;
-                    TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
-                    model.EpLevel1ID = tp1.Id;
+                    LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id,model);
+                    //List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3,tpToUser.TerraPoint.ParentId);
+                    //model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    //model.EpLevel3ID = tpToUser.TerraPoint.Id;
+                    //TerraPoint tp2 = LoadByCode1C(tpToUser.TerraPoint.ParentId);
+                    //List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+                    //model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    //model.EpLevel2ID = tp2.Id;
+                    //TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+                    //model.EpLevel1ID = tp1.Id;
                 }
             }
             else
             {
-                
+                TerraGraphic tg = TerraGraphicDao.Load(model.Id);
+                model.Credit = GetCredits(tg.IsCreditAvailable);
+                model.Day = tg.Day.ToString("dd.MM.yyyy");
+                model.IsEditable = true;
+                //model.UserId = tg.UserId;
+                model.Hours = tg.Hours.HasValue?tg.Hours.ToString():string.Empty;
+                TerraPoint tp = TerraPointDao.Load(tg.PointId);
+                if(tp == null)
+                    throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", tg.PointId));
+                LoadTerraPoints23Level(tp.ParentId, tp.Id, model);
             }
+        }
+        protected void LoadTerraPoints23Level(string parentId,int level3Id,TerraGraphicsEditPointModel model)
+        {
+            List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, parentId);
+            model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+            model.EpLevel3ID = level3Id;
+            TerraPoint tp2 = LoadByCode1C(parentId);
+            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+            model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.EpLevel2ID = tp2.Id;
+            TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+            model.EpLevel1ID = tp1.Id;
         }
         protected TerraPoint LoadByCode1C(string code1C)
         {
@@ -6384,7 +6412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     new IdNameDto{Id = 0,Name = string.Empty},
                                     new IdNameDto{Id = 1,Name = "Да"},
-                                    new IdNameDto{Id = 1,Name = "Нет"},
+                                    new IdNameDto{Id = 2,Name = "Нет"},
                                 };
         }
     }

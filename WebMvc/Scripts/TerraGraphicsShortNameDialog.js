@@ -15,6 +15,8 @@
                 disableEditSaveButton();
                 disableEditClearButton();
             }
+            if ($('#Id').val() == 0)
+                disableEditClearButton();
         }
     }
     );
@@ -31,10 +33,6 @@
         height: 340,
         close: function (event, ui) {
             $(this).dialog("destroy").remove();
-        },
-        open: function (event, ui) {
-            if ($('#Id').val() == 0)
-                disableEditClearButton();
         },
         buttons:
         {
