@@ -27,13 +27,18 @@ namespace Reports.Core.Dao.Impl
                 .Add(Restrictions.Between("Day", beginDate, endDate));
             return criteria.List<TerraGraphic>();
         }
-        public IList<TerraGraphicDbDto> LoadDtoForIdsList(List<int> userIds,
-                                                  int month, int year)
+        public IList<TerraGraphicDbDto> LoadDtoForIdsList(List<int> userIds,int month, int year)
         {
-            if (userIds.Count == 0)
-                return new List<TerraGraphicDbDto>();
             var beginDate = new DateTime(year, month, 1);
             DateTime endDate = beginDate.AddMonths(1).AddDays(-1);
+            return LoadDtoForIdsList(userIds,beginDate,endDate);
+        }
+        public IList<TerraGraphicDbDto> LoadDtoForIdsList(List<int> userIds,DateTime beginDate,DateTime endDate)
+        {
+         
+            if (userIds.Count == 0)
+                return new List<TerraGraphicDbDto>();
+           
             string sqlQuery = @"select tg.Id
                                 ,UserId
                                 ,Day

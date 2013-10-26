@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Reports.Core;
@@ -703,10 +702,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsSaveVisible = false;
                 return;
             }
+            List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
-
+            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays);
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,tgList);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -735,6 +735,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<WorkingGraphic> wgList = WorkingGraphicDao.LoadForIdsList(allUserIds,
                                                                             model.Month, model.Year);
             IList<WorkingGraphicTypeDto>  wgtList = WorkingGraphicTypeDao.GetWorkingGraphicTypeDtoForUsers(allUserIds);
+           
             foreach (int userId in allUserIds)
             {
                 //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
@@ -775,8 +776,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                  {
                                                      Number = dayRequestsDto.Day.Day,
                                                      isHoliday = CoreUtils.IsDayHoliday(workDays,dayRequestsDto.Day),
-                                                     /*dayRequestsDto.Day.DayOfWeek == DayOfWeek.Sunday || 
-                                                     dayRequestsDto.Day.DayOfWeek == DayOfWeek.Saturday*/
                                                      Status = status.Substring(0,status.Length -1),
                                                      Hours = hours.Substring(0, hours.Length - 1),
                                                      Graphic = graphic,
@@ -1111,10 +1110,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.IsSaveVisible = false;
                 return;
             }
+            List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(beginDate, endDate);
+            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds,beginDate,endDate);
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForYear
-                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays);
+                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays,tgList);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -1486,14 +1487,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetGraphicsInfo(GraphicsListModel model)
         {
             IUser user = AuthenticationService.CurrentUser;
-            Log.Debug("Before GetRequestsForMonth");
+            Log.Debug("SetGraphicsInfo:Before GetRequestsForMonth");
 
             IList<DayRequestsDto> dayDtoList = GetDayDtoList(model.Month, model.Year);
             IList<IdNameDtoWithDates> uDtoList =
                 UserDao.GetUsersForManagerWithDatePagedForGraphics(user.Id, user.UserRole,
                         dayDtoList.First().Day, dayDtoList.Last().Day
                         , model.DepartmentId, model.UserName);
-            Log.Debug("After GetUsersForManagerWithDatePaged");
+            Log.Debug("SetGraphicsInfo:After GetUsersForManagerWithDatePaged");
             int userCount = uDtoList.Count;
             //model.TotalRecordsCount = userCount;
             int numberOfPages = Convert.ToInt32(Math.Ceiling((double)userCount / TimesheetPageSize));
@@ -1510,20 +1511,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (userCount == 0)
             {
                 model.Dtos = new List<TerraGraphicDto>();
-                //model.IsSaveVisible = false;
                 return;
             }
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole, dayDtoList, uDtoList, workDays);
-            Log.Debug("After GetRequestsForMonth");
+                (model.Month, model.Year, user.Id, user.UserRole, dayDtoList, uDtoList, workDays
+                ,new List<TerraGraphicDbDto>());
+            Log.Debug("SetGraphicsInfo:After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
                                         (current, dayRequestsDto) =>
                                         current.Union(dayRequestsDto.Requests.Select(x => x.UserId).Distinct().ToList())
                                             .ToList());
-            Log.Debug("After aggregate");
+            Log.Debug("SetGraphicsInfo:After aggregate");
             /*List<IdNameDto> userNameDtoList = new List<IdNameDto>();
             foreach (int userId in allUserIds)
             {
@@ -1540,59 +1541,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             //userNameDtoList = userNameDtoList.OrderBy(x => x.Name).ToList();
             IList<User> users = UserDao.LoadForIdsList(allUserIds);
             allUserIds = users.ToList().ConvertAll(x => x.Id).ToList();
-            Log.Debug("After create ordered user dto list ");
+            Log.Debug("SetGraphicsInfo:After create ordered user dto list ");
             List<TerraGraphicDto> list = new List<TerraGraphicDto>();
-
-            //List<int> userIds = userNameDtoList.ConvertAll(x => x.Id);
             IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(allUserIds,model.Month, model.Year);
-
-            //IList<WorkingGraphicTypeDto> wgtList = WorkingGraphicTypeDao.GetWorkingGraphicTypeDtoForUsers(allUserIds);
             foreach (int userId in allUserIds)
             {
-                //dtos.Where(x => x.Requests.Where(y => y.UserId == userId))
                 TerraGraphicDto dto = new TerraGraphicDto();
-                //List<RequestDto> userDtoList = new List<RequestDto>();
                 List<TerraGraphicDayDto> userDayList = new List<TerraGraphicDayDto>();
-                //IdNameDtoWithDates uDto = uDtoList.Where(x => x.Id == userId).FirstOrDefault();
-
-                //float wgHoursSum = 0;
                 DateTime beginUserDate = dayDtoList.First().Day;
                 DateTime endUserDate = dayDtoList.Last().Day;
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
                     int? hours = new int?();  
-                    //string status = userList.Aggregate(string.Empty,
-                    //                                   (curr, requestDto) => curr + requestDto.TimesheetCode + "/");
                     TerraGraphicDbDto graphicEntity = tgList.Where(x => x.UserId == userId && x.Day == dayRequestsDto.Day).FirstOrDefault();
                     if (graphicEntity == null)
                     {
-                        //string hours = userList.Aggregate(string.Empty,
-                        //                                  (curr, requestDto) =>
-                        //                                  curr +
-                        //                                  (requestDto.TimesheetHours.HasValue
-                        //                                       ? requestDto.TimesheetHours.Value.ToString()
-                        //                                       : " ") + "/");
                         RequestDto rDto = userList.Where(x => x.TimesheetHours.HasValue).FirstOrDefault();
                         if (rDto != null)
                             hours = rDto.TimesheetHours.Value;
                     }
                     else
                         hours = graphicEntity.Hours;
-                    //float? wgHours;
-                    //WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
-                    //                                           x.Day == dayRequestsDto.Day).FirstOrDefault();
-                    //wgHours = graphicEntity == null ?
-                    //    GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
-                    //    : graphicEntity.Hours;
-                    //wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
-                    //string graphic = string.Empty;
-                    //if (wgHours.HasValue)
-                    //{
-                    //    graphic = (int)wgHours.Value == wgHours.Value
-                    //           ? ((int)wgHours.Value).ToString()
-                    //           : wgHours.Value.ToString("0.0");
-                    //}
                     RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
                     if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
                         beginUserDate = employmentDay.BeginDate;
@@ -1609,7 +1579,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             Day = dayRequestsDto.Day.ToString("dd.MM.yyyy"),
                                             isHoliday = CoreUtils.IsDayHoliday(workDays, dayRequestsDto.Day),
                                             Hours = hours,
-                                            //hours.Substring(0, hours.Length - 1),
                                             Id = graphicEntity == null ? 0 : graphicEntity.Id,
                                             IsCredits = isCredit.HasValue?isCredit.Value?"Да":"Нет":string.Empty,
                                             TerraPointId = graphicEntity == null ? 0 : graphicEntity.PointId,
@@ -1620,31 +1589,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
                                             IsEditable = true,//user.UserRole == UserRole.Manager,
                     });
-                    //userDtoList.AddRange(userList);
-                 
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
                 {
                     Number = 0,
                     isStatRecord = true,
                     isHoliday = false,
-                    //Status = daySum.ToString(),
-                    //Hours = workdaysSum,
                     StatCode = string.Empty,
                     IsCredits = "Кредиты",
                     TerraPointName = "Точка",
                 });
-                //if (user.UserRole != UserRole.Employee && uDto != null)
-                //{
                 int? planHours = userDayList.Sum(x => x.Hours);
                 int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
-                // int daySum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate && x.IsWorkingHours.HasValue).Count();
                 userDayList.Add(new TerraGraphicDayDto
                 {
                     Number = 0,
                     isStatRecord = true,
                     isHoliday = false,
-                    //Status = daySum.ToString(),
                     Hours = workdaysSum,
                     StatCode = "Б",
                 });
@@ -1653,80 +1614,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Number = 0,
                     isStatRecord = true,
                     isHoliday = false,
-                    //Status = daySum.ToString(),
                     Hours = planHours,
                     StatCode = "План",
                 });
-                    
-                    
-
-                    //WorkingDaysConstant wdk = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
-                    //if (wdk == null)
-                    //    userDayList.Add(new TimesheetDayDto
-                    //    {
-                    //        Number = 0,
-                    //        isStatRecord = true,
-                    //        isHoliday = false,
-                    //        Status = string.Empty,
-                    //        Hours = string.Empty,
-                    //        StatCode = "Б",
-                    //    });
-                    //else
-                    //    userDayList.Add(new TimesheetDayDto
-                    //    {
-                    //        Number = 0,
-                    //        isStatRecord = true,
-                    //        isHoliday = false,
-                    //        Status = wdk.Days.ToString(),
-                    //        Hours = wdk.Hours.ToString(),
-                    //        StatCode = "Б",
-                    //    });
-                    //int sumDays = 0;
-                    //int sum = 0;
-                    //string graphic = null;
-                    //for (int i = 0; i < 5; i++)
-                    //{
-
-                    //    if (i == 0)
-                    //    {
-                    //        graphic = (int)wgHoursSum == wgHoursSum
-                    //           ? ((int)wgHoursSum).ToString()
-                    //           : wgHoursSum.ToString("0.0");
-                    //    }
-                    //    sum += uDto.userStats[i];
-                    //    sumDays += uDto.userStatsDays[i];
-                    //    userDayList.Add(new TimesheetDayDto
-                    //    {
-                    //        Number = 0,
-                    //        isHoliday = false,
-                    //        isStatRecord = true,
-                    //        Status = uDto.userStatsDays[i].ToString(),
-                    //        Hours = uDto.userStats[i].ToString(),
-                    //        StatCode = GetStatCodeName(i),
-                    //        Graphic = i == 0 ? graphic : null,
-                    //    });
-                    //}
-                    //userDayList.Add(new TimesheetDayDto
-                    //{
-                    //    Number = 0,
-                    //    isHoliday = false,
-                    //    isStatRecord = true,
-                    //    Status = sumDays.ToString(),
-                    //    Hours = sum.ToString(),
-                    //    StatCode = "Всего",
-                    //    Graphic = graphic,
-                    //});
-                    /*userDayList.Add(new TimesheetDayDto
-                    {
-                        Number = 0,
-                        isHoliday = false,
-                        isStatRecord = true,
-                        Status = "Дней",
-                        Hours = "График/ ч.",
-                        StatCode = "Инф.",
-                        Graphic = "Факт/ ч."
-                    });*/
-                //}
                 User usr = users.Where(x => x.Id == userId).FirstOrDefault();
                 if (usr == null)
                     throw new ArgumentException(string.Format("Не найден пользователь с id {0}", userId));
@@ -1734,17 +1624,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dto.UserNameAndCode = usr.Name;
                 dto.UserId = userId;
                 dto.Days = userDayList;
-                //dto.IsHoursVisible = user.UserRole != UserRole.Employee;//user.UserRole == UserRole.Manager || user.UserRole == UserRole.PersonnelManager;
-                //dto.IsGraphicVisible = user.UserRole != UserRole.Employee;
-                //dto.IsGraphicEditable = user.UserRole == UserRole.Manager;
                 dto.Postion = string.IsNullOrEmpty(usr.Position.Name) ? string.Empty : usr.Position.Name.Trim();
                 dto.Rate = usr.Rate.HasValue ? usr.Rate.Value.ToString() : string.Empty;
                 list.Add(dto);
             }
-            Log.Debug("After foreach");
+            Log.Debug("SetGraphicsInfo:After foreach");
             model.Dtos = list;
-            //model.IsSaveVisible = list.Count > 0 && user.UserRole == UserRole.Manager;
-
         }
         #endregion
     }

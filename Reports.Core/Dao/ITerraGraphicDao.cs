@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 
@@ -8,5 +9,6 @@ namespace Reports.Core.Dao
     {
         IList<TerraGraphic> LoadForIdsList(List<int> userIds,int month, int year);
         IList<TerraGraphicDbDto> LoadDtoForIdsList(List<int> userIds,int month, int year);
+        IList<TerraGraphicDbDto> LoadDtoForIdsList(List<int> userIds, DateTime beginDate, DateTime endDate);
     }
 }
