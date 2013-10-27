@@ -6389,7 +6389,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Day = tg.Day.ToString("dd.MM.yyyy");
                 model.IsEditable = true;
                 //model.UserId = tg.UserId;
-                model.Hours = tg.Hours.HasValue?tg.Hours.ToString():string.Empty;
+                model.Hours = tg.Hours.ToString();
                 TerraPoint tp = TerraPointDao.Load(tg.PointId);
                 if(tp == null)
                     throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", tg.PointId));

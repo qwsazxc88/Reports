@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.Mapping;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -49,8 +48,7 @@ namespace Reports.Core.Dao.Impl
         //}
         public IList<DateTime> GetTimesheetDates()
         {
-            string sqlQuery =
-                (@"select distinct(Month)
+            const string sqlQuery = (@"select distinct(Month)
                         from dbo.Timesheet ts 
                         inner join dbo.Users u on u.Id = ts.UserId ");
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
@@ -703,7 +701,7 @@ namespace Reports.Core.Dao.Impl
                             dayRequestsDto.Requests.Add(newDto);
                             if(tg != null)
                             {
-                                userStats[0] += tg.Hours.HasValue ? tg.Hours.Value : 0;
+                                userStats[0] += tg.Hours;
                                 userStatsDays[0]++;
                             }
                             else
@@ -774,7 +772,7 @@ namespace Reports.Core.Dao.Impl
                             dayRequestsDto.Requests.Add(newDto);
                             if (tg != null)
                             {
-                                userStats[0] += tg.Hours.HasValue ? tg.Hours.Value : 0;
+                                userStats[0] += tg.Hours;
                                 userStatsDays[0]++;
                             }
                             else
