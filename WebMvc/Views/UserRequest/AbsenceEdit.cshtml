@@ -107,9 +107,9 @@
         <td colspan="2">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                     {<text>style="display:none"</text>}/>
-            <input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
+            <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
                                                                                     {<text>style="display:none"</text>}/>
-            
+            </div>
            @* <input type="button" id="SendToBillingButton" name="SendToBillingButton" value="Отправить в биллинг" onclick="return SendToBilling();" @if (!Model.IsSendToBillingAvailable)
                                                                                    {<text>style="display:none"</text>}/>*@
         </td>
