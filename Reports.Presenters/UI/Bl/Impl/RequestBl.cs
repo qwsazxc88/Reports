@@ -5912,7 +5912,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Accountant:
                     if (!deduction.SendTo1C.HasValue && !deduction.DeleteDate.HasValue)
                     {
-                        model.IsEditable = true;
+                        if(deduction.EditDate.Month >= DateTime.Today.Month)
+                            model.IsEditable = true;
                         model.IsDeleteAvailable = true;
                     }
                     model.IsCreateButtonVisible = true;
