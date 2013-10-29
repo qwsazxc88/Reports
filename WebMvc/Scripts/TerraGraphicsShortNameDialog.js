@@ -41,7 +41,7 @@
                     return;
                 SaveEditPoint();
             },
-            "Очистить": function () {
+            "Удалить": function () {
                 deletePoint();
                 //$(this).dialog("close");
             },
@@ -151,7 +151,7 @@ function disableEditSaveButton() {
     $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
 }
 function disableEditClearButton() {
-    $(".ui-dialog-buttonpane button:contains('Очистить')").button("disable");
+    $(".ui-dialog-buttonpane button:contains('Удалить')").button("disable");
 }
 
 

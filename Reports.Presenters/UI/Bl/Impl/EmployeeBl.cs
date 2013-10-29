@@ -1587,7 +1587,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                         ? "!"
                                                                         : graphicEntity.PointName),
                                             TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
-                                            IsEditable = true,//user.UserRole == UserRole.Manager,
+                                            IsEditable = user.UserRole == UserRole.Manager,
                     });
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto

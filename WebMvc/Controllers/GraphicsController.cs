@@ -71,6 +71,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
         public ActionResult EditPointDialog(int id,string day,int userId)
         {
             try
@@ -90,7 +91,7 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
-        //[ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager)]
         public ContentResult SetDefaultTerraPoint(int pointId, int userId)
         {
             TerraPointSetDefaultTerraPointModel model;
@@ -112,7 +113,7 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         [HttpGet]
-        //[ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager)]
         public ContentResult DeleteTerraPoint(int id)
         {
             TerraPointSetDefaultTerraPointModel model = new TerraPointSetDefaultTerraPointModel {Error = string.Empty};
@@ -135,7 +136,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        //[ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager)]
         public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits)
         {
             TerraPointSaveModel model = new TerraPointSaveModel

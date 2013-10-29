@@ -98,7 +98,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        // [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.OutsourcingManager)]
         public ContentResult GetTerraPointChildren(int parentId, int level)
         {
             TerraPointChildrenDto model;
