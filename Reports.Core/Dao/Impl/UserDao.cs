@@ -276,6 +276,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join [dbo].[Department] d on u1.[DepartmentId] = d.Id and  u1.IsActive = 1 and u1.RoleId = 4 
                                     inner join [dbo].[Department] d1 on d1.Path like d.Path+N'%' and d1.ItemLevel = 7
                                     inner join [dbo].[Users] u2 on u2.[DepartmentId]  = d1.Id and ((u2.RoleId & 2) > 0) and u2.IsActive = 1
+                                    and (u2.Code + N'R' != u1.Code)
                                     where u1.Id =  :userId 
                                     and not exists 
                                     (
