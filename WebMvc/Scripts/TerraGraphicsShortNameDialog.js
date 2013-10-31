@@ -61,8 +61,8 @@ function deletePoint() {
                 addTerraEditError(result.Error);
             }
             else {
-                $("#divEditPointDialog").dialog("close");
-                refreshTableBtn();
+                //$("#divEditPointDialog").dialog("close");
+                refreshTableBtn(true);
             }
         });
 }
@@ -90,8 +90,9 @@ function SaveEditPoint() {
             }
             else {
                 //TerraGraphicsLevel2IDChange();
-                $("#divEditPointDialog").dialog("close");
-                refreshTableBtn();
+                refreshTableBtn(true);
+                //$("#divEditPointDialog").dialog("close");
+                
             }
         });
 }

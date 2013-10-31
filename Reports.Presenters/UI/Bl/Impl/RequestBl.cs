@@ -6326,8 +6326,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return 0;
             return isCreditAvailable.Value ? 1 : 2;
         }
-        public TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId,int userId)
+        public TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId/*,int userId*/)
         {
+            int userId = CurrentUser.Id;
             TerraPoint tp = TerraPointDao.Load(pointId);
             if( tp == null)
                 throw new ValidationException(string.Format("Точка (ID {0}) не найдена в базе данных",pointId));
@@ -6358,7 +6359,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EpLevel1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             if(model.Id == 0)
             {
-                TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(model.UserId);
+                TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(CurrentUser.Id);
                 if(tpToUser == null)
                 {
                     TerraPoint p1 = l1[0];

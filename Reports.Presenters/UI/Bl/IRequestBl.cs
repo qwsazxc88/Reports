@@ -110,7 +110,7 @@ namespace Reports.Presenters.UI.Bl
         TerraPointShortNameDto SaveTerraPointShortName(int pointId, string shortName);
 
         void SetEditPointDialogModel(TerraGraphicsEditPointModel model);
-        TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId, int userId);
+        TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId/*, int userId*/);
         void SaveTerraPoint(TerraPointSaveModel model);
         void DeleteTerraPoint(int id);
     }

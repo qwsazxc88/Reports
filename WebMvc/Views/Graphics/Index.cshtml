@@ -105,14 +105,14 @@
             $("#DepartmentName").val('');
         }
     }
-    function refreshTableBtn()
+    function refreshTableBtn(closeDialog)
     {
         var currentPage = $('#CurrentPage').val();
         if(currentPage == undefined)
             currentPage = 1;
-         refreshTable(currentPage);
+         refreshTable(currentPage,closeDialog);
     }
-    function refreshTable(currentPage) {
+    function refreshTable(currentPage,closeDialog) {
             setLoadData()
             $.ajax({
                 type: "GET",
@@ -129,8 +129,12 @@
                 success: function(result) {
                      clearLoadData();
                      success(result);
+                     if(closeDialog)
+                        $("#divEditPointDialog").dialog("close");
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
+                    if(closeDialog)
+                        $("#divEditPointDialog").dialog("close");
                     clearLoadData();
                     alert('Ошибка при получении ответа сервера:\r' + xhr.responseText);
                 }
@@ -140,7 +144,7 @@
             $("#Table").html(result);
         } 
         function OnPageClick(pageNumber) {
-            refreshTable(pageNumber);
+           refreshTable(pageNumber,false);
 //        $("#CurrentPage").val(pageNumber);
 //        submitForm();
             return false;
@@ -155,8 +159,8 @@
     $("#LoadData").hide();
 }
 function setLoadData() {
-    $("#LoadData").text("Идет загрузка данных, подождите ");
-    $("#LoadData").show();
+//    $("#LoadData").text("Идет загрузка данных, подождите ");
+//    $("#LoadData").show();
 }
  </script>   
 

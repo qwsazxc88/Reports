@@ -97,7 +97,7 @@ namespace WebMvc.Controllers
             TerraPointSetDefaultTerraPointModel model;
             try
             {
-                model = RequestBl.SetDefaultTerraPoint(pointId, userId);
+                model = RequestBl.SetDefaultTerraPoint(pointId/*, userId*/);
             }
             catch (Exception ex)
             {
