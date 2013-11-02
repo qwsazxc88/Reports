@@ -53,9 +53,12 @@ function createDepartmentDialog()
     });
 }
 function ValidateDepartment() {
-    if (($('#Level3ID').val() == 0) &&
-    (/*($('#Level3ID').val() != 0) ||*/ ($('#Level2ID').val() != 0))) {
+    /*if (($('#Level3ID').val() == 0) && ($('#Level2ID').val() != 0)) {
         addDepSelError("Необходимо выбрать структурное подразделение не менее 2 уровня");
+        return false;
+    }*/
+    if ($('#Level2ID').val() == 0) {
+        addDepSelError("Не выбрано подразделение");
         return false;
     }
     return true;
@@ -79,6 +82,10 @@ function SaveDepartment() {
     }
     if ($('#Level3ID').val() != 0) {
         setDepartmentValues('Level3ID');
+        return;
+    }
+    if ($('#Level2ID').val() != 0) {
+        setDepartmentValues('Level2ID');
         return;
     }
     $('#DepartmentId').val("0");
