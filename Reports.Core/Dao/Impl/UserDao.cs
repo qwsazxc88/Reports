@@ -397,7 +397,21 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(userName))
                 criteria.Add(Restrictions.InsensitiveLike("Name", "%" + userName + "%"));
             if (role > 0)
-                criteria.Add(Restrictions.Eq("Role.Id", role));
+            {
+                if (role == (int)UserRole.Employee)
+                {
+                    criteria.Add(Restrictions.Disjunction()
+                                              .Add(Restrictions.Eq("RoleId", role))
+                                              .Add(Restrictions.Eq("RoleId", role + (int)UserRole.Accountant))
+                                              );
+                }
+                else
+                {
+                    if (role == (int) UserRole.Accountant)
+                        role = (int) UserRole.Accountant + (int) UserRole.Employee;
+                    criteria.Add(Restrictions.Eq("RoleId", role));
+                }
+            }
             ICriteria countCriteria = (ICriteria)criteria.Clone();
             int rowCount = (int)countCriteria
             .SetProjection(Projections.RowCount())

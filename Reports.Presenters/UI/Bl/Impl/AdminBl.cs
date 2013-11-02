@@ -85,6 +85,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Roles = GetRoleList(true,role);
             int numberOfPages;
             int currentPage = model.CurrentPage;
+            IList<Role> allRoles = RoleDao.LoadAll();
             if (role == UserRole.Admin)
             {
                 model.Users = UserDao.GetUsersForAdmin(model.UserName, model.RoleId,
@@ -95,7 +96,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             Name = x.FullName,
                                             IsActive = x.IsActive,
                                             Login = x.Login,
-                                            Role = GetUserRoleName(x.UserRole),
+                                            Role = GetUserRoleName(allRoles,x.RoleId),
                                         });
             }
             else if (role == UserRole.PersonnelManager)
@@ -107,7 +108,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                        Name = x.FullName,
                        IsActive = x.IsActive,
                        Login = x.Login,
-                       Role = GetUserRoleName(x.UserRole),
+                       Role = GetUserRoleName(allRoles, x.RoleId),
                    });
                 
             }
@@ -1040,10 +1041,37 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
 
-
-        protected static string GetUserRoleName(UserRole role)
+        protected string GetRoleName(IList<Role> allRoles,UserRole role)
         {
-            switch (role)
+            Role r = allRoles.Where(x => x.Id == (int)role).FirstOrDefault();
+            if (r == null)
+                throw new ArgumentException(string.Format("Не могу загрузить роль с id {0}", (int)role));
+            return r.Name;
+        }
+        protected string GetUserRoleName(IList<Role> allRoles,int role)
+        {
+            string roles = string.Empty;
+           
+            if ((role & (int)UserRole.Accountant) > 0)
+                roles += GetRoleName(allRoles,UserRole.Accountant)+" ";
+            if ((role & (int)UserRole.Admin) > 0)
+                roles += GetRoleName(allRoles, UserRole.Admin) + " ";
+            if ((role & (int)UserRole.BudgetManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.BudgetManager) + " ";
+            if ((role & (int)UserRole.Chief) > 0)
+                roles += GetRoleName(allRoles, UserRole.Chief) + " ";
+            if ((role & (int)UserRole.Employee) > 0)
+                roles += GetRoleName(allRoles, UserRole.Employee) + " ";
+            if ((role & (int)UserRole.Inspector) > 0)
+                roles += GetRoleName(allRoles, UserRole.Inspector) + " ";
+            if ((role & (int)UserRole.Manager) > 0)
+                roles += GetRoleName(allRoles, UserRole.Manager) + " ";
+            if ((role & (int)UserRole.OutsourcingManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.OutsourcingManager) + " ";
+            if ((role & (int)UserRole.PersonnelManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.PersonnelManager) + " ";
+            return roles;
+            /*switch (role)
             {
                 case UserRole.Admin:
                     return "Администратор";
@@ -1063,7 +1091,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return "Начальник";
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль {0}", (int) role));
-            }
+            }*/
         }
 
         public IList<IdNameDto> GetRoleList(bool addAll, UserRole role)
