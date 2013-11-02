@@ -77,15 +77,17 @@
     </tr>
     <tr>
         <td>
-            @Html.LabelFor(m => m.RoleId)
+            @Html.LabelFor(m => m.Role)
         </td>
         <td>
             <input type="hidden" id="IsRoleEditable" name="IsRoleEditable" value="@Model.IsRoleEditable" />
-            @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name"), Model.IsRoleEditable ? (object) null : (object)new { disabled = "disabled" }) 
+            <input type="hidden" id="RoleId" name="RoleId" value="@Model.RoleId" />
+             @Html.DisplayFor(m => m.Role)
+@*            @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name"), Model.IsRoleEditable ? (object) null : (object)new { disabled = "disabled" }) 
             @if (!Model.IsRoleEditable)
             {
                 <input type="hidden" id="RoleId" name="RoleId" value="@Model.RoleId" />
-            }
+            }*@
         </td>
     </tr>
     <tr>

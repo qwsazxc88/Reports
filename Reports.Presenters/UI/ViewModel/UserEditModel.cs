@@ -32,8 +32,10 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Код 1C")]
         public string Code { get; set; }
         [Display(Name = "Роль")]
+        public string Role { get; set; }
         public int RoleId { get; set; }
-        public IList<IdNameDto> Roles;
+        //public IList<IdNameDto> Roles;
+       
         public bool IsRoleEditable { get; set; }
         [Display(Name = "Руководитель")]
         public int ManagerId { get; set; }

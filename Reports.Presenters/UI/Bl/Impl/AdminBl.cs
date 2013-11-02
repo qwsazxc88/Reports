@@ -127,7 +127,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             if (role != UserRole.Admin && role != UserRole.PersonnelManager)
                 throw new ArgumentException("Доступ запрещен.");
-            model.Roles = GetRoleList(false,role);
+            //model.Roles = GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
             //model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true) 
             //                                            : new List<IdNameDto> { new IdNameDto {Id = CurrentUser.Id,Name = CurrentUser.Name}};
@@ -141,12 +141,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Login = user.Login;
                 model.Password = user.Password;
                 model.RoleId = user.RoleId;
+                model.Role = GetUserRoleName(user.RoleId);
                 model.UserName = user.FullName;
                 model.UserNameStatic = user.FullName;
                 model.Version = user.Version;
                 if (user.Personnels.Count() > 0)
                     model.PersonnelName = user.Personnels.Aggregate(string.Empty, (current, entity) => current + (entity.FullName + "; "));
-                if (model.RoleId == (int)UserRole.Employee)
+                if ((user.RoleId & (int)UserRole.Employee) > 0)
                 {
                     if (user.Manager != null)
                         model.ManagerId = user.Manager.Id;
@@ -167,8 +168,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public void SetStaticToModel(UserEditModel model,bool setStatic)
         {
-            UserRole role = CurrentUser.UserRole;
-            model.Roles = GetRoleList(false,role);
+            //UserRole role = CurrentUser.UserRole;
+            model.Role = GetUserRoleName(model.RoleId);//GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
             //model.PersonnelName = 
             //    role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true)
@@ -202,11 +203,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     user.Name = model.UserName;
                     user.Password = model.Password;
                     user.IsNew = true;
-                    user.RoleId = model.RoleId;//RoleDao.Load(model.RoleId);
+                    //user.RoleId = model.RoleId;//RoleDao.Load(model.RoleId);
                     if (IsUserFrom1C((UserRole)(model.RoleId)))
                         user.IsFirstTimeLogin = true;
                     user.Code = string.Empty;
-                    if (model.RoleId == (int) UserRole.Employee)
+                    if ((model.RoleId & (int) UserRole.Employee) > 0)
                     {
                         if (model.ManagerId != 0)
                             user.Manager = UserDao.Load(model.ManagerId);
@@ -232,8 +233,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsNew = user.IsNew;
                 model.Version = user.Version;
                 model.UserNameStatic = model.UserName;
-                if ((user.RoleId != (int) UserRole.Employee) &&
-                    ((model.ManagerId != 0) /*|| (model.PersonnelId != 0)*/))
+                if (((user.RoleId & (int) UserRole.Employee) == 0) &&
+                    (model.ManagerId != 0))
                     model.ClearManagers = true;
 
                 SetControlStates(model,user);
@@ -269,7 +270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Error = "Логин должен быть уникальным";
                 return false;
             }
-            if (model.RoleId == (int)UserRole.Employee)
+            if ((model.RoleId & (int)UserRole.Employee) > 0)
             {
                 if (model.ManagerId == 0)
                 {
@@ -1048,6 +1049,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Не могу загрузить роль с id {0}", (int)role));
             return r.Name;
         }
+        protected string GetUserRoleName(int role)
+        {
+            IList<Role> allRoles = RoleDao.LoadAll();
+            return GetUserRoleName(allRoles, role);
+        }
+
         protected string GetUserRoleName(IList<Role> allRoles,int role)
         {
             string roles = string.Empty;
@@ -1118,9 +1125,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool IsUserFrom1C(UserRole role)
         {
-            return (role == UserRole.Employee) ||
+            return true;
+            /*return (role == UserRole.Employee) ||
                    (role == UserRole.Manager) ||
-                   (role == UserRole.PersonnelManager);
+                   (role == UserRole.PersonnelManager);*/
         }
 
         #endregion
