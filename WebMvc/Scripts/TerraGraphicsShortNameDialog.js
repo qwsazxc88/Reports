@@ -113,9 +113,9 @@ $.getJSON(url,
             addTerraEditError(result.Error, true);
         }
         else {
-            setValuesToDropdown(controlName, result.Children);
+            setTgValuesToDropdown(controlName, result.Children);
             if (level == 2) {
-                setValuesToDropdown('EpLevel3ID', result.Level3Children);
+                setTgValuesToDropdown('EpLevel3ID', result.Level3Children);
             }
         }
     });
@@ -268,9 +268,9 @@ function GetTgChilds(controlName, parentId, level) {
                 if (level == 3) {
                     var selection = $('#Level3ID').val();
                 }
-                setValuesToDropdown(controlName, result.Children);
+                setTgValuesToDropdown(controlName, result.Children);
                 if (level == 2) {
-                    setValuesToDropdown('Level3ID', result.Level3Children);
+                    setTgValuesToDropdown('Level3ID', result.Level3Children);
                 }
                 else {
                     $('#Level3ID').val(selection);
@@ -280,7 +280,7 @@ function GetTgChilds(controlName, parentId, level) {
             }
         });
 }
-function setValuesToDropdown(controlName, data) {
+function setTgValuesToDropdown(controlName, data) {
     var optionsValues = '<select style = "width:95%" onchange = TerraGraphics' + controlName + 'Change(); id="' + controlName + '" name="' + controlName + '">';
 //    optionsValues += '<option value="0"></option>';
     $.each(data, function (item, data) {
