@@ -37,19 +37,19 @@
                 </div> 
                 <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
                 </div>  
-                <div id="liDeduction" class="mainOn">
-                    @if ((dto.UserRole & UserRole.Accountant) > 0 || 
-                         (dto.UserRole & UserRole.OutsourcingManager) > 0)
-                    {
-                        @Html.ActionLink("Удержания", "Index", "Deduction")
-                    }
+                <div id="liDeduction" class="mainMenuItem">
+                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                    || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                {
+                    @Html.ActionLink("Удержания", "Index", "Deduction")
+                }
                 </div> 
-                @if ((dto.UserRole & UserRole.Employee) > 0
+                  @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Admin) > 0)
                 {
-                    <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
+                    <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -58,16 +58,15 @@
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
                 <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
-                </div>  
+                </div> 
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
         </div>  
-         <div class="podmenu">    
-            <div class="on" id="deductionsAll" >@Html.ActionLink("Все заявки", "Index", "Deduction")</div>
+        <div class="podmenu">       
+            <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
-         </div> 
-        </div> 
-
+        </div>
+    </div>   
 }
 <script type="text/javascript">
 

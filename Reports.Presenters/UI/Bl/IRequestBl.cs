@@ -113,5 +113,8 @@ namespace Reports.Presenters.UI.Bl
         TerraPointSetDefaultTerraPointModel SetDefaultTerraPoint(int pointId/*, int userId*/);
         void SaveTerraPoint(TerraPointSaveModel model);
         void DeleteTerraPoint(int id);
+
+        MissionOrderListModel GetMissionOrderListModel();
+        void SetMissionOrderListModel(MissionOrderListModel model, bool hasError);
     }
 }

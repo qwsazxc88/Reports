@@ -1,0 +1,94 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionOrderListModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Приказ - реестр";
+}
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+      <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.UserName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.UserName)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+    </table> 
+}
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        //setSortFields();
+        setActiveMenuItem("moAllOrders");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+        //$("#RequestStatusId").val('0');
+         $("#UserName").val('');
+    }
+ </script> 

@@ -6156,6 +6156,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region Terra Graphics
         public TerraGraphicsSetShortNameModel SetShortNameModel()
         {
             TerraGraphicsSetShortNameModel model = new TerraGraphicsSetShortNameModel();
@@ -6426,6 +6427,37 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     new IdNameDto{Id = 2,Name = "Нет"},
                                 };
         }
+        #endregion
+
+        #region Mission Order
+        public MissionOrderListModel GetMissionOrderListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            MissionOrderListModel model = new MissionOrderListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //RequestStatuses = GetDeductionStatuses(true),
+                //Types = GetDeductionTypes(true)
+            };
+            SetInitialDates(model);
+            return model;
+        }
+
+        public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            //model.RequestStatuses = GetDeductionStatuses(true);
+            //model.Types = GetDeductionTypes(true);
+            //if (hasError)
+            //    model.Documents = new List<DeductionDto>();
+            //else
+            //    SetDocumentsToModel(model, user);
+        }
+        #endregion
     }
 
 }
