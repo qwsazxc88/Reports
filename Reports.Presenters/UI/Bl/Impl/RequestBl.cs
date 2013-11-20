@@ -6457,11 +6457,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Types = GetDeductionTypes(true)
             };
             SetInitialDates(model);
+            SetDictionariesToModel(model);
             return model;
         }
 
         public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
         {
+            SetDictionariesToModel(model);
             User user = UserDao.Load(model.UserId);
             //model.RequestStatuses = GetDeductionStatuses(true);
             //model.Types = GetDeductionTypes(true);
@@ -6471,6 +6473,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    SetDocumentsToModel(model, user);
         }
 
+        public void SetDictionariesToModel(MissionOrderListModel model)
+        {
+            model.Statuses = GetMoStatuses();
+        }
+        public List<IdNameDto> GetMoStatuses()
+        {
+            //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> moStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Создан сотрудником"),
+                                                           new IdNameDto(2, "Утвержден руководителем"),
+                                                           new IdNameDto(3, "Согласован членом правления"),
+                                                           //new IdNameDto(10, "Отклоненные"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return moStatusesList;
+        }
         public MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId)
         {
             if(!userId.HasValue)

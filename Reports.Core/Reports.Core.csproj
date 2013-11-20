@@ -259,7 +259,14 @@
     <Compile Include="Domain\Information.cs" />
     <Compile Include="Domain\InspectorToUser.cs" />
     <Compile Include="Domain\Mission.cs" />
+    <Compile Include="Domain\MissionAirTicketType.cs" />
     <Compile Include="Domain\MissionComment.cs" />
+    <Compile Include="Domain\MissionCountry.cs" />
+    <Compile Include="Domain\MissionDailyAllowance.cs" />
+    <Compile Include="Domain\MissionGoal.cs" />
+    <Compile Include="Domain\MissionGraid.cs" />
+    <Compile Include="Domain\MissionResidence.cs" />
+    <Compile Include="Domain\MissionTrainTicketType.cs" />
     <Compile Include="Domain\MissionType.cs" />
     <Compile Include="Domain\Organization.cs" />
     <Compile Include="Domain\Position.cs" />
@@ -575,6 +582,23 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\TerraPointToUser.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionDailyAllowance.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionGoal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionResidence.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionAirTicketType.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionTrainTicketType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionGraid.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionCountry.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

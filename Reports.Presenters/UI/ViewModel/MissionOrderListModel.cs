@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
@@ -12,6 +14,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int DepartmentId { get; set; }
         public bool DepartmentReadOnly { get; set; }
+
+
+        [Display(Name = "Статус приказа")]
+        public int StatusId { get; set; }
+        public IList<IdNameDto> Statuses;
 
         [Display(Name = "Период с")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]

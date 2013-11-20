@@ -42,14 +42,25 @@
                                 }            
                             </td>
                         </tr>
-                        <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.UserName):
-                                </td>
-                                <td>
-                                    @Html.TextBoxFor(model => model.UserName)
-                                </td>
-                         </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName)
+                                    </td>
+                             </tr>
+                          }
                          <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
@@ -76,7 +87,7 @@
                  <tr>
                     <td colspan="2">
                             @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee ||
-                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Manager)
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)
                             {
                                 if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                                 {
@@ -115,7 +126,7 @@
             $("#DepartmentName").val('');
         }
         //$("#TypeId").val('0');
-        //$("#RequestStatusId").val('0');
+         $("#StatusId").val('0');
          $("#UserName").val('');
     }
  </script> 
