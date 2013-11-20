@@ -4931,6 +4931,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.MissionOrder:
+                    /*Mission mission = MissionDao.Load(id);
+                    if ((mission.Comments != null) && (mission.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = mission.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }*/
+                    break;
                 }
             }
             return commentModel;
@@ -6457,6 +6470,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             //else
             //    SetDocumentsToModel(model, user);
         }
+
+        public MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId)
+        {
+            if(!userId.HasValue)
+            {
+                if (CurrentUser.UserRole == UserRole.Employee)
+                    userId = CurrentUser.Id;
+                else
+                    throw new ValidationException("Не указан пользователь для приказа на командировку");
+            }
+            MissionOrderEditModel model = new MissionOrderEditModel {Id = id,UserId = userId.Value};
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserMoRights(user, current, id, false))
+                throw new ArgumentException("Доступ запрещен.");
+            SetUserInfoModel(user, model);
+            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
+            return model;
+        }
+        public bool CheckUserMoRights(User user, IUser current, int entityId, bool isSave)
+        {
+            switch (current.UserRole)
+            {
+                case UserRole.Employee:
+                    if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1}", user.Id, current.Id);
+                        return false;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (user.Manager != null && user.Manager.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} user.Manager.Id {2}", user.Id, current.Id, user.Manager.Id);
+                        return false;
+                    }
+                    break;
+            }
+            return true;
+        }
+
         #endregion
     }
 

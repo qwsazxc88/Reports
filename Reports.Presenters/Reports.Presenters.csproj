@@ -167,6 +167,7 @@
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />
+    <Compile Include="UI\ViewModel\MissionOrderEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionOrderListModel.cs" />
     <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />

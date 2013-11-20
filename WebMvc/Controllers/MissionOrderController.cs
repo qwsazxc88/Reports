@@ -36,6 +36,12 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
+        [HttpGet]
+        public ActionResult MissionOrderEdit(int id,int? userId)
+        {
+            MissionOrderEditModel model = RequestBl.GetMissionOrderEditModel(id,userId);
+            return View(model);
+        }
 
     }
 }

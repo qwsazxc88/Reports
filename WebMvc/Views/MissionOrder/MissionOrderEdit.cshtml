@@ -1,0 +1,59 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionOrderEditModel
+@{
+    ViewBag.Title = "Редактирование приказа на командировку";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+            <div id="Error" style="color:Red;display:none;"></div>
+            @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            @Html.Partial("../UserInfoView", Model)
+        </td>
+    </tr>
+    </table>
+    </div>
+    
+    <br />
+    <div class="comment-wrap">
+    <table style="width:100%">
+         <tr>
+            <td colspan="2">
+                <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+            </td>
+        </tr>
+    </table>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*$("#BeginDate").datepicker();
+            $("#EndDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#DaysCount").width("50px");*/
+            setActiveMenuItem("moAllOrders");
+        });
+        /*function ValidateForm() {
+            return true;
+        }
+        function SetApprovedForAllAndValidateForm() {
+            SetApprovedAndValidateForm();
+            $("#IsApprovedForAll").val('true');
+            return true;
+        }
+        function SetApprovedAndValidateForm() {
+            $("#IsApproved").val('true');
+            return true;
+        }
+        function Delete() {
+            $("#IsDelete").val("true");
+            return true;
+        }*/
+    </script>
+}

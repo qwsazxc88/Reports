@@ -1,4 +1,6 @@
-﻿@model Reports.Presenters.UI.ViewModel.MissionOrderListModel
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.MissionOrderListModel
 @{
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Приказ - реестр";
@@ -67,6 +69,31 @@
         </div>
     </td>
     </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                 <tr>
+                    <td colspan="2">
+                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee ||
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Manager)
+                            {
+                                if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+                                {
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = 0 })'"/>   
+                                }
+                                else
+                                {
+                                @*    @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "MissionOrder")'"/>
+                                }
+                            }                                                                                               
+                            </td>
+                        </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>       
     </table> 
 }
 <script type="text/javascript">

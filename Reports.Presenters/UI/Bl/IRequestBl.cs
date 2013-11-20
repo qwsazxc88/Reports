@@ -116,5 +116,6 @@ namespace Reports.Presenters.UI.Bl
 
         MissionOrderListModel GetMissionOrderListModel();
         void SetMissionOrderListModel(MissionOrderListModel model, bool hasError);
+        MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId);
     }
 }

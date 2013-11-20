@@ -21,6 +21,7 @@
         Employment = 8,
         ChildVacation = 9,
         Deduction = 10,
+        MissionOrder = 11,
     }
     public enum RequestAttachmentTypeEnum
     {
