@@ -66,7 +66,7 @@ insert into [dbo].[MissionTrainTicketType] (Id,Name) values (2,N'Проезд, �
 insert into [dbo].[MissionTrainTicketType] (Id,Name) values (3,N'Проезд, длительностью от 2 до 3 суток')
 insert into [dbo].[MissionTrainTicketType] (Id,Name) values (4,N'Проезд, длительностью от 3 до 4 суток')
 insert into [dbo].[MissionTrainTicketType] (Id,Name) values (5,N'Проезд, длительностью от 4 до 5 суток')
-insert into [dbo].[MissionTrainTicketType] (Id,Name) values (6,N'Проезд длительностью от 5 суток')
+insert into [dbo].[MissionTrainTicketType] (Id,Name) values (6,N'Проезд, длительностью от 5 суток')
 set identity_insert [dbo].[MissionTrainTicketType] OFF
 
 -- Перелет, длительностью менее 1 часа

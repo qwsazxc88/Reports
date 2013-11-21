@@ -334,6 +334,25 @@ namespace Reports.Core
                     ImplementedBy(typeof(TerraGraphicDao)).
                     LifeStyle.Is(type));
 
+
+
+
+            Register(Component.For(typeof(IMissionAirTicketTypeDao)).
+               ImplementedBy(typeof(MissionAirTicketTypeDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionCountryDao)).
+               ImplementedBy(typeof(MissionCountryDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionDailyAllowanceDao)).
+               ImplementedBy(typeof(MissionDailyAllowanceDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionResidenceDao)).
+              ImplementedBy(typeof(MissionResidenceDao)).
+              LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionTrainTicketTypeDao)).
+              ImplementedBy(typeof(MissionTrainTicketTypeDao)).
+              LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)
