@@ -334,6 +334,10 @@ namespace Reports.Core
                     ImplementedBy(typeof(TerraGraphicDao)).
                     LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IMissionGoalDao)).
+                  ImplementedBy(typeof(MissionGoalDao)).
+                  LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

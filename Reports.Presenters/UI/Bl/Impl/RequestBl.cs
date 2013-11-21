@@ -339,6 +339,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { terraGraphicDao = value; }
         }
 
+        protected IMissionGoalDao missionGoalDao;
+        public IMissionGoalDao MissionGoalDao
+        {
+            get { return Validate.Dependency(missionGoalDao); }
+            set { missionGoalDao = value; }
+        }
+
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -6505,6 +6512,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckUserMoRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             return model;
         }
@@ -6529,7 +6538,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return true;
         }
-
+        protected void LoadDictionaries(MissionOrderEditModel model)
+        {
+            //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
+            //model.Statuses = GetTimesheetStatusesForDismissal();
+            model.Types = GetMissionTypes(false);
+            model.Goals = GetMissionGoals(false);
+        }
+        protected List<IdNameDto> GetMissionGoals(bool addAll)
+        {
+            var typeList = MissionGoalDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addAll)
+                typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
         #endregion
     }
 

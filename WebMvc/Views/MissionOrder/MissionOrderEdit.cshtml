@@ -1,23 +1,84 @@
 ﻿@model Reports.Presenters.UI.ViewModel.MissionOrderEditModel
 @{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Редактирование приказа на командировку";
 }
 @using (Html.BeginForm())
 {
     <div class="doc-wrap">
     <table style="width:100%">
-    <tr>
-        <td colspan="2">
-            @Html.ValidationSummary(false)
-            <div id="Error" style="color:Red;display:none;"></div>
-            @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @Html.Partial("../UserInfoView", Model)
-        </td>
-    </tr>
+        <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+                @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.Partial("../UserInfoView", Model)
+            </td>
+        </tr>
+        @if (Model.IsDeleted)
+        { 
+        <tr>
+            <td colspan="2" style="color:Red">Приказ отклонен</td>
+        </tr>
+        }
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.BeginDate):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.BeginDate)
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.EndDate):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.EndDate)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.GoalId):
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.GoalId, new SelectList(Model.Goals, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="GoalIdHidden" name="GoalIdHidden" value="@Model.GoalIdHidden" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                @*<input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
+                <input type="hidden" id="IsReasonEditable" name="IsReasonEditable" value="@Model.IsReasonEditable" />
+                <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
+                <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />*@
+                @Html.LabelFor(m => m.TypeId):
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.Grade):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Grade)
+            </td>
+        </tr>
     </table>
     </div>
     

@@ -118,6 +118,7 @@
     <Compile Include="Dao\IInspectorToUserDao.cs" />
     <Compile Include="Dao\IMissionCommentDao.cs" />
     <Compile Include="Dao\IMissionDao.cs" />
+    <Compile Include="Dao\IMissionGoalDao.cs" />
     <Compile Include="Dao\IMissionTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="Dao\Impl\InspectorToUserDao.cs" />
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
+    <Compile Include="Dao\Impl\MissionGoalDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />
