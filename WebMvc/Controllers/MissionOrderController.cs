@@ -1,11 +1,12 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 
 namespace WebMvc.Controllers
 {
-    public class MissionOrderController : Controller
+    public class MissionOrderController : BaseController
     {
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
@@ -41,6 +42,25 @@ namespace WebMvc.Controllers
         {
             MissionOrderEditModel model = RequestBl.GetMissionOrderEditModel(id,userId);
             return View(model);
+        }
+
+
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ActionResult EditTargetDialog(int id)
+        {
+            try
+            {
+                MissionOrderEditTargetModel model = new MissionOrderEditTargetModel { Id = id };
+                RequestBl.SetMissionOrderEditTargetModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EditTargetDialogError", new DialogErrorModel { Error = error });
+            }
         }
 
     }

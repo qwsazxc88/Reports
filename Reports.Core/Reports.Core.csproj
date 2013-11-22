@@ -116,9 +116,14 @@
     <Compile Include="Dao\IHolidayWorkDao.cs" />
     <Compile Include="Dao\IHolidayWorkTypeDao.cs" />
     <Compile Include="Dao\IInspectorToUserDao.cs" />
+    <Compile Include="Dao\IMissionAirTicketTypeDao.cs" />
     <Compile Include="Dao\IMissionCommentDao.cs" />
+    <Compile Include="Dao\IMissionCountryDao.cs" />
+    <Compile Include="Dao\IMissionDailyAllowanceDao.cs" />
     <Compile Include="Dao\IMissionDao.cs" />
     <Compile Include="Dao\IMissionGoalDao.cs" />
+    <Compile Include="Dao\IMissionResidenceDao.cs" />
+    <Compile Include="Dao\IMissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\IMissionTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
@@ -127,6 +132,8 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\MissionAirTicketTypeDao.cs" />
+    <Compile Include="Dao\Impl\MissionCountryDao.cs" />
     <Compile Include="Dao\Impl\DbVersionDao.cs" />
     <Compile Include="Dao\Impl\DeductionDao.cs" />
     <Compile Include="Dao\Impl\DeductionKindDao.cs" />
@@ -154,8 +161,10 @@
     <Compile Include="Dao\Impl\InformationDao.cs" />
     <Compile Include="Dao\Impl\InspectorToUserDao.cs" />
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
+    <Compile Include="Dao\Impl\MissionDailyAllowanceDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
-    <Compile Include="Dao\Impl\MissionGoalDao.cs" />
+    <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
+    <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />
     <Compile Include="Dao\Impl\RequestAttachmentDao.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Dao.Impl;
@@ -339,11 +340,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { terraGraphicDao = value; }
         }
 
+
+
+
+
+
+        protected IMissionAirTicketTypeDao missionAirTicketTypeDao;
+        public IMissionAirTicketTypeDao MissionAirTicketTypeDao
         protected IMissionGoalDao missionGoalDao;
         public IMissionGoalDao MissionGoalDao
         {
             get { return Validate.Dependency(missionGoalDao); }
             set { missionGoalDao = value; }
+        }
+
+        {
+            get { return Validate.Dependency(missionAirTicketTypeDao); }
+            set { missionAirTicketTypeDao = value; }
+        }
+        protected IMissionCountryDao missionCountryDao;
+        public IMissionCountryDao MissionCountryDao
+        {
+            get { return Validate.Dependency(missionCountryDao); }
+            set { missionCountryDao = value; }
+        }
+        protected IMissionDailyAllowanceDao missionDailyAllowanceDao;
+        public IMissionDailyAllowanceDao MissionDailyAllowanceDao
+        {
+            get { return Validate.Dependency(missionDailyAllowanceDao); }
+            set { missionDailyAllowanceDao = value; }
+        }
+        protected IMissionResidenceDao missionResidenceDao;
+        public IMissionResidenceDao MissionResidenceDao
+        {
+            get { return Validate.Dependency(missionResidenceDao); }
+            set { missionResidenceDao = value; }
+        }
+        protected IMissionTrainTicketTypeDao missionTrainTicketTypeDao;
+        public IMissionTrainTicketTypeDao MissionTrainTicketTypeDao
+        {
+            get { return Validate.Dependency(missionTrainTicketTypeDao); }
+            set { missionTrainTicketTypeDao = value; }
         }
 
         protected IConfigurationService configurationService;
@@ -6511,12 +6548,70 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (!CheckUserMoRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
+            if(id != 0)
+            {
+                
+            }
+            else
+            {
+                JsonList list = new JsonList { List = new MissionOrderTargetModel[0] };
+                JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                model.Targets = jsonSerializer.Serialize(list); 
+            }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
 
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             return model;
         }
+        /*protected MissionOrderTargetModel[] AddTestData()
+        {
+            List<MissionOrderTargetModel> data = new List<MissionOrderTargetModel>
+                                                     {
+                                                         new MissionOrderTargetModel
+                                                             {
+                                                                 AirTicketTypeId = 1,
+                                                                 AirTicketTypeName = "Данные по авиа билетам",
+                                                                 AllDaysCount = 2.ToString(),
+                                                                 City = "Город",
+                                                                 Country = "Страна",
+                                                                 CountryId = 2,
+                                                                 DailyAllowanceId = 3,
+                                                                 DailyAllowanceName = "Данные по суточным",
+                                                                 DateFrom = "20.11.2013",
+                                                                 DateTo = "22.11.2013",
+                                                                 Organization = "Данные по организации",
+                                                                 ResidenceId = 1,
+                                                                 ResidenceName = "Данные по проживанию",
+                                                                 TargetDaysCount = 1.ToString(),
+                                                                 TargetId = 1,
+                                                                 TrainTicketTypeId = 2,
+                                                                 TrainTicketTypeName = "Данные по жел. билетам"
+                                                             },
+                                                             new MissionOrderTargetModel
+                                                             {
+                                                                 AirTicketTypeId = 1,
+                                                                 AirTicketTypeName = "Данные по авиа билетам",
+                                                                 AllDaysCount = 2.ToString(),
+                                                                 City = "Город",
+                                                                 Country = "Страна",
+                                                                 CountryId = 2,
+                                                                 DailyAllowanceId = 3,
+                                                                 DailyAllowanceName = "Данные по суточным",
+                                                                 DateFrom = "20.11.2013",
+                                                                 DateTo = "22.11.2013",
+                                                                 Organization = "Данные по организации",
+                                                                 ResidenceId = 1,
+                                                                 ResidenceName = "Данные по проживанию",
+                                                                 TargetDaysCount = 1.ToString(),
+                                                                 TargetId = 2,
+                                                                 TrainTicketTypeId = 2,
+                                                                 TrainTicketTypeName = "Данные по жел. билетам"
+                                                             },
+
+                                                     };
+            return data.ToArray();
+        }*/
         public bool CheckUserMoRights(User user, IUser current, int entityId, bool isSave)
         {
             switch (current.UserRole)
@@ -6539,6 +6634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
+        public void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model)
         {
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
             //model.Statuses = GetTimesheetStatusesForDismissal();
@@ -6550,6 +6646,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             var typeList = MissionGoalDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
+            return typeList;
+        }
+            model.AirTicketTypes = GetMissionAirTicketTypes(true);
+            model.TrainTicketTypes = GetMissionTrainTicketTypes(true);
+            model.Residences = GetMissionResidences(true);
+            model.DailyAllowances = GetMissionDailyAllowances(true);
+            model.Countries = GetMissionCountries(false);
+        }
+        protected List<IdNameDto> GetMissionAirTicketTypes(bool addEmpty)
+        {
+            var typeList = MissionAirTicketTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
+            return typeList;
+        }
+        protected List<IdNameDto> GetMissionTrainTicketTypes(bool addEmpty)
+        {
+            var typeList = MissionTrainTicketTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
+            return typeList;
+        }
+        protected List<IdNameDto> GetMissionResidences(bool addEmpty)
+        {
+            var typeList = MissionResidenceDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
+            return typeList;
+        }
+        protected List<IdNameDto> GetMissionDailyAllowances(bool addEmpty)
+        {
+            var typeList = MissionDailyAllowanceDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
+            return typeList;
+        }
+        protected List<IdNameDto> GetMissionCountries(bool addEmpty)
+        {
+            var typeList = MissionCountryDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
         #endregion

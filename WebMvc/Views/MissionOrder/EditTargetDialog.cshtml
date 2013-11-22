@@ -1,0 +1,105 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionOrderEditTargetModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "targetDialogTable" style="width:100%;">
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.CountryId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.CountryId, new SelectList(Model.Countries, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.City):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.City, new { maxlength = 20 }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Organization):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Organization, new { maxlength = 20 }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.BeginDate):
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.BeginDate) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.EndDate):
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.EndDate) 
+                    </td>
+                </tr>
+                <tr>
+                <td>
+                        @Html.LabelFor(m => m.AllDays):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.AllDays, new { @readonly = "readonly" }) 
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        @Html.LabelFor(m => m.RealDays):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.RealDays) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.DailyAllowanceId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.DailyAllowanceId, new SelectList(Model.DailyAllowances, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.ResidenceId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.ResidenceId, new SelectList(Model.Residences, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.AirTicketTypeId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.AirTicketTypeId, new SelectList(Model.AirTicketTypes, "ID", "Name")) 
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        @Html.LabelFor(m => m.TrainTicketTypeId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.TrainTicketTypeId, new SelectList(Model.TrainTicketTypes, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @*    @Html.ValidationSummary(false)*@
+                          <div id="EditTargetDlgError" style="color:Red;display:none;"/>
+                         <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                     </td>
+                </tr>
+    </table>
+</body>
+</html>
