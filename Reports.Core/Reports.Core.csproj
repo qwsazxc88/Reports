@@ -163,6 +163,7 @@
     <Compile Include="Dao\Impl\MissionCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionDailyAllowanceDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
+    <Compile Include="Dao\Impl\MissionGoalDao.cs" />
     <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />

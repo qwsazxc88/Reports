@@ -339,21 +339,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(terraGraphicDao); }
             set { terraGraphicDao = value; }
         }
-
-
-
-
-
-
-        protected IMissionAirTicketTypeDao missionAirTicketTypeDao;
-        public IMissionAirTicketTypeDao MissionAirTicketTypeDao
         protected IMissionGoalDao missionGoalDao;
         public IMissionGoalDao MissionGoalDao
         {
             get { return Validate.Dependency(missionGoalDao); }
             set { missionGoalDao = value; }
         }
-
+        protected IMissionAirTicketTypeDao missionAirTicketTypeDao;
+        public IMissionAirTicketTypeDao MissionAirTicketTypeDao
         {
             get { return Validate.Dependency(missionAirTicketTypeDao); }
             set { missionAirTicketTypeDao = value; }
@@ -6634,7 +6627,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
-        public void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model)
         {
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
             //model.Statuses = GetTimesheetStatusesForDismissal();
@@ -6648,6 +6640,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
             return typeList;
         }
+        public void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model)
+        {
             model.AirTicketTypes = GetMissionAirTicketTypes(true);
             model.TrainTicketTypes = GetMissionTrainTicketTypes(true);
             model.Residences = GetMissionResidences(true);

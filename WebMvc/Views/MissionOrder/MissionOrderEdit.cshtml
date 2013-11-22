@@ -60,47 +60,6 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 @*<input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <tr>
-            <td colspan="2" style="font-weight:bold">
-               Место назначения &nbsp;<input type="button" value="Добавить" name="AddTargetBtn" onclick="addTarget();"/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-               <input type="hidden" id="Targets" name="Targets" value="@Model.Targets" />
-                <table id="targetsTable"></table>
-            </td>
-        </tr>
-
-
                 <input type="hidden" id="IsReasonEditable" name="IsReasonEditable" value="@Model.IsReasonEditable" />
                 <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
                 <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
@@ -118,6 +77,17 @@
             </td>
             <td>
                 @Html.DisplayFor(m => m.Grade)
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2" style="font-weight:bold">
+               Место назначения &nbsp;<input type="button" value="Добавить" name="AddTargetBtn" onclick="addTarget();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+               <input type="hidden" id="Targets" name="Targets" value="@Model.Targets" />
+                <table id="targetsTable"></table>
             </td>
         </tr>
     </table>
@@ -314,7 +284,7 @@
                 modal: true,
                 title: title,
                 width: 830,
-                height: 480,
+                height: 490,
                 // fix IE6  
                 bgiframe: true,
                 open: function (event, ui) {
