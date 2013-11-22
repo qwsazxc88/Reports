@@ -1780,8 +1780,8 @@ namespace WebMvc.Controllers
             }
         }
 
-         [HttpGet]
-         public ActionResult DepartmentDialog(int id/*, int typeId*/)
+         /*[HttpGet]
+         public ActionResult DepartmentDialog(int id)
          {
              try
              {
@@ -1795,7 +1795,7 @@ namespace WebMvc.Controllers
                  string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
                  return PartialView("DialogError", new DialogErrorModel { Error = error });
              }
-         }
+         }*/
          [HttpGet]
          public ContentResult GetChildren(int parentId, int level)
          {
@@ -1915,11 +1915,11 @@ namespace WebMvc.Controllers
             }
             return ModelState.IsValid;
          }
-         [HttpGet]
+         /*[HttpGet]
          public ActionResult TemplatesList()
          {
              return View(new TemplatesListModel());
-         }
+         }*/
     }
 
 

@@ -6657,7 +6657,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetMissionTrainTicketTypes(bool addEmpty)
         {
-            var typeList = MissionTrainTicketTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            var typeList = MissionTrainTicketTypeDao.LoadAll().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addEmpty)
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;

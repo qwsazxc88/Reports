@@ -3,9 +3,11 @@ using System.Web.Mvc;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant  | UserRole.OutsourcingManager)]
     public class MissionOrderController : BaseController
     {
         protected IRequestBl requestBl;
