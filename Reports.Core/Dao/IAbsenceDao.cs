@@ -19,5 +19,7 @@ namespace Reports.Core.Dao
             string userName, 
             int sortedBy,
             bool? sortDescending);
+
+        IList<BeginEndDateDto> LoadForUserAndPeriod(DateTime beginDate, DateTime endDate, int userId);
     }
 }

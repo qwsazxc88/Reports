@@ -185,6 +185,7 @@ namespace Reports.Presenters.Services
         public const int defaultTimesheetPageSize = 50;
 
         public const string keySicklistTypeIdBabyMinding = "SicklistTypeIdBabyMinding";
+        public const string keySuperPersonnelId = "SuperPersonnelId";
         public const string keyDefaultDeductionEmail = "DefaultDeductionEmail";
 
         #region IConfigurationService Members
@@ -224,6 +225,19 @@ namespace Reports.Presenters.Services
                 if (!Int32.TryParse(ConfigurationManager.AppSettings[keySicklistTypeIdBabyMinding], out sicklistTypeIdBabyMinding) || (sicklistTypeIdBabyMinding < 0))
                     throw new ArgumentException("No or incorrect {0} setting on configuration file.", keyPageSize);
                 return sicklistTypeIdBabyMinding;
+            }
+        }
+        public int? SuperPersonnelId
+        {
+            get
+            {
+                int superPersonnelId;
+                string strValue = ConfigurationManager.AppSettings[keySuperPersonnelId];
+                if (string.IsNullOrEmpty(strValue))
+                    return null;
+                if (!Int32.TryParse( strValue,out superPersonnelId) || (superPersonnelId < 0))
+                    throw new ArgumentException("No or incorrect {0} setting on configuration file.", keySuperPersonnelId);
+                return superPersonnelId;
             }
         }
 

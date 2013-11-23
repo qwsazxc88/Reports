@@ -3080,8 +3080,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (current.UserRole == UserRole.PersonnelManager
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -3317,6 +3319,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
 
+        }
+        public bool HaveAbsencesForPeriod(DateTime beginDate,DateTime endDate, int userId,
+            int currentUserId,UserRole currentUserRole)
+        {
+            if(currentUserRole == UserRole.PersonnelManager)
+            {
+                int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                if(superPersonnelId.HasValue && currentUserId == superPersonnelId.Value)
+                    return true;
+            }
+            DateTime current = DateTime.Today;
+            DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
+            if(current.Day == 1)
+                monthBegin = monthBegin.AddMonths(-1);
+            if (monthBegin < endDate)
+                endDate = monthBegin;
+            IList<BeginEndDateDto> absences = AbsenceDao.LoadForUserAndPeriod(beginDate, endDate, userId);
+            current = beginDate;
+            while(current <= endDate)
+            {
+                if (!IsAbsenceExists(absences, current))
+                {
+                    Log.InfoFormat("Absence not found for {0}",current);
+                    return false;
+                }
+                current = current.AddDays(1);
+            }
+            return true;
+        }
+        protected  bool IsAbsenceExists(IList<BeginEndDateDto> absences,DateTime date)
+        {
+            return absences.Any(x => x.BeginDate <= date && x.EndDate >= date);
         }
         #endregion
         #region Absence
@@ -4145,6 +4179,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                    if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
+                        return true;
                     if (/*user.PersonnelManager != null && user.PersonnelManager.Id != current.Id*/
                         user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() == null
                         )
