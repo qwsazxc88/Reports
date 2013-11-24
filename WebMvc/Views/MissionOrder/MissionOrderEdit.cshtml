@@ -309,6 +309,36 @@
                 }
             });
         }
+        /*function addCheckedObjects() {
+    var agents = JSON.parse($("#Agents").val());
+    $(".checkAgent").each(function () {
+        if ($(this).is(":checked")) {
+            var tr = $(this).parents('tr[class^="checkTr"]');
+            var agentId = tr.find(".checkId").val();
+            var fio = tr.find(".checkFio").text();
+            var team = tr.find(".checkTeam").text();
+            var region = tr.find(".checkRegion").text();
+            var newObj = { AgentId: agentId, Fio: fio, Team: team, Region: region };
+            agents.List.push(newObj);
+        }
+    });
+    agents.List.sort(function (a, b) {
+        return a.Fio > b.Fio ? 1 : -1;
+    });
+    renderAgentTable(agents);
+    $("#Agents").val(JSON.stringify(agents));
+}*/
+        function addObject()
+        {
+            var targets = JSON.parse($("#Targets").val());
+            var targetId = $("#Id").val();
+            var countryId = $("#CountryId").val();
+            var country = $("#CountryId").text();
+            var city = $("#City").val();
+            var organization = $("#Organization").val();
+            var dateFrom = $("#BeginDate").val();
+            var dateTo = $("#EndDate").val();
+        }
         function validateTarget()
         {
             clearEditTargetErrors($("#targetDialogTable"));
@@ -350,12 +380,20 @@
             else
             {
                 var days = parseInt($("#RealDays").val(), 10);
-                if (isNaN(days) || (days < 0)) {
+                if (!(/^[0-9]+$/i).test($("#RealDays").val()) || isNaN(days) || (days < 0)) {
                     addEditTargetError($("#RealDays"),"Поле должно быть целым неотрицательным числом");
                     result = false;
                 }
+                else
+                {
+                    var allDays = parseInt($("#AllDays").val(), 10);
+                    if(days > allDays)
+                    {
+                        addEditTargetError($("#RealDays"),"Значение не должно превышать числа кадендарных дней");
+                        result = false;
+                    }
+                }
             }
-            
             return result;
         }
         function clearEditTargetErrors(form) {
@@ -393,7 +431,10 @@
                    
                 }
                 if ((beginDate != undefined) && (endDate != undefined)) {
-                    $("#AllDays").val((endDate - beginDate)/(3600*24*1000));
+                    var value =  (endDate - beginDate)/(3600*24*1000);
+                    if(value == 0)
+                        value = 1;
+                    $("#AllDays").val(value);
                     return;
                 }
             }
