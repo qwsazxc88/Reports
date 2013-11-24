@@ -4779,8 +4779,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.ChildVacation, false);
                 }
             }
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (current.UserRole == UserRole.PersonnelManager
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+                    (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)

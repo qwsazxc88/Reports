@@ -1214,11 +1214,36 @@ namespace WebMvc.Controllers
                      ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
                  else if (!model.IsDelete)
                  {
-                     int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
+                     /*int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates
                          (model.BeginDate.Value, model.EndDate.Value,
                          model.UserId, model.Id,true);
                      if (requestCount > 0)
-                         ModelState.AddModelError("BeginDate","Для данного пользователя существуют другие заявки в указанном интервале дат.");
+                         ModelState.AddModelError("BeginDate","Для данного пользователя существуют другие заявки в указанном интервале дат.");*/
+                     if (model.IsApproved)
+                     {
+                         DateTime beginDate = model.BeginDate.Value;
+                         DateTime current = DateTime.Today;
+                         DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
+                         bool isValid = true;
+                         if ((current.Day != 1) && monthBegin > beginDate)
+                         {
+                             isValid = RequestBl.HaveAbsencesForPeriod(model.BeginDate.Value,
+                                                                       model.EndDate.Value, model.UserId,
+                                                                       AuthenticationService.CurrentUser.Id, role);
+                         }
+                         if ((current.Day == 1) && monthBegin.AddMonths(-1) > beginDate)
+                         {
+                             isValid = RequestBl.HaveAbsencesForPeriod(model.BeginDate.Value,
+                                                                       model.EndDate.Value, model.UserId,
+                                                                       AuthenticationService.CurrentUser.Id, role);
+                         }
+                         if (!isValid)
+                         {
+                             Log.InfoFormat("Absence not found for child vacation {0}", model.Id);
+                             ModelState.AddModelError(string.Empty,
+                         "Период, указанный в заявке,не соответствует данным по неявкам в табеле.Вы не можете согласовать эту заявку.");
+                         }
+                     }
                  }
              }
              if (model.PaidToDate.HasValue && model.EndDate.HasValue && model.EndDate.Value < model.PaidToDate.Value)
@@ -1237,7 +1262,7 @@ namespace WebMvc.Controllers
                          ModelState.AddModelError("ChildrenCount", "Количество детей должно быть целым положительным числом.");
                  }
              }
-             CheckBeginDate(model);
+             //CheckBeginDate(model);
              return ModelState.IsValid;
          }
          protected void CorrectDropdowns(ChildVacationEditModel model)
