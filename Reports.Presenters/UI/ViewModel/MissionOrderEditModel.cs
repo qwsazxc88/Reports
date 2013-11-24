@@ -74,7 +74,7 @@ namespace Reports.Presenters.UI.ViewModel
     }
     public class MissionOrderEditTargetModel
     {
-        public int Id { get; set; }
+        public int TargetId { get; set; }
         //public string Day { get; set; }
         //public int UserId { get; set; }
 

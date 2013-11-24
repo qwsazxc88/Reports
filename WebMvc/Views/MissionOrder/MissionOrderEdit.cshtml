@@ -241,9 +241,20 @@
             renderTargetsTable(targets);
             $("#Targets").val(JSON.stringify(targets));
         }
-        function addTarget()
-        {
+        function addTarget() {
             createTargetDialog(actionEditTargetDialogUrl,"id=0");
+        }
+        function editTarget(targetId) {
+            clearEditTargetCommonErrors();
+            var targets = JSON.parse($("#Targets").val());
+            var obj = findById(targets.List,targetId);
+            if(obj == undefined)
+            {
+                addEditTargetCommonError("Не найден объект для редактирования");
+                return;
+            }
+            var params = "id="+targetId+"&json="+escapeJson(JSON.stringify(obj));
+            createTargetDialog(actionEditTargetDialogUrl,params);
         }
 
         function disableSaveButton() {
@@ -287,11 +298,11 @@
                 height: 490,
                 // fix IE6  
                 bgiframe: true,
-                open: function (event, ui) {
+                /*open: function (event, ui) {
                     $("#BeginDate").datepicker();
                     $("#EndDate").datepicker();
                     $(".hasDatepicker").width("75px"); 
-                },
+                },*/
                 close: function (event, ui) {
                     $(this).dialog("destroy").remove();
                 },
@@ -300,7 +311,8 @@
                     "Сохранить": function () {
                         if(!validateTarget())
                             return;
-                        addObject();
+                        if(!addObject())
+                             return;
                         $(this).dialog("close");
                     },
                     "Отмена": function () {
@@ -330,14 +342,83 @@
 }*/
         function addObject()
         {
+            clearEditTargetCommonErrors();
             var targets = JSON.parse($("#Targets").val());
-            var targetId = $("#Id").val();
+            var targetId = $("#TargetId").val();
             var countryId = $("#CountryId").val();
-            var country = $("#CountryId").text();
+            var country = $("#CountryId option:selected").text();
             var city = $("#City").val();
             var organization = $("#Organization").val();
             var dateFrom = $("#BeginDate").val();
             var dateTo = $("#EndDate").val();
+            var allDaysCount = $("#AllDays").val();
+            var targetDaysCount = $("#RealDays").val();
+            var dailyAllowanceId = $("#DailyAllowanceId").val();
+            var dailyAllowanceName = $("#DailyAllowanceId option:selected").text();
+            var residenceId = $("#ResidenceId").val();
+            var residenceName = $("#ResidenceId option:selected").text();
+            var airTicketTypeId = $("#AirTicketTypeId").val();
+            var airTicketTypeName = $("#AirTicketTypeId option:selected").text();
+            var trainTicketTypeId = $("#TrainTicketTypeId").val();
+            var trainTicketTypeName = $("#TrainTicketTypeId option:selected").text();
+            if(targetId == 0)
+            {
+                var targetId = findMinId(targets.List);
+                var newObj = { TargetId: targetId, CountryId: countryId, Country: country, City: city,Organization:organization, DateFrom:dateFrom,
+                DateTo:dateTo,AllDaysCount:allDaysCount,TargetDaysCount:targetDaysCount,DailyAllowanceId:dailyAllowanceId,DailyAllowanceName:dailyAllowanceName,
+                 ResidenceId:residenceId,ResidenceName:residenceName,AirTicketTypeId:airTicketTypeId,AirTicketTypeName:airTicketTypeName,
+                 TrainTicketTypeId:trainTicketTypeId,TrainTicketTypeName:trainTicketTypeName };
+                targets.List.push(newObj);
+            }
+            else
+            {
+                var obj = findById(targets.List,targetId);
+                 if(obj == undefined)
+                 {
+                    addEditTargetCommonError("Не найден объект для сохранения");
+                    return false;
+                 }
+                 obj.CountryId = countryId; 
+                 obj.Country = country; 
+                 obj.City = city;
+                 obj.Organization = organization; 
+                 obj.DateFrom = dateFrom;
+                 obj.DateTo = dateTo;
+                 obj.AllDaysCount = allDaysCount;
+                 obj.TargetDaysCount = targetDaysCount;
+                 obj.DailyAllowanceId = dailyAllowanceId;
+                 obj.DailyAllowanceName = dailyAllowanceName;
+                 obj.ResidenceId = residenceId;
+                 obj.ResidenceName = residenceName;
+                 obj.AirTicketTypeId = airTicketTypeId;
+                 obj.AirTicketTypeName = airTicketTypeName;
+                 obj.TrainTicketTypeId = trainTicketTypeId;
+                 obj.TrainTicketTypeName = trainTicketTypeName;
+            }
+            renderTargetsTable(targets);
+            $("#Targets").val(JSON.stringify(targets));
+            return true;
+        }
+        function findMinId(list)
+        {
+            var minId = 0;
+            jQuery.each( list, function( i, val ) {
+                if(val.TargetId < minId)
+                    minId = val.TargetId;
+            });
+            return minId - 1;
+        }
+        function findById(list,targetId)
+        {
+            var obj = undefined;
+            jQuery.each( list, function( i, val ) {
+                if(val.TargetId == targetId)
+                {
+                   obj = val;
+                   return obj;
+                }
+            });
+            return obj;
         }
         function validateTarget()
         {
@@ -361,7 +442,8 @@
                     endDate = $.datepicker.parseDate("dd.mm.yy", $('#EndDate').val());
                 }
                 catch (error) {
-                    addEditTargetError($("#EndDate"), "Неправильная дата");
+                    //addEditTargetError($("#EndDate"), "Неправильная дата");
+                   
                     result = false;
                 }
             }
@@ -439,6 +521,14 @@
                 }
             }
             $("#AllDays").val("");
+        }
+        function addEditTargetCommonError(value) {
+            $("#EditTargetDlgError").text(value);
+            $("#EditTargetDlgError").show();
+        }
+        function clearEditTargetCommonErrors() {
+            $("#EditTargetDlgError").text("");
+            $("#EditTargetDlgError").hide();
         }
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>

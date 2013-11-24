@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
@@ -49,11 +50,28 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]
-        public ActionResult EditTargetDialog(int id)
+        public ActionResult EditTargetDialog(int id,string json)
         {
             try
             {
-                MissionOrderEditTargetModel model = new MissionOrderEditTargetModel { Id = id };
+                MissionOrderEditTargetModel model = new MissionOrderEditTargetModel { TargetId = id };
+                if(!string.IsNullOrEmpty(json))
+                {
+                    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                    MissionOrderTargetModel target = jsonSerializer.Deserialize<MissionOrderTargetModel>(json);
+                    model.AirTicketTypeId = target.AirTicketTypeId;
+                    model.AllDays = target.AllDaysCount;
+                    model.BeginDate = target.DateFrom;
+                    model.City = target.City;
+                    model.CountryId = target.CountryId;
+                    model.DailyAllowanceId = target.DailyAllowanceId;
+                    model.EndDate = target.DateTo;
+                    model.Organization = target.Organization;
+                    model.RealDays = target.TargetDaysCount;
+                    model.ResidenceId = target.ResidenceId;
+                    model.TrainTicketTypeId = target.TrainTicketTypeId;
+
+                }
                 RequestBl.SetMissionOrderEditTargetModel(model);
                 return PartialView(model);
             }
