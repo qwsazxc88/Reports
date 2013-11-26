@@ -1,0 +1,26 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionTarget">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+      <version name="Version" column= "Version"/>
+      <!--<property name="CreateDate" not-null="true"/>-->
+      <property name="MissionOrderId" not-null="true"/>
+      <many-to-one name="Country" class="MissionCountry" column="CountryId" foreign-key="FK_MissionTarget_Country" index="IX_MissionTarget_Country_Id"  not-null="true"/>
+      <!--<property name="CountryId" not-null="true"/>-->
+      <property name="City" length="32" not-null="true"/>
+      <property name="Organization" length="32" not-null="true"/>
+      <property name="BeginDate" not-null="true"/>
+      <property name="EndDate" not-null="true"/>
+      <property name="DaysCount"  not-null="true"/>
+      <property name="RealDaysCount"  not-null="true"/>
+      <many-to-one name="DailyAllowance" class="MissionDailyAllowance" column="DailyAllowanceId" foreign-key="FK_MissionTarget_DailyAllowance" index="IX_MissionTarget_DailyAllowance_Id"  not-null="false"/>
+      <!--<property name="DailyAllowanceId" not-null="false"/>-->
+      <many-to-one name="Residence" class="MissionResidence" column="ResidenceId" foreign-key="FK_MissionTarget_Residence" index="IX_MissionTarget_Residence_Id"  not-null="false"/>
+      <!--<property name="ResidenceId" not-null="false"/>-->
+      <many-to-one name="AirTicketType" class="MissionAirTicketType" column="AirTicketTypeId" foreign-key="FK_MissionTarget_AirTicketType" index="IX_MissionTarget_AirTicketType_Id"  not-null="false"/>
+      <!--<property name="AirTicketTypeId" not-null="false"/>-->
+      <many-to-one name="TrainTicketType" class="MissionTrainTicketType" column="TrainTicketTypeId" foreign-key="FK_MissionTarget_TrainTicketType" index="IX_MissionTarget_TrainTicketType_Id"  not-null="false"/>
+      <!--<property name="TrainTicketTypeId" not-null="false"/>-->
+  </class>
+</hibernate-mapping>

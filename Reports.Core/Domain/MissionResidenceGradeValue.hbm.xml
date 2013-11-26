@@ -1,0 +1,11 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionResidenceGradeValue">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <many-to-one name="Residence" class="MissionResidence" column="ResidenceId" foreign-key="FK_MissionResidenceGradeValue_Residence" index="IX_MissionResidenceGradeValue_Residence_Id"  not-null="true"/>
+    <many-to-one name="Grade" class="MissionGraid" column="GradeId" foreign-key="FK_MissionResidenceGradeValue_Grade" index="IX_MissionResidenceGradeValue_Grade_Id"  not-null="true"/>
+    <property name="GradeDate"  not-null="true"/>
+    <property name="Amount"  not-null="true"/>
+  </class>
+</hibernate-mapping>
