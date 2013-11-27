@@ -122,6 +122,7 @@
     <Compile Include="Dao\IMissionDailyAllowanceDao.cs" />
     <Compile Include="Dao\IMissionDao.cs" />
     <Compile Include="Dao\IMissionGoalDao.cs" />
+    <Compile Include="Dao\IMissionGraidDao.cs" />
     <Compile Include="Dao\IMissionResidenceDao.cs" />
     <Compile Include="Dao\IMissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\IMissionTypeDao.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Dao\Impl\MissionDailyAllowanceDao.cs" />
     <Compile Include="Dao\Impl\MissionDao.cs" />
     <Compile Include="Dao\Impl\MissionGoalDao.cs" />
+    <Compile Include="Dao\Impl\MissionGraidDao.cs" />
     <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />

@@ -30,13 +30,28 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
 
-
+        public string DailyAllowanceGrades { get; set; }
+        public string ResidenceGrades { get; set; }
+        public string AirTicketTypeGrades { get; set; }
+        public string TrainTicketTypeGrades { get; set; }
+      
 
         public string Targets { get; set; }
 
         [Display(Name = "Грейд G (1,2,3,4)")]
         public string Grade { get; set; }
-       
+
+        public decimal AllSumDaily { get; set; }
+        public string  UserAllSumDaily { get; set; }
+        public decimal AllSumResidence { get; set; }
+        public string  UserAllSumResidence { get; set; }
+        public decimal AllSumAir { get; set; }
+        public string  UserAllSumAir { get; set; }
+        public decimal AllSumTrain { get; set; }
+        public string  UserAllSumTrain { get; set; }
+        public decimal AllSum { get; set; }
+        public decimal UserAllSum { get; set; }
+
 
         public RequestCommentsModel CommentsModel { get; set; }
 

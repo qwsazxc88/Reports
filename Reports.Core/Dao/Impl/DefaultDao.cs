@@ -690,7 +690,8 @@ namespace Reports.Core.Dao.Impl
                             where GradeId = :gradeId and GradeDate <= :endDate
                             group by [GradeId],{0})
                             select m.GradeId,m.{0} as Id,Amount from {1} m
-                            inner join res r on m.GradeId = r.[GradeId] and m.{0} = r.{0} and m.GradeDate = r.MaxDate",
+                            inner join res r on m.GradeId = r.[GradeId] and m.{0} = r.{0} and m.GradeDate = r.MaxDate
+                            order by Id",
                     fieldName, tableName);
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("GradeId", NHibernateUtil.Int32).

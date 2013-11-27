@@ -159,3 +159,4 @@ insert into  dbo.MissionDailyAllowanceGradeValue (DailyAllowanceId, GradeId, Gra
 values (4,3,'2013-01-01',700)
 insert into  dbo.MissionDailyAllowanceGradeValue (DailyAllowanceId, GradeId, GradeDate, Amount)
 values (4,4,'2013-01-01',700)
+ commit

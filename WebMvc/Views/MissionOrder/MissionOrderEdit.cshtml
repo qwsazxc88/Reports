@@ -59,6 +59,10 @@
                 <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="DailyAllowanceGrades" name="DailyAllowanceGrades" value="@Model.DailyAllowanceGrades" />
+                <input type="hidden" id="ResidenceGrades" name="ResidenceGrades" value="@Model.ResidenceGrades" />
+                <input type="hidden" id="AirTicketTypeGrades" name="AirTicketTypeGrades" value="@Model.AirTicketTypeGrades" />
+                <input type="hidden" id="TrainTicketTypeGrades" name="TrainTicketTypeGrades" value="@Model.TrainTicketTypeGrades" />
                 @*<input type="hidden" id="IsTimesheetStatusEditable" name="IsTimesheetStatusEditable" value="@Model.IsTimesheetStatusEditable" />
                 <input type="hidden" id="IsReasonEditable" name="IsReasonEditable" value="@Model.IsReasonEditable" />
                 <input type="hidden" id="TimesheetStatusIdHidden" name="TimesheetStatusIdHidden" value="@Model.TimesheetStatusIdHidden" />
@@ -88,6 +92,78 @@
             <td colspan="2">
                <input type="hidden" id="Targets" name="Targets" value="@Model.Targets" />
                 <table id="targetsTable"></table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            Наименование
+                        </td>
+                         <td>
+                            Итого по G расчетная
+                        </td>
+                         <td>
+                            Сумма, запрашиваемая сотрудником
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Суточные (руб. в день командировки)
+                        </td>
+                         <td>
+                            @Html.TextBoxFor(m => m.AllSumDaily, new { disabled = "disabled" })
+                        </td>
+                        <td>
+                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                            Проживание (стоимость номера руб./сутки)
+                        </td>
+                         <td>
+                            @Html.TextBoxFor(m => m.AllSumResidence, new { disabled = "disabled" })
+                        </td>
+                        <td>
+                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                        </td>
+                    </tr>
+                     <tr>
+                        <td>
+                           Авиа билеты (руб.)
+                        </td>
+                         <td>
+                            @Html.TextBoxFor(m => m.AllSumAir, new { disabled = "disabled" })
+                        </td>
+                        <td>
+                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                           Железнодорожные билеты (руб.)
+                        </td>
+                         <td>
+                            @Html.TextBoxFor(m => m.AllSumTrain, new { disabled = "disabled" })
+                        </td>
+                        <td>
+                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                           Итого
+                        </td>
+                         <td>
+                            @Html.TextBoxFor(m => m.AllSum, new { disabled = "disabled" })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.UserAllSum, new { disabled = "disabled" }) 
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -238,6 +314,7 @@
             targets.List = jQuery.grep(targets.List, function (value, i) {
                 return value.TargetId != targetId;
             });
+            calculateSums(targets.List);
             renderTargetsTable(targets);
             $("#Targets").val(JSON.stringify(targets));
         }
@@ -247,7 +324,7 @@
         function editTarget(targetId) {
             clearEditTargetCommonErrors();
             var targets = JSON.parse($("#Targets").val());
-            var obj = findById(targets.List,targetId);
+            var obj = findByTargetId(targets.List,targetId);
             if(obj == undefined)
             {
                 addEditTargetCommonError("Не найден объект для редактирования");
@@ -345,21 +422,21 @@
             clearEditTargetCommonErrors();
             var targets = JSON.parse($("#Targets").val());
             var targetId = $("#TargetId").val();
-            var countryId = $("#CountryId").val();
+            var countryId = parseInt($("#CountryId").val(),10);
             var country = $("#CountryId option:selected").text();
             var city = $("#City").val();
             var organization = $("#Organization").val();
             var dateFrom = $("#BeginDate").val();
             var dateTo = $("#EndDate").val();
-            var allDaysCount = $("#AllDays").val();
-            var targetDaysCount = $("#RealDays").val();
-            var dailyAllowanceId = $("#DailyAllowanceId").val();
+            var allDaysCount = parseInt($("#AllDays").val(),10);
+            var targetDaysCount = parseInt($("#RealDays").val(),10);
+            var dailyAllowanceId = parseInt($("#DailyAllowanceId").val(),10);
             var dailyAllowanceName = $("#DailyAllowanceId option:selected").text();
-            var residenceId = $("#ResidenceId").val();
+            var residenceId = parseInt($("#ResidenceId").val(),10);
             var residenceName = $("#ResidenceId option:selected").text();
-            var airTicketTypeId = $("#AirTicketTypeId").val();
+            var airTicketTypeId = parseInt($("#AirTicketTypeId").val(),10);
             var airTicketTypeName = $("#AirTicketTypeId option:selected").text();
-            var trainTicketTypeId = $("#TrainTicketTypeId").val();
+            var trainTicketTypeId = parseInt($("#TrainTicketTypeId").val(),10);
             var trainTicketTypeName = $("#TrainTicketTypeId option:selected").text();
             if(targetId == 0)
             {
@@ -372,7 +449,7 @@
             }
             else
             {
-                var obj = findById(targets.List,targetId);
+                var obj = findByTargetId(targets.List,targetId);
                  if(obj == undefined)
                  {
                     addEditTargetCommonError("Не найден объект для сохранения");
@@ -395,9 +472,78 @@
                  obj.TrainTicketTypeId = trainTicketTypeId;
                  obj.TrainTicketTypeName = trainTicketTypeName;
             }
+            
+
             renderTargetsTable(targets);
             $("#Targets").val(JSON.stringify(targets));
-            return true;
+            return calculateSums(targets.List);
+        }
+        function calculateSums(list)
+        {
+                var sumDaily = 0;
+                var sumResidence = 0;
+                var sumAir = 0; 
+                var sumTrain = 0; 
+                jQuery.each( list, function( i, val ) {
+                   var dailyType  = val.DailyAllowanceId;
+                   dailyTargetSum = 0;
+                   if(dailyType != 0)
+                   {
+                       var dailyAmount = findTypeGrade($("#DailyAllowanceGrades").val(),dailyType);
+                       if(dailyAmount == undefined)
+                       {
+                            addEditTargetCommonError("Не найден лимит на расходы для суточных");
+                            return false;
+                       }
+                       dailyTargetSum = dailyAmount * val.AllDaysCount;
+                   }
+                   sumDaily = sumDaily + dailyTargetSum;
+                   var resType  = val.ResidenceId;
+                   resTargetSum = 0;
+                   if(resType != 0)
+                   {
+                       var resAmount = findTypeGrade($("#ResidenceGrades").val(),resType);
+                       if(resAmount == undefined)
+                       {
+                            addEditTargetCommonError("Не найден лимит на расходы для проживания");
+                            return false;
+                       }
+                       resTargetSum = resAmount * val.TargetDaysCount;
+                   }
+                   sumResidence = sumResidence+resTargetSum;
+                   var airType  = val.AirTicketTypeId;
+                   airTargetSum = 0;
+                   if(airType != 0)
+                   {
+                       var airAmount = findTypeGrade($("#AirTicketTypeGrades").val(),airType);
+                       if(airAmount == undefined)
+                       {
+                            addEditTargetCommonError("Не найден лимит на расходы для авиабилетов");
+                            return false;
+                       }
+                       airTargetSum = airAmount;
+                   }
+                   sumAir = sumAir+airTargetSum;
+                   var trainType  = val.TrainTicketTypeId;
+                   trainTargetSum = 0;
+                   if(trainType != 0)
+                   {
+                       var trainAmount = findTypeGrade($("#TrainTicketTypeGrades").val(),trainType);
+                       if(trainAmount == undefined)
+                       {
+                            addEditTargetCommonError("Не найден лимит на расходы для ж/д билетов");
+                            return false;
+                       }
+                       trainTargetSum = trainAmount;
+                   }
+                   sumTrain = sumTrain+trainTargetSum;
+                });
+                $("#AllSumDaily").val(sumDaily);
+                $("#AllSumResidence").val(sumResidence);
+                $("#AllSumAir").val(sumAir);
+                $("#AllSumTrain").val(sumTrain);
+                $("#AllSum").val(sumDaily+sumResidence+sumAir+sumTrain);
+                return true;
         }
         function findMinId(list)
         {
@@ -408,7 +554,7 @@
             });
             return minId - 1;
         }
-        function findById(list,targetId)
+        function findByTargetId(list,targetId)
         {
             var obj = undefined;
             jQuery.each( list, function( i, val ) {
@@ -420,6 +566,27 @@
             });
             return obj;
         }
+        function findTypeGrade(field,id)
+        {
+             var types = JSON.parse(field);
+             var obj = findById(types,id);
+            if(obj == undefined)
+                return undefined;
+            return obj.Amount;
+        }
+        function findById(list,targetId)
+        {
+            var obj = undefined;
+            jQuery.each( list, function( i, val ) {
+                if(val.Id == targetId)
+                {
+                   obj = val;
+                   return obj;
+                }
+            });
+            return obj;
+        }
+        
         function validateTarget()
         {
             clearEditTargetErrors($("#targetDialogTable"));

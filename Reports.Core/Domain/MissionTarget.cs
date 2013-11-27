@@ -19,7 +19,7 @@ namespace Reports.Core.Domain
         public virtual int DaysCount { get; set; }
         public virtual int RealDaysCount { get; set; }
 
-        public virtual MissionDailyAllowance DailyAllowanceId { get; set; }
+        public virtual MissionDailyAllowance DailyAllowance { get; set; }
         public virtual MissionResidence Residence { get; set; }
         public virtual MissionAirTicketType AirTicketType { get; set; }
         public virtual MissionTrainTicketType TrainTicketType { get; set; }

@@ -375,6 +375,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionTrainTicketTypeDao); }
             set { missionTrainTicketTypeDao = value; }
         }
+        protected IMissionGraidDao missionGraidDao;
+        public IMissionGraidDao MissionGraidDao
+        {
+            get { return Validate.Dependency(missionGraidDao); }
+            set { missionGraidDao = value; }
+        }
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -6553,6 +6559,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
+            LoadGraids(model,1);
 
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             return model;
@@ -6632,6 +6639,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Statuses = GetTimesheetStatusesForDismissal();
             model.Types = GetMissionTypes(false);
             model.Goals = GetMissionGoals(false);
+        }
+        protected void LoadGraids(MissionOrderEditModel model, int gradeId)
+        {
+            IList<GradeAmountDto> dailyList = MissionGraidDao.GetDailyAllowanceGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            if (dailyList.Count != 4)
+                throw new ValidationException(string.Format("Неверное число лимитов для суточных загружено из базы данных"));
+            IList<GradeAmountDto> resList = MissionGraidDao.GetResidenceGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            if (resList.Count != 2)
+                throw new ValidationException(string.Format("Неверное число лимитов для авиа проживания загружено из базы данных"));
+            IList<GradeAmountDto> airList = MissionGraidDao.GetAirTicketTypeGradeAmountForGradeAndDate(gradeId,DateTime.Now);
+            if(airList.Count != 6)
+                throw new ValidationException(string.Format("Неверное число лимитов для авиа билетов загружено из базы данных"));
+            IList<GradeAmountDto> trainList = MissionGraidDao.GetTrainTicketTypeGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            if (trainList.Count != 6)
+                throw new ValidationException(string.Format("Неверное число лимитов для ж/д билетов загружено из базы данных"));
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            model.DailyAllowanceGrades = jsonSerializer.Serialize(dailyList.ToArray());
+            model.ResidenceGrades = jsonSerializer.Serialize(resList.ToArray());
+            model.AirTicketTypeGrades = jsonSerializer.Serialize(airList.ToArray());
+            model.TrainTicketTypeGrades = jsonSerializer.Serialize(trainList.ToArray()); 
         }
         protected List<IdNameDto> GetMissionGoals(bool addAll)
         {

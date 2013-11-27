@@ -356,6 +356,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IMissionTrainTicketTypeDao)).
               ImplementedBy(typeof(MissionTrainTicketTypeDao)).
               LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionGraidDao)).
+             ImplementedBy(typeof(MissionGraidDao)).
+             LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
