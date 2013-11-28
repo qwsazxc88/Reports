@@ -30,7 +30,7 @@
                 @Html.LabelFor(m => m.BeginMissionDate):
             </td>
             <td>
-                @Html.TextBoxFor(m => m.BeginMissionDate, new { disabled = "disabled" })
+                @Html.TextBoxFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
             </td>
         </tr>
          <tr>
@@ -38,7 +38,7 @@
                 @Html.LabelFor(m => m.EndMissionDate):
             </td>
             <td>
-                @Html.TextBoxFor(m => m.EndMissionDate, new { disabled = "disabled" })
+                @Html.TextBoxFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
             </td>
         </tr>
         <tr>
@@ -113,10 +113,10 @@
                             Суточные (руб. в день командировки)
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSumDaily, new { @class = "readonly", @readonly = "readonly" })
+                            @Html.TextBoxFor(m => m.AllSumDaily, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -124,10 +124,10 @@
                             Проживание (стоимость номера руб./сутки)
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSumResidence, new { disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.AllSumResidence, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -135,10 +135,10 @@
                            Авиа билеты (руб.)
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSumAir, new { disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.AllSumAir, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -146,10 +146,10 @@
                            Железнодорожные билеты (руб.)
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSumTrain, new { disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.AllSumTrain, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -157,13 +157,75 @@
                            Итого
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSum, new { disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.AllSum, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.UserAllSum, new { disabled = "disabled" }) 
+                            @Html.TextBoxFor(model => model.UserAllSum, new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                     </tr>
                 </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="color:Red">
+            По приезду из командировки в течение 15 дней должен быть заполнен Авансовый отчет и предоставлены подтверждающие документы.<br/>
+            В случае не заполнения Авансового отчета в указанный срок, вся сумма подотчета подлежит удержанию в полном <br/>
+            объеме из заработной платы. 
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.UserSumCash):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.UserSumNotCash):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsUserApproved)
+                @if (!Model.IsEditable)
+                {
+                    <input type="hidden" id="IsUserApprovedHidden" name="IsUserApprovedHidden" value="@Model.IsUserApprovedHidden" />
+                }
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                @Html.CheckBox("IsChiefApproveNeed", Model.IsChiefApproveNeed, (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsChiefApproveNeed)
+                <input type="hidden" id="IsChiefApproveNeedHidden" name="IsChiefApproveNeedHidden" value="@Model.IsChiefApproveNeedHidden" />
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                    Расходы утверждены функциональным руководителем
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
+                    @if (!Model.IsManagerApproveAvailable)
+                    {
+                        <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
+                    }
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                    Согласование Члена Розничного Правления/ Члена Правления, курирующего функциональное  направление
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
+                    @if (!Model.IsChiefApproveAvailable)
+                    {
+                        <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
+                    }
             </td>
         </tr>
          <tr>
@@ -489,7 +551,25 @@
                 var sumResidence = 0;
                 var sumAir = 0; 
                 var sumTrain = 0; 
+                var beginDate = '';
+                var endDate = '';
                 jQuery.each( list, function( i, val ) {
+
+                    try {
+                        var bDate = $.datepicker.parseDate("dd.mm.yy", val.DateFrom);
+                        var eDate = $.datepicker.parseDate("dd.mm.yy", val.DateTo);
+                        if(beginDate == '')
+                            beginDate = bDate;
+                        else if(bDate < beginDate)
+                            beginDate = bDate;   
+                         if(endDate == '')
+                            endDate = eDate;
+                        else if(eDate > endDate)
+                            endDate = eDate;
+                    }
+                    catch (error) {
+                    }
+
                    var dailyType  = val.DailyAllowanceId;
                    dailyTargetSum = 0;
                    if(dailyType != 0)
@@ -542,12 +622,22 @@
                        trainTargetSum = trainAmount;
                    }
                    sumTrain = sumTrain+trainTargetSum;
+                   
+
                 });
                 $("#AllSumDaily").val(sumDaily);
                 $("#AllSumResidence").val(sumResidence);
                 $("#AllSumAir").val(sumAir);
                 $("#AllSumTrain").val(sumTrain);
                 $("#AllSum").val(sumDaily+sumResidence+sumAir+sumTrain);
+                if(beginDate != '')
+                    $("#BeginMissionDate").val($.datepicker.formatDate('dd.mm.yy', beginDate));
+                else
+                    $("#BeginMissionDate").val('');
+                if(endDate != '')
+                    $("#EndMissionDate").val($.datepicker.formatDate('dd.mm.yy', endDate));
+                else
+                    $("#EndMissionDate").val('');
                 return true;
         }
         function findMinId(list)

@@ -608,3 +608,7 @@ margin-right:5px;
 {
     background-color:Red;
 }
+.fixedSize
+{
+    width:85px!important;
+}

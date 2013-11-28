@@ -52,10 +52,32 @@ namespace Reports.Presenters.UI.ViewModel
         public decimal AllSum { get; set; }
         public decimal UserAllSum { get; set; }
 
+        [Display(Name = "Сумма наличных в подотчет")]
+        public string UserSumCash { get; set; }
+        [Display(Name = "Сумма безналичных в подотчет")]
+        public string UserSumNotCash { get; set; }
+
+        [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]
+        public bool IsUserApproved { get; set; }
+        public bool IsUserApprovedHidden { get; set; }
+
+        [Display(Name = "Командировка приходится на выходные/праздничные дни или  её продолжительность более семи дней")]
+        public bool IsChiefApproveNeed { get; set; }
+        public bool IsChiefApproveNeedHidden { get; set; }
+
+        public bool? IsManagerApproved { get; set; }
+        public bool IsManagerApproveAvailable { get; set; }
+        public bool IsManagerApprovedHidden { get; set; }
+
+        public bool? IsChiefApproved { get; set; }
+        public bool IsChiefApproveAvailable { get; set; }
+        public bool IsChiefApprovedHidden { get; set; }
+        //public bool IsManagerNotApproved { get; set; }
 
         public RequestCommentsModel CommentsModel { get; set; }
 
         public bool IsEditable { get; set; }
+       
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsDelete { get; set; }
