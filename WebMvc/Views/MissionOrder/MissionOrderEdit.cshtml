@@ -27,18 +27,18 @@
         }
         <tr>
             <td>
-                @Html.LabelFor(m => m.BeginDate):
+                @Html.LabelFor(m => m.BeginMissionDate):
             </td>
             <td>
-                @Html.DisplayFor(m => m.BeginDate)
+                @Html.TextBoxFor(m => m.BeginMissionDate, new { disabled = "disabled" })
             </td>
         </tr>
          <tr>
             <td>
-                @Html.LabelFor(m => m.EndDate):
+                @Html.LabelFor(m => m.EndMissionDate):
             </td>
             <td>
-                @Html.DisplayFor(m => m.EndDate)
+                @Html.TextBoxFor(m => m.EndMissionDate, new { disabled = "disabled" })
             </td>
         </tr>
         <tr>
@@ -113,7 +113,7 @@
                             Суточные (руб. в день командировки)
                         </td>
                          <td>
-                            @Html.TextBoxFor(m => m.AllSumDaily, new { disabled = "disabled" })
+                            @Html.TextBoxFor(m => m.AllSumDaily, new { @class = "readonly", @readonly = "readonly" })
                         </td>
                         <td>
                            @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
@@ -164,6 +164,11 @@
                         </td>
                     </tr>
                 </table>
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+               <input type="submit" value="Сохранить"/>
             </td>
         </tr>
     </table>

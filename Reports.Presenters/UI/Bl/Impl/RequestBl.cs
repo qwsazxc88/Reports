@@ -6642,6 +6642,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId)
         {
+            MissionGraid graid = MissionGraidDao.Load(gradeId);
+            if(graid == null)
+                throw new ValidationException(string.Format("Не найден грайд (id = {0}) в базе данных",gradeId));
+            model.Grade = graid.Name;
             IList<GradeAmountDto> dailyList = MissionGraidDao.GetDailyAllowanceGradeAmountForGradeAndDate(gradeId, DateTime.Now);
             if (dailyList.Count != 4)
                 throw new ValidationException(string.Format("Неверное число лимитов для суточных загружено из базы данных"));

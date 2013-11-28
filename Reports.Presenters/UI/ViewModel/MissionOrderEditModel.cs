@@ -15,10 +15,10 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
 
         [Display(Name = "Дата начала командировки")]
-        public string BeginDate { get; set; }
+        public string BeginMissionDate { get; set; }
 
         [Display(Name = "Дата окончания командировки")]
-        public string EndDate { get; set; }
+        public string EndMissionDate { get; set; }
 
         [Display(Name = "Цель командировки")]
         public int GoalId { get; set; }
