@@ -81,6 +81,7 @@
             </td>
             <td>
                 @Html.DisplayFor(m => m.Grade)
+                <input type="hidden" id="Grade" name="Grade" value="@Model.Grade" />
             </td>
         </tr>
          <tr>
@@ -791,6 +792,46 @@
         function clearEditTargetCommonErrors() {
             $("#EditTargetDlgError").text("");
             $("#EditTargetDlgError").hide();
+        }
+        function CalcUserCashNotCashSums(){
+            var allCashSum = 0;
+            var sum = ValidateSum($("#UserSumCash"));
+            if(sum != undefined)
+                allCashSum = allCashSum + sum;
+            else if ($("#UserSumCash").val() != '')
+                return false;
+            sum = ValidateSum($("#UserSumNotCash"));
+            if(sum != undefined)
+                allCashSum = allCashSum + sum;
+            else if ($("#UserSumNotCash").val() != '')
+                return false;
+
+            if(allCashSum > 0)
+            {
+                if($("#UserAllSum").val() != '')
+                {
+                    var sum = ValidateFloat($("#UserAllSum"));
+                    if((sum == undefined) || (sum != allCashSum))
+                    {
+                        addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                    return false;
+                }    
+            }
+            else
+            {
+                 var sum = ValidateFloat($("#UserAllSum"));
+                 if((sum == undefined) || (sum == 0))
+                    return true;
+                  addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                  return false; 
+            }
         }
         function CalcUserSum() {
             clearEditTargetErrors($("#AllTargetSums"));
