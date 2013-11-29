@@ -45,4 +45,29 @@ function clearMainActiveMenuItem() {
     $(".mainOn").each(function () {
         jQuery(this).attr("class", "mainMenuItem");
     });
-}  
+}
+
+function ValidateFloat(control) {
+    var hours = $(control).val();
+    var hourValue = getFloatValueC(hours);
+    if (isNaN(hourValue) || !/^[0-9\.,]+$/.test(hours)) {
+          return undefined;
+    }
+    hourValue = GetTwoDigitValue(hourValue);
+    hours = ReplaceToRussianDecimalPointC(hourValue.toString());
+    control.val(hours);
+    return hourValue;
+}
+function getFloatValueC(textValue) {
+    var value = trimSpaces(textValue);
+    value = ReplaceDecimalPointC(value);
+    return parseFloat(value);
+}
+function ReplaceDecimalPointC(value) {
+    return value.replace(/,/g, '.');
+
+}
+function ReplaceToRussianDecimalPointC(value) {
+    return value.replace('.', ',');
+
+}

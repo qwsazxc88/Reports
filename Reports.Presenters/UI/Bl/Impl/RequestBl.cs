@@ -6555,7 +6555,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 JsonList list = new JsonList { List = new MissionOrderTargetModel[0] };
                 JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-                model.Targets = jsonSerializer.Serialize(list); 
+                model.Targets = jsonSerializer.Serialize(list);
+                model.IsEditable = true;
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);

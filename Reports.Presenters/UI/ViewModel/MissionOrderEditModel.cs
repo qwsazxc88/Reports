@@ -59,6 +59,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]
         public bool IsUserApproved { get; set; }
+        public bool IsUserAvailable { get; set; }
         public bool IsUserApprovedHidden { get; set; }
 
         [Display(Name = "Командировка приходится на выходные/праздничные дни или  её продолжительность более семи дней")]
