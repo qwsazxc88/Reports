@@ -6525,9 +6525,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Создан сотрудником"),
-                                                           new IdNameDto(2, "Утвержден руководителем"),
-                                                           new IdNameDto(3, "Согласован членом правления"),
+                                                           new IdNameDto(1, "Одобрен сотрудником"),
+                                                           new IdNameDto(2, "Не одобрен сотрудником"),
+                                                           new IdNameDto(3, "Одобрен руководителем"),
+                                                           new IdNameDto(4, "Не одобрен руководителем"),
+                                                           new IdNameDto(5, "Одобрен членом правления"),
+                                                           new IdNameDto(6, "Не одобрен членом правления"),
                                                            //new IdNameDto(10, "Отклоненные"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
