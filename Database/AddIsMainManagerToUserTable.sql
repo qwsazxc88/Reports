@@ -1,0 +1,1 @@
+﻿alter table dbo.Users add IsMainManager bit not null default(0)

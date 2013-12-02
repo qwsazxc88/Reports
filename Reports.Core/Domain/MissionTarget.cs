@@ -9,7 +9,7 @@ namespace Reports.Core.Domain
     {
         #region Fields
 
-        public virtual int MissionOrderId { get; set; }
+        public virtual MissionOrder MissionOrder { get; set; }
         public virtual MissionCountry Country { get; set; }
         public virtual string City { get; set; }
         public virtual string Organization { get; set; }

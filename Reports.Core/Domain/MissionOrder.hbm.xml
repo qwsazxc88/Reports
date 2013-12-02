@@ -1,0 +1,50 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionOrder">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	<property name="EditDate" not-null="true"/>
+    <property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+
+	  
+	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
+	<many-to-one name="Goal" class="MissionGoal" column="MissionGoalId" foreign-key="FK_MissionOrder_MissionGoal" index="MissionOrder_MissionGoal"  not-null="false"/>
+	<property name="AllSum"  not-null="true"/>
+	<property name="UserSumDaily"  not-null="false"/>
+	<property name="UserSumResidence"  not-null="false"/>
+	<property name="UserSumAir"  not-null="false"/>
+	<property name="UserSumTrain"  not-null="false"/>
+	<property name="UserAllSum"  not-null="true"/>
+	<property name="UserSumCash"  not-null="false"/>
+	<property name="UserSumNotCash"  not-null="false"/>
+	<property name="NeedToAcceptByChief"  not-null="true"/>
+
+
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionOrder_User" index="IX_MissionOrder_User_Id"  not-null="true"/>
+	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_MissionOrder_CreatorUser" index="IX_MissionOrder_CreatorUser_Id"  not-null="true"/>
+
+	<property name="UserDateAccept" not-null="false"/>
+	<many-to-one name="AcceptUser" class="User" column="AcceptUserId" foreign-key="FK_MissionOrder_AcceptUser" index="IX_MissionOrder_AcceptUser"  not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_MissionOrder_AcceptManager" index="IX_MissionOrder_AcceptManager"  not-null="false"/>
+	<property name="ChiefDateAccept" not-null="false"/>
+	<many-to-one name="AcceptChief" class="User" column="AcceptChiefId" foreign-key="FK_MissionOrder_AcceptChief" index="IX_MissionOrder_AcceptChief"  not-null="false"/>
+	<property name="SendTo1C" not-null="false"/>
+	<property name="DeleteDate" not-null="false"/>
+	<property name="DeleteAfterSendTo1C" not-null="true"/>
+	  
+	  <bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>
+		  <one-to-many class="MissionTarget"/>
+	  </bag>
+	  
+	  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<key column="MissionOrderId" foreign-key="FK_MissionOrderComment_MissionOrder"/>
+		<one-to-many class="MissionOrderComment"/>
+	  </bag>
+	</class>
+</hibernate-mapping>

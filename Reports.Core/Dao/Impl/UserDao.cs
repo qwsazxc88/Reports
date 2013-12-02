@@ -68,6 +68,83 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.IsNull("DateRelease"))
                   .List<User>();
         }
+        public virtual User GetManagerForEmployee(string login)
+        {
+            return (User)Session.CreateCriteria(typeof(User))
+                  .Add(Restrictions.Eq("Login", login+"R"))
+                  .Add(Restrictions.Eq("RoleId", 4))
+                  .Add(Restrictions.Eq("IsActive", true))
+                  .UniqueResult();
+        }
+        public virtual IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList,int level)
+        {
+            string sqlQuery =
+                @" select emp.Id,emp.Name from Users emp
+                    inner join Users man on emp.Login+N'R' = man.Login
+                    and ((emp.RoleId & 2) > 0) and man.RoleId = 4
+                    and emp.IsActive = 1 and man.IsActive = 1 
+                    inner join dbo.Department d on man.DepartmentId = d.Id
+                    where d.Path like :path and 
+                    ((man.[level] in (:levelList)) or ((man.[level] = :level) and (man.IsMainManager = 0))) 
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetString("path", departmentPath + "%").
+                SetInt32("level", level).
+                SetParameterList("levelList", levelList);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
+        public virtual IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, List<int> levelList, int level)
+        {
+            string sqlQuery =
+                @" select emp.Id,emp.Name from Users emp
+                    inner join Users man on emp.Login+N'R' = man.Login
+                    and ((emp.RoleId & 2) > 0) and man.RoleId = 4
+                    and emp.IsActive = 1 and man.IsActive = 1 
+                    inner join dbo.Department d on man.DepartmentId = d.Id
+                    where d.Path like :path and 
+                    ((man.[level] in (:levelList)) or ((man.[level] = :level) and (man.IsMainManager = 0)))
+                    union 
+                    select emp.Id,emp.Name from Users emp
+                    inner join dbo.Department d on emp.DepartmentId = d.Id
+                    where ((emp.RoleId & 2) > 0) 
+                    and emp.IsActive = 1 
+                    and d.Path like :path
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetString("path", departmentPath + "%").
+                SetInt32("level", level).
+                SetParameterList("levelList", levelList);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
+        public virtual IList<User> GetUserWithEmailAndRole(UserRole role, string email,
+            string departmentPath, List<int> levelList)
+        {
+            string sqlQuery =
+                @" select u.* from Users u
+                                inner join dbo.Department d on d.Id = u.DepartmentId
+                                where u.IsActive = 1 and u.DateRelease is null
+                                and u.Level in (:levelList)
+                                and (u.RoleId & :role) > 0 
+                                and u.eMail = :email
+                                and d.Path like :path";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("role", (int) role).
+                SetString("email", email).
+                SetString("path", departmentPath + "%").
+                SetParameterList("levelList", levelList);
+            return query.List<User>();
+            //return Session.CreateCriteria(typeof(User))
+            //      .Add(Restrictions.Eq("RoleId", (int)role))
+            //      .Add(Restrictions.Eq("IsActive", true))
+            //      .Add(Restrictions.Not(Restrictions.Eq("Level", 0)))
+            //      .Add(Restrictions.Eq("Email", email))
+            //      .Add(Restrictions.IsNull("DateRelease"))
+            //      .List<User>();
+        }
         public virtual IList<User> LoadUserByCodes(List<string> codes)
         {
             if(codes.Count > bufferSize)

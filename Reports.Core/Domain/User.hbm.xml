@@ -29,6 +29,7 @@
     <property name="Rate" not-null="false" />
     <property name="GivesCredit" not-null="true" />
     <property name="Level" not-null="false" />
+	<property name="IsMainManager" not-null="true" />
     
 	<!--<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>-->
 	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>

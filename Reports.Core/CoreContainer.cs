@@ -360,6 +360,13 @@ namespace Reports.Core
              ImplementedBy(typeof(MissionGraidDao)).
              LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IMissionOrderDao)).
+             ImplementedBy(typeof(MissionOrderDao)).
+             LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionOrderCommentDao)).
+             ImplementedBy(typeof(MissionOrderCommentDao)).
+             LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

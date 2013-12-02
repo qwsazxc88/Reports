@@ -381,6 +381,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionGraidDao); }
             set { missionGraidDao = value; }
         }
+        protected IMissionOrderDao missionOrderDao;
+        public IMissionOrderDao MissionOrderDao
+        {
+            get { return Validate.Dependency(missionOrderDao); }
+            set { missionOrderDao = value; }
+        }
+        protected IMissionOrderCommentDao missionOrderCommentDao;
+        public IMissionOrderCommentDao MissionOrderCommentDao
+        {
+            get { return Validate.Dependency(missionOrderCommentDao); }
+            set { missionOrderCommentDao = value; }
+        }
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -4975,17 +4987,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                     case (int)RequestTypeEnum.MissionOrder:
-                    /*Mission mission = MissionDao.Load(id);
-                    if ((mission.Comments != null) && (mission.Comments.Count() > 0))
+                    MissionOrder missionOrder = MissionOrderDao.Load(id);
+                    if ((missionOrder.Comments != null) && (missionOrder.Comments.Count() > 0))
                     {
-                        commentModel.Comments = mission.Comments.OrderBy(x => x.DateCreated).ToList().
+                        commentModel.Comments = missionOrder.Comments.OrderBy(x => x.DateCreated).ToList().
                             ConvertAll(x => new RequestCommentModel
                             {
                                 Comment = x.Comment,
                                 CreatedDate = x.DateCreated.ToString(),
                                 Creator = x.User.FullName,
                             });
-                    }*/
+                    }
                     break;
                 }
             }
@@ -5108,6 +5120,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         EmploymentCommentDao.MergeAndFlush(employmentComment);
                         /*SendEmailForUserRequest(employment.User, AuthenticationService.CurrentUser, employment.Id,
                                                 employment.Number, RequestTypeEnum.Employment, true);*/
+                        break;
+                    case (int)RequestTypeEnum.MissionOrder:
+                        MissionOrder missionOrder = MissionOrderDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        MissionOrderComment missionOrderComment = new MissionOrderComment
+                        {
+                            Comment = model.Comment,
+                            MissionOrder  = missionOrder,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        MissionOrderCommentDao.MergeAndFlush(missionOrderComment);
                         break;
                 }
                 //doc.Comments.Add(comment);
@@ -6486,6 +6510,36 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Mission Order
+        public CreateMissionOrderModel GetCreateMissionOrderModel()
+        {
+            CreateMissionOrderModel model = new CreateMissionOrderModel();
+            User currentUser = UserDao.Load(CurrentUser.Id);
+            if (currentUser == null)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
+                    CurrentUser.Id));
+            IList<IdNameDto> list;
+            switch (currentUser.Level)
+            {
+                case 2:
+                    list = UserDao.GetUsersForCreateMissionOrder(currentUser.Department.Path,
+                                                                             new List<int> {3},2);
+                    model.Users = list;
+                    break;
+                case 3:
+                    list = UserDao.GetUsersForCreateMissionOrder(currentUser.Department.Path,
+                                                                             new List<int> { 4,5 }, 3);
+                    model.Users = list;
+                    break;
+                case 5:
+                    list = UserDao.GetManagersAndEmployeesForCreateMissionOrder(currentUser.Department.Path,
+                                                                             new List<int> { 6 }, 5);
+                    model.Users = list;
+                    break;
+
+            }
+            return model;
+        }
+
         public MissionOrderListModel GetMissionOrderListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -6501,7 +6555,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetInitialDates(model);
             SetDictionariesToModel(model);
+            SetIsAvailable(model);
             return model;
+        }
+        protected void SetIsAvailable(MissionOrderListModel model)
+        {
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.Manager:
+                    User currentUser = UserDao.Load(CurrentUser.Id);
+                    if(currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
+                            CurrentUser.Id));
+                    model.IsAddAvailable = currentUser.IsMainManager && ((currentUser.Level == 2) ||
+                                           (currentUser.Level == 3) ||
+                                           (currentUser.Level == 5));
+                    break;
+            }
         }
 
         public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
@@ -6550,8 +6620,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (!CheckUserMoRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
+            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             if(id != 0)
             {
+
                 
             }
             else
@@ -6564,8 +6636,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             LoadGraids(model,1);
-
-            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             return model;
         }
         /*protected MissionOrderTargetModel[] AddTestData()
@@ -6626,16 +6696,75 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
                     }
-                    break;
+                    return true;
                 case UserRole.Manager:
-                    if (user.Manager != null && user.Manager.Id != current.Id)
+                    User currentUser = UserDao.Load(current.Id);
+                    if(currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",current.Id));
+                    User manager = UserDao.GetManagerForEmployee(user.Login);
+                    switch(currentUser.Level)
                     {
-                        Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} user.Manager.Id {2}", user.Id, current.Id, user.Manager.Id);
-                        return false;
+                        case 2:
+                            if (manager != null)
+                            {
+                                if ((((manager.Level == 2) && !manager.IsMainManager) || (manager.Level == 3)) &&
+                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
+                                    return true;
+                            }
+                            else
+                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})",user.Id));
+                            break;
+                        case 3:
+                            if (manager != null)
+                            {
+                                if ((((manager.Level == 3) && !manager.IsMainManager) || (manager.Level == 4) ||
+                                     (manager.Level == 5)) &&
+                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
+                                    return true;
+                            }
+                            else
+                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                            break;
+                        case 4:
+                            if (manager != null)
+                            {
+                                if ((((manager.Level == 4) && !manager.IsMainManager) || (manager.Level == 5)) &&
+                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
+                                    return true;
+                            }
+                            else
+                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                            break;
+                        case 5:
+                            if (manager != null)
+                            {
+                                if ((((manager.Level == 5) && !manager.IsMainManager) || (manager.Level == 6)) &&
+                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
+                                    return true;
+                            }
+                            if (((user.RoleId & (int)UserRole.Employee) > 0) &&
+                                 user.Department.Path.StartsWith(currentUser.Department.Path))
+                                return true;
+                            break;
+                        case 6:
+                            if (manager != null)
+                            {
+                                if ((((manager.Level == 6) && !manager.IsMainManager)) &&
+                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
+                                    return true;
+                            }
+                            if (((user.RoleId & (int)UserRole.Employee) > 0) &&
+                                user.Department.Path.StartsWith(currentUser.Department.Path))
+                                return true;
+                            break;
                     }
-                    break;
+                    Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
+                    return false;
+                case UserRole.OutsourcingManager:
+                case UserRole.Accountant:
+                    return true;
             }
-            return true;
+            return false;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
         {

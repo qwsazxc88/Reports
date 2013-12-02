@@ -5,6 +5,7 @@ using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
@@ -40,6 +41,24 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
+        public ActionResult CreateMissionOrderRequest()
+        {
+            CreateMissionOrderModel model = RequestBl.GetCreateMissionOrderModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult CreateMissionOrderRequest(CreateMissionOrderModel model)
+        {
+            return RedirectToAction("MissionOrderEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
+        }
+
         [HttpGet]
         public ActionResult MissionOrderEdit(int id,int? userId)
         {

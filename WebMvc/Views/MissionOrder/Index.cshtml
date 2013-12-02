@@ -86,19 +86,16 @@
             <table style="width:100%">
                  <tr>
                     <td colspan="2">
-                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee ||
-                                ((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)
-                            {
-                                if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+                                @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                                 {
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = 0 })'"/>   
                                 }
-                                else
+                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                @if(Model.IsAddAvailable)
                                 {
-                                @*    @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "MissionOrder")'"/>
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateMissionOrderRequest", "MissionOrder")'"/>
                                 }
-                            }                                                                                               
+                                                                                                                        
                             </td>
                         </tr>
               </table>  
