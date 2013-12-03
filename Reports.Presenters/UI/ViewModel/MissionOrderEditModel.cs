@@ -68,11 +68,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
-        public bool IsManagerApprovedHidden { get; set; }
+        public bool? IsManagerApprovedHidden { get; set; }
 
         public bool? IsChiefApproved { get; set; }
         public bool IsChiefApproveAvailable { get; set; }
-        public bool IsChiefApprovedHidden { get; set; }
+        public bool? IsChiefApprovedHidden { get; set; }
         //public bool IsManagerNotApproved { get; set; }
 
         public RequestCommentsModel CommentsModel { get; set; }

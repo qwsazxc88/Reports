@@ -88,7 +88,7 @@ namespace WebMvc.Controllers
                     ModelState.Clear();
                     if (!string.IsNullOrEmpty(error))
                         ModelState.AddModelError("", error);
-                    return View(RequestBl.GetChildVacationEditModel(model.Id, model.UserId));
+                    return View(RequestBl.GetMissionOrderEditModel(model.Id, model.UserId));
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
@@ -109,13 +109,13 @@ namespace WebMvc.Controllers
         }
         protected void CorrectCheckboxes(MissionOrderEditModel model)
         {
-            if (!model.IsChiefApproveAvailable && model.IsChiefApprovedHidden)
+            if (!model.IsChiefApproveAvailable && model.IsChiefApprovedHidden.Value)
             {
                 if (ModelState.ContainsKey("IsChiefApproved"))
                     ModelState.Remove("IsChiefApproved");
                 model.IsChiefApproved = model.IsChiefApprovedHidden;
             }
-            if (!model.IsManagerApproveAvailable && model.IsManagerApprovedHidden)
+            if (!model.IsManagerApproveAvailable && model.IsManagerApprovedHidden.Value)
             {
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");

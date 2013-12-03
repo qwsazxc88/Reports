@@ -6619,7 +6619,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (!CheckUserMoRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
-            model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
+            //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             MissionOrder entity = null;
             if(id != 0)
             {
@@ -6647,6 +6647,68 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = null;
             try
             {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                //if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
+                //{
+                //    error = "Редактирование заявки запрещено";
+                //    return false;
+                //}
+                MissionOrder missionOrder;
+                if (model.Id == 0)
+                {
+                    missionOrder = new MissionOrder
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.MissionOrder),
+                        User = user,
+                        EditDate = DateTime.Now,
+                    };
+                    ChangeEntityProperties(current, missionOrder, model, user);
+                    MissionOrderDao.SaveAndFlush(missionOrder);
+                    model.Id = missionOrder.Id;
+                }
+                else
+                {
+                    missionOrder = MissionOrderDao.Load(model.Id);
+                    if (missionOrder.Version != model.Version)
+                    {
+                        error = "Приказ был изменен другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    if (model.IsDelete)
+                    {
+                        if (current.UserRole == UserRole.OutsourcingManager)
+                            missionOrder.DeleteAfterSendTo1C = true;
+                        missionOrder.DeleteDate = DateTime.Now;
+                        //missionOrder.CreateDate = DateTime.Now;
+                        MissionOrderDao.SaveAndFlush(missionOrder);
+                        /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
+                            missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
+                        model.IsDelete = false;
+                    }
+                    else
+                    {
+                        ChangeEntityProperties(current, missionOrder, model, user);
+                        MissionOrderDao.SaveAndFlush(missionOrder);
+                        if (missionOrder.Version != model.Version)
+                        {
+                            missionOrder.EditDate = DateTime.Now;
+                            MissionOrderDao.SaveAndFlush(missionOrder);
+                        }
+                    }
+                    if (missionOrder.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                }
+                model.DocumentNumber = missionOrder.Number.ToString();
+                model.Version = missionOrder.Version;
+                //model.DaysCount = childVacation.DaysCount;
+                //model.CreatorLogin = missionOrder.Creator.Name;
+                model.DateCreated = missionOrder.CreateDate.ToShortDateString();
+                SetFlagsState(missionOrder.Id, user, missionOrder, model);
+
                 return true;
             }
             catch (Exception ex)
@@ -6660,8 +6722,55 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SetUserInfoModel(user, model);
                 LoadDictionaries(model);
-                //SetHiddenFields(model);
+                SetHiddenFields(model);
             }
+        }
+        protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
+        {
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsUserApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                //!!! need to send e-mail
+                /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.ChildVacation, false);*/
+            }
+            if (current.UserRole == UserRole.Manager && user.Manager != null
+                && current.Id == user.Manager.Id
+                && !entity.ManagerDateAccept.HasValue)
+            {
+                /*if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;*/
+                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                if (model.IsManagerApproved.HasValue)
+                {
+                    if (model.IsManagerApproved.Value)
+                    {
+                        entity.ManagerDateAccept = DateTime.Now;
+                    }
+                    //!!! need to send e-mail
+                    /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                        entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                }
+            }
+            if (model.IsEditable)
+            {
+                // ReSharper disable PossibleInvalidOperationException
+                entity.BeginDate =  DateTime.Parse(model.BeginMissionDate);
+                entity.EndDate = DateTime.Parse(model.EndMissionDate);
+                // ReSharper restore PossibleInvalidOperationException
+            }
+        }
+       
+        protected void SetHiddenFields(MissionOrderEditModel model)
+        {
+            model.IsChiefApproved = model.IsChiefApproved;
+            model.IsChiefApproveNeedHidden = model.IsChiefApproveNeed;
+            model.IsManagerApprovedHidden = model.IsManagerApproved;
+            model.IsUserApprovedHidden = model.IsUserApproved;
+            model.GoalIdHidden = model.GoalId;
+            model.TypeIdHidden = model.TypeId;
         }
         protected void SetFlagsState(int id, User user, MissionOrder entity, MissionOrderEditModel model)
         {
@@ -6687,19 +6796,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteAvailable = state;
             model.IsChiefApproveAvailable = state;
             model.IsManagerApproveAvailable = state;
-            model.IsUserApprovedAvailable = false;
+            model.IsUserApprovedAvailable = state;
             model.IsSaveAvailable = state;
 
-            model.IsChiefApproved = state;
-            model.IsChiefApprovedHidden = state;
+            model.IsChiefApproved = null;
+            //model.IsChiefApprovedHidden = null;
             model.IsChiefApproveNeed = state;
-            model.IsChiefApproveNeedHidden = state;
-            model.IsDelete = false;
-            model.IsDeleted = false;
-            model.IsManagerApproved = false;
-            model.IsManagerApprovedHidden = false;
-            model.IsUserApproved = false;
-            model.IsUserApprovedHidden = false;
+            //model.IsChiefApproveNeedHidden = state;
+            model.IsDelete = state;
+            model.IsDeleted = state;
+            model.IsManagerApproved = null;
+            //model.IsManagerApprovedHidden = null;
+            model.IsUserApproved = state;
+            //model.IsUserApprovedHidden = state;
+            SetHiddenFields(model);
         }
         /*protected MissionOrderTargetModel[] AddTestData()
         {
@@ -6835,6 +6945,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Statuses = GetTimesheetStatusesForDismissal();
             model.Types = GetMissionTypes(false);
             model.Goals = GetMissionGoals(false);
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId)
         {
