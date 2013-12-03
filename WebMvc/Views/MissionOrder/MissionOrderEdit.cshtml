@@ -197,9 +197,9 @@
         </tr>
         <tr>
             <td colspan="2">
-                @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsUserAvailable ? null : (object)new { disabled = "disabled" }) 
+                @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsUserApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsUserApproved)
-                @if (!Model.IsUserAvailable)
+                @if (!Model.IsUserApprovedAvailable)
                 {
                     <input type="hidden" id="IsUserApprovedHidden" name="IsUserApprovedHidden" value="@Model.IsUserApprovedHidden" />
                 }

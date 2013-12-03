@@ -66,7 +66,69 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult MissionOrderEdit(MissionOrderEditModel model)
+        {
+            CorrectCheckboxes(model);
+            CorrectDropdowns(model);
+            if (!ValidateMissionOrderEditModel(model))
+            {
+                //model.IsApproved = false;
+                //model.IsApprovedForAll = false;
+                RequestBl.LoadDictionaries(model);
+                return View(model);
+            }
 
+            string error;
+            if (!RequestBl.SaveMissionOrderEditModel(model, out error))
+            {
+
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(RequestBl.GetChildVacationEditModel(model.Id, model.UserId));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected void CorrectDropdowns(MissionOrderEditModel model)
+        {
+             if (!model.IsEditable)
+             {
+                 model.TypeId = model.TypeIdHidden;
+                 model.GoalId = model.GoalIdHidden;
+             }
+        }
+        protected void CorrectCheckboxes(MissionOrderEditModel model)
+        {
+            if (!model.IsChiefApproveAvailable && model.IsChiefApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsChiefApproved"))
+                    ModelState.Remove("IsChiefApproved");
+                model.IsChiefApproved = model.IsChiefApprovedHidden;
+            }
+            if (!model.IsManagerApproveAvailable && model.IsManagerApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+                model.IsManagerApproved = model.IsManagerApprovedHidden;
+            }
+            if (!model.IsUserApprovedAvailable && model.IsUserApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsUserApproved"))
+                    ModelState.Remove("IsUserApproved");
+                model.IsUserApproved = model.IsUserApprovedHidden;
+            }
+        }
+        
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]
         public ActionResult EditTargetDialog(int id,string json)
