@@ -6614,6 +6614,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             MissionOrderEditModel model = new MissionOrderEditModel {Id = id,UserId = userId.Value};
             User user = UserDao.Load(model.UserId);
+            if(!user.Grade.HasValue)
+                throw new ValidationException(string.Format("Не указан грейд для пользователя {0} в базе данных",user.Id));
             IUser current = AuthenticationService.CurrentUser;
             if (!CheckUserMoRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
@@ -6634,7 +6636,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
-            LoadGraids(model,1);
+            LoadGraids(model,user.Grade.Value);
             SetFlagsState(id,user,entity,model);
             return model;
         }

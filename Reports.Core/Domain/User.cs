@@ -161,6 +161,7 @@ namespace Reports.Core.Domain
         public virtual decimal? Rate { get; set; }
         public virtual bool GivesCredit { get; set; }
         public virtual int? Level { get; set; }
+        public virtual int? Grade { get; set; }
         #endregion
 
         #region Constructors
