@@ -6639,15 +6639,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = MissionOrderDao.Load(model.Id);
                 if(entity == null)
                     throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных",model.Id));
-                model.AllSum = entity.AllSum;
-                model.AllSumTrain = entity.UserSumTrain.HasValue ? entity.UserSumTrain.Value : 0;
+                model.AllSum = FormatSum(entity.AllSum);
+                //model.AllSumTrain = entity.UserSumTrain.HasValue ? entity.UserSumTrain.Value : 0;
                 model.BeginMissionDate = entity.BeginDate.ToShortDateString();
                 model.EndMissionDate = entity.EndDate.ToShortDateString();
                 model.GoalId = entity.Goal.Id;
                 model.Id = entity.Id;
                 model.TypeId = entity.Type.Id;
                 model.UserId = entity.User.Id;
-                model.UserAllSum = entity.UserAllSum;
+                model.UserAllSum = FormatSum(entity.UserAllSum);
                 model.UserAllSumAir = FormatSum(entity.UserSumAir);
                 model.UserAllSumDaily = FormatSum(entity.UserSumDaily);
                 model.UserAllSumResidence = FormatSum(entity.UserSumResidence);
@@ -6656,7 +6656,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-                
+                MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
+                                                            {
+                                                                AirTicketTypeId = x.AirTicketType.Id,
+                                                                AirTicketTypeName = x.AirTicketType.Name,
+                                                                AllDaysCount = x.DaysCount.ToString(),
+                                                                City = x.City,
+                                                                Country = x.Country.Name,
+                                                                CountryId = x.Country.Id,
+                                                                DailyAllowanceId = x.DailyAllowance.Id,
+                                                                DailyAllowanceName = x.DailyAllowance.Name,
+                                                                DateFrom = x.BeginDate.ToShortDateString(),
+                                                                DateTo = x.EndDate.ToShortDateString(),
+                                                                Organization = x.Organization,
+                                                                ResidenceId = x.Residence.Id,
+                                                                ResidenceName = x.Residence.Name,
+                                                                TargetDaysCount = x.RealDaysCount.ToString(),
+                                                                TargetId = x.Id,
+                                                                TrainTicketTypeId = x.TrainTicketType.Id,
+                                                                TrainTicketTypeName = x.TrainTicketType.Name,
+                                                            }).ToArray();
+                JsonList list = new JsonList { List = targets };
+                JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                model.Targets = jsonSerializer.Serialize(list);
             }
             else
             {
@@ -6815,8 +6837,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.UserSumTrain = string.IsNullOrEmpty(model.UserAllSumTrain)
                                         ? new decimal?()
                                         : Decimal.Parse(model.UserAllSumTrain);
-                entity.AllSum = model.AllSum;
-                entity.UserAllSum = model.UserAllSum;
+                entity.AllSum = Decimal.Parse(model.AllSum);
+                entity.UserAllSum = Decimal.Parse(model.UserAllSum);
                 entity.UserSumCash = string.IsNullOrEmpty(model.UserSumCash)
                                         ? new decimal?()
                                         : Decimal.Parse(model.UserSumCash);

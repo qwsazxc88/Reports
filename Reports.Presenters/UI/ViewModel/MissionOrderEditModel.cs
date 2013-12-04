@@ -41,16 +41,16 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Грейд G (1,2,3,4)")]
         public string Grade { get; set; }
 
-        public decimal AllSumDaily { get; set; }
+        public string AllSumDaily { get; set; }
         public string  UserAllSumDaily { get; set; }
-        public decimal AllSumResidence { get; set; }
+        public string AllSumResidence { get; set; }
         public string  UserAllSumResidence { get; set; }
-        public decimal AllSumAir { get; set; }
+        public string AllSumAir { get; set; }
         public string  UserAllSumAir { get; set; }
-        public decimal AllSumTrain { get; set; }
+        public string AllSumTrain { get; set; }
         public string  UserAllSumTrain { get; set; }
-        public decimal AllSum { get; set; }
-        public decimal UserAllSum { get; set; }
+        public string AllSum { get; set; }
+        public string UserAllSum { get; set; }
 
         [Display(Name = "Сумма наличных в подотчет")]
         public string UserSumCash { get; set; }
