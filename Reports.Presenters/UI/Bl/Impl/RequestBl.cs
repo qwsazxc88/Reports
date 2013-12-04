@@ -6662,11 +6662,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                //if (!CheckUserRights(user, current, model.Id, true) || !CheckUserRightsForEntity(user, current, model))
-                //{
-                //    error = "Редактирование заявки запрещено";
-                //    return false;
-                //}
+                if (!CheckUserRights(user, current, model.Id, true))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }
                 MissionOrder missionOrder;
                 if (model.Id == 0)
                 {
@@ -6749,17 +6749,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
             }
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
+            bool canEdit = false;
+            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit) 
                 && !entity.ManagerDateAccept.HasValue)
             {
-                /*if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;*/
-                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                 if (model.IsManagerApproved.HasValue)
                 {
                     if (model.IsManagerApproved.Value)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        if(entity.Creator.RoleId == (int)UserRole.Manager)
+                            entity.UserDateAccept = DateTime.Now;
+                    }
                     else
                         entity.UserDateAccept = null;
                     
@@ -6878,6 +6879,44 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 return;
             }
+            model.IsUserApproved = entity.UserDateAccept.HasValue;
+            model.IsManagerApproved = entity.ManagerDateAccept.HasValue? true: new bool?();
+            model.IsChiefApproved = entity.ChiefDateAccept.HasValue ? true : new bool?();
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    if((entity.Creator.RoleId & (int)UserRole.Employee) > 0)
+                    {
+                        if(!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsUserApprovedAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (entity.Creator.RoleId == (int)UserRole.Manager)
+                    {
+                         if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                         {
+                             model.IsEditable = true;
+                             model.IsManagerApproveAvailable = true;
+                         }
+                    }
+                    else
+                    {
+                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
+                            model.IsManagerApproveAvailable = true;
+                        
+                    }
+                    break;
+                case UserRole.OutsourcingManager:
+                    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                        model.IsDeleteAvailable = true;
+                    break;
+            }
+            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable || model.IsManagerApproveAvailable;
+
         }
         protected void SetFlagsState(MissionOrderEditModel model, bool state)
         {
@@ -6960,81 +6999,128 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     return true;
                 case UserRole.Manager:
-                    User currentUser = UserDao.Load(current.Id);
-                    if(currentUser == null)
-                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",current.Id));
-                    User manager = UserDao.GetManagerForEmployee(user.Login);
-                    switch(currentUser.Level)
+                    bool canEdit;
+                    bool isManager = IsUserManagerForEmployee(user, current,out canEdit);
+                    if (isManager)
                     {
-                        case 2:
-                            if (manager != null)
-                            {
-                                if ((((manager.Level == 2) && !manager.IsMainManager) || (manager.Level == 3)) &&
-                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
-                                    return true;
-                            }
-                            else
-                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})",user.Id));
-                            break;
-                        case 3:
-                            if (manager != null)
-                            {
-                                if ((((manager.Level == 3) && !manager.IsMainManager) || (manager.Level == 4) ||
-                                     (manager.Level == 5)) &&
-                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
-                                    return true;
-                            }
-                            else
-                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                            break;
-                        case 4:
-                            if (manager != null)
-                            {
-                                if ((((manager.Level == 4) && !manager.IsMainManager) || (manager.Level == 5)) &&
-                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
-                                    return true;
-                            }
-                            else
-                                throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                            break;
-                        case 5:
-                            if (manager != null)
-                            {
-                                if ((((manager.Level == 5) && !manager.IsMainManager) || (manager.Level == 6)) &&
-                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
-                                    return true;
-                            }
-                            if (((user.RoleId & (int)UserRole.Employee) > 0) &&
-                                 user.Department.Path.StartsWith(currentUser.Department.Path))
-                                return true;
-                            break;
-                        case 6:
-                            if (manager != null)
-                            {
-                                if ((((manager.Level == 6) && !manager.IsMainManager)) &&
-                                    manager.Department.Path.StartsWith(currentUser.Department.Path))
-                                    return true;
-                            }
-                            if (((user.RoleId & (int)UserRole.Employee) > 0) &&
-                                user.Department.Path.StartsWith(currentUser.Department.Path))
-                                return true;
-                            break;
+                        if (isSave)
+                            return canEdit;
+                        return true;
                     }
                     Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
                 case UserRole.OutsourcingManager:
+                    return true;
                 case UserRole.Accountant:
+                    if (isSave)
+                        return false;
                     return true;
             }
             return false;
         }
-        public void LoadDictionaries(MissionOrderEditModel model)
+        protected bool IsUserManagerForEmployee(User user, IUser current,out bool canEdit)
+        {
+            canEdit = false;
+            User currentUser = UserDao.Load(current.Id);
+            if (currentUser == null)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+            User manager = UserDao.GetManagerForEmployee(user.Login);
+            switch (currentUser.Level)
+            {
+                case 2:
+                    if (manager != null)
+                    {
+                        if ((((manager.Level == 2) && !manager.IsMainManager) || (manager.Level == 3)) &&
+                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                        {
+                            canEdit = true;
+                            return true;
+                        }
+                    }
+                    else
+                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                    break;
+                case 3:
+                    if (manager != null)
+                    {
+                        if ((((manager.Level == 3) && !manager.IsMainManager) || (manager.Level == 4) ||
+                             (manager.Level == 5)) &&
+                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                        {
+                            canEdit = true;
+                            return true;
+                        }
+                    }
+                    else
+                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                    break;
+                case 4:
+                    if (manager != null)
+                    {
+                        if ((((manager.Level == 4) && !manager.IsMainManager) || (manager.Level == 5)) &&
+                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                            return true;
+                    }
+                    else
+                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                    break;
+                case 5:
+                    if (manager != null)
+                    {
+                        if ((((manager.Level == 5) && !manager.IsMainManager) || (manager.Level == 6)) &&
+                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                        {
+                            canEdit = true;
+                            return true;
+                        }
+                    }
+                    if (((user.RoleId & (int)UserRole.Employee) > 0) &&
+                         user.Department.Path.StartsWith(currentUser.Department.Path))
+                    {
+                        canEdit = true;
+                        return true;
+                    }
+                    break;
+                case 6:
+                    if (manager != null)
+                    {
+                        if ((((manager.Level == 6) && !manager.IsMainManager)) &&
+                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                            return true;
+                    }
+                    if (((user.RoleId & (int)UserRole.Employee) > 0) &&
+                        user.Department.Path.StartsWith(currentUser.Department.Path))
+                        return true;
+                    break;
+            }
+            return false;
+        }
+        protected void LoadDictionaries(MissionOrderEditModel model)
         {
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
             //model.Statuses = GetTimesheetStatusesForDismissal();
             model.Types = GetMissionTypes(false);
             model.Goals = GetMissionGoals(false);
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
+        }
+        public void ReloadDictionaries(MissionOrderEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetUserInfoModel(user, model);
+            //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                MissionOrder missionOrder = MissionOrderDao.Load(model.Id);
+                model.DocumentNumber = missionOrder.Number.ToString();
+                model.DateCreated = missionOrder.EditDate.ToShortDateString();
+                if (missionOrder.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+            }
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId)
         {

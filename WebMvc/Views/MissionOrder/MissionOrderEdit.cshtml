@@ -86,7 +86,7 @@
         </tr>
          <tr>
             <td colspan="2" style="font-weight:bold">
-               Место назначения &nbsp;<input type="button" value="Добавить" name="AddTargetBtn" onclick="addTarget();"/>
+               Место назначения &nbsp;<input type="button" value="Добавить" name="AddTargetBtn" id="AddTargetBtn" class="targetBtn" onclick="addTarget();"/>
             </td>
         </tr>
         <tr>
@@ -122,7 +122,7 @@
                             @Html.TextBoxFor(m => m.AllSumDaily, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onclick = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -133,7 +133,7 @@
                             @Html.TextBoxFor(m => m.AllSumResidence, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onclick = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -144,7 +144,7 @@
                             @Html.TextBoxFor(m => m.AllSumAir, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onclick = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -155,7 +155,7 @@
                             @Html.TextBoxFor(m => m.AllSumTrain, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onclick = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -197,6 +197,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                <input type="hidden" id="IsUserApprovedAvailable" name="IsUserApprovedAvailable" value="@Model.IsUserApprovedAvailable" />
                 @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsUserApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsUserApproved)
                 @if (!Model.IsUserApprovedAvailable)
@@ -221,6 +222,7 @@
                     {
                         <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
                     }
+                    <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
             </td>
         </tr>
          <tr>
@@ -232,6 +234,7 @@
                     {
                         <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
                     }
+                    <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
             </td>
         </tr>
          <tr>
@@ -265,8 +268,8 @@
                                     </td>
                                     <td>
                                         {{Country}} &nbsp;
-                                        <input type="button" value="Изменить" name="ChangeTargetBtn" onclick="editTarget({{TargetId}});"/>
-                                        <input type="button" value="Удалить" name="DeleteTargetBtn" onclick="deleteTarget({{TargetId}});"/>
+                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});"/>
+                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});"/>
                                     </td>
                                 </tr>    
                                <tr>
@@ -360,9 +363,11 @@
             setActiveMenuItem("moAllOrders");
             var targets = JSON.parse($("#Targets").val());
             renderTargetsTable(targets);
+            setTargetBtnState();
         });
         function ValidateForm() {
-           
+            if(!CalcUserSum())
+                return false;
             if(!CalcUserCashNotCashSums())
                 return false;
             clearErrors();
@@ -404,6 +409,7 @@
             calculateSums(targets.List);
             renderTargetsTable(targets);
             $("#Targets").val(JSON.stringify(targets));
+            setTargetBtnState();
         }
         function addTarget() {
             createTargetDialog(actionEditTargetDialogUrl,"id=0");
@@ -419,6 +425,20 @@
             }
             var params = "id="+targetId+"&json="+escapeJson(JSON.stringify(obj));
             createTargetDialog(actionEditTargetDialogUrl,params);
+        }
+         function setTargetBtnState()
+        {
+            if($("#IsEditable").val() == "False")
+                $(".targetBtn").hide();
+            else
+            {
+                $(".targetBtn").show();
+                var targets = JSON.parse($("#Targets").val());
+                if(targets.List.length > 5)
+                    $("#AddTargetBtn").hide();
+                else
+                    $("#AddTargetBtn").show();
+            }
         }
 
         function disableSaveButton() {
@@ -478,6 +498,7 @@
                         if(!addObject())
                              return;
                         $(this).dialog("close");
+                        setTargetBtnState();
                     },
                     "Отмена": function () {
                         $(this).dialog("close");
@@ -808,6 +829,7 @@
             $("#EditTargetDlgError").text(value);
             $("#EditTargetDlgError").show();
         }
+       
         function clearEditTargetCommonErrors() {
             $("#EditTargetDlgError").text("");
             $("#EditTargetDlgError").hide();
@@ -855,22 +877,32 @@
             }
         }
         function CalcUserSum() {
+            var isError = false;
             clearEditTargetErrors($("#AllTargetSums"));
             var allSum = 0;
             var sum = ValidateSum($("#UserAllSumDaily"));
             if(sum != undefined)
                 allSum = allSum + sum;
+            else if($("#UserAllSumDaily").val() != '')
+                isError = true;
             sum = ValidateSum($("#UserAllSumResidence"));
             if(sum != undefined)
                 allSum = allSum + sum;
+            else if($("#UserAllSumResidence").val() != '')
+                isError = true;
             sum = ValidateSum($("#UserAllSumAir"));
             if(sum != undefined)
                 allSum = allSum + sum;
+            else if($("#UserAllSumAir").val() != '')
+                isError = true;
             sum = ValidateSum($("#UserAllSumTrain"));
             if(sum != undefined)
                 allSum = allSum + sum;
+            else if($("#UserAllSumTrain").val() != '')
+                isError = true;
             var allSumStr = ReplaceToRussianDecimalPointC(allSum.toString());
             $("#UserAllSum").val(allSumStr);
+            return !isError;
         }
         function ValidateSum(control)
         {

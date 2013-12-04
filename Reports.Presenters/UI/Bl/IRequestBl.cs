@@ -119,7 +119,7 @@ namespace Reports.Presenters.UI.Bl
         MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId);
         void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model);
         CreateMissionOrderModel GetCreateMissionOrderModel();
-        void LoadDictionaries(MissionOrderEditModel model);
+        void ReloadDictionaries(MissionOrderEditModel model);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
 
 

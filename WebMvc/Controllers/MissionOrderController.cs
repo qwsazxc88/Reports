@@ -75,14 +75,13 @@ namespace WebMvc.Controllers
             {
                 //model.IsApproved = false;
                 //model.IsApprovedForAll = false;
-                RequestBl.LoadDictionaries(model);
+                RequestBl.ReloadDictionaries(model);
                 return View(model);
             }
 
             string error;
             if (!RequestBl.SaveMissionOrderEditModel(model, out error))
             {
-
                 if (model.ReloadPage)
                 {
                     ModelState.Clear();
@@ -97,6 +96,7 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
         {
+            //return false;
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(MissionOrderEditModel model)
