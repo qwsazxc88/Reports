@@ -126,6 +126,7 @@
     <Compile Include="Dao\IMissionOrderCommentDao.cs" />
     <Compile Include="Dao\IMissionOrderDao.cs" />
     <Compile Include="Dao\IMissionResidenceDao.cs" />
+    <Compile Include="Dao\IMissionTargetDao.cs" />
     <Compile Include="Dao\IMissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\IMissionTypeDao.cs" />
     <Compile Include="Dao\Impl\AbsenceCommentDao.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Dao\Impl\MissionOrderCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionOrderDao.cs" />
     <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
+    <Compile Include="Dao\Impl\MissionTargetDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionTypeDao.cs" />
     <Compile Include="Dao\Impl\PositionDao.cs" />

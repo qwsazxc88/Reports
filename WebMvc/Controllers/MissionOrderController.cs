@@ -109,13 +109,13 @@ namespace WebMvc.Controllers
         }
         protected void CorrectCheckboxes(MissionOrderEditModel model)
         {
-            if (!model.IsChiefApproveAvailable && model.IsChiefApprovedHidden.Value)
+            if (!model.IsChiefApproveAvailable /*&& model.IsChiefApprovedHidden.Value*/)
             {
                 if (ModelState.ContainsKey("IsChiefApproved"))
                     ModelState.Remove("IsChiefApproved");
                 model.IsChiefApproved = model.IsChiefApprovedHidden;
             }
-            if (!model.IsManagerApproveAvailable && model.IsManagerApprovedHidden.Value)
+            if (!model.IsManagerApproveAvailable /*&& model.IsManagerApprovedHidden.Value*/)
             {
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");

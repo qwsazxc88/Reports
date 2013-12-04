@@ -28,6 +28,13 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.Between("Date", beginDate, endDate))
                     .List<WorkingCalendar>();
         }
+        public virtual int GetNotWorkingCountBetweenDates(DateTime beginDate, DateTime endDate)
+        {
+            return Session.CreateCriteria(typeof(WorkingCalendar))
+                  .Add(Restrictions.Between("Date", beginDate, endDate))
+                  .Add(Restrictions.IsNull("IsWorkingHours"))
+                  .List<WorkingCalendar>().Count;
+        }
       
     }
 }

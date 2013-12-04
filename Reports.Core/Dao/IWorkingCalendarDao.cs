@@ -8,5 +8,6 @@ namespace Reports.Core.Dao
     {
         IList<WorkingCalendar> GetEntitiesBetweenDates(int month, int year);
         IList<WorkingCalendar> GetEntitiesBetweenDates(DateTime beginDate, DateTime endDate);
+        int GetNotWorkingCountBetweenDates(DateTime beginDate, DateTime endDate);
     }
 }

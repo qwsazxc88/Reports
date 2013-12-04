@@ -361,10 +361,20 @@
             var targets = JSON.parse($("#Targets").val());
             renderTargetsTable(targets);
         });
-        /*function ValidateForm() {
+        function ValidateForm() {
+           
+            if(!CalcUserCashNotCashSums())
+                return false;
+            clearErrors();
+            var targets = JSON.parse($("#Targets").val());
+            if(targets.List.length == 0)
+            {
+               addError("Необходимо указать хотя бы одно место назначения");
+               return false;
+            }    
             return true;
         }
-        function SetApprovedForAllAndValidateForm() {
+        /*function SetApprovedForAllAndValidateForm() {
             SetApprovedAndValidateForm();
             $("#IsApprovedForAll").val('true');
             return true;
@@ -372,11 +382,11 @@
         function SetApprovedAndValidateForm() {
             $("#IsApproved").val('true');
             return true;
-        }
+        }*/
         function Delete() {
             $("#IsDelete").val("true");
             return true;
-        }*/
+        }
 
         function renderTargetsTable(targets) {
             var template = $("#targetTemplate").html();
@@ -803,6 +813,8 @@
             $("#EditTargetDlgError").hide();
         }
         function CalcUserCashNotCashSums(){
+            clearEditTargetErrors($("#UserSumCash"));
+            clearEditTargetErrors($("#UserSumNotCash"));
             var allCashSum = 0;
             var sum = ValidateSum($("#UserSumCash"));
             if(sum != undefined)

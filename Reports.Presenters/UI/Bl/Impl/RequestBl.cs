@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -392,6 +393,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(missionOrderCommentDao); }
             set { missionOrderCommentDao = value; }
+        }
+        protected IWorkingCalendarDao workingCalendarDao;
+        public IWorkingCalendarDao WorkingCalendarDao
+        {
+            get { return Validate.Dependency(workingCalendarDao); }
+            set { workingCalendarDao = value; }
+        }
+        protected IMissionTargetDao missionTargetDao;
+        public IMissionTargetDao MissionTargetDao
+        {
+            get { return Validate.Dependency(missionTargetDao); }
+            set { missionTargetDao = value; }
         }
 
         protected IConfigurationService configurationService;
@@ -6746,9 +6759,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsManagerApproved.HasValue)
                 {
                     if (model.IsManagerApproved.Value)
-                    {
                         entity.ManagerDateAccept = DateTime.Now;
-                    }
+                    else
+                        entity.UserDateAccept = null;
+                    
                     //!!! need to send e-mail
                     /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                         entity.Number, RequestTypeEnum.ChildVacation, false);*/
@@ -6756,13 +6770,88 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsEditable)
             {
-                // ReSharper disable PossibleInvalidOperationException
                 entity.BeginDate =  DateTime.Parse(model.BeginMissionDate);
                 entity.EndDate = DateTime.Parse(model.EndMissionDate);
-                // ReSharper restore PossibleInvalidOperationException
+                entity.Goal = MissionGoalDao.Load(model.GoalId);
+                entity.Type = MissionTypeDao.Load(model.TypeId);
+                entity.UserSumDaily = string.IsNullOrEmpty(model.UserAllSumDaily)
+                                          ? new decimal?()
+                                          : Decimal.Parse(model.UserAllSumDaily);
+                entity.UserSumResidence = string.IsNullOrEmpty(model.UserAllSumResidence)
+                                          ? new decimal?()
+                                          : Decimal.Parse(model.UserAllSumResidence);
+                entity.UserSumAir = string.IsNullOrEmpty(model.UserAllSumAir)
+                                         ? new decimal?()
+                                         : Decimal.Parse(model.UserAllSumAir);
+                entity.UserSumTrain = string.IsNullOrEmpty(model.UserAllSumTrain)
+                                        ? new decimal?()
+                                        : Decimal.Parse(model.UserAllSumTrain);
+                entity.AllSum = model.AllSum;
+                entity.UserAllSum = model.UserAllSum;
+                entity.UserSumCash = string.IsNullOrEmpty(model.UserSumCash)
+                                        ? new decimal?()
+                                        : Decimal.Parse(model.UserSumCash);
+                entity.UserSumNotCash = string.IsNullOrEmpty(model.UserSumNotCash)
+                                   ? new decimal?()
+                                   : Decimal.Parse(model.UserSumNotCash);
+                if (entity.EditDate.Subtract(entity.BeginDate).Days > 7 || 
+                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EditDate) > 0)
+                    entity.NeedToAcceptByChief = true;
+                else
+                    entity.NeedToAcceptByChief = false;
+                SaveMissionTargets(entity, model);
             }
         }
-       
+        protected void SaveMissionTargets(MissionOrder entity, MissionOrderEditModel model)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            JsonList list = jsonSerializer.Deserialize<JsonList>(model.Targets);
+            List<MissionOrderTargetModel> targets = list.List.ToList();
+            if (entity.Targets == null)
+                entity.Targets = new List<MissionTarget>();
+            List<MissionTarget> removed = entity.Targets.Where(x => !targets.Any(y => y.TargetId == x.Id)).ToList();
+            foreach (MissionTarget target in removed)
+                entity.Targets.Remove(target);
+            foreach (MissionOrderTargetModel target in targets)
+            {
+                if(target.TargetId < 0)
+                {
+                    MissionTarget newTarget = new MissionTarget();
+                    SetTargetProperties(target,newTarget,entity);
+                    entity.Targets.Add(newTarget);
+                }
+                else
+                {
+                    MissionTarget old = entity.Targets.Where(x => x.Id == target.TargetId).FirstOrDefault();
+                    if (old == null)
+                        throw new ArgumentException(string.Format("Не найдено место назначения (id {0}) в базе данных",
+                            target.TargetId));
+                    SetTargetProperties(target, old, entity);
+                    MissionTargetDao.SaveAndFlush(old);
+                }
+            }
+        
+        }
+        protected void SetTargetProperties(MissionOrderTargetModel target,MissionTarget entity,MissionOrder order)
+        {
+                        entity.AirTicketType = target.AirTicketTypeId == 0
+                                ? null
+                                : MissionAirTicketTypeDao.Load(target.AirTicketTypeId);
+                        entity.BeginDate = DateTime.Parse(target.DateFrom);
+                        entity.City = target.City;
+                        entity.Country = MissionCountryDao.Load(target.CountryId);
+                        entity.DailyAllowance = target.DailyAllowanceId == 0 ? null :
+                                                                    MissionDailyAllowanceDao.Load(target.DailyAllowanceId);
+                        entity.DaysCount = int.Parse(target.AllDaysCount);
+                        entity.EndDate = DateTime.Parse(target.DateTo);
+                        entity.MissionOrder = order;
+                        entity.Organization = target.Organization;
+                        entity.RealDaysCount = int.Parse(target.TargetDaysCount);
+                        entity.Residence = target.ResidenceId == 0 ? null :
+                                                              MissionResidenceDao.Load(target.ResidenceId);
+                        entity.TrainTicketType = target.TrainTicketTypeId == 0 ? null :
+                                                              MissionTrainTicketTypeDao.Load(target.TrainTicketTypeId);
+        }
         protected void SetHiddenFields(MissionOrderEditModel model)
         {
             model.IsChiefApproved = model.IsChiefApproved;
@@ -6949,20 +7038,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId)
         {
+            DateTime gradeDate = DateTime.Parse(model.DateCreated);
             MissionGraid graid = MissionGraidDao.Load(gradeId);
             if(graid == null)
                 throw new ValidationException(string.Format("Не найден грайд (id = {0}) в базе данных",gradeId));
             model.Grade = graid.Name;
-            IList<GradeAmountDto> dailyList = MissionGraidDao.GetDailyAllowanceGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            IList<GradeAmountDto> dailyList = MissionGraidDao.GetDailyAllowanceGradeAmountForGradeAndDate(gradeId, gradeDate);
             if (dailyList.Count != 4)
                 throw new ValidationException(string.Format("Неверное число лимитов для суточных загружено из базы данных"));
-            IList<GradeAmountDto> resList = MissionGraidDao.GetResidenceGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            IList<GradeAmountDto> resList = MissionGraidDao.GetResidenceGradeAmountForGradeAndDate(gradeId, gradeDate);
             if (resList.Count != 2)
                 throw new ValidationException(string.Format("Неверное число лимитов для авиа проживания загружено из базы данных"));
-            IList<GradeAmountDto> airList = MissionGraidDao.GetAirTicketTypeGradeAmountForGradeAndDate(gradeId,DateTime.Now);
+            IList<GradeAmountDto> airList = MissionGraidDao.GetAirTicketTypeGradeAmountForGradeAndDate(gradeId, gradeDate);
             if(airList.Count != 6)
                 throw new ValidationException(string.Format("Неверное число лимитов для авиа билетов загружено из базы данных"));
-            IList<GradeAmountDto> trainList = MissionGraidDao.GetTrainTicketTypeGradeAmountForGradeAndDate(gradeId, DateTime.Now);
+            IList<GradeAmountDto> trainList = MissionGraidDao.GetTrainTicketTypeGradeAmountForGradeAndDate(gradeId, gradeDate);
             if (trainList.Count != 6)
                 throw new ValidationException(string.Format("Неверное число лимитов для ж/д билетов загружено из базы данных"));
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();

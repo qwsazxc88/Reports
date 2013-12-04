@@ -366,6 +366,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IMissionOrderCommentDao)).
              ImplementedBy(typeof(MissionOrderCommentDao)).
              LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionTargetDao)).
+             ImplementedBy(typeof(MissionTargetDao)).
+             LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
