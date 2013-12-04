@@ -6636,8 +6636,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionOrder entity = null;
             if(id != 0)
             {
-               
-               
+                entity = MissionOrderDao.Load(model.Id);
+                if(entity == null)
+                    throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных",model.Id));
+                model.AllSum = entity.AllSum;
+                model.AllSumTrain = entity.UserSumTrain.HasValue ? entity.UserSumTrain.Value : 0;
+                model.BeginMissionDate = entity.BeginDate.ToShortDateString();
+                model.EndMissionDate = entity.EndDate.ToShortDateString();
+                model.GoalId = entity.Goal.Id;
+                model.Id = entity.Id;
+                model.TypeId = entity.Type.Id;
+                model.UserId = entity.User.Id;
+                model.UserAllSum = entity.UserAllSum;
+                model.UserAllSumAir = FormatSum(entity.UserSumAir);
+                model.UserAllSumDaily = FormatSum(entity.UserSumDaily);
+                model.UserAllSumResidence = FormatSum(entity.UserSumResidence);
+                model.UserAllSumTrain = FormatSum(entity.UserSumTrain);
+                model.DateCreated = entity.EditDate.ToShortDateString();
+                model.Version = entity.Version;
+                model.UserSumCash = FormatSum(entity.UserSumCash);
+                model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
+                
             }
             else
             {
@@ -6653,7 +6672,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id,user,entity,model);
             return model;
         }
-
+        protected string FormatSum(decimal sum)
+        {
+            return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
+        }
+        protected string FormatSum(decimal? sum)
+        {
+            if (!sum.HasValue)
+                return string.Empty;
+            return FormatSum(sum.Value);
+        }
         public bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error)
         {
             error = string.Empty;
