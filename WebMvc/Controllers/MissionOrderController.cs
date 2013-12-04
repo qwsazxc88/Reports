@@ -127,6 +127,8 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsUserApproved");
                 model.IsUserApproved = model.IsUserApprovedHidden;
             }
+            if (ModelState.ContainsKey("IsChiefApproveNeed"))
+                ModelState.Remove("IsChiefApproveNeed");
         }
         
         [HttpGet]

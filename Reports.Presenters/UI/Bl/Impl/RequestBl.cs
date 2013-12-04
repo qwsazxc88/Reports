@@ -6662,7 +6662,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current, model.Id, true))
+                if (!CheckUserMoRights(user, current, model.Id, true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -6795,11 +6795,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.UserSumNotCash = string.IsNullOrEmpty(model.UserSumNotCash)
                                    ? new decimal?()
                                    : Decimal.Parse(model.UserSumNotCash);
-                if (entity.EditDate.Subtract(entity.BeginDate).Days > 7 || 
-                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EditDate) > 0)
+                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 || 
+                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EndDate) > 0)
                     entity.NeedToAcceptByChief = true;
                 else
                     entity.NeedToAcceptByChief = false;
+                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
         }
@@ -6855,7 +6856,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetHiddenFields(MissionOrderEditModel model)
         {
-            model.IsChiefApproved = model.IsChiefApproved;
+            model.IsChiefApprovedHidden = model.IsChiefApproved;
             model.IsChiefApproveNeedHidden = model.IsChiefApproveNeed;
             model.IsManagerApprovedHidden = model.IsManagerApproved;
             model.IsUserApprovedHidden = model.IsUserApproved;
@@ -6901,6 +6902,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                          {
                              model.IsEditable = true;
                              model.IsManagerApproveAvailable = true;
+                             model.IsUserApproved = true;
                          }
                     }
                     else
@@ -6929,7 +6931,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             model.IsChiefApproved = null;
             //model.IsChiefApprovedHidden = null;
-            model.IsChiefApproveNeed = state;
+            //model.IsChiefApproveNeed = state;
             //model.IsChiefApproveNeedHidden = state;
             model.IsDelete = state;
             model.IsDeleted = state;
