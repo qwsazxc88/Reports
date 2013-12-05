@@ -179,7 +179,7 @@
             объеме из заработной платы. 
             </td>
         </tr>
-         <tr>
+         <tr id="trUserSumCash">
             <td>
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
@@ -187,7 +187,7 @@
                 @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
             </td>
         </tr>
-        <tr>
+        <tr  id="trUserSumNotCash">
             <td>
                 @Html.LabelFor(m => m.UserSumNotCash):
             </td>
@@ -835,8 +835,8 @@
             $("#EditTargetDlgError").hide();
         }
         function CalcUserCashNotCashSums(){
-            clearEditTargetErrors($("#UserSumCash"));
-            clearEditTargetErrors($("#UserSumNotCash"));
+            clearEditTargetErrors($("#trUserSumCash"));
+            clearEditTargetErrors($("#trUserSumNotCash"));
             var allCashSum = 0;
             var sum = ValidateSum($("#UserSumCash"));
             if(sum != undefined)

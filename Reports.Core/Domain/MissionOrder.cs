@@ -23,6 +23,10 @@ namespace Reports.Core.Domain
         public virtual MissionType Type { get; set; }
         public virtual MissionGoal Goal { get; set; }
 
+        public virtual decimal? SumAir { get; set; }
+        public virtual decimal? SumDaily { get; set; }
+        public virtual decimal? SumResidence { get; set; }
+        public virtual decimal? SumTrain { get; set; }
         public virtual decimal AllSum { get; set; }
         public virtual decimal? UserSumDaily { get; set; }
         public virtual decimal? UserSumResidence { get; set; }

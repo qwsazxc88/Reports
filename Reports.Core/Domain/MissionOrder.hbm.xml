@@ -14,6 +14,10 @@
 	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
 	<many-to-one name="Goal" class="MissionGoal" column="MissionGoalId" foreign-key="FK_MissionOrder_MissionGoal" index="MissionOrder_MissionGoal"  not-null="false"/>
 	<property name="AllSum"  not-null="true"/>
+	<property name="SumDaily"  not-null="false"/>
+	<property name="SumResidence"  not-null="false"/>
+	<property name="SumAir"  not-null="false"/>
+	<property name="SumTrain"  not-null="false"/>
 	<property name="UserSumDaily"  not-null="false"/>
 	<property name="UserSumResidence"  not-null="false"/>
 	<property name="UserSumAir"  not-null="false"/>

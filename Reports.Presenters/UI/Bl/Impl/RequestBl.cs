@@ -6639,8 +6639,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = MissionOrderDao.Load(model.Id);
                 if(entity == null)
                     throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных",model.Id));
+                LoadGraids(model, user.Grade.Value, entity,entity.CreateDate);
                 model.AllSum = FormatSum(entity.AllSum);
-                //model.AllSumTrain = entity.UserSumTrain.HasValue ? entity.UserSumTrain.Value : 0;
+                model.AllSumAir = FormatSum(entity.SumAir);
+                model.AllSumDaily = FormatSum(entity.SumDaily);
+                model.AllSumResidence = FormatSum(entity.SumResidence);
+                model.AllSumTrain = FormatSum(entity.SumTrain);
                 model.BeginMissionDate = entity.BeginDate.ToShortDateString();
                 model.EndMissionDate = entity.EndDate.ToShortDateString();
                 model.GoalId = entity.Goal.Id;
@@ -6686,23 +6690,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
                 model.Targets = jsonSerializer.Serialize(list);
                 model.DateCreated = DateTime.Today.ToShortDateString();
+                LoadGraids(model, user.Grade.Value, entity, DateTime.Today);
                 //model.IsEditable = true;
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
-            LoadGraids(model,user.Grade.Value);
             SetFlagsState(id,user,entity,model);
             return model;
         }
-        protected string FormatSum(decimal sum)
+        protected static string FormatSum(decimal sum)
         {
             return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
         }
-        protected string FormatSum(decimal? sum)
+        protected static string FormatSum(decimal? sum)
         {
-            if (!sum.HasValue)
-                return string.Empty;
-            return FormatSum(sum.Value);
+            return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
         }
         public bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error)
         {
@@ -6825,26 +6827,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.EndDate = DateTime.Parse(model.EndMissionDate);
                 entity.Goal = MissionGoalDao.Load(model.GoalId);
                 entity.Type = MissionTypeDao.Load(model.TypeId);
-                entity.UserSumDaily = string.IsNullOrEmpty(model.UserAllSumDaily)
-                                          ? new decimal?()
-                                          : Decimal.Parse(model.UserAllSumDaily);
-                entity.UserSumResidence = string.IsNullOrEmpty(model.UserAllSumResidence)
-                                          ? new decimal?()
-                                          : Decimal.Parse(model.UserAllSumResidence);
-                entity.UserSumAir = string.IsNullOrEmpty(model.UserAllSumAir)
-                                         ? new decimal?()
-                                         : Decimal.Parse(model.UserAllSumAir);
-                entity.UserSumTrain = string.IsNullOrEmpty(model.UserAllSumTrain)
-                                        ? new decimal?()
-                                        : Decimal.Parse(model.UserAllSumTrain);
-                entity.AllSum = Decimal.Parse(model.AllSum);
                 entity.UserAllSum = Decimal.Parse(model.UserAllSum);
-                entity.UserSumCash = string.IsNullOrEmpty(model.UserSumCash)
-                                        ? new decimal?()
-                                        : Decimal.Parse(model.UserSumCash);
-                entity.UserSumNotCash = string.IsNullOrEmpty(model.UserSumNotCash)
-                                   ? new decimal?()
-                                   : Decimal.Parse(model.UserSumNotCash);
+                entity.UserSumDaily = GetSum(model.UserAllSumDaily);
+                entity.UserSumResidence = GetSum(model.UserAllSumResidence);
+                entity.UserSumAir = GetSum(model.UserAllSumAir);
+                entity.UserSumTrain = GetSum(model.UserAllSumTrain); 
+                entity.AllSum = Decimal.Parse(model.AllSum);
+                entity.SumDaily = Decimal.Parse(model.AllSumDaily);
+                entity.SumResidence = Decimal.Parse(model.AllSumResidence);
+                entity.SumAir = Decimal.Parse(model.AllSumAir);
+                entity.SumTrain = Decimal.Parse(model.AllSumTrain);
+                entity.UserSumCash = GetSum(model.UserSumCash);
+                entity.UserSumNotCash = GetSum(model.UserSumNotCash); 
                 if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 || 
                     WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EndDate) > 0)
                     entity.NeedToAcceptByChief = true;
@@ -6853,6 +6847,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
+        }
+        protected static decimal? GetSum(string sum)
+        {
+            return string.IsNullOrEmpty(sum)
+                                   ? new decimal?()
+                                   : Decimal.Parse(sum);
         }
         protected void SaveMissionTargets(MissionOrder entity, MissionOrderEditModel model)
         {
@@ -7174,9 +7174,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsDeleted = true;
             }
         }
-        protected void LoadGraids(MissionOrderEditModel model, int gradeId)
+        protected void LoadGraids(MissionOrderEditModel model, int gradeId,MissionOrder entity,DateTime gradeDate)
         {
-            DateTime gradeDate = DateTime.Parse(model.DateCreated);
+            //DateTime gradeDate = DateTime.Parse(model.DateCreated);
             MissionGraid graid = MissionGraidDao.Load(gradeId);
             if(graid == null)
                 throw new ValidationException(string.Format("Не найден грайд (id = {0}) в базе данных",gradeId));
@@ -7198,6 +7198,79 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ResidenceGrades = jsonSerializer.Serialize(resList.ToArray());
             model.AirTicketTypeGrades = jsonSerializer.Serialize(airList.ToArray());
             model.TrainTicketTypeGrades = jsonSerializer.Serialize(trainList.ToArray()); 
+            if(entity != null && entity.Targets != null && entity.Targets.Count > 0)
+            {
+                decimal sumAir = 0;
+                decimal sumTrain = 0;
+                decimal sumDaily = 0;
+                decimal sumRes = 0;
+                foreach (MissionTarget target in entity.Targets)
+                {
+                    if(target.AirTicketType != null)
+                    {
+                        GradeAmountDto dto = airList.Where(x => x.Id == target.AirTicketType.Id).FirstOrDefault();
+                        if(dto == null)
+                            throw new ArgumentException(string.Format("Не найден грейд для авиабилетов (id {0})  в базе данных",
+                                target.AirTicketType.Id));
+                        sumAir += dto.Amount;
+                    }
+                    if (target.TrainTicketType != null)
+                    {
+                        GradeAmountDto dto = trainList.Where(x => x.Id == target.TrainTicketType.Id).FirstOrDefault();
+                        if (dto == null)
+                            throw new ArgumentException(string.Format("Не найден грейд для ж/д билетов (id {0})  в базе данных",
+                                target.AirTicketType.Id));
+                        sumTrain += dto.Amount;
+                    }
+                    if (target.DailyAllowance != null)
+                    {
+                        GradeAmountDto dto = dailyList.Where(x => x.Id == target.DailyAllowance.Id).FirstOrDefault();
+                        if (dto == null)
+                            throw new ArgumentException(string.Format("Не найден грейд для суточных (id {0})  в базе данных",
+                                target.AirTicketType.Id));
+                        sumDaily += dto.Amount*target.DaysCount;
+                    }
+                    if (target.Residence != null)
+                    {
+                        GradeAmountDto dto = resList.Where(x => x.Id == target.Residence.Id).FirstOrDefault();
+                        if (dto == null)
+                            throw new ArgumentException(string.Format("Не найден грейд для проживания (id {0})  в базе данных",
+                                target.AirTicketType.Id));
+                        sumRes += dto.Amount * target.RealDaysCount;
+                    }
+                }
+                if(entity.SumAir.HasValue)
+                {
+                    if(entity.SumAir.Value != sumAir)
+                        Log.ErrorFormat("Сумма для авиабилетов по грейду не совпадает с суммой из базы данных для приказа {0}",entity.Id);
+                }
+                else if (sumAir != 0)
+                    Log.ErrorFormat("Сумма для авиабилетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+
+                if (entity.SumTrain.HasValue)
+                {
+                    if (entity.SumTrain.Value != sumTrain)
+                        Log.ErrorFormat("Сумма для  ж/д билетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                }
+                else if (sumTrain != 0)
+                    Log.ErrorFormat("Сумма для  ж/д билетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+
+                if (entity.SumDaily.HasValue)
+                {
+                    if (entity.SumDaily.Value != sumDaily)
+                        Log.ErrorFormat("Сумма для суточных по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                }
+                else if (sumDaily != 0)
+                    Log.ErrorFormat("Сумма для суточных по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+
+                if (entity.SumResidence.HasValue)
+                {
+                    if (entity.SumResidence.Value != sumRes)
+                        Log.ErrorFormat("Сумма для проживания по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                }
+                else if (sumRes != 0)
+                    Log.ErrorFormat("Сумма для проживания по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+            }
         }
         protected List<IdNameDto> GetMissionGoals(bool addAll)
         {
