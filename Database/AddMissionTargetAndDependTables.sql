@@ -13,6 +13,9 @@ alter table MissionTarget  drop constraint FK_MissionTarget_AirTicketType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionTarget_TrainTicketType]') AND parent_object_id = OBJECT_ID('MissionTarget'))
 alter table MissionTarget  drop constraint FK_MissionTarget_TrainTicketType
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderTarget_MissionOrder]') AND parent_object_id = OBJECT_ID('MissionTarget'))
+alter table MissionTarget  drop constraint FK_MissionOrderTarget_MissionOrder
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionDailyAllowanceGradeValue_DailyAllowance]') AND parent_object_id = OBJECT_ID('MissionDailyAllowanceGradeValue'))
 alter table MissionDailyAllowanceGradeValue  drop constraint FK_MissionDailyAllowanceGradeValue_DailyAllowance
 
@@ -69,11 +72,13 @@ create index IX_MissionTarget_DailyAllowance_Id on MissionTarget (DailyAllowance
 create index IX_MissionTarget_Residence_Id on MissionTarget (ResidenceId)
 create index IX_MissionTarget_AirTicketType_Id on MissionTarget (AirTicketTypeId)
 create index IX_MissionTarget_TrainTicketType_Id on MissionTarget (TrainTicketTypeId)
+create index IX_MissionOrderTarget_MissionOrder on MissionTarget (MissionOrderId)
 alter table MissionTarget add constraint FK_MissionTarget_Country foreign key (CountryId) references MissionCountry
 alter table MissionTarget add constraint FK_MissionTarget_DailyAllowance foreign key (DailyAllowanceId) references MissionDailyAllowance
 alter table MissionTarget add constraint FK_MissionTarget_Residence foreign key (ResidenceId) references MissionResidence
 alter table MissionTarget add constraint FK_MissionTarget_AirTicketType foreign key (AirTicketTypeId) references MissionAirTicketType
 alter table MissionTarget add constraint FK_MissionTarget_TrainTicketType foreign key (TrainTicketTypeId) references MissionTrainTicketType
+alter table MissionTarget add constraint FK_MissionOrderTarget_MissionOrder foreign key (MissionOrderId) references MissionOrder
 
 
 create table MissionDailyAllowanceGradeValue (

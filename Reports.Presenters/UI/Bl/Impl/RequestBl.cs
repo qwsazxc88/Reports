@@ -6769,11 +6769,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.DocumentNumber = missionOrder.Number.ToString();
                 model.Version = missionOrder.Version;
-                //model.DaysCount = childVacation.DaysCount;
-                //model.CreatorLogin = missionOrder.Creator.Name;
                 model.DateCreated = missionOrder.CreateDate.ToShortDateString();
                 SetFlagsState(missionOrder.Id, user, missionOrder, model);
-
                 return true;
             }
             catch (Exception ex)
@@ -7200,6 +7197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TrainTicketTypeGrades = jsonSerializer.Serialize(trainList.ToArray()); 
             if(entity != null && entity.Targets != null && entity.Targets.Count > 0)
             {
+                bool needUpdate = false;
                 decimal sumAir = 0;
                 decimal sumTrain = 0;
                 decimal sumDaily = 0;
@@ -7241,35 +7239,79 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if(entity.SumAir.HasValue)
                 {
-                    if(entity.SumAir.Value != sumAir)
-                        Log.ErrorFormat("Сумма для авиабилетов по грейду не совпадает с суммой из базы данных для приказа {0}",entity.Id);
+                    if (entity.SumAir.Value != sumAir)
+                    {
+                        Log.ErrorFormat("Сумма для авиабилетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                        entity.SumAir = sumAir;
+                        needUpdate = true;
+                    }
                 }
                 else if (sumAir != 0)
+                {
                     Log.ErrorFormat("Сумма для авиабилетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                    entity.SumAir = sumAir;
+                    needUpdate = true;
+                }
 
                 if (entity.SumTrain.HasValue)
                 {
                     if (entity.SumTrain.Value != sumTrain)
+                    {
                         Log.ErrorFormat("Сумма для  ж/д билетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                        entity.SumTrain = sumTrain;
+                        needUpdate = true;
+                    }
                 }
                 else if (sumTrain != 0)
-                    Log.ErrorFormat("Сумма для  ж/д билетов по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                {
+                    Log.ErrorFormat("Сумма для  ж/д билетов по грейду не совпадает с суммой из базы данных для приказа {0}",entity.Id);
+                    entity.SumTrain = sumTrain;
+                    needUpdate = true;
+                }
 
                 if (entity.SumDaily.HasValue)
                 {
                     if (entity.SumDaily.Value != sumDaily)
+                    {
                         Log.ErrorFormat("Сумма для суточных по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                        entity.SumDaily = sumDaily;
+                        needUpdate = true;
+                    }
                 }
                 else if (sumDaily != 0)
+                {
                     Log.ErrorFormat("Сумма для суточных по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                    entity.SumDaily = sumDaily;
+                    needUpdate = true;
+                }
 
                 if (entity.SumResidence.HasValue)
                 {
                     if (entity.SumResidence.Value != sumRes)
+                    {
                         Log.ErrorFormat("Сумма для проживания по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                        entity.SumResidence = sumRes;
+                        needUpdate = true;
+                    }
                 }
                 else if (sumRes != 0)
+                {
                     Log.ErrorFormat("Сумма для проживания по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                    entity.SumResidence = sumRes;
+                    needUpdate = true;
+                }
+                decimal allSum = sumAir + sumTrain + sumDaily + sumRes;
+                if(entity.AllSum != allSum)
+                {
+                    Log.ErrorFormat("Общая сумма по грейду не совпадает с суммой из базы данных для приказа {0}", entity.Id);
+                    entity.AllSum = allSum;
+                    needUpdate = true;
+                }
+                if(needUpdate)
+                {
+                    MissionOrderDao.SaveAndFlush(entity);
+                    Log.ErrorFormat("Сумма(ы) по грейду изменены в базе данных для приказа {0}", entity.Id);
+                }
             }
         }
         protected List<IdNameDto> GetMissionGoals(bool addAll)
