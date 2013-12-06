@@ -9,7 +9,7 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant  | UserRole.OutsourcingManager)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Director)]
     public class MissionOrderController : BaseController
     {
         protected IRequestBl requestBl;
@@ -43,7 +43,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Director)]
         public ActionResult CreateMissionOrderRequest()
         {
             CreateMissionOrderModel model = RequestBl.GetCreateMissionOrderModel();

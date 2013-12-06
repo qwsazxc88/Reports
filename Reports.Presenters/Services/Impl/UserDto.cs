@@ -38,6 +38,8 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.OutsourcingManager;
                 if (IsInRole(ReportRoleConstants.Accountant))
                     return UserRole.Accountant;
+                if (IsInRole(ReportRoleConstants.Director))
+                    return UserRole.Director;
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))

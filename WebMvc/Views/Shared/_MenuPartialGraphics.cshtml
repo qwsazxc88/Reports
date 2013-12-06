@@ -46,8 +46,9 @@
                 </div>
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
-                     //|| (dto.UserRole & UserRole.Accountant) > 0
-                     //|| (dto.UserRole & UserRole.Admin) > 0
+                     || (dto.UserRole & UserRole.Accountant) > 0
+                     || (dto.UserRole & UserRole.Director) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
                     )
                 {
                     <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>

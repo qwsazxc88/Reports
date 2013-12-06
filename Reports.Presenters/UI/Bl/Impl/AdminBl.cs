@@ -1077,6 +1077,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles += GetRoleName(allRoles, UserRole.OutsourcingManager) + " ";
             if ((role & (int)UserRole.PersonnelManager) > 0)
                 roles += GetRoleName(allRoles, UserRole.PersonnelManager) + " ";
+            if ((role & (int)UserRole.Director) > 0)
+                roles += GetRoleName(allRoles, UserRole.Director) + " ";
             return roles;
             /*switch (role)
             {

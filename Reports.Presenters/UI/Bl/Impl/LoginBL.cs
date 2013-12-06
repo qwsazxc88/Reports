@@ -184,6 +184,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.OutsourcingManager);
             if ((user.UserRole & UserRole.PersonnelManager) > 0 && !roles.Contains(UserRole.PersonnelManager))
                 roles.Add(UserRole.PersonnelManager);
+            if ((user.UserRole & UserRole.Director) > 0 && !roles.Contains(UserRole.Director))
+                roles.Add(UserRole.Director);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

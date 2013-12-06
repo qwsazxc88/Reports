@@ -17,6 +17,7 @@ namespace Reports.Core
         Inspector = 64,
         Chief = 128,
         Accountant = 256,
+        Director = 512,
     }
     public class ReportRoleConstants
     {
@@ -28,6 +29,7 @@ namespace Reports.Core
         public const string Inspector = "64";
         public const string Chief = "128";
         public const string Accountant = "256";
+        public const string Director = "512";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -46,6 +48,7 @@ namespace Reports.Core
                              {UserRole.Inspector, Inspector},
                              {UserRole.Chief, Chief},
                              {UserRole.Accountant, Accountant},
+                             {UserRole.Director, Director},
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}
