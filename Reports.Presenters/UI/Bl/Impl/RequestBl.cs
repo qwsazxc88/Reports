@@ -6673,25 +6673,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
 
                 MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
-                                                            {
-                                                                AirTicketTypeId = x.AirTicketType.Id,
-                                                                AirTicketTypeName = x.AirTicketType.Name,
-                                                                AllDaysCount = x.DaysCount.ToString(),
-                                                                City = x.City,
-                                                                Country = x.Country.Name,
-                                                                CountryId = x.Country.Id,
-                                                                DailyAllowanceId = x.DailyAllowance.Id,
-                                                                DailyAllowanceName = x.DailyAllowance.Name,
-                                                                DateFrom = x.BeginDate.ToShortDateString(),
-                                                                DateTo = x.EndDate.ToShortDateString(),
-                                                                Organization = x.Organization,
-                                                                ResidenceId = x.Residence.Id,
-                                                                ResidenceName = x.Residence.Name,
-                                                                TargetDaysCount = x.RealDaysCount.ToString(),
-                                                                TargetId = x.Id,
-                                                                TrainTicketTypeId = x.TrainTicketType.Id,
-                                                                TrainTicketTypeName = x.TrainTicketType.Name,
-                                                            }).ToArray();
+                    {
+                        AirTicketTypeId = x.AirTicketType == null ? 0 : x.AirTicketType.Id,
+                        AirTicketTypeName = x.AirTicketType == null? string.Empty:x.AirTicketType.Name,
+                        AllDaysCount = x.DaysCount.ToString(),
+                        City = x.City,
+                        Country = x.Country.Name,
+                        CountryId = x.Country.Id,
+                        DailyAllowanceId = x.DailyAllowance == null? 0: x.DailyAllowance.Id,
+                        DailyAllowanceName =  x.DailyAllowance == null? string.Empty : x.DailyAllowance.Name,
+                        DateFrom = x.BeginDate.ToShortDateString(),
+                        DateTo = x.EndDate.ToShortDateString(),
+                        Organization = x.Organization,
+                        ResidenceId = x.Residence == null? 0: x.Residence.Id,
+                        ResidenceName = x.Residence == null? string.Empty: x.Residence.Name,
+                        TargetDaysCount = x.RealDaysCount.ToString(),
+                        TargetId = x.Id,
+                        TrainTicketTypeId = x.TrainTicketType == null? 0:x.TrainTicketType.Id,
+                        TrainTicketTypeName = x.TrainTicketType == null? string.Empty: x.TrainTicketType.Name,
+                    }).ToArray();
                 JsonList list = new JsonList { List = targets };
                 JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
                 model.Targets = jsonSerializer.Serialize(list);
@@ -6808,6 +6808,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
+            if (model.IsEditable)
+            {
+                entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
+                entity.EndDate = DateTime.Parse(model.EndMissionDate);
+                entity.Goal = MissionGoalDao.Load(model.GoalId);
+                entity.Type = MissionTypeDao.Load(model.TypeId);
+                entity.UserAllSum = Decimal.Parse(model.UserAllSum);
+                entity.UserSumDaily = GetSum(model.UserAllSumDaily);
+                entity.UserSumResidence = GetSum(model.UserAllSumResidence);
+                entity.UserSumAir = GetSum(model.UserAllSumAir);
+                entity.UserSumTrain = GetSum(model.UserAllSumTrain);
+                entity.AllSum = Decimal.Parse(model.AllSum);
+                entity.SumDaily = Decimal.Parse(model.AllSumDaily);
+                entity.SumResidence = Decimal.Parse(model.AllSumResidence);
+                entity.SumAir = Decimal.Parse(model.AllSumAir);
+                entity.SumTrain = Decimal.Parse(model.AllSumTrain);
+                entity.UserSumCash = GetSum(model.UserSumCash);
+                entity.UserSumNotCash = GetSum(model.UserSumNotCash);
+                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 ||
+                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate, entity.EndDate) > 0)
+                    entity.NeedToAcceptByChief = true;
+                else
+                    entity.NeedToAcceptByChief = false;
+                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
+                SaveMissionTargets(entity, model);
+            }
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -6830,6 +6856,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = UserDao.Load(current.Id);
                         if (entity.Creator.RoleId == (int)UserRole.Manager)
                             entity.UserDateAccept = DateTime.Now;
+                        if(!entity.NeedToAcceptByChief)
+                            CreateMission(entity);
                     }
                     else
                     {
@@ -6852,6 +6880,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
+                            if (!entity.NeedToAcceptByChief)
+                                CreateMission(entity);
                         }
                         else
                         {
@@ -6880,6 +6910,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
                             }
+                            CreateMission(entity);
                         }
                         else
                         {
@@ -6895,32 +6926,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }  
                 }
             }
-            if (model.IsEditable)
-            {
-                entity.BeginDate =  DateTime.Parse(model.BeginMissionDate);
-                entity.EndDate = DateTime.Parse(model.EndMissionDate);
-                entity.Goal = MissionGoalDao.Load(model.GoalId);
-                entity.Type = MissionTypeDao.Load(model.TypeId);
-                entity.UserAllSum = Decimal.Parse(model.UserAllSum);
-                entity.UserSumDaily = GetSum(model.UserAllSumDaily);
-                entity.UserSumResidence = GetSum(model.UserAllSumResidence);
-                entity.UserSumAir = GetSum(model.UserAllSumAir);
-                entity.UserSumTrain = GetSum(model.UserAllSumTrain); 
-                entity.AllSum = Decimal.Parse(model.AllSum);
-                entity.SumDaily = Decimal.Parse(model.AllSumDaily);
-                entity.SumResidence = Decimal.Parse(model.AllSumResidence);
-                entity.SumAir = Decimal.Parse(model.AllSumAir);
-                entity.SumTrain = Decimal.Parse(model.AllSumTrain);
-                entity.UserSumCash = GetSum(model.UserSumCash);
-                entity.UserSumNotCash = GetSum(model.UserSumNotCash); 
-                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 || 
-                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EndDate) > 0)
-                    entity.NeedToAcceptByChief = true;
-                else
-                    entity.NeedToAcceptByChief = false;
-                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
-                SaveMissionTargets(entity, model);
-            }
+            
+        }
+        protected void CreateMission(MissionOrder entity)
+        {
+            if (entity.Mission != null)
+                throw new ArgumentException(
+                    string.Format("Для приказа уже существвует заявка на командировку (Id {0})", entity.Mission.Id));
+            MissionTarget target = entity.Targets[0];
+            Mission mission = new Mission
+                                  {
+                                      BeginDate = entity.BeginDate,
+                                      Country = target.Country.Name,
+                                      CreateDate = DateTime.Now,
+                                      Creator = entity.Creator,
+                                      //todo ???
+                                      DaysCount = entity.EndDate.Subtract(entity.BeginDate).Days + 1,
+                                      EndDate = entity.EndDate,
+                                      FinancesSource = string.Empty,
+                                      Goal = entity.Goal.Name,
+                                      ManagerDateAccept = DateTime.Now,
+                                      Number = RequestNextNumberDao.GetNextNumberForType((int) RequestTypeEnum.Mission),
+                                      Organization = target.Organization,
+                                      Reason = string.Format("Приказ № {0}", entity.Number),
+                                      TimesheetStatus = TimesheetStatusDao.Load(7),
+                                      Type = entity.Type,
+                                      User = entity.User,
+                                      UserDateAccept = DateTime.Now
+                                  };
+            MissionDao.SaveAndFlush(mission);
+            entity.Mission = mission;
         }
         protected static decimal? GetSum(string sum)
         {

@@ -51,6 +51,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? DeleteDate { get; set; }
         public virtual bool DeleteAfterSendTo1C { get; set; }
 
+        public virtual Mission Mission { get; set; }
+
         public virtual IList<MissionTarget> Targets { get; set; }
 
         public virtual IList<MissionOrderComment> Comments { get; set; }
