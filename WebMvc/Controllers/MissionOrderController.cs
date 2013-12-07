@@ -129,6 +129,22 @@ namespace WebMvc.Controllers
             }
             if (ModelState.ContainsKey("IsChiefApproveNeed"))
                 ModelState.Remove("IsChiefApproveNeed");
+            model.IsChiefApproveNeed = model.IsChiefApproveNeedHidden;
+
+            if (model.IsManagerApproveAvailable && model.IsManagerApproved.HasValue
+                && !model.IsManagerApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
+            if (model.IsChiefApproveAvailable && model.IsChiefApproved.HasValue
+                && !model.IsChiefApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsChiefApproved"))
+                    ModelState.Remove("IsChiefApproved");
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
         }
         
         [HttpGet]

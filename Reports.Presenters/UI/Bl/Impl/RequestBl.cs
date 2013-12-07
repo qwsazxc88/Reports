@@ -6618,27 +6618,35 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId)
         {
-            if(!userId.HasValue)
+            if(id == 0 && !userId.HasValue)
             {
                 if (CurrentUser.UserRole == UserRole.Employee)
                     userId = CurrentUser.Id;
                 else
                     throw new ValidationException("Не указан пользователь для приказа на командировку");
             }
-            MissionOrderEditModel model = new MissionOrderEditModel {Id = id,UserId = userId.Value};
+            MissionOrder entity = null;
+            if (id != 0)
+            {
+                entity = MissionOrderDao.Load(id);
+                if (entity == null)
+                    throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных", id));
+            }
+            MissionOrderEditModel model = new MissionOrderEditModel
+                    {
+                        Id = id,
+                        UserId = id == 0 ? userId.Value : entity.User.Id
+                    };
             User user = UserDao.Load(model.UserId);
             if(!user.Grade.HasValue)
                 throw new ValidationException(string.Format("Не указан грейд для пользователя {0} в базе данных",user.Id));
             IUser current = AuthenticationService.CurrentUser;
-            if (!CheckUserMoRights(user, current, id, false))
+           
+            if (!CheckUserMoRights(user, current, id, entity, false))
                 throw new ArgumentException("Доступ запрещен.");
             //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
-            MissionOrder entity = null;
             if(id != 0)
             {
-                entity = MissionOrderDao.Load(model.Id);
-                if(entity == null)
-                    throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных",model.Id));
                 LoadGraids(model, user.Grade.Value, entity,entity.CreateDate);
                 model.AllSum = FormatSum(entity.AllSum);
                 model.AllSumAir = FormatSum(entity.SumAir);
@@ -6660,6 +6668,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
+
+                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
+                model.DocumentNumber = entity.Number.ToString();
+
                 MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
                                                             {
                                                                 AirTicketTypeId = x.AirTicketType.Id,
@@ -6683,6 +6695,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 JsonList list = new JsonList { List = targets };
                 JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
                 model.Targets = jsonSerializer.Serialize(list);
+                if (entity.DeleteDate.HasValue)
+                    model.IsDeleted = true;
             }
             else
             {
@@ -6696,6 +6710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id,user,entity,model);
+            SetHiddenFields(model);
             return model;
         }
         protected static string FormatSum(decimal sum)
@@ -6714,12 +6729,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserMoRights(user, current, model.Id, true))
+                MissionOrder missionOrder = null;
+                if (model.Id != 0)
+                {
+                    missionOrder = MissionOrderDao.Load(model.Id);
+                }
+                if (!CheckUserMoRights(user, current, model.Id, missionOrder, true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
                 }
-                MissionOrder missionOrder;
+               
                 if (model.Id == 0)
                 {
                     missionOrder = new MissionOrder
@@ -6736,7 +6756,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    missionOrder = MissionOrderDao.Load(model.Id);
                     if (missionOrder.Version != model.Version)
                     {
                         error = "Приказ был изменен другим пользователем.";
@@ -6794,6 +6813,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && model.IsUserApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
+                entity.AcceptUser = UserDao.Load(current.Id);
                 //!!! need to send e-mail
                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
@@ -6807,15 +6827,72 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsManagerApproved.Value)
                     {
                         entity.ManagerDateAccept = DateTime.Now;
-                        if(entity.Creator.RoleId == (int)UserRole.Manager)
+                        entity.AcceptManager = UserDao.Load(current.Id);
+                        if (entity.Creator.RoleId == (int)UserRole.Manager)
                             entity.UserDateAccept = DateTime.Now;
                     }
                     else
+                    {
                         entity.UserDateAccept = null;
-                    
+                        model.IsManagerApproved = null;
+                    }
                     //!!! need to send e-mail
                     /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                         entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                }
+            }
+            if(current.UserRole == UserRole.Director)
+            {
+                bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                {
+                    if (model.IsManagerApproved.HasValue)
+                    {
+                        if (model.IsManagerApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = UserDao.Load(current.Id);
+                        }
+                        else
+                        {
+                            entity.UserDateAccept = null;
+                            model.IsManagerApproved = null;
+                        }
+                        //!!! need to send e-mail
+                        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                    }
+                }
+                if(entity.NeedToAcceptByChief)
+                {
+                    if (model.IsChiefApproved.HasValue)
+                    {
+                        if(model.IsChiefApproved.Value)
+                        {
+                            User currentUser = UserDao.Load(current.Id);
+                            entity.ChiefDateAccept = DateTime.Now;
+                            entity.AcceptChief = currentUser;
+                            if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                            {
+                                entity.ManagerDateAccept = DateTime.Now;
+                                entity.AcceptManager = UserDao.Load(current.Id);
+                                //!!! need to send e-mail
+                                /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                                    entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                            }
+                        }
+                        else
+                        {
+                            if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
+                                entity.UserDateAccept = null;
+                            entity.ManagerDateAccept = null;
+                            model.IsChiefApproved = null;
+                            model.IsManagerApproved = null;
+                            //!!! need to send e-mail
+                            /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                                entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                        }
+                    }  
                 }
             }
             if (model.IsEditable)
@@ -6963,8 +7040,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Director:
+                    if (IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
+                    {
+                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
+                            model.IsManagerApproveAvailable = true;
+                    }
+                    if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
+                        && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
+                        && entity.UserDateAccept.HasValue)
+                        model.IsChiefApproveAvailable = true;
+                    break;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable || model.IsManagerApproveAvailable;
+            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
+                || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable;
 
         }
         protected void SetFlagsState(MissionOrderEditModel model, bool state)
@@ -6981,12 +7070,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.IsChiefApproveNeed = state;
             //model.IsChiefApproveNeedHidden = state;
             model.IsDelete = state;
-            model.IsDeleted = state;
+            //model.IsDeleted = state;
             model.IsManagerApproved = null;
             //model.IsManagerApprovedHidden = null;
             model.IsUserApproved = state;
             //model.IsUserApprovedHidden = state;
-            SetHiddenFields(model);
+            
         }
         /*protected MissionOrderTargetModel[] AddTestData()
         {
@@ -7036,7 +7125,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                      };
             return data.ToArray();
         }*/
-        public bool CheckUserMoRights(User user, IUser current, int entityId, bool isSave)
+        public bool CheckUserMoRights(User user, IUser current, int entityId,MissionOrder entity,bool isSave)
         {
             switch (current.UserRole)
             {
@@ -7064,9 +7153,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (isSave)
                         return false;
                     return true;
+                case UserRole.Director:
+                    if (entityId > 0)
+                    {
+                        if (entity.NeedToAcceptByChief)
+                            return true;
+                        return IsDirectorManagerForEmployee(user, current);
+                    }
+                    return false;
             }
             return false;
         }
+        protected bool IsDirectorManagerForEmployee(User user, IUser current)
+        {
+            User currentUser = UserDao.Load(current.Id);
+            if (currentUser == null)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+            User manager = UserDao.GetManagerForEmployee(user.Login);
+            if (manager != null && manager.Level == 2)
+                return true;
+            return false;
+        }
+
         protected bool IsUserManagerForEmployee(User user, IUser current,out bool canEdit)
         {
             canEdit = false;

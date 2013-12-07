@@ -122,7 +122,7 @@
                             @Html.TextBoxFor(m => m.AllSumDaily, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -133,7 +133,7 @@
                             @Html.TextBoxFor(m => m.AllSumResidence, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                     </tr>
                      <tr>
@@ -144,7 +144,7 @@
                             @Html.TextBoxFor(m => m.AllSumAir, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -155,7 +155,7 @@
                             @Html.TextBoxFor(m => m.AllSumTrain, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                     </tr>
                     <tr>
@@ -173,7 +173,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="color:Red">
+            <td colspan="2" style="font-weight:bold">
             По приезду из командировки в течение 15 дней должен быть заполнен Авансовый отчет и предоставлены подтверждающие документы.<br/>
             В случае не заполнения Авансового отчета в указанный срок, вся сумма подотчета подлежит удержанию в полном <br/>
             объеме из заработной платы. 
@@ -184,7 +184,7 @@
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
         <tr  id="trUserSumNotCash">
@@ -192,7 +192,7 @@
                 @Html.LabelFor(m => m.UserSumNotCash):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { disabled = "disabled", @class = "fixedSize" }) 
+                @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
         <tr>
