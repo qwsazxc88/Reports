@@ -6808,6 +6808,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
+            if (model.IsEditable)
+            {
+                entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
+                entity.EndDate = DateTime.Parse(model.EndMissionDate);
+                entity.Goal = MissionGoalDao.Load(model.GoalId);
+                entity.Type = MissionTypeDao.Load(model.TypeId);
+                entity.UserAllSum = Decimal.Parse(model.UserAllSum);
+                entity.UserSumDaily = GetSum(model.UserAllSumDaily);
+                entity.UserSumResidence = GetSum(model.UserAllSumResidence);
+                entity.UserSumAir = GetSum(model.UserAllSumAir);
+                entity.UserSumTrain = GetSum(model.UserAllSumTrain);
+                entity.AllSum = Decimal.Parse(model.AllSum);
+                entity.SumDaily = Decimal.Parse(model.AllSumDaily);
+                entity.SumResidence = Decimal.Parse(model.AllSumResidence);
+                entity.SumAir = Decimal.Parse(model.AllSumAir);
+                entity.SumTrain = Decimal.Parse(model.AllSumTrain);
+                entity.UserSumCash = GetSum(model.UserSumCash);
+                entity.UserSumNotCash = GetSum(model.UserSumNotCash);
+                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 ||
+                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate, entity.EndDate) > 0)
+                    entity.NeedToAcceptByChief = true;
+                else
+                    entity.NeedToAcceptByChief = false;
+                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
+                SaveMissionTargets(entity, model);
+            }
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -6830,6 +6856,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = UserDao.Load(current.Id);
                         if (entity.Creator.RoleId == (int)UserRole.Manager)
                             entity.UserDateAccept = DateTime.Now;
+                        if(!entity.NeedToAcceptByChief)
+                            CreateMission(entity);
                     }
                     else
                     {
@@ -6852,6 +6880,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
+                            if (!entity.NeedToAcceptByChief)
+                                CreateMission(entity);
                         }
                         else
                         {
@@ -6880,6 +6910,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
                             }
+                            CreateMission(entity);
                         }
                         else
                         {
@@ -6895,32 +6926,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }  
                 }
             }
-            if (model.IsEditable)
-            {
-                entity.BeginDate =  DateTime.Parse(model.BeginMissionDate);
-                entity.EndDate = DateTime.Parse(model.EndMissionDate);
-                entity.Goal = MissionGoalDao.Load(model.GoalId);
-                entity.Type = MissionTypeDao.Load(model.TypeId);
-                entity.UserAllSum = Decimal.Parse(model.UserAllSum);
-                entity.UserSumDaily = GetSum(model.UserAllSumDaily);
-                entity.UserSumResidence = GetSum(model.UserAllSumResidence);
-                entity.UserSumAir = GetSum(model.UserAllSumAir);
-                entity.UserSumTrain = GetSum(model.UserAllSumTrain); 
-                entity.AllSum = Decimal.Parse(model.AllSum);
-                entity.SumDaily = Decimal.Parse(model.AllSumDaily);
-                entity.SumResidence = Decimal.Parse(model.AllSumResidence);
-                entity.SumAir = Decimal.Parse(model.AllSumAir);
-                entity.SumTrain = Decimal.Parse(model.AllSumTrain);
-                entity.UserSumCash = GetSum(model.UserSumCash);
-                entity.UserSumNotCash = GetSum(model.UserSumNotCash); 
-                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 || 
-                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate,entity.EndDate) > 0)
-                    entity.NeedToAcceptByChief = true;
-                else
-                    entity.NeedToAcceptByChief = false;
-                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
-                SaveMissionTargets(entity, model);
-            }
+            
+        }
+        protected void CreateMission(MissionOrder entity)
+        {
+            
         }
         protected static decimal? GetSum(string sum)
         {
