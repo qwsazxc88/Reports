@@ -6591,10 +6591,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             //model.RequestStatuses = GetDeductionStatuses(true);
             //model.Types = GetDeductionTypes(true);
-            //if (hasError)
-            //    model.Documents = new List<DeductionDto>();
-            //else
-            //    SetDocumentsToModel(model, user);
+            if (hasError)
+                model.Documents = new List<MissionOrderDto>();
+            else
+                model.Documents = new List<MissionOrderDto>();
+                //SetDocumentsToModel(model, user);
         }
         public void SetDictionariesToModel(MissionOrderListModel model)
         {

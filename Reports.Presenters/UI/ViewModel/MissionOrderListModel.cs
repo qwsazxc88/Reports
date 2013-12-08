@@ -33,5 +33,10 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsAddAvailable { get; set; }
 
+        public IList<MissionOrderDto> Documents { get; set; }
+    
+        public int SortBy { get; set; }
+        public bool? SortDescending { get; set; }
+
     }
 }
