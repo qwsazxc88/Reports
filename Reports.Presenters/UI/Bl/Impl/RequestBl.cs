@@ -6932,7 +6932,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (entity.Mission != null)
                 throw new ArgumentException(
-                    string.Format("Для приказа уже существвует заявка на командировку (Id {0})", entity.Mission.Id));
+                    string.Format("Для приказа уже существует заявка на командировку (Id {0})", entity.Mission.Id));
             MissionTarget target = entity.Targets[0];
             Mission mission = new Mission
                                   {
