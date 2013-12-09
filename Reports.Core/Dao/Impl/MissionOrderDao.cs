@@ -1,13 +1,243 @@
-﻿using Reports.Core.Domain;
+﻿using System;
+using System.Collections.Generic;
+using NHibernate;
+using NHibernate.Transform;
+using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
 {
     public class MissionOrderDao : DefaultDao<MissionOrder>, IMissionOrderDao
     {
+        protected const string sqlSelectForMissionOrderRn = @";with res as
+                                ({0})
+                                select {1} as Number,* from res order by Number ";
+        protected const string sqlSelectForMoList =
+                                @"select v.Id as Id,
+                                u.Id as UserId,
+                                u.Name as UserName,
+                                dep.Name as Dep7Name,
+                                v.Number as OrderNumber,
+                                EditDate as EditDate,
+                                t.Name as MissionType,  
+                                N'' as Target,
+                                u.Grade as Grade,
+                                v.AllSum as GradeSum,
+                                v.AllSum - v.UserAllSum as GradeIncrease,
+                                v.UserAllSum as UserSum,
+                                case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
+                                case when v.DeleteDate is not null then N'Отклонен'
+                                     when v.SendTo1C is not null then N'Выгружен в 1с' 
+                                     when v.ChiefDateAccept is not null 
+                                          -- and v.ManagerDateAccept is not null 
+                                          -- and v.UserDateAccept is not null 
+                                          then N'Согласован'
+                                    when  NeedToAcceptByChief = 0
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then N'Согласован'    
+                                    when  v.ChiefDateAccept is null 
+                                          and NeedToAcceptByChief = 1
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then N'Отправлен члену правления'    
+                                    when  v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is not null 
+                                          then N'Отправлен руководителю'    
+                                    when  v.UserDateAccept is null 
+                                          then N'Черновик сотрудника'    
+                                    else N''
+                                end as State,
+                                v.BeginDate as BeginDate,  
+                                v.EndDate as EndDate,  
+                                from dbo.MissionOrder v
+                                left join dbo.MissionType t on v.TypeId = t.Id
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                inner join dbo.Department dep on u.DepartmentId = dep.Id";
         public MissionOrderDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
         }
+        public IList<MissionOrderDto> GetDocuments(int userId,
+                UserRole role,
+                int departmentId,
+                int statusId,
+                DateTime? beginDate,
+                DateTime? endDate,
+                string userName,
+                int sortBy,
+                bool? sortDescending)
+        {
+            string sqlQuery = sqlSelectForMoList;
+            string whereString = GetWhereForUserRole(role, userId);
+            //whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            //whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
+        }
+        public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
+                    int sortedBy,
+                    bool? sortDescending)
+        {
+            string orderBy = string.Empty;
+            if (!string.IsNullOrEmpty(whereString))
+                sqlQuery += @" where " + whereString;
+            if (!sortDescending.HasValue)
+            {
+                orderBy = " ORDER BY UserName,EditDate DESC";
+                return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            }
+            switch (sortedBy)
+            {
+                case 0:
+                    orderBy = " ORDER BY UserName,EditDate DESC";
+                    return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+                case 1:
+                    orderBy = @" order by Number";
+                    break;
+                //case 2:
+                //    sqlQuery += @" order by EditDate";
+                //    break;
+                case 3:
+                    orderBy = @" order by EditDate";
+                    break;
+                case 4:
+                    orderBy = @" order by Dep3Name";
+                    break;
+                case 5:
+                    orderBy = @" order by Sum";
+                    break;
+                case 6:
+                    orderBy = @" order by DeductionDate";
+                    break;
+                case 7:
+                    orderBy = @" order by UserName";
+                    break;
+                case 8:
+                    orderBy = @" order by Position";
+                    break;
+                case 9:
+                    orderBy = @" order by Kind";
+                    break;
+                case 10:
+                    orderBy = @" order by Dep7Name";
+                    break;
+                case 11:
+                    orderBy = @" order by DismissalDate";
+                    break;
+                case 12:
+                    orderBy = @" order by Status";
+                    break;
+                case 13:
+                    orderBy = @" order by IsFastDismissal";
+                    break;
+            }
+            if (sortDescending.Value)
+                orderBy += " DESC ";
+            else
+                orderBy += " ASC ";
+            return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            //sqlQuery += @" order by Date DESC,Name ";
+            //return sqlQuery;
+        }
+
+        public override string GetWhereForUserRole(UserRole role, int userId)
+        {
+            switch (role)
+            {
+                case UserRole.Employee:
+                    return string.Format(" u.Id = {0} ", userId);
+                case UserRole.Manager:
+                    return string.Format(" u.ManagerId = {0} ", userId);
+                case UserRole.Director:
+                    return string.Format(" u.ManagerId = {0} ", userId);
+                case UserRole.Accountant:
+                case UserRole.OutsourcingManager:
+                    return string.Empty;
+                default:
+                    throw new ArgumentException(string.Format("Invalid user role {0}", role));
+            }
+        }
+        public override string GetDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EditDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EditDate] < :endDate ";
+            }
+            return whereString;
+        }
+        public override string GetStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    //case 1:
+                    //    statusWhere =
+                    //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
+                    //    break;
+                    case 1:
+                        statusWhere = @"UserDateAccept is not null";
+                        break;
+                    case 2:
+                        statusWhere = @"UserDateAccept is null";
+                        break;
+                    case 3:
+                        statusWhere = @"ManagerDateAccept is not null";
+                        break;
+                    case 4:
+                        statusWhere = @"ManagerDateAccept is null";
+                        break;
+                    case 5:
+                        statusWhere = @"ChiefDateAccept is not null";
+                        break;
+                    case 6:
+                        statusWhere = @"ChiefDateAccept is null";
+                        break;
+                    //case 8:
+                    //    statusWhere =
+                    //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
+                    //    break;
+                    //case 10:
+                    //    statusWhere = @"[DeleteDate] is not null";
+                    //    break;
+                    //case 9:
+                    //    statusWhere = @"SendTo1C is not null";
+                    //    break;
+                    default:
+                        throw new ArgumentException("Неправильный статус заявки");
+                }
+                //if (statusId != 10)
+                //    statusWhere += " and DeleteDate is null ";
+                //if (statusId != 9 && statusId != 10)
+                //    statusWhere += " and SendTo1C is null ";
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere;
+
+
+                return whereString;
+            }
+            return whereString;
+        }
+      
     }
 }

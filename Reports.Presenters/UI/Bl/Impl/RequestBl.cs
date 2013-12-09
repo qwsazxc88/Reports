@@ -6594,8 +6594,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (hasError)
                 model.Documents = new List<MissionOrderDto>();
             else
-                model.Documents = new List<MissionOrderDto>();
-                //SetDocumentsToModel(model, user);
+                SetDocumentsToModel(model, user);
+            //model.Documents = new List<MissionOrderDto>();
+        }
+        public void SetDocumentsToModel(MissionOrderListModel model, User user)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = MissionOrderDao.GetDocuments(user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
         public void SetDictionariesToModel(MissionOrderListModel model)
         {
