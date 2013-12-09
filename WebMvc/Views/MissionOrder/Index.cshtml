@@ -1,5 +1,6 @@
 ﻿@using Reports.Core
 @using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
 @model Reports.Presenters.UI.ViewModel.MissionOrderListModel
 @{
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
@@ -134,13 +135,13 @@
                         <div id="sort6" style="min-width:90px"><a href="#"  onclick = "SortChanged(6);">Нас. пункт</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:100px"><a href="#"  onclick = "SortChanged(7);">Грейд</a></div>
+                        <div id="sort7" style="min-width:100px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
                     </th>
                     <th>
-                        <div id="sort8" style="min-width:132px"><a href="#"  onclick = "SortChanged(8);">Сумма по грейду</a></div>
+                        <div id="sort8" style="min-width:132px"><a href="#"  onclick = "SortChanged(8);">Сумма по G грейду</a></div>
                     </th>
                     <th>
-                        <div id="sort9" style="min-width:222px"><a href="#"  onclick = "SortChanged(9);">Сумма превышения по грейду</a></div>
+                        <div id="sort9" style="min-width:222px"><a href="#"  onclick = "SortChanged(9);">Сумма превышения +\-G</a></div>
                     </th>
                      <th>
                         <div id="sort10" style="min-width:148px"><a href="#"  onclick = "SortChanged(10);">Сумма в подотчет запрошенная</a></div>
@@ -173,14 +174,13 @@
                             <td>@doc.MissionType</td>
                             <td>@doc.Target</td>
                             <td>@doc.Grade</td>
-                            <td>@doc.GradeSum</td>
-                            <td>@doc.GradeIncrease</td>
-                            <td>@doc.UserSum</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@doc.HasMission</td>
                             <td>@doc.State</td>
-                            <td>@doc.State</td>
                             <td>@doc.BeginDate.ToShortDateString() - @doc.EndDate.ToShortDateString()</td>
-                            <td>>@doc.ApproveFlag</td>
+                            <td></td>
                         </tr>
                     }
                 }
@@ -195,7 +195,7 @@
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
-        //setSortFields();
+        setSortFields();
         setActiveMenuItem("moAllOrders");
     });
     function resetFilter() {

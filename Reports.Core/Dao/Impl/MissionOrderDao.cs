@@ -13,6 +13,28 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForMissionOrderRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("OrderNumber", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("MissionType", NHibernateUtil.String).
+                AddScalar("Target", NHibernateUtil.String).
+                AddScalar("Grade", NHibernateUtil.Int32).
+                AddScalar("GradeSum", NHibernateUtil.Decimal).
+                AddScalar("GradeIncrease", NHibernateUtil.Decimal).
+                AddScalar("UserSum", NHibernateUtil.Decimal).
+                AddScalar("HasMission", NHibernateUtil.String).
+                AddScalar("State", NHibernateUtil.String).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Flag", NHibernateUtil.Boolean).
+                AddScalar("Number", NHibernateUtil.Int32);
+        }
         protected const string sqlSelectForMoList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -24,7 +46,7 @@ namespace Reports.Core.Dao.Impl
                                 N'' as Target,
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
-                                v.AllSum - v.UserAllSum as GradeIncrease,
+                                v.UserAllSum - v.AllSum  as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
                                 case when v.DeleteDate is not null then N'Отклонен'
@@ -50,11 +72,13 @@ namespace Reports.Core.Dao.Impl
                                     else N''
                                 end as State,
                                 v.BeginDate as BeginDate,  
-                                v.EndDate as EndDate,  
+                                v.EndDate as EndDate,
+                                {0}  
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                inner join dbo.Department dep on u.DepartmentId = dep.Id";
+                                inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                {1}";
         public MissionOrderDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -70,7 +94,7 @@ namespace Reports.Core.Dao.Impl
                 bool? sortDescending)
         {
             string sqlQuery = sqlSelectForMoList;
-            string whereString = GetWhereForUserRole(role, userId);
+            string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -83,6 +107,7 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
         }
+      
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
                     int sortedBy,
                     bool? sortDescending)
@@ -101,43 +126,43 @@ namespace Reports.Core.Dao.Impl
                     orderBy = " ORDER BY UserName,EditDate DESC";
                     return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
                 case 1:
-                    orderBy = @" order by Number";
-                    break;
-                //case 2:
-                //    sqlQuery += @" order by EditDate";
-                //    break;
-                case 3:
-                    orderBy = @" order by EditDate";
-                    break;
-                case 4:
-                    orderBy = @" order by Dep3Name";
-                    break;
-                case 5:
-                    orderBy = @" order by Sum";
-                    break;
-                case 6:
-                    orderBy = @" order by DeductionDate";
-                    break;
-                case 7:
                     orderBy = @" order by UserName";
                     break;
+                case 2:
+                    orderBy += @" order by Dep7Name";
+                    break;
+                case 3:
+                    orderBy = @" order by OrderNumber";
+                    break;
+                case 4:
+                    orderBy = @" order by EditDate";
+                    break;
+                case 5:
+                    orderBy = @" order by MissionType";
+                    break;
+                case 6:
+                    orderBy = @" order by Target";
+                    break;
+                case 7:
+                    orderBy = @" order by Grade";
+                    break;
                 case 8:
-                    orderBy = @" order by Position";
+                    orderBy = @" order by GradeSum";
                     break;
                 case 9:
-                    orderBy = @" order by Kind";
+                    orderBy = @" order by GradeIncrease";
                     break;
                 case 10:
-                    orderBy = @" order by Dep7Name";
+                    orderBy = @" order by UserSum";
                     break;
                 case 11:
-                    orderBy = @" order by DismissalDate";
+                    orderBy = @" order by HasMission";
                     break;
                 case 12:
-                    orderBy = @" order by Status";
+                    orderBy = @" order by State";
                     break;
                 case 13:
-                    orderBy = @" order by IsFastDismissal";
+                    orderBy = @" order by BeginDate,EndDate";
                     break;
             }
             if (sortDescending.Value)
@@ -149,11 +174,12 @@ namespace Reports.Core.Dao.Impl
             //return sqlQuery;
         }
 
-        public override string GetWhereForUserRole(UserRole role, int userId)
+        public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
         {
             switch (role)
             {
                 case UserRole.Employee:
+                    sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
                     return string.Format(" u.ManagerId = {0} ", userId);
@@ -161,6 +187,7 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" u.ManagerId = {0} ", userId);
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
+                    sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));

@@ -6727,7 +6727,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetHiddenFields(model);
             return model;
         }
-        protected static string FormatSum(decimal sum)
+        public static string FormatSum(decimal sum)
         {
             return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
         }
