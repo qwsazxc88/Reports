@@ -6848,12 +6848,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
+            bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
                 entity.AcceptUser = UserDao.Load(current.Id);
+                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
+                    entity.AcceptManager = UserDao.Load(current.Id);
+                }
                 //!!! need to send e-mail
                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
@@ -6890,9 +6896,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if(current.UserRole == UserRole.Director)
             {
-                bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+               
                 if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
                 {
+                    Log.WarnFormat("!entity.ManagerDateAccept.HasValue and isDirectorManager for MissionOrder {0}",entity.Id);
                     if (model.IsManagerApproved.HasValue)
                     {
                         if (model.IsManagerApproved.Value)

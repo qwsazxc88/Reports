@@ -191,8 +191,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
                     if(currentUser == null)
-                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
-                            userId));
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
 
                     string sqlQueryPartTemplate =
                         @" u.Id in (        select distinct emp.Id from dbo.Users emp
@@ -243,7 +242,23 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart+" ) ";
                 case UserRole.Director:
-                    return string.Format(" u.ManagerId = {0} ", userId);
+                        //User currUser = UserDao.Load(userId);
+                        //if(currUser == null)
+                        //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
+                        const string sqlFlagD = @"case when v.UserDateAccept is not null 
+                                            and  v.ManagerDateAccept is not null 
+                                            and  v.[ChiefDateAccept] is null 
+                                            then 1 else 0 end as Flag";
+                        sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
+                        return @"    ((u.Id in ( select distinct emp.Id from dbo.Users emp
+                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
+                                            and manU.RoleId.[level] = 2 and manU.IsMainManager = 1 )
+                                             -- inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
+                                             -- ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
+                                             -- inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
+                                             -- inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2} 
+                                      )
+                                      or ( v.[NeedToAcceptByChief] = 1 ))";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
