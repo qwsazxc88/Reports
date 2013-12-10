@@ -120,40 +120,40 @@
                         <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                      <th>
-                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение уровня 7</a></div>
+                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
                     </th>
                     <th>
-                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Номер приказа</a></div>
+                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>приказа</a></div>
                     </th>
                     <th>
                         <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Дата</a></div>
                     </th>
                     <th>
-                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип командировки</a></div>
+                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:90px"><a href="#"  onclick = "SortChanged(6);">Нас. пункт</a></div>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Нас. пункт</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:100px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
+                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
                     </th>
                     <th>
-                        <div id="sort8" style="min-width:132px"><a href="#"  onclick = "SortChanged(8);">Сумма по G грейду</a></div>
+                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
                     </th>
                     <th>
-                        <div id="sort9" style="min-width:222px"><a href="#"  onclick = "SortChanged(9);">Сумма превышения +\-G</a></div>
+                        <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Сумма <br/>прев.<br/>+\-G</a></div>
                     </th>
                      <th>
-                        <div id="sort10" style="min-width:148px"><a href="#"  onclick = "SortChanged(10);">Сумма в подотчет запрошенная</a></div>
+                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
                     </th>
                     <th>
-                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка в табеле</a></div>
+                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
                     </th>
                      <th>
-                        <div id="sort12"  style="min-width:74px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
                     </th>
                      <th>
-                        <div id="sort13"  style="min-width:74px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
+                        <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
                     </th>
                     <th>
                         Согласован
@@ -179,8 +179,8 @@
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@doc.HasMission</td>
                             <td>@doc.State</td>
-                            <td>@doc.BeginDate.ToShortDateString() - @doc.EndDate.ToShortDateString()</td>
-                            <td></td>
+                            <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
+                            <td>@doc.Flag</td>
                         </tr>
                     }
                 }

@@ -10,6 +10,13 @@ namespace Reports.Core.Dao.Impl
 {
     public class MissionOrderDao : DefaultDao<MissionOrder>, IMissionOrderDao
     {
+        protected IUserDao userDao;
+        public IUserDao UserDao
+        {
+            get { return Validate.Dependency(userDao); }
+            set { userDao = value; }
+        }
+
         protected const string sqlSelectForMissionOrderRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
@@ -182,7 +189,59 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
-                    return string.Format(" u.ManagerId = {0} ", userId);
+                    User currentUser = UserDao.Load(userId);
+                    if(currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
+                            userId));
+
+                    string sqlQueryPartTemplate =
+                        @" u.Id in (        select distinct emp.Id from dbo.Users emp
+                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
+                                             inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
+                                             ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
+                                             inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
+                                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
+                    string sqlQueryPart = string.Empty;
+                    string sqlFlag = string.Empty;     
+                    switch (currentUser.Level)
+                    {
+                        case 2:
+                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2",currentUser.Id);
+                            sqlFlag = @"case v.UserDateAccept is not null 
+                                        and  v.ManagerDateAccept is null when 1 else 0 end as Flag";
+                            break;
+                        case 3:
+                            sqlFlag = @"case when v.UserDateAccept is not null 
+                                        and v.ManagerDateAccept is null then 1 else 0 end as Flag";
+                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5", "3", currentUser.Id);
+                            break;
+                        case 4:
+                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "5", "4", currentUser.Id);
+                            sqlFlag = "0 as Flag";
+                            break;
+                        case 5:
+                        case 6:
+                            sqlQueryPartTemplate += @" union 
+                             select distinct emp1.Id from dbo.Users emp1
+                             inner join dbo.Department dEmp1 on emp1.DepartmentId = dEmp1.Id 
+                             and  ((emp1.RoleId & 2) > 0) 
+                             inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
+                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
+                            if (currentUser.Level == 5)
+                            {
+                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);
+                                sqlFlag = @"case when v.UserDateAccept is not null 
+                                            and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
+                            }
+                            else
+                            {
+                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "-1", "6", currentUser.Id);
+                                sqlFlag = "0 as Flag";
+                            }
+                            break;
+                    }
+                    sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
+                    return sqlQueryPart+" ) ";
                 case UserRole.Director:
                     return string.Format(" u.ManagerId = {0} ", userId);
                 case UserRole.Accountant:

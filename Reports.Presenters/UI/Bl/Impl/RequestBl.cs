@@ -6860,28 +6860,33 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             bool canEdit = false;
             if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit) 
-                && !entity.ManagerDateAccept.HasValue)
+                /*&& !entity.ManagerDateAccept.HasValue*/)
             {
-                if (model.IsManagerApproved.HasValue)
+                if (!entity.ManagerDateAccept.HasValue)
                 {
-                    if (model.IsManagerApproved.Value)
+                    if (model.IsManagerApproved.HasValue)
                     {
-                        entity.ManagerDateAccept = DateTime.Now;
-                        entity.AcceptManager = UserDao.Load(current.Id);
-                        if (entity.Creator.RoleId == (int)UserRole.Manager)
-                            entity.UserDateAccept = DateTime.Now;
-                        if(!entity.NeedToAcceptByChief)
-                            CreateMission(entity);
+                        if (model.IsManagerApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = UserDao.Load(current.Id);
+                            if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
+                                entity.UserDateAccept = DateTime.Now;
+                            if (!entity.NeedToAcceptByChief)
+                                CreateMission(entity);
+                        }
+                        else
+                        {
+                            entity.UserDateAccept = null;
+                            model.IsManagerApproved = null;
+                        }
+                        //!!! need to send e-mail
+                        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.ChildVacation, false);*/
                     }
-                    else
-                    {
-                        entity.UserDateAccept = null;
-                        model.IsManagerApproved = null;
-                    }
-                    //!!! need to send e-mail
-                    /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                        entity.Number, RequestTypeEnum.ChildVacation, false);*/
                 }
+                if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;
             }
             if(current.UserRole == UserRole.Director)
             {
@@ -7075,7 +7080,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                          {
                              model.IsEditable = true;
                              model.IsManagerApproveAvailable = true;
-                             model.IsUserApproved = true;
+                             if (entity.UserDateAccept.HasValue)
+                                model.IsUserApproved = true;
                          }
                     }
                     else
