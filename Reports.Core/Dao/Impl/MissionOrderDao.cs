@@ -50,10 +50,10 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as OrderNumber,
                                 EditDate as EditDate,
                                 t.Name as MissionType,  
-                                N'' as Target,
+                                [dbo].[fnGetMissionOrderTargetsCities](v.Id) as Target,
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
-                                v.UserAllSum - v.AllSum  as GradeIncrease,
+                                v.AllSum - v.UserAllSum   as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
                                 case when v.DeleteDate is not null then N'Отклонен'
@@ -250,15 +250,16 @@ namespace Reports.Core.Dao.Impl
                                             and  v.[ChiefDateAccept] is null 
                                             then 1 else 0 end as Flag";
                         sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
-                        return @"    ((u.Id in ( select distinct emp.Id from dbo.Users emp
-                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
-                                            and manU.RoleId.[level] = 2 and manU.IsMainManager = 1 )
+                        return @"   -- ((u.Id in ( select distinct emp.Id from dbo.Users emp
+                                    --        inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
+                                    --        and manU.[level] = 2 and manU.IsMainManager = 1 )
                                              -- inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
                                              -- ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
                                              -- inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
                                              -- inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2} 
-                                      )
-                                      or ( v.[NeedToAcceptByChief] = 1 ))";
+                                    --  )
+                                    --  or 
+                                       v.[NeedToAcceptByChief] = 1 ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);

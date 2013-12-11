@@ -6683,7 +6683,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
 
-                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
+                model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 model.DocumentNumber = entity.Number.ToString();
 
                 MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
@@ -6790,6 +6790,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                     {
                         ChangeEntityProperties(current, missionOrder, model, user);
+                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
+                        //string country = GetStringForList(cityList);
+                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
+                        //string org = GetStringForList(orgList);
                         MissionOrderDao.SaveAndFlush(missionOrder);
                         if (missionOrder.Version != model.Version)
                         {
@@ -6822,6 +6826,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
+            bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             if (model.IsEditable)
             {
                 entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
@@ -6840,15 +6845,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.SumTrain = Decimal.Parse(model.AllSumTrain);
                 entity.UserSumCash = GetSum(model.UserSumCash);
                 entity.UserSumNotCash = GetSum(model.UserSumNotCash);
-                if (entity.EndDate.Subtract(entity.BeginDate).Days > 7 ||
-                    WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate, entity.EndDate) > 0)
+                if ( IsMissionOrderLong(entity) || isDirectorManager)
                     entity.NeedToAcceptByChief = true;
                 else
                     entity.NeedToAcceptByChief = false;
-                model.IsChiefApproveNeed = entity.NeedToAcceptByChief;
+                model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
-            bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+            
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -6954,26 +6958,51 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
         }
+        protected bool IsMissionOrderLong(MissionOrder entity)
+        {
+            return (entity.EndDate.Subtract(entity.BeginDate).Days > 7) ||
+                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate, entity.EndDate) > 0);
+        }
+        protected string GetStringForList(List<string> list)
+        {
+            string result = string.Empty;
+            foreach (string t in list)
+            {
+                if (result.Length + t.Length > 249)
+                {
+                    result += " ...  ";
+                    break;
+                }
+                result += t + ", ";
+            }
+            return result.Length > 2 ? result.Substring(0, result.Length - 2) : result;
+        }
         protected void CreateMission(MissionOrder entity)
         {
             if (entity.Mission != null)
                 throw new ArgumentException(
                     string.Format("Для приказа уже существует заявка на командировку (Id {0})", entity.Mission.Id));
-            MissionTarget target = entity.Targets[0];
+            //MissionTarget target = entity.Targets[0];
+
+            List<string> cityList = entity.Targets.Select(x => x.City).ToList();
+            string country = GetStringForList(cityList);
+            List<string> orgList = entity.Targets.Select(x => x.Organization).ToList();
+            string org = GetStringForList(orgList);
+            GetStringForList(cityList); 
             Mission mission = new Mission
                                   {
                                       BeginDate = entity.BeginDate,
-                                      Country = target.Country.Name,
+                                      Country = country,
                                       CreateDate = DateTime.Now,
                                       Creator = entity.Creator,
                                       //todo ???
                                       DaysCount = entity.EndDate.Subtract(entity.BeginDate).Days + 1,
                                       EndDate = entity.EndDate,
-                                      FinancesSource = string.Empty,
+                                      FinancesSource = entity.User.Organization == null? string.Empty:entity.User.Organization.Name,
                                       Goal = entity.Goal.Name,
                                       ManagerDateAccept = DateTime.Now,
                                       Number = RequestNextNumberDao.GetNextNumberForType((int) RequestTypeEnum.Mission),
-                                      Organization = target.Organization,
+                                      Organization = org,
                                       Reason = string.Format("Приказ № {0}", entity.Number),
                                       TimesheetStatus = TimesheetStatusDao.Load(7),
                                       Type = entity.Type,
@@ -7232,7 +7261,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
             User manager = UserDao.GetManagerForEmployee(user.Login);
-            if (manager != null && manager.Level == 2)
+            if (manager != null && manager.Level == 2 && manager.IsMainManager)
                 return true;
             return false;
         }
