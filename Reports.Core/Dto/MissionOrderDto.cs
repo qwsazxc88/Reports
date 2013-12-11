@@ -22,6 +22,7 @@ namespace Reports.Core.Dto
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool Flag { get; set; }
+        public bool IsChecked { get; set; }
         //public bool IsApproveFlagAvailable { get; set; }
     }
 }

@@ -314,6 +314,13 @@ namespace Reports.Core.Dao.Impl
                     case 6:
                         statusWhere = @"ChiefDateAccept is null";
                         break;
+                    case 7:
+                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null";
+                        break;
+                    case 8:
+                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is not null 
+                                        and ChiefDateAccept is null and NeedToAcceptByChief = 1";
+                        break;
                     //case 8:
                     //    statusWhere =
                     //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";

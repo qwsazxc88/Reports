@@ -161,6 +161,7 @@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
+                    int i = 0;
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
@@ -180,8 +181,14 @@
                             <td>@doc.HasMission</td>
                             <td>@doc.State</td>
                             <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
-                            <td>@doc.Flag</td>
+                            <td>@if(doc.Flag)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
+                                    <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
+                                }
+                            </td>
                         </tr>
+                        i++;
                     }
                 }
             </table>    

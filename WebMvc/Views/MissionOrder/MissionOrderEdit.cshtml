@@ -816,9 +816,7 @@
                    
                 }
                 if ((beginDate != undefined) && (endDate != undefined)) {
-                    var value =  (endDate - beginDate)/(3600*24*1000);
-                    if(value == 0)
-                        value = 1;
+                    var value =  (endDate - beginDate)/(3600*24*1000) + 1;
                     $("#AllDays").val(value);
                     return;
                 }
