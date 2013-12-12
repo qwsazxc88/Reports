@@ -34,6 +34,8 @@ namespace WebMvc.Controllers
         {
             ModelState.Clear();
             RequestBl.SetMissionOrderListModel(model, !ValidateModel(model));
+            if(model.HasErrors)
+                ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
         }
         protected bool ValidateModel(MissionOrderListModel model)

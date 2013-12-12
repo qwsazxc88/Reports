@@ -6618,10 +6618,96 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(model.IsApproveClick)
                 {
                     model.IsApproveClick = false;
+                    List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
+                    ApproveOrders(model,idsForApprove);
                 }
                 SetDocumentsToModel(model, user);
             }
             //model.Documents = new List<MissionOrderDto>();
+        }
+        protected void ApproveOrders(MissionOrderListModel model,List<int> idsForApprove)
+        {
+            List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsForApprove).ToList();
+            foreach (MissionOrder order in orders)
+                ApproveOrder(model,order);
+        }
+        protected void ApproveOrder(MissionOrderListModel model,MissionOrder order)
+        {
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.Manager:
+                    ApproveOrderForManager(model,order);
+                    break;
+                case UserRole.Director:
+                    ApproveOrderForDirector(model, order);
+                    break;
+                default:
+                    model.HasErrors = true;
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2}",order.Id,CurrentUser.Id,CurrentUser.UserRole);
+                    break;
+            }
+        }
+        protected void ApproveOrderForManager(MissionOrderListModel model,MissionOrder entity)
+        {
+            try
+            {
+                if(entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue)
+                {
+                    bool canEdit;
+                    if(IsUserManagerForEmployee(entity.User,CurrentUser,out canEdit) && canEdit)
+                    {
+                        entity.ManagerDateAccept = DateTime.Now;
+                        entity.AcceptManager = UserDao.Load(CurrentUser.Id);
+                        entity.EditDate = DateTime.Now;
+                        if (!entity.NeedToAcceptByChief)
+                            CreateMission(entity);
+                        MissionOrderDao.SaveAndFlush(entity);
+                    }
+                    else
+                    {
+                        Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - IsUserManagerForEmployee", 
+                            entity.Id, CurrentUser.Id, CurrentUser.UserRole);
+                        model.HasErrors = true;
+                    }
+                }
+                else
+                {
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue",
+                        entity.Id, CurrentUser.Id, CurrentUser.UserRole);
+                    model.HasErrors = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("ApproveOrderForManager",ex);
+                model.HasErrors = true;
+            }
+        }
+        protected void ApproveOrderForDirector(MissionOrderListModel model, MissionOrder entity)
+        {
+            try
+            {
+                if (entity.UserDateAccept.HasValue && entity.ManagerDateAccept.HasValue && 
+                    entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue)
+                {
+                        entity.ChiefDateAccept = DateTime.Now;
+                        entity.EditDate = DateTime.Now;
+                        entity.AcceptChief = UserDao.Load(CurrentUser.Id);
+                        CreateMission(entity);
+                        MissionOrderDao.SaveAndFlush(entity);
+                }
+                else
+                {
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue",
+                        entity.Id, CurrentUser.Id, CurrentUser.UserRole);
+                    model.HasErrors = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("ApproveOrderForDirector", ex);
+                model.HasErrors = true;
+            }
         }
         public void SetDocumentsToModel(MissionOrderListModel model, User user)
         {

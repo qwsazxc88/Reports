@@ -40,5 +40,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
 
+        public bool HasErrors { get; set; }
+
     }
 }

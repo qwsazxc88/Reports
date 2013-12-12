@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -346,6 +347,15 @@ namespace Reports.Core.Dao.Impl
                 return whereString;
             }
             return whereString;
+        }
+
+        public IList<MissionOrder> LoadForIdsList(List<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<MissionOrder>();
+            ICriteria criteria = Session.CreateCriteria(typeof(MissionOrder));
+            criteria.Add(Restrictions.In("Id", ids));
+            return criteria.List<MissionOrder>();
         }
       
     }

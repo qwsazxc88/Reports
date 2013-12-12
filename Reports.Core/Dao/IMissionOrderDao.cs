@@ -16,5 +16,7 @@ namespace Reports.Core.Dao
                                             string userName,
                                             int sortBy,
                                             bool? ortDescending);
+
+        IList<MissionOrder> LoadForIdsList(List<int> ids);
     }
 }
