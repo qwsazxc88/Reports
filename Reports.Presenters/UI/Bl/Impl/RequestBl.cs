@@ -6597,19 +6597,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsAddAvailable = currentUser.IsMainManager && ((currentUser.Level == 2) ||
                                            (currentUser.Level == 3) ||
                                            (currentUser.Level == 5));
+                    model.IsApproveAvailable = model.IsAddAvailable;
+                    break;
+                case UserRole.Director:
+                    model.IsApproveAvailable = true;
                     break;
             }
         }
         public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
         {
             SetDictionariesToModel(model);
+            SetIsAvailable(model);
             User user = UserDao.Load(model.UserId);
             //model.RequestStatuses = GetDeductionStatuses(true);
             //model.Types = GetDeductionTypes(true);
             if (hasError)
                 model.Documents = new List<MissionOrderDto>();
             else
+            {
+                if(model.IsApproveClick)
+                {
+                    model.IsApproveClick = false;
+                }
                 SetDocumentsToModel(model, user);
+            }
             //model.Documents = new List<MissionOrderDto>();
         }
         public void SetDocumentsToModel(MissionOrderListModel model, User user)

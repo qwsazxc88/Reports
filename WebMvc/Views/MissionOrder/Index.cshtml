@@ -21,6 +21,7 @@
                         <tr>
                             <td colspan="2">
                                 @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
                                 @Html.HiddenFor(m => m.UserId)
                             </td>
                         </tr>
@@ -85,8 +86,8 @@
         <td colspan="2">
           <div class="action-wrap">
             <table style="width:100%">
-                 <tr>
-                    <td colspan="2">
+                    <tr>
+                            <td>
                                 @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                                 {
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = 0 })'"/>   
@@ -95,10 +96,17 @@
                                 @if(Model.IsAddAvailable)
                                 {
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateMissionOrderRequest", "MissionOrder")'"/>
-                                }
-                                                                                                                        
+                                }                                                                                     
                             </td>
-                        </tr>
+                            <td style = "text-align:right">
+                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
+                                @if(Model.IsApproveAvailable)
+                                {
+                                 @*   <input type="button" value="Отменить вы" onclick="clearSelection();"/>*@
+                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
+                                }
+                            </td>
+                   </tr>
               </table>  
            </div>
         </td>
@@ -155,9 +163,12 @@
                      <th>
                         <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
                     </th>
-                    <th>
-                        Согласован
-                    </th>
+                     @if (Model.IsApproveAvailable)
+                     {
+                        <th>
+                             <input type="checkbox" id="setAll" onclick="setSelection();" />
+                        </th>
+                     }
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -181,14 +192,18 @@
                             <td>@doc.HasMission</td>
                             <td>@doc.State</td>
                             <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
-                            <td>@if(doc.Flag)
-                                {
-                                    @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
-                                    <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
-                                }
-                            </td>
+                            @if (Model.IsApproveAvailable)
+                            {
+                                <td>@if(doc.Flag)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
+                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
+                                        i++;
+                                    }
+                                </td>
+                            }
                         </tr>
-                        i++;
+                       
                     }
                 }
             </table>    
@@ -216,5 +231,23 @@
         //$("#TypeId").val('0');
          $("#StatusId").val('0');
          $("#UserName").val('');
+    }
+    function setSelection()
+    {
+        if($("#setAll").is(':checked'))
+            $(".selcheck").attr('checked','checked');
+        else
+            $(".selcheck").removeAttr('checked');
+    }
+     function approveClick()
+    {
+        clearErrors();
+        if($(".selcheck").filter(':checked').length == 0)
+        {
+            addError("Не выбрано ни одного приказа для согласования");
+            return false;
+        }
+        $("#IsApproveClick").val('True');
+        return true;
     }
  </script> 

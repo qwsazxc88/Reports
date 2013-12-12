@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
@@ -31,6 +32,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Index(MissionOrderListModel model)
         {
+            ModelState.Clear();
             RequestBl.SetMissionOrderListModel(model, !ValidateModel(model));
             return View(model);
         }
@@ -39,6 +41,9 @@ namespace WebMvc.Controllers
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                 model.BeginDate.Value > model.EndDate.Value)
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            if (model.IsApproveClick && (model.Documents == null || model.Documents.Count == 0
+                       || model.Documents.Where(x => x.IsChecked).Count() == 0 ))
+                ModelState.AddModelError(string.Empty, "Не выбрано ни одного приказа для согласования.");
             return ModelState.IsValid;
         }
 

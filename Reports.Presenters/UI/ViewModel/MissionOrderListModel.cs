@@ -32,6 +32,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string UserName { get; set; }
 
         public bool IsAddAvailable { get; set; }
+        public bool IsApproveAvailable { get; set; }
+        public bool IsApproveClick { get; set; }
 
         public IList<MissionOrderDto> Documents { get; set; }
     
