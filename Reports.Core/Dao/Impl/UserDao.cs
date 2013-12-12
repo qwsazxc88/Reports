@@ -76,6 +76,15 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.Eq("IsActive", true))
                   .UniqueResult();
         }
+        public virtual IList<User> GetMainManagersForLevelDepartment(int level,string departmentPath)
+        {
+            return Session.CreateCriteria(typeof(User))
+                  .Add(Restrictions.Eq("[Level]", level))
+                  .Add(Restrictions.Eq("RoleId", 4))
+                  .Add(Restrictions.Eq("[IsMainManager]", true))
+                  .Add(Restrictions.Like("[DepartmentId]+N'%'", departmentPath))
+                  .List<User>();
+        }
         public virtual IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList,int level)
         {
             string sqlQuery =

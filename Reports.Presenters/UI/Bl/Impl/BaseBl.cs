@@ -113,6 +113,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             const string subject = "Подтверждение ввода заявок";
             return subject;
         }
+        
+        protected EmailDto SendEmailForMissionOrderReject(IUser current, MissionOrder entity)
+        {
+            string to = entity.Creator.Email;
+            if (string.IsNullOrEmpty(to))
+            {
+                Log.ErrorFormat("Cannot send e-mail about confirm of mission order {0} - email for user {1} empty", entity.Id, entity.Creator.Id);
+                return null;
+            }
+            string subject = @"Отклонение приказа на командировку";
+            string body = string.Format(@"Приказ на командировку № {0} был отклонен.", entity.Number);
+            return SendEmail(to, subject, body);
+        }
+        protected EmailDto SendEmailForMissionOrderConfirm(IUser current, MissionOrder entity)
+        {
+            string to = entity.User.Email;
+            if(string.IsNullOrEmpty(to))
+            {
+                Log.ErrorFormat("Cannot send e-mail about confirm of mission order {0} - email for user {1} empty",entity.Id,entity.User.Id);
+                return null;
+            }
+            string subject = @"Одобрение приказа на командировку";
+            string body = string.Format(@"Приказ на командировку № {0} был одобрен.", entity.Number);
+            return SendEmail(to, subject, body);
+        }
+        protected EmailDto SendEmailForMissionOrderNeedToApprove(string to, MissionOrder entity)
+        {
+            if (string.IsNullOrEmpty(to))
+            {
+                Log.ErrorFormat("Cannot send e-mail about need approve of mission order {0} - to is empty", entity.Id);
+                return null;
+            }
+            string subject = @"Одобрение приказа на командировку";
+            string body = string.Format(@"Приказ на командировку № {0} был одобрен.", entity.Number);
+            return SendEmail(to, subject, body);
+        }
 
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
             User creator,bool isDeleted,

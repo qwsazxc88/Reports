@@ -6973,19 +6973,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.UserDateAccept = DateTime.Now;
                 entity.AcceptUser = UserDao.Load(current.Id);
-                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
                 {
                     entity.ManagerDateAccept = DateTime.Now;
                     entity.AcceptManager = UserDao.Load(current.Id);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
                 }
+                else
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
                 //!!! need to send e-mail
                 /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
             }
             bool canEdit = false;
-            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit) 
-                /*&& !entity.ManagerDateAccept.HasValue*/)
+            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
             {
+                if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
+                {
+                    entity.UserDateAccept = DateTime.Now;
+                    entity.AcceptUser = UserDao.Load(current.Id);
+                }
                 if (!entity.ManagerDateAccept.HasValue)
                 {
                     if (model.IsManagerApproved.HasValue)
@@ -6994,49 +7001,58 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
-                            if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
-                                entity.UserDateAccept = DateTime.Now;
+                            /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
+                                entity.UserDateAccept = DateTime.Now;*/
                             if (!entity.NeedToAcceptByChief)
+                            {
+                                SendEmailForMissionOrderConfirm(CurrentUser, entity);
                                 CreateMission(entity);
+                            }
+                            else
+                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
                         }
                         else
                         {
-                            entity.UserDateAccept = null;
                             model.IsManagerApproved = null;
+                            if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
+                            {
+                                entity.UserDateAccept = null;
+                                SendEmailForMissionOrderReject(CurrentUser, entity);
+                            }
                         }
                         //!!! need to send e-mail
                         /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.ChildVacation, false);*/
                     }
                 }
-                if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;
+                /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;*/
             }
             if(current.UserRole == UserRole.Director)
             {
                
-                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
-                {
-                    Log.WarnFormat("!entity.ManagerDateAccept.HasValue and isDirectorManager for MissionOrder {0}",entity.Id);
-                    if (model.IsManagerApproved.HasValue)
-                    {
-                        if (model.IsManagerApproved.Value)
-                        {
-                            entity.ManagerDateAccept = DateTime.Now;
-                            entity.AcceptManager = UserDao.Load(current.Id);
-                            if (!entity.NeedToAcceptByChief)
-                                CreateMission(entity);
-                        }
-                        else
-                        {
-                            entity.UserDateAccept = null;
-                            model.IsManagerApproved = null;
-                        }
-                        //!!! need to send e-mail
-                        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                            entity.Number, RequestTypeEnum.ChildVacation, false);*/
-                    }
-                }
+                //if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                //{
+                //    Log.WarnFormat("!entity.ManagerDateAccept.HasValue and isDirectorManager for MissionOrder {0}",entity.Id);
+                //    if (model.IsManagerApproved.HasValue)
+                //    {
+                //        if (model.IsManagerApproved.Value)
+                //        {
+                //            entity.ManagerDateAccept = DateTime.Now;
+                //            entity.AcceptManager = UserDao.Load(current.Id);
+                //            if (!entity.NeedToAcceptByChief)
+                //                CreateMission(entity);
+                //        }
+                //        else
+                //        {
+                //            entity.UserDateAccept = null;
+                //            model.IsManagerApproved = null;
+                //        }
+                //        //!!! need to send e-mail
+                //        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                //            entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                //    }
+                //}
                 if(entity.NeedToAcceptByChief)
                 {
                     if (model.IsChiefApproved.HasValue)
@@ -7055,6 +7071,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     entity.Number, RequestTypeEnum.ChildVacation, false);*/
                             }
                             CreateMission(entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
                         }
                         else
                         {
@@ -7063,6 +7080,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.ManagerDateAccept = null;
                             model.IsChiefApproved = null;
                             model.IsManagerApproved = null;
+                            SendEmailForMissionOrderReject(CurrentUser, entity);
                             //!!! need to send e-mail
                             /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                                 entity.Number, RequestTypeEnum.ChildVacation, false);*/
@@ -7071,6 +7089,55 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             
+        }
+        protected EmailDto SendEmailForMissionOrder(IUser current, MissionOrder entity, UserRole receiverRole)
+        {
+            //User currentUser = UserDao.Load(current.Id);
+            //if (currentUser == null)
+            //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+            string to = string.Empty;
+            IList<User> managers;
+            switch(receiverRole)
+            {
+                case UserRole.Manager:
+                    User manager = UserDao.GetManagerForEmployee(entity.User.Login);
+                    if(manager != null)
+                    {
+                        switch (manager.Level)
+                        {
+                            case 3:
+                                managers = UserDao.GetMainManagersForLevelDepartment(2, manager.Department.Path);
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                                 break;
+                            case 4:
+                            case 5:
+                                 managers = UserDao.GetMainManagersForLevelDepartment(3, manager.Department.Path);
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                                 break;
+                            case 6:
+                                 managers = UserDao.GetMainManagersForLevelDepartment(5, manager.Department.Path);
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                                 break;
+                        }
+                    }
+                    else
+                    {
+                        managers = UserDao.GetMainManagersForLevelDepartment(5, entity.User.Department.Path);
+                        to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
+                                Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                    }
+                    break;
+                case UserRole.Director:
+                    IList<User> directors =  UserDao.GetUsersWithRole(UserRole.Director);
+                    to = directors.Where(director => !string.IsNullOrEmpty(director.Email)).
+                        Aggregate(string.Empty, (current1, director) => current1 + (director.Email + ";"));
+
+                    break;
+            }
+            return SendEmailForMissionOrderNeedToApprove(to, entity);
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
         {
