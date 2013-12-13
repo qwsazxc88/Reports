@@ -122,8 +122,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat("Cannot send e-mail about confirm of mission order {0} - email for user {1} empty", entity.Id, entity.Creator.Id);
                 return null;
             }
-            string subject = @"Отклонение приказа на командировку";
-            string body = string.Format(@"Приказ на командировку № {0} был отклонен.", entity.Number);
+            User curUser = UserDao.Load(CurrentUser.Id);
+            const string subject = @"Приказ на командировку отклонен";
+            string body = string.Format(@"Приказ на командировку № {0} от {1} отклонен руководителем {2}, {3}.<br/>
+                                        <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>", entity.Number
+                                    , entity.EditDate.ToShortDateString(),curUser.Name,curUser.Email);
             return SendEmail(to, subject, body);
         }
         protected EmailDto SendEmailForMissionOrderConfirm(IUser current, MissionOrder entity)
@@ -134,8 +137,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat("Cannot send e-mail about confirm of mission order {0} - email for user {1} empty",entity.Id,entity.User.Id);
                 return null;
             }
-            string subject = @"Одобрение приказа на командировку";
-            string body = string.Format(@"Приказ на командировку № {0} был одобрен.", entity.Number);
+            User curUser = UserDao.Load(CurrentUser.Id);
+            const string subject = @"Приказ на командировку утвержден";
+            string body = string.Format(@"Приказ на командировку № {0} от {1} утвержден руководителем {2}.<br/>
+                                        <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>", entity.Number
+                                        ,entity.EditDate.ToShortDateString()
+                                        ,curUser.Name);
             return SendEmail(to, subject, body);
         }
         protected EmailDto SendEmailForMissionOrderNeedToApprove(string to, MissionOrder entity)
@@ -146,8 +153,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
             to = to.Substring(0, to.Length - 1);
-            string subject = @"Одобрение приказа на командировку";
-            string body = string.Format(@"Приказ на командировку № {0} был одобрен.", entity.Number);
+            const string subject = @"Новый приказ на командировку";
+            string body = string.Format(@"Новый Приказ на командировку № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
+                                          <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>", 
+                                          entity.Number,entity.EditDate.ToShortDateString(),entity.User.Name,entity.User.Department.Name);
             return SendEmail(to, subject, body);
         }
 

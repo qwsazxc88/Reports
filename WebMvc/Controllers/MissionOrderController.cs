@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.Security;
 using Reports.Core;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
@@ -188,6 +194,115 @@ namespace WebMvc.Controllers
                 return PartialView("EditTargetDialogError", new DialogErrorModel { Error = error });
             }
         }
+        #region Print
+        [HttpGet]
+        public ActionResult PrintOrder(int id)
+        {
+            PrintMissionOrderViewModel model = RequestBl.GetPrintMissionOrderModel(id);
 
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult GetOrderPrintForm(int id)
+        {
+            return GetPrintForm(id, "PrintOrder");
+        }
+        [HttpGet]
+        public ActionResult GetPrintForm(int id,string actionName)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var argumrnts = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                    GetConverterCommandParam(id,actionName)
+                    , cookieName, authCookie.Value);
+                argumrnts.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = argumrnts.ToString(),
+                        UseShellExecute = true
+                    },
+                    EnableRaisingEvents = true
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(Response,Request,Server,filePath, fileName, @"application/pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on RenderToPdf", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+        public static ActionResult GetFile(HttpResponseBase Response, HttpRequestBase Request,HttpServerUtilityBase Server,
+            string filePath, string fileName, string contentType)
+        {
+            byte[] value;
+            using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+            {
+                value = new byte[stream.Length];
+                stream.Read(value, 0, (int)stream.Length);
+            }
+            const string userFileName = "MissionOrder.pdf";
+            //const string contentType = "application/pdf";
+            Response.Clear();
+            if (Request.Browser.Browser == "IE")
+            {
+                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(userFileName));
+                Response.AddHeader("Content-Disposition", attachment);
+            }
+            else
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + userFileName + "\"");
+
+            Response.ContentType = contentType;
+            Response.Charset = "utf-8";
+            Response.HeaderEncoding = Encoding.UTF8;
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.BinaryWrite(value);
+            Response.End();
+            return null;
+        }
+        protected string GetConverterCommandParam(int id, string actionName)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            string urlTemplate = string.Format("MissionOrder/{0}",actionName);
+            string args = @"/"+id;
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}{2}", localhostUrl, urlTemplate, args)
+                       : Url.Content(string.Format(@"{0}{1}", urlTemplate, args));
+        }
+        #endregion
     }
 }

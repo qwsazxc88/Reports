@@ -5547,8 +5547,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new PrintVacationOrderDto { Keyword = "MANPOS",Text = vacation.User.Manager.Position.Name},
                            new PrintVacationOrderDto { Keyword = "MANFIO",Text = vacation.User.Manager.Name},
                        };
-        }
-        protected static string GetMonthName(int month)
+        }*/
+        protected static string GetMonthNamerRP(int month)
         {
             switch (month)
             {
@@ -5579,7 +5579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     throw new ArgumentException(string.Format("Неизвестный месяц {0}", month));
             }
-        }*/
+        }
 
         public void GetAcceptRequestsModel(AcceptRequestsModel model)
         {
@@ -7775,6 +7775,60 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (addEmpty)
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
+        }
+
+        public PrintMissionOrderViewModel GetPrintMissionOrderModel(int id)
+        {
+            PrintMissionOrderViewModel model = new PrintMissionOrderViewModel();
+            MissionOrder order = MissionOrderDao.Load(id);
+            if(order == null)
+                throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
+            SetUserInfoModel(order.User,model);
+            model.DocumentNumber = order.Number.ToString();
+            model.DateCreated = order.EditDate.ToShortDateString();
+            model.Goal = order.Goal.Name;
+            int i = 1;
+            List<PrintMissionTargetViewModel> targets = order.Targets.Select(target => new PrintMissionTargetViewModel
+            {
+                BeginDay = target.BeginDate.Day.ToString(), 
+                BeginMonth = GetMonthNamerRP(target.BeginDate.Month), 
+                BeginYear = target.BeginDate.Year.ToString(), 
+                Country = target.Country.Name + ", " + target.City, 
+                Days = target.DaysCount, 
+                EndDay = target.EndDate.Day.ToString(), 
+                EndMonth = GetMonthNamerRP(target.EndDate.Month), 
+                EndYear = target.EndDate.Year.ToString(), 
+                Organization = target.Organization, 
+                RealDays = target.RealDaysCount, 
+                Number = i++,
+            }).ToList();
+            model.Targets = targets;
+            model.GradeAllSum = FormatSum(order.AllSum);
+            model.GradeAviaSum = FormatSum(order.SumAir);
+            model.GradeDailySum = FormatSum(order.SumDaily);
+            model.GradeResSum = FormatSum(order.SumResidence);
+            model.GradeTrainSum = FormatSum(order.SumTrain);
+            model.UserAllSum = FormatSum(order.UserAllSum);
+            model.UserAviaSum = FormatSum(order.UserSumAir);
+            model.UserDailySum = FormatSum(order.UserSumDaily);
+            model.UserResSum = FormatSum(order.UserSumResidence);
+            model.UserTrainSum = FormatSum(order.UserSumTrain);
+            model.UserCashSum = FormatSum(order.UserSumCash);
+            model.UserNotCashSum = FormatSum(order.UserSumNotCash);
+            if(order.ManagerDateAccept.HasValue)
+            {
+                model.ManName = order.AcceptManager.Name;
+                model.ManagerPosition = order.AcceptManager.Position == null? string.Empty:order.AcceptManager.Position.Name;
+                model.ManagerDate = order.ManagerDateAccept.Value.ToShortDateString();
+            }
+            if(order.NeedToAcceptByChief && order.ChiefDateAccept.HasValue)
+            {
+                model.ChiefDate = order.ChiefDateAccept.Value.ToShortDateString();
+                model.ChiefName = order.AcceptChief.Name;
+                model.ChiefPosition = order.AcceptChief.Position == null? string.Empty:order.AcceptChief.Position.Name;
+            }
+            model.IsLongOrder = IsMissionOrderLong(order);
+            return model;
         }
         #endregion
     }
