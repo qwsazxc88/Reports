@@ -145,6 +145,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat("Cannot send e-mail about need approve of mission order {0} - to is empty", entity.Id);
                 return null;
             }
+            to = to.Substring(0, to.Length - 1);
             string subject = @"Одобрение приказа на командировку";
             string body = string.Format(@"Приказ на командировку № {0} был одобрен.", entity.Number);
             return SendEmail(to, subject, body);

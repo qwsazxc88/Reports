@@ -61,7 +61,7 @@ namespace Reports.Core.Dao
                                                                       int level);
 
         User GetManagerForEmployee(string login);
-        IList<User> GetMainManagersForLevelDepartment(int level, string departmentPath);
+        IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath);
     }
 }
 

@@ -6660,7 +6660,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = UserDao.Load(CurrentUser.Id);
                         entity.EditDate = DateTime.Now;
                         if (!entity.NeedToAcceptByChief)
+                        {
                             CreateMission(entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                        }
                         MissionOrderDao.SaveAndFlush(entity);
                     }
                     else
@@ -6694,6 +6697,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.EditDate = DateTime.Now;
                         entity.AcceptChief = UserDao.Load(CurrentUser.Id);
                         CreateMission(entity);
+                        SendEmailForMissionOrderConfirm(CurrentUser, entity);
                         MissionOrderDao.SaveAndFlush(entity);
                 }
                 else
@@ -7096,7 +7100,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //if (currentUser == null)
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
             string to = string.Empty;
-            IList<User> managers;
+            string to1 = string.Empty;
+            IList<IdNameDto> managers;
+            IList<IdNameDto> managers1;
             switch(receiverRole)
             {
                 case UserRole.Manager:
@@ -7105,29 +7111,55 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         switch (manager.Level)
                         {
+                            case 2:
+                                if(!manager.IsMainManager)
+                                {
+                                    managers = UserDao.GetMainManagersForLevelDepartment(2, manager.Department.Path);
+                                    to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                           Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                }
+                                break;
                             case 3:
-                                managers = UserDao.GetMainManagersForLevelDepartment(2, manager.Department.Path);
-                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
-                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                                 managers = UserDao.GetMainManagersForLevelDepartment(2, manager.Department.Path);
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                 if (!manager.IsMainManager)
+                                 {
+                                     managers1 = UserDao.GetMainManagersForLevelDepartment(3, manager.Department.Path);
+                                     to1 = managers1.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                            Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                     to += to1;
+                                 }
                                  break;
                             case 4:
+                                 managers = UserDao.GetMainManagersForLevelDepartment(3, manager.Department.Path);
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                 break;
                             case 5:
                                  managers = UserDao.GetMainManagersForLevelDepartment(3, manager.Department.Path);
-                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
-                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
-                                 break;
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                if (!manager.IsMainManager)
+                                {
+                                     managers1 = UserDao.GetMainManagersForLevelDepartment(5, manager.Department.Path);
+                                     to1 = managers1.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                         Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
+                                     to += to1;
+                                 }
+                                break;
                             case 6:
                                  managers = UserDao.GetMainManagersForLevelDepartment(5, manager.Department.Path);
-                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
-                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                                 to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                        Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
                                  break;
                         }
                     }
                     else
                     {
                         managers = UserDao.GetMainManagersForLevelDepartment(5, entity.User.Department.Path);
-                        to = managers.Where(man => !string.IsNullOrEmpty(man.Email)).
-                                Aggregate(string.Empty, (current1, man) => current1 + (man.Email + ";"));
+                        to = managers.Where(man => !string.IsNullOrEmpty(man.Name)).
+                                Aggregate(string.Empty, (current1, man) => current1 + (man.Name + ";"));
                     }
                     break;
                 case UserRole.Director:

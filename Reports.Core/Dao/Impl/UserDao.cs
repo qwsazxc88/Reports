@@ -76,19 +76,24 @@ namespace Reports.Core.Dao.Impl
                   .Add(Restrictions.Eq("IsActive", true))
                   .UniqueResult();
         }
-        public virtual IList<User> GetMainManagersForLevelDepartment(int level,string departmentPath)
+        public virtual IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath)
         {
-            return Session.CreateCriteria(typeof(User))
-                  .Add(Restrictions.Eq("[Level]", level))
-                  .Add(Restrictions.Eq("RoleId", 4))
-                  .Add(Restrictions.Eq("[IsMainManager]", true))
-                  .Add(Restrictions.Like("[DepartmentId]+N'%'", departmentPath))
-                  .List<User>();
+            const string sqlQuery = @" select u.Id,u.Email as Name from Users u 
+                    inner join Department d on u.DepartmentId = d.Id
+                    where u.Level = :level 
+                    and u.RoleId = 4 
+                    and u.IsMainManager = 1
+                    and :path like d.Path+N'%'";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetInt32("level", level).
+                SetString("path", departmentPath);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }
         public virtual IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList,int level)
         {
-            string sqlQuery =
-                @" select emp.Id,emp.Name from Users emp
+            const string sqlQuery = @" select emp.Id,emp.Name from Users emp
                     inner join Users man on emp.Login+N'R' = man.Login
                     and ((emp.RoleId & 2) > 0) and man.RoleId = 4
                     and emp.IsActive = 1 and man.IsActive = 1 
@@ -106,8 +111,7 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, List<int> levelList, int level)
         {
-            string sqlQuery =
-                @" select emp.Id,emp.Name from Users emp
+            const string sqlQuery = @" select emp.Id,emp.Name from Users emp
                     inner join Users man on emp.Login+N'R' = man.Login
                     and ((emp.RoleId & 2) > 0) and man.RoleId = 4
                     and emp.IsActive = 1 and man.IsActive = 1 
@@ -132,8 +136,7 @@ namespace Reports.Core.Dao.Impl
         public virtual IList<User> GetUserWithEmailAndRole(UserRole role, string email,
             string departmentPath, List<int> levelList)
         {
-            string sqlQuery =
-                @" select u.* from Users u
+            const string sqlQuery = @" select u.* from Users u
                                 inner join dbo.Department d on d.Id = u.DepartmentId
                                 where u.IsActive = 1 and u.DateRelease is null
                                 and u.Level in (:levelList)
