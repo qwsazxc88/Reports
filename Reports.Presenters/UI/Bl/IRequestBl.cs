@@ -122,6 +122,7 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionaries(MissionOrderEditModel model);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
+        UserInfoModel GetPrintMissionOrderDocumentModel(int id);
 
 
     }

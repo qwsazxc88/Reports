@@ -7830,6 +7830,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsLongOrder = IsMissionOrderLong(order);
             return model;
         }
+        public UserInfoModel GetPrintMissionOrderDocumentModel(int id)
+        {
+            UserInfoModel model = new UserInfoModel();
+            MissionOrder order = MissionOrderDao.Load(id);
+            if (order == null)
+                throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
+            SetUserInfoModel(order.User, model);
+            model.DocumentNumber = order.Number.ToString();
+            model.DateCreated = order.EditDate.ToShortDateString();
+            return model;
+        }
         #endregion
     }
 
