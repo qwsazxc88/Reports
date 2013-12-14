@@ -7841,6 +7841,39 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = order.EditDate.ToShortDateString();
             return model;
         }
+
+
+        public GradeListViewModel GetGradeListModel()
+        {
+            GradeListViewModel model = new GradeListViewModel();
+            IList<MissionGraid> graids = MissionGraidDao.LoadAll().OrderBy(x => x.Id).ToList();
+            IList<GradeAmountNameDto> dailyList = MissionGraidDao.GetDailyAllowanceGradeAmountForDate(DateTime.Today);
+            model.Daily = GetTableDto(dailyList,graids);
+            IList<GradeAmountNameDto> resList = MissionGraidDao.GetResidenceGradeAmountForDate(DateTime.Today);
+            model.Residence = GetTableDto(resList, graids);
+            return model;
+        }
+        protected TableDto GetTableDto(IList<GradeAmountNameDto> list, IList<MissionGraid> graids)
+        {
+            List<int> ids = list.Select(x => x.Id).Distinct().ToList();
+            TableDto table = new TableDto { rows = new List<RowDto>() };
+            RowDto head = new RowDto();
+            List<string> values = new List<string> { "Лимит на расходы" };
+            foreach (MissionGraid graid in graids)
+                values.Add(graid.Name);
+            head.Values = values;
+            table.rows.Add(head);
+            foreach (int id in ids)
+            {
+                List<GradeAmountNameDto> dtoForId = list.ToList().Where(x => x.Id == id).OrderBy(x => x.GradeId).ToList();
+                values = new List<string> { dtoForId[0].Name };
+                foreach (GradeAmountNameDto dto in dtoForId)
+                    values.Add(FormatSum(dto.Amount));
+                RowDto row = new RowDto { Values = values };
+                table.rows.Add(row);
+            }
+            return table;
+        }
         #endregion
     }
 

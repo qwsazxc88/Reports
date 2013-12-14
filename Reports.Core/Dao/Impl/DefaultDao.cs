@@ -701,6 +701,28 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("gradeId", gradeId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(GradeAmountDto))).List<GradeAmountDto>();
         }
+        protected IList<GradeAmountNameDto> GetGradeAmountForDate(string tableName, string fieldName, string dicTableName, 
+           DateTime date)
+        {
+            string sqlQuery =
+                string.Format(
+                    @";with res as
+                            (select [GradeId],{0},max(GradeDate) as MaxDate from {1}
+                            where GradeDate <= :endDate
+                            group by [GradeId],{0})
+                            select distinct m.GradeId,m.{0} as Id,dic.Name,Amount from {1} m
+                            inner join {2} dic on dic.Id =  m.{0} 
+                            inner join res r on m.{0} = r.{0} and m.GradeDate = r.MaxDate
+                            order by Id",
+                    fieldName, tableName, dicTableName);
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("GradeId", NHibernateUtil.Int32).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Amount", NHibernateUtil.Decimal).
+                SetDateTime("endDate", date);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(GradeAmountNameDto))).List<GradeAmountNameDto>();
+        }
 
 		//public bool IsSameNameEntityExists(Type type,int entityId,string name)
 		//{

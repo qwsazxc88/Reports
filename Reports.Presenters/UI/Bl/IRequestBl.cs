@@ -123,7 +123,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);
-
+        GradeListViewModel GetGradeListModel();
 
     }
 }

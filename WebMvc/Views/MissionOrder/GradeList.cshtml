@@ -1,0 +1,15 @@
+﻿@model Reports.Presenters.UI.ViewModel.GradeListViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Справочник расчета лимитов";
+}
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+    </table> 
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("moGradeList");
+    });
+</script> 

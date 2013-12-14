@@ -314,5 +314,17 @@ namespace WebMvc.Controllers
                        : Url.Content(string.Format(@"{0}{1}", urlTemplate, args));
         }
         #endregion
+
+        [HttpGet]
+        public ActionResult GradeList()
+        {
+            GradeListViewModel model = RequestBl.GetGradeListModel();
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult Instructions()
+        {
+            return View(new InstructionsViewModel());
+        }
     }
 }

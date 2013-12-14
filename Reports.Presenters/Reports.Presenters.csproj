@@ -158,6 +158,7 @@
     <Compile Include="UI\ViewModel\ActionListModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentEditModel.cs" />
     <Compile Include="UI\ViewModel\EmploymentListModel.cs" />
+    <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="UI\ViewModel\IExportImport.cs" />
     <Compile Include="UI\ViewModel\InfoModel.cs" />
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
+    <Compile Include="UI\ViewModel\InstructionsViewModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />

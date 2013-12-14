@@ -11,5 +11,7 @@ namespace Reports.Core.Dao
         IList<GradeAmountDto> GetTrainTicketTypeGradeAmountForGradeAndDate(int gradeId, DateTime date);
         IList<GradeAmountDto> GetResidenceGradeAmountForGradeAndDate(int gradeId, DateTime date);
         IList<GradeAmountDto> GetDailyAllowanceGradeAmountForGradeAndDate(int gradeId, DateTime date);
+        IList<GradeAmountNameDto> GetDailyAllowanceGradeAmountForDate(DateTime date);
+        IList<GradeAmountNameDto> GetResidenceGradeAmountForDate(DateTime date);
     }
 }
