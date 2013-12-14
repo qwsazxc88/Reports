@@ -758,9 +758,43 @@
             }
             else
                 result = false;
-            if ((beginDate != undefined) && (endDate != undefined) && (beginDate > endDate)) {
-                addEditTargetError($("#BeginDate"), "Дата начала не может превышать дату окончания");
-                result = false;
+            if ((beginDate != undefined) && (endDate != undefined)) {
+                if(beginDate > endDate)
+                {
+                    addEditTargetError($("#BeginDate"), "Дата начала не может превышать дату окончания");
+                    result = false;
+                }
+                 var targets = JSON.parse($("#Targets").val());
+                 var targetId = $("#TargetId").val();
+                 var hasError = false;
+                 jQuery.each(targets.List, function( i, val ) {
+                        if(val.TargetId != targetId)
+                        {
+                           if(!hasError)
+                           {
+                                try 
+                                {
+                                        var bDate = $.datepicker.parseDate("dd.mm.yy", val.DateFrom);
+                                        var eDate = $.datepicker.parseDate("dd.mm.yy", val.DateTo);
+                                        if(((beginDate >= bDate ) && (beginDate <= eDate)) ||
+                                           ((endDate >= bDate ) && (endDate <= eDate)) || 
+                                           ((bDate >= beginDate ) && (bDate <= endDate)) || 
+                                           ((eDate >= beginDate ) && (eDate <= endDate))
+                                           )
+                                           hasError = true;
+
+                                }
+                                catch (error) {
+                                }
+                           }
+                        }
+                    });
+                    if(hasError)
+                    {
+                        addEditTargetError($("#BeginDate"), "Разные места назначения не могут пересекаться по датам.");
+                        addEditTargetError($("#EndDate"), "");
+                        result = false;
+                    }
             }
             if(!validate_FieldIsNotEmptyAddError($("#City")))
                 result = false;
