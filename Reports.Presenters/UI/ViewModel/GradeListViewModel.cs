@@ -6,6 +6,8 @@ namespace Reports.Presenters.UI.ViewModel
     {
         public TableDto Daily { get; set; }
         public TableDto Residence { get; set; }
+        public TableDto AirTicket { get; set; }
+        public TableDto TrainTicket { get; set; }
     }
     public class TableDto
     {

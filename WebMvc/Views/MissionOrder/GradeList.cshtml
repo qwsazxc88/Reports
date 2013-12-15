@@ -5,8 +5,109 @@
 }
 @using (Html.BeginForm())
 {
-    <table style="width:100%">
-    </table> 
+    <table>
+    <tr>
+        <td style="width:800px;font-weight:bold">Суточные</td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid">
+                @foreach (var row in Model.Daily.rows)
+                {
+                    var i = 0;
+                    <tr>
+                         @foreach (var value in row.Values)
+                         {
+                             
+                             <td @if (i == 0)
+                                 {<text> style="width:500px;"</text>}
+                                 else
+                                 {<text> style="width:50px;text-align:center"</text>}>                                                            
+                                @value
+                             </td>
+                                 i++;
+                         }
+                    </tr>
+                }
+            </table> 
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold">Проживание</td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid">
+                @foreach (var row in Model.Residence.rows)
+                {
+                    var i = 0;
+                    <tr>
+                         @foreach (var value in row.Values)
+                         {
+                              <td @if (i == 0)
+                                 {<text> style="width:500px"</text>}  
+                                 else
+                                 {<text> style="width:50px;text-align:center"</text>}>   
+                                @value
+                             </td>
+                             i++;
+                         }
+                    </tr>
+                }
+            </table> 
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold">Авиабилеты</td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid">
+                @foreach (var row in Model.AirTicket.rows)
+                {
+                    var i = 0;
+                    <tr>
+                         @foreach (var value in row.Values)
+                         {
+                              <td @if (i == 0)
+                                 {<text> style="width:500px"</text>}
+                                  else
+                                 {<text> style="width:50px;text-align:center"</text>}>   
+                                @value
+                             </td>
+                                  i++;
+                         }
+                    </tr>
+                }
+            </table> 
+        </td>
+    </tr>
+     <tr>
+        <td  style="font-weight:bold">Ж/д билеты</td>
+    </tr>
+    <tr>
+        <td>
+            <table class="grid">
+                @foreach (var row in Model.TrainTicket.rows)
+                {
+                    var i = 0;
+                    <tr>
+                         @foreach (var value in row.Values)
+                         {
+                              <td @if (i == 0)
+                                  {<text> style="width:500px"</text>}
+                                  else
+                                  {<text> style="width:50px;text-align:center"</text>}>     
+                                @value
+                             </td>
+                                  i++;
+                         }
+                    </tr>
+                }
+            </table> 
+        </td>
+    </tr>
+    </table>
 }
 <script type="text/javascript">
     $(document).ready(function () {

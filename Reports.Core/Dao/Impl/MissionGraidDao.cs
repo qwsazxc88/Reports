@@ -42,5 +42,15 @@ namespace Reports.Core.Dao.Impl
             return GetGradeAmountForDate("[dbo].[MissionResidenceGradeValue]", "ResidenceId", "dbo.MissionResidence",
                                                  date);
         }
+        public IList<GradeAmountNameDto> GetAirTicketTypeGradeAmountForDate(DateTime date)
+        {
+            return GetGradeAmountForDate("[dbo].[MissionAirTicketTypeGradeValue]", "AirTicketTypeId", 
+                "dbo.MissionAirTicketType",date);
+        }
+        public IList<GradeAmountNameDto> GetTrainTicketTypeGradeAmountForDate(DateTime date)
+        {
+            return GetGradeAmountForDate("[dbo].[MissionTrainTicketTypeGradeValue]", "TrainTicketTypeId", 
+                "dbo.MissionTrainTicketType",date);
+        }
     }
 }

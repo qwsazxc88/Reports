@@ -7851,6 +7851,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Daily = GetTableDto(dailyList,graids);
             IList<GradeAmountNameDto> resList = MissionGraidDao.GetResidenceGradeAmountForDate(DateTime.Today);
             model.Residence = GetTableDto(resList, graids);
+            IList<GradeAmountNameDto> airList = MissionGraidDao.GetAirTicketTypeGradeAmountForDate(DateTime.Today);
+            model.AirTicket = GetTableDto(airList, graids);
+            IList<GradeAmountNameDto> trainList = MissionGraidDao.GetTrainTicketTypeGradeAmountForDate(DateTime.Today);
+            model.TrainTicket = GetTableDto(trainList, graids);
             return model;
         }
         protected TableDto GetTableDto(IList<GradeAmountNameDto> list, IList<MissionGraid> graids)
