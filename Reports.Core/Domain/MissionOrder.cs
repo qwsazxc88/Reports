@@ -37,6 +37,7 @@ namespace Reports.Core.Domain
         public virtual decimal? UserSumNotCash { get; set; }
 
         public virtual bool NeedToAcceptByChief { get; set; }
+        public virtual bool NeedToAcceptByChiefAsManager { get; set; }
 
         public virtual User User { get; set; }
         public virtual User Creator { get; set; }

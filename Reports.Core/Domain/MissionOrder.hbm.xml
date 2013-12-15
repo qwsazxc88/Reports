@@ -26,6 +26,7 @@
 	<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>
 	<property name="NeedToAcceptByChief"  not-null="true"/>
+	<property name="NeedToAcceptByChiefAsManager"  not-null="true"/>
 
 
 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionOrder_User" index="IX_MissionOrder_User_Id"  not-null="true"/>

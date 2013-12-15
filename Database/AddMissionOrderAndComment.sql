@@ -59,6 +59,7 @@ create table MissionOrder (
   UserSumCash DECIMAL(19,5) null,
   UserSumNotCash DECIMAL(19,5) null,
   NeedToAcceptByChief BIT not null,
+  NeedToAcceptByChiefAsManager BIT not null,
   UserId INT not null,
   CreatorId INT not null,
   UserDateAccept DATETIME null,

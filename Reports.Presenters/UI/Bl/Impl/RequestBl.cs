@@ -6690,6 +6690,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
+                bool isAccept = false;
+                if (entity.NeedToAcceptByChiefAsManager && entity.UserDateAccept.HasValue 
+                    && !entity.ManagerDateAccept.HasValue)
+                {
+                    User current = UserDao.Load(CurrentUser.Id);
+                    entity.ManagerDateAccept = DateTime.Now;
+                    entity.EditDate = DateTime.Now;
+                    entity.AcceptManager = current;
+                    if(entity.NeedToAcceptByChief)
+                    {
+                        entity.ChiefDateAccept = DateTime.Now;
+                        entity.EditDate = DateTime.Now;
+                        entity.AcceptChief = current; 
+                    }
+                    CreateMission(entity);
+                    SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                    MissionOrderDao.SaveAndFlush(entity);
+                    isAccept = true;
+                }
                 if (entity.UserDateAccept.HasValue && entity.ManagerDateAccept.HasValue && 
                     entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue)
                 {
@@ -6699,11 +6718,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         CreateMission(entity);
                         SendEmailForMissionOrderConfirm(CurrentUser, entity);
                         MissionOrderDao.SaveAndFlush(entity);
+                        isAccept = true;
                 }
-                else
+                if(!isAccept)
                 {
-                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue",
-                        entity.Id, CurrentUser.Id, CurrentUser.UserRole);
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2}.",entity.Id, CurrentUser.Id
+                        ,CurrentUser.UserRole);
                     model.HasErrors = true;
                 }
             }
@@ -6963,10 +6983,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.SumTrain = Decimal.Parse(model.AllSumTrain);
                 entity.UserSumCash = GetSum(model.UserSumCash);
                 entity.UserSumNotCash = GetSum(model.UserSumNotCash);
-                if ( IsMissionOrderLong(entity) || isDirectorManager)
-                    entity.NeedToAcceptByChief = true;
-                else
-                    entity.NeedToAcceptByChief = false;
+                entity.NeedToAcceptByChiefAsManager = isDirectorManager;
+                entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
@@ -6977,17 +6995,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.UserDateAccept = DateTime.Now;
                 entity.AcceptUser = UserDao.Load(current.Id);
-                if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                if (isDirectorManager)
                 {
-                    entity.ManagerDateAccept = DateTime.Now;
-                    entity.AcceptManager = UserDao.Load(current.Id);
+                    entity.NeedToAcceptByChiefAsManager = true;
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
                 }
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
-                //!!! need to send e-mail
-                /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                    entity.Number, RequestTypeEnum.ChildVacation, false);*/
             }
             bool canEdit = false;
             if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
@@ -7009,8 +7023,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.UserDateAccept = DateTime.Now;*/
                             if (!entity.NeedToAcceptByChief)
                             {
-                                SendEmailForMissionOrderConfirm(CurrentUser, entity);
                                 CreateMission(entity);
+                                SendEmailForMissionOrderConfirm(CurrentUser, entity);
                             }
                             else
                                 SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
@@ -7024,9 +7038,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForMissionOrderReject(CurrentUser, entity);
                             }
                         }
-                        //!!! need to send e-mail
-                        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                            entity.Number, RequestTypeEnum.ChildVacation, false);*/
                     }
                 }
                 /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
@@ -7034,29 +7045,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if(current.UserRole == UserRole.Director)
             {
-               
-                //if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
-                //{
-                //    Log.WarnFormat("!entity.ManagerDateAccept.HasValue and isDirectorManager for MissionOrder {0}",entity.Id);
-                //    if (model.IsManagerApproved.HasValue)
-                //    {
-                //        if (model.IsManagerApproved.Value)
-                //        {
-                //            entity.ManagerDateAccept = DateTime.Now;
-                //            entity.AcceptManager = UserDao.Load(current.Id);
-                //            if (!entity.NeedToAcceptByChief)
-                //                CreateMission(entity);
-                //        }
-                //        else
-                //        {
-                //            entity.UserDateAccept = null;
-                //            model.IsManagerApproved = null;
-                //        }
-                //        //!!! need to send e-mail
-                //        /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                //            entity.Number, RequestTypeEnum.ChildVacation, false);*/
-                //    }
-                //}
+                if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
+                {
+                    if (model.IsManagerApproved.HasValue)
+                    {
+                        if (model.IsManagerApproved.Value)
+                        {
+                            User currentUser = UserDao.Load(current.Id);
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = currentUser;
+                            if (entity.NeedToAcceptByChief)
+                            {
+                                entity.ChiefDateAccept = DateTime.Now;
+                                entity.AcceptChief = currentUser;
+                            }
+                            CreateMission(entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                        }
+                        else
+                        {
+                            entity.UserDateAccept = null;
+                            model.IsManagerApproved = null;
+                            SendEmailForMissionOrderReject(CurrentUser, entity);
+                        }
+                    }
+                }
                 if(entity.NeedToAcceptByChief)
                 {
                     if (model.IsChiefApproved.HasValue)
@@ -7069,25 +7082,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
                             {
                                 entity.ManagerDateAccept = DateTime.Now;
-                                entity.AcceptManager = UserDao.Load(current.Id);
-                                //!!! need to send e-mail
-                                /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                                    entity.Number, RequestTypeEnum.ChildVacation, false);*/
+                                entity.AcceptManager = currentUser;
                             }
                             CreateMission(entity);
                             SendEmailForMissionOrderConfirm(CurrentUser, entity);
                         }
                         else
                         {
-                            if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
-                                entity.UserDateAccept = null;
+                            entity.UserDateAccept = null;
+                            model.IsUserApproved = false;
                             entity.ManagerDateAccept = null;
-                            model.IsChiefApproved = null;
                             model.IsManagerApproved = null;
                             SendEmailForMissionOrderReject(CurrentUser, entity);
-                            //!!! need to send e-mail
-                            /*SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                                entity.Number, RequestTypeEnum.ChildVacation, false);*/
                         }
                     }  
                 }
@@ -7347,7 +7353,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Director:
                     if (IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
                     {
-                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
+                        if (!entity.ManagerDateAccept.HasValue && 
+                            !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
                             model.IsManagerApproveAvailable = true;
                     }
                     if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue

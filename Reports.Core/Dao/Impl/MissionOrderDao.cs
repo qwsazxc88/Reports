@@ -246,9 +246,16 @@ namespace Reports.Core.Dao.Impl
                         //User currUser = UserDao.Load(userId);
                         //if(currUser == null)
                         //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
-                        const string sqlFlagD = @"case when v.UserDateAccept is not null 
+                        const string sqlFlagD = @"case when (
+                                            (v.UserDateAccept is not null 
                                             and  v.ManagerDateAccept is not null 
                                             and  v.[ChiefDateAccept] is null 
+                                            and  v.[NeedToAcceptByChief] = 1) 
+                                            or
+                                            (v.UserDateAccept is not null 
+                                             and  v.ManagerDateAccept is null 
+                                             and v.[NeedToAcceptByChiefAsManager] = 1)
+                                            )
                                             then 1 else 0 end as Flag";
                         sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
                         return @"   -- ((u.Id in ( select distinct emp.Id from dbo.Users emp
@@ -260,7 +267,7 @@ namespace Reports.Core.Dao.Impl
                                              -- inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2} 
                                     --  )
                                     --  or 
-                                       v.[NeedToAcceptByChief] = 1 ";
+                                       ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1))  ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
@@ -319,8 +326,8 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null";
                         break;
                     case 8:
-                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is not null 
-                                        and ChiefDateAccept is null and NeedToAcceptByChief = 1";
+                        statusWhere = @"UserDateAccept is not null and ((ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1) 
+                                        or (ManagerDateAccept is not null and ChiefDateAccept is null and NeedToAcceptByChief = 1))";
                         break;
                     //case 8:
                     //    statusWhere =
