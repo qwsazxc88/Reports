@@ -311,19 +311,22 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"UserDateAccept is null";
                         break;
                     case 3:
-                        statusWhere = @"ManagerDateAccept is not null";
+                        statusWhere = @"ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 4:
-                        statusWhere = @"ManagerDateAccept is null";
+                        statusWhere = @"ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 5:
-                        statusWhere = @"ChiefDateAccept is not null";
+                        statusWhere = @"(ChiefDateAccept is not null and NeedToAcceptByChief = 1) or
+                                        (ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 1)";
                         break;
                     case 6:
-                        statusWhere = @"ChiefDateAccept is null";
+                        statusWhere = @"(ChiefDateAccept is null  and NeedToAcceptByChief = 1) or
+                                        (ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1)";
                         break;
                     case 7:
-                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null";
+                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null
+                                        and NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 8:
                         statusWhere = @"UserDateAccept is not null and ((ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1) 
