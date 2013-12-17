@@ -209,6 +209,12 @@ namespace WebMvc.Controllers
             return View(model);
         }
         [HttpGet]
+        public ActionResult PrintPathList(int id)
+        {
+            UserInfoModel model = RequestBl.GetPrintMissionOrderDocumentModel(id);
+            return View(model);
+        }
+        [HttpGet]
         public ActionResult GetOrderPrintForm(int id)
         {
             return GetPrintForm(id, "PrintOrder");
@@ -217,6 +223,11 @@ namespace WebMvc.Controllers
         public ActionResult GetDocumentPrintForm(int id)
         {
             return GetPrintForm(id, "PrintOrderDocument");
+        }
+        [HttpGet]
+        public ActionResult GetPathListPrintForm(int id)
+        {
+            return GetPrintForm(id, "PrintPathList");
         }
         [HttpGet]
         public ActionResult GetPrintForm(int id,string actionName)

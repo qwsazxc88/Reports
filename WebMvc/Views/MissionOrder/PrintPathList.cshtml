@@ -1,0 +1,335 @@
+﻿@model Reports.Presenters.UI.ViewModel.UserInfoModel
+@{
+    Layout = null;
+    ViewBag.Title = "Путевой лист";
+}
+<HTML><HEAD>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=GENERATOR content="MSHTML 10.00.9200.16660"></HEAD>
+<BODY><TBODY>
+<TABLE style="WIDTH: 971px">
+<TBODY>
+<TR height=30>
+<TH colspan="2">
+<P align=left>Путевой лист&nbsp;№</P></TH>
+</TR>
+<TR>
+<TD height=30>Дата составления</TD>
+<TH style="text-align:left">@Model.DateCreated</TH></TR>
+<TR>
+<TD height=30>Организация</TD>
+<TH style="text-align:left">@Model.Organization</TH></TR>
+<TR>
+<TD height=30>Номер документа</TD>
+<TH style="text-align:left">@Model.DocumentNumber</TH></TR>
+<TR>
+<TD height=30>Сотрудник</TD>
+<TH style="text-align:left">@Model.UserName</TH></TR>
+<TR>
+<TD height=30>Табельный номер</TD>
+<TH style="text-align:left">@Model.UserNumber</TH></TR>
+<TR>
+<TD height=30 style="width:160px">Структурное подразделение</TD>
+<TH style="text-align:left">@Model.Department</TH></TR>
+<TR>
+<TD height=30>Должность</TD>
+<TH style="text-align:left">@Model.Position</TH></TR>
+<TR>
+<TD height=30>Руководитель</TD>
+<TH style="text-align:left">@Model.ManagerName</TH></TR>
+<TR>
+<TD height=30>
+<P>Кадровик </P></TD>
+<TH style="text-align:left">@Model.PersonnelName</TH></TR></TR>
+<TR>
+<TD height=30>
+<P></P></TD>
+<TH></TH></TR></TR></TBODY></TABLE>
+<TABLE cellSpacing=0 cols=9 rules=none frame=void>
+<COLGROUP>
+<COL width=106>
+<COL width=24>
+<COL width=43>
+<COL width=29>
+<COL width=67>
+<COL width=31>
+<COL width=35>
+<COL width=37>
+<COL width=50></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=130 colSpan=2 align=left>Путевой лист от</TD>
+<TD style="border-bottom:1px solid #000000" width=43 align=left>« &nbsp; »</TD>
+<TD width=29 align=left><BR></TD>
+<TD style="border-bottom:1px solid #000000" width=98 colSpan=2 align=left></TD>
+<TD width=35 align=right SDVAL="20" SDNUM="1049;">20</TD>
+<TD style="border-bottom:1px solid #000000" width=37 align=left></TD>
+<TD width=50 align=left>года</TD></TR></TBODY></TABLE></P>
+<TH></TH>
+<TR>
+<TD height=30>
+<P>
+<TABLE style="HEIGHT: 14px; WIDTH: 967px" cellSpacing=0 cols=7 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=86 align=left>Сотрудник</TD>
+<TD style="border-bottom: #000000 1px solid" width=257 colSpan=3 align=left></TD>
+<TD width=257 colSpan=3 align=left>
+<P>указывается ФИО/полностью-без сокращений</P></TD></TR></TBODY></TABLE></P>
+<P>
+<TABLE style="HEIGHT: 57px; WIDTH: 364px" cellSpacing=0 cols=4 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=86 align=left>Автомобиль</TD>
+<TD width=86 align=center>марка</TD>
+<TD style="border-bottom: #000000 1px solid" width=171 colSpan=2 align=left></TD></TR>
+<TR>
+<TD height=17 align=left></TD>
+<TD align=center>гос. номер</TD>
+<TD style="border-bottom: #000000 1px solid" colSpan=2 align=left></TD></TR></TBODY></TABLE>
+<DIV align=center>&nbsp;&nbsp; </DIV>
+<DIV align=left>
+<TABLE style="HEIGHT: 145px; WIDTH: 825px;border:1px" cellSpacing=0 cols=4 rules=none align=left  frame=void>
+<COLGROUP><FONT size=2>
+<COL width=22>
+<COL width=135>
+<COL width=102>
+<COL width=101></FONT></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=22 align=center><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" rowSpan=2 width=135 align=center>
+<P align=center><STRONG>Время в пути</STRONG></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" rowSpan=2 width=102>
+<P align=center>Дата (число, месяц, год)</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" rowSpan=2 width=101>
+<P align=center>Показания спидометра, км</P></TD></TR>
+<TR>
+<TD style="BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>1.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left>Выезд</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>2.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left>Возвращение</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>3.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" colSpan=2 align=left>Итого пробег, км</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT size=2></FONT></TD></TR></TBODY></TABLE></DIV>
+@*<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>*@
+<DIV align=left>
+<TABLE style="HEIGHT: 225px; WIDTH: 826px;border:1px" cellSpacing=0 cols=4 rules=none align=left frame=void>
+<COLGROUP><FONT size=2>
+<COL width=22>
+<COL width=135>
+<COL width=102>
+<COL width=101></FONT></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=22 align=left><FONT size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" width=338 colSpan=3 align=center><STRONG>Маршрут движения</STRONG></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" align=center>
+<P align=center>Откуда</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>
+<P align=center>Куда</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left>
+<P align=center>Расстояние, км</P></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>1.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>2.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>3.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left SDNUM="1049;0;">
+<P align=center>4.</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 colSpan=3 align=left SDNUM="1049;0;">Итого:</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left SDNUM="1049;0;"></TD></TR></TBODY></TABLE></DIV>
+@*<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center><BR>&nbsp;</DIV>*@
+<DIV align=center>
+<TABLE style="HEIGHT: 203px; WIDTH: 827px; border:1px" cellSpacing=0 cols=5 rules=none align=left frame=void>
+<COLGROUP>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=529 colSpan=5 align=center><FONT face="Times New Roman"><STRONG>Расход топлива</STRONG></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=39>
+<P align=center><FONT face="Times New Roman">Марка топлива</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Норма на 100 км (л)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Расход по норме (л)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Расход фактический (л)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Перерасход (+) / </FONT><FONT face="Times New Roman">экономия (-) (л)</FONT></P></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 colSpan=2 align=left><FONT face="Times New Roman">Итого:</FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR></TBODY></TABLE></DIV>
+<DIV align=center><BR></DIV>
+@*<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center><BR>&nbsp;</DIV>
+<DIV align=center>&nbsp; </DIV>*@
+<DIV align=center>
+<TABLE style="HEIGHT: 247px; WIDTH: 828px;border:1px" cellSpacing=0 cols=5 rules=none align=left frame=void>
+<COLGROUP>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=529 colSpan=5 align=center><FONT face="Times New Roman"><STRONG>Сумма расхода</STRONG> </FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=44>
+<P align=center><FONT face="Times New Roman">Дата,номер подтверждающего документа</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Средняя цена за 1 литр (руб)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Расход по норме (руб)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Расход фактический (руб)</FONT></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid">
+<P align=center><FONT face="Times New Roman">Перерасход (+) / экономия (-) (руб)</FONT></P></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 colSpan=2 align=left><FONT face="Times New Roman">Итого:</FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><FONT face="Times New Roman"></FONT></TD></TR></TBODY></TABLE></DIV>
+@*<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>
+<DIV align=center>&nbsp;</DIV>*@
+<DIV align=center>&nbsp; 
+<TABLE style="HEIGHT: 22px; WIDTH: 835px" cellSpacing=0 cols=6 rules=none align=left border=0 frame=void>
+<COLGROUP>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=106>
+<COL width=86></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=106 align=left><FONT size=2><FONT size=3>Сотрудник</FONT> </FONT></TD>
+<TD width=212 colSpan=2 align=left><FONT size=2></FONT></TD>
+<TD width=106 align=left><FONT size=2></FONT></TD>
+<TD width=192 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TR>
+<TD height=17 align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(ФИО полностью)</FONT></TD></TR></TBODY></TABLE></DIV></BODY></HTML>
