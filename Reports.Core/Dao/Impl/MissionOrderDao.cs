@@ -207,8 +207,8 @@ namespace Reports.Core.Dao.Impl
                     {
                         case 2:
                             sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2",currentUser.Id);
-                            sqlFlag = @"case v.UserDateAccept is not null 
-                                        and  v.ManagerDateAccept is null when 1 else 0 end as Flag";
+                            sqlFlag = @"case when v.UserDateAccept is not null 
+                                        and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         case 3:
                             sqlFlag = @"case when v.UserDateAccept is not null 
