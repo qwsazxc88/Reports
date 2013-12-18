@@ -226,7 +226,9 @@ namespace Reports.Core.Dao.Impl
                              inner join dbo.Department dEmp1 on emp1.DepartmentId = dEmp1.Id 
                              and  ((emp1.RoleId & 2) > 0) 
                              inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
-                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
+                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}
+                             where not exists (select Id from dbo.Users empMan1 where
+                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R')";
                             if (currentUser.Level == 5)
                             {
                                 sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);
