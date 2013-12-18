@@ -7329,9 +7329,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
+                    //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
+                    bool canEdit = false;
+                    bool isUserManager =  IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
                     {
-                         if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                         if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
                          {
                              model.IsEditable = true;
                              model.IsManagerApproveAvailable = true;
@@ -7341,7 +7344,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
-                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
+                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
+                            && entity.UserDateAccept.HasValue && isUserManager && canEdit)
                             model.IsManagerApproveAvailable = true;
                         
                     }
