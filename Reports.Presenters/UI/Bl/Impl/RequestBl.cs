@@ -6442,11 +6442,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, parentId);
             model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
             model.EpLevel3ID = level3Id;
-            TerraPoint tp2 = LoadByCode1C(parentId);
-            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+            TerraPoint l3Point = TerraPointDao.Load(level3Id);
+            if (l3Point == null)
+                throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", level3Id));
+            IdNameDto tp2 = LoadByCode1AndPath(parentId,l3Point.Path);
+            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.Name);
             model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             model.EpLevel2ID = tp2.Id;
-            TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+            TerraPoint tp1 = LoadByCode1C(tp2.Name);
             model.EpLevel1ID = tp1.Id;
         }
         protected TerraPoint LoadByCode1C(string code1C)
@@ -6454,6 +6457,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             TerraPoint terraPoint = TerraPointDao.FindByCode1C(code1C);
             if (terraPoint == null)
                 throw new ArgumentException(string.Format("Точка с Code1C {0} отсутствует в базе данных", code1C));
+            return terraPoint;
+        }
+        protected IdNameDto LoadByCode1AndPath(string code1C,string path)
+        {
+            IdNameDto terraPoint = TerraPointDao.FindByCode1CAndPath(code1C,path);
+            if (terraPoint == null)
+                throw new ArgumentException(string.Format("Точка с Code1C {0} и путем {1} отсутствует в базе данных", code1C,path));
             return terraPoint;
         }
         protected void SetupCreditsCombo(TerraGraphicsEditPointModel model)

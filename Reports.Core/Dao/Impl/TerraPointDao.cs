@@ -3,6 +3,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -60,6 +61,23 @@ namespace Reports.Core.Dao.Impl
         {
             return (TerraPoint)Session.CreateCriteria(typeof(TerraPoint))
                 .Add(Restrictions.Eq("Code1C", code1C)).UniqueResult();
+        }
+        public virtual IdNameDto FindByCode1CAndPath(string code1C, string path)
+        {
+            const string sqlQuery = @"select id as Id,parentId as Name from [dbo].[TerraPoint]
+                                    where Code1c = :code1c
+                                    and :path like [Path]+N'%'";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                               AddScalar("Id", NHibernateUtil.Int32).
+                               AddScalar("Name", NHibernateUtil.String).
+                               SetString("code1c", code1C).
+                               SetString("path", path);
+            //query.SetDateTime("endDate", endDate);
+            return (IdNameDto)query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult(); ;
+            //return (TerraPoint)Session.CreateCriteria(typeof(TerraPoint))
+            //    .Add(Restrictions.Eq("Code1C", code1C))
+            //    .Add(Restrictions.Like("path", path))
+            //    .UniqueResult();
         }
     }
 }
