@@ -261,7 +261,12 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Manager:
                     return string.Format(" u.ManagerId = {0} ", userId);
                 case UserRole.PersonnelManager:
-                    return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
+                    {
+                        int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                        if (superPersonnelId.HasValue && superPersonnelId.Value == userId)
+                            return string.Empty;
+                        return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
+                    }
                 case UserRole.Inspector:
                     return string.Format(" exists ( select * from InspectorToUser iu where iu.InspectorId = {0} and u.Id = iu.UserId ) ", userId);
                 case UserRole.Chief:

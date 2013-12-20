@@ -3148,8 +3148,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (current.UserRole == UserRole.PersonnelManager
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -3385,6 +3387,38 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
 
+        }
+        public bool HaveAbsencesForPeriod(DateTime beginDate,DateTime endDate, int userId,
+            int currentUserId,UserRole currentUserRole)
+        {
+            if(currentUserRole == UserRole.PersonnelManager)
+            {
+                int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                if(superPersonnelId.HasValue && currentUserId == superPersonnelId.Value)
+                    return true;
+            }
+            DateTime current = DateTime.Today;
+            DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
+            if(current.Day == 1)
+                monthBegin = monthBegin.AddMonths(-1);
+            if (monthBegin < endDate)
+                endDate = monthBegin;
+            IList<BeginEndDateDto> absences = AbsenceDao.LoadForUserAndPeriod(beginDate, endDate, userId);
+            current = beginDate;
+            while(current <= endDate)
+            {
+                if (!IsAbsenceExists(absences, current))
+                {
+                    Log.InfoFormat("Absence not found for {0}",current);
+                    return false;
+                }
+                current = current.AddDays(1);
+            }
+            return true;
+        }
+        protected  bool IsAbsenceExists(IList<BeginEndDateDto> absences,DateTime date)
+        {
+            return absences.Any(x => x.BeginDate <= date && x.EndDate >= date);
         }
         #endregion
         #region Absence
@@ -4213,6 +4247,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                    if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
+                        return true;
                     if (/*user.PersonnelManager != null && user.PersonnelManager.Id != current.Id*/
                         user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() == null
                         )
@@ -4810,8 +4847,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.ChildVacation, false);
                 }
             }
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (current.UserRole == UserRole.PersonnelManager
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
+                    (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -6497,11 +6536,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, parentId);
             model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
             model.EpLevel3ID = level3Id;
-            TerraPoint tp2 = LoadByCode1C(parentId);
-            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.ParentId);
+            TerraPoint l3Point = TerraPointDao.Load(level3Id);
+            if (l3Point == null)
+                throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", level3Id));
+            IdNameDto tp2 = LoadByCode1AndPath(parentId,l3Point.Path);
+            List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.Name);
             model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             model.EpLevel2ID = tp2.Id;
-            TerraPoint tp1 = LoadByCode1C(tp2.ParentId);
+            TerraPoint tp1 = LoadByCode1C(tp2.Name);
             model.EpLevel1ID = tp1.Id;
         }
         protected TerraPoint LoadByCode1C(string code1C)
@@ -6509,6 +6551,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             TerraPoint terraPoint = TerraPointDao.FindByCode1C(code1C);
             if (terraPoint == null)
                 throw new ArgumentException(string.Format("Точка с Code1C {0} отсутствует в базе данных", code1C));
+            return terraPoint;
+        }
+        protected IdNameDto LoadByCode1AndPath(string code1C,string path)
+        {
+            IdNameDto terraPoint = TerraPointDao.FindByCode1CAndPath(code1C,path);
+            if (terraPoint == null)
+                throw new ArgumentException(string.Format("Точка с Code1C {0} и путем {1} отсутствует в базе данных", code1C,path));
             return terraPoint;
         }
         protected void SetupCreditsCombo(TerraGraphicsEditPointModel model)

@@ -49,5 +49,26 @@ namespace Reports.Core.Dao.Impl
                 requestStatusId, beginDate, endDate,userName,
                 sqlQuery,sortedBy,sortDescending);
         }
+        public IList<BeginEndDateDto> LoadForUserAndPeriod(DateTime beginDate, DateTime endDate, int userId)
+        {
+            string sqlQuery =
+                @"select v.BeginDate as BeginDate,
+                         v.EndDate as EndDate
+                from [dbo].[Absence] v
+                where ((v.BeginDate between :beginDate and :endDate) or
+                                 (v.EndDate between :beginDate and :endDate) or 
+                                 (:beginDate between v.BeginDate and v.EndDate) or
+                                 (:endDate between v.BeginDate and v.EndDate))
+                          and v.DeleteDate is null 
+                          and v.SendTo1C is not null
+                          and v.UserId = :userId";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+              AddScalar("BeginDate", NHibernateUtil.DateTime).
+              AddScalar("EndDate", NHibernateUtil.DateTime).
+              SetDateTime("beginDate", beginDate).
+              SetDateTime("endDate", endDate).
+              SetInt32("userId", userId);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(BeginEndDateDto))).List<BeginEndDateDto>();
+        }
     }
 }

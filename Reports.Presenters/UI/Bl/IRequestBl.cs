@@ -1,4 +1,5 @@
 ﻿using System;
+using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
@@ -38,6 +39,10 @@ namespace Reports.Presenters.UI.Bl
         SicklistEditModel GetSicklistEditModel(int id, int userId);
         void ReloadDictionariesToModel(SicklistEditModel model);
         bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error);
+
+        bool HaveAbsencesForPeriod(DateTime beginDate, DateTime endDate, int userId,
+                                   int currentUserId, UserRole currentUserRole);
+
 
         HolidayWorkListModel GetHolidayWorkListModel();
         void SetHolidayWorkListModel(HolidayWorkListModel model, bool hasError);
