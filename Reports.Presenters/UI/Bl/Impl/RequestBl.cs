@@ -7512,8 +7512,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
                 case UserRole.OutsourcingManager:
+                case UserRole.Secretary:
                     return true;
                 case UserRole.Accountant:
+                case UserRole.Findep:
                     if (isSave)
                         return false;
                     return true;

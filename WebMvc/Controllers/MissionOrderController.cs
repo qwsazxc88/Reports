@@ -16,7 +16,8 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Director)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | 
+        UserRole.Director | UserRole.Secretary | UserRole.Findep)]
     public class MissionOrderController : BaseController
     {
         protected IRequestBl requestBl;

@@ -16,7 +16,9 @@ using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | UserRole.Director | UserRole.Accountant)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | 
+        UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | 
+        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep)]
     public class UserRequestController : BaseController
     {
         public const int MaxCommentLength = 256;

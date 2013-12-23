@@ -272,6 +272,8 @@ namespace Reports.Core.Dao.Impl
                                        ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1))  ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.Secretary:
+                case UserRole.Findep:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
                 default:

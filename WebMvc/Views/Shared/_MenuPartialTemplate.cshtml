@@ -49,6 +49,8 @@
                      || (dto.UserRole & UserRole.Accountant) > 0
                      || (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                     || (dto.UserRole & UserRole.Secretary) > 0
+                     || (dto.UserRole & UserRole.Findep) > 0
                      )
                 {
                     <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>

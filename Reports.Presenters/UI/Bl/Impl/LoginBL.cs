@@ -186,6 +186,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.PersonnelManager);
             if ((user.UserRole & UserRole.Director) > 0 && !roles.Contains(UserRole.Director))
                 roles.Add(UserRole.Director);
+            if ((user.UserRole & UserRole.Secretary) > 0 && !roles.Contains(UserRole.Secretary))
+                roles.Add(UserRole.Secretary);
+            if ((user.UserRole & UserRole.Findep) > 0 && !roles.Contains(UserRole.Findep))
+                roles.Add(UserRole.Findep);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
