@@ -293,6 +293,18 @@
                 @Html.TextBoxFor(model => model.TrainTicketsRequestNumber, Model.IsSecritaryEditable ? (object)new { maxlength = 15, width = "100px" } : (object)new { @readonly = "read-only", width = "100px" }) 
             </td>
         </tr>
+        @if (!string.IsNullOrEmpty(Model.SecretaryFio))
+        {
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.SecretaryFio):
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.SecretaryFio)
+            
+                </td>
+            </tr>
+        }
         <tr>
             <td colspan="2">
                <input type="submit" value="Записать" onclick="return ValidateForm();" 

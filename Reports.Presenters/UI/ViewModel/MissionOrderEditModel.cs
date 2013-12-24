@@ -100,6 +100,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Билеты ж/д")]
         public string TrainTicketsRequestNumber { get; set; }
         public bool IsSecritaryEditable { get; set; }
+
+        [Display(Name = "Секретарь")]
+        public string SecretaryFio { get; set; }
     }
 
     public class MissionOrderTargetModel

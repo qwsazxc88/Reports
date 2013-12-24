@@ -6877,6 +6877,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ResidenceRequestNumber = entity.ResidenceRequestNumber;
                 model.AirTicketsRequestNumber = entity.AirTicketsRequestNumber;
                 model.TrainTicketsRequestNumber = entity.TrainTicketsRequestNumber;
+                model.SecretaryFio = entity.Secretary == null ? string.Empty : entity.Secretary.FullName;
 
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 model.DocumentNumber = entity.Number.ToString();
@@ -7050,6 +7051,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if(model.IsSecritaryEditable)
             {
+                if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
+                    entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
+                    entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber)
+                {
+                    entity.Secretary = UserDao.Load(current.Id);
+                    model.SecretaryFio = entity.Secretary.FullName;
+                }
                 entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber)? null : model.ResidenceRequestNumber;
                 entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
                 entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
