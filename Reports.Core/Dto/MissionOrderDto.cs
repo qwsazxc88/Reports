@@ -18,11 +18,13 @@ namespace Reports.Core.Dto
         public decimal GradeIncrease { get; set; }
         public decimal UserSum { get; set; }
         public string HasMission { get; set; }
+        public string NeedSecretary { get; set; }
         public string State { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool Flag { get; set; }
         public bool IsChecked { get; set; }
+        
         //public bool IsApproveFlagAvailable { get; set; }
     }
 }

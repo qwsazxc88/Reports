@@ -37,6 +37,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("GradeIncrease", NHibernateUtil.Decimal).
                 AddScalar("UserSum", NHibernateUtil.Decimal).
                 AddScalar("HasMission", NHibernateUtil.String).
+                AddScalar("NeedSecretary", NHibernateUtil.String).
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("BeginDate", NHibernateUtil.DateTime).
                 AddScalar("EndDate", NHibernateUtil.DateTime).
@@ -57,6 +58,14 @@ namespace Reports.Core.Dao.Impl
                                 v.AllSum - v.UserAllSum   as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
+                                case when ((NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
+                                          (NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
+                                           and v.DeleteDate is null and v.SendTo1C is null
+                                           and 
+                                           ( (IsResidencePaid = 1 and ResidenceRequestNumber is null) or
+                                             (IsAirTicketsPaid = 1 and AirTicketsRequestNumber is null) or
+                                             (IsTrainTicketsPaid = 1 and TrainTicketsRequestNumber is null))
+                                    then N'Заказ' else N'' end  as NeedSecretary,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
                                      when v.ChiefDateAccept is not null 
@@ -171,6 +180,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 13:
                     orderBy = @" order by BeginDate,EndDate";
+                    break;
+                case 14:
+                    orderBy = @" order by NeedSecretary";
                     break;
             }
             if (sortDescending.Value)
