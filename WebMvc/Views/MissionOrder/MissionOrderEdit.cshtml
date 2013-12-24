@@ -207,7 +207,7 @@
             объеме из заработной платы. 
             </td>
         </tr>
-         <tr id="trUserSumCash">
+        <tr id="trUserSumCash">
             <td>
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
@@ -265,7 +265,35 @@
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
             </td>
         </tr>
-         <tr>
+        <tr>
+            <td colspan="2" style="font-weight:bold">Секретариат</td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ResidenceRequestNumber):
+                 <input type="hidden" id="IsSecritaryEditable" name="IsSecritaryEditable" value="@Model.IsSecritaryEditable" />
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.ResidenceRequestNumber, Model.IsSecritaryEditable ? (object)new { width = "100px", maxlength = 15 } : (object)new { @readonly = "read-only", width = "100px" }) 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.AirTicketsRequestNumber):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.AirTicketsRequestNumber, Model.IsSecritaryEditable ? (object)new { width = "100px", maxlength = 15 } : (object)new { @readonly = "read-only", width = "100px" }) 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.TrainTicketsRequestNumber):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.TrainTicketsRequestNumber, Model.IsSecritaryEditable ? (object)new { maxlength = 15, width = "100px" } : (object)new { @readonly = "read-only", width = "100px" }) 
+            </td>
+        </tr>
+        <tr>
             <td colspan="2">
                <input type="submit" value="Записать" onclick="return ValidateForm();" 
                         @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
@@ -281,6 +309,7 @@
             </div>
             </td>
         </tr>
+        
     </table>
     </div>
     <br />
@@ -404,6 +433,8 @@
             IsTrainTicketsPaidChange();
         });
         function ValidateForm() {
+            if($("#IsSecritaryEditable").val == "True")
+                return true;
             if(!CalcUserSum())
                 return false;
             if(!CalcUserCashNotCashSums())

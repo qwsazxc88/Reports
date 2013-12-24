@@ -92,6 +92,14 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAirTicketsPaidHidden { get; set; }
         public bool IsTrainTicketsPaid { get; set; }
         public bool IsTrainTicketsPaidHidden { get; set; }
+
+        [Display(Name = "Гостиница")]
+        public string ResidenceRequestNumber { get; set; }
+        [Display(Name = "Билеты авиа")]
+        public string AirTicketsRequestNumber { get; set; }
+        [Display(Name = "Билеты ж/д")]
+        public string TrainTicketsRequestNumber { get; set; }
+        public bool IsSecritaryEditable { get; set; }
     }
 
     public class MissionOrderTargetModel

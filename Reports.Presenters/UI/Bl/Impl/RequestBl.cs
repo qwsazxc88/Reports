@@ -6874,6 +6874,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
                 model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;
 
+                model.ResidenceRequestNumber = entity.ResidenceRequestNumber;
+                model.AirTicketsRequestNumber = entity.AirTicketsRequestNumber;
+                model.TrainTicketsRequestNumber = entity.TrainTicketsRequestNumber;
+
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 model.DocumentNumber = entity.Number.ToString();
 
@@ -7043,6 +7047,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
+            }
+            if(model.IsSecritaryEditable)
+            {
+                entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber)? null : model.ResidenceRequestNumber;
+                entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
+                entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
             }
             
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
@@ -7414,6 +7424,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                case UserRole.Secretary:
+                    if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue &&
+                        ((entity.NeedToAcceptByChief && entity.ChiefDateAccept.HasValue) ||
+                         (!entity.NeedToAcceptByChief && entity.ManagerDateAccept.HasValue)) &&
+                        (entity.IsAirTicketsPaid || entity.IsResidencePaid || entity.IsTrainTicketsPaid))
+                        model.IsSecritaryEditable = true;
+                    break;
                 case UserRole.Director:
                     if (IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
                     {
@@ -7428,7 +7445,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
-                || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable;
+                || model.IsManagerApproveAvailable || model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
         protected void SetFlagsState(MissionOrderEditModel model, bool state)
@@ -7439,6 +7456,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproveAvailable = state;
             model.IsUserApprovedAvailable = state;
             model.IsSaveAvailable = state;
+            model.IsSecritaryEditable = state;
 
             model.IsChiefApproved = null;
             //model.IsChiefApprovedHidden = null;
@@ -7451,6 +7469,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApproved = state;
             //model.IsUserApprovedHidden = state;
             
+
         }
         /*protected MissionOrderTargetModel[] AddTestData()
         {
