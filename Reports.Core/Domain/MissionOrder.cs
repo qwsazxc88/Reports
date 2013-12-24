@@ -36,8 +36,17 @@ namespace Reports.Core.Domain
         public virtual decimal? UserSumCash { get; set; }
         public virtual decimal? UserSumNotCash { get; set; }
 
+        public virtual bool IsResidencePaid { get; set; }
+        public virtual bool IsAirTicketsPaid { get; set; }
+        public virtual bool IsTrainTicketsPaid { get; set; }
+
+        public virtual string ResidenceRequestNumber { get; set; }
+        public virtual string AirTicketsRequestNumber { get; set; }
+        public virtual string TrainTicketsRequestNumber { get; set; }
+
         public virtual bool NeedToAcceptByChief { get; set; }
         public virtual bool NeedToAcceptByChiefAsManager { get; set; }
+
 
         public virtual User User { get; set; }
         public virtual User Creator { get; set; }

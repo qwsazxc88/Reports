@@ -6870,6 +6870,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
 
+                model.IsResidencePaid = entity.IsResidencePaid;
+                model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
+                model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;
+
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 model.DocumentNumber = entity.Number.ToString();
 
@@ -7034,6 +7038,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.UserSumNotCash = GetSum(model.UserSumNotCash);
                 entity.NeedToAcceptByChiefAsManager = isDirectorManager;
                 entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
+                entity.IsResidencePaid = model.IsResidencePaid;
+                entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model);
             }
@@ -7344,6 +7351,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApprovedHidden = model.IsUserApproved;
             model.GoalIdHidden = model.GoalId;
             model.TypeIdHidden = model.TypeId;
+
+            model.IsResidencePaidHidden = model.IsResidencePaid;
+            model.IsAirTicketsPaidHidden = model.IsAirTicketsPaid;
+            model.IsTrainTicketsPaidHidden = model.IsTrainTicketsPaid;
         }
         protected void SetFlagsState(int id, User user, MissionOrder entity, MissionOrderEditModel model)
         {

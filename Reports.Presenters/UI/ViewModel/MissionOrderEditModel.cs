@@ -85,7 +85,13 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDeleted { get; set; }
 
         public bool ReloadPage { get; set; }
-       
+
+        public bool IsResidencePaid { get; set; }
+        public bool IsResidencePaidHidden { get; set; }
+        public bool IsAirTicketsPaid { get; set; }
+        public bool IsAirTicketsPaidHidden { get; set; }
+        public bool IsTrainTicketsPaid { get; set; }
+        public bool IsTrainTicketsPaidHidden { get; set; }
     }
 
     public class MissionOrderTargetModel

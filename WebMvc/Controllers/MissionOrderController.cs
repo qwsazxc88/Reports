@@ -159,6 +159,27 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");
             }
+            if (!model.IsEditable)
+            {
+                if (model.IsResidencePaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsResidencePaid"))
+                        ModelState.Remove("IsResidencePaid");
+                    model.IsResidencePaid = model.IsResidencePaidHidden;
+                }
+                if (model.IsAirTicketsPaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsAirTicketsPaid"))
+                        ModelState.Remove("IsAirTicketsPaid");
+                    model.IsAirTicketsPaid = model.IsAirTicketsPaidHidden;
+                }
+                if (model.IsTrainTicketsPaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsTrainTicketsPaid"))
+                        ModelState.Remove("IsTrainTicketsPaid");
+                    model.IsTrainTicketsPaid = model.IsTrainTicketsPaidHidden;
+                }
+            }
         }
         
         [HttpGet]

@@ -111,7 +111,10 @@
                             Итого по G расчетная
                         </td>
                          <td>
-                            Сумма, запрашиваемая сотрудником
+                            Сумма, запрашиваемая<br/> сотрудником
+                        </td>
+                        <td>
+                            Отметить поле, если оплата<br/> со счета организации
                         </td>
                     </tr>
                     <tr>
@@ -124,6 +127,8 @@
                         <td>
                            @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
+                        <td>
+                        </td>
                     </tr>
                      <tr>
                         <td>
@@ -134,6 +139,13 @@
                         </td>
                         <td>
                            @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                        </td>
+                        <td>
+                                @Html.CheckBox("IsResidencePaid", Model.IsResidencePaid, Model.IsEditable ? (object)new { onchange = "IsResidencePaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!Model.IsEditable)
+                                {
+                                    <input type="hidden" id="IsResidencePaidHidden" name="IsResidencePaidHidden" value="@Model.IsResidencePaidHidden" />
+                                }
                         </td>
                     </tr>
                      <tr>
@@ -146,6 +158,13 @@
                         <td>
                            @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
+                         <td>
+                                @Html.CheckBox("IsAirTicketsPaid", Model.IsAirTicketsPaid, Model.IsEditable ? (object)new { onchange = "IsAirTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!Model.IsEditable)
+                                {
+                                    <input type="hidden" id="IsAirTicketsPaidHidden" name="IsAirTicketsPaidHidden" value="@Model.IsAirTicketsPaidHidden" />
+                                }
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -157,6 +176,13 @@
                         <td>
                            @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
+                         <td>
+                                @Html.CheckBox("IsTrainTicketsPaid", Model.IsTrainTicketsPaid, Model.IsEditable ? (object)new { onchange = "IsTrainTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
+                                @if (!Model.IsEditable)
+                                {
+                                    <input type="hidden" id="IsTrainTicketsPaidHidden" name="IsTrainTicketsPaidHidden" value="@Model.IsTrainTicketsPaidHidden" />
+                                }
+                        </td>
                     </tr>
                     <tr>
                         <td>
@@ -167,6 +193,8 @@
                         </td>
                         <td>
                             @Html.TextBoxFor(model => model.UserAllSum, new { @readonly = "read-only", @class = "fixedSize" }) 
+                        </td>
+                        <td>
                         </td>
                     </tr>
                 </table>
@@ -371,6 +399,9 @@
             var targets = JSON.parse($("#Targets").val());
             renderTargetsTable(targets);
             setTargetBtnState();
+            IsResidencePaidChange();
+            IsAirTicketsPaidChange();
+            IsTrainTicketsPaidChange();
         });
         function ValidateForm() {
             if(!CalcUserSum())
@@ -960,6 +991,28 @@
             }
             else
                 return sum;
+        }
+        function IsTrainTicketsPaidChange()
+        {
+            OnCheckboxChange($("#IsTrainTicketsPaid"),$("#UserAllSumTrain"));
+        }
+        function IsAirTicketsPaidChange()
+        {
+            OnCheckboxChange($("#IsAirTicketsPaid"),$("#UserAllSumAir"));
+        }
+        function IsResidencePaidChange()
+        {
+            OnCheckboxChange($("#IsResidencePaid"),$("#UserAllSumResidence"));
+        }
+        function OnCheckboxChange(checkbox,input)
+        {
+             if (checkbox.is(":checked")) {
+                 input.val('');
+                 input.attr('readonly', true);
+             }
+             else
+                input.removeAttr('readonly');
+            CalcUserSum()
         }
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>
