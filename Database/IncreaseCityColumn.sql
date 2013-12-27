@@ -1,0 +1,1 @@
+﻿ alter table [dbo].[MissionTarget] alter column City NVARCHAR(256) not null

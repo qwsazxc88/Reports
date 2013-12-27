@@ -25,22 +25,7 @@
             <td colspan="2" style="color:Red">Приказ отклонен</td>
         </tr>
         }
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.BeginMissionDate):
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
-            </td>
-        </tr>
-         <tr>
-            <td>
-                @Html.LabelFor(m => m.EndMissionDate):
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
-            </td>
-        </tr>
+       
         <tr>
             <td>
                 @Html.LabelFor(m => m.GoalId):
@@ -223,6 +208,22 @@
                 @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.BeginMissionDate):
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.EndMissionDate):
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+            </td>
+        </tr>
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsUserApprovedAvailable" name="IsUserApprovedAvailable" value="@Model.IsUserApprovedAvailable" />
@@ -350,7 +351,7 @@
                                 </tr>    
                                <tr>
                                     <td>
-                                        Город
+                                        Маршрут
                                     </td>
                                     <td>
                                         {{City}}

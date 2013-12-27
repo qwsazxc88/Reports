@@ -93,11 +93,11 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsTrainTicketsPaid { get; set; }
         public bool IsTrainTicketsPaidHidden { get; set; }
 
-        [Display(Name = "Гостиница")]
+        [Display(Name = "Гостиница (номер ЭССЗ)")]
         public string ResidenceRequestNumber { get; set; }
-        [Display(Name = "Билеты авиа")]
+        [Display(Name = "Билеты авиа (номер ЭССЗ)")]
         public string AirTicketsRequestNumber { get; set; }
-        [Display(Name = "Билеты ж/д")]
+        [Display(Name = "Билеты ж/д (номер ЭССЗ)")]
         public string TrainTicketsRequestNumber { get; set; }
         public bool IsSecritaryEditable { get; set; }
 
@@ -139,7 +139,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int CountryId { get; set; }
         public List<IdNameDto> Countries { get; set; }
 
-        [Display(Name = "Город")]
+        [Display(Name = "Маршрут")]
         public string City { get; set; }
 
         [Display(Name = "Организация")]

@@ -18,7 +18,8 @@
                         @Html.LabelFor(m => m.City):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.City, new { maxlength = 20 }) 
+                        @Html.TextBoxFor(model => model.City, new { maxlength = 255, style="width:400px" }) <br/>
+                        Формат: &lt;город откуда&gt; - &lt;город куда&gt;
                     </td>
                 </tr>
                 <tr>

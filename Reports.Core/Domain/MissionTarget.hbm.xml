@@ -9,7 +9,7 @@
       <!--<property name="MissionOrderId" not-null="true"/>-->
       <many-to-one name="Country" class="MissionCountry" column="CountryId" foreign-key="FK_MissionTarget_Country" index="IX_MissionTarget_Country_Id"  not-null="true"/>
       <!--<property name="CountryId" not-null="true"/>-->
-      <property name="City" length="32" not-null="true"/>
+      <property name="City" length="255" not-null="true"/>
       <property name="Organization" length="32" not-null="true"/>
       <property name="BeginDate" not-null="true"/>
       <property name="EndDate" not-null="true"/>
