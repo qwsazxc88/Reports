@@ -2112,6 +2112,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             var typeList = MissionTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addAll)
                 typeList.Insert(0, new IdNameDto(0, SelectAll));
+            else
+            {
+                List<IdNameDto> result = new List<IdNameDto>();
+                foreach (IdNameDto dto in typeList)
+                {
+                    if(dto.Id == 1)
+                        result.Insert(0,dto);
+                    else
+                        result.Add(dto);
+                }
+                return result;
+            }
             return typeList;
         }
         public void SetDocumentsToModel(MissionListModel model, User user)
