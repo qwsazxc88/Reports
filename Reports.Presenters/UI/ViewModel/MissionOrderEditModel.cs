@@ -30,6 +30,11 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
 
+        [Display(Name = "Вид командировки")]
+        public int Kind { get; set; }
+        public int KindHidden { get; set; }
+        public IList<IdNameDto> Kinds;
+
         public string DailyAllowanceGrades { get; set; }
         public string ResidenceGrades { get; set; }
         public string AirTicketTypeGrades { get; set; }

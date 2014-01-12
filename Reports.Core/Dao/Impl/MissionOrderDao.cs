@@ -31,6 +31,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("MissionType", NHibernateUtil.String).
+                AddScalar("MissionKind", NHibernateUtil.String).
                 AddScalar("Target", NHibernateUtil.String).
                 AddScalar("Grade", NHibernateUtil.Int32).
                 AddScalar("GradeSum", NHibernateUtil.Decimal).
@@ -52,6 +53,10 @@ namespace Reports.Core.Dao.Impl
                                 v.Number as OrderNumber,
                                 EditDate as EditDate,
                                 t.Name as MissionType,  
+                                case when v.Kind = 1 then  N' Внутренняя'
+                                     when v.Kind = 2 then  N' Внешняя'
+                                     else N'' end
+                                as MissionKind,  
                                 [dbo].[fnGetMissionOrderTargetsCities](v.Id) as Target,
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
@@ -192,6 +197,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 14:
                     orderBy = @" order by NeedSecretary";
+                    break;
+                case 15:
+                    orderBy = @" order by MissionKind";
                     break;
             }
             if (sortDescending.Value)

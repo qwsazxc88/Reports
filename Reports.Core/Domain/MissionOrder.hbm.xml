@@ -12,6 +12,7 @@
 
 	  
 	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
+	<property name="Kind"  not-null="true"/>
 	<many-to-one name="Goal" class="MissionGoal" column="MissionGoalId" foreign-key="FK_MissionOrder_MissionGoal" index="MissionOrder_MissionGoal"  not-null="false"/>
 	<property name="AllSum"  not-null="true"/>
 	<property name="SumDaily"  not-null="false"/>

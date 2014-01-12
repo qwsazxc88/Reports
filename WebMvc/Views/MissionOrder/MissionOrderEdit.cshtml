@@ -62,6 +62,15 @@
         </tr>
          <tr>
             <td>
+                @Html.LabelFor(m => m.Kind):
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.Kind, new SelectList(Model.Kinds, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="KindHidden" name="KindHidden" value="@Model.KindHidden" />
+            </td>
+        </tr>
+         <tr>
+            <td>
                 @Html.LabelFor(m => m.Grade):
             </td>
             <td>

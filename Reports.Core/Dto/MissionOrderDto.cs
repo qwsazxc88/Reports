@@ -12,6 +12,7 @@ namespace Reports.Core.Dto
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
         public string MissionType { get; set; }
+        public string MissionKind { get; set; }
         public string Target { get; set; }
         public int Grade { get; set; }
         public decimal GradeSum { get; set; }

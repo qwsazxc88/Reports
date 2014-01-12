@@ -118,6 +118,7 @@ namespace WebMvc.Controllers
              if (!model.IsEditable)
              {
                  model.TypeId = model.TypeIdHidden;
+                 model.Kind = model.KindHidden;
                  model.GoalId = model.GoalIdHidden;
              }
         }

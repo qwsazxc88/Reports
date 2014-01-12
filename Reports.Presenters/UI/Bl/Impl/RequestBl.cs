@@ -6871,6 +6871,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.GoalId = entity.Goal.Id;
                 model.Id = entity.Id;
                 model.TypeId = entity.Type.Id;
+                model.Kind = entity.Kind;
                 model.UserId = entity.User.Id;
                 model.UserAllSum = FormatSum(entity.UserAllSum);
                 model.UserAllSumAir = FormatSum(entity.UserSumAir);
@@ -7041,6 +7042,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.EndDate = DateTime.Parse(model.EndMissionDate);
                 entity.Goal = MissionGoalDao.Load(model.GoalId);
                 entity.Type = MissionTypeDao.Load(model.TypeId);
+                entity.Kind = model.Kind;
                 entity.UserAllSum = Decimal.Parse(model.UserAllSum);
                 entity.UserSumDaily = GetSum(model.UserAllSumDaily);
                 entity.UserSumResidence = GetSum(model.UserAllSumResidence);
@@ -7381,7 +7383,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApprovedHidden = model.IsUserApproved;
             model.GoalIdHidden = model.GoalId;
             model.TypeIdHidden = model.TypeId;
-
+            model.KindHidden = model.Kind;
             model.IsResidencePaidHidden = model.IsResidencePaid;
             model.IsAirTicketsPaidHidden = model.IsAirTicketsPaid;
             model.IsTrainTicketsPaidHidden = model.IsTrainTicketsPaid;
@@ -7673,8 +7675,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
             //model.Statuses = GetTimesheetStatusesForDismissal();
             model.Types = GetMissionTypes(false);
+            model.Kinds = GetMissionOrderKinds();
             model.Goals = GetMissionGoals(false);
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
+        }
+        protected List<IdNameDto> GetMissionOrderKinds()
+        {
+            return new List<IdNameDto>
+                       {
+                           new IdNameDto {Id = 1,Name = "Внутренняя"},
+                           new IdNameDto {Id = 2,Name = "Внешняя"},
+                       };
         }
         public void ReloadDictionaries(MissionOrderEditModel model)
         {

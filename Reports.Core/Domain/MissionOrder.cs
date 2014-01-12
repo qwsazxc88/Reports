@@ -21,6 +21,8 @@ namespace Reports.Core.Domain
        
         
         public virtual MissionType Type { get; set; }
+        public virtual int Kind { get; set; }
+       
         public virtual MissionGoal Goal { get; set; }
 
         public virtual decimal? SumAir { get; set; }
