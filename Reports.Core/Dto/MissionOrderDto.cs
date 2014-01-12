@@ -15,7 +15,7 @@ namespace Reports.Core.Dto
         public string Target { get; set; }
         public int Grade { get; set; }
         public decimal GradeSum { get; set; }
-        public decimal GradeIncrease { get; set; }
+        public Decimal? GradeIncrease { get; set; }
         public decimal UserSum { get; set; }
         public string HasMission { get; set; }
         public string NeedSecretary { get; set; }

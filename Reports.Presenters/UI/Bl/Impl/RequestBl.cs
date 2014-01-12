@@ -6927,7 +6927,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
         }
-        protected static string FormatSum(decimal? sum)
+        public static string FormatSum(decimal? sum)
         {
             return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
         }

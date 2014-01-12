@@ -55,10 +55,15 @@ namespace Reports.Core.Dao.Impl
                                 [dbo].[fnGetMissionOrderTargetsCities](v.Id) as Target,
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
-                                v.AllSum - v.UserAllSum   
-                                - case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                - case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                - case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
+                                case when (v.UserAllSum - v.AllSum 
+                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
+                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
+                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end) > 0
+                                    then v.UserAllSum - v.AllSum 
+                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
+                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
+                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
+                                    else null end
                                 as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
