@@ -32,8 +32,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Кадровик(и)")]
         public string PersonnelName { get; set; }
 
-        public string Prefix = "К";
-        public string DocPrefix = "КУ";
+        //public string Prefix = "К";
+        //public string DocPrefix = "КУ";
     }
     public class PreventDCModel : IPreventDCModel
     {

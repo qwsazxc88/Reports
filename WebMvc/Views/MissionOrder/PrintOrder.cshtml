@@ -12,7 +12,7 @@
 <TBODY>
 <TR height=30>
 <TH>
-<P align=left>ПРИКАЗ&nbsp;№&nbsp;@Model.Prefix@Model.DocumentNumber</P></TH>
+<P align=left>ПРИКАЗ № К-@Model.DocumentNumber</P></TH>
 <TH>
 <P align=left>о направлении сотрудника&nbsp;в командировку</P></TH></TR>
 <TR>
@@ -21,9 +21,9 @@
 <TR>
 <TD height=30>Организация</TD>
 <TH style="text-align:left">@Model.Organization</TH></TR>
-<TR>
+@*<TR>
 <TD height=30>Номер документа</TD>
-<TH style="text-align:left">@Model.DocumentNumber</TH></TR>
+<TH style="text-align:left">@Model.DocumentNumber</TH></TR>*@
 <TR>
 <TD height=30>Сотрудник</TD>
 <TH style="text-align:left">@Model.UserName</TH></TR>
