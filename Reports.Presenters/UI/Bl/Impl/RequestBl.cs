@@ -8001,6 +8001,90 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return table;
         }
+
+        #region Mission Report
+        public MissionReportsListModel GetMissionReportsListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            MissionReportsListModel model = new MissionReportsListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                //RequestStatuses = GetDeductionStatuses(true),
+                //Types = GetDeductionTypes(true)
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            //SetIsAvailable(model);
+            return model;
+        }
+        public void SetDictionariesToModel(MissionReportsListModel model)
+        {
+            model.Statuses = GetMrStatuses();
+        }
+        public List<IdNameDto> GetMrStatuses()
+        {
+            //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> moStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Одобрен сотрудником"),
+                                                           new IdNameDto(2, "Не одобрен сотрудником"),
+                                                           new IdNameDto(3, "Одобрен руководителем"),
+                                                           new IdNameDto(4, "Не одобрен руководителем"),
+                                                           new IdNameDto(5, "Одобрен бухгалтером"),
+                                                           new IdNameDto(6, "Не одобрен бухгалтером"),
+                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
+                                                           //new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           //new IdNameDto(10, "Отклоненные"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return moStatusesList;
+        }
+        public void SetMissionReportsListModel(MissionReportsListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            //SetIsAvailable(model);
+            User user = UserDao.Load(model.UserId);
+            //model.RequestStatuses = GetDeductionStatuses(true);
+            //model.Types = GetDeductionTypes(true);
+            if (hasError)
+                model.Documents = new List<MissionOrderDto>();
+            else
+            {
+                //if(model.IsApproveClick)
+                //{
+                //    model.IsApproveClick = false;
+                //    List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
+                //    ApproveOrders(model,idsForApprove);
+                //}
+                SetDocumentsToModel(model, user);
+            }
+            //model.Documents = new List<MissionOrderDto>();
+        }
+        public void SetDocumentsToModel(MissionReportsListModel model, User user)
+        {
+            UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            model.Documents = new List<MissionOrderDto>();
+            //model.Documents = MissionDao.GetDocuments(
+            //    user.Id,
+            //    role,
+            //    //GetDepartmentId(model.Department),
+            //    model.DepartmentId,
+            //    model.PositionId,
+            //    model.TypeId,
+            //    //0,
+            //    model.StatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    model.UserName,
+            //    model.SortBy,
+            //    model.SortDescending);
+        }
+        #endregion
         #endregion
     }
 

@@ -360,5 +360,33 @@ namespace WebMvc.Controllers
         {
             return View(new InstructionsViewModel());
         }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+            /*UserRole.Director | UserRole.Secretary |*/ UserRole.Findep)]
+        public ActionResult MissionReportsList()
+        {
+            var model = RequestBl.GetMissionReportsListModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionReportsList(MissionReportsListModel model)
+        {
+            ModelState.Clear();
+            RequestBl.SetMissionReportsListModel(model, !ValidateModel(model));
+            //if (model.HasErrors)
+            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
+            return View(model);
+        }
+        protected bool ValidateModel(MissionReportsListModel model)
+        {
+            if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            //if (model.IsApproveClick && (model.Documents == null || model.Documents.Count == 0
+            //           || model.Documents.Where(x => x.IsChecked).Count() == 0))
+            //    ModelState.AddModelError(string.Empty, "Не выбрано ни одного приказа для согласования.");
+            return ModelState.IsValid;
+        }
     }
 }

@@ -68,6 +68,17 @@
         </div>  
         <div class="podmenu">       
             <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
+             @if ((dto.UserRole & UserRole.Employee) > 0
+                     || (dto.UserRole & UserRole.Manager) > 0
+                     || (dto.UserRole & UserRole.Accountant) > 0
+                     //|| (dto.UserRole & UserRole.Director) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                     //|| (dto.UserRole & UserRole.Secretary) > 0
+                     || (dto.UserRole & UserRole.Findep) > 0
+                      )
+             {
+                <div class="menuitem" id="moAllReports">@Html.ActionLink("Авансовый отчет - реестр", "MissionReportsList", "MissionOrder")</div> 
+             }
             <div class="menuitem" id="moGradeList">@Html.ActionLink("Справочник расчета лимитов", "GradeList", "MissionOrder")</div> 
             <div class="menuitem" id="moInstructions">@Html.ActionLink("Инструкция", "Instructions", "MissionOrder")</div> 
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>

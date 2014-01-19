@@ -130,5 +130,8 @@ namespace Reports.Presenters.UI.Bl
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);
         GradeListViewModel GetGradeListModel();
 
+        MissionReportsListModel GetMissionReportsListModel();
+        void SetMissionReportsListModel(MissionReportsListModel model, bool hasError);
+
     }
 }
