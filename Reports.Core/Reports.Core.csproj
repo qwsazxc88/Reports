@@ -125,6 +125,7 @@
     <Compile Include="Dao\IMissionGraidDao.cs" />
     <Compile Include="Dao\IMissionOrderCommentDao.cs" />
     <Compile Include="Dao\IMissionOrderDao.cs" />
+    <Compile Include="Dao\IMissionReportDao.cs" />
     <Compile Include="Dao\IMissionResidenceDao.cs" />
     <Compile Include="Dao\IMissionTargetDao.cs" />
     <Compile Include="Dao\IMissionTrainTicketTypeDao.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Dao\Impl\MissionGraidDao.cs" />
     <Compile Include="Dao\Impl\MissionOrderCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionOrderDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportDao.cs" />
     <Compile Include="Dao\Impl\MissionResidenceDao.cs" />
     <Compile Include="Dao\Impl\MissionTargetDao.cs" />
     <Compile Include="Dao\Impl\MissionTrainTicketTypeDao.cs" />
@@ -247,6 +249,8 @@
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
+    <Compile Include="Domain\Account.cs" />
+    <Compile Include="Domain\AccountingTransaction.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
@@ -289,6 +293,10 @@
     <Compile Include="Domain\MissionGraid.cs" />
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
+    <Compile Include="Domain\MissionReport.cs" />
+    <Compile Include="Domain\MissionReportComment.cs" />
+    <Compile Include="Domain\MissionReportCost.cs" />
+    <Compile Include="Domain\MissionReportCostType.cs" />
     <Compile Include="Domain\MissionResidence.cs" />
     <Compile Include="Domain\MissionResidenceGradeValue.cs" />
     <Compile Include="Domain\MissionTarget.cs" />
@@ -648,6 +656,22 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\MissionOrderComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReport.hbm.xml" />
+    <EmbeddedResource Include="Domain\MissionReportComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReportCost.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AccountingTransaction.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionReportCostType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Account.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

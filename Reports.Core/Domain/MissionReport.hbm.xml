@@ -1,0 +1,68 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionReport">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	<property name="EditDate" not-null="true"/>
+    <property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+
+	  
+	<!--<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionReport_MissionType" index="MissionReport_MissionType"  not-null="false"/>
+	<property name="Kind"  not-null="true"/>
+	<many-to-one name="Goal" class="MissionGoal" column="MissionGoalId" foreign-key="FK_MissionReport_MissionGoal" index="MissionReport_MissionGoal"  not-null="false"/>-->
+	<property name="AllSum"  not-null="true"/>
+	<!--<property name="SumDaily"  not-null="false"/>
+	<property name="SumResidence"  not-null="false"/>
+	<property name="SumAir"  not-null="false"/>
+	<property name="SumTrain"  not-null="false"/>-->
+	<!--<property name="UserSumDaily"  not-null="false"/>
+	<property name="UserSumResidence"  not-null="false"/>
+	<property name="UserSumAir"  not-null="false"/>
+	<property name="UserSumTrain"  not-null="false"/>-->
+	<property name="UserAllSum"  not-null="true"/>
+	<property name="AccountantAllSum"  not-null="true"/>
+	<!--<property name="UserSumCash"  not-null="false"/>
+	<property name="UserSumNotCash"  not-null="false"/>-->
+	<!--<property name="NeedToAcceptByChief"  not-null="true"/>
+	<property name="NeedToAcceptByChiefAsManager"  not-null="true"/>-->
+
+	<!--<property name="IsResidencePaid"  not-null="true"/>
+	<property name="IsAirTicketsPaid"  not-null="true"/>
+	<property name="IsTrainTicketsPaid"  not-null="true"/>
+	  
+	<property name="ResidenceRequestNumber" length="16" not-null="false"/>
+	<property name="AirTicketsRequestNumber" length="16" not-null="false"/>
+	<property name="TrainTicketsRequestNumber" length="16" not-null="false"/>
+  <many-to-one name="Secretary" class="User" column="SecretaryId" foreign-key="FK_MissionReport_Secretary" index="IX_MissionReport_Secretary_Id"  not-null="false"/>-->
+
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionReport_User" index="IX_MissionReport_User_Id"  not-null="true"/>
+	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_MissionReport_CreatorUser" index="IX_MissionReport_CreatorUser_Id"  not-null="true"/>
+
+	<property name="UserDateAccept" not-null="false"/>
+	<many-to-one name="AcceptUser" class="User" column="AcceptUserId" foreign-key="FK_MissionReport_AcceptUser" index="IX_MissionReport_AcceptUser"  not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_MissionReport_AcceptManager" index="IX_MissionReport_AcceptManager"  not-null="false"/>
+	<property name="AccountantDateAccept" not-null="false"/>
+	<many-to-one name="AcceptAccountant" class="User" column="AcceptAccountant" foreign-key="FK_MissionReport_AcceptAccountant" index="IX_MissionReport_AcceptAccountant"  not-null="false"/>
+	<property name="SendTo1C" not-null="false"/>
+	<property name="DeleteDate" not-null="false"/>
+	<property name="DeleteAfterSendTo1C" not-null="true"/>
+
+	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
+	  
+	  
+	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="MissionReportId" foreign-key="FK_MissionReportTarget_MissionReport"/>
+		  <one-to-many class="MissionTarget"/>
+	  </bag>-->
+	  
+	  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<key column="MissionReportId" foreign-key="FK_MissionReportComment_MissionReport"/>
+		<one-to-many class="MissionReportComment"/>
+	  </bag>
+	</class>
+</hibernate-mapping>

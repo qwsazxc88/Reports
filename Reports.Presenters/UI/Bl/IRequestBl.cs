@@ -133,5 +133,8 @@ namespace Reports.Presenters.UI.Bl
         MissionReportsListModel GetMissionReportsListModel();
         void SetMissionReportsListModel(MissionReportsListModel model, bool hasError);
 
+
+        MissionReportEditModel GetMissionReportEditModel(int id);
+
     }
 }

@@ -1,0 +1,142 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionReportEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Редактирование авансового отчета";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+                @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.Partial("../UserInfoView", Model)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="button" value="Добавить вид расхода" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+               <input type="hidden" id="Costs" name="Costs" value="@Model.Costs" />
+                <table id="costsTable"></table>
+            </td>
+        </tr>
+        <tr>
+            <td>@Model.UserFio</td>
+            <td>
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="IsUserApprovedAvailable" name="IsUserApprovedAvailable" value="@Model.IsUserApprovedAvailable" />
+                @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsUserApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
+              @*  @Html.LabelFor(model => model.IsUserApproved)*@
+                @if (!Model.IsUserApprovedAvailable)
+                {
+                    <input type="hidden" id="IsUserApprovedHidden" name="IsUserApprovedHidden" value="@Model.IsUserApprovedHidden" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>Руководитель</td>
+            <td>
+                <input type="hidden" id="IsManagerApprovedAvailable" name="IsManagerApprovedAvailable" value="@Model.IsManagerApprovedAvailable" />
+                @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsManagerApproved)
+                @if (!Model.IsManagerApprovedAvailable)
+                {
+                    <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td>@Html.AccountantFio(model => model.AccountantFio)</td>
+            <td>
+                <input type="hidden" id="IsAccountantEditable" name="IsAccountantEditable" value="@Model.IsAccountantEditable" />
+                <input type="hidden" id="IsAccountantApproveAvailable" name="IsAccountantApproveAvailable" value="@Model.IsAccountantApproveAvailable" />
+                @Html.CheckBox("IsAccountantApproved", Model.IsAccountantApproved, Model.IsAccountantApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsAccountantApproved)
+                @if (!Model.IsAccountantApproveAvailable)
+                {
+                    <input type="hidden" id="IsAccountantApprovedHidden" name="IsAccountantApprovedHidden" value="@Model.IsAccountantApprovedHidden" />
+                }
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>@Model.AccountantFio</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+            <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+               <input type="submit" value="Сохранить" onclick="return ValidateForm();" 
+                        @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+               @if (Model.Id > 0)
+               {
+                    <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
+                   @* <input type="button" value="Печать командировочного удостоверения" onclick="window.location.href='@Url.Action("GetDocumentPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
+                    <input type="button" value="Печать путевого листа" onclick="window.location.href='@Url.Action("GetPathListPrintForm", "MissionOrder", new { id = Model.Id })';"/>   *@
+               }
+               @*<div style="text-align: right;"><input type="submit" value="Отклонить" onclick="return Delete();" 
+                        @if (!Model.IsDeleteAvailable)
+                        {<text>style="display:none"</text>}/>
+                </div>*@
+            </td>
+        </tr>
+    </table>
+    </div>
+    <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+     <script type="template/html" id="costTemplate">
+                    <table id="costsTable">
+                            <tbody>
+                                {{#List}}
+                                <tr>
+                                </tr>
+                               {{/List}}
+                        </tbody>
+                    </table>
+     </script>
+     <script type="text/javascript">
+        var  actionEditTargetDialogUrl = "@Url.Action("EditCostDialog", "MissionReport")";
+        $(document).ready(function () {
+            /*$("#BeginDate").datepicker();
+            $("#EndDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#DaysCount").width("50px");*/
+            setActiveMenuItem("moAllReports");
+            var targets = JSON.parse($("#Costs").val());
+            renderCostsTable(targets);
+//            setTargetBtnState();
+//            IsResidencePaidChange();
+//            IsAirTicketsPaidChange();
+//            IsTrainTicketsPaidChange();
+        });
+        function renderCostsTable(costs) {
+            var template = $("#costTemplate").html();
+            var html = Mustache.render(template, costs);
+            $("#costsTable").html(html);
+            /*if ($("#IsReadOnly").val() == 'True') {
+                $(".deleteLink").hide();
+            }*/
+        }
+    </script>
+    <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>
+}

@@ -388,5 +388,13 @@ namespace WebMvc.Controllers
             //    ModelState.AddModelError(string.Empty, "Не выбрано ни одного приказа для согласования.");
             return ModelState.IsValid;
         }
+
+
+        [HttpGet]
+        public ActionResult MissionReportEdit(int id/*, int? userId*/)
+        {
+            MissionReportEditModel model = RequestBl.GetMissionReportEditModel(id/*, userId*/);
+            return View(model);
+        }
     }
 }

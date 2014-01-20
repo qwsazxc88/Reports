@@ -22,6 +22,7 @@
         ChildVacation = 9,
         Deduction = 10,
         MissionOrder = 11,
+        MissionReport = 12,
     }
     public enum RequestAttachmentTypeEnum
     {

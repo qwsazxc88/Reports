@@ -407,6 +407,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { missionTargetDao = value; }
         }
 
+        protected IMissionReportDao missionReportDao;
+        public IMissionReportDao MissionReportDao
+        {
+            get { return Validate.Dependency(missionReportDao); }
+            set { missionReportDao = value; }
+        }
+
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -5063,6 +5070,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.MissionReport:
+                    MissionReport missionReport = MissionReportDao.Load(id);
+                    if ((missionReport.Comments != null) && (missionReport.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = missionReport.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 }
             }
             return commentModel;
@@ -8001,7 +8021,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return table;
         }
-
+        #endregion
         #region Mission Report
         public MissionReportsListModel GetMissionReportsListModel()
         {
@@ -8084,8 +8104,198 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    model.SortBy,
             //    model.SortDescending);
         }
+
+        public MissionReportEditModel GetMissionReportEditModel(int id)
+        {
+            MissionReport entity = null;
+            if (id != 0)
+            {
+                entity = MissionReportDao.Load(id);
+                if (entity == null)
+                    throw new ValidationException(string.Format("Не найден авансовый отчет (id {0}) в базе данных", id));
+            }
+            MissionReportEditModel model = new MissionReportEditModel
+            {
+                Id = id,
+                UserId = entity.User.Id
+            };
+            User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserMrRights(user, current, id, entity, false))
+                throw new ArgumentException("Доступ запрещен.");
+            model.Id = entity.Id;
+            model.Version = entity.Version;
+            model.DocumentNumber = entity.Number.ToString();
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            SetFlagsState(id, user, entity, model);
+            LoadCosts(model, entity);
+            SetHiddenFields(model);
+            return model;
+        }
+        protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
+        {
+            
+        }
+        protected void SetUserInfoModel(User user,MissionReportEditModel model)
+        {
+            SetUserInfoModel(user,(UserInfoModel)model);
+            model.UserFio = user.FullName;
+        }
+        protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
+        {
+            SetFlagsState(model, false);
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            model.IsUserApproved = entity.UserDateAccept.HasValue;
+            model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
+            model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
+            if (entity.AcceptAccountant != null)
+                model.AccountantFio = entity.AcceptAccountant.FullName + ", " + entity.AcceptAccountant.Email;
+            switch (currentUserRole)
+            {
+                case UserRole.Employee:
+                    //if ((entity.Creator.RoleId & (int)UserRole.Employee) > 0)
+                    //{
+                        if (!entity.UserDateAccept.HasValue /*&& !entity.DeleteDate.HasValue*/)
+                        {
+                            model.IsEditable = true;
+                            model.IsUserApprovedAvailable = true;
+                        }
+                    //}
+                    break;
+                case UserRole.Manager:
+                    //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
+                    bool canEdit = false;
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    //if (entity.Creator.RoleId == (int)UserRole.Manager)
+                    //{
+                    //    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
+                    //    {
+                    //        model.IsEditable = true;
+                    //        model.IsManagerApproveAvailable = true;
+                    //        if (entity.UserDateAccept.HasValue)
+                    //            model.IsUserApproved = true;
+                    //    }
+                    //}
+                    //else
+                    //{
+                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
+                            && entity.UserDateAccept.HasValue && isUserManager && canEdit)
+                            model.IsManagerApproveAvailable = true;
+
+                    //}
+                    break;
+                case UserRole.Accountant:
+                    if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
+                           && !entity.AccountantDateAccept.HasValue )
+                    {
+                        model.IsAccountantEditable = true;
+                        model.IsAccountantApproveAvailable = true;
+                    }
+                    break;
+                    //case UserRole.OutsourcingManager:
+                    //    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    //        model.IsDeleteAvailable = true;
+                    //    break;
+                    //case UserRole.Secretary:
+                    //    if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue &&
+                    //        ((entity.NeedToAcceptByChief && entity.ChiefDateAccept.HasValue) ||
+                    //         (!entity.NeedToAcceptByChief && entity.ManagerDateAccept.HasValue)) &&
+                    //        (entity.IsAirTicketsPaid || entity.IsResidencePaid || entity.IsTrainTicketsPaid))
+                    //        model.IsSecritaryEditable = true;
+                    //    break;
+                    //case UserRole.Director:
+                    //    if (IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
+                    //    {
+                    //        if (!entity.ManagerDateAccept.HasValue &&
+                    //            !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
+                    //            model.IsManagerApproveAvailable = true;
+                    //    }
+                    //    if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
+                    //        && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
+                    //        && entity.UserDateAccept.HasValue)
+                    //        model.IsChiefApproveAvailable = true;
+                    //    break;
+            }
+            model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
+                || model.IsManagerApproveAvailable 
+                || model.IsAccountantEditable || model.IsAccountantApproveAvailable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
+
+        }
+        protected void SetFlagsState(MissionReportEditModel model, bool state)
+        {
+            model.IsEditable = state;
+            model.IsAccountantEditable = state;
+            model.IsManagerApproveAvailable = state;
+            model.IsUserApprovedAvailable = state;
+            model.IsAccountantApproveAvailable = state;
+            model.IsSaveAvailable = state;
+            model.IsManagerApproved = state;
+            model.IsUserApproved = state;
+            model.IsAccountantApproved = state;
+        }
+        protected void SetHiddenFields(MissionReportEditModel model)
+        {
+            model.IsManagerApprovedHidden = model.IsManagerApproved;
+            model.IsUserApprovedHidden = model.IsUserApproved;
+            model.IsAccountantApprovedHidden = model.IsAccountantApproved;
+        }
+        protected void LoadDictionaries(MissionReportEditModel model)
+        {
+            //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
+            //model.Statuses = GetTimesheetStatusesForDismissal();
+            //model.Types = GetMissionTypes(false);
+            //model.Kinds = GetMissionOrderKinds();
+            //model.Goals = GetMissionGoals(false);
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionReport);
+        }
+        public bool CheckUserMrRights(User user, IUser current, int entityId, MissionReport entity, bool isSave)
+        {
+            switch (current.UserRole)
+            {
+                case UserRole.Employee:
+                    if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserMrRights user.Id {0} current.Id {1}", user.Id, current.Id);
+                        return false;
+                    }
+                    return true;
+                case UserRole.Manager:
+                    bool canEdit;
+                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit);
+                    if (isManager)
+                    {
+                        if (isSave)
+                            return canEdit;
+                        return true;
+                    }
+                    Log.ErrorFormat("CheckUserMrRights user.Id {0} current.Id {1} ", user.Id, current.Id);
+                    return false;
+                case UserRole.OutsourcingManager:
+                //case UserRole.Secretary:
+                //    return true;
+                case UserRole.Accountant:
+                    return true;
+                case UserRole.Findep:
+                    if (isSave)
+                        return false;
+                    return true;
+                //case UserRole.Director:
+                //    if (entityId > 0)
+                //    {
+                //        if (entity.NeedToAcceptByChief)
+                //            return true;
+                //        return IsDirectorManagerForEmployee(user, current);
+                //    }
+                //    return false;
+            }
+            return false;
+        }
         #endregion
-        #endregion
+        
+
+
+
     }
 
 }
