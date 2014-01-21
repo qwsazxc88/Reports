@@ -86,8 +86,8 @@ create table MissionReport (
   Version INT not null,
   CreateDate DATETIME not null,
   EditDate DATETIME not null,
-  BeginDate DATETIME not null,
-  EndDate DATETIME not null,
+  -- BeginDate DATETIME not null,
+  -- EndDate DATETIME not null,
   Number INT not null,
   AllSum DECIMAL(19,5) not null,
   UserAllSum DECIMAL(19,5) not null,
@@ -102,7 +102,7 @@ create table MissionReport (
   AcceptAccountant INT null,
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
-  DeleteAfterSendTo1C BIT not null,
+  -- DeleteAfterSendTo1C BIT not null,
   MissionOrderId INT null,
   constraint PK_MissionReport  primary key (Id)
 )

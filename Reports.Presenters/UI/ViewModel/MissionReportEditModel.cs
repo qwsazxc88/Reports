@@ -22,7 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Задание сотрудника выполнено, производственные расходы согласованы")]
         public bool IsManagerApproved { get; set; }
-        public bool IsManagerApproveAvailable { get; set; }
+        public bool IsManagerApprovedAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
 
         [Display(Name = "Авансовый отчет проверен")]

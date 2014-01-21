@@ -30,7 +30,8 @@
         <tr>
             <td colspan="2">
                <input type="hidden" id="Costs" name="Costs" value="@Model.Costs" />
-                <table id="costsTable"></table>
+                <div id="costsTable"></div>
+                <br/>
             </td>
         </tr>
         <tr>
@@ -59,7 +60,7 @@
             </td>
         </tr>
         <tr>
-            <td>@Html.AccountantFio(model => model.AccountantFio)</td>
+            <td>@Html.LabelFor(model => model.AccountantFio)</td>
             <td>
                 <input type="hidden" id="IsAccountantEditable" name="IsAccountantEditable" value="@Model.IsAccountantEditable" />
                 <input type="hidden" id="IsAccountantApproveAvailable" name="IsAccountantApproveAvailable" value="@Model.IsAccountantApproveAvailable" />
@@ -105,13 +106,24 @@
         </table>
     </div>
      <script type="template/html" id="costTemplate">
-                    <table id="costsTable">
+                    <table id="costsTable" class="grid">
+                            <thead>
+                                <tr>
+                                   <td>№ пп</td>
+                                   <td>Наименование расходов</td>
+                                   <td>Кол-во</td>
+                                   <td>Норма по грейду</td>
+                                   <td>Оплачено фактически сотрудником (сумма, руб)</td>
+                                   <td>Оплачено организацией за сотрудника</td>
+                                   <td>Принято к учету</td>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {{#List}}
                                 <tr>
                                 </tr>
                                {{/List}}
-                        </tbody>
+                            </tbody>
                     </table>
      </script>
      <script type="text/javascript">
@@ -131,8 +143,12 @@
         });
         function renderCostsTable(costs) {
             var template = $("#costTemplate").html();
-            var html = Mustache.render(template, costs);
+            var html = Mustache.to_html(template, costs/*, partials*/);
             $("#costsTable").html(html);
+
+//            var html = Mustache.render(template, costs);
+//            $("#costsTable").html(html);
+//            $("#costsTable").attr("class","grid");
             /*if ($("#IsReadOnly").val() == 'True') {
                 $(".deleteLink").hide();
             }*/

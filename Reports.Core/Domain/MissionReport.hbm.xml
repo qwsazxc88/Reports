@@ -6,8 +6,8 @@
     <version name="Version" column= "Version"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
-    <property name="BeginDate" not-null="true"/>
-    <property name="EndDate" not-null="true"/>
+    <!--<property name="BeginDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>-->
     <property name="Number"  not-null="true"/>
 
 	  
@@ -50,7 +50,7 @@
 	<many-to-one name="AcceptAccountant" class="User" column="AcceptAccountant" foreign-key="FK_MissionReport_AcceptAccountant" index="IX_MissionReport_AcceptAccountant"  not-null="false"/>
 	<property name="SendTo1C" not-null="false"/>
 	<property name="DeleteDate" not-null="false"/>
-	<property name="DeleteAfterSendTo1C" not-null="true"/>
+	<!--<property name="DeleteAfterSendTo1C" not-null="true"/>-->
 
 	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
 	  

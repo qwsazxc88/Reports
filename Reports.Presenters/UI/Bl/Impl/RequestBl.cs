@@ -8135,12 +8135,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
         {
-            
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            model.Costs = jsonSerializer.Serialize("[]");
         }
         protected void SetUserInfoModel(User user,MissionReportEditModel model)
         {
             SetUserInfoModel(user,(UserInfoModel)model);
-            model.UserFio = user.FullName;
+            model.UserFio ="Сотрудник " + user.FullName;
         }
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
@@ -8151,6 +8152,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
             if (entity.AcceptAccountant != null)
                 model.AccountantFio = entity.AcceptAccountant.FullName + ", " + entity.AcceptAccountant.Email;
+            
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -8172,7 +8174,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
                     //    {
                     //        model.IsEditable = true;
-                    //        model.IsManagerApproveAvailable = true;
+                    //        model.IsManagerApprovedAvailable = true;
                     //        if (entity.UserDateAccept.HasValue)
                     //            model.IsUserApproved = true;
                     //    }
@@ -8181,7 +8183,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //{
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                             && entity.UserDateAccept.HasValue && isUserManager && canEdit)
-                            model.IsManagerApproveAvailable = true;
+                            model.IsManagerApprovedAvailable = true;
 
                     //}
                     break;
@@ -8209,7 +8211,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    {
                     //        if (!entity.ManagerDateAccept.HasValue &&
                     //            !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
-                    //            model.IsManagerApproveAvailable = true;
+                    //            model.IsManagerApprovedAvailable = true;
                     //    }
                     //    if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
                     //        && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
@@ -8218,7 +8220,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    break;
             }
             model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
-                || model.IsManagerApproveAvailable 
+                || model.IsManagerApprovedAvailable 
                 || model.IsAccountantEditable || model.IsAccountantApproveAvailable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
@@ -8226,7 +8228,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.IsEditable = state;
             model.IsAccountantEditable = state;
-            model.IsManagerApproveAvailable = state;
+            model.IsManagerApprovedAvailable = state;
             model.IsUserApprovedAvailable = state;
             model.IsAccountantApproveAvailable = state;
             model.IsSaveAvailable = state;
