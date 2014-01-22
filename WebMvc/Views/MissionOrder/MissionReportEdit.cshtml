@@ -110,7 +110,7 @@
                             <thead>
                                 <tr>
                                    <td>№ пп</td>
-                                   <td>Наименование расходов</td>
+                                   <td style='width:400px'>Наименование расходов</td>
                                    <td>Кол-во</td>
                                    <td>Норма по грейду</td>
                                    <td>Оплачено фактически сотрудником (сумма, руб)</td>
@@ -121,7 +121,25 @@
                             <tbody>
                                 {{#List}}
                                 <tr>
+                                    <td>{{Number}}</td>
+                                    <td>{{Name}}</td>
+                                    <td>{{Count}}</td>
+                                    <td>{{GradeSum}}</td>
+                                    <td>{{UserSum}}</td>
+                                    <td>{{PurchaseBookSum}}</td>
+                                    <td>{{AccountantSum}}</td>
                                 </tr>
+                                {{#Trans}}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{Debit}}</td>
+                                    <td>{{Credit}}</td>
+                                    <td></td>
+                                    <td>{{Sum}}</td>
+                                </tr>
+                                {{/Trans}}
                                {{/List}}
                             </tbody>
                     </table>
@@ -143,11 +161,11 @@
         });
         function renderCostsTable(costs) {
             var template = $("#costTemplate").html();
-            var html = Mustache.to_html(template, costs/*, partials*/);
-            $("#costsTable").html(html);
-
-//            var html = Mustache.render(template, costs);
+//            var html = Mustache.to_html(template, costs/*, partials*/);
 //            $("#costsTable").html(html);
+
+            var html = Mustache.render(template, costs);
+            $("#costsTable").html(html);
 //            $("#costsTable").attr("class","grid");
             /*if ($("#IsReadOnly").val() == 'True') {
                 $(".deleteLink").hide();
