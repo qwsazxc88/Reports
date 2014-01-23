@@ -24,7 +24,7 @@
              <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-                <input type="button" value="Добавить вид расхода" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();"/>
+                <input type="button" value="Добавить расход" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();"/>
             </td>
         </tr>
         <tr>
@@ -145,7 +145,7 @@
                     </table>
      </script>
      <script type="text/javascript">
-        var  actionEditTargetDialogUrl = "@Url.Action("EditCostDialog", "MissionReport")";
+        var  actionEditCostDialogUrl = "@Url.Action("EditCostDialog", "MissionOrder")";
         $(document).ready(function () {
             /*$("#BeginDate").datepicker();
             $("#EndDate").datepicker();
@@ -170,6 +170,73 @@
             /*if ($("#IsReadOnly").val() == 'True') {
                 $(".deleteLink").hide();
             }*/
+        }
+         function addCost() {
+            createCostDialog(actionEditCostDialogUrl,"id=0");
+        }
+         function createCostDialog(url,params) {
+            var elem = document.createElement('div');
+            elem.id = "divCostDialog";
+            var newDiv = $(elem);
+            var title = "Редактирование расхода";
+            $(newDiv).text('Подождите, идет загрузка данных ...');
+            $(newDiv).load(url + "?"+ params+ " #costDialogTable"
+             , function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#DialogTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     else
+                     {
+//                        $("#BeginDate").datepicker();
+//                        $("#EndDate").datepicker();
+//                        $(".hasDatepicker").width("85px"); 
+//                        $("#RealDays").width("85px"); 
+//                        $("#AllDays").width("85px"); 
+//                        $("#BeginDate").change(function(){getDateDiff();});
+//                        $("#EndDate").change(function(){getDateDiff();});
+                     }
+                 }
+             }
+            );
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 830,
+                height: 490,
+                // fix IE6  
+                bgiframe: true,
+                /*open: function (event, ui) {
+                    $("#BeginDate").datepicker();
+                    $("#EndDate").datepicker();
+                    $(".hasDatepicker").width("75px"); 
+                },*/
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Сохранить": function () {
+                        if(!validateCost())
+                            return;
+                        if(!addCost())
+                             return;
+                        $(this).dialog("close");
+                        //setTargetBtnState();
+                    },
+                    "Отмена": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        function disableSaveButton() {
+            $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
         }
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>

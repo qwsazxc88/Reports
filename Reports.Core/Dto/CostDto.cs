@@ -5,13 +5,14 @@ namespace Reports.Core.Dto
     public class CostDto
     {
         public int? Number { get; set; }
+        public int CostTypeId { get; set; }
         public string Name { get; set; }
         public int? Count { get; set; }
         public decimal? GradeSum { get; set; }
         public decimal? UserSum { get; set; }
         public decimal? PurchaseBookSum { get; set; }
         public decimal? AccountantSum { get; set; }
-        public int Id { get; set; }
+        public int CostId { get; set; }
         public bool IsReadOnly { get; set; }
         public bool IsTransactionAvailable { get; set; }
         public TransactionDto[] Trans { get; set; }

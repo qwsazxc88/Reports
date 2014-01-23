@@ -135,6 +135,7 @@ namespace Reports.Presenters.UI.Bl
 
 
         MissionReportEditModel GetMissionReportEditModel(int id);
+        void SetMissionReportEditCostModel(MissionReportEditCostModel model);
 
     }
 }

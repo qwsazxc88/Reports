@@ -413,6 +413,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionReportDao); }
             set { missionReportDao = value; }
         }
+        protected IMissionReportCostTypeDao missionReportCostTypeDao;
+        public IMissionReportCostTypeDao MissionReportCostTypeDao
+        {
+            get { return Validate.Dependency(missionReportCostTypeDao); }
+            set { missionReportCostTypeDao = value; }
+        }
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -8317,6 +8323,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    return false;
             }
             return false;
+        }
+
+        public void SetMissionReportEditCostModel(MissionReportEditCostModel model)
+        {
+            model.CostTypes = GetCostTypes(true);
+        }
+        protected List<IdNameDto> GetCostTypes(bool addEmpty)
+        {
+            List<IdNameDto> typeList = MissionReportCostTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            if (addEmpty)
+                typeList.Insert(0, new IdNameDto(0, string.Empty));
+            return typeList;
         }
         #endregion
         

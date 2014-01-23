@@ -49,6 +49,7 @@ create table MissionReportCostType (
  Id INT IDENTITY NOT NULL,
   Code NVARCHAR(16) not null,
   Name NVARCHAR(128) not null,
+  SortOrder int not null,
   constraint PK_MissionReportCostType  primary key (Id)
 )
 

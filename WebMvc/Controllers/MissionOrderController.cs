@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
 using Reports.Core;
+using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -395,6 +396,36 @@ namespace WebMvc.Controllers
         {
             MissionReportEditModel model = RequestBl.GetMissionReportEditModel(id/*, userId*/);
             return View(model);
+        }
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ActionResult EditCostDialog(int id, string json)
+        {
+            try
+            {
+                MissionReportEditCostModel model = new MissionReportEditCostModel { CostId = id };
+                if (!string.IsNullOrEmpty(json))
+                {
+                    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                    CostDto dto = jsonSerializer.Deserialize<CostDto>(json);
+                    model.AccountantSum = dto.AccountantSum;
+                    model.CostTypeId = dto.CostTypeId;
+                    model.Count = dto.Count;
+                    model.GradeSum = dto.GradeSum;
+                    model.PurchaseBookSum = dto.PurchaseBookSum;
+                    model.UserSum = dto.UserSum;
+                    
+
+                }
+                RequestBl.SetMissionReportEditCostModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EditCostDialogError", new DialogErrorModel { Error = error });
+            }
         }
     }
 }
