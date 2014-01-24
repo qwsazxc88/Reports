@@ -8327,11 +8327,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public void SetMissionReportEditCostModel(MissionReportEditCostModel model)
         {
-            model.CostTypes = GetCostTypes(true);
+            model.CostTypes = GetCostTypes(false);
         }
         protected List<IdNameDto> GetCostTypes(bool addEmpty)
         {
-            List<IdNameDto> typeList = MissionReportCostTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<IdNameDto> typeList = MissionReportCostTypeDao.LoadAll().OrderBy(x => x.SortOrder)
+                .ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addEmpty)
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;

@@ -13,20 +13,12 @@
                         @Html.DropDownListFor(model => model.CostTypeId, new SelectList(Model.CostTypes, "ID", "Name")) 
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Count):
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(model => model.Count) 
-                    </td>
-                </tr>
                  <tr>
                     <td>
                         @Html.LabelFor(m => m.Count):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.Count) 
+                        @Html.TextBoxFor(model => model.Count, new { @class = "fixedSize" }) 
                     </td>
                 </tr>
                 <tr>
@@ -34,7 +26,7 @@
                         @Html.LabelFor(m => m.GradeSum):
                     </td>
                     <td>
-                        @Html.EditorFor(model => model.GradeSum) 
+                        @Html.TextBoxFor(model => model.GradeSum, new { disabled = "disabled", @class = "fixedSize" }) 
                     </td>
                 </tr>
                 <tr>
@@ -42,7 +34,7 @@
                         @Html.LabelFor(m => m.UserSum):
                     </td>
                     <td>
-                        @Html.EditorFor(model => model.UserSum) 
+                        @Html.TextBoxFor(model => model.UserSum, new { @class = "fixedSize" }) 
                     </td>
                 </tr>
                   <tr>
@@ -50,7 +42,7 @@
                         @Html.LabelFor(m => m.PurchaseBookSum):
                     </td>
                     <td>
-                        @Html.EditorFor(model => model.PurchaseBookSum) 
+                        @Html.TextBoxFor(model => model.PurchaseBookSum, new { disabled = "disabled", @class = "fixedSize" }) 
                     </td>
                 </tr>
                  <tr>
@@ -58,7 +50,7 @@
                         @Html.LabelFor(m => m.AccountantSum):
                     </td>
                     <td>
-                        @Html.EditorFor(model => model.AccountantSum) 
+                        @Html.TextBoxFor(model => model.AccountantSum, new { disabled = "disabled", @class = "fixedSize" }) 
                     </td>
                 </tr>
                 <tr>

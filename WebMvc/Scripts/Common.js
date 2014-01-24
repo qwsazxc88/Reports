@@ -71,3 +71,50 @@ function ReplaceToRussianDecimalPointC(value) {
     return value.replace('.', ',');
 
 }
+function validateFieldIsNotEmptyAddError(control) {
+    return validateFieldIsNotEmpty(control, true);
+}
+function validateFieldIsNotEmpty(control, addErrorToForm) {
+    if (control.val() != '')
+        return true;
+    if (addErrorToForm) {
+        addDlgError(control, "Обязательное поле");
+    }
+    return false;
+}
+function clearDlgErrors(form) {
+    form.find(":input").removeClass("input-validation-error");
+    form.find(".error").remove();
+}
+function addDlgError(el, value) {
+    el.addClass("input-validation-error");
+    var msg = value.toString();
+    $("<span/>").addClass("error field-validation-error").text(msg).appendTo(el.parent());
+    if (value.length > 20) $("<span/>").parent().css("width", 500);
+}
+function ValidateSumC(control) {
+    if (control.val() == '')
+        return undefined;
+    var sum = ValidateFloat(control);
+    if (sum == undefined) {
+        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
+        return undefined;
+    }
+    else if (sum < 0) {
+        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
+        return undefined;
+    }
+    else
+        return sum;
+}
+function ValidateInt(control) {
+    var value = control.val();
+    if (value == '')
+        return undefined;
+    var result = parseInt(value, 10);
+    if (!(/^[0-9]+$/i).test(value) || isNaN(result) || (result < 0)) {
+        addDlgError(control, "Поле должно быть целым неотрицательным числом");
+        return undefined;
+    }
+    return result;
+}
