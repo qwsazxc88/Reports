@@ -8141,28 +8141,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
         {
+            List<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll().ToList();
             List<CostDto> list = new List<CostDto>
                                      {
-                                          new CostDto
-                                              {
-                                                  Number = 1,
-                                                  Name = "Проживание (стоимость номера руб/сутки)",
-                                                  Count = 5,
-                                                  GradeSum = 1000,
-                                                  UserSum = 1000,
-                                                  AccountantSum = 1000,
-                                                  IsTransactionAvailable = true,
-                                                  Trans = new TransactionDto[]
-                                                    {
-                                                        new TransactionDto{Credit = "60308810801111111111",Debit = "70606810601002640201",Sum = 1000}
-                                                    }
-                                              },
-                                         new CostDto { UserSum = 10400,Name = "Итого расходов",IsReadOnly = true},
-                                         new CostDto { UserSum = 9000.25m,Name = "Получено в подотчет",IsReadOnly = true},
+                                         //new CostDto
+                                         //    {
+                                         //       Number = 1,
+                                         //       CostTypeId = types.Where(x => x.Id == 2).First().Id, 
+                                         //       Name =  types.Where(x => x.Id == 2).First().Name,
+                                         //       SortOrder = types.Where(x => x.Id == 2).First().SortOrder,
+                                         //       Count = 5,
+                                         //       GradeSum = 1000,
+                                         //       UserSum = 1000,
+                                         //       AccountantSum = 1000,
+                                         //       IsTransactionAvailable = true,
+
+                                         //       Trans = new TransactionDto[]
+                                         //       {
+                                         //           new TransactionDto{Credit = "60308810801111111111",Debit = "70606810601002640201",Sum = 1000}
+                                         //       }
+                                         //     },
+                                         new CostDto { UserSum = 10400,Name = "Итого расходов",IsReadOnly = true,SortOrder = -1},
+                                         new CostDto { UserSum = 9000.25m,Name = "Получено в подотчет",IsReadOnly = true,SortOrder = -2},
                                          new CostDto { 
                                              UserSum = -1400.15m,
                                              Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
-                                             IsReadOnly = true
+                                             IsReadOnly = true,
+                                             SortOrder = -3
                                          }
                                      };
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();

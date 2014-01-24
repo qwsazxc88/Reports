@@ -224,9 +224,9 @@
                     "Сохранить": function () {
                         if(!validateCost())
                             return;
-//                        if(!addCost())
-//                             return;
-                        //$(this).dialog("close");
+                        if(!addCostToTemplate())
+                             return;
+                        $(this).dialog("close");
                         //setTargetBtnState();
                     },
                     "Отмена": function () {
@@ -258,7 +258,179 @@
             }
             return result;
         }
+        function addCostToTemplate()
+        {
+            clearEditCostCommonErrors();
+            var targets = JSON.parse($("#Costs").val());
+            var costId = $("#CostId").val();
+            var costTypeId = parseInt($("#CostTypeId").val(),10);
+            var costType = $("#CostTypeId option:selected").text();
+            var userSum = ValidateSumC($("#UserSum"));
+            var count = ValidateInt($("#Count"));
+
+//            var city = $("#City").val();
+//            var organization = $("#Organization").val();
+//            var dateFrom = $("#BeginDate").val();
+//            var dateTo = $("#EndDate").val();
+//            var allDaysCount = parseInt($("#AllDays").val(),10);
+//            var targetDaysCount = parseInt($("#RealDays").val(),10);
+//            var dailyAllowanceId = parseInt($("#DailyAllowanceId").val(),10);
+//            var dailyAllowanceName = $("#DailyAllowanceId option:selected").text();
+//            var residenceId = parseInt($("#ResidenceId").val(),10);
+//            var residenceName = $("#ResidenceId option:selected").text();
+//            var airTicketTypeId = parseInt($("#AirTicketTypeId").val(),10);
+//            var airTicketTypeName = $("#AirTicketTypeId option:selected").text();
+//            var trainTicketTypeId = parseInt($("#TrainTicketTypeId").val(),10);
+//            var trainTicketTypeName = $("#TrainTicketTypeId option:selected").text();
+            if(costId == 0)
+            {
+                var costId = findMinId(targets.List);
+                var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,Count:count,GradeSum:null,UserSum:userSum,
+                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsReadOnly:false,
+                IsTransactionAvailable:false,TransactionDto:null,SortOrder:getSortOrder(costTypeId)};
+                if(!AddToTemplate(targets,newObj))
+                {
+                    addEditCostCommonError("Не найден индекс для сохранения");
+                    return false;
+                }
+                renumberCosts(targets.List);
+                //targets.List.push(newObj);
+            }
+            else
+            {
+                var obj = findByCostId(targets.List,targetId);
+                 if(obj == undefined)
+                 {
+                    addEditCostCommonError("Не найден объект для сохранения");
+                    return false;
+                 }
+                 obj.CountryId = countryId; 
+                 obj.Country = country; 
+                 obj.City = city;
+                 obj.Organization = organization; 
+                 obj.DateFrom = dateFrom;
+                 obj.DateTo = dateTo;
+                 obj.AllDaysCount = allDaysCount;
+                 obj.TargetDaysCount = targetDaysCount;
+                 obj.DailyAllowanceId = dailyAllowanceId;
+                 obj.DailyAllowanceName = dailyAllowanceName;
+                 obj.ResidenceId = residenceId;
+                 obj.ResidenceName = residenceName;
+                 obj.AirTicketTypeId = airTicketTypeId;
+                 obj.AirTicketTypeName = airTicketTypeName;
+                 obj.TrainTicketTypeId = trainTicketTypeId;
+                 obj.TrainTicketTypeName = trainTicketTypeName;
+            }
+            if(!recalcTotal(targets.List))
+            {
+                addEditCostCommonError("Ошибка при подсчете итогов");
+                return false;
+            }
+            renderCostsTable(targets);
+            $("#Costs").val(JSON.stringify(targets));
+            return true; //calculateSums(targets.List);
+        }
+        function AddToTemplate(targets,newObj)
+        {
+            var index = findPositionUsingSortOrder(targets.List,newObj.SortOrder);
+            if(index == undefined)
+                return false;
+            targets.List.splice(index, 0, newObj);
+            return true;
+        }
+        function addEditCostCommonError(value) {
+            $("#EditCostDlgError").text(value);
+            $("#EditCostDlgError").show();
+        }
        
+        function clearEditCostCommonErrors() {
+            $("#EditCostDlgError").text("");
+            $("#EditCostDlgError").hide();
+        }
+        function findByCostId(list,costId)
+        {
+            var obj = undefined;
+            jQuery.each( list, function( i, val ) {
+                if(val.CostId == costId)
+                {
+                   obj = val;
+                   //return obj;
+                }
+            });
+            return obj;
+        }
+        function recalcTotal(list)
+        {
+            var total = undefined;
+            var userReceiveSum = undefined;
+            var diffSum = undefined;
+            var totalUserSum = 0;
+            var totalAccountantSum = 0;
+            jQuery.each( list, function( i, val ) {
+                if(val.SortOrder == -1)
+                   total = val;
+                else if(val.SortOrder == -2)
+                   userReceiveSum = val;
+                else if(val.SortOrder == -3)
+                   diffSum = val;
+                else if(val.SortOrder > 0)
+                {
+                    if(val.UserSum != null)
+                        totalUserSum = totalUserSum + val.UserSum;
+                    if(val.AccountantSum != null)
+                        totalAccountantSum = totalAccountantSum + val.AccountantSum;
+                }
+            });
+            if(total == undefined)
+                return undefined;
+            if(userReceiveSum == undefined)
+                return undefined;
+            if(diffSum == undefined)
+                return undefined;
+            total.UserSum = totalUserSum;
+            total.AccountantSum = totalAccountantSum;
+            if(userReceiveSum.UserSum != null)
+                diffSum.UserSum = total.UserSum - userReceiveSum.UserSum;
+            else    
+                diffSum.UserSum = total.UserSum;
+            return total;
+        }
+        function getSortOrder(costTypeId)
+        {
+            return costTypeId;
+        }
+        function findMinId(list) {
+            var minId = 0;
+            jQuery.each(list, function (i, val) {
+                if (val.CostId < minId)
+                    minId = val.CostId;
+            });
+            return minId - 1;
+        }
+         function findPositionUsingSortOrder(list,sortOrder) {
+            var found = -1;
+            jQuery.each(list, function (i, val) {
+                if(found == -1)
+                {
+                    if ((val.SortOrder > sortOrder) || (val.SortOrder < 0))
+                        found = i;
+                }
+            });
+            if(found == -1)
+                return undefined;
+            return found;
+        }  
+        function renumberCosts(list) {
+            var number = 1;
+            jQuery.each(list, function (i, val) {
+                if (val.SortOrder >= 0)
+                {
+                    val.Number = number;
+                    number = number + 1
+                }
+            });
+        } 
+         
       
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>

@@ -17,6 +17,8 @@ namespace Reports.Core.Dto
         public bool IsTransactionAvailable { get; set; }
         public TransactionDto[] Trans { get; set; }
         //public JsonTransList Trans { get; set; }
+
+        public int SortOrder { get; set; }
     }
     public class TransactionDto
     {
