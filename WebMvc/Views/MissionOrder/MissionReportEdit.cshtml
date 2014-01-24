@@ -121,7 +121,14 @@
                             <tbody>
                                 {{#List}}
                                 <tr>
-                                    <td>{{Number}}</td>
+                                    <td>
+                                        {{#IsReadOnly}}
+                                            {{Number}}
+                                        {{/IsReadOnly}}
+                                        {{^IsReadOnly}}
+                                           <a href="#" onclick = "editCost({{CostId}});">{{Number}}</a>
+                                        {{/IsReadOnly}}
+                                    </td>
                                     <td>{{Name}}</td>
                                     <td>{{Count}}</td>
                                     <td>{{GradeSum}}</td>
@@ -173,6 +180,18 @@
         }
          function addCost() {
             createCostDialog(actionEditCostDialogUrl,"id=0");
+        }
+        function editCost(id){
+            //clearEditTargetCommonErrors(); !!!
+            var targets = JSON.parse($("#Costs").val());
+            var obj = findByCostId(targets.List,id);
+            if(obj == undefined)
+            {
+                //addEditTargetCommonError("Не найден объект для редактирования");
+                return;
+            }
+            var params = "id="+id+"&json="+escapeJson(JSON.stringify(obj));
+            createCostDialog(actionEditCostDialogUrl,params);
         }
          function createCostDialog(url,params) {
             var elem = document.createElement('div');
@@ -298,28 +317,16 @@
             }
             else
             {
-                var obj = findByCostId(targets.List,targetId);
+                var obj = findByCostId(targets.List,costId);
                  if(obj == undefined)
                  {
                     addEditCostCommonError("Не найден объект для сохранения");
                     return false;
                  }
-                 obj.CountryId = countryId; 
-                 obj.Country = country; 
-                 obj.City = city;
-                 obj.Organization = organization; 
-                 obj.DateFrom = dateFrom;
-                 obj.DateTo = dateTo;
-                 obj.AllDaysCount = allDaysCount;
-                 obj.TargetDaysCount = targetDaysCount;
-                 obj.DailyAllowanceId = dailyAllowanceId;
-                 obj.DailyAllowanceName = dailyAllowanceName;
-                 obj.ResidenceId = residenceId;
-                 obj.ResidenceName = residenceName;
-                 obj.AirTicketTypeId = airTicketTypeId;
-                 obj.AirTicketTypeName = airTicketTypeName;
-                 obj.TrainTicketTypeId = trainTicketTypeId;
-                 obj.TrainTicketTypeName = trainTicketTypeName;
+                 obj.CostTypeId = costTypeId; 
+                 obj.Name = costType; 
+                 obj.Count = count; 
+                 obj.UserSum = userSum;
             }
             if(!recalcTotal(targets.List))
             {
@@ -407,7 +414,7 @@
             });
             return minId - 1;
         }
-         function findPositionUsingSortOrder(list,sortOrder) {
+        function findPositionUsingSortOrder(list,sortOrder) {
             var found = -1;
             jQuery.each(list, function (i, val) {
                 if(found == -1)
