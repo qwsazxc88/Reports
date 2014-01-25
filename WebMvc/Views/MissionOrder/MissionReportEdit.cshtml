@@ -116,6 +116,7 @@
                                    <td>Оплачено фактически сотрудником (сумма, руб)</td>
                                    <td>Оплачено организацией за сотрудника</td>
                                    <td>Принято к учету</td>
+                                   <td style='width:57px'></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,7 +127,7 @@
                                             {{Number}}
                                         {{/IsReadOnly}}
                                         {{^IsReadOnly}}
-                                           <a href="#" onclick = "editCost({{CostId}});">{{Number}}</a>
+                                           <a href="#" onclick = "editCost({{CostId}});return false;">{{Number}}</a>
                                         {{/IsReadOnly}}
                                     </td>
                                     <td>{{Name}}</td>
@@ -135,6 +136,11 @@
                                     <td>{{UserSum}}</td>
                                     <td>{{PurchaseBookSum}}</td>
                                     <td>{{AccountantSum}}</td>
+                                    <td>
+                                        {{^IsReadOnly}}
+                                           <a href="#" onclick = "deleteCost({{CostId}});return false;">Удалить</a>
+                                        {{/IsReadOnly}}
+                                    </td>
                                 </tr>
                                 {{#Trans}}
                                 <tr>
@@ -193,6 +199,20 @@
             var params = "id="+id+"&json="+escapeJson(JSON.stringify(obj));
             createCostDialog(actionEditCostDialogUrl,params);
         }
+        function deleteCost(id){
+            var targets = JSON.parse($("#Costs").val());
+            targets.List = jQuery.grep(targets.List, function (value, i) {
+                return value.CostId != id;
+            });
+            renumberCosts(targets.List);
+            if(!recalcTotal(targets.List))
+            {
+                addEditCostCommonError("Ошибка при подсчете итогов");
+                return false;
+            }
+            renderCostsTable(targets);
+            $("#Costs").val(JSON.stringify(targets));
+        }
          function createCostDialog(url,params) {
             var elem = document.createElement('div');
             elem.id = "divCostDialog";
@@ -226,8 +246,8 @@
                 autoOpen: true,
                 modal: true,
                 title: title,
-                width: 750,
-                height: 330,
+                width: 780,
+                height: 340,
                 // fix IE6  
                 bgiframe: true,
                 /*open: function (event, ui) {
@@ -318,15 +338,31 @@
             else
             {
                 var obj = findByCostId(targets.List,costId);
+                var needToMove = false;
                  if(obj == undefined)
                  {
                     addEditCostCommonError("Не найден объект для сохранения");
                     return false;
                  }
+                 if(obj.CostTypeId != costTypeId)
+                    needToMove = true;
                  obj.CostTypeId = costTypeId; 
                  obj.Name = costType; 
                  obj.Count = count; 
                  obj.UserSum = userSum;
+                 if(needToMove)
+                 {
+                    obj.SortOrder = getSortOrder(costTypeId);
+                    targets.List = jQuery.grep(targets.List, function (value, i) {
+                        return value.CostId != costId;
+                    }); 
+                    if(!AddToTemplate(targets,obj))
+                    {
+                        addEditCostCommonError("Не найден индекс для сохранения");
+                        return false;
+                    }
+                    renumberCosts(targets.List);
+                 }
             }
             if(!recalcTotal(targets.List))
             {
