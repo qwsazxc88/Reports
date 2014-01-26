@@ -424,6 +424,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionReportCostDao); }
             set { missionReportCostDao = value; }
         }
+        protected IMissionReportCommentDao missionReportCommentDao;
+        public IMissionReportCommentDao MissionReportCommentDao
+        {
+            get { return Validate.Dependency(missionReportCommentDao); }
+            set { missionReportCommentDao = value; }
+        }
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -5227,6 +5233,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         MissionOrderCommentDao.MergeAndFlush(missionOrderComment);
+                        break;
+                    case (int)RequestTypeEnum.MissionReport:
+                        MissionReport missionReport = MissionReportDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        MissionReportComment missionReportComment = new MissionReportComment
+                        {
+                            Comment = model.Comment,
+                            MissionReport = missionReport,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        MissionReportCommentDao.MergeAndFlush(missionReportComment);
                         break;
                 }
                 //doc.Comments.Add(comment);
