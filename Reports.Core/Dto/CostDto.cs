@@ -13,7 +13,7 @@ namespace Reports.Core.Dto
         public decimal? PurchaseBookSum { get; set; }
         public decimal? AccountantSum { get; set; }
         public int CostId { get; set; }
-        public bool IsReadOnly { get; set; }
+        public bool IsEditable { get; set; }
         public bool IsTransactionAvailable { get; set; }
         public TransactionDto[] Trans { get; set; }
         //public JsonTransList Trans { get; set; }

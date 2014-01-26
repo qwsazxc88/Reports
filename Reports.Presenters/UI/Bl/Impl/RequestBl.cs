@@ -8166,7 +8166,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,PurchaseBookSum = cost.BookOfPurchaseSum
                         ,UserSum = cost.UserSum
                         ,SortOrder = cost.Type.SortOrder
-                        ,IsReadOnly = !model.IsEditable
+                        ,IsEditable = model.IsEditable
                         //,IsTransactionAvailable = false
                     });
                 }
@@ -8178,7 +8178,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                          {
                              SortOrder = -1,
                              CostId = 0,
-                             IsReadOnly = true,
                              Name = "Итого расходов",
                              UserSum = userSum,
                              PurchaseBookSum = pbSum,
@@ -8188,7 +8187,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SortOrder = -2,
                 CostId = 0,
-                IsReadOnly = true,
                 Name = "Получено в подотчет",
                 UserSum = entity.UserSumReceived,
             });
@@ -8196,14 +8194,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SortOrder = -3,
                 CostId = 0,
-                IsReadOnly = true,
                 Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
                 UserSum = userSum - entity.UserSumReceived,
             });
             int i = 1;
             foreach (CostDto dto in list.Where(x=> x.CostId != 0))
             {
-                if (dto.SortOrder >= 0)
+                //if (dto.SortOrder >= 0)
                     dto.Number = i++;
             }
             //List<CostDto> list = new List<CostDto>
@@ -8437,7 +8434,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //{
                     if (missionReport.Version != model.Version)
                     {
-                        error = "Приказ был изменен другим пользователем.";
+                        error = "Отчет был изменен другим пользователем.";
                         model.ReloadPage = true;
                         return false;
                     }
@@ -8500,6 +8497,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.UserDateAccept = DateTime.Now;
                 entity.AcceptUser = UserDao.Load(current.Id);
+                SetMissionCostsEditable(model,false);
+
                 //SendEmailForMissionReport(CurrentUser, entity, UserRole.Manager);
                 //if (isDirectorManager)
                 //{
@@ -8527,6 +8526,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //{
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
+                            
                             /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
                                 entity.UserDateAccept = DateTime.Now;*/
                             //SendEmailForMissionReportConfirm(CurrentUser, entity);
@@ -8615,6 +8615,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    }
             //}
             
+        }
+        protected void SetMissionCostsEditable(MissionReportEditModel model,bool isEditable)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
+            List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
+            foreach (CostDto dto in costDtos)
+                dto.IsEditable = false;
+            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray() };
+            model.Costs = jsonSerializer.Serialize(res);
         }
         protected void SaveMissionCosts(MissionReport entity, MissionReportEditModel model)
         {

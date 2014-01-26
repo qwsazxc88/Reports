@@ -24,7 +24,8 @@
              <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-                <input type="button" value="Добавить расход" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();"/>
+                <input type="button" value="Добавить расход" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();" 
+                @if(!Model.IsEditable){<text>style="display:none"</text> } />
             </td>
         </tr>
         <tr>
@@ -123,12 +124,12 @@
                                 {{#List}}
                                 <tr>
                                     <td>
-                                        {{#IsReadOnly}}
+                                        {{#IsEditable}}
+                                            <a href="#" onclick = "editCost({{CostId}});return false;">{{Number}}</a>
+                                        {{/IsEditable}}
+                                        {{^IsEditable}}
                                             {{Number}}
-                                        {{/IsReadOnly}}
-                                        {{^IsReadOnly}}
-                                           <a href="#" onclick = "editCost({{CostId}});return false;">{{Number}}</a>
-                                        {{/IsReadOnly}}
+                                        {{/IsEditable}}
                                     </td>
                                     <td>{{Name}}</td>
                                     <td>{{Count}}</td>
@@ -137,9 +138,9 @@
                                     <td>{{PurchaseBookSum}}</td>
                                     <td>{{AccountantSum}}</td>
                                     <td>
-                                        {{^IsReadOnly}}
+                                        {{#IsEditable}}
                                            <a href="#" onclick = "deleteCost({{CostId}});return false;">Удалить</a>
-                                        {{/IsReadOnly}}
+                                        {{/IsEditable}}
                                     </td>
                                 </tr>
                                 {{#Trans}}
@@ -325,7 +326,7 @@
             {
                 var costId = findMinId(targets.List);
                 var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,Count:count,GradeSum:null,UserSum:userSum,
-                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsReadOnly:false,
+                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,
                 IsTransactionAvailable:false,TransactionDto:null,SortOrder:getSortOrder(costTypeId)};
                 if(!AddToTemplate(targets,newObj))
                 {
