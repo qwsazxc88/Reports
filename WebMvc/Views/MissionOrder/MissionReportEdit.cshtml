@@ -50,10 +50,10 @@
         <tr>
             <td>Руководитель</td>
             <td>
-                <input type="hidden" id="IsManagerApprovedAvailable" name="IsManagerApprovedAvailable" value="@Model.IsManagerApprovedAvailable" />
-                @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
+                @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsManagerApproved)
-                @if (!Model.IsManagerApprovedAvailable)
+                @if (!Model.IsManagerApproveAvailable)
                 {
                     <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
                 }

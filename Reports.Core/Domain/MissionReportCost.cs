@@ -11,7 +11,7 @@ namespace Reports.Core.Domain
 
         public virtual MissionReport Report { get; set; }
         public virtual MissionReportCostType Type { get; set; }
-        public virtual decimal? Cnt { get; set; }
+        public virtual int? Cnt { get; set; }
         public virtual decimal? Sum { get; set; }
         public virtual decimal? UserSum { get; set; }
         public virtual decimal? BookOfPurchaseSum { get; set; }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -418,6 +417,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(missionReportCostTypeDao); }
             set { missionReportCostTypeDao = value; }
+        }
+        protected IMissionReportCostDao missionReportCostDao;
+        public IMissionReportCostDao MissionReportCostDao
+        {
+            get { return Validate.Dependency(missionReportCostDao); }
+            set { missionReportCostDao = value; }
         }
 
         protected IConfigurationService configurationService;
@@ -8132,6 +8137,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = entity.Id;
             model.Version = entity.Version;
             model.DocumentNumber = entity.Number.ToString();
+            model.DateCreated = entity.CreateDate.ToShortDateString();
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
@@ -8141,38 +8147,101 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
         {
-            List<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll().ToList();
-            List<CostDto> list = new List<CostDto>
-                                     {
-                                         //new CostDto
-                                         //    {
-                                         //       Number = 1,
-                                         //       CostTypeId = types.Where(x => x.Id == 2).First().Id, 
-                                         //       Name =  types.Where(x => x.Id == 2).First().Name,
-                                         //       SortOrder = types.Where(x => x.Id == 2).First().SortOrder,
-                                         //       Count = 5,
-                                         //       GradeSum = 1000,
-                                         //       UserSum = 1000,
-                                         //       AccountantSum = 1000,
-                                         //       IsTransactionAvailable = true,
+            //List<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll().ToList();
+            List<CostDto> list = new List<CostDto>();
+            decimal userSum=0;
+            decimal pbSum=0;
+            decimal accSum=0;
+            if (entity.Costs != null)
+            {
+                foreach (MissionReportCost cost in entity.Costs.OrderBy(x => x.Type.SortOrder).ThenBy(x => x.Id))
+                {
+                    list.Add(new CostDto {
+                        AccountantSum = cost.AccountantSum,
+                        CostId = cost.Id,
+                        CostTypeId = cost.Type.Id
+                        ,Count = cost.Cnt
+                        ,GradeSum = cost.Sum
+                        ,Name = cost.Type.Name
+                        ,PurchaseBookSum = cost.BookOfPurchaseSum
+                        ,UserSum = cost.UserSum
+                        ,SortOrder = cost.Type.SortOrder
+                        ,IsReadOnly = !model.IsEditable
+                        //,IsTransactionAvailable = false
+                    });
+                }
+                userSum = entity.Costs.Sum(x => x.UserSum).Value;
+                pbSum = entity.Costs.Sum(x => x.BookOfPurchaseSum).Value;
+                accSum = entity.Costs.Sum(x => x.AccountantSum).Value;
+            }
+            list.Add(new CostDto
+                         {
+                             SortOrder = -1,
+                             CostId = 0,
+                             IsReadOnly = true,
+                             Name = "Итого расходов",
+                             UserSum = userSum,
+                             PurchaseBookSum = pbSum,
+                             AccountantSum = accSum,
+                         });
+            list.Add(new CostDto
+            {
+                SortOrder = -2,
+                CostId = 0,
+                IsReadOnly = true,
+                Name = "Получено в подотчет",
+                UserSum = entity.UserSumReceived,
+            });
+            list.Add(new CostDto
+            {
+                SortOrder = -3,
+                CostId = 0,
+                IsReadOnly = true,
+                Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
+                UserSum = userSum - entity.UserSumReceived,
+            });
+            int i = 1;
+            foreach (CostDto dto in list.Where(x=> x.CostId != 0))
+            {
+                if (dto.SortOrder >= 0)
+                    dto.Number = i++;
+            }
+            //List<CostDto> list = new List<CostDto>
+            //                         {
+            //                             //new CostDto
+            //                             //    {
+            //                             //       Number = 1,
+            //                             //       CostTypeId = types.Where(x => x.Id == 2).First().Id, 
+            //                             //       Name =  types.Where(x => x.Id == 2).First().Name,
+            //                             //       SortOrder = types.Where(x => x.Id == 2).First().SortOrder,
+            //                             //       Count = 5,
+            //                             //       GradeSum = 1000,
+            //                             //       UserSum = 1000,
+            //                             //       AccountantSum = 1000,
+            //                             //       IsTransactionAvailable = true,
 
-                                         //       Trans = new TransactionDto[]
-                                         //       {
-                                         //           new TransactionDto{Credit = "60308810801111111111",Debit = "70606810601002640201",Sum = 1000}
-                                         //       }
-                                         //     },
-                                         new CostDto { UserSum = 10400,Name = "Итого расходов",IsReadOnly = true,SortOrder = -1},
-                                         new CostDto { UserSum = 9000.25m,Name = "Получено в подотчет",IsReadOnly = true,SortOrder = -2},
-                                         new CostDto { 
-                                             UserSum = -1400.15m,
-                                             Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
-                                             IsReadOnly = true,
-                                             SortOrder = -3
-                                         }
-                                     };
+            //                             //       Trans = new TransactionDto[]
+            //                             //       {
+            //                             //           new TransactionDto{Credit = "60308810801111111111",Debit = "70606810601002640201",Sum = 1000}
+            //                             //       }
+            //                             //     },
+            //                             new CostDto { UserSum = 10400,Name = "Итого расходов",IsReadOnly = true,SortOrder = -1},
+            //                             new CostDto { UserSum = 9000.25m,Name = "Получено в подотчет",IsReadOnly = true,SortOrder = -2},
+            //                             new CostDto { 
+            //                                 UserSum = -1400.15m,
+            //                                 Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
+            //                                 IsReadOnly = true,
+            //                                 SortOrder = -3
+            //                             }
+            //                         };
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             JsonCostsList res = new JsonCostsList { List = list.ToArray() };
             model.Costs = jsonSerializer.Serialize(res);
+        }
+        // hardcode in javascript
+        protected static int GetSortOrder(MissionReportCost cost)
+        {
+            return cost.Type.SortOrder;
         }
         protected void SetUserInfoModel(User user,MissionReportEditModel model)
         {
@@ -8219,7 +8288,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //{
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                             && entity.UserDateAccept.HasValue && isUserManager && canEdit)
-                            model.IsManagerApprovedAvailable = true;
+                            model.IsManagerApproveAvailable = true;
 
                     //}
                     break;
@@ -8256,7 +8325,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    break;
             }
             model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
-                || model.IsManagerApprovedAvailable 
+                || model.IsManagerApproveAvailable 
                 || model.IsAccountantEditable || model.IsAccountantApproveAvailable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
@@ -8264,7 +8333,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.IsEditable = state;
             model.IsAccountantEditable = state;
-            model.IsManagerApprovedAvailable = state;
+            model.IsManagerApproveAvailable = state;
             model.IsUserApprovedAvailable = state;
             model.IsAccountantApproveAvailable = state;
             model.IsSaveAvailable = state;
@@ -8329,7 +8398,266 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return false;
         }
-
+        public bool SaveMissionReportEditModel(MissionReportEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                MissionReport missionReport = null;
+                //if (model.Id != 0)
+                //{
+                missionReport = MissionReportDao.Load(model.Id);
+                model.DocumentNumber = missionReport.Number.ToString();
+                model.DateCreated = missionReport.CreateDate.ToShortDateString();
+                //}
+                if (!CheckUserMrRights(user, current, model.Id, missionReport, true))
+                {
+                    error = "Редактирование отчета запрещено";
+                    return false;
+                }
+               
+                //if (model.Id == 0)
+                //{
+                //    missionReport = new MissionOrder
+                //    {
+                //        CreateDate = DateTime.Now,
+                //        Creator = UserDao.Load(current.Id),
+                //        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.MissionOrder),
+                //        User = user,
+                //        EditDate = DateTime.Now,
+                //    };
+                //    ChangeEntityProperties(current, missionReport, model, user);
+                //    MissionOrderDao.SaveAndFlush(missionReport);
+                //    model.Id = missionReport.Id;
+                //}
+                //else
+                //{
+                    if (missionReport.Version != model.Version)
+                    {
+                        error = "Приказ был изменен другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    //if (model.IsDelete)
+                    //{
+                    //    if (current.UserRole == UserRole.OutsourcingManager)
+                    //        missionReport.DeleteAfterSendTo1C = true;
+                    //    missionReport.DeleteDate = DateTime.Now;
+                    //    //missionOrder.CreateDate = DateTime.Now;
+                    //    MissionOrderDao.SaveAndFlush(missionReport);
+                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
+                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
+                    //    model.IsDelete = false;
+                    //}
+                    //else
+                    //{
+                        ChangeEntityProperties(current, missionReport, model, user);
+                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
+                        //string country = GetStringForList(cityList);
+                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
+                        //string org = GetStringForList(orgList);
+                        MissionReportDao.SaveAndFlush(missionReport);
+                        if (missionReport.Version != model.Version)
+                        {
+                            missionReport.EditDate = DateTime.Now;
+                            MissionReportDao.SaveAndFlush(missionReport);
+                        }
+                    //}
+                    //if (missionReport.DeleteDate.HasValue)
+                    //    model.IsDeleted = true;
+                //}
+                model.Version = missionReport.Version;
+                SetFlagsState(missionReport.Id, user, missionReport, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MissionReportDao.RollbackTran();
+                Log.Error("Error on SaveMissionReportEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, MissionReport entity, MissionReportEditModel model, User user)
+        {
+            //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+            if (model.IsEditable)
+            {
+                SaveMissionCosts(entity, model);
+            }
+            if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+                && !entity.UserDateAccept.HasValue
+                && model.IsUserApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                entity.AcceptUser = UserDao.Load(current.Id);
+                //SendEmailForMissionReport(CurrentUser, entity, UserRole.Manager);
+                //if (isDirectorManager)
+                //{
+                //    entity.NeedToAcceptByChiefAsManager = true;
+                //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                //}
+                //else
+                //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
+            }
+            bool canEdit = false;
+            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)
+                && !entity.ManagerDateAccept.HasValue && model.IsManagerApproved 
+                && entity.UserDateAccept.HasValue)
+            {
+                //if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
+                //{
+                //    entity.UserDateAccept = DateTime.Now;
+                //    entity.AcceptUser = UserDao.Load(current.Id);
+                //}
+                //if (!entity.ManagerDateAccept.HasValue)
+                //{
+                //    if (model.IsManagerApproved)
+                //    {
+                        //if (model.IsManagerApproved.Value)
+                        //{
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = UserDao.Load(current.Id);
+                            /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
+                                entity.UserDateAccept = DateTime.Now;*/
+                            //SendEmailForMissionReportConfirm(CurrentUser, entity);
+                            //if (!entity.NeedToAcceptByChief)
+                            //{
+                            //    CreateMission(entity);
+                            //    SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            //}
+                            //else
+                            //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                        //}
+                        //else
+                        //{
+                        //    model.IsManagerApproved = null;
+                        //    if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
+                        //    {
+                        //        entity.UserDateAccept = null;
+                        //        SendEmailForMissionOrderReject(CurrentUser, entity);
+                        //    }
+                        //}
+                //    }
+                //}
+                /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
+                    entity.UserDateAccept = DateTime.Now;*/
+            }
+               if (current.UserRole == UserRole.Accountant /*&& current.Id == model.UserId*/
+                && !entity.AccountantDateAccept.HasValue && entity.ManagerDateAccept.HasValue
+                && model.IsAccountantApproved)
+               {
+                   entity.AccountantDateAccept = DateTime.Now;
+                   entity.AcceptAccountant = UserDao.Load(current.Id);
+               }
+              //if(current.UserRole == UserRole.Director)
+            //{
+            //    if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
+            //    {
+            //        if (model.IsManagerApproved.HasValue)
+            //        {
+            //            if (model.IsManagerApproved.Value)
+            //            {
+            //                User currentUser = UserDao.Load(current.Id);
+            //                entity.ManagerDateAccept = DateTime.Now;
+            //                entity.AcceptManager = currentUser;
+            //                if (entity.NeedToAcceptByChief)
+            //                {
+            //                    entity.ChiefDateAccept = DateTime.Now;
+            //                    entity.AcceptChief = currentUser;
+            //                }
+            //                CreateMission(entity);
+            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+            //            }
+            //            else
+            //            {
+            //                entity.UserDateAccept = null;
+            //                model.IsManagerApproved = null;
+            //                SendEmailForMissionOrderReject(CurrentUser, entity);
+            //            }
+            //        }
+            //    }
+            //    if(entity.NeedToAcceptByChief)
+            //    {
+            //        if (model.IsChiefApproved.HasValue)
+            //        {
+            //            if(model.IsChiefApproved.Value)
+            //            {
+            //                User currentUser = UserDao.Load(current.Id);
+            //                entity.ChiefDateAccept = DateTime.Now;
+            //                entity.AcceptChief = currentUser;
+            //                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
+            //                {
+            //                    entity.ManagerDateAccept = DateTime.Now;
+            //                    entity.AcceptManager = currentUser;
+            //                }
+            //                CreateMission(entity);
+            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+            //            }
+            //            else
+            //            {
+            //                entity.UserDateAccept = null;
+            //                model.IsUserApproved = false;
+            //                entity.ManagerDateAccept = null;
+            //                model.IsManagerApproved = null;
+            //                SendEmailForMissionOrderReject(CurrentUser, entity);
+            //            }
+            //        }  
+            //    }
+            //}
+            
+        }
+        protected void SaveMissionCosts(MissionReport entity, MissionReportEditModel model)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
+            List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
+            if (entity.Costs == null)
+                entity.Costs = new List<MissionReportCost>();
+            List<MissionReportCost> removed = entity.Costs.Where(x => !costDtos.Any(y => y.CostId == x.Id)).ToList();
+            foreach (MissionReportCost cost in removed)
+                entity.Costs.Remove(cost);
+            foreach (CostDto dto in costDtos)
+            {
+                if (dto.CostId < 0)
+                {
+                    MissionReportCost newCost = new MissionReportCost();
+                    SetCostProperties(dto, newCost, entity);
+                    entity.Costs.Add(newCost);
+                    //MissionReportCostDao.SaveAndFlush(newCost);
+                }
+                else
+                {
+                    MissionReportCost old = entity.Costs.Where(x => x.Id == dto.CostId).FirstOrDefault();
+                    if (old == null)
+                        throw new ArgumentException(string.Format("Не найден расход (id {0}) в базе данных",dto.CostId));
+                    SetCostProperties(dto, old, entity);
+                    MissionReportCostDao.SaveAndFlush(old);
+                }
+            }
+            entity.AllSum = entity.Costs.Sum(x => x.Sum).Value;
+            entity.UserAllSum = entity.Costs.Sum(x => x.UserSum).Value;
+            entity.AccountantAllSum = entity.Costs.Sum(x => x.AccountantSum).Value;
+        }
+        protected void SetCostProperties(CostDto dto, MissionReportCost cost, MissionReport entity)
+        {
+            //cost.AccountantSum = dto.AccountantSum;
+            //cost.BookOfPurchaseSum = dto.PurchaseBookSum;
+            //cost.Sum = dto.GradeSum;
+            cost.Cnt = dto.Count;
+            cost.Report = entity;
+            cost.Type = MissionReportCostTypeDao.Load(dto.CostTypeId);
+            cost.UserSum = dto.UserSum;
+        }
         public void SetMissionReportEditCostModel(MissionReportEditCostModel model)
         {
             model.CostTypes = GetCostTypes(false);

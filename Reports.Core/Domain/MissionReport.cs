@@ -33,6 +33,7 @@ namespace Reports.Core.Domain
         //public virtual decimal? UserSumAir { get; set; }
         //public virtual decimal? UserSumTrain { get; set; }
         public virtual decimal UserAllSum { get; set; }
+        public virtual decimal UserSumReceived { get; set; }
         public virtual decimal AccountantAllSum { get; set; }
         //public virtual decimal? UserSumCash { get; set; }
         //public virtual decimal? UserSumNotCash { get; set; }

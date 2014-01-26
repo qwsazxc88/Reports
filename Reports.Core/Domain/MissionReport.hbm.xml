@@ -24,6 +24,7 @@
 	<property name="UserSumAir"  not-null="false"/>
 	<property name="UserSumTrain"  not-null="false"/>-->
 	<property name="UserAllSum"  not-null="true"/>
+	<property name="UserSumReceived"  not-null="true"/>
 	<property name="AccountantAllSum"  not-null="true"/>
 	<!--<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>-->
@@ -55,10 +56,10 @@
 	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
 	  
 	  
-	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
-		  <key column="MissionReportId" foreign-key="FK_MissionReportTarget_MissionReport"/>
-		  <one-to-many class="MissionTarget"/>
-	  </bag>-->
+	  <bag name="Costs" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="ReportId" foreign-key="FK_MissionReportCost_MissionReport"/>
+		  <one-to-many class="MissionReportCost"/>
+	  </bag>
 	  
 	  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
 		<key column="MissionReportId" foreign-key="FK_MissionReportComment_MissionReport"/>

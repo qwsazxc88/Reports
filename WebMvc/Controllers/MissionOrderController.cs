@@ -397,6 +397,93 @@ namespace WebMvc.Controllers
             MissionReportEditModel model = RequestBl.GetMissionReportEditModel(id/*, userId*/);
             return View(model);
         }
+        [HttpPost]
+        public ActionResult MissionReportEdit(MissionReportEditModel model)
+        {
+            CorrectCheckboxes(model);
+            //CorrectDropdowns(model);
+            //if (!ValidateMissionOrderEditModel(model))
+            //{
+            //    RequestBl.ReloadDictionaries(model);
+            //    return View(model);
+            //}
+
+            string error;
+            if (!RequestBl.SaveMissionReportEditModel(model, out error))
+            {
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(RequestBl.GetMissionReportEditModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected void CorrectCheckboxes(MissionReportEditModel model)
+        {
+            if (!model.IsUserApprovedAvailable && model.IsUserApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsUserApproved"))
+                    ModelState.Remove("IsUserApproved");
+                model.IsUserApproved = model.IsUserApprovedHidden;
+            }
+            if (!model.IsManagerApproveAvailable && model.IsManagerApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+                model.IsManagerApproved = model.IsManagerApprovedHidden;
+            }
+            if (!model.IsAccountantApproveAvailable && model.IsAccountantApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsAccountantApproved"))
+                    ModelState.Remove("IsAccountantApproved");
+                model.IsAccountantApproved = model.IsAccountantApprovedHidden;
+            }
+            
+            /*if (ModelState.ContainsKey("IsChiefApproveNeed"))
+                ModelState.Remove("IsChiefApproveNeed");
+            model.IsChiefApproveNeed = model.IsChiefApproveNeedHidden;
+
+            if (model.IsManagerApproveAvailable && model.IsManagerApproved.HasValue
+                && !model.IsManagerApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
+            if (model.IsChiefApproveAvailable && model.IsChiefApproved.HasValue
+                && !model.IsChiefApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsChiefApproved"))
+                    ModelState.Remove("IsChiefApproved");
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
+            if (!model.IsEditable)
+            {
+                if (model.IsResidencePaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsResidencePaid"))
+                        ModelState.Remove("IsResidencePaid");
+                    model.IsResidencePaid = model.IsResidencePaidHidden;
+                }
+                if (model.IsAirTicketsPaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsAirTicketsPaid"))
+                        ModelState.Remove("IsAirTicketsPaid");
+                    model.IsAirTicketsPaid = model.IsAirTicketsPaidHidden;
+                }
+                if (model.IsTrainTicketsPaidHidden)
+                {
+                    if (ModelState.ContainsKey("IsTrainTicketsPaid"))
+                        ModelState.Remove("IsTrainTicketsPaid");
+                    model.IsTrainTicketsPaid = model.IsTrainTicketsPaidHidden;
+                }
+            }*/
+        }
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]
         public ActionResult EditCostDialog(int id, string json)

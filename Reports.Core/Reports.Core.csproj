@@ -91,6 +91,7 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IMissionReportCostDao.cs" />
     <Compile Include="Dao\IMissionReportCostTypeDao.cs" />
     <Compile Include="Dao\IDeductionDao.cs" />
     <Compile Include="Dao\IDeductionKindDao.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\MissionReportCostDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCostTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionAirTicketTypeDao.cs" />
     <Compile Include="Dao\Impl\MissionCountryDao.cs" />
