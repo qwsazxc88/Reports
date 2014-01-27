@@ -21,4 +21,17 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Принято к учету")]
         public decimal? AccountantSum { get; set; }
     }
+    public class MissionReportEditTranModel
+    {
+        public int CostId { get; set; }
+        public int TranId { get; set; }
+        [Display(Name = "Дебит")]
+        public int DebitAccountId { get; set; }
+        public List<IdNameDto> DebitAccounts { get; set; }
+        [Display(Name = "Кредит")]
+        public int CreditAccountId { get; set; }
+        public List<IdNameDto> CreditAccounts { get; set; }
+        [Display(Name = "Сумма")]
+        public decimal Sum { get; set; }
+    }
 }

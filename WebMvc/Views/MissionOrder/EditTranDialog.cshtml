@@ -1,0 +1,42 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionReportEditTranModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "tranDialogTable" style="width:100%;">
+                <tr>
+                    <td style="width:80px">
+                        @Html.LabelFor(m => m.DebitAccountId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.DebitAccountId, new SelectList(Model.DebitAccounts, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.CreditAccountId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.CreditAccountId, new SelectList(Model.CreditAccounts, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Sum):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @*    @Html.ValidationSummary(false)*@
+                          <div id="EditTranDlgError" style="color:Red;display:none;"/>
+                          <input type="hidden" id="CostId" name="CostId" value="@Model.CostId" />
+                          <input type="hidden" id="TranId" name="TranId" value="@Model.TranId" />
+                     </td>
+                </tr>
+    </table>
+</body>
+</html>

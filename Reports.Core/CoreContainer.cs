@@ -380,8 +380,11 @@ namespace Reports.Core
               ImplementedBy(typeof(MissionReportCostDao)).
               LifeStyle.Is(type));
             Register(Component.For(typeof(IMissionReportCommentDao)).
-            ImplementedBy(typeof(MissionReportCommentDao)).
-            LifeStyle.Is(type));
+                ImplementedBy(typeof(MissionReportCommentDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAccountDao)).
+                ImplementedBy(typeof(AccountDao)).
+                LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

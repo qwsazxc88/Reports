@@ -22,9 +22,13 @@ namespace Reports.Core.Dto
     }
     public class TransactionDto
     {
+        public int TranId { get; set; }
+        public int DebitId { get; set; }
         public string Debit { get; set; }
+        public int CreditId { get; set; }
         public string Credit { get; set; }
         public decimal Sum { get; set; }
+        public bool IsEditable { get; set; }
     }
     public class JsonCostsList
     {

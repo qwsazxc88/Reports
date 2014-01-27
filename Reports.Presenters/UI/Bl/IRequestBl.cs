@@ -139,6 +139,7 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionReportEditCostModel(MissionReportEditCostModel model);
         bool SaveMissionReportEditModel(MissionReportEditModel model, out string error);
         RequestAttachmentsModel GetMoAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
+        void SetMissionReportEditTranModel(MissionReportEditTranModel model);
 
     }
 }

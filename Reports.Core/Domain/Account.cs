@@ -12,7 +12,7 @@ namespace Reports.Core.Domain
 
         #region Properties
 
-        //public virtual string Code { get; set; }
+        public virtual string Code { get; set; }
         public virtual string Number { get; set; }
         public virtual bool IsDebitAccount { get; set; }
 

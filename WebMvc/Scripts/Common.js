@@ -97,11 +97,11 @@ function ValidateSumC(control) {
         return undefined;
     var sum = ValidateFloat(control);
     if (sum == undefined) {
-        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
+        addDlgError(control, "Поле должно быть положительным десятичным числом");
         return undefined;
     }
-    else if (sum < 0) {
-        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
+    else if (sum <= 0) {
+        addDlgError(control, "Поле должно быть положительным десятичным числом");
         return undefined;
     }
     else
@@ -112,8 +112,8 @@ function ValidateInt(control) {
     if (value == '')
         return undefined;
     var result = parseInt(value, 10);
-    if (!(/^[0-9]+$/i).test(value) || isNaN(result) || (result < 0)) {
-        addDlgError(control, "Поле должно быть целым неотрицательным числом");
+    if (!(/^[0-9]+$/i).test(value) || isNaN(result) || (result <= 0)) {
+        addDlgError(control, "Поле должно быть целым положительным числом");
         return undefined;
     }
     return result;

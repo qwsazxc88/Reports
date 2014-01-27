@@ -54,7 +54,8 @@ create table MissionReportCostType (
 )
 
 create table Account (
- Id INT IDENTITY NOT NULL,
+  Id INT IDENTITY NOT NULL,
+  Code NVARCHAR(16) null,
   Number NVARCHAR(128) not null,
   IsDebitAccount BIT not null,
   constraint PK_Account  primary key (Id)

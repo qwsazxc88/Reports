@@ -519,6 +519,31 @@ namespace WebMvc.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult EditTranDialog(int id, int costId, string json)
+        {
+            try
+            {
+                MissionReportEditTranModel model = new MissionReportEditTranModel { TranId = id,CostId = costId };
+                if (!string.IsNullOrEmpty(json))
+                {
+                    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                    TransactionDto dto = jsonSerializer.Deserialize<TransactionDto>(json);
+                    model.DebitAccountId = dto.DebitId;
+                    model.CreditAccountId = dto.CreditId;
+                    model.Sum = dto.Sum;
+                }
+                RequestBl.SetMissionReportEditTranModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EditTranDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+
         public FileContentResult ViewAttachment(int id)
         {
             try

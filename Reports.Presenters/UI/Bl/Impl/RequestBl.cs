@@ -431,6 +431,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { missionReportCommentDao = value; }
         }
 
+        protected IAccountDao accountDao;
+        public IAccountDao AccountDao
+        {
+            get { return Validate.Dependency(accountDao); }
+            set { accountDao = value; }
+        }
+
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -8162,6 +8169,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetHiddenFields(model);
             return model;
         }
+        protected void LoadTransactions(MissionReportEditModel model,MissionReportCost cost,CostDto dto)
+        {
+            List<TransactionDto> trans = new List<TransactionDto>();
+            foreach (AccountingTransaction tran in cost.AccountingTransactions)
+            {
+                trans.Add(new TransactionDto
+                              {
+                                  TranId = tran.Id,
+                                  Credit = tran.CreditAccount.Number,
+                                  CreditId = tran.CreditAccount.Id,
+                                  Debit = tran.DebitAccount.Number,
+                                  DebitId = tran.CreditAccount.Id,
+                                  Sum = tran.Sum,
+                                  IsEditable = model.IsAccountantEditable,
+                              });
+            }
+            dto.Trans = trans.ToArray();
+            dto.IsTransactionAvailable = model.IsAccountantEditable;
+        }
         protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
         {
             //List<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll().ToList();
@@ -8173,7 +8199,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 foreach (MissionReportCost cost in entity.Costs.OrderBy(x => x.Type.SortOrder).ThenBy(x => x.Id))
                 {
-                    list.Add(new CostDto {
+                    CostDto dto = new CostDto {
                         AccountantSum = cost.AccountantSum,
                         CostId = cost.Id,
                         CostTypeId = cost.Type.Id
@@ -8184,8 +8210,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,UserSum = cost.UserSum
                         ,SortOrder = cost.Type.SortOrder
                         ,IsEditable = model.IsEditable
-                        //,IsTransactionAvailable = false
-                    });
+                    };
+                    LoadTransactions(model,cost,dto);
+                    list.Add(dto);
                 }
                 userSum = entity.Costs.Sum(x => x.UserSum).Value;
                 pbSum = entity.Costs.Sum(x => x.BookOfPurchaseSum).Value;
@@ -8698,6 +8725,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
+
+         public void SetMissionReportEditTranModel(MissionReportEditTranModel model)
+         {
+             List<Account> list = AccountDao.LoadAll().ToList();
+             model.DebitAccounts =
+                 list.Where(x => x.IsDebitAccount).OrderBy(x => x.Number).ToList().ConvertAll(x => new IdNameDto(x.Id, x.Number));
+             model.CreditAccounts =
+                 list.Where(x => !x.IsDebitAccount).OrderBy(x => x.Number).ToList().ConvertAll(x => new IdNameDto(x.Id, x.Number));
+         }
 
 
         public RequestAttachmentsModel GetMoAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
