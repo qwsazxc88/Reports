@@ -8107,7 +8107,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.RequestStatuses = GetDeductionStatuses(true);
             //model.Types = GetDeductionTypes(true);
             if (hasError)
-                model.Documents = new List<MissionOrderDto>();
+                model.Documents = new List<MissionReportDto>();
             else
             {
                 //if(model.IsApproveClick)
@@ -8122,22 +8122,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(MissionReportsListModel model, User user)
         {
-            UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            model.Documents = new List<MissionOrderDto>();
-            //model.Documents = MissionDao.GetDocuments(
-            //    user.Id,
-            //    role,
-            //    //GetDepartmentId(model.Department),
-            //    model.DepartmentId,
-            //    model.PositionId,
-            //    model.TypeId,
-            //    //0,
-            //    model.StatusId,
-            //    model.BeginDate,
-            //    model.EndDate,
-            //    model.UserName,
-            //    model.SortBy,
-            //    model.SortDescending);
+            UserRole role = CurrentUser.UserRole;
+            //model.Documents = new List<MissionOrderDto>();
+            model.Documents = MissionReportDao.GetDocuments(
+                user.Id,
+                role,
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
+                //model.PositionId,
+                //model.TypeId,
+                //0,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
 
         public MissionReportEditModel GetMissionReportEditModel(int id)

@@ -28,4 +28,22 @@ namespace Reports.Core.Dto
         
         //public bool IsApproveFlagAvailable { get; set; }
     }
+    public class MissionReportDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public int Number { get; set; }
+        public string UserName { get; set; }
+        public string Dep7Name { get; set; }
+        public DateTime EditDate { get; set; }
+        public int ReportNumber { get; set; }
+        public int OrderNumber { get; set; }
+        public int Grade { get; set; }
+        public decimal GradeSum { get; set; }
+        public decimal UserSum { get; set; }
+        public decimal AccountantSum { get; set; }
+        public Decimal? GradeIncrease { get; set; }
+        public string State { get; set; }
+        public string AccountantName { get; set; }
+    }
 }

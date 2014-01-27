@@ -36,7 +36,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool HasErrors { get; set; }
 
-        public IList<MissionOrderDto> Documents { get; set; }
+        public IList<MissionReportDto> Documents { get; set; }
 
     }
 }
