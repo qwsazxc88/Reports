@@ -42,5 +42,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool ReloadPage { get; set; }
 
         public RequestCommentsModel CommentsModel { get; set; }
+        public RequestAttachmentsModel AttachmentsModel { get; set; }
     }
 }

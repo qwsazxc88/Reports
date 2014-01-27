@@ -10,6 +10,7 @@ using System.Web.Script.Serialization;
 using System.Web.Security;
 using Reports.Core;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -21,6 +22,9 @@ namespace WebMvc.Controllers
         UserRole.Director | UserRole.Secretary | UserRole.Findep)]
     public class MissionOrderController : BaseController
     {
+        public const int MaxFileSize = 2 * 1024 * 1024;
+        public const int MaxCommentLength = 256;
+
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
         {
@@ -514,5 +518,151 @@ namespace WebMvc.Controllers
                 return PartialView("EditCostDialogError", new DialogErrorModel { Error = error });
             }
         }
+
+        public FileContentResult ViewAttachment(int id)
+        {
+            try
+            {
+                AttachmentModel model = RequestBl.GetFileContext(id);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on ViewAttachment:", ex);
+                throw;
+            }
+        }
+        [HttpGet]
+        public ActionResult RenderAttachments(int id, int typeId)
+        {
+            //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+            RequestAttachmentsModel model = RequestBl.GetMoAttachmentsModel(id, (RequestAttachmentTypeEnum)typeId);
+            return PartialView("RequestAttachmentsPartial", model);
+        }
+        [HttpGet]
+        public ActionResult AddAttachmentDialog(int id, int typeId)
+        {
+            try
+            {
+                AddAttachmentModel model = new AddAttachmentModel { DocumentId = id };
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        protected UploadFileDto GetFileContext()
+        {
+            if (Request.Files.Count == 0)
+                return null;
+            string file = Request.Files.GetKey(0);
+            return GetFileContext(file);
+        }
+        protected UploadFileDto GetFileContext(string file)
+        {
+            //if (Request.Files.Count == 0)
+            //    return null;
+            //string file = Request.Files.GetKey(0);
+            HttpPostedFileBase hpf = Request.Files[file];
+            if ((hpf == null) || (hpf.ContentLength == 0))
+                return null;
+            if (hpf.ContentLength > MaxFileSize)
+            {
+                ModelState.AddModelError("", string.Format("Размер прикрепленного файла не может превышать {0} Мб.", MaxFileSize / (1024 * 1024)));
+                return null;
+            }
+            byte[] context = GetFileData(hpf);
+            return new UploadFileDto
+            {
+                Context = context,
+                ContextType = hpf.ContentType,
+                FileName = Path.GetFileName(hpf.FileName),
+            };
+        }
+        protected byte[] GetFileData(HttpPostedFileBase file)
+        {
+            var length = file.ContentLength;
+            var fileContent = new byte[length];
+            file.InputStream.Read(fileContent, 0, length);
+            return fileContent;
+        }
+        [HttpPost]
+        public ContentResult SaveAttachment(int id, string description, string qqFile)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                var length = Request.ContentLength;
+                var bytes = new byte[length];
+                Request.InputStream.Read(bytes, 0, length);
+
+                saveResult = true;
+                if (length > MaxFileSize)
+                {
+                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                }
+                else if (description == null || string.IsNullOrEmpty(description.Trim()))
+                {
+                    error = "Описание - обязательное поле";
+                }
+                else if (description.Trim().Length > MaxCommentLength)
+                {
+                    error = string.Format("Длина поля 'Описание' не может превышать {0} символов.", MaxCommentLength);
+                }
+                else
+                {
+                    var model = new SaveAttacmentModel
+                    {
+                        EntityId = id,
+                        EntityTypeId = RequestAttachmentTypeEnum.MissionReport,
+                        Description = description.Trim(),
+                        FileDto = new UploadFileDto
+                        {
+                            Context = bytes,
+                            FileName = qqFile,
+                            //ContextType = Request.Content,
+                        }
+                    };
+                    saveResult = RequestBl.SaveAttachment(model);
+                    error = model.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        [HttpGet]
+        public ContentResult DeleteAttachment(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = RequestBl.DeleteAttachment(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+ 
     }
 }

@@ -36,6 +36,21 @@
             </td>
         </tr>
         <tr>
+            <td colspan="2">
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div id="AttachmentModelContext">@Html.Partial("RequestAttachmentsPartial", Model.AttachmentsModel)</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr/>
+            </td>
+        </tr>
+        <tr>
             <td>@Model.UserFio</td>
             <td>
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />

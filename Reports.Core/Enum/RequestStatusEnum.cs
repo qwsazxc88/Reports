@@ -40,6 +40,7 @@
         //EmploymentInn = 4,
         //EmploymentNdfl = 5,
         ChildVacation = 5,
+        MissionReport = 6
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

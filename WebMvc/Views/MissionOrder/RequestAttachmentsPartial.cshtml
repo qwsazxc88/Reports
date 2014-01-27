@@ -1,0 +1,238 @@
+﻿@model Reports.Presenters.UI.ViewModel.RequestAttachmentsModel
+@*<script src="@Url.Content("~/Scripts/jquery.upload-1.0.2.min.js")" type="text/javascript"></script>*@
+
+@Html.HiddenFor(model => model.AttachmentRequestId)      
+@Html.HiddenFor(model => model.AttachmentRequestTypeId)          
+<table id="AttachmentDialogTable" style="width: 100%;">
+        
+         <tr>
+            <td>
+                <input type="button" value="Прикрепить файл" @if (!Model.IsAddAvailable)
+                                                             { <text>style = "display:none"</text>;
+                                                             } id="AddAttachment" onclick="OnAddAttachment();"/>
+            </td>
+        </tr>
+         @*<tr>
+                    <td colspan="2">
+                        <div id="file-uploader">
+                            <noscript>
+                                <p>Please enable JavaScript to use file uploader.</p>
+                                <!-- or put a simple form for upload here -->
+                            </noscript>
+                        </div>
+                    </td>
+         </tr>*@
+        <tr>
+            <td>Прикрепленные файлы</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="AttachmentError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Attachments != null && Model.Attachments.Count > 0)
+        {
+            int i = 0;
+            <tr>
+                <td>Файл</td>         
+                <td>Описание</td>
+                <td></td>  
+            </tr>   
+
+                    foreach (var attach in Model.Attachments)
+                    {
+                        var bkColor = i++ % 2 == 0 ? "#e8e8e8" : "transparent";
+            <tr style="background-color:@bkColor">
+                <td>
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >@attach.Attachment</a>
+                </td>         
+                <td>@attach.Description</td>
+                <td>
+                    @if (attach.IsDeleteAvailable)
+                    {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                 </td>  
+            </tr>   
+                    }
+        }
+</table>
+
+@*<input  type="button"  id="btnRender" value="Срендерить" onclick="Render();"/>*@
+
+<script type="text/javascript">
+$(document).ready(function () {
+//    setupUploader();
+});
+    function RenderAttachments() {
+        var actionUrl="@Url.Action("RenderAttachments", "MissionOrder")";
+        var documentId = $("#AttachmentRequestId").val();
+        var typeId = $("#AttachmentRequestTypeId").val();
+        var url = actionUrl + "?id=" + documentId+"&typeId="+typeId+"&dummy=" + new Date().getTime();
+        $("#AttachmentModelContext").load(url);
+    }
+    function OnAddAttachment() {
+        createAttachmentDialog(0);
+    }
+    function createAttachmentDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divAttachmentDialog";
+        var newDiv = $(elem);
+        var documentId = $("#AttachmentRequestId").val();
+        var typeId = $("#AttachmentRequestTypeId").val();
+
+        var title =  "Прикрепление нового файла";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("AddAttachmentDialog", "MissionOrder")?id=" + documentId + "&typeId="+typeId + " #AttachmentDialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 550,
+	        height: 220,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            open: function(event, ui) {
+            setTimeout(function()   {
+                    setupUploader();
+                }, 200);          
+            },
+            buttons:
+            {
+//                "Сохранить": function () {
+//                    if (!ValidateAttachment())
+//                        return;
+//                    SaveAttachment();
+//                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateAttachment()
+    {
+        if(trimSpaces($("#Description").val()) == "")
+        {
+            addAttachmentError("Описание - обязательное поле");
+            return false;
+        }
+        return true;
+    }
+//    function SaveAttachment()
+//    {
+//        var url="@Url.Action("SaveAttachment", "MissionOrder")"+"?id="+ $("#AttachmentRequestId").val() + "&typeId="+ $("#AttachmentRequestTypeId").val()
+//                +"&attachment="+escapeJson($("#Attachment").val());
+//        var jqxhr = $.post(url,
+//                function (jsonResult) {
+//                                            if (!this.JSON) {
+//                                                    this.JSON = {};
+//                                            }
+//                                            if(jsonResult == "")
+//                                            {
+//                                                addAttachmentError("Ошибка асинхронного запроса - не был получен ответ.");
+//                                                return;
+//                                            }
+//                                            var result = JSON.parse(jsonResult);  
+//                                            if(!result.Result)
+//                                            {
+//                                                addAttachmentError(result.Error);
+//                                                //Render();
+//                                            }
+//                                            else
+//                                            {
+//                                                clearAttachmentErrors();
+//                                                $("#divAttachmentDialog").dialog("close");
+//                                                Render();
+//                                            }    
+//                                  });
+//    }
+    function addAttachmentError(value) {
+    $("#AddAttachmentError").text(value);
+    $("#AddAttachmentError").show();
+}
+function clearAttachmentErrors() {
+    $("#AddAttachmentError").text("");
+    $("#AddAttachmentError").hide();
+}
+function setupUploader()
+{
+    //var id = $('#DocumentId').val();
+    var uploader = new qq.FileUploader(
+    {
+        // pass the dom node (ex. $(selector)[0] for jQuery users)
+        element: document.getElementById('file-uploader'),
+        // path to server-side upload script      
+        action: "@Url.Action("SaveAttachment", "MissionOrder")",
+        sizeLimit: 2097152,
+//        params: {
+//            id: id
+//        },
+        onSubmit: function (id, fileName) {
+            if(!ValidateAttachment())
+                return false;
+            clearAttachmentErrors();
+            $('.qq-upload-list').hide();
+            var description = $('#Description').val();
+            var id = $('#DocumentId').val();
+            uploader.setParams({
+                id: id
+                ,Description: description
+            });
+        },
+        onProgress: function (id, fileName, loaded, total) {
+            $('.qq-upload-list').hide();
+        },
+        onComplete: function (id, fileName, responseJSON) {
+            $('.qq-upload-list').hide();
+//             if (!this.JSON) {
+//                                                    this.JSON = {};
+//                                            }
+            if(responseJSON == "")
+            {
+                addAttachmentError("Ошибка асинхронного запроса - не был получен ответ.");
+                return;
+            }
+            var result = responseJSON; //JSON.parse("{"+responseJSON+"}");  
+            if(!result.Result)
+            {
+                addAttachmentError(result.Error);
+                //Render();
+            }
+            else
+            {
+                clearAttachmentErrors();
+                $("#divAttachmentDialog").dialog("close");
+                RenderAttachments();
+            }    
+            //loadDocumentsList(companyId)
+        },
+        debug: true
+    });
+}
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "MissionOrder")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#AttachmentError").text(result.Error);
+                                $("#AttachmentError").show(); 
+                            }
+                            else{
+                                $("#AttachmentError").text("");
+                                $("#AttachmentTableError").hide();                                 
+                           }
+                           RenderAttachments();
+                       }
+                     );
+        return false;
+    }
+//setupUploader();
+</script>

@@ -5297,7 +5297,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
             return model;
         }
-
         public AttachmentModel GetFileContext(int id/*,int typeId*/)
         {
             RequestAttachment attachment = RequestAttachmentDao.Load(id);
@@ -8370,6 +8369,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Kinds = GetMissionOrderKinds();
             //model.Goals = GetMissionGoals(false);
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionReport);
+            model.AttachmentsModel = GetMoAttachmentsModel(model.Id, RequestAttachmentTypeEnum.MissionReport);
         }
         public bool CheckUserMrRights(User user, IUser current, int entityId, MissionReport entity, bool isSave)
         {
@@ -8697,6 +8697,44 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (addEmpty)
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
+        }
+
+
+        public RequestAttachmentsModel GetMoAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
+        {
+            bool isAddAvailable = false;
+            bool isDeleteAvailable = false;
+            List<RequestAttachment> list = RequestAttachmentDao.FindManyByRequestIdAndTypeId(id, typeId).ToList();
+            if (id > 0)
+            {
+                MissionReport entity = MissionReportDao.Load(id);
+                isAddAvailable = !entity.UserDateAccept.HasValue;
+                isDeleteAvailable = !entity.UserDateAccept.HasValue;
+                //if (isDeleteAvailable && list.Count <= 4)
+                //{
+                //    if ((entity.UserDateAccept.HasValue && CurrentUser.UserRole == UserRole.Employee) ||
+                //       (entity.ManagerDateAccept.HasValue && CurrentUser.UserRole == UserRole.Manager) ||
+                //       (entity.PersonnelManagerDateAccept.HasValue && CurrentUser.UserRole == UserRole.PersonnelManager)
+                //      )
+                //        isDeleteAvailable = false;
+                //}
+            }
+            RequestAttachmentsModel model = new RequestAttachmentsModel
+            {
+                AttachmentRequestId = id,
+                AttachmentRequestTypeId = (int)typeId,
+                IsAddAvailable = isAddAvailable,
+                Attachments = new List<RequestAttachmentModel>()
+            };
+            model.Attachments = list.ConvertAll(x =>
+                            new RequestAttachmentModel
+                            {
+                                Attachment = x.FileName,
+                                AttachmentId = x.Id,
+                                Description = x.Description,
+                                IsDeleteAvailable = (x.CreatorUserRole == CurrentUser.UserRole) && isDeleteAvailable,
+                            });
+            return model;
         }
         #endregion
         
