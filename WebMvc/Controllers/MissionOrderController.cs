@@ -518,7 +518,6 @@ namespace WebMvc.Controllers
                 return PartialView("EditCostDialogError", new DialogErrorModel { Error = error });
             }
         }
-
         [HttpGet]
         public ActionResult EditTranDialog(int id, int costId, string json)
         {
@@ -544,6 +543,7 @@ namespace WebMvc.Controllers
             }
         }
 
+        [HttpGet]
         public FileContentResult ViewAttachment(int id)
         {
             try

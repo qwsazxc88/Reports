@@ -8180,7 +8180,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   Credit = tran.CreditAccount.Number,
                                   CreditId = tran.CreditAccount.Id,
                                   Debit = tran.DebitAccount.Number,
-                                  DebitId = tran.CreditAccount.Id,
+                                  DebitId = tran.DebitAccount.Id,
                                   Sum = tran.Sum,
                                   IsEditable = model.IsAccountantEditable,
                               });
@@ -8536,6 +8536,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SaveMissionCosts(entity, model);
             }
+            if (model.IsAccountantEditable)
+            {
+                SaveMissionCostsTransactions(entity, model);
+            }
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -8701,6 +8705,62 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             entity.AllSum = entity.Costs.Sum(x => x.Sum).Value;
             entity.UserAllSum = entity.Costs.Sum(x => x.UserSum).Value;
+            entity.AccountantAllSum = entity.Costs.Sum(x => x.AccountantSum).Value;
+        }
+        protected void SaveMissionCostsTransactions(MissionReport entity, MissionReportEditModel model)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
+            List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
+            List<Account> accounts = AccountDao.LoadAll().ToList();
+            foreach (CostDto dto in costDtos)
+            {
+                MissionReportCost cost = entity.Costs.Where(x => x.Id == dto.CostId).FirstOrDefault();
+                if (cost == null)
+                    throw new ArgumentException(string.Format("Не найден расход (id {0}) в базе данных", dto.CostId));
+                if(dto.Trans == null || dto.Trans.Count() == 0)
+                {
+                    if(cost.AccountingTransactions != null && cost.AccountingTransactions.Count > 0)
+                    {
+                        List<AccountingTransaction> deleted = cost.AccountingTransactions.ToList();
+                        foreach (AccountingTransaction tran in deleted)
+                            cost.AccountingTransactions.Remove(tran);
+                    }
+                    cost.AccountantSum = 0;
+                }
+                else
+                {
+                    List<AccountingTransaction> deleted = cost.AccountingTransactions.Where(x => !dto.Trans.Any(y => y.TranId == x.Id)).ToList();
+                    foreach (AccountingTransaction tran in deleted)
+                        cost.AccountingTransactions.Remove(tran);
+                    foreach (TransactionDto tran in dto.Trans)
+                    {
+                        if(tran.TranId < 0)
+                        {
+                            AccountingTransaction newTran = new AccountingTransaction
+                                                                {
+                                                                    Cost = cost,
+                                                                    CreditAccount = accounts.Where(x => x.Id == tran.CreditId && !x.IsDebitAccount).First(),
+                                                                    DebitAccount = accounts.Where(x => x.Id == tran.DebitId && x.IsDebitAccount).First(),
+                                                                    Sum = tran.Sum,
+                                                                };
+                            cost.AccountingTransactions.Add(newTran);
+                        }
+                        else
+                        {
+                            AccountingTransaction existing = cost.AccountingTransactions.Where(x => x.Id == tran.TranId).FirstOrDefault();
+                            if(existing == null)
+                                throw new ArgumentException(string.Format("Не найдена проводка (id {0}) в базе данных", tran.TranId));
+                            existing.CreditAccount = accounts.Where(x => x.Id == tran.CreditId && !x.IsDebitAccount).First();
+                            existing.DebitAccount = accounts.Where(x => x.Id == tran.DebitId && x.IsDebitAccount).First();
+                            existing.Sum = tran.Sum;
+                        }
+                    }
+                }
+                decimal sum = cost.AccountingTransactions.Sum(x => x.Sum);
+                cost.AccountantSum = sum;
+                missionReportCostDao.SaveAndFlush(cost);
+            }
             entity.AccountantAllSum = entity.Costs.Sum(x => x.AccountantSum).Value;
         }
         protected void SetCostProperties(CostDto dto, MissionReportCost cost, MissionReport entity)
