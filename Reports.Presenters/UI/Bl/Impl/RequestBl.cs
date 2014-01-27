@@ -8607,6 +8607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                {
                    entity.AccountantDateAccept = DateTime.Now;
                    entity.AcceptAccountant = UserDao.Load(current.Id);
+                   SetMissionTransactionEditable(model, false);
                }
               //if(current.UserRole == UserRole.Director)
             //{
@@ -8671,7 +8672,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
             List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
             foreach (CostDto dto in costDtos)
-                dto.IsEditable = false;
+                dto.IsEditable = isEditable;
+            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray() };
+            model.Costs = jsonSerializer.Serialize(res);
+        }
+        protected void SetMissionTransactionEditable(MissionReportEditModel model, bool isEditable)
+        {
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
+            List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
+            foreach (CostDto dto in costDtos)
+            {
+                dto.IsTransactionAvailable = isEditable;
+                if(dto.Trans != null && dto.Trans.Count() > 0)
+                {
+                    foreach (TransactionDto tran in dto.Trans)
+                    {
+                        tran.IsEditable = isEditable;
+                    }
+                }
+            }
             JsonCostsList res = new JsonCostsList { List = costDtos.ToArray() };
             model.Costs = jsonSerializer.Serialize(res);
         }
