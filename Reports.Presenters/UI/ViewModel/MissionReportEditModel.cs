@@ -12,6 +12,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         #endregion
 
+        public string DocumentTitle { get; set; }
         public string Costs { get; set; }
 
         //[Display(Name = "")]

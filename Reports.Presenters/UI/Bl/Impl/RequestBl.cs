@@ -8174,6 +8174,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException("Доступ запрещен.");
             model.Id = entity.Id;
             model.Version = entity.Version;
+            model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             SetUserInfoModel(user, model);
@@ -8442,7 +8443,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //if (model.Id != 0)
                 //{
                 missionReport = MissionReportDao.Load(model.Id);
-                model.DocumentNumber = missionReport.Number.ToString();
+
+                model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", missionReport.Number);
+                model.DocumentNumber =  missionReport.Number.ToString();
                 model.DateCreated = missionReport.CreateDate.ToShortDateString();
                 //}
                 if (!CheckUserMrRights(user, current, model.Id, missionReport, true))
