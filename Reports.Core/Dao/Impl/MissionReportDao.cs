@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -93,6 +94,13 @@ namespace Reports.Core.Dao.Impl
         public MissionReportDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
+        }
+        public virtual bool IsReportForOrderExists(int orderId)
+        {
+            return (int)Session.CreateCriteria(typeof(MissionReport))
+                              .Add(Restrictions.Eq("MissionOrderId", orderId))
+                              .SetProjection(Projections.RowCount())
+                              .UniqueResult() > 0;
         }
 
         public IList<MissionReportDto> GetDocuments(int userId,

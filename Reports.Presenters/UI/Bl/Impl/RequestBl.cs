@@ -7339,8 +7339,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return result.Length > 2 ? result.Substring(0, result.Length - 2) : result;
         }
+        protected void CreateMissionReport(MissionOrder entity)
+        {
+            if(MissionReportDao.IsReportForOrderExists(entity.Id))
+                throw new ArgumentException("Для приказа уже существует авансовый отчет");
+
+        }
         protected void CreateMission(MissionOrder entity)
         {
+            CreateMissionReport(entity);
             if (entity.Mission != null)
                 throw new ArgumentException(
                     string.Format("Для приказа уже существует заявка на командировку (Id {0})", entity.Mission.Id));
