@@ -24,6 +24,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerApprovedHidden { get; set; }
+        public bool IsManagerRejectAvailable { get; set; }
+        public bool IsManagerReject { get; set; }
 
         [Display(Name = "Авансовый отчет проверен")]
         public bool IsAccountantApproved { get; set; }

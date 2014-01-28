@@ -8313,9 +8313,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //else
                     //{
-                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
-                            && entity.UserDateAccept.HasValue && isUserManager && canEdit)
-                            model.IsManagerApproveAvailable = true;
+                    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
+                        && entity.UserDateAccept.HasValue && isUserManager && canEdit)
+                    {
+                        model.IsManagerApproveAvailable = true;
+                        model.IsManagerRejectAvailable = true;
+                    }
 
                     //}
                     break;
@@ -8367,6 +8370,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproved = state;
             model.IsUserApproved = state;
             model.IsAccountantApproved = state;
+            model.IsManagerRejectAvailable = state;
         }
         protected void SetHiddenFields(MissionReportEditModel model)
         {
@@ -8545,7 +8549,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             bool canEdit = false;
             if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)
-                && !entity.ManagerDateAccept.HasValue && model.IsManagerApproved 
+                && !entity.ManagerDateAccept.HasValue
                 && entity.UserDateAccept.HasValue)
             {
                 //if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
@@ -8559,10 +8563,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    {
                         //if (model.IsManagerApproved.Value)
                         //{
-                            entity.ManagerDateAccept = DateTime.Now;
-                            entity.AcceptManager = UserDao.Load(current.Id);
-                            
-                            /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
+                            if(model.IsManagerReject)
+                            {
+                                entity.UserDateAccept = null;
+                                entity.AcceptUser = null;
+                                model.IsManagerApproved = false;
+                            }
+                            else if (model.IsManagerApproved)
+                            {
+                                entity.ManagerDateAccept = DateTime.Now;
+                                entity.AcceptManager = UserDao.Load(current.Id);
+                            }
+
+                /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
                                 entity.UserDateAccept = DateTime.Now;*/
                             //SendEmailForMissionReportConfirm(CurrentUser, entity);
                             //if (!entity.NeedToAcceptByChief)
@@ -8659,7 +8672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
             foreach (CostDto dto in costDtos)
                 dto.IsEditable = isEditable;
-            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray() };
+            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray(),IsTransactionsHidden = list.IsTransactionsHidden };
             model.Costs = jsonSerializer.Serialize(res);
         }
         protected void SetMissionTransactionEditable(MissionReportEditModel model, bool isEditable)
@@ -8678,7 +8691,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
-            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray() };
+            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray(),IsTransactionsHidden = list.IsTransactionsHidden };
             model.Costs = jsonSerializer.Serialize(res);
         }
         protected void SaveMissionCosts(MissionReport entity, MissionReportEditModel model)

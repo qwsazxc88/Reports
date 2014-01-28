@@ -66,6 +66,7 @@
         <tr>
             <td>Руководитель</td>
             <td>
+                <div  style="float:left">
                 <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
                 @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
                 @Html.LabelFor(model => model.IsManagerApproved)
@@ -73,6 +74,13 @@
                 {
                     <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
                 }
+                </div>
+                <div style="text-align: right;float:left;width:200px">
+                    <input type="submit" value="Отклонить" onclick="return ManagerReject();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
+                    <input type="hidden" id="IsManagerReject" name="IsManagerReject" value="@Model.IsManagerReject" />
+                    <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
+                </div>
+               
             </td>
         </tr>
         <tr>
@@ -86,6 +94,7 @@
                 {
                     <input type="hidden" id="IsAccountantApprovedHidden" name="IsAccountantApprovedHidden" value="@Model.IsAccountantApprovedHidden" />
                 }
+                
             </td>
         </tr>
         <tr>
@@ -153,9 +162,9 @@
                                     <td>{{PurchaseBookSum}}</td>
                                     <td>{{AccountantSum}}</td>
                                     <td>
-                                        {{#IsEditable}}
+                                        {{#IsDeleteAvailable}}
                                            <a href="#" onclick = "deleteCost({{CostId}});return false;">Удалить</a>
-                                        {{/IsEditable}}
+                                        {{/IsDeleteAvailable}}
                                         {{#IsTransactionAvailable}}
                                             <input type="button" value="Добавить проводку" name="AddTranBtn" id="AddTranBtn" onclick="addTran({{CostId}});" 
                                         {{/IsTransactionAvailable}}
@@ -206,6 +215,11 @@
 //            IsAirTicketsPaidChange();
 //            IsTrainTicketsPaidChange();
         });
+        function ManagerReject()
+        {
+            $("#IsManagerReject").val('True');
+            return true;
+        }
         function renderCostsTable(costs) {
             var template = $("#costTemplate").html();
 //            var html = Mustache.to_html(template, costs/*, partials*/);
@@ -360,7 +374,7 @@
             {
                 var costId = findMinId(targets.List);
                 var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,Count:count,GradeSum:null,UserSum:userSum,
-                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,
+                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,IsDeleteAvailable:true,
                 IsTransactionAvailable:false,TransactionDto:null,SortOrder:getSortOrder(costTypeId)};
                 if(!AddToTemplate(targets,newObj))
                 {
