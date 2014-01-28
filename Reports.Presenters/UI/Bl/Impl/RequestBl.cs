@@ -8210,6 +8210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             decimal userSum=0;
             decimal pbSum=0;
             decimal accSum=0;
+            decimal gradeSum = 0;
             if (entity.Costs != null)
             {
                 foreach (MissionReportCost cost in entity.Costs.OrderBy(x => x.Type.SortOrder).ThenBy(x => x.Id))
@@ -8224,11 +8225,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,PurchaseBookSum = cost.BookOfPurchaseSum
                         ,UserSum = cost.UserSum
                         ,SortOrder = cost.Type.SortOrder
-                        ,IsEditable = model.IsEditable
+                        ,IsEditable = model.IsEditable && !cost.IsCostFromPurchaseBook
+                        ,IsDeleteAvailable = model.IsEditable && !cost.IsCostFromOrder
                     };
                     LoadTransactions(model,cost,dto);
                     list.Add(dto);
                 }
+                gradeSum = entity.Costs.Sum(x => x.Sum).Value;
                 userSum = entity.Costs.Sum(x => x.UserSum).Value;
                 pbSum = entity.Costs.Sum(x => x.BookOfPurchaseSum).Value;
                 accSum = entity.Costs.Sum(x => x.AccountantSum).Value;
@@ -8238,6 +8241,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                              SortOrder = -1,
                              CostId = 0,
                              Name = "Итого расходов",
+                             GradeSum = gradeSum,
                              UserSum = userSum,
                              PurchaseBookSum = pbSum,
                              AccountantSum = accSum,
@@ -8254,7 +8258,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SortOrder = -3,
                 CostId = 0,
                 Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
-                UserSum = userSum - entity.UserSumReceived,
+                UserSum = accSum - pbSum - entity.UserSumReceived,
             });
             int i = 1;
             foreach (CostDto dto in list.Where(x=> x.CostId != 0))

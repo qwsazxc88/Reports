@@ -461,7 +461,9 @@
             var total = undefined;
             var userReceiveSum = undefined;
             var diffSum = undefined;
+            var totalGradeSum = 0;
             var totalUserSum = 0;
+            var totalPbSum = 0;
             var totalAccountantSum = 0;
             jQuery.each( list, function( i, val ) {
                 if(val.SortOrder == -1)
@@ -472,8 +474,12 @@
                    diffSum = val;
                 else if(val.SortOrder > 0)
                 {
+                    if(val.GradeSum != null)
+                        totalGradeSum = totalGradeSum + val.GradeSum;
                     if(val.UserSum != null)
                         totalUserSum = totalUserSum + val.UserSum;
+                    if(val.PurchaseBookSum != null)
+                        totalPbSum = totalPbSum + val.PurchaseBookSum;
                     if(val.AccountantSum != null)
                         totalAccountantSum = totalAccountantSum + val.AccountantSum;
                 }
@@ -484,12 +490,14 @@
                 return undefined;
             if(diffSum == undefined)
                 return undefined;
+            total.GradeSum = totalGradeSum;
             total.UserSum = totalUserSum;
+            total.PurchaseBookSum = totalPbSum;
             total.AccountantSum = totalAccountantSum;
             if(userReceiveSum.UserSum != null)
-                diffSum.UserSum = total.UserSum - userReceiveSum.UserSum;
+                diffSum.UserSum = totalAccountantSum - totalPbSum - userReceiveSum.UserSum;
             else    
-                diffSum.UserSum = total.UserSum;
+                diffSum.UserSum = totalAccountantSum - totalPbSum;
             return total;
         }
         function getSortOrder(costTypeId)

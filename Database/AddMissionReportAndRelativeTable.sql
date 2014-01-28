@@ -81,6 +81,8 @@ create table MissionReportCost (
   UserSum DECIMAL(19,5) null,
   BookOfPurchaseSum DECIMAL(19,5) null,
   AccountantSum DECIMAL(19,5) null,
+  IsCostFromOrder BIT not null default(0),
+  IsCostFromPurchaseBook BIT not null default(0),
   constraint PK_MissionReportCost  primary key (Id)
 )
 create table MissionReport (

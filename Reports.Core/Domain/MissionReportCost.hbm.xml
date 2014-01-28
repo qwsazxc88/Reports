@@ -28,6 +28,9 @@
 	<property name="UserSum"  not-null="false"/>
 	<property name="BookOfPurchaseSum"  not-null="false"/>
 	<property name="AccountantSum"  not-null="false"/>
+
+  <property name="IsCostFromOrder"  not-null="true"/>
+  <property name="IsCostFromPurchaseBook"  not-null="true"/>
 	
 	<!--<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>-->
