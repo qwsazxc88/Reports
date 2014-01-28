@@ -367,8 +367,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
-            /*UserRole.Director | UserRole.Secretary |*/ UserRole.Findep)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
         public ActionResult MissionReportsList()
         {
             var model = RequestBl.GetMissionReportsListModel();
@@ -394,7 +393,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
-
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
         [HttpGet]
         public ActionResult MissionReportEdit(int id/*, int? userId*/)
         {
@@ -561,15 +560,20 @@ namespace WebMvc.Controllers
         public ActionResult RenderAttachments(int id, int typeId)
         {
             //IContractRequest bo = Ioc.Resolve<IContractRequest>();
-            RequestAttachmentsModel model = RequestBl.GetMoAttachmentsModel(id, (RequestAttachmentTypeEnum)typeId);
+            RequestAttachmentsModel model = RequestBl.GetMrAttachmentsModel(id, (RequestAttachmentTypeEnum)typeId);
             return PartialView("RequestAttachmentsPartial", model);
         }
         [HttpGet]
-        public ActionResult AddAttachmentDialog(int id, int typeId)
+        public ActionResult AddAttachmentDialog(int id, int typeId, string name)
         {
             try
             {
-                AddAttachmentModel model = new AddAttachmentModel { DocumentId = id };
+                AddAttachmentModel model = new AddAttachmentModel
+                                               {
+                                                   DocumentId = id,
+                                                   Description = name,
+                                                   IsDescriptionDisabled = !string.IsNullOrEmpty(name)
+                                               };
                 return PartialView(model);
             }
             catch (Exception ex)

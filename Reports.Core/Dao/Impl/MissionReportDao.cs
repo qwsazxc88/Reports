@@ -230,22 +230,22 @@ namespace Reports.Core.Dao.Impl
                     //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
                     //    break;
                     case 1:
-                        statusWhere = @"UserDateAccept is not null";
+                        statusWhere = @"v.UserDateAccept is not null";
                         break;
                     case 2:
-                        statusWhere = @"UserDateAccept is null";
+                        statusWhere = @"v.UserDateAccept is null";
                         break;
                     case 3:
-                        statusWhere = @"ManagerDateAccept is not null";
+                        statusWhere = @"v.ManagerDateAccept is not null";
                         break;
                     case 4:
-                        statusWhere = @"ManagerDateAccept is null";
+                        statusWhere = @"v.ManagerDateAccept is null";
                         break;
                     case 5:
-                        statusWhere = @"[AccountantDateAccept] is not null";
+                        statusWhere = @"v.[AccountantDateAccept] is not null";
                         break;
                     case 6:
-                        statusWhere = @"[AccountantDateAccept] is null";
+                        statusWhere = @"v.[AccountantDateAccept] is null";
                         break;
 //                    case 5:
 //                        statusWhere = @"(ChiefDateAccept is not null and NeedToAcceptByChief = 1) or
@@ -255,14 +255,12 @@ namespace Reports.Core.Dao.Impl
 //                        statusWhere = @"(ChiefDateAccept is null  and NeedToAcceptByChief = 1) or
 //                                        (ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1)";
 //                        break;
-//                    case 7:
-//                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null
-//                                        and NeedToAcceptByChiefAsManager = 0";
-//                        break;
-//                    case 8:
-//                        statusWhere = @"UserDateAccept is not null and ((ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1) 
-//                                        or (ManagerDateAccept is not null and ChiefDateAccept is null and NeedToAcceptByChief = 1))";
-//                        break;
+                    case 7:
+                        statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null";
+                        break;
+                    case 8:
+                        statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is not null and v.[AccountantDateAccept] is null";
+                        break;
                     //case 8:
                     //    statusWhere =
                     //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";

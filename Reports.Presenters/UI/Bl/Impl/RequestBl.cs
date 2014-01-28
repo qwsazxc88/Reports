@@ -8073,9 +8073,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetInitialDates(model);
             SetDictionariesToModel(model);
-            //SetInitialStatus(model);
+            SetInitialStatus(model);
             //SetIsAvailable(model);
             return model;
+        }
+        protected void SetInitialStatus(MissionReportsListModel model)
+        {
+            switch (CurrentUser.UserRole)
+            {
+                case UserRole.Accountant:
+                    model.StatusId = 8;
+                    break;
+                case UserRole.Manager:
+                    model.StatusId = 7;
+                    break;
+                default:
+                    break;
+            }
         }
         public void SetDictionariesToModel(MissionReportsListModel model)
         {
@@ -8092,8 +8106,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(4, "Не одобрен руководителем"),
                                                            new IdNameDto(5, "Одобрен бухгалтером"),
                                                            new IdNameDto(6, "Не одобрен бухгалтером"),
-                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
-                                                           //new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           new IdNameDto(7, "Требует одобрения руководителем"),
+                                                           new IdNameDto(8, "Требует одобрения бухгалтером"),
                                                            //new IdNameDto(10, "Отклоненные"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
@@ -8244,39 +8258,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             int i = 1;
             foreach (CostDto dto in list.Where(x=> x.CostId != 0))
             {
-                //if (dto.SortOrder >= 0)
                     dto.Number = i++;
             }
-            //List<CostDto> list = new List<CostDto>
-            //                         {
-            //                             //new CostDto
-            //                             //    {
-            //                             //       Number = 1,
-            //                             //       CostTypeId = types.Where(x => x.Id == 2).First().Id, 
-            //                             //       Name =  types.Where(x => x.Id == 2).First().Name,
-            //                             //       SortOrder = types.Where(x => x.Id == 2).First().SortOrder,
-            //                             //       Count = 5,
-            //                             //       GradeSum = 1000,
-            //                             //       UserSum = 1000,
-            //                             //       AccountantSum = 1000,
-            //                             //       IsTransactionAvailable = true,
-
-            //                             //       Trans = new TransactionDto[]
-            //                             //       {
-            //                             //           new TransactionDto{Credit = "60308810801111111111",Debit = "70606810601002640201",Sum = 1000}
-            //                             //       }
-            //                             //     },
-            //                             new CostDto { UserSum = 10400,Name = "Итого расходов",IsReadOnly = true,SortOrder = -1},
-            //                             new CostDto { UserSum = 9000.25m,Name = "Получено в подотчет",IsReadOnly = true,SortOrder = -2},
-            //                             new CostDto { 
-            //                                 UserSum = -1400.15m,
-            //                                 Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
-            //                                 IsReadOnly = true,
-            //                                 SortOrder = -3
-            //                             }
-            //                         };
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-            JsonCostsList res = new JsonCostsList { List = list.ToArray() };
+            bool isTransactionHidden = (CurrentUser.UserRole == UserRole.Manager) || (CurrentUser.UserRole == UserRole.Employee);
+            JsonCostsList res = new JsonCostsList { List = list.ToArray(),IsTransactionsHidden = isTransactionHidden};
             model.Costs = jsonSerializer.Serialize(res);
         }
         // hardcode in javascript
@@ -8396,7 +8382,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Kinds = GetMissionOrderKinds();
             //model.Goals = GetMissionGoals(false);
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionReport);
-            model.AttachmentsModel = GetMoAttachmentsModel(model.Id, RequestAttachmentTypeEnum.MissionReport);
+            model.AttachmentsModel = GetMrAttachmentsModel(model.Id, RequestAttachmentTypeEnum.MissionReport);
         }
         public bool CheckUserMrRights(User user, IUser current, int entityId, MissionReport entity, bool isSave)
         {
@@ -8816,7 +8802,7 @@ namespace Reports.Presenters.UI.Bl.Impl
          }
 
 
-        public RequestAttachmentsModel GetMoAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
+        public RequestAttachmentsModel GetMrAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
             bool isAddAvailable = false;
             bool isDeleteAvailable = false;
@@ -8839,7 +8825,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 AttachmentRequestId = id,
                 AttachmentRequestTypeId = (int)typeId,
-                IsAddAvailable = isAddAvailable,
+                IsAddAvailable = isAddAvailable && (CurrentUser.UserRole == UserRole.Employee),
                 Attachments = new List<RequestAttachmentModel>()
             };
             model.Attachments = list.ConvertAll(x =>
@@ -8848,7 +8834,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Attachment = x.FileName,
                                 AttachmentId = x.Id,
                                 Description = x.Description,
-                                IsDeleteAvailable = (x.CreatorUserRole == CurrentUser.UserRole) && isDeleteAvailable,
+                                IsDeleteAvailable = ((x.CreatorUserRole & CurrentUser.UserRole) > 0) && isDeleteAvailable,
                             });
             return model;
         }

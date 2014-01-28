@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Reports.Core.Dto
+﻿namespace Reports.Core.Dto
 {
     public class CostDto
     {
@@ -20,6 +18,7 @@ namespace Reports.Core.Dto
 
         public int SortOrder { get; set; }
     }
+
     public class TransactionDto
     {
         public int TranId { get; set; }
@@ -30,10 +29,13 @@ namespace Reports.Core.Dto
         public decimal Sum { get; set; }
         public bool IsEditable { get; set; }
     }
+
     public class JsonCostsList
     {
         public CostDto[] List { get; set; }
+        public bool IsTransactionsHidden { get; set; }
     }
+
     //public class JsonTransList
     //{
     //    public TransactionDto[] List { get; set; }

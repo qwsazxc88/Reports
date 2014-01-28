@@ -13,5 +13,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string Description { get; set; }
 
         public string Error { get; set; }
+        public bool IsDescriptionDisabled { get; set; }
     }
 }

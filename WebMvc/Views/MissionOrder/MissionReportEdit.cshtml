@@ -161,6 +161,7 @@
                                         {{/IsTransactionAvailable}}
                                     </td>
                                 </tr>
+                                 {{^IsTransactionsHidden}}
                                 {{#Trans}}
                                 <tr>
                                     <td></td>
@@ -184,6 +185,7 @@
                                     </td>
                                 </tr>
                                 {{/Trans}}
+                                {{/IsTransactionsHidden}}
                                {{/List}}
                             </tbody>
                     </table>

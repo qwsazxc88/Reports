@@ -7,9 +7,12 @@
         
          <tr>
             <td>
+                <input type="button" value="Прикрепить скан служебной записки к Авансовому отчету" @if (!Model.IsAddAvailable)
+                                                             { <text>style = "display:none"</text>;
+                                                             } id="AddAttachment" onclick="OnAddAttachment('Служебная записка к Авансовому отчету');"/>
                 <input type="button" value="Прикрепить файл" @if (!Model.IsAddAvailable)
                                                              { <text>style = "display:none"</text>;
-                                                             } id="AddAttachment" onclick="OnAddAttachment();"/>
+                                                             } id="AddAttachment" onclick="OnAddAttachment('');"/>
             </td>
         </tr>
          @*<tr>
@@ -34,24 +37,24 @@
         {
             int i = 0;
             <tr>
-                <td>Файл</td>         
                 <td>Описание</td>
+                <td>Файл</td>         
                 <td></td>  
             </tr>   
 
                     foreach (var attach in Model.Attachments)
                     {
                         var bkColor = i++ % 2 == 0 ? "#e8e8e8" : "transparent";
-            <tr style="background-color:@bkColor">
-                <td>
-                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >@attach.Attachment</a>
-                </td>         
-                <td>@attach.Description</td>
-                <td>
-                    @if (attach.IsDeleteAvailable)
-                    {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
-                 </td>  
-            </tr>   
+                    <tr style="background-color:@bkColor">
+                        <td>@attach.Description</td>
+                        <td>
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = attach.AttachmentId })' style="cursor:hand" target="_blank" >@attach.Attachment</a>
+                        </td>         
+                        <td>
+                            @if (attach.IsDeleteAvailable)
+                            {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                         </td>  
+                    </tr>   
                     }
         }
 </table>
@@ -69,10 +72,10 @@ $(document).ready(function () {
         var url = actionUrl + "?id=" + documentId+"&typeId="+typeId+"&dummy=" + new Date().getTime();
         $("#AttachmentModelContext").load(url);
     }
-    function OnAddAttachment() {
-        createAttachmentDialog(0);
+    function OnAddAttachment(name) {
+        createAttachmentDialog(0,name);
     }
-    function createAttachmentDialog(id) 
+    function createAttachmentDialog(id,name) 
     {
         var elem = document.createElement('div');
         elem.id = "divAttachmentDialog";
@@ -83,7 +86,7 @@ $(document).ready(function () {
         var title =  "Прикрепление нового файла";
         $(newDiv).text('Подождите, идет загрузка данных ...'); 
         $.ajaxSetup({cache: false});
-        $(newDiv).load("@Url.Action("AddAttachmentDialog", "MissionOrder")?id=" + documentId + "&typeId="+typeId + " #AttachmentDialogTable");
+        $(newDiv).load("@Url.Action("AddAttachmentDialog", "MissionOrder")?id=" + documentId + "&typeId="+typeId  + "&name=" + escapeJson(name) + " #AttachmentDialogTable");
         $(newDiv).dialog(
         { // initialize dialog box
             autoOpen: true,
@@ -93,7 +96,7 @@ $(document).ready(function () {
             bgiframe: true, 
             draggable: false,
             resizable: false,
-            width: 550,
+            width: 750,
 	        height: 220,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
