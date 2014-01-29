@@ -108,6 +108,14 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Секретарь")]
         public string SecretaryFio { get; set; }
+
+        public int AirTicketType { get; set; }
+        public int AirTicketTypeHidden { get; set; }
+        public IList<IdNameDto> AirTicketTypes;
+
+        public int TrainTicketType { get; set; }
+        public int TrainTicketTypeHidden { get; set; }
+        public IList<IdNameDto> TrainTicketTypes;
     }
 
     public class MissionOrderTargetModel

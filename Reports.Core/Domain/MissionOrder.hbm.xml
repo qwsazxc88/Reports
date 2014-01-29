@@ -36,7 +36,9 @@
 	<property name="ResidenceRequestNumber" length="16" not-null="false"/>
 	<property name="AirTicketsRequestNumber" length="16" not-null="false"/>
 	<property name="TrainTicketsRequestNumber" length="16" not-null="false"/>
-  <many-to-one name="Secretary" class="User" column="SecretaryId" foreign-key="FK_MissionOrder_Secretary" index="IX_MissionOrder_Secretary_Id"  not-null="false"/>
+	<many-to-one name="Secretary" class="User" column="SecretaryId" foreign-key="FK_MissionOrder_Secretary" index="IX_MissionOrder_Secretary_Id"  not-null="false"/>
+	<property name="AirTicketType"  not-null="true"/>
+	<property name="TrainTicketType"  not-null="true"/>
 
 	  <many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionOrder_User" index="IX_MissionOrder_User_Id"  not-null="true"/>
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_MissionOrder_CreatorUser" index="IX_MissionOrder_CreatorUser_Id"  not-null="true"/>
