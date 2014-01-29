@@ -6994,6 +6994,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         missionOrder.DeleteDate = DateTime.Now;
                         //missionOrder.CreateDate = DateTime.Now;
                         MissionOrderDao.SaveAndFlush(missionOrder);
+                        if(missionOrder.Mission != null)
+                        {
+                            Mission mission = missionOrder.Mission;
+                            if (mission.SendTo1C.HasValue)
+                                mission.DeleteAfterSendTo1C = true;
+                            mission.DeleteDate = DateTime.Now;
+                            mission.CreateDate = DateTime.Now;
+                            MissionDao.SaveAndFlush(mission);
+                        }
+                        else
+                            Log.WarnFormat("No mission for mission order with id {0}",missionOrder.Id);
                         /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
                             missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
                         model.IsDelete = false;
