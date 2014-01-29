@@ -169,6 +169,12 @@
                      <th>
                         <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
                     </th>
+                     <th>
+                        <div id="sort16" style="min-width:70px"><a href="#"  onclick = "SortChanged(16);">Авиа <br/>билеты</a></div>
+                    </th>
+                    <th>
+                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Ж/д <br/>билеты</a></div>
+                    </th>
                      @if (Model.IsApproveAvailable)
                      {
                         <th>
@@ -200,6 +206,8 @@
                             <td>@doc.NeedSecretary</td>
                             <td>@doc.State</td>
                             <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
+                            <td>@doc.AirTicketType</td>
+                            <td>@doc.TrainTicketType</td>
                             @if (Model.IsApproveAvailable)
                             {
                                 <td>@if(doc.Flag)

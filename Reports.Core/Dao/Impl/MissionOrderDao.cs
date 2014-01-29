@@ -43,7 +43,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BeginDate", NHibernateUtil.DateTime).
                 AddScalar("EndDate", NHibernateUtil.DateTime).
                 AddScalar("Flag", NHibernateUtil.Boolean).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("AirTicketType", NHibernateUtil.String).
+                AddScalar("TrainTicketType", NHibernateUtil.String);
         }
         protected const string sqlSelectForMoList =
                                 @"select v.Id as Id,
@@ -104,6 +106,12 @@ namespace Reports.Core.Dao.Impl
                                 end as State,
                                 v.BeginDate as BeginDate,  
                                 v.EndDate as EndDate,
+                                case when v.AirTicketType = 1 then N'Бизнес'
+                                     when v.AirTicketType = 2 then N'Эконом'
+                                     else N'' end as AirTicketType,
+                                case when v.TrainTicketType = 1 then N'Купе'
+                                     when v.TrainTicketType = 2 then N'СВ'
+                                     else N'' end as TrainTicketType,
                                 {0}  
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
@@ -200,6 +208,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 15:
                     orderBy = @" order by MissionKind";
+                    break;
+                case 16:
+                    orderBy = @" order by AirTicketType";
+                    break;
+                case 17:
+                    orderBy = @" order by TrainTicketType";
                     break;
             }
             if (sortDescending.Value)
