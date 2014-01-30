@@ -8294,7 +8294,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
-            if (entity.AcceptAccountant != null)
+            if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
                 model.AccountantFio = entity.AcceptAccountant.FullName + ", " + entity.AcceptAccountant.Email;
             
             switch (currentUserRole)
@@ -8590,6 +8590,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.UserDateAccept = null;
                                 entity.AcceptUser = null;
                                 model.IsManagerApproved = false;
+                                entity.AcceptManager = UserDao.Load(current.Id);
                             }
                             else if (model.IsManagerApproved)
                             {
@@ -8633,6 +8634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                    else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
                    {
                        entity.AccountantDateAccept = null;
+                       entity.AcceptAccountant = UserDao.Load(current.Id);
                        SetMissionTransactionEditable(model, true);
                        model.IsAccountantReject = false;
                    }
