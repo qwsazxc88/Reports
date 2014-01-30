@@ -8335,11 +8335,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     break;
                 case UserRole.Accountant:
-                    if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
-                           && !entity.AccountantDateAccept.HasValue )
+                    if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
                     {
-                        model.IsAccountantEditable = true;
-                        model.IsAccountantApproveAvailable = true;
+                        if (!entity.AccountantDateAccept.HasValue)
+                        {
+                            model.IsAccountantEditable = true;
+                            model.IsAccountantApproveAvailable = true;
+                        }
+                        else
+                        {
+                            model.IsAccountantRejectAvailable = true;
+                        }
                     }
                     break;
                     //case UserRole.OutsourcingManager:
@@ -8383,6 +8389,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApproved = state;
             model.IsAccountantApproved = state;
             model.IsManagerRejectAvailable = state;
+            model.IsAccountantRejectAvailable = state;
         }
         protected void SetHiddenFields(MissionReportEditModel model)
         {
@@ -8614,14 +8621,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;*/
             }
-               if (current.UserRole == UserRole.Accountant /*&& current.Id == model.UserId*/
-                && !entity.AccountantDateAccept.HasValue && entity.ManagerDateAccept.HasValue
-                && model.IsAccountantApproved)
-               {
-                   entity.AccountantDateAccept = DateTime.Now;
-                   entity.AcceptAccountant = UserDao.Load(current.Id);
-                   SetMissionTransactionEditable(model, false);
-               }
+               if (current.UserRole == UserRole.Accountant && entity.ManagerDateAccept.HasValue)
+                {
+                   if(!entity.AccountantDateAccept.HasValue && model.IsAccountantApproved)
+                   {
+                       entity.AccountantDateAccept = DateTime.Now;
+                       entity.AcceptAccountant = UserDao.Load(current.Id);
+                       SetMissionTransactionEditable(model, false);
+                   }
+                   else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
+                   {
+                       entity.AccountantDateAccept = null;
+                       SetMissionTransactionEditable(model, true);
+                       model.IsAccountantReject = false;
+                   }
+                }
               //if(current.UserRole == UserRole.Director)
             //{
             //    if (isDirectorManager && !entity.ManagerDateAccept.HasValue)

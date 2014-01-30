@@ -32,6 +32,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAccountantApproved { get; set; }
         public bool IsAccountantApproveAvailable { get; set; }
         public bool IsAccountantApprovedHidden { get; set; }
+        public bool IsAccountantRejectAvailable { get; set; }
+        public bool IsAccountantReject { get; set; }
 
         [Display(Name = "Бухгалтер")]
         public string AccountantFio { get; set; }

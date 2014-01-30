@@ -91,6 +91,7 @@
         <tr>
             <td>@Html.LabelFor(model => model.AccountantFio)</td>
             <td>
+                <div  style="float:left;width:533px">
                 <input type="hidden" id="IsAccountantEditable" name="IsAccountantEditable" value="@Model.IsAccountantEditable" />
                 <input type="hidden" id="IsAccountantApproveAvailable" name="IsAccountantApproveAvailable" value="@Model.IsAccountantApproveAvailable" />
                 @Html.CheckBox("IsAccountantApproved", Model.IsAccountantApproved, Model.IsAccountantApproveAvailable ? null : (object)new { disabled = "disabled" }) 
@@ -99,6 +100,12 @@
                 {
                     <input type="hidden" id="IsAccountantApprovedHidden" name="IsAccountantApprovedHidden" value="@Model.IsAccountantApprovedHidden" />
                 }
+                </div>
+                <div style="text-align: right;float:left;width:200px">
+                    <input type="submit" value="Отменить согласование" onclick="return AccountantReject();" @if (!Model.IsAccountantRejectAvailable){<text>style="display:none"</text>}/>
+                    <input type="hidden" id="IsAccountantReject" name="IsAccountantReject" value="@Model.IsAccountantReject" />
+                    <input type="hidden" id="IsAccountantRejectAvailable" name="IsAccountantRejectAvailable" value="@Model.IsAccountantRejectAvailable" />
+                </div>
                 
             </td>
         </tr>
@@ -226,6 +233,13 @@
             if(!ValidateForm())
                 return false;
             $("#IsManagerReject").val('True');
+            return true;
+        }
+        function AccountantReject()
+        {
+            if(!ValidateForm())
+                return false;
+            $("#IsAccountantReject").val('True');
             return true;
         }
         function renderCostsTable(costs) {

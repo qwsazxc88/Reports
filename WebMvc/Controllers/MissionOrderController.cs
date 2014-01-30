@@ -453,7 +453,12 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");
             }
-            
+            if (model.IsAccountantRejectAvailable && model.IsAccountantReject)
+            {
+                if (ModelState.ContainsKey("IsAccountantApproved"))
+                    ModelState.Remove("IsAccountantApproved");
+            }
+
             /*if (ModelState.ContainsKey("IsChiefApproveNeed"))
                 ModelState.Remove("IsChiefApproveNeed");
             model.IsChiefApproveNeed = model.IsChiefApproveNeedHidden;
