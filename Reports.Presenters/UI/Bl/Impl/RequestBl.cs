@@ -7343,6 +7343,72 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
+            IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
+            MissionReport report = new MissionReport
+                                       {
+                                           CreateDate = DateTime.Now,
+                                           EditDate = DateTime.Now,
+                                           Creator = UserDao.Load(CurrentUser.Id),
+                                           MissionOrder = entity,
+                                           Number = entity.Number,
+                                           User = entity.User,
+                                           AllSum = entity.AllSum,
+                                           //UserAllSum = entity.UserAllSum,
+                                       };
+            List<MissionReportCost> list = new List<MissionReportCost>();
+            if(entity.SumDaily.HasValue && entity.SumDaily > 0)
+            {
+                MissionReportCost cost = new MissionReportCost
+                                             {
+                                                 IsCostFromOrder = true,
+                                                 IsCostFromPurchaseBook = false,
+                                                 Report = report,
+                                                 Type = types.Where(x => x.Id == 1).First(),
+                                                 Sum = entity.SumDaily,
+                                             };
+                list.Add(cost);
+            }
+            if (entity.SumResidence.HasValue && entity.SumResidence > 0)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsResidencePaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 2).First(),
+                    Sum = entity.SumResidence,
+                    //BookOfPurchaseSum = entity.IsResidencePaid ? entity.SumResidence:null,
+                };
+                list.Add(cost);
+            }
+            if (entity.SumAir.HasValue && entity.SumAir > 0)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsAirTicketsPaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 3).First(),
+                    Sum = entity.SumAir,
+                    //BookOfPurchaseSum = entity.IsAirTicketsPaid ? entity.SumAir : null,
+                };
+                list.Add(cost);
+            }
+            if (entity.SumTrain.HasValue && entity.SumTrain > 0)
+            {
+                MissionReportCost cost = new MissionReportCost
+                {
+                    IsCostFromOrder = true,
+                    IsCostFromPurchaseBook = entity.IsTrainTicketsPaid,
+                    Report = report,
+                    Type = types.Where(x => x.Id == 4).First(),
+                    Sum = entity.SumTrain,
+                    //BookOfPurchaseSum = entity.IsTrainTicketsPaid ? entity.SumTrain : null,
+                };
+                list.Add(cost);
+            }
+            report.Costs = list;
+            MissionReportDao.SaveAndFlush(report);
 
         }
         protected void CreateMission(MissionOrder entity)
