@@ -8335,7 +8335,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     break;
                 case UserRole.Accountant:
-                    if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue 
+                        && !entity.SendTo1C.HasValue)
                     {
                         if (!entity.AccountantDateAccept.HasValue)
                         {
