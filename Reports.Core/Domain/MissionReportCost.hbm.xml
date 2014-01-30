@@ -15,7 +15,7 @@
 	<many-to-one name="Type" class="MissionReportCostType" column="TypeId" foreign-key="FK_MissionReportCost_MissionReportCostType" index="MissionReportCost_MissionReportCostType"  not-null="true"/>
 	<!--<property name="Kind"  not-null="true"/>
 	<many-to-one name="Goal" class="MissionGoal" column="MissionGoalId" foreign-key="FK_MissionReport_MissionGoal" index="MissionReport_MissionGoal"  not-null="false"/>-->
-	<property name="Cnt"  not-null="false"/>
+	<!--<property name="Cnt"  not-null="false"/>-->
 	<property name="Sum"  not-null="false"/>
 	<!--<property name="SumDaily"  not-null="false"/>
 	<property name="SumResidence"  not-null="false"/>

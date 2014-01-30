@@ -13,14 +13,14 @@
                         @Html.DropDownListFor(model => model.CostTypeId, new SelectList(Model.CostTypes, "ID", "Name")) 
                     </td>
                 </tr>
-                 <tr>
+                @* <tr>
                     <td>
                         @Html.LabelFor(m => m.Count):
                     </td>
                     <td>
                         @Html.TextBoxFor(model => model.Count, new { @class = "fixedSize" }) 
                     </td>
-                </tr>
+                </tr>*@
                 <tr>
                     <td>
                         @Html.LabelFor(m => m.GradeSum):

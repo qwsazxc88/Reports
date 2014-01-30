@@ -8226,7 +8226,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         AccountantSum = cost.AccountantSum,
                         CostId = cost.Id,
                         CostTypeId = cost.Type.Id
-                        ,Count = cost.Cnt
+                        //,Count = cost.Cnt
                         ,GradeSum = cost.Sum
                         ,Name = cost.Type.Name
                         ,PurchaseBookSum = cost.BookOfPurchaseSum
@@ -8685,8 +8685,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             JsonCostsList list = jsonSerializer.Deserialize<JsonCostsList>(model.Costs);
             List<CostDto> costDtos = list.List.Where(x => x.CostId != 0).ToList();
             foreach (CostDto dto in costDtos)
+            {
                 dto.IsEditable = isEditable;
-            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray(),IsTransactionsHidden = list.IsTransactionsHidden };
+                dto.IsDeleteAvailable = isEditable;
+            }
+            JsonCostsList res = new JsonCostsList { List = list.List.ToArray(), IsTransactionsHidden = list.IsTransactionsHidden };
             model.Costs = jsonSerializer.Serialize(res);
         }
         protected void SetMissionTransactionEditable(MissionReportEditModel model, bool isEditable)
@@ -8705,7 +8708,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
-            JsonCostsList res = new JsonCostsList { List = costDtos.ToArray(),IsTransactionsHidden = list.IsTransactionsHidden };
+            JsonCostsList res = new JsonCostsList { List = list.List.ToArray(), IsTransactionsHidden = list.IsTransactionsHidden };
             model.Costs = jsonSerializer.Serialize(res);
         }
         protected void SaveMissionCosts(MissionReport entity, MissionReportEditModel model)
@@ -8801,7 +8804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //cost.AccountantSum = dto.AccountantSum;
             //cost.BookOfPurchaseSum = dto.PurchaseBookSum;
             //cost.Sum = dto.GradeSum;
-            cost.Cnt = dto.Count;
+            //cost.Cnt = dto.Count;
             cost.Report = entity;
             cost.Type = MissionReportCostTypeDao.Load(dto.CostTypeId);
             cost.UserSum = dto.UserSum;

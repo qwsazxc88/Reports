@@ -141,7 +141,6 @@
                                 <tr>
                                    <td>№ пп</td>
                                    <td style='width:400px'>Наименование расходов</td>
-                                   <td>Кол-во</td>
                                    <td>Норма по грейду</td>
                                    <td>Оплачено фактически сотрудником (сумма, руб)</td>
                                    <td>Оплачено организацией за сотрудника</td>
@@ -161,7 +160,6 @@
                                         {{/IsEditable}}
                                     </td>
                                     <td>{{Name}}</td>
-                                    <td>{{Count}}</td>
                                     <td>{{GradeSum}}</td>
                                     <td>{{UserSum}}</td>
                                     <td>{{PurchaseBookSum}}</td>
@@ -178,7 +176,6 @@
                                  {{^IsTransactionsHidden}}
                                 {{#Trans}}
                                 <tr>
-                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td>
@@ -220,8 +217,14 @@
 //            IsAirTicketsPaidChange();
 //            IsTrainTicketsPaidChange();
         });
+        function ValidateForm()
+        {
+            return true;
+        }
         function ManagerReject()
         {
+            if(!ValidateForm())
+                return false;
             $("#IsManagerReject").val('True');
             return true;
         }
@@ -342,13 +345,13 @@
              if(ValidateSumC($("#UserSum")) == undefined)
                 result = false;
             }
-            if(!validateFieldIsNotEmptyAddError($("#Count")))
+            /*if(!validateFieldIsNotEmptyAddError($("#Count")))
                 result = false;
             else
             {
                 if(ValidateInt($("#Count")) == undefined)
                     result = false;
-            }
+            }*/
             return result;
         }
         function addCostToTemplate()
@@ -359,7 +362,7 @@
             var costTypeId = parseInt($("#CostTypeId").val(),10);
             var costType = $("#CostTypeId option:selected").text();
             var userSum = ValidateSumC($("#UserSum"));
-            var count = ValidateInt($("#Count"));
+            //var count = ValidateInt($("#Count"));
 
 //            var city = $("#City").val();
 //            var organization = $("#Organization").val();
@@ -378,7 +381,7 @@
             if(costId == 0)
             {
                 var costId = findMinId(targets.List);
-                var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,Count:count,GradeSum:null,UserSum:userSum,
+                var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,/*Count:count,*/GradeSum:null,UserSum:userSum,
                 PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,IsDeleteAvailable:true,
                 IsTransactionAvailable:false,TransactionDto:null,SortOrder:getSortOrder(costTypeId)};
                 if(!AddToTemplate(targets,newObj))
@@ -402,7 +405,7 @@
                     needToMove = true;
                  obj.CostTypeId = costTypeId; 
                  obj.Name = costType; 
-                 obj.Count = count; 
+                 //obj.Count = count; 
                  obj.UserSum = userSum;
                  if(needToMove)
                  {

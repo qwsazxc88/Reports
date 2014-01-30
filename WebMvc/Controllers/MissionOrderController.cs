@@ -507,7 +507,7 @@ namespace WebMvc.Controllers
                     CostDto dto = jsonSerializer.Deserialize<CostDto>(json);
                     model.AccountantSum = dto.AccountantSum;
                     model.CostTypeId = dto.CostTypeId;
-                    model.Count = dto.Count;
+                    //model.Count = dto.Count;
                     model.GradeSum = dto.GradeSum;
                     model.PurchaseBookSum = dto.PurchaseBookSum;
                     model.UserSum = dto.UserSum;

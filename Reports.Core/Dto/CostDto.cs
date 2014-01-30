@@ -5,7 +5,7 @@
         public int? Number { get; set; }
         public int CostTypeId { get; set; }
         public string Name { get; set; }
-        public int? Count { get; set; }
+        //public int? Count { get; set; }
         public decimal? GradeSum { get; set; }
         public decimal? UserSum { get; set; }
         public decimal? PurchaseBookSum { get; set; }

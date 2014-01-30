@@ -76,7 +76,7 @@ create table MissionReportCost (
   Version INT not null,
   ReportId INT not null,
   TypeId INT not null,
-  Cnt INT null,
+  -- Cnt INT null,
   Sum DECIMAL(19,5) null,
   UserSum DECIMAL(19,5) null,
   BookOfPurchaseSum DECIMAL(19,5) null,
