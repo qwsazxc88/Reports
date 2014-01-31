@@ -7353,7 +7353,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                            Number = entity.Number,
                                            User = entity.User,
                                            AllSum = entity.AllSum,
-                                           //UserAllSum = entity.UserAllSum,
+                                           UserSumReceived = entity.UserAllSum,
                                        };
             List<MissionReportCost> list = new List<MissionReportCost>();
             if(entity.SumDaily.HasValue && entity.SumDaily > 0)
