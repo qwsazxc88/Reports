@@ -6946,6 +6946,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AirTicketsRequestNumber = entity.AirTicketsRequestNumber;
                 model.TrainTicketsRequestNumber = entity.TrainTicketsRequestNumber;
                 model.SecretaryFio = entity.Secretary == null ? string.Empty : entity.Secretary.FullName;
+                model.AirTicketType = entity.AirTicketType;
+                model.TrainTicketType = entity.TrainTicketType;
 
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 model.DocumentNumber = entity.Number.ToString();
@@ -6986,8 +6988,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.IsEditable = true;
             }
             SetUserInfoModel(user, model);
-            LoadDictionaries(model);
             SetFlagsState(id,user,entity,model);
+            LoadDictionaries(model);
             SetHiddenFields(model);
             return model;
         }
@@ -7047,6 +7049,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         missionOrder.DeleteDate = DateTime.Now;
                         //missionOrder.CreateDate = DateTime.Now;
                         MissionOrderDao.SaveAndFlush(missionOrder);
+                        if(missionOrder.Mission != null)
+                        {
+                            Mission mission = missionOrder.Mission;
+                            if (mission.SendTo1C.HasValue)
+                                mission.DeleteAfterSendTo1C = true;
+                            mission.DeleteDate = DateTime.Now;
+                            mission.CreateDate = DateTime.Now;
+                            MissionDao.SaveAndFlush(mission);
+                        }
+                        else
+                            Log.WarnFormat("No mission for mission order with id {0}",missionOrder.Id);
                         /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
                             missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
                         model.IsDelete = false;
@@ -7122,7 +7135,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
                     entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
-                    entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber)
+                    entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber ||
+                    model.AirTicketType != entity.AirTicketType ||
+                    model.TrainTicketType != entity.TrainTicketType)
                 {
                     entity.Secretary = UserDao.Load(current.Id);
                     model.SecretaryFio = entity.Secretary.FullName;
@@ -7130,6 +7145,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber)? null : model.ResidenceRequestNumber;
                 entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
                 entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
+                entity.AirTicketType = model.AirTicketType;
+                entity.TrainTicketType = model.TrainTicketType;
             }
             
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
@@ -7515,6 +7532,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsResidencePaidHidden = model.IsResidencePaid;
             model.IsAirTicketsPaidHidden = model.IsAirTicketsPaid;
             model.IsTrainTicketsPaidHidden = model.IsTrainTicketsPaid;
+            model.AirTicketTypeHidden = model.AirTicketType;
+            model.TrainTicketTypeHidden = model.TrainTicketType;
         }
         protected void SetFlagsState(int id, User user, MissionOrder entity, MissionOrderEditModel model)
         {
@@ -7805,6 +7824,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Types = GetMissionTypes(false);
             model.Kinds = GetMissionOrderKinds();
             model.Goals = GetMissionGoals(false);
+            model.AirTicketTypes = GetAirTicketTypes();
+            model.TrainTicketTypes = GetTrainTicketTypes();
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
         }
         protected List<IdNameDto> GetMissionOrderKinds()
@@ -7813,6 +7834,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                        {
                            new IdNameDto {Id = 1,Name = "Внутренняя"},
                            new IdNameDto {Id = 2,Name = "Внешняя"},
+                       };
+        }
+        protected List<IdNameDto> GetAirTicketTypes()
+        {
+            return new List<IdNameDto>
+                       {
+                           new IdNameDto {Id = 0,Name = string.Empty},
+                           new IdNameDto {Id = 1,Name = "Бизнес"},
+                           new IdNameDto {Id = 2,Name = "Эконом"},
+                       };
+        }
+        protected List<IdNameDto> GetTrainTicketTypes()
+        {
+            return new List<IdNameDto>
+                       {
+                           new IdNameDto {Id = 0,Name = string.Empty},
+                           new IdNameDto {Id = 1,Name = "Купе"},
+                           new IdNameDto {Id = 2,Name = "СВ"},
                        };
         }
         public void ReloadDictionaries(MissionOrderEditModel model)

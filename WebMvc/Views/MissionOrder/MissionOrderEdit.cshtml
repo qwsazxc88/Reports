@@ -27,7 +27,7 @@
         }
        
         <tr>
-            <td>
+            <td style="width:225px">
                 @Html.LabelFor(m => m.GoalId):
             </td>
             <td>
@@ -293,6 +293,8 @@
             </td>
             <td>
                 @Html.TextBoxFor(model => model.AirTicketsRequestNumber, Model.IsSecritaryEditable ? (object)new { width = "100px", maxlength = 15 } : (object)new { @readonly = "read-only", width = "100px" }) 
+                @Html.DropDownListFor(model => model.AirTicketType, new SelectList(Model.AirTicketTypes, "ID", "Name"), Model.IsSecritaryEditable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="AirTicketTypeHidden" name="AirTicketTypeHidden" value="@Model.AirTicketTypeHidden" />
             </td>
         </tr>
         <tr>
@@ -301,6 +303,8 @@
             </td>
             <td>
                 @Html.TextBoxFor(model => model.TrainTicketsRequestNumber, Model.IsSecritaryEditable ? (object)new { maxlength = 15, width = "100px" } : (object)new { @readonly = "read-only", width = "100px" }) 
+                 @Html.DropDownListFor(model => model.TrainTicketType, new SelectList(Model.TrainTicketTypes, "ID", "Name"), Model.IsSecritaryEditable ? null : (object)new { disabled = "disabled" }) 
+                <input type="hidden" id="TrainTicketTypeHidden" name="TrainTicketTypeHidden" value="@Model.TrainTicketTypeHidden" />
             </td>
         </tr>
         @if (!string.IsNullOrEmpty(Model.SecretaryFio))
@@ -570,7 +574,7 @@
                 modal: true,
                 title: title,
                 width: 830,
-                height: 490,
+                height: 520,
                 // fix IE6  
                 bgiframe: true,
                 /*open: function (event, ui) {

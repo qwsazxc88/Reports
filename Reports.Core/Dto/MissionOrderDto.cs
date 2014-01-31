@@ -23,6 +23,8 @@ namespace Reports.Core.Dto
         public string State { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string AirTicketType { get; set; }
+        public string TrainTicketType { get; set; }
         public bool Flag { get; set; }
         public bool IsChecked { get; set; }
         

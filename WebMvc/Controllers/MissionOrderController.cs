@@ -126,6 +126,11 @@ namespace WebMvc.Controllers
                  model.Kind = model.KindHidden;
                  model.GoalId = model.GoalIdHidden;
              }
+             if(!model.IsSecritaryEditable)
+             {
+                 model.AirTicketType = model.AirTicketTypeHidden;
+                 model.TrainTicketType = model.TrainTicketTypeHidden;
+             }
         }
         protected void CorrectCheckboxes(MissionOrderEditModel model)
         {

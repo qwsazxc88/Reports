@@ -46,6 +46,8 @@ namespace Reports.Core.Domain
         public virtual string AirTicketsRequestNumber { get; set; }
         public virtual string TrainTicketsRequestNumber { get; set; }
         public virtual User Secretary { get; set; }
+        public virtual int AirTicketType { get; set; }
+        public virtual int TrainTicketType { get; set; }
 
         public virtual bool NeedToAcceptByChief { get; set; }
         public virtual bool NeedToAcceptByChiefAsManager { get; set; }
