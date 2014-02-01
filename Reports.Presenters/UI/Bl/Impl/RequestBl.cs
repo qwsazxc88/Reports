@@ -8992,8 +8992,48 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         
+        #region Mission PurchaseBook Documents
+        public MissionPurchaseBookDocListModel GetMissionPurchaseBookDocsListModel()
+        {
+            //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            MissionPurchaseBookDocListModel model = new MissionPurchaseBookDocListModel();
+            SetInitialDates(model);
+            model.IsAddAvailable = CurrentUser.UserRole == UserRole.Accountant;
+            return model;
+        }
+        public void SetMissionPurchaseBookDocsModel(MissionPurchaseBookDocListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<MissionPurchaseBookDocDto>();
+            else
+            {
+                SetDocumentsToModel(model, user);
+            }
+        }
+        public void SetDocumentsToModel(MissionPurchaseBookDocListModel model, User user)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = new List<MissionPurchaseBookDocDto>();
+            //model.Documents = new List<MissionOrderDto>();
+            //model.Documents = MissionReportDao.GetDocuments(
+            //    user.Id,
+            //    role,
+            //    //GetDepartmentId(model.Department),
+            //    //model.DepartmentId,
+            //    //model.PositionId,
+            //    //model.TypeId,
+            //    //0,
+            //    //model.StatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    //model.UserName,
+            //    model.SortBy,
+            //    model.SortDescending);
+        }
 
 
+        #endregion
 
     }
 

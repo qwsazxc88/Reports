@@ -381,7 +381,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult MissionReportsList(MissionReportsListModel model)
         {
-            ModelState.Clear();
+            //ModelState.Clear();
             RequestBl.SetMissionReportsListModel(model, !ValidateModel(model));
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
@@ -708,6 +708,28 @@ namespace WebMvc.Controllers
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
+        }
+
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult MissionPurchaseBookDocList()
+        {
+            var model = RequestBl.GetMissionPurchaseBookDocsListModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionPurchaseBookDocList(MissionPurchaseBookDocListModel model)
+        {
+            RequestBl.SetMissionPurchaseBookDocsModel(model, !ValidateModel(model));
+            return View(model);
+        }
+        protected bool ValidateModel(MissionPurchaseBookDocListModel model)
+        {
+            if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            return ModelState.IsValid;
         }
  
     }

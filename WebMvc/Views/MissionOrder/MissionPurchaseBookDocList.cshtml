@@ -1,0 +1,140 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.MissionPurchaseBookDocListModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Книга покупок (документы)";
+}
+
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+      <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr
+    <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    <tr>
+                            <td>
+                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                @if(Model.IsAddAvailable)
+                                {
+                                    <input type="button" value="Добавить" onclick="location.href='@Url.Action("EditMissionPurchaseBookDoc", "MissionOrder", new { id = 0 })'"/>
+                                }                                                                                     
+                            </td>
+                   </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+    <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                    <th style="width:70px">
+                        № п/п
+                    </th>
+                    <th style="width:100px">
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Номер</a></div>
+                    </th>
+                     <th style="width:100px">
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Дата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort3"><a href="#" style="min-width:500px" onclick = "SortChanged(3);">Контрагент</a></div>
+                    </th>
+                    <th style="width:100px">
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Сумма</a></div>
+                    </th>
+                </tr>
+               @* @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    int i = 0;
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.EditDate.ToShortDateString()</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Dep7Name</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("MissionReportEdit", new { id = doc.Id })' style="cursor:hand">@doc.ReportNumber</a>
+                            </td>
+                           
+                            <td>@doc.OrderNumber</td>
+                            <td>@doc.Grade</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@doc.State</td>
+                            <td>@doc.AccountantName</td>
+                        </tr>
+                    }
+                }*@
+            </table>    
+          </td>
+        </tr>
+     </table> 
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    //var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    //var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("moAllPurchaseBookDoc");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+//        if ($("#DepartmentReadOnly").val() == "False") {
+//            $("#DepartmentId").val('0');
+//            $("#DepartmentNameLabel").text('');
+//            $("#DepartmentName").val('');
+//        }
+//        //$("#TypeId").val('0');
+//         $("#StatusId").val('0');
+//         $("#UserName").val('');
+    }
+ </script>

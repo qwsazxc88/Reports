@@ -141,5 +141,9 @@ namespace Reports.Presenters.UI.Bl
         RequestAttachmentsModel GetMrAttachmentsModel(int id, RequestAttachmentTypeEnum typeId);
         void SetMissionReportEditTranModel(MissionReportEditTranModel model);
 
+        MissionPurchaseBookDocListModel GetMissionPurchaseBookDocsListModel();
+        void SetMissionPurchaseBookDocsModel(MissionPurchaseBookDocListModel model, bool hasError);
+
+
     }
 }

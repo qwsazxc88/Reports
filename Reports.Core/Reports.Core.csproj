@@ -363,6 +363,7 @@
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
+    <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
     <Compile Include="Dto\NameDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
