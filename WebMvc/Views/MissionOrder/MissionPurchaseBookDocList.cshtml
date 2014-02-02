@@ -54,7 +54,7 @@
                                 <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
                                 @if(Model.IsAddAvailable)
                                 {
-                                    <input type="button" value="Добавить" onclick="location.href='@Url.Action("EditMissionPurchaseBookDoc", "MissionOrder", new { id = 0 })'"/>
+                                    <input type="button" value="Добавить" onclick="location.href='@Url.Action("EditMissionPbDocument", "MissionOrder", new { id = 0 })'"/>
                                 }                                                                                     
                             </td>
                    </tr>
@@ -84,31 +84,21 @@
                         <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Сумма</a></div>
                     </th>
                 </tr>
-               @* @if (Model.Documents != null && Model.Documents.Count > 0)
+                @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
-                    int i = 0;
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
                             <td>@doc.Number</td>
-                            <td>@doc.EditDate.ToShortDateString()</td>
-                            <td>@doc.UserName</td>
-                            <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("MissionReportEdit", new { id = doc.Id })' style="cursor:hand">@doc.ReportNumber</a>
+                                <a class="ui-notify-close" href='@Url.Action("EditMissionPbDocument", new { id = doc.Id })' style="cursor:hand">@doc.DocumentNumber</a>
                             </td>
-                           
-                            <td>@doc.OrderNumber</td>
-                            <td>@doc.Grade</td>
-                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
-                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
-                            <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
-                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
-                            <td>@doc.State</td>
-                            <td>@doc.AccountantName</td>
+                            <td>@doc.DocumentDate.ToShortDateString()</td>
+                            <td>@doc.Contractor</td>
+                            <td>@RequestBl.FormatSum(doc.Sum)</td>
                         </tr>
                     }
-                }*@
+                }
             </table>    
           </td>
         </tr>

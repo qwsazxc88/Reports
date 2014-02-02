@@ -342,4 +342,10 @@
   <data name="ConstantEditModel_Hours_Required" xml:space="preserve">
     <value>Баланс мес.(часов) - обязательное поле</value>
   </data>
+  <data name="EditMissionPbDocumentModel_Date_Required" xml:space="preserve">
+    <value>Дата СФ(акта) - обязательное поле</value>
+  </data>
+  <data name="EditMissionPbDocumentModel_Number_Required" xml:space="preserve">
+    <value>Номер СФ(акта) - обязательное поле</value>
+  </data>
 </root>

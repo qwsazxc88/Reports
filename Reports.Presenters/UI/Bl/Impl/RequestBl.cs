@@ -437,7 +437,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(accountDao); }
             set { accountDao = value; }
         }
-
+        protected IContractorDao contractorDao;
+        public IContractorDao ContractorDao
+        {
+            get { return Validate.Dependency(contractorDao); }
+            set { contractorDao = value; }
+        }
+        protected IMissionPurchaseBookDocumentDao missionPurchaseBookDocumentDao;
+        public IMissionPurchaseBookDocumentDao MissionPurchaseBookDocumentDao
+        {
+            get { return Validate.Dependency(missionPurchaseBookDocumentDao); }
+            set { missionPurchaseBookDocumentDao = value; }
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -9003,36 +9014,143 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetMissionPurchaseBookDocsModel(MissionPurchaseBookDocListModel model, bool hasError)
         {
-            User user = UserDao.Load(model.UserId);
+            //User user = UserDao.Load(model.UserId);
             if (hasError)
                 model.Documents = new List<MissionPurchaseBookDocDto>();
             else
             {
-                SetDocumentsToModel(model, user);
+                SetDocumentsToModel(model);
             }
         }
-        public void SetDocumentsToModel(MissionPurchaseBookDocListModel model, User user)
+        public void SetDocumentsToModel(MissionPurchaseBookDocListModel model)
         {
             UserRole role = CurrentUser.UserRole;
             model.Documents = new List<MissionPurchaseBookDocDto>();
             //model.Documents = new List<MissionOrderDto>();
-            //model.Documents = MissionReportDao.GetDocuments(
-            //    user.Id,
-            //    role,
-            //    //GetDepartmentId(model.Department),
-            //    //model.DepartmentId,
-            //    //model.PositionId,
-            //    //model.TypeId,
-            //    //0,
-            //    //model.StatusId,
-            //    model.BeginDate,
-            //    model.EndDate,
-            //    //model.UserName,
-            //    model.SortBy,
-            //    model.SortDescending);
+            model.Documents = MissionPurchaseBookDocumentDao.GetDocuments(
+                //user.Id,
+                role,
+                model.BeginDate,
+                model.EndDate,
+                model.SortBy,
+                model.SortDescending);
         }
 
+        public EditMissionPbDocumentModel GetEditMissionPbDocumentModel(int id)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            if(current.UserRole != UserRole.Accountant && current.UserRole != UserRole.OutsourcingManager)
+                throw new ArgumentException("Доступ запрещен.");
+            EditMissionPbDocumentModel model = new EditMissionPbDocumentModel {UserId = current.Id, Id = id};
+            if(id != 0)
+            {
+                MissionPurchaseBookDocument entity = MissionPurchaseBookDocumentDao.Load(id);
+                if(entity == null)
+                    throw new ValidationException(string.Format("Не найден документ книги покупок (id {0}) в базе данных", id));
+                model.Number = entity.Number;
+                model.DocumentDate = entity.DocumentDate;
+                model.ContractorId = entity.Contractor.Id;
+                model.Version = entity.Version;
+            }
+            LoadDictionaries(model);
+            model.IsEditable = current.UserRole == UserRole.Accountant;
+            model.ContractorIdHidden = model.ContractorId;
+            return model;
+        }
 
+        public bool SaveMissionPbDocumentEditModel(EditMissionPbDocumentModel model, out string error)
+        {
+            error = string.Empty;
+            //User user = null;
+            try
+            {
+                //user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                if (current.UserRole != UserRole.Accountant)
+                {
+                    error = "Редактирование отчета запрещено";
+                    return false;
+                }
+                MissionPurchaseBookDocument entity = new MissionPurchaseBookDocument();
+                //if (model.Id != 0)
+                //{
+                if (model.Id > 0)
+                {
+                    entity = MissionPurchaseBookDocumentDao.Load(model.Id);
+                    if (entity == null)
+                        throw new ValidationException(string.Format("Не найден документ книги покупок (id {0}) в базе данных", model.Id));
+                    if (entity.Version != model.Version)
+                    {
+                        error = "Документ был изменен другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                }
+                else
+                {
+                    entity.CreateDate = DateTime.Now;
+                    entity.Editor = UserDao.Load(current.Id);
+                    entity.EditDate = DateTime.Now;
+                }
+                entity.Number = model.Number;
+                entity.DocumentDate = model.DocumentDate.Value;
+                entity.Contractor = ContractorDao.Load(model.ContractorId);
+                MissionPurchaseBookDocumentDao.SaveAndFlush(entity);
+                if (model.Id != 0 && entity.Version != model.Version)
+                {
+                    entity.EditDate = DateTime.Now;
+                    entity.Editor = UserDao.Load(current.Id);
+                    MissionPurchaseBookDocumentDao.SaveAndFlush(entity);
+                }
+                if (model.Id == 0)
+                    model.Id = entity.Id;
+                model.Version = entity.Version;
+                model.ContractorIdHidden = model.ContractorId;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MissionPurchaseBookDocumentDao.RollbackTran();
+                Log.Error("Error on SaveMissionPbDocumentEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                LoadDictionaries(model);
+            }
+        }
+        protected void LoadDictionaries(EditMissionPbDocumentModel model)
+        {
+            List<Contractor> list = ContractorDao.LoadAllSorted().ToList();
+            model.Contractors = list.ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
+            if (model.ContractorId != 0)
+                model.ContractorAccount = list.Where(x => x.Id == model.ContractorId).First().Account;
+            else
+                model.ContractorAccount = list.First().Account;
+        }
+        public void ReloadDictionaries(EditMissionPbDocumentModel model)
+        {
+            LoadDictionaries(model);
+        }
+        public ContractorAccountDto GetContractorAccount(int id)
+        {
+            try
+            {
+                Contractor entity = ContractorDao.Load(id);
+                if(entity == null)
+                    throw new ValidationException(string.Format("Не найден контрагент (id {0}) в базе данных",id));
+                return new ContractorAccountDto { Error = string.Empty, Account = entity.Account };
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetContractorAccount:", ex);
+                return new ContractorAccountDto
+                {
+                    Error = string.Format("Ошибка: {0}",ex.GetBaseException().Message)
+                };
+            }
+        }
         #endregion
 
     }

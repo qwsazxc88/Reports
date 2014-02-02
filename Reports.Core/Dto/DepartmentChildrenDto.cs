@@ -17,4 +17,9 @@ namespace Reports.Core.Dto
         public string ShortName { get; set; }
         public string Error { get; set; }
     }
+    public class ContractorAccountDto
+    {
+        public string Account { get; set; }
+        public string Error { get; set; }
+    }
 }

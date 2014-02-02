@@ -92,6 +92,8 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
     <Compile Include="Dao\IMissionReportCostDao.cs" />
     <Compile Include="Dao\IMissionReportCostTypeDao.cs" />
@@ -143,6 +145,8 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ContractorDao.cs" />
+    <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCostDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCostTypeDao.cs" />
@@ -264,6 +268,7 @@
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
+    <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Deduction.cs" />
     <Compile Include="Domain\DeductionKind.cs" />
@@ -302,6 +307,7 @@
     <Compile Include="Domain\MissionGraid.cs" />
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
+    <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
     <Compile Include="Domain\MissionReport.cs" />
     <Compile Include="Domain\MissionReportComment.cs" />
     <Compile Include="Domain\MissionReportCost.cs" />
@@ -683,6 +689,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Account.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionPurchaseBookDocument.hbm.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Contractor.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

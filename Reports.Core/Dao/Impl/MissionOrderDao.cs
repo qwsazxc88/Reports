@@ -18,7 +18,7 @@ namespace Reports.Core.Dao.Impl
             set { userDao = value; }
         }
 
-        protected const string sqlSelectForMissionOrderRn = @";with res as
+        public const string sqlSelectForMissionOrderRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
         public override IQuery CreateQuery(string sqlQuery)

@@ -385,6 +385,13 @@ namespace Reports.Core
             Register(Component.For(typeof(IAccountDao)).
                 ImplementedBy(typeof(AccountDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IContractorDao)).
+               ImplementedBy(typeof(ContractorDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionPurchaseBookDocumentDao)).
+                ImplementedBy(typeof(MissionPurchaseBookDocumentDao)).
+                LifeStyle.Is(type));
+
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

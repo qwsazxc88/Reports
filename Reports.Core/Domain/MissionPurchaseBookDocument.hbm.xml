@@ -1,0 +1,23 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionPurchaseBookDocument">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	<property name="EditDate" not-null="true"/>
+    <property name="DocumentDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+
+	  
+	<many-to-one name="Contractor" class="Contractor" column="ContractorId" foreign-key="FK_MissionPurchaseBookDocument_Contractor" index="MissionPurchaseBookDocument_Contractor"  not-null="false"/>
+	<property name="Sum"  not-null="true"/>
+	<many-to-one name="Editor" class="User" column="EditorId" foreign-key="FK_MissionPurchaseBookDocument_EditorUser" index="IX_MissionPurchaseBookDocument_EditorUser"  not-null="true"/>
+
+	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>
+		  <one-to-many class="MissionTarget"/>
+	  </bag>-->
+	  
+	</class>
+</hibernate-mapping>

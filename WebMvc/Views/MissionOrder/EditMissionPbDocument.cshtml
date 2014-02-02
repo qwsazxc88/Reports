@@ -1,0 +1,109 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditMissionPbDocumentModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Редактирование книги покупок";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+        <table style="width:100%"> 
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr
+            <tr>
+                <td style="width:115px">
+                    @Html.LabelFor(m => m.Number):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                    <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Number, Model.IsEditable ? null : (object)new { @readonly = "readonly" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DocumentDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.DocumentDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.DocumentDate)
+                        @Html.HiddenFor(model => model.DocumentDate)
+                    } 
+                 </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.ContractorId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ContractorId, new SelectList(Model.Contractors, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "ContractorChange();" } : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ContractorIdHidden" name="ContractorIdHidden" value="@Model.ContractorIdHidden" />
+                    &nbsp;@Html.TextBoxFor(model => model.ContractorAccount,new { disabled = "disabled"  })
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="submit" value="Записать" name="SaveBtn" id="SaveBtn" onclick="return Validate();" 
+                    @if(!Model.IsEditable){<text>style="display:none"</text> } />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <hr />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="button" value="Добавить" name="AddRecordBtn" id="AddRecordBtn" onclick="addRecord()" 
+                    @if (!Model.IsEditable || Model.Id == 0) {<text>style="display:none"</text> } />
+                </td>
+            </tr>
+        </table>
+    </div>
+     <script type="text/javascript">
+       var  actionGetContractorAccountUrl = "@Url.Action("GetContractorAccount", "MissionOrder")";
+        $(document).ready(function () {
+            setActiveMenuItem("moAllPurchaseBookDoc");
+            $("#DocumentDate").datepicker();
+            $(".hasDatepicker").width("75px");
+        });
+        function Validate()
+        {
+            return true;
+        }
+        function addRecord()
+        {
+        }
+        function ContractorChange()
+        {
+            GetContractorAccount();
+        }
+        function GetContractorAccount() {
+            clearErrors();
+            var id =  $("#ContractorId").val();
+            var url = actionGetContractorAccountUrl + '?id=' + id;
+            $.getJSON(url,
+        function (result) {
+            if (result.Error != "") {
+                addError(result.Error);
+            }
+            else {
+                $("#ContractorAccount").val(result.Account);
+            }
+        });
+
+        }
+     </script>
+}
+       
+   

@@ -143,7 +143,9 @@ namespace Reports.Presenters.UI.Bl
 
         MissionPurchaseBookDocListModel GetMissionPurchaseBookDocsListModel();
         void SetMissionPurchaseBookDocsModel(MissionPurchaseBookDocListModel model, bool hasError);
-
-
+        EditMissionPbDocumentModel GetEditMissionPbDocumentModel(int id);
+        ContractorAccountDto GetContractorAccount(int id);
+        void ReloadDictionaries(EditMissionPbDocumentModel model);
+        bool SaveMissionPbDocumentEditModel(EditMissionPbDocumentModel model, out string error);
     }
 }

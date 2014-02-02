@@ -731,6 +731,64 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
- 
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult EditMissionPbDocument(int id)
+        {
+            var model = RequestBl.GetEditMissionPbDocumentModel(id);
+            return View(model);
+        }
+
+        public ContentResult GetContractorAccount(int id)
+        {
+            ContractorAccountDto model;
+            try
+            {
+                model = RequestBl.GetContractorAccount(id);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetContractorAccount:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new ContractorAccountDto { Error = string.Format("Ошибка: {0}", error) };
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Accountant)]
+        public ActionResult EditMissionPbDocument(EditMissionPbDocumentModel model)
+        {
+            if (!ValidateModel(model))
+            {
+                RequestBl.ReloadDictionaries(model);
+                return View(model);
+            }
+            string error;
+            if (!RequestBl.SaveMissionPbDocumentEditModel(model, out error))
+            {
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(RequestBl.GetEditMissionPbDocumentModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateModel(EditMissionPbDocumentModel model)
+        {
+            //if(string.IsNullOrEmpty(model.Number))
+            //    ModelState.AddModelError("Number", "СФ (Акт) номер - обязательное поле");
+            //if (!model.DocumentDate.HasValue)
+            //    ModelState.AddModelError("DocumentDate", "СФ (Акт) дата - неправильная дата");
+            return ModelState.IsValid;
+        }
     }
 }
