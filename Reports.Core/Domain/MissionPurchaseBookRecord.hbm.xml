@@ -1,0 +1,26 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionPurchaseBookRecord">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+	<property name="EditDate" not-null="true"/>
+
+	<many-to-one name="Document" class="MissionPurchaseBookDocument" column="MissionPurchaseBookDocumentId" foreign-key="FK_MissionPurchaseBookRecord_MissionPurchaseBookDocument" index="MissionPurchaseBookRecord_MissionPurchaseBookDocument"  not-null="true"/>  
+	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionPurchaseBookRecord_MissionOrder" index="MissionPurchaseBookRecord_MissionOrder"  not-null="true"/>
+	<many-to-one name="MissionReportCostType" class="MissionReportCostType" column="MissionReportCostTypeId" foreign-key="FK_MissionPurchaseBookRecord_MissionReportCostType" index="MissionPurchaseBookRecord_MissionReportCostType"  not-null="true"/>
+	<many-to-one name="MissionReportCost" class="MissionReportCost" column="MissionReportCostId" foreign-key="FK_MissionPurchaseBookRecord_MissionReportCost" index="MissionPurchaseBookRecord_MissionReportCost"  not-null="true"/>
+	<property name="Sum"  not-null="true"/>
+	<property name="SumNds"  not-null="true"/>
+	<property name="AllSum"  not-null="true"/>
+	<property name="RequestNumber" length="16" not-null="true"/>
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionPurchaseBookRecord_User" index="IX_MissionPurchaseBookRecord_User"  not-null="true"/>
+	<many-to-one name="Editor" class="User" column="EditorId" foreign-key="FK_MissionPurchaseBookRecord_EditorUser" index="IX_MissionPurchaseBookRecord_EditorUser"  not-null="true"/>
+
+	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>
+		  <one-to-many class="MissionTarget"/>
+	  </bag>-->
+	  
+	</class>
+</hibernate-mapping>

@@ -37,5 +37,16 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsEditable { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public EditMissionPbRecordsModel RecordsModel { get; set; }
+      
+    }
+    public class EditMissionPbRecordsModel
+    {
+        public int DocumentId { get; set; }
+        public decimal Sum { get; set; }
+        public decimal SumNds { get; set; }
+        public decimal AllSum { get; set; }
+        public List<MissionPurchaseBookRecordDto> Records { get; set; }
     }
 }

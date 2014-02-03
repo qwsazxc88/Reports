@@ -308,6 +308,7 @@
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
     <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
+    <Compile Include="Domain\MissionPurchaseBookRecord.cs" />
     <Compile Include="Domain\MissionReport.cs" />
     <Compile Include="Domain\MissionReportComment.cs" />
     <Compile Include="Domain\MissionReportCost.cs" />
@@ -370,6 +371,7 @@
     <Compile Include="Dto\MinMaxDate.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
+    <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
     <Compile Include="Dto\NameDto.cs" />
     <Compile Include="Dto\PrintVacationOrderDto.cs" />
     <Compile Include="Dto\SaveTypeResult.cs" />
@@ -697,6 +699,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Contractor.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionPurchaseBookRecord.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

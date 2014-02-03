@@ -21,7 +21,7 @@ namespace Reports.Core.Domain
         public virtual Contractor Contractor { get; set; }
         public virtual decimal Sum { get; set; }
         public virtual User Editor { get; set; }
-        //public virtual IList<MissionTarget> Targets { get; set; }
+        public virtual IList<MissionPurchaseBookRecord> Records { get; set; }
 
         #endregion
 

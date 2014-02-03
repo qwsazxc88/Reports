@@ -9128,6 +9128,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractorAccount = list.Where(x => x.Id == model.ContractorId).First().Account;
             else
                 model.ContractorAccount = list.First().Account;
+            if (model.Id == 0)
+                model.RecordsModel = new EditMissionPbRecordsModel();
+            else
+            {
+                model.RecordsModel = new EditMissionPbRecordsModel();
+            }
+
         }
         public void ReloadDictionaries(EditMissionPbDocumentModel model)
         {

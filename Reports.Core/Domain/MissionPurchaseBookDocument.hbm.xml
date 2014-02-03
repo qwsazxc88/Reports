@@ -14,10 +14,10 @@
 	<property name="Sum"  not-null="true"/>
 	<many-to-one name="Editor" class="User" column="EditorId" foreign-key="FK_MissionPurchaseBookDocument_EditorUser" index="IX_MissionPurchaseBookDocument_EditorUser"  not-null="true"/>
 
-	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
-		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>
-		  <one-to-many class="MissionTarget"/>
-	  </bag>-->
+	  <bag name="Records" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="MissionPurchaseBookDocumentId" foreign-key="FK_MissionPurchaseBookRecord_MissionPurchaseBookDocument"/>
+		  <one-to-many class="MissionPurchaseBookRecord"/>
+	  </bag>
 	  
 	</class>
 </hibernate-mapping>

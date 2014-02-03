@@ -68,6 +68,11 @@
                     @if (!Model.IsEditable || Model.Id == 0) {<text>style="display:none"</text> } />
                 </td>
             </tr>
+            <tr>
+            <td colspan="2">
+                <div id="RecordsModelContext">@Html.Partial("MissionPdRecordPartial", Model.RecordsModel)</div>
+            </td>
+        </tr>
         </table>
     </div>
      <script type="text/javascript">

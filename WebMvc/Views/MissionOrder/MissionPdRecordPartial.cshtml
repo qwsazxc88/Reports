@@ -1,0 +1,36 @@
+﻿@model Reports.Presenters.UI.ViewModel.EditMissionPbRecordsModel
+@Html.HiddenFor(model => model.DocumentId)              
+<table id="RecordsTable" style="width: 100%;">
+        @*<tr>
+            <td>
+                <div id="CommentError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>   *@ 
+        @if (Model != null && Model.Records != null && Model.Records.Count > 0)
+        {
+            <tr>
+                <td>Командированный сотрудник</td>
+                <td>№ авансового отчета</td>         
+                <td>№ приказа</td>  
+                <td>Сумма расходов</td>  
+                <td>НДС</td> 
+                <td>Сумма всего</td>  
+                <td>Вид расхода</td>  
+                <td>Номер заявки в ЭССЗ</td>
+                <td></td>
+            </tr>   
+            foreach (var record in Model.Records)
+            {
+                <tr>
+                    <td>@record.UserName</td>
+                    <td>@record.ReportNumber</td>
+                    <td>@record.OrderNumber</td>
+                    <td>@record.Sum</td>
+                    <td>@record.SumNds</td>
+                    <td>@record.AllSum</td>
+                    <td>@record.CostType</td>
+                    <td>@record.RequestNumber</td>
+                </tr>
+            }
+        }
+</table>
