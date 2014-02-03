@@ -215,8 +215,8 @@ function ValidateShortName() {
         addTerraSelError("Необходимо указать короткое название");
         return false;
     }
-    if ($('#ShortName').val().length > 3 ) {
-        addTerraSelError("Длина короткого названия не может превышать  3 символов");
+    if ($('#ShortName').val().length > 5 ) {
+        addTerraSelError("Длина короткого названия не может превышать  5 символов");
         return false;
     }
     return true;
