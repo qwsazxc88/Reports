@@ -449,6 +449,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionPurchaseBookDocumentDao); }
             set { missionPurchaseBookDocumentDao = value; }
         }
+        protected IMissionPurchaseBookRecordDao missionPurchaseBookRecordDao;
+        public IMissionPurchaseBookRecordDao MissionPurchaseBookRecordDao
+        {
+            get { return Validate.Dependency(missionPurchaseBookRecordDao); }
+            set { missionPurchaseBookRecordDao = value; }
+        }
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -9128,13 +9134,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractorAccount = list.Where(x => x.Id == model.ContractorId).First().Account;
             else
                 model.ContractorAccount = list.First().Account;
-            if (model.Id == 0)
-                model.RecordsModel = new EditMissionPbRecordsModel();
-            else
-            {
-                model.RecordsModel = new EditMissionPbRecordsModel();
-            }
-
+            model.RecordsModel = GetRecordsModel(model.Id);
+        }
+        public EditMissionPbRecordsModel GetRecordsModel(int documentId)
+        {
+            if (documentId == 0)
+                return new EditMissionPbRecordsModel();
+          
+            List<MissionPurchaseBookRecordDto> records = 
+                    MissionPurchaseBookRecordDao.GetRecordsForDocumentId(documentId).ToList();
+            EditMissionPbRecordsModel model = new EditMissionPbRecordsModel
+                                                    {
+                                                        DocumentId = documentId,
+                                                        Records = records,
+                                                        AllSum = records.Sum(x => x.AllSum),
+                                                        Sum = records.Sum(x => x.Sum),
+                                                        SumNds = records.Sum(x => x.SumNds)
+                                                    };
+            return model;
         }
         public void ReloadDictionaries(EditMissionPbDocumentModel model)
         {

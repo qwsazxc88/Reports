@@ -94,6 +94,7 @@
     <Compile Include="Dao\IChildVacationDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
+    <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
     <Compile Include="Dao\IMissionReportCostDao.cs" />
     <Compile Include="Dao\IMissionReportCostTypeDao.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
+    <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCostDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCostTypeDao.cs" />
