@@ -3,206 +3,253 @@
     Layout = null;
     ViewBag.Title = "Командировочное удостоверение";
 }
-<HTML><HEAD>
-<META content="text/html; charset=utf-8" http-equiv=Content-Type>
-<META name=GENERATOR content="MSHTML 10.00.9200.16660"></HEAD>
-<BODY><TBODY>
-<TABLE style="HEIGHT: 322px; WIDTH: 971px">
-<TBODY>
-<TR height=30>
-<TH style="text-align:left" colspan="2">
-<P align=left>Командировочное удостоверение № КУ-@Model.DocumentNumber к Приказу в командировку № К-@Model.DocumentNumber</P>
-</TH>
-</TR>
-<TR>
-<TD height=30>Дата составления</TD>
-<TH style="text-align:left">@Model.DateCreated</TH></TR>
-<TR>
-<TD height=30>Организация</TD>
-<TH style="text-align:left">@Model.Organization</TH></TR>
-@*<TR>
-<TD height=30>Номер документа</TD>
-<TH style="text-align:left">@Model.DocumentNumber</TH></TR>*@
-<TR>
-<TD height=30>Сотрудник</TD>
-<TH style="text-align:left">@Model.UserName</TH></TR>
-<TR>
-<TD height=30>Табельный номер</TD>
-<TH style="text-align:left">@Model.UserNumber</TH></TR>
-<TR>
-<TD height=30 style="width:135px">Структурное подразделение</TD>
-<TH style="text-align:left">@Model.Department</TH></TR>
-<TR>
-<TD height=30>Должность</TD>
-<TH style="text-align:left">@Model.Position</TH></TR>
-<TR>
-<TD height=30>Руководитель</TD>
-<TH style="text-align:left">@Model.ManagerName</TH></TR>
-<TR>
-<TD height=30>Кадровик</TD>
-<TH style="text-align:left">@Model.PersonnelName</TH></TR></TR></TBODY></TABLE></TBODY></TABLE>
-<P>
-<HR>
-<SUP><I>Б. Отметки о выбытии и прибытии</I></SUP> 
-<P></P>
-<DIV align=center>
-<TABLE style="HEIGHT: 109px; WIDTH: 910px" align=left>
-<TBODY>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR>
-<TR>
-<TD colSpan=2><FONT size=2>Выбыл из&nbsp;_____________________________________________________ Прибыл &nbsp;____________________________________________________________</FONT></TD></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>"&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;"_________________________20____ года</FONT></P></FONT>
-<TR>
-<TD>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></TD>
-<TD><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P>
-<TD>
-<P align=left><FONT size=2>(должность)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;(личная подпись)</FONT></P></D><FONT size=2>
-<P align=left><FONT size=2>______________________________________________________________</FONT></P></FONT></TD></TR></TR>
-<TR>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD>
-<TD>
-<P align=center><FONT size=2>(расшифровка подписи)</FONT></P>
-<P align=left><FONT size=2>М.П.</FONT></P></TD></TR></TBODY></TABLE></DIV>
-<DIV align=center>&nbsp;</DIV>
-<DIV align=center>&nbsp;</DIV></BODY></HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<style>
+		table#header{
+			border: 0;
+			width: 815px;
+		}
+		tr.headerRow{
+			height: 30px;
+		}
+		th{
+			text-align: left;
+		}
+		td.headerItemCell{
+			width: 150px;
+		}
+		td.headerValueCell{
+			font-weight: bold;
+			text-align:left;
+		}
+		hr{
+			width: 815px;
+			text-align: left;
+		}
+		p.subtitle{
+			font-style: italic;
+			font-size: small;
+		}
+		table#mainBody{
+			border: 0;
+			width: 815px;
+			margin-left: 0;
+		}
+		td.left{
+			width: 50%;
+			padding-right: 16px;
+		}
+		td.right{
+			width: 50%;
+			padding-left: 16px;
+		}
+		table.mainBodyBlock{
+			width: 100%;
+			margin-bottom: 16px;
+		}
+		td.fillable{
+			border-bottom: 1px solid black;
+			padding: 0;
+		}
+		td.nonFillable{
+			padding: 0;			
+			font-style: italic;
+			text-align: center;
+			font-size: small;
+		}
+		td.stamp{
+			padding: 0;
+			text-indent: 16px;
+		}
+		td.fillable>table{
+			margin: 0;
+			padding: 0;
+		}
+		td.nonFillable>table{
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			font-style: italic;
+			font-size: small;
+		}
+		td.dayCell{
+			width: 30px;
+			margin: 0;
+			padding: 0;
+		}
+		td.monthCell{
+			width: 150px;
+			margin: 0;
+			padding: 0;
+		}
+		td.yearCell{
+			width: 90px;
+			margin: 0;
+			padding: 0;
+		}
+		td.positionPromptCell{
+			text-align: left;
+			vertical-align: top;
+			width: 50%;
+		}
+		td.signaturePromptCell{
+			text-align: right;
+			width: 50%;			
+		}
+	</style>
+</head>
+
+<body>
+	<!-- header start -->
+	<table id="header">
+		<thead>
+			<tr class="headerRow">
+				<th colspan="2">Командировочное удостоверение №&nbsp;КУ-@Model.DocumentNumber
+					к&nbsp;Приказу&nbsp;на&nbsp;командировку&nbsp;№&nbsp;К-@Model.DocumentNumber
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="headerRow">
+				<td class="headerItemCell">Дата составления</td>
+				<td class="headerValueCell">@Model.DateCreated</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Организация</td>
+				<td class="headerValueCell">@Model.Organization</td>
+			</tr>
+			@*<tr class="headerRow">
+				<td class="headerItemCell">Номер документа</td>
+				<td class="headerValueCell">@Model.DocumentNumber</td>
+			</tr>*@
+			<tr class="headerRow">
+				<td class="headerItemCell">Сотрудник</td>
+				<td class="headerValueCell">@Model.UserName</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Табельный номер</td>
+				<td class="headerValueCell">@Model.UserNumber</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Структурное подразделение</td>
+				<td class="headerValueCell">@Model.Department</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Должность</td>
+				<td class="headerValueCell">@Model.Position</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Руководитель</td>
+				<td class="headerValueCell">@Model.ManagerName</td>
+			</tr>
+			<tr class="headerRow">
+				<td class="headerItemCell">Кадровик</td>
+				<td class="headerValueCell">@Model.PersonnelName</td>
+			</tr>			
+		</tbody>
+	</table>
+	<!-- header end -->
+	<hr />
+	<!-- main body start -->
+	<p class="subtitle">Б. Отметки о выбытии и прибытии</p>
+	<table id="mainBody">
+		<tbody>
+			@for(var i = 0; i < 5; i++)
+			{
+			<tr>
+				<td class="left">
+					<table class="mainBodyBlock">
+						<tr>
+							<td class="fillable">Выбыл из</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="fillable">
+								<table>
+									<tr>
+										<td class="dayCell">&laquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&raquo;</td>
+										<td class="monthCell">&nbsp;</td>
+										<td class="yearCell">20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;года</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="nonFillable">
+								<table>
+									<tr>
+										<td class="positionPromptCell">(должность)</td>
+										<td class="signaturePromptCell">(личная подпись)</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="nonFillable">(расшифровка подписи)</td>
+						</tr>
+						<tr>
+							<td class="stamp">М.П.</td>
+						</tr>
+					</table>
+				<td>
+				<td class="right">
+					<table class="mainBodyBlock">
+						<tr>
+							<td class="fillable">Прибыл</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="fillable">
+								<table>
+									<tr>
+										<td class="dayCell">&laquo;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&raquo;</td>
+										<td class="monthCell">&nbsp;</td>
+										<td class="yearCell">20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;года</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="nonFillable">
+								<table>
+									<tr>
+										<td class="positionPromptCell">(должность)</td>
+										<td class="signaturePromptCell">(личная подпись)</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class="fillable">&nbsp;</td>
+						</tr>
+						<tr>
+							<td class="nonFillable">(расшифровка подписи)</td>
+						</tr>
+						<tr>
+							<td class="stamp">М.П.</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			}
+		</tbody>
+	</table>
+	<!-- main body end -->
+</body>
+</html>
