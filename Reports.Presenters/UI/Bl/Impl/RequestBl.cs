@@ -9058,8 +9058,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractorId = entity.Contractor.Id;
                 model.Version = entity.Version;
             }
-            LoadDictionaries(model);
             model.IsEditable = current.UserRole == UserRole.Accountant;
+            LoadDictionaries(model);
             model.ContractorIdHidden = model.ContractorId;
             return model;
         }
@@ -9134,15 +9134,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractorAccount = list.Where(x => x.Id == model.ContractorId).First().Account;
             else
                 model.ContractorAccount = list.First().Account;
-            model.RecordsModel = GetRecordsModel(model.Id);
+            model.RecordsModel = GetRecordsModel(model.Id,model.IsEditable);
         }
-        public EditMissionPbRecordsModel GetRecordsModel(int documentId)
+        public EditMissionPbRecordsModel GetPbRecordsModel(int documentId)
+        {
+            return GetRecordsModel(documentId, AuthenticationService.CurrentUser.UserRole == UserRole.Accountant);
+        }
+        protected EditMissionPbRecordsModel GetRecordsModel(int documentId,bool isEditable)
         {
             if (documentId == 0)
                 return new EditMissionPbRecordsModel();
           
             List<MissionPurchaseBookRecordDto> records = 
                     MissionPurchaseBookRecordDao.GetRecordsForDocumentId(documentId).ToList();
+            foreach (MissionPurchaseBookRecordDto dto in records)
+                dto.IsEditable = dto.IsEditable && isEditable;
+            
             EditMissionPbRecordsModel model = new EditMissionPbRecordsModel
                                                     {
                                                         DocumentId = documentId,
@@ -9174,6 +9181,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Error = string.Format("Ошибка: {0}",ex.GetBaseException().Message)
                 };
             }
+        }
+
+        public void SetMissionReportEditRecordModel(MissionPbEditRecordModel model)
+        {
+            if(model.RecordId != 0)
+            {
+               MissionPurchaseBookRecord entity = MissionPurchaseBookRecordDao.Load(model.RecordId);
+                if(entity == null)
+                    throw new ArgumentException(string.Format("Не могу загрузить запись книги покупок (id {0}) из базы данных",model.RecordId));
+                model.AllSum = entity.AllSum;
+                model.CostTypeId = entity.MissionReportCostType.Id;
+                model.OrderId = entity.MissionOrder.Id;
+                model.RequestNumber = entity.RequestNumber;
+                model.Sum = entity.Sum;
+                model.SumNds = entity.SumNds;
+                model.UserId = entity.User.Id;
+            }
+            LoadDictionaries(model);
+        }
+        protected void LoadDictionaries(MissionPbEditRecordModel model)
+        {
+            
         }
         #endregion
 

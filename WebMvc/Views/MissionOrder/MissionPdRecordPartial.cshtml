@@ -1,4 +1,7 @@
-﻿@model Reports.Presenters.UI.ViewModel.EditMissionPbRecordsModel
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.EditMissionPbRecordsModel
 @Html.HiddenFor(model => model.DocumentId)              
 <table id="RecordsTable" style="width: 100%;">
         @*<tr>
@@ -25,12 +28,18 @@
                     <td>@record.UserName</td>
                     <td>@record.ReportNumber</td>
                     <td>@record.OrderNumber</td>
-                    <td>@record.Sum</td>
-                    <td>@record.SumNds</td>
-                    <td>@record.AllSum</td>
+                    <td>@RequestBl.FormatSum(record.Sum)</td>
+                    <td>@RequestBl.FormatSum(record.SumNds)</td>
+                    <td>@RequestBl.FormatSum(record.AllSum)</td>
                     <td>@record.CostType</td>
                     <td>@record.RequestNumber</td>
                 </tr>
             }
+            <tr>
+                <td colspan="3"></td>
+                <td>@RequestBl.FormatSum(Model.Sum)</td>
+                <td>@RequestBl.FormatSum(Model.SumNds)</td>
+                <td>@RequestBl.FormatSum(Model.AllSum)</td>
+            </tr>
         }
 </table>
