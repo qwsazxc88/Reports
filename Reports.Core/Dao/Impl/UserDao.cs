@@ -979,6 +979,22 @@ namespace Reports.Core.Dao.Impl
             //query.SetDateTime("endDate", endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }
+        public virtual IList<IdNameDto> GetUsersWithPurchaseBookReportCosts()
+        {
+            const string sqlQuery = @" select distinct u.Id,u.Name+N', '+d.Name+N', '+d3.Name as Name from Users u
+                    inner join [dbo].[Department] d on d.Id = u.DepartmentId
+                    inner join [dbo].[Department] d3 on d.Path like d3.Path+N'%' and d3.[ItemLevel] = 3
+                    where exists
+                    (select mr.id from [dbo].[MissionReportCost] mrc
+                    inner join [dbo].[MissionReport] mr on mr.Id = mrc.ReportId
+                    where mrc.IsCostFromPurchaseBook = 1
+                    and mr.UserId = u.Id)
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
 		//protected static UserInstitutionLink FindInList(IList<UserInstitutionLink> list, int userId)
 		//{
 		//    foreach (UserInstitutionLink entity in list)

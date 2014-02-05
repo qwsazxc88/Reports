@@ -62,6 +62,8 @@ namespace Reports.Core.Dao
 
         User GetManagerForEmployee(string login);
         IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath);
+
+        IList<IdNameDto> GetUsersWithPurchaseBookReportCosts();
     }
 }
 
