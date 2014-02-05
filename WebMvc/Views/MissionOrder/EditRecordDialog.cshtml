@@ -16,10 +16,10 @@
                 </tr>
                 <tr>
                     <td>
-                        @Html.LabelFor(m => m.OrderId):
+                        @Html.LabelFor(m => m.ReportId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.OrderId, new SelectList(Model.Orders, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.ReportId, new SelectList(Model.Reports, "ID", "Name")) 
                     </td>
                 </tr>
                 <tr>

@@ -14,10 +14,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         public List<IdNameDto> Users { get; set; }
 
-        [Display(Name = "Приказ на командировку")]
-        public int OrderId { get; set; }
-
-        public List<IdNameDto> Orders { get; set; }
+        [Display(Name = "Авансовый отчет")]
+        public int ReportId { get; set; }
+        public List<IdNameDto> Reports { get; set; }
 
         [Display(Name = "Вид расхода")]
         public int CostTypeId { get; set; }

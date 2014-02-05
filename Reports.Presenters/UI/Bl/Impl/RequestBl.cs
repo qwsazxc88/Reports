@@ -9192,7 +9192,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Не могу загрузить запись книги покупок (id {0}) из базы данных",model.RecordId));
                 model.AllSum = entity.AllSum;
                 model.CostTypeId = entity.MissionReportCostType.Id;
-                model.OrderId = entity.MissionOrder.Id;
+                model.ReportId = entity.MissionReportCost.Report.Id;
                 model.RequestNumber = entity.RequestNumber;
                 model.Sum = entity.Sum;
                 model.SumNds = entity.SumNds;
