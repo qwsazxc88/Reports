@@ -391,7 +391,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IMissionPurchaseBookDocumentDao)).
                 ImplementedBy(typeof(MissionPurchaseBookDocumentDao)).
                 LifeStyle.Is(type));
-
+            Register(Component.For(typeof(IMissionPurchaseBookRecordDao)).
+             ImplementedBy(typeof(MissionPurchaseBookRecordDao)).
+             LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
