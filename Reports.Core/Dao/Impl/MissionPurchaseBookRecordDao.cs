@@ -20,7 +20,8 @@ namespace Reports.Core.Dao.Impl
                                     mr.Number as ReportNumber,
                                     mo.Number as OrderNumber,
                                     pbr.Sum,SumNds,pbr.AllSum,mrct.Name as CostType,
-                                    RequestNumber
+                                    RequestNumber,
+                                    case when mr.AccountantDateAccept is null then 1 else 0 end as IsEditable
                                     from dbo.MissionPurchaseBookRecord pbr
                                     inner join dbo.Users u on u.Id = pbr.UserId
                                     inner join dbo.Department d on d.Id = u.DepartmentId
@@ -41,6 +42,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("AllSum", NHibernateUtil.Decimal).
                 AddScalar("CostType", NHibernateUtil.String).
                 AddScalar("RequestNumber", NHibernateUtil.String).
+                AddScalar("IsEditable", NHibernateUtil.Boolean).
                 SetInt32("documentId", documentId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionPurchaseBookRecordDto)))
                 .List<MissionPurchaseBookRecordDto>();

@@ -790,5 +790,28 @@ namespace WebMvc.Controllers
             //    ModelState.AddModelError("DocumentDate", "СФ (Акт) дата - неправильная дата");
             return ModelState.IsValid;
         }
+
+        [HttpGet]
+        public ActionResult RenderRecords(int id)
+        {
+            EditMissionPbRecordsModel model = RequestBl.GetPbRecordsModel(id);
+            return PartialView("MissionPdRecordPartial", model);
+        }
+
+        public ActionResult EditRecordDialog(int id, int documentId)
+        {
+            try
+            {
+                MissionPbEditRecordModel model = new MissionPbEditRecordModel { RecordId = id,DocumentId = documentId};
+                RequestBl.SetMissionReportEditRecordModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EditRecordDialogError", new DialogErrorModel { Error = error });
+            }
+        }
     }
 }

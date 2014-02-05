@@ -77,17 +77,82 @@
     </div>
      <script type="text/javascript">
        var  actionGetContractorAccountUrl = "@Url.Action("GetContractorAccount", "MissionOrder")";
+       var  actionEditRecordDialogUrl = "@Url.Action("EditRecordDialog", "MissionOrder")";
         $(document).ready(function () {
             setActiveMenuItem("moAllPurchaseBookDoc");
             $("#DocumentDate").datepicker();
             $(".hasDatepicker").width("75px");
         });
+        function RenderRecords() {
+            var actionUrl="@Url.Action("RenderRecords", "MissionOrder")";
+            var documentId = $("#DocumentId").val();
+            var url = actionUrl + "?id=" + documentId+"&dummy=" + new Date().getTime();
+            $("#RecordsModelContext").load(url);
+        }
         function Validate()
         {
             return true;
         }
         function addRecord()
         {
+            createRecordDialog(actionEditRecordDialogUrl,"id=0&documentId="+$("#Id").val());
+        }
+        function disableSaveButton() {
+            $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+        }
+        function createRecordDialog(url,params) {
+            var elem = document.createElement('div');
+            elem.id = "divRecordDialog";
+            var newDiv = $(elem);
+            var title = "Редактирование записи книги покупок";
+            $(newDiv).text('Подождите, идет загрузка данных ...');
+            $(newDiv).load(url + "?"+ params+ " #recordDialogTable"
+             , function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                      disableSaveButton();
+                 } else if (status == "success") {
+                     if ($('#DialogTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     /*else
+                     {
+                     }*/
+                 }
+             }
+            );
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 780,
+                height: 340,
+                // fix IE6  
+                bgiframe: true,
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Сохранить": function () {
+                        if(!validateRecord())
+                            return;
+                        RenderRecords();
+                        $(this).dialog("close");
+                       
+                        //setTargetBtnState();
+                    },
+                    "Отмена": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        function validateRecord()
+        {
+            return false;
         }
         function ContractorChange()
         {

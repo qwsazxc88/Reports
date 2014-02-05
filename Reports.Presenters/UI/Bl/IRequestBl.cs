@@ -147,5 +147,7 @@ namespace Reports.Presenters.UI.Bl
         ContractorAccountDto GetContractorAccount(int id);
         void ReloadDictionaries(EditMissionPbDocumentModel model);
         bool SaveMissionPbDocumentEditModel(EditMissionPbDocumentModel model, out string error);
+        EditMissionPbRecordsModel GetPbRecordsModel(int documentId);
+        void SetMissionReportEditRecordModel(MissionPbEditRecordModel model);
     }
 }

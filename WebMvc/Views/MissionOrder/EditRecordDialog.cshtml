@@ -1,0 +1,75 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionPbEditRecordModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "recordDialogTable" style="width:100%;">
+
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.UserId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.OrderId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.OrderId, new SelectList(Model.Orders, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.CostTypeId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.CostTypeId, new SelectList(Model.CostTypes, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Sum):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.SumNds):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize" }) 
+                    </td>
+                </tr>
+                  <tr>
+                    <td>
+                        @Html.LabelFor(m => m.AllSum):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.AllSum, new { disabled = "disabled", @class = "fixedSize" }) 
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        @Html.LabelFor(m => m.RequestNumber):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.RequestNumber) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @*    @Html.ValidationSummary(false)*@
+                          <div id="EditRecordDlgError" style="color:Red;display:none;"/>
+                          <input type="hidden" id="RecordId" name="RecordId" value="@Model.RecordId" />
+                          <input type="hidden" id="DocumentId" name="DocumentId" value="@Model.DocumentId" />
+                     </td>
+                </tr>
+    </table>
+</body>
+</html>
