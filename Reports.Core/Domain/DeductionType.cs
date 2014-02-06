@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Вариант удержания
+    /// </summary>
     public class DeductionType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

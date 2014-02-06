@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Причина удержания
+    /// </summary>
     public class DeductionKind : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

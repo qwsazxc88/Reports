@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Вариант расчета суточных
+    /// </summary>
     public class MissionDailyAllowance : AbstractEntity
     {
         #region Constants

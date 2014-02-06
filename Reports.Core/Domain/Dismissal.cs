@@ -7,7 +7,7 @@ using Reports.Core.Enum;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Увольнение
     /// </summary>
     public class Dismissal : AbstractEntityWithVersion//AbstractEntity
     {

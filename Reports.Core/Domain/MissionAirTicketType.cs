@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Тип авиабилета для командировки
+    /// </summary>
     public class MissionAirTicketType : AbstractEntity
     {
         #region Constants

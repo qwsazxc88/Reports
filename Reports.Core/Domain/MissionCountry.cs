@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Направление/страна командировки
+    /// </summary>
     public class MissionCountry : AbstractEntity
     {
         #region Constants

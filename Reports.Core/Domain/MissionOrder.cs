@@ -7,7 +7,7 @@ using Reports.Core.Enum;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Приказ на командировку
     /// </summary>
     public class MissionOrder : AbstractEntityWithVersion
     {
