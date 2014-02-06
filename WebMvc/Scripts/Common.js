@@ -82,6 +82,12 @@ function validateFieldIsNotEmpty(control, addErrorToForm) {
     }
     return false;
 }
+function validateFieldIsNotNull(control) {
+    if (control.val() != null)
+        return true;
+    addDlgError(control, "Обязательное поле")
+    return false;
+}
 function clearDlgErrors(form) {
     form.find(":input").removeClass("input-validation-error");
     form.find(".error").remove();

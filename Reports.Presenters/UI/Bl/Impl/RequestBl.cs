@@ -9196,7 +9196,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestNumber = entity.RequestNumber;
                 model.Sum = entity.Sum;
                 model.SumNds = entity.SumNds;
-                model.UserId = entity.User.Id;
+                model.RecordUserId = entity.User.Id;
             }
             LoadDictionaries(model);
         }
@@ -9212,14 +9212,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.Users = users;
             int selectedUserId = users[0].Id;
-            if (model.UserId != 0)
+            if (model.RecordUserId != 0)
             {
-                IdNameDto selectedUser = users.Where(x => x.Id == model.UserId).FirstOrDefault();
+                IdNameDto selectedUser = users.Where(x => x.Id == model.RecordUserId).FirstOrDefault();
                 if (selectedUser != null)
                     selectedUserId = selectedUser.Id;
             }
             else
-                model.UserId = selectedUserId;
+                model.RecordUserId = selectedUserId;
             List<IdNameDto> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(selectedUserId).ToList();
             if(reports.Count == 0)
             {
@@ -9249,24 +9249,44 @@ namespace Reports.Presenters.UI.Bl.Impl
             //IdNameDto selectedType = costTypes.Where(x => x.Id == model.CostTypeId).FirstOrDefault();
             if(model.RecordId == 0)
             {
-                MissionReport report = MissionReportDao.Load(selectedReportId);
-                MissionOrder order = report.MissionOrder;
-                switch (model.CostTypeId)
-                {
-                    case 2:
-                        model.RequestNumber = order.ResidenceRequestNumber;
-                        break;
-                    case 3:
-                        model.RequestNumber = order.AirTicketsRequestNumber;
-                        break;
-                    case 4:
-                        model.RequestNumber = order.AirTicketsRequestNumber;
-                        break;
-                    default:
-                        throw new ValidationException(string.Format("Недопустимый вид расхода (id {0})",model.CostTypeId));
-                }
+                model.RequestNumber = GetRequestNumber(selectedReportId, model.CostTypeId);
             }
             return;
+        }
+        protected string GetRequestNumber(int reportId, int costTypeId)
+        {
+            MissionReport report = MissionReportDao.Load(reportId);
+            MissionOrder order = report.MissionOrder;
+            switch (costTypeId)
+            {
+                case 2:
+                    return order.ResidenceRequestNumber;
+                case 3:
+                    return order.AirTicketsRequestNumber;
+                case 4:
+                    return order.AirTicketsRequestNumber;
+                default:
+                    throw new ValidationException(string.Format("Недопустимый вид расхода (id {0})", costTypeId));
+            }
+        }
+        public PbRecordCostTypesDto GetCostTypes(int reportId,bool isNew)
+        {
+            PbRecordCostTypesDto model = new PbRecordCostTypesDto{Error = string.Empty};
+            List<IdNameDto> costTypes = MissionReportCostDao.GetCostTypesWithPurchaseBookReportCosts(reportId).ToList();
+            model.Children = costTypes;
+            if (isNew && costTypes.Count > 0)
+                model.RequestNumber = GetRequestNumber(reportId, costTypes[0].Id);
+            return model;
+        }
+
+        public ContractorAccountDto GetRequestNumberForCostType(int reportId, int costTypeId)
+        {
+            ContractorAccountDto model = new ContractorAccountDto
+                                             {
+                                                 Error = string.Empty,
+                                                 Account = GetRequestNumber(reportId, costTypeId)
+                                             };
+            return model;
         }
         #endregion
 

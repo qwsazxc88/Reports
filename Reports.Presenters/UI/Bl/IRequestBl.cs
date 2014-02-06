@@ -149,5 +149,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveMissionPbDocumentEditModel(EditMissionPbDocumentModel model, out string error);
         EditMissionPbRecordsModel GetPbRecordsModel(int documentId);
         void SetMissionReportEditRecordModel(MissionPbEditRecordModel model);
+        PbRecordCostTypesDto GetCostTypes(int reportId, bool isNew);
+        ContractorAccountDto GetRequestNumberForCostType(int reportId, int costTypeId);
     }
 }

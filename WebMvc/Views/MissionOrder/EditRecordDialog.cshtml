@@ -8,10 +8,10 @@
 
                 <tr>
                     <td>
-                        @Html.LabelFor(m => m.UserId):
+                        @Html.LabelFor(m => m.RecordUserId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.RecordUserId, new SelectList(Model.Users, "ID", "Name"), Model.RecordId > 0 ? (object)new { disabled = "disabled" } : (object)new { onchange = "RecordUserIdChange();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -19,7 +19,7 @@
                         @Html.LabelFor(m => m.ReportId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.ReportId, new SelectList(Model.Reports, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.ReportId, new SelectList(Model.Reports, "ID", "Name"), Model.RecordId > 0 ? (object)new { disabled = "disabled" } : (object)new { onchange = "ReportIdChange();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -27,7 +27,7 @@
                         @Html.LabelFor(m => m.CostTypeId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.CostTypeId, new SelectList(Model.CostTypes, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.CostTypeId, new SelectList(Model.CostTypes, "ID", "Name"), Model.RecordId > 0 ? (object)new { disabled = "disabled" } : (object)new { onchange = "CostTypeIdChange();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -35,7 +35,7 @@
                         @Html.LabelFor(m => m.Sum):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize", onchange = "validateSums();" }) 
+                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize", onchange = "validateSum();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -43,7 +43,7 @@
                         @Html.LabelFor(m => m.SumNds):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize", onchange = "validateSums();" }) 
+                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize", onchange = "validateSum();" }) 
                     </td>
                 </tr>
                   <tr>

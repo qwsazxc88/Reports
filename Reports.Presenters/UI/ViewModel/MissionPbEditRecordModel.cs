@@ -10,7 +10,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int DocumentId { get; set; }
 
         [Display(Name = "Сотрудник")]
-        public int UserId { get; set; }
+        public int RecordUserId { get; set; }
 
         public List<IdNameDto> Users { get; set; }
 

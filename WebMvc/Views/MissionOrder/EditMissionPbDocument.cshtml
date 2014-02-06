@@ -78,6 +78,8 @@
      <script type="text/javascript">
        var  actionGetContractorAccountUrl = "@Url.Action("GetContractorAccount", "MissionOrder")";
        var  actionEditRecordDialogUrl = "@Url.Action("EditRecordDialog", "MissionOrder")";
+       var  actionGetCostTypesUrl = "@Url.Action("GetCostTypes", "MissionOrder")";
+       var  actionGetRequestNumberForCostTypeUrl = "@Url.Action("GetRequestNumberForCostType", "MissionOrder")";
         $(document).ready(function () {
             setActiveMenuItem("moAllPurchaseBookDoc");
             $("#DocumentDate").datepicker();
@@ -152,12 +154,25 @@
         }
         function validateRecord()
         {
+            clearDlgErrors($("#recordDialogTable"));
+            var res = true;
+              if(!validateFieldIsNotNull($("#RecordUserId")))
+                res = false;
+            if(!validateFieldIsNotNull($("#ReportId")))
+                res = false;
+            if(!validateFieldIsNotNull($("#CostTypeId")))
+                res = false;
             if(!validateSums())
-                return false;
+                res = false;
+            return res;
+        }
+        function validateSum()
+        {
+            clearDlgErrors($("#recordDialogTable"));
+            validateSums();
         }
         function validateSums()
         {
-            clearDlgErrors($("#recordDialogTable"));
             var result = true;
             var sum = undefined;
             var sumNds = undefined;
@@ -183,6 +198,64 @@
                 $("#AllSum").val('');
             result =  false;
             return result;
+        }
+        function addRecordDlgError(value) {
+            $("#EditRecordDlgError").text(value);
+            $("#EditRecordDlgError").show();
+        }
+        function clearRecordDlgError() {
+            $("#EditRecordDlgError").text("");
+            $("#EditRecordDlgError").hide();
+        }
+        function CostTypeIdChange()
+        {
+            if( $("#RecordId").val() == 0)
+            {
+                GetRequestNumberForCostType();
+            }
+        }
+         function GetRequestNumberForCostType() {
+            clearRecordDlgError();
+            var url = actionGetRequestNumberForCostTypeUrl + '?reportId='+ $("#ReportId").val()+"&costTypeId="+$("#CostTypeId").val();
+            $.getJSON(url,
+                function (result) {
+                    if (result.Error != "") {
+                        addRecordDlgError(result.Error);
+                    }
+                    else {
+                            $("#RequestNumber").val(result.ContractorAccountDto);
+                    }
+            });
+        }
+        function ReportIdChange()
+        {
+            GetCostTypes();
+        }
+        function GetCostTypes() {
+            clearRecordDlgError();
+            var url = actionGetCostTypesUrl + '?reportId='+ $("#ReportId").val()+"&isNew=" + $("#RecordId").val() > 0?"false":"true";
+            $.getJSON(url,
+                function (result) {
+                    if (result.Error != "") {
+                        addRecordDlgError(result.Error);
+                    }
+                    else {
+                        setValuesToDropdown("CostTypeId", result.Children);
+                        if($("#RecordId").val() == 0)
+                            $("#RequestNumber").val(result.RequestNumber);
+                    }
+            });
+        }
+        function setValuesToDropdown(controlName,data)
+        {
+            var optionsValues = '<select onchange = "' + controlName + 'Change();" id="' + controlName + '" name="' + controlName + '">';
+            //optionsValues += '<option value="0"></option>';
+            $.each(data, function (item, data) {
+                optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+            })
+            optionsValues += '</select>';
+            var options = $('#' + controlName );
+            options.replaceWith(optionsValues);
         }
         function ContractorChange()
         {

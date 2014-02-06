@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -812,6 +813,53 @@ namespace WebMvc.Controllers
                 string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
                 return PartialView("EditRecordDialogError", new DialogErrorModel { Error = error });
             }
+        }
+
+       
+
+        [HttpGet]
+        public ContentResult GetCostTypes(int reportId,bool isNew)
+        {
+            PbRecordCostTypesDto model;
+            try
+            {
+                model = RequestBl.GetCostTypes(reportId,isNew);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetCostTypes:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new PbRecordCostTypesDto
+                            {
+                                Error = string.Format("Ошибка: {0}", error),
+                                Children = new List<IdNameDto>()
+                            };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
+
+        [HttpGet]
+        public ContentResult GetRequestNumberForCostType(int reportId,int costTypeId)
+        {
+            ContractorAccountDto model;
+            try
+            {
+                model = RequestBl.GetRequestNumberForCostType(reportId,costTypeId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetRequestNumberForCostType:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new ContractorAccountDto
+                {
+                    Error = string.Format("Ошибка: {0}", error)
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
         }
     }
 }

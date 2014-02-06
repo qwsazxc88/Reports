@@ -22,4 +22,8 @@ namespace Reports.Core.Dto
         public string Account { get; set; }
         public string Error { get; set; }
     }
+    public class PbRecordCostTypesDto:DepartmentChildrenDto
+    {
+        public string RequestNumber { get; set; }
+    }
 }
