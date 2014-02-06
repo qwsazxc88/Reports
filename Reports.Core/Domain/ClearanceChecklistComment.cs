@@ -6,7 +6,7 @@ using System.Text;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Комментарий к обходному листу
+    /// Комментарий к обходному листу при увольнении
     /// </summary>
     class ClearanceChecklistComment : AbstractEntityWithVersion
     {

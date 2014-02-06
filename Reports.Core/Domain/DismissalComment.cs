@@ -2,6 +2,9 @@
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Комментарий к увольнению
+    /// </summary>
     public class DismissalComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }

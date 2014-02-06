@@ -2,6 +2,9 @@
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Комментарий к работе выходные и праздничные дни
+    /// </summary>
     public class HolidayWorkComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }
