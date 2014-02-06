@@ -270,6 +270,8 @@
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
+    <Compile Include="Domain\ClearanceChecklist.cs" />
+    <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Deduction.cs" />
@@ -704,6 +706,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\MissionPurchaseBookRecord.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\ClearanceChecklist.hbm.xml" />
+    <Content Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
