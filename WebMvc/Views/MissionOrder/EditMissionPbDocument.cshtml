@@ -142,8 +142,9 @@
                     "Сохранить": function () {
                         if(!validateRecord())
                             return;
-                        RenderRecords();
-                        $(this).dialog("close");
+                        SaveRecord();
+                        //RenderRecords();
+                        //$(this).dialog("close");
                        
                         //setTargetBtnState();
                     },
@@ -152,6 +153,52 @@
                     }
                 }
             });
+        }
+        function SaveRecord()
+        {
+            var sum = ValidateSumC($("#Sum"));
+            var sumNds = ValidateSumC($("#SumNds"));
+            var allSum = sum+sumNds;
+            var url="@Url.Action("SavePbRecord", "MissionOrder")";
+            /*+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+                +"&comment="+escapeJson($("#Comment").val());*/
+            var jqxhr = $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: url,
+                data: {
+                    'DocumentId': $("#DocumentId").val(),
+                    'RecordId': $("#RecordId").val(),
+                    'UserId': $("#RecordUserId").val(),
+                    'ReportId': $("#ReportId").val(),
+                    'CostTypeId': $("#CostTypeId").val(),
+                    'Sum':sum,
+                    'SumNds':sumNds,
+                    'AllSum':allSum,
+                    'RequestNumber': $("#RequestNumber").val()
+                },
+                success:function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addRecordDlgError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addRecordDlgError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearDlgErrors($("#recordDialogTable"));
+                                                RenderRecords();
+                                                $(this).dialog("close");
+                                            }    
+                                  }});
         }
         function validateRecord()
         {
@@ -197,7 +244,7 @@
                 $("#AllSum").val(sum+sumNds);
             else
                 $("#AllSum").val('');
-            result =  false;
+            //result =  false;
             return result;
         }
         function addRecordDlgError(value) {

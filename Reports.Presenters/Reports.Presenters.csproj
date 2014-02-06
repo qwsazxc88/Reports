@@ -183,6 +183,7 @@
     <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />
+    <Compile Include="UI\ViewModel\SavePbRecordModel.cs" />
     <Compile Include="UI\ViewModel\SendToBillingModel.cs" />
     <Compile Include="UI\ViewModel\SendToSupportModel.cs" />
     <Compile Include="UI\ViewModel\SettingsModel.cs" />

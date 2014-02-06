@@ -883,5 +883,26 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+        [HttpPost]
+        public ContentResult SavePbRecord(SavePbRecordModel model)
+        {
+            DialogErrorModel result;
+            try
+            {
+                result = new DialogErrorModel{Error = "Test error"};//RequestBl.GetReportsForPbUserId(userId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SavePbRecord:", ex);
+                string error = ex.GetBaseException().Message;
+                result = new DialogErrorModel
+                {
+                    Error = string.Format("Ошибка: {0}", error)
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(result);
+            return Content(jsonString);
+        }
     }
 }
