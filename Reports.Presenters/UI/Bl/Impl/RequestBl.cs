@@ -9264,7 +9264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case 3:
                     return order.AirTicketsRequestNumber;
                 case 4:
-                    return order.AirTicketsRequestNumber;
+                    return order.TrainTicketsRequestNumber;
                 default:
                     throw new ValidationException(string.Format("Недопустимый вид расхода (id {0})", costTypeId));
             }
@@ -9286,6 +9286,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                  Error = string.Empty,
                                                  Account = GetRequestNumber(reportId, costTypeId)
                                              };
+            return model;
+        }
+
+        public PbRecordCostTypesDto GetReportsForPbUserId(int userId)
+        {
+            PbRecordCostTypesDto model = new PbRecordCostTypesDto { Error = string.Empty };
+            List<IdNameDto> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(userId).ToList();
+            model.Children = reports;
             return model;
         }
         #endregion

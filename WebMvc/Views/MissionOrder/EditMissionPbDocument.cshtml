@@ -80,6 +80,7 @@
        var  actionEditRecordDialogUrl = "@Url.Action("EditRecordDialog", "MissionOrder")";
        var  actionGetCostTypesUrl = "@Url.Action("GetCostTypes", "MissionOrder")";
        var  actionGetRequestNumberForCostTypeUrl = "@Url.Action("GetRequestNumberForCostType", "MissionOrder")";
+       var  actionGetReportsUrl = "@Url.Action("GetReports", "MissionOrder")";
         $(document).ready(function () {
             setActiveMenuItem("moAllPurchaseBookDoc");
             $("#DocumentDate").datepicker();
@@ -207,6 +208,24 @@
             $("#EditRecordDlgError").text("");
             $("#EditRecordDlgError").hide();
         }
+        function RecordUserIdChange()
+        {
+            GetReports();
+        }
+        function GetReports() {
+            clearRecordDlgError();
+            var url = actionGetReportsUrl + '?userId='+ $("#RecordUserId").val();
+            $.getJSON(url,
+                function (result) {
+                    if (result.Error != "") {
+                        addRecordDlgError(result.Error);
+                    }
+                    else {
+                        setValuesToDropdown("ReportId", result.Children);
+                        ReportIdChange();
+                    }
+            });
+        }
         function CostTypeIdChange()
         {
             if( $("#RecordId").val() == 0)
@@ -223,7 +242,7 @@
                         addRecordDlgError(result.Error);
                     }
                     else {
-                            $("#RequestNumber").val(result.ContractorAccountDto);
+                            $("#RequestNumber").val(result.Account);
                     }
             });
         }
@@ -233,7 +252,7 @@
         }
         function GetCostTypes() {
             clearRecordDlgError();
-            var url = actionGetCostTypesUrl + '?reportId='+ $("#ReportId").val()+"&isNew=" + $("#RecordId").val() > 0?"false":"true";
+            var url = actionGetCostTypesUrl + '?reportId='+ $("#ReportId").val()+"&isNew=" + ($("#RecordId").val() > 0?"false":"true");
             $.getJSON(url,
                 function (result) {
                     if (result.Error != "") {

@@ -861,5 +861,27 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+        [HttpGet]
+        public ContentResult GetReports(int userId)
+        {
+            PbRecordCostTypesDto model;
+            try
+            {
+                model = RequestBl.GetReportsForPbUserId(userId);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetReports:", ex);
+                string error = ex.GetBaseException().Message;
+                model = new PbRecordCostTypesDto
+                {
+                    Error = string.Format("Ошибка: {0}", error),
+                    Children = new List<IdNameDto>()
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
     }
 }

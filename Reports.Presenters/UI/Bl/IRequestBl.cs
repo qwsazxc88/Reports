@@ -151,5 +151,6 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionReportEditRecordModel(MissionPbEditRecordModel model);
         PbRecordCostTypesDto GetCostTypes(int reportId, bool isNew);
         ContractorAccountDto GetRequestNumberForCostType(int reportId, int costTypeId);
+        PbRecordCostTypesDto GetReportsForPbUserId(int userId);
     }
 }
