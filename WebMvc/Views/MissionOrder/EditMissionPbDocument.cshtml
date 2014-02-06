@@ -127,8 +127,8 @@
                 autoOpen: true,
                 modal: true,
                 title: title,
-                width: 780,
-                height: 340,
+                width: 1160,
+                height: 380,
                 // fix IE6  
                 bgiframe: true,
                 close: function (event, ui) {
@@ -152,7 +152,37 @@
         }
         function validateRecord()
         {
-            return false;
+            if(!validateSums())
+                return false;
+        }
+        function validateSums()
+        {
+            clearDlgErrors($("#recordDialogTable"));
+            var result = true;
+            var sum = undefined;
+            var sumNds = undefined;
+            if(!validateFieldIsNotEmptyAddError($("#Sum")))
+                result =  false;
+            else
+            { 
+                sum = ValidateSumC($("#Sum")); 
+                if(sum == undefined)
+                    result = false;
+            }
+            if(!validateFieldIsNotEmptyAddError($("#SumNds")))
+                result =  false;
+            else
+            {
+                sumNds = ValidateSumC($("#SumNds"));
+                if(sumNds == undefined)
+                    result = false;
+            }
+            if(sum != undefined && sumNds != undefined)
+                $("#AllSum").val(sum+sumNds);
+            else
+                $("#AllSum").val('');
+            result =  false;
+            return result;
         }
         function ContractorChange()
         {

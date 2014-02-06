@@ -9202,7 +9202,71 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(MissionPbEditRecordModel model)
         {
-            
+            List<IdNameDto> users = UserDao.GetUsersWithPurchaseBookReportCosts().ToList();
+            if(users.Count == 0)
+            {
+                model.Users = new List<IdNameDto>();
+                model.Reports = new List<IdNameDto>();
+                model.CostTypes = new List<IdNameDto>();
+                return;
+            }
+            model.Users = users;
+            int selectedUserId = users[0].Id;
+            if (model.UserId != 0)
+            {
+                IdNameDto selectedUser = users.Where(x => x.Id == model.UserId).FirstOrDefault();
+                if (selectedUser != null)
+                    selectedUserId = selectedUser.Id;
+            }
+            else
+                model.UserId = selectedUserId;
+            List<IdNameDto> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(selectedUserId).ToList();
+            if(reports.Count == 0)
+            {
+                model.Reports = new List<IdNameDto>();
+                model.CostTypes = new List<IdNameDto>();
+                return;
+            }
+            model.Reports = reports;
+            int selectedReportId = reports[0].Id;
+            if (model.RecordId != 0)
+            {
+                IdNameDto selectedReport = reports.Where(x => x.Id == model.ReportId).FirstOrDefault();
+                if (selectedReport != null)
+                    selectedReportId = selectedReport.Id;
+            }
+            else
+                model.ReportId = selectedReportId;
+            List<IdNameDto> costTypes = MissionReportCostDao.GetCostTypesWithPurchaseBookReportCosts(selectedReportId).ToList();
+            if(costTypes.Count == 0)
+            {
+                model.CostTypes = new List<IdNameDto>();
+                return; 
+            }
+            model.CostTypes = costTypes;
+            if (model.CostTypeId == 0)
+                model.CostTypeId = costTypes[0].Id;
+            //IdNameDto selectedType = costTypes.Where(x => x.Id == model.CostTypeId).FirstOrDefault();
+            if(model.RecordId == 0)
+            {
+                MissionReport report = MissionReportDao.Load(selectedReportId);
+                MissionOrder order = report.MissionOrder;
+                switch (model.CostTypeId)
+                {
+                    case 2:
+                        model.RequestNumber = order.ResidenceRequestNumber;
+                        break;
+                    case 3:
+                        model.RequestNumber = order.AirTicketsRequestNumber;
+                        break;
+                    case 4:
+                        model.RequestNumber = order.AirTicketsRequestNumber;
+                        break;
+                    default:
+                        throw new ValidationException(string.Format("Недопустимый вид расхода (id {0})",model.CostTypeId));
+                }
+            }
+            return;
         }
         #endregion
 

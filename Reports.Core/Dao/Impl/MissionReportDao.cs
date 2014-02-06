@@ -430,6 +430,18 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32);
         }
-      
+
+        public virtual IList<IdNameDto> GetReportsWithPurchaseBookReportCosts(int userId)
+        {
+            string sqlQuery = string.Format(@" select distinct mr.Id,N'АО'+cast(mr.Number as nvarchar(10)) as Name 
+                                        from dbo.MissionReport mr
+                                        inner join [dbo].[MissionReportCost] mrc on  mr.Id = mrc.ReportId
+                                        where mrc.IsCostFromPurchaseBook = 1 and mr.UserId = {0}
+                                        order by Name",userId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
     }
 }

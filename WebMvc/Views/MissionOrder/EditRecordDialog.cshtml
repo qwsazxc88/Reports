@@ -35,7 +35,7 @@
                         @Html.LabelFor(m => m.Sum):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize" }) 
+                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize", onchange = "validateSums();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -43,7 +43,7 @@
                         @Html.LabelFor(m => m.SumNds):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize" }) 
+                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize", onchange = "validateSums();" }) 
                     </td>
                 </tr>
                   <tr>
