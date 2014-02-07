@@ -97,6 +97,7 @@ create table MissionReport (
   UserAllSum DECIMAL(19,5) not null,
   UserSumReceived DECIMAL(19,5) not null,
   AccountantAllSum DECIMAL(19,5) not null,
+  PurchaseBookAllSum DECIMAL(19,5) not null default(0),
   UserId INT not null,
   CreatorId INT not null,
   UserDateAccept DATETIME null,

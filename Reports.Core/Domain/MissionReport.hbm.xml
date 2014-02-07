@@ -26,6 +26,7 @@
 	<property name="UserAllSum"  not-null="true"/>
 	<property name="UserSumReceived"  not-null="true"/>
 	<property name="AccountantAllSum"  not-null="true"/>
+  <property name="PurchaseBookAllSum"  not-null="true"/>
 	<!--<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>-->
 	<!--<property name="NeedToAcceptByChief"  not-null="true"/>

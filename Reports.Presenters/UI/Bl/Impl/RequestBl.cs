@@ -8881,6 +8881,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.AllSum = entity.Costs.Sum(x => x.Sum).Value;
             entity.UserAllSum = entity.Costs.Sum(x => x.UserSum).Value;
             entity.AccountantAllSum = entity.Costs.Sum(x => x.AccountantSum).Value;
+            entity.PurchaseBookAllSum = entity.Costs.Sum(x => x.BookOfPurchaseSum).Value;
         }
         protected void SaveMissionCostsTransactions(MissionReport entity, MissionReportEditModel model)
         {
@@ -9341,6 +9342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
             cost.BookOfPurchaseSum = costRecords.Sum(x => x.AllSum);
+            report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
             MissionReportDao.SaveAndFlush(report);
             return true;
         }
