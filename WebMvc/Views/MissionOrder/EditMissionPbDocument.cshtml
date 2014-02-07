@@ -156,9 +156,9 @@
         }
         function SaveRecord()
         {
-            var sum = ValidateSumC($("#Sum"));
-            var sumNds = ValidateSumC($("#SumNds"));
-            var allSum = sum+sumNds;
+            var sum = $("#Sum").val();
+            var sumNds = $("#SumNds").val();
+            var allSum = $("#AllSum").val();
             var url="@Url.Action("SavePbRecord", "MissionOrder")";
             /*+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
                 +"&comment="+escapeJson($("#Comment").val());*/
@@ -172,9 +172,9 @@
                     'UserId': $("#RecordUserId").val(),
                     'ReportId': $("#ReportId").val(),
                     'CostTypeId': $("#CostTypeId").val(),
-                    'Sum':sum,
-                    'SumNds':sumNds,
-                    'AllSum':allSum,
+                    'Sum':sum.toString(),
+                    'SumNds':sumNds.toString(),
+                    'AllSum':allSum.toString(),
                     'RequestNumber': $("#RequestNumber").val()
                 },
                 success:function (jsonResult) {
@@ -187,7 +187,7 @@
                                                 return;
                                             }
                                             var result = JSON.parse(jsonResult);  
-                                            if(!result.Result)
+                                            if(result.Error != '')
                                             {
                                                 addRecordDlgError(result.Error);
                                                 //Render();
@@ -196,7 +196,7 @@
                                             {
                                                 clearDlgErrors($("#recordDialogTable"));
                                                 RenderRecords();
-                                                $(this).dialog("close");
+                                                $("#divRecordDialog").dialog("close");
                                             }    
                                   }});
         }
@@ -241,7 +241,7 @@
                     result = false;
             }
             if(sum != undefined && sumNds != undefined)
-                $("#AllSum").val(sum+sumNds);
+                $("#AllSum").val(FormatFloat(sum+sumNds));
             else
                 $("#AllSum").val('');
             //result =  false;

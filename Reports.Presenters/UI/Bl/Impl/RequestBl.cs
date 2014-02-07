@@ -9296,6 +9296,54 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Children = reports;
             return model;
         }
+
+        public bool SavePbRecord(SavePbRecordModel model)
+        {
+            MissionPurchaseBookDocument doc = MissionPurchaseBookDocumentDao.Load(model.DocumentId);
+            if(doc == null)
+                throw new ArgumentException(string.Format("Не могу загрузить документ книги покупок (id {0}) из базы данных.",model.DocumentId));
+            MissionReport report = MissionReportDao.Load(model.ReportId);
+            if(report == null)
+                throw new ArgumentException(string.Format("Не могу загрузить авансовый отчет (id {0}) из базы данных.",model.ReportId));
+            if(report.AccountantDateAccept.HasValue)
+                throw new ArgumentException(string.Format("Изменение записей книги покупок для авансового отчета (id {0}) запрещено - отчет уже проверен бухгалтером.",model.ReportId));
+            MissionReportCost cost = report.Costs.Where(x => x.IsCostFromPurchaseBook && x.Type.Id == model.CostTypeId).FirstOrDefault();
+            if(cost == null)
+                throw new ArgumentException(string.Format("Не найден расход указанного типа (id {1}) в авансовом отчете (id {0}).",model.ReportId,model.CostTypeId));
+
+            MissionPurchaseBookRecord rec; 
+            if(model.RecordId == 0)
+            {
+                rec = new MissionPurchaseBookRecord
+                                                    {
+                                                        Document = doc,
+                                                        MissionOrder = report.MissionOrder,
+                                                        MissionReportCost = cost,
+                                                        MissionReportCostType = cost.Type,
+                                                        User = UserDao.Load(model.UserId),
+                                                    };
+                doc.Records.Add(rec);
+            }
+            else
+            {
+                rec = doc.Records.Where(x => x.Id == model.RecordId).FirstOrDefault();
+                if(rec == null)
+                    throw new ArgumentException(string.Format("Не найдена запись книги покупок (id {0}).", model.RecordId));
+            }
+            rec.AllSum = model.AllSum;
+            rec.Sum = model.Sum;
+            rec.SumNds = model.SumNds;
+            rec.RequestNumber = model.RequestNumber;
+            rec.EditDate = DateTime.Now;
+            rec.Editor = UserDao.Load(CurrentUser.Id);
+            doc.Sum = doc.Records.Sum(x => x.AllSum);
+            MissionPurchaseBookDocumentDao.SaveAndFlush(doc);
+
+            List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
+            cost.BookOfPurchaseSum = costRecords.Sum(x => x.AllSum);
+            MissionReportDao.SaveAndFlush(report);
+            return true;
+        }
         #endregion
 
     }

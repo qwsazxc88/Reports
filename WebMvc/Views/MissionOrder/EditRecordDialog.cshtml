@@ -59,7 +59,7 @@
                         @Html.LabelFor(m => m.RequestNumber):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.RequestNumber) 
+                        @Html.TextBoxFor(model => model.RequestNumber, (object)new { maxlength = 15}) 
                     </td>
                 </tr>
                 <tr>

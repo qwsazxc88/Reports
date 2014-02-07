@@ -7,5 +7,6 @@ namespace Reports.Core.Dao
     public interface IMissionPurchaseBookRecordDao : IDao<MissionPurchaseBookRecord>
     {
         IList<MissionPurchaseBookRecordDto> GetRecordsForDocumentId(int documentId);
+        IList<MissionPurchaseBookRecord> GetRecordsForCost(int costId);
     }
 }

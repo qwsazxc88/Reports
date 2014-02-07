@@ -886,10 +886,11 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ContentResult SavePbRecord(SavePbRecordModel model)
         {
-            DialogErrorModel result;
+            DialogErrorModel result = new DialogErrorModel{Error = string.Empty};
             try
             {
-                result = new DialogErrorModel{Error = "Test error"};//RequestBl.GetReportsForPbUserId(userId);
+                //result = new DialogErrorModel{Error = "Тестовая ошибка"};
+                bool res = RequestBl.SavePbRecord(model);
             }
             catch (Exception ex)
             {

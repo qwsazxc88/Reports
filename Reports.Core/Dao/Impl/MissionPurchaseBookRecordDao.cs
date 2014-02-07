@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -46,6 +47,12 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("documentId", documentId);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionPurchaseBookRecordDto)))
                 .List<MissionPurchaseBookRecordDto>();
+        }
+        public virtual IList<MissionPurchaseBookRecord> GetRecordsForCost(int costId)
+        {
+            return Session.CreateCriteria(typeof(MissionPurchaseBookRecord))
+                  .Add(Restrictions.Eq("MissionReportCost.Id", costId))
+                  .List<MissionPurchaseBookRecord>();
         }
     }
 }
