@@ -13,7 +13,7 @@ namespace Reports.Core.Domain
         // TODO Свойство для хранения согласующего отдела
 
         // Согласующий; заполняется по факту согласования
-        public virtual User? ApprovedBy { get; set; }
+        public virtual User ApprovedBy { get; set; }
         public virtual DateTime? ApprovalDate { get; set; }
     }
 }

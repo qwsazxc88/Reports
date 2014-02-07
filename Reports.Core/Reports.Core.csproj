@@ -271,6 +271,7 @@
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
     <Compile Include="Domain\ClearanceChecklist.cs" />
+    <Compile Include="Domain\ClearanceChecklistApproval.cs" />
     <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
@@ -709,6 +710,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Domain\ClearanceChecklist.hbm.xml" />
+    <Content Include="Domain\ClearanceChecklistApproval.hbm.xml" />
     <Content Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
