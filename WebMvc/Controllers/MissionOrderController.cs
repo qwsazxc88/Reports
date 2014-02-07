@@ -905,5 +905,27 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(result);
             return Content(jsonString);
         }
+        [HttpPost]
+        public ContentResult DeletePbRecord(DeletePbRecordModel model)
+        {
+            DialogErrorModel result = new DialogErrorModel { Error = string.Empty };
+            try
+            {
+                //result = new DialogErrorModel{Error = "Тестовая ошибка"};
+                bool res = RequestBl.DeletePbRecord(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeletePbRecord:", ex);
+                string error = ex.GetBaseException().Message;
+                result = new DialogErrorModel
+                {
+                    Error = string.Format("Ошибка: {0}", error)
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(result);
+            return Content(jsonString);
+        }
     }
 }

@@ -28,12 +28,26 @@
                     <td>@record.UserName</td>
                     <td>@record.ReportNumber</td>
                     <td>@record.OrderNumber</td>
-                    <td>@RequestBl.FormatSum(record.Sum)</td>
+                    <td>
+                        @if(record.IsEditable)
+                        {
+                            <a class="ui-notify-close" href='' onclick="return editRecord(@record.Id);" style="cursor:hand">@RequestBl.FormatSum(record.Sum)</a>
+                        }
+                        else
+                        {
+                            @RequestBl.FormatSum(record.Sum)
+                        }
+                    </td>
                     <td>@RequestBl.FormatSum(record.SumNds)</td>
                     <td>@RequestBl.FormatSum(record.AllSum)</td>
                     <td>@record.CostType</td>
                     <td>@record.RequestNumber</td>
-                    <td></td>
+                    <td>
+                        @if(record.IsEditable)
+                        {
+                            <a class="ui-notify-close" href='' onclick="return deleteRecord(@record.Id);" style="cursor:hand">Удалить</a>
+                        }
+                    </td>
                 </tr>
             }
             <tr>

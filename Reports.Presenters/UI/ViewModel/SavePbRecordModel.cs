@@ -12,4 +12,9 @@
         public decimal AllSum { get; set; }
         public string RequestNumber { get; set; }
     }
+    public class DeletePbRecordModel
+    {
+        public int Id { get; set; }
+    }
+
 }

@@ -9334,7 +9334,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             rec.AllSum = model.AllSum;
             rec.Sum = model.Sum;
             rec.SumNds = model.SumNds;
-            rec.RequestNumber = model.RequestNumber;
+            rec.RequestNumber = model.RequestNumber ?? string.Empty;
             rec.EditDate = DateTime.Now;
             rec.Editor = UserDao.Load(CurrentUser.Id);
             doc.Sum = doc.Records.Sum(x => x.AllSum);
@@ -9342,6 +9342,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
             cost.BookOfPurchaseSum = costRecords.Sum(x => x.AllSum);
+            report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
+            MissionReportDao.SaveAndFlush(report);
+            return true;
+        }
+        public bool DeletePbRecord(DeletePbRecordModel model)
+        {
+            MissionPurchaseBookRecord rec = MissionPurchaseBookRecordDao.Load(model.Id);
+            if (rec == null)
+                throw new ArgumentException(string.Format("Не могу загрузить запись книги покупок (id {0}) из базы данных.", model.Id));
+            MissionReport report = rec.MissionReportCost.Report;
+            if (report.AccountantDateAccept.HasValue)
+                throw new ArgumentException(string.Format("Удаление записей книги покупок для авансового отчета (id {0}) запрещено - отчет уже проверен бухгалтером.", report.Id));
+            MissionReportCost cost = rec.MissionReportCost;
+            MissionPurchaseBookDocument doc = rec.Document;
+            doc.Records.Remove(rec);
+            doc.Sum = doc.Records.Sum(x => x.AllSum);
+            MissionPurchaseBookDocumentDao.SaveAndFlush(doc);
+
+            List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
+            decimal? sum = costRecords.Sum(x => x.AllSum);
+            cost.BookOfPurchaseSum = sum == 0 ? null : sum;
             report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
             MissionReportDao.SaveAndFlush(report);
             return true;

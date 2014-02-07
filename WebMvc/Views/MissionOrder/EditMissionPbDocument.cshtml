@@ -100,6 +100,16 @@
         {
             createRecordDialog(actionEditRecordDialogUrl,"id=0&documentId="+$("#Id").val());
         }
+        function editRecord(id)
+        {
+            createRecordDialog(actionEditRecordDialogUrl,"id="+id+"&documentId="+$("#Id").val());
+            return false;
+        }
+        function deleteRecord(id)
+        {
+          DeleteRecord(id);
+          return false;
+        }
         function disableSaveButton() {
             $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
         }
@@ -118,9 +128,11 @@
                  } else if (status == "success") {
                      if ($('#DialogTableLoadError').val() != undefined)
                          disableSaveButton();
-                     /*else
+                     else
                      {
-                     }*/
+                        if($("#RecordId").val() != 0)
+                            validateSums();
+                     }
                  }
              }
             );
@@ -153,6 +165,41 @@
                     }
                 }
             });
+        }
+        function DeleteRecord(id)
+        {
+        var url="@Url.Action("DeletePbRecord", "MissionOrder")";
+            /*+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+                +"&comment="+escapeJson($("#Comment").val());*/
+            var jqxhr = $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: url,
+                data: {
+                    'Id': id
+                },
+                success:function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(result.Error != '')
+                                            {
+                                                addError(result.Error);
+                                                RenderRecords();
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearErrors();
+                                                RenderRecords();
+                                            }    
+                                  }});
         }
         function SaveRecord()
         {
