@@ -197,6 +197,7 @@
                                             else
                                             {
                                                 clearErrors();
+                                                $("#Version").val(result.DocumentVersion);
                                                 RenderRecords();
                                             }    
                                   }});
@@ -242,6 +243,7 @@
                                             else
                                             {
                                                 clearDlgErrors($("#recordDialogTable"));
+                                                $("#Version").val(result.DocumentVersion);
                                                 RenderRecords();
                                                 $("#divRecordDialog").dialog("close");
                                             }    

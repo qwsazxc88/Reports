@@ -152,7 +152,7 @@ namespace Reports.Presenters.UI.Bl
         PbRecordCostTypesDto GetCostTypes(int reportId, bool isNew);
         ContractorAccountDto GetRequestNumberForCostType(int reportId, int costTypeId);
         PbRecordCostTypesDto GetReportsForPbUserId(int userId);
-        bool SavePbRecord(SavePbRecordModel model);
-        bool DeletePbRecord(DeletePbRecordModel model);
+        int SavePbRecord(SavePbRecordModel model);
+        int DeletePbRecord(DeletePbRecordModel model);
     }
 }

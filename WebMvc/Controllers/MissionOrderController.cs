@@ -886,17 +886,18 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ContentResult SavePbRecord(SavePbRecordModel model)
         {
-            DialogErrorModel result = new DialogErrorModel{Error = string.Empty};
+            PbRecordSaveDialogErrorModel result = new PbRecordSaveDialogErrorModel { Error = string.Empty };
             try
             {
                 //result = new DialogErrorModel{Error = "Тестовая ошибка"};
-                bool res = RequestBl.SavePbRecord(model);
+                int docVersion = RequestBl.SavePbRecord(model);
+                result.DocumentVersion = docVersion;
             }
             catch (Exception ex)
             {
                 Log.Error("Exception on SavePbRecord:", ex);
                 string error = ex.GetBaseException().Message;
-                result = new DialogErrorModel
+                result = new PbRecordSaveDialogErrorModel
                 {
                     Error = string.Format("Ошибка: {0}", error)
                 };
@@ -908,17 +909,18 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ContentResult DeletePbRecord(DeletePbRecordModel model)
         {
-            DialogErrorModel result = new DialogErrorModel { Error = string.Empty };
+            PbRecordSaveDialogErrorModel result = new PbRecordSaveDialogErrorModel { Error = string.Empty };
             try
             {
                 //result = new DialogErrorModel{Error = "Тестовая ошибка"};
-                bool res = RequestBl.DeletePbRecord(model);
+                int docVersion = RequestBl.DeletePbRecord(model);
+                result.DocumentVersion = docVersion;
             }
             catch (Exception ex)
             {
                 Log.Error("Exception on DeletePbRecord:", ex);
                 string error = ex.GetBaseException().Message;
-                result = new DialogErrorModel
+                result = new PbRecordSaveDialogErrorModel
                 {
                     Error = string.Format("Ошибка: {0}", error)
                 };

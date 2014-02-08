@@ -9298,7 +9298,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
-        public bool SavePbRecord(SavePbRecordModel model)
+        public int SavePbRecord(SavePbRecordModel model)
         {
             MissionPurchaseBookDocument doc = MissionPurchaseBookDocumentDao.Load(model.DocumentId);
             if(doc == null)
@@ -9340,13 +9340,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             doc.Sum = doc.Records.Sum(x => x.AllSum);
             MissionPurchaseBookDocumentDao.SaveAndFlush(doc);
 
+            int documentVersion = doc.Version; 
             List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
             cost.BookOfPurchaseSum = costRecords.Sum(x => x.AllSum);
             report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
             MissionReportDao.SaveAndFlush(report);
-            return true;
+            return documentVersion;
         }
-        public bool DeletePbRecord(DeletePbRecordModel model)
+        public int DeletePbRecord(DeletePbRecordModel model)
         {
             MissionPurchaseBookRecord rec = MissionPurchaseBookRecordDao.Load(model.Id);
             if (rec == null)
@@ -9359,13 +9360,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             doc.Records.Remove(rec);
             doc.Sum = doc.Records.Sum(x => x.AllSum);
             MissionPurchaseBookDocumentDao.SaveAndFlush(doc);
+            int documentVersion = doc.Version; 
 
             List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
             decimal? sum = costRecords.Sum(x => x.AllSum);
             cost.BookOfPurchaseSum = sum == 0 ? null : sum;
             report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
             MissionReportDao.SaveAndFlush(report);
-            return true;
+            return documentVersion;
         }
         #endregion
 
