@@ -1,0 +1,107 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@model Reports.Presenters.UI.ViewModel.ClearanceChecklistListModel
+@{
+    ViewBag.Title = "Обходные листы";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:200px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                                @*@Html.DropDownListFor(model => model.DepartmentId, new SelectList(Model.Departments, "ID", "Name")) *@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PositionId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"))
+                             </td>
+                        </tr>
+                        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.UserName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.UserName)
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate)
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+                <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+
+                <table class="grid" style="width:100%">
+                    <tr>
+                        <th>
+                            <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                        </th>
+                        <th>
+                            <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                        </th>
+                        <th>
+                            <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                        </th>
+                        <th>
+                            <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
+                        </th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+}
