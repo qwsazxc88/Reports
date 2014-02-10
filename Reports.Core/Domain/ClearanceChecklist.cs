@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     /// <summary>
     /// Обходной лист при увольнении
     /// </summary>
-    class ClearanceChecklist : AbstractEntityWithVersion
+    public class ClearanceChecklist : AbstractEntityWithVersion
     {
         // Родительское увольнение
         public virtual Dismissal Dismissal { get; set; }

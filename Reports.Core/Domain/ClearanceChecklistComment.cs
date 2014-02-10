@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     /// <summary>
     /// Комментарий к обходному листу при увольнении
     /// </summary>
-    class ClearanceChecklistComment : AbstractEntityWithVersion
+    public class ClearanceChecklistComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }
         public virtual ClearanceChecklist ClearanceChecklist { get; set; }
