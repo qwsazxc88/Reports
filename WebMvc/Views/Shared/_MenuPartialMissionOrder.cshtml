@@ -77,9 +77,15 @@
              {
                 <div class="menuitem" id="moAllReports">@Html.ActionLink("Авансовый отчет - реестр", "MissionReportsList", "MissionOrder")</div> 
              }
-             @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+             @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Findep) > 0)
              {
                 <div class="menuitem" id="moAllPurchaseBookDoc">@Html.ActionLink("Книга покупок (документы)", "MissionPurchaseBookDocList", "MissionOrder")</div> 
+                <div class="menuitem" id="moAllPurchaseBookRecords">@Html.ActionLink("Книга покупок (отчет)", "MissionPurchaseBookRecordsList", "MissionOrder")</div> 
+             }
+              @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+             {
+                <div class="menuitem" id="moUserPayments">@Html.ActionLink("Реестр на доплату", "MissionUserPaymentsList", "MissionOrder")</div> 
+                <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
              }
             <div class="menuitem" id="moGradeList">@Html.ActionLink("Справочник расчета лимитов", "GradeList", "MissionOrder")</div> 
             <div class="menuitem" id="moInstructions">@Html.ActionLink("Инструкция", "Instructions", "MissionOrder")</div> 

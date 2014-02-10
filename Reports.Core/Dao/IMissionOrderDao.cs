@@ -18,5 +18,15 @@ namespace Reports.Core.Dao
                                             bool? ortDescending);
 
         IList<MissionOrder> LoadForIdsList(List<int> ids);
+
+        IList<MissionUserDeptsListDto> GetUserDeptsDocuments(int userId,
+                                                             UserRole role,
+                                                             int departmentId,
+                                                             int statusId,
+                                                             DateTime? beginDate,
+                                                             DateTime? endDate,
+                                                             string userName,
+                                                             int sortBy,
+                                                             bool? sortDescending);
     }
 }

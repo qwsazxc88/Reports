@@ -7,7 +7,7 @@
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
     <property name="DocumentDate" not-null="true"/>
-    <property name="Number"  not-null="true"/>
+    <property name="Number" length="255" not-null="true"/>
 
 	  
 	<many-to-one name="Contractor" class="Contractor" column="ContractorId" foreign-key="FK_MissionPurchaseBookDocument_Contractor" index="MissionPurchaseBookDocument_Contractor"  not-null="false"/>

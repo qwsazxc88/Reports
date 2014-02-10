@@ -154,5 +154,16 @@ namespace Reports.Presenters.UI.Bl
         PbRecordCostTypesDto GetReportsForPbUserId(int userId);
         int SavePbRecord(SavePbRecordModel model);
         int DeletePbRecord(DeletePbRecordModel model);
+
+        MissionPurchaseBookRecordsListModel GetMissionPurchaseBookRecordsListModel();
+        void SetMissionPurchaseBookRecordsListModel(MissionPurchaseBookRecordsListModel model);
+
+        MissionUserDeptsListModel GetMissionUserDeptsListModel();
+        void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError);
+
+        PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId,
+                                                                      DateTime? beginDate,
+                                                                      DateTime? endDate, string userName, int sortBy,
+                                                                      bool? sortDescending);
     }
 }

@@ -263,6 +263,8 @@ namespace WebMvc.Controllers
         {
             return GetPrintForm(id, "PrintPathList");
         }
+       
+
         [HttpGet]
         public ActionResult GetPrintForm(int id,string actionName)
         {
@@ -303,7 +305,7 @@ namespace WebMvc.Controllers
             }
             catch (Exception ex)
             {
-                Log.Error("Exception on RenderToPdf", ex);
+                Log.Error("Exception on GetPrintForm", ex);
                 throw;
             }
             finally
@@ -713,12 +715,147 @@ namespace WebMvc.Controllers
 
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager )]
+        public ActionResult MissionUserDeptsList()
+        {
+            var model = RequestBl.GetMissionUserDeptsListModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
+        {
+            //ModelState.Clear();
+            RequestBl.SetMissionUserDeptsListModel(model, !ValidateModel(model));
+            //if (model.HasErrors)
+            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
+            return View(model);
+        }
+        protected bool ValidateModel(MissionUserDeptsListModel model)
+        {
+            if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            //if (model.IsApproveClick && (model.Documents == null || model.Documents.Count == 0
+            //           || model.Documents.Where(x => x.IsChecked).Count() == 0))
+            //    ModelState.AddModelError(string.Empty, "Не выбрано ни одного приказа для согласования.");
+            return ModelState.IsValid;
+        }
+
+
+        [HttpGet]
+        public ActionResult PrintMissionUserDeptsList(int departmentId, int statusId, DateTime? beginDate,
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+        {
+            PrintMissionUserDeptsListModel model = 
+                RequestBl.PrintMissionUserDeptsListModel(departmentId,statusId,beginDate,endDate,userName,sortBy,sortDescending);
+
+            return View(model);
+        }
+        [HttpGet]
         [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult GetMissionUserDeptsListPrintForm(int departmentId, int statusId, DateTime? beginDate,
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+        {
+            string args =
+                string.Format(
+                    @"departmentId={0}&statusId={1}&beginDate={2}&endDate={3}&userName={4}&sortBy={5}&sortDescending={6}",
+                    departmentId, statusId, 
+                    beginDate.HasValue?beginDate.Value.ToShortDateString():string.Empty,
+                    endDate.HasValue?endDate.Value.ToShortDateString() : string.Empty, 
+                    Server.UrlEncode(userName), sortBy, sortDescending);
+            return GetPrintForm(args, "PrintMissionUserDeptsList");
+        }
+        [HttpGet]
+        public ActionResult GetPrintForm(string arguments, string actionName)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var argumrnts = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                    GetConverterCommandParam(arguments, actionName)
+                    , cookieName, authCookie.Value);
+                argumrnts.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = argumrnts.ToString(),
+                        UseShellExecute = true
+                    },
+                    EnableRaisingEvents = true
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetPrintForm", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+        protected string GetConverterCommandParam(string args, string actionName)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            string urlTemplate = string.Format("MissionOrder/{0}", actionName);
+            //string args = @"/" + id;
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}?{2}", localhostUrl, urlTemplate, args)
+                       : Url.Content(string.Format(@"{0}?{1}", urlTemplate, args));
+        }
+
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        public ActionResult MissionPurchaseBookRecordsList()
+        {
+            var model = RequestBl.GetMissionPurchaseBookRecordsListModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionPurchaseBookRecordsList(MissionPurchaseBookRecordsListModel model)
+        {
+            RequestBl.SetMissionPurchaseBookRecordsListModel(model);
+            return View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
         public ActionResult MissionPurchaseBookDocList()
         {
             var model = RequestBl.GetMissionPurchaseBookDocsListModel();
             return View(model);
         }
+       
         [HttpPost]
         public ActionResult MissionPurchaseBookDocList(MissionPurchaseBookDocListModel model)
         {
@@ -734,7 +871,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
         public ActionResult EditMissionPbDocument(int id)
         {
             var model = RequestBl.GetEditMissionPbDocumentModel(id);

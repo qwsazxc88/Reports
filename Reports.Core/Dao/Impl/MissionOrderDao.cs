@@ -414,6 +414,157 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<MissionOrder>();
         }
-      
+
+
+        public IList<MissionUserDeptsListDto> GetUserDeptsDocuments(int userId,
+               UserRole role,
+               int departmentId,
+               int statusId,
+               DateTime? beginDate,
+               DateTime? endDate,
+               string userName,
+               int sortBy,
+               bool? sortDescending)
+        {
+            string sqlQuery = @"select 
+                            v.Id,
+                            u.Name as UserName,
+                            cast(v.Number as nvarchar(10)) as ReportNumber,
+                            v.EditDate as ReportDate,
+                            v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived as DiffSum,
+                            v.AccountantAllSum as AccountantSum,
+                            v.UserAllSum as UserSum,
+                            case when v.SendTo1C is null then N'Не выгружено в 1С'
+	                             else N'Выгружено в 1С' end as [Status]
+                            from dbo.MissionReport v
+                            inner join dbo.Users u on v.UserId = u.id";
+            //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
+            //whereString = GetTypeWhere(whereString, typeId);
+            string whereString = GetUdStatusWhere(string.Empty, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            //whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetUdSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+
+            IQuery query = CreateUdQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionUserDeptsListDto)))
+                .List<MissionUserDeptsListDto>();
+        }
+        public virtual IQuery CreateUdQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("ReportNumber", NHibernateUtil.String).
+                AddScalar("ReportDate", NHibernateUtil.DateTime).
+                AddScalar("DiffSum", NHibernateUtil.Decimal).
+                AddScalar("AccountantSum", NHibernateUtil.Decimal).
+                AddScalar("UserSum", NHibernateUtil.Decimal).
+                AddScalar("Status", NHibernateUtil.String);
+        }
+        public virtual string GetUdStatusWhere(string whereString, int statusId)
+        {
+            if (statusId != 0)
+            {
+                string statusWhere;
+                switch (statusId)
+                {
+                    case 1:
+                        statusWhere = @"SendTo1C is not null";
+                        break;
+                    case 2:
+                        statusWhere = @"SendTo1C is null";
+                        break;
+                    default:
+                        throw new ArgumentException("Неправильный статус отчета");
+                }
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @" " + statusWhere;
+                return whereString;
+            }
+            return whereString;
+        }
+        public virtual string GetUdSqlQueryOrdered(string sqlQuery, string whereString,
+                    int sortedBy,
+                    bool? sortDescending)
+        {
+            string orderBy = string.Empty;
+            if (!string.IsNullOrEmpty(whereString))
+                sqlQuery += @" where " + whereString;
+            if (!sortDescending.HasValue)
+            {
+                orderBy = " ORDER BY UserName,ReportDate DESC";
+                return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            }
+            switch (sortedBy)
+            {
+                case 0:
+                    orderBy = " ORDER BY UserName,ReportDate DESC";
+                    return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+                case 1:
+                    orderBy = @" order by UserName";
+                    break;
+                case 2:
+                    orderBy += @" order by ReportNumber";
+                    break;
+                case 3:
+                    orderBy = @" order by ReportDate";
+                    break;
+                case 4:
+                    orderBy = @" order by DiffSum";
+                    break;
+                case 5:
+                    orderBy = @" order by AccountantSum";
+                    break;
+                case 6:
+                    orderBy = @" order by UserSum";
+                    break;
+                case 7:
+                    orderBy = @" order by Status";
+                    break;
+                //case 8:
+                //    orderBy = @" order by GradeSum";
+                //    break;
+                //case 9:
+                //    orderBy = @" order by GradeIncrease";
+                //    break;
+                //case 10:
+                //    orderBy = @" order by UserSum";
+                //    break;
+                //case 11:
+                //    orderBy = @" order by HasMission";
+                //    break;
+                //case 12:
+                //    orderBy = @" order by State";
+                //    break;
+                //case 13:
+                //    orderBy = @" order by BeginDate,EndDate";
+                //    break;
+                //case 14:
+                //    orderBy = @" order by NeedSecretary";
+                //    break;
+                //case 15:
+                //    orderBy = @" order by MissionKind";
+                //    break;
+                //case 16:
+                //    orderBy = @" order by AirTicketType";
+                //    break;
+                //case 17:
+                //    orderBy = @" order by TrainTicketType";
+                //    break;
+            }
+            if (sortDescending.Value)
+                orderBy += " DESC ";
+            else
+                orderBy += " ASC ";
+            return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
+            //sqlQuery += @" order by Date DESC,Name ";
+            //return sqlQuery;
+        }
+
     }
 }

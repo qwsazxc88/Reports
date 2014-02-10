@@ -7399,6 +7399,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                  Report = report,
                                                  Type = types.Where(x => x.Id == 1).First(),
                                                  Sum = entity.SumDaily,
+                                                 UserSum = entity.UserSumDaily,
                                              };
                 list.Add(cost);
             }
@@ -7411,7 +7412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 2).First(),
                     Sum = entity.SumResidence,
-                    //BookOfPurchaseSum = entity.IsResidencePaid ? entity.SumResidence:null,
+                    UserSum = entity.IsResidencePaid ? null:entity.UserSumResidence,
                 };
                 list.Add(cost);
             }
@@ -7424,7 +7425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 3).First(),
                     Sum = entity.SumAir,
-                    //BookOfPurchaseSum = entity.IsAirTicketsPaid ? entity.SumAir : null,
+                    UserSum = entity.IsAirTicketsPaid ? null : entity.UserSumAir,
                 };
                 list.Add(cost);
             }
@@ -7437,11 +7438,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 4).First(),
                     Sum = entity.SumTrain,
-                    //BookOfPurchaseSum = entity.IsTrainTicketsPaid ? entity.SumTrain : null,
+                    UserSum = entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
                 };
                 list.Add(cost);
             }
             report.Costs = list;
+            report.UserAllSum = report.Costs.Sum(x => x.UserSum).Value;
             MissionReportDao.SaveAndFlush(report);
 
         }
@@ -8354,7 +8356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,PurchaseBookSum = cost.BookOfPurchaseSum
                         ,UserSum = cost.UserSum
                         ,SortOrder = cost.Type.SortOrder
-                        ,IsEditable = model.IsEditable && !cost.IsCostFromPurchaseBook
+                        ,IsEditable = model.IsEditable && !cost.IsCostFromOrder
                         ,IsDeleteAvailable = model.IsEditable && !cost.IsCostFromOrder
                     };
                     LoadTransactions(model,cost,dto);
@@ -9010,6 +9012,88 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         
+       
+
+        public MissionUserDeptsListModel GetMissionUserDeptsListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            MissionUserDeptsListModel model = new MissionUserDeptsListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            //SetIsAvailable(model);
+            return model;
+        }
+        public void SetDictionariesToModel(MissionUserDeptsListModel model)
+        {
+            model.Statuses = GetUserDeptsListStatuses();
+        }
+        protected List<IdNameDto> GetUserDeptsListStatuses()
+        {
+            List<IdNameDto> statusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Выгружено в 1С"),
+                                                           new IdNameDto(2, "Не выгружено в 1С"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            statusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return statusesList;
+        }
+        public void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            //SetIsAvailable(model);
+            User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<MissionUserDeptsListDto>();
+            else
+            {
+                //if (model.IsApproveClick)
+                //{
+                //    model.IsApproveClick = false;
+                //    List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
+                //    ApproveOrders(model, idsForApprove);
+                //}
+                SetDocumentsToModel(model, user);
+            }
+        }
+        public void SetDocumentsToModel(MissionUserDeptsListModel model, User user)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = MissionOrderDao.GetUserDeptsDocuments(user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
+            model.IsPrintAvailable = model.Documents.Count > 0;
+        }
+        public PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId, DateTime? beginDate,
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+        {
+            UserRole role = CurrentUser.UserRole;
+            return new PrintMissionUserDeptsListModel
+                       {
+                           Documents = MissionOrderDao.GetUserDeptsDocuments(CurrentUser.Id,
+                                                                             role,
+                                                                             departmentId,
+                                                                             statusId,
+                                                                             beginDate,
+                                                                             endDate,
+                                                                             userName,
+                                                                             sortBy,
+                                                                             sortDescending)
+                       };
+        }
         #region Mission PurchaseBook Documents
         public MissionPurchaseBookDocListModel GetMissionPurchaseBookDocsListModel()
         {
@@ -9018,6 +9102,34 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             model.IsAddAvailable = CurrentUser.UserRole == UserRole.Accountant;
             return model;
+        }
+        public MissionPurchaseBookRecordsListModel GetMissionPurchaseBookRecordsListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+
+            MissionPurchaseBookRecordsListModel model = new MissionPurchaseBookRecordsListModel
+                                                            {
+                                                                UserId = AuthenticationService.CurrentUser.Id,
+                                                                DepartmentName = dep.Name,
+                                                                DepartmentId = dep.Id,
+                                                                DepartmentReadOnly = dep.IsReadOnly,
+                                                            };
+            return model;
+        }
+        public void SetMissionPurchaseBookRecordsListModel(MissionPurchaseBookRecordsListModel model)
+        {
+            SetDocumentsToModel(model);
+        }
+        public void SetDocumentsToModel(MissionPurchaseBookRecordsListModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = MissionPurchaseBookRecordDao.GetDocuments(
+                role,
+                model.DepartmentId,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
         public void SetMissionPurchaseBookDocsModel(MissionPurchaseBookDocListModel model, bool hasError)
         {
@@ -9032,8 +9144,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(MissionPurchaseBookDocListModel model)
         {
             UserRole role = CurrentUser.UserRole;
-            model.Documents = new List<MissionPurchaseBookDocDto>();
-            //model.Documents = new List<MissionOrderDto>();
             model.Documents = MissionPurchaseBookDocumentDao.GetDocuments(
                 //user.Id,
                 role,
@@ -9046,7 +9156,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public EditMissionPbDocumentModel GetEditMissionPbDocumentModel(int id)
         {
             IUser current = AuthenticationService.CurrentUser;
-            if(current.UserRole != UserRole.Accountant && current.UserRole != UserRole.OutsourcingManager)
+            if(current.UserRole != UserRole.Accountant && current.UserRole != UserRole.OutsourcingManager
+                && current.UserRole != UserRole.Findep)
                 throw new ArgumentException("Доступ запрещен.");
             EditMissionPbDocumentModel model = new EditMissionPbDocumentModel {UserId = current.Id, Id = id};
             if(id != 0)

@@ -8,5 +8,11 @@ namespace Reports.Core.Dao
     {
         IList<MissionPurchaseBookRecordDto> GetRecordsForDocumentId(int documentId);
         IList<MissionPurchaseBookRecord> GetRecordsForCost(int costId);
+
+        IList<MissionPbRecordListDto> GetDocuments(UserRole role,
+                                                   int departmentId,
+                                                   string userName,
+                                                   int sortBy,
+                                                   bool? sortDescending);
     }
 }
