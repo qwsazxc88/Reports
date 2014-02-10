@@ -61,6 +61,10 @@ namespace Reports.Presenters.UI.Bl
         DismissalEditModel GetDismissalEditModel(int id, int userId);
         bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
+                
+        ClearanceChecklistListModel GetClearanceChecklistListModel();
+        void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError);
+        // TODO Add all the necessary method declarations
 
         TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
         void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model, bool hasError);

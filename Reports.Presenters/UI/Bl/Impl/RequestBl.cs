@@ -63,6 +63,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDismissalDao dismissalDao;
         protected IDismissalCommentDao dismissalCommentDao;
 
+        protected IClearanceChecklistDao clearanceChecklistDao;
+
         protected ITimesheetCorrectionTypeDao timesheetCorrectionTypeDao;
         protected ITimesheetCorrectionDao timesheetCorrectionDao;
         protected ITimesheetCorrectionCommentDao timesheetCorrectionCommentDao;
@@ -228,6 +230,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(dismissalCommentDao); }
             set { dismissalCommentDao = value; }
+        }
+        public IClearanceChecklistDao ClearanceChecklistDao
+        {
+            get { return Validate.Dependency(clearanceChecklistDao); }
+            set { clearanceChecklistDao = value; }
         }
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
         {
@@ -2122,6 +2129,70 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        #region ClearanceChecklist
+
+        // TODO Finish method
+        public ClearanceChecklistListModel GetClearanceChecklistListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            ClearanceChecklistListModel model = new ClearanceChecklistListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                SortBy = 0,
+                SortDescending = null,
+                //Department = GetDepartmentDto(user),
+            };
+            SetDictionariesToModel(model, user);
+            SetInitialDates(model);
+            return model;
+        }
+
+        public void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            if (hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+
+        protected void SetDictionariesToModel(ClearanceChecklistListModel model, User user)
+        {
+            //model.Departments = GetDepartments(user);
+            //model.Types = GetDismissalTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+
+        public void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
+        {
+
+            UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            model.Documents = ClearanceChecklistDao.GetDocuments(
+                user.Id,
+                role,
+                //model.DepartmentId,
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
+                model.PositionId,
+                //model.TypeId,
+                model.StatusId,
+                //0,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
+        }
+
+        #endregion
+
         #region Mission
         public MissionListModel GetMissionListModel()
         {

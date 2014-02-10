@@ -393,24 +393,28 @@ namespace WebMvc.Controllers
 
          #endregion
          #region Dismissal
+
          [HttpGet]
          public ActionResult DismissalList()
          {
              DismissalListModel model = RequestBl.GetDismissalListModel();
              return View(model);
          }
+
          [HttpPost]
          public ActionResult DismissalList(DismissalListModel model)
          {
              RequestBl.SetDismissalListModel(model, !ValidateModel(model));
              return View(model);
          }
+
          [HttpGet]
          public ActionResult DismissalEdit(int id, int userId)
          {
              DismissalEditModel model = RequestBl.GetDismissalEditModel(id, userId);
              return View(model);
          }
+
          [HttpPost]
          public ActionResult DismissalEdit(DismissalEditModel model)
          {
@@ -440,6 +444,7 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+
          protected void CorrectDropdowns(DismissalEditModel model)
          {
              if (!model.IsPersonnelFieldsEditable)
@@ -448,6 +453,7 @@ namespace WebMvc.Controllers
                  model.StatusId = model.StatusIdHidden;*/
              //model.DaysCount = model.DaysCountHidden;
          }
+
          protected bool ValidateDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto)
          {
              //if (model.BeginDate.HasValue && model.EndDate.HasValue &&
@@ -509,6 +515,24 @@ namespace WebMvc.Controllers
 
              CheckEndDate(model);
              return ModelState.IsValid;
+         }
+
+         #endregion
+
+         #region ClearanceChecklist
+
+         [HttpGet]
+         public ActionResult ClearanceChecklistList()
+         {
+             ClearanceChecklistListModel model = RequestBl.GetClearanceChecklistListModel();
+             return View(model);
+         }
+
+         [HttpPost]
+         public ActionResult ClearanceChecklistList(ClearanceChecklistListModel model)
+         {
+             RequestBl.SetClearanceChecklistListModel(model, !ValidateModel(model));
+             return View(model);
          }
 
          #endregion
