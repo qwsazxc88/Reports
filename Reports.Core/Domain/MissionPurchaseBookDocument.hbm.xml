@@ -6,8 +6,10 @@
     <version name="Version" column= "Version"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
-    <property name="DocumentDate" not-null="true"/>
-    <property name="Number" length="255" not-null="true"/>
+    <property name="DocumentDate" not-null="false"/>
+    <property name="Number" length="255" not-null="false"/>
+    <property name="CfDate" not-null="false"/>
+    <property name="CfNumber" length="255" not-null="false"/>
 
 	  
 	<many-to-one name="Contractor" class="Contractor" column="ContractorId" foreign-key="FK_MissionPurchaseBookDocument_Contractor" index="MissionPurchaseBookDocument_Contractor"  not-null="false"/>

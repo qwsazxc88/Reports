@@ -71,11 +71,17 @@
                     <th style="width:70px">
                         № п/п
                     </th>
-                    <th style="width:100px">
-                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Номер</a></div>
+                    <th style="width:70px">
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Акт <br/>номер</a></div>
                     </th>
-                     <th style="width:100px">
-                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Дата</a></div>
+                     <th style="width:70px">
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Акт <br/>дата</a></div>
+                    </th>
+                    <th style="width:70px">
+                        <div id="sort5"><a href="#" onclick = "SortChanged(5);">Сч/ф <br/>номер</a></div>
+                    </th>
+                     <th style="width:70px">
+                        <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Сч/ф <br/>дата</a></div>
                     </th>
                      <th>
                         <div id="sort3"><a href="#" style="min-width:500px" onclick = "SortChanged(3);">Контрагент</a></div>
@@ -93,7 +99,11 @@
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("EditMissionPbDocument", new { id = doc.Id })' style="cursor:hand">@doc.DocumentNumber</a>
                             </td>
-                            <td>@doc.DocumentDate.ToShortDateString()</td>
+                            <td>@if(doc.DocumentDate.HasValue){@doc.DocumentDate.Value.ToShortDateString()}</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("EditMissionPbDocument", new { id = doc.Id })' style="cursor:hand">@doc.CfNumber</a>
+                            </td>
+                            <td>@if(doc.CfDate.HasValue){@doc.CfDate.Value.ToShortDateString()}</td>
                             <td>@doc.Contractor</td>
                             <td>@RequestBl.FormatSum(doc.Sum)</td>
                         </tr>

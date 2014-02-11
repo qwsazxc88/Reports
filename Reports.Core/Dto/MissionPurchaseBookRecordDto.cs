@@ -24,8 +24,10 @@ namespace Reports.Core.Dto
         public string MissionOrderNumber { get; set; }
         public string ContractorName { get; set; }
         public string ContractorAccount { get; set; }
-        public DateTime DocDate { get; set; }
+        public DateTime? DocDate { get; set; }
         public string DocNumber { get; set; }
+        public DateTime? CfDate { get; set; }
+        public string CfNumber { get; set; }
         public string CostTypeName { get; set; }
         public decimal AllSum { get; set; }
     }

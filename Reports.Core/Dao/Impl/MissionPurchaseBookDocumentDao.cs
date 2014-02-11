@@ -22,7 +22,9 @@ namespace Reports.Core.Dao.Impl
               int sortBy,
               bool? sortDescending)
         {
-            string sqlQuery = @"select v.Id as Id,Number as DocumentNumber,DocumentDate,c.Name as Contractor,[Sum]
+            string sqlQuery = @"select v.Id as Id,Number as DocumentNumber,
+                                DocumentDate,CfNumber,CfDate,
+                                c.Name as Contractor,[Sum]
                                 from dbo.MissionPurchaseBookDocument v
                                 inner join dbo.Contractor c on c.Id = v.ContractorId";
             //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -40,17 +42,24 @@ namespace Reports.Core.Dao.Impl
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
         {
-            if (beginDate.HasValue)
+            if (beginDate.HasValue && endDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[DocumentDate] >= :beginDate ";
+                whereString += @" (((v.[DocumentDate] >= :beginDate) and (v.[DocumentDate] < :endDate)) 
+                                or ((v.[CfDate] >= :beginDate) and (v.[CfDate]  < :endDate))) ";
             }
-            if (endDate.HasValue)
+            else if (beginDate.HasValue)
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += @"v.[DocumentDate] < :endDate ";
+                whereString += @" ((v.[DocumentDate] >= :beginDate) or (v.[CfDate] >= :beginDate)) ";
+            }
+            else if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"((v.[DocumentDate] < :endDate) or (v.[CfDate] < :endDate)) ";
             }
             return whereString;
         }
@@ -83,6 +92,12 @@ namespace Reports.Core.Dao.Impl
                 case 4:
                     orderBy = @" order by [Sum]";
                     break;
+                case 5:
+                    orderBy = @" order by CfNumber";
+                    break;
+                case 6:
+                    orderBy += @" order by CfDate";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -96,6 +111,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("DocumentNumber", NHibernateUtil.String).
                 AddScalar("DocumentDate", NHibernateUtil.DateTime).
+                AddScalar("CfNumber", NHibernateUtil.String).
+                AddScalar("CfDate", NHibernateUtil.DateTime).
                 AddScalar("Contractor", NHibernateUtil.String).
                 AddScalar("Sum", NHibernateUtil.Decimal).
                 AddScalar("Number", NHibernateUtil.Int32);

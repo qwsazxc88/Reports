@@ -922,6 +922,19 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateModel(EditMissionPbDocumentModel model)
         {
+            if ((string.IsNullOrEmpty(model.Number) && !string.IsNullOrEmpty(model.DocumentDate)) ||
+                (string.IsNullOrEmpty(model.DocumentDate) && !string.IsNullOrEmpty(model.Number)))
+                ModelState.AddModelError("Number", "Поля дата и номер акта должны быть либо пусты, либо заполнены оба");
+            if ((string.IsNullOrEmpty(model.CfNumber) && !string.IsNullOrEmpty(model.CfDate)) ||
+                (string.IsNullOrEmpty(model.CfDate) && !string.IsNullOrEmpty(model.CfNumber)))
+                ModelState.AddModelError("CfNumber", "Поля дата и номер сч/ф должны быть либо пусты, либо заполнены оба");
+            DateTime res;
+            if (!string.IsNullOrEmpty(model.DocumentDate) && !DateTime.TryParse(model.DocumentDate,out res))
+                ModelState.AddModelError("DocumentDate", "Неверная дата в поле <Акт дата>");
+            if (!string.IsNullOrEmpty(model.CfDate) && !DateTime.TryParse(model.CfDate, out res))
+                ModelState.AddModelError("CfDate", "Неверная дата в поле <Сч/ф дата>");
+            if (string.IsNullOrEmpty(model.Number) && string.IsNullOrEmpty(model.CfNumber))
+                ModelState.AddModelError("CfNumber", "Одно из полей <Акт номер> или <Сч/ф> должно быть заполнено");
             //if(string.IsNullOrEmpty(model.Number))
             //    ModelState.AddModelError("Number", "СФ (Акт) номер - обязательное поле");
             //if (!model.DocumentDate.HasValue)

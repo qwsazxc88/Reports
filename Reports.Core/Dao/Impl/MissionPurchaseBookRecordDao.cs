@@ -66,7 +66,9 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = @"select v.Id,u.Name as UserName,u.Cnilc,mo.Number as MissionOrderNumber,
                             c.Name as ContractorName,c.Account as ContractorAccount,
-                            pbd.DocumentDate as DocDate,pbd.Number as DocNumber,ct.Name as CostTypeName,
+                            pbd.DocumentDate as DocDate,pbd.Number as DocNumber,
+                            pbd.CfDate as CfDate,pbd.CfNumber as CfNumber,
+                            ct.Name as CostTypeName,
                             v.[AllSum] 
                             from dbo.MissionPurchaseBookRecord v
                             inner join [dbo].[Users] u on u.Id = v.UserId
@@ -133,6 +135,12 @@ namespace Reports.Core.Dao.Impl
                 case 9:
                     orderBy = @" order by CostTypeName";
                     break;
+                case 10:
+                    orderBy = @" order by CfDate";
+                    break;
+                case 11:
+                    orderBy = @" order by CfNumber";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -162,6 +170,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ContractorAccount", NHibernateUtil.String).
                 AddScalar("DocDate", NHibernateUtil.DateTime).
                 AddScalar("DocNumber", NHibernateUtil.String).
+                AddScalar("CfDate", NHibernateUtil.DateTime).
+                AddScalar("CfNumber", NHibernateUtil.String).
                 AddScalar("CostTypeName", NHibernateUtil.String).
                 AddScalar("AllSum", NHibernateUtil.Decimal);
         }

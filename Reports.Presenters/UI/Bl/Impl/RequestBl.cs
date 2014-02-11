@@ -9166,7 +9166,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(entity == null)
                     throw new ValidationException(string.Format("Не найден документ книги покупок (id {0}) в базе данных", id));
                 model.Number = entity.Number;
-                model.DocumentDate = entity.DocumentDate;
+                model.DocumentDate = entity.DocumentDate.HasValue?entity.DocumentDate.Value.ToShortDateString():string.Empty;
+                model.CfNumber = entity.CfNumber;
+                model.CfDate = entity.CfDate.HasValue? entity.CfDate.Value.ToShortDateString():string.Empty;
                 model.ContractorId = entity.Contractor.Id;
                 model.Version = entity.Version;
             }
@@ -9210,8 +9212,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Editor = UserDao.Load(current.Id);
                     entity.EditDate = DateTime.Now;
                 }
-                entity.Number = model.Number;
-                entity.DocumentDate = model.DocumentDate.Value;
+                entity.Number = string.IsNullOrEmpty(model.Number)?null: model.Number;
+                entity.DocumentDate = string.IsNullOrEmpty(model.DocumentDate) ? new DateTime?() : DateTime.Parse(model.DocumentDate);
+                entity.CfNumber = string.IsNullOrEmpty(model.CfNumber) ? null : model.CfNumber;
+                entity.CfDate = string.IsNullOrEmpty(model.CfDate) ? new DateTime?() : DateTime.Parse(model.CfDate);
                 entity.Contractor = ContractorDao.Load(model.ContractorId);
                 MissionPurchaseBookDocumentDao.SaveAndFlush(entity);
                 if (model.Id != 0 && entity.Version != model.Version)

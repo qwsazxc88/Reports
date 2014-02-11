@@ -12,10 +12,10 @@ namespace Reports.Core.Domain
 
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
-        public virtual DateTime DocumentDate { get; set; }
-       
-
+        public virtual DateTime? DocumentDate { get; set; }
         public virtual string Number { get; set; }
+        public virtual DateTime? CfDate { get; set; }
+        public virtual string CfNumber { get; set; }
 
 
         public virtual Contractor Contractor { get; set; }

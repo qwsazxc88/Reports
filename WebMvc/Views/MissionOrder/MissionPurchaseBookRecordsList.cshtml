@@ -106,10 +106,16 @@
                         <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Номер счета<br/>Инверсии</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:90px"><a href="#"  onclick = "SortChanged(6);">Дата  <br/>акта</a></div>
+                        <div id="sort7" style="min-width:90px"><a href="#"  onclick = "SortChanged(7);">Акт <br/>номер</a></div>
                     </th>
                     <th>
-                        <div id="sort7" style="min-width:90px"><a href="#"  onclick = "SortChanged(7);">Номер <br/>акта</a></div>
+                        <div id="sort6" style="min-width:90px"><a href="#"  onclick = "SortChanged(6);">Акт <br/>дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort11" style="min-width:90px"><a href="#"  onclick = "SortChanged(11);">Сч/ф <br/>номер</a></div>
+                    </th>
+                     <th>
+                        <div id="sort10" style="min-width:90px"><a href="#"  onclick = "SortChanged(10);">Сч/ф <br/>дата</a></div>
                     </th>
                     <th>
                         <div id="sort8" style="min-width:143px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>(за гостиницу или билеты)</a></div>
@@ -130,8 +136,10 @@
                             <td>@doc.MissionOrderNumber</td>
                             <td>@doc.ContractorName</td>
                             <td>@doc.ContractorAccount</td>
-                            <td>@doc.DocDate.ToShortDateString()</td>
                             <td>@doc.DocNumber</td>
+                            <td>@if (doc.DocDate.HasValue){@doc.DocDate.Value.ToShortDateString()}</td>
+                            <td>@doc.CfNumber</td>
+                            <td>@if (doc.CfDate.HasValue){@doc.CfDate.Value.ToShortDateString()}</td>
                             <td>@RequestBl.FormatSum(doc.AllSum)</td>
                             <td>@doc.CostTypeName</td>
                         </tr>

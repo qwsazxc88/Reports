@@ -12,7 +12,31 @@
                     @Html.ValidationSummary(false)
                     <div id="Error" style="color:Red;display:none;"></div>
                 </td>
-            </tr
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CfNumber):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.CfNumber, Model.IsEditable ? null : (object)new { @readonly = "readonly" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CfDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.CfDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.CfDate)
+                        @Html.HiddenFor(model => model.CfDate)
+                    } 
+                 </td>
+            </tr>
             <tr>
                 <td style="width:115px">
                     @Html.LabelFor(m => m.Number):
@@ -41,6 +65,8 @@
                     } 
                  </td>
             </tr>
+            
+
              <tr>
                 <td>
                     @Html.LabelFor(m => m.ContractorId):
@@ -84,6 +110,7 @@
         $(document).ready(function () {
             setActiveMenuItem("moAllPurchaseBookDoc");
             $("#DocumentDate").datepicker();
+            $("#CfDate").datepicker();
             $(".hasDatepicker").width("75px");
         });
         function RenderRecords() {
