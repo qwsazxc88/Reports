@@ -1,5 +1,21 @@
 ﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
   <class name="ClearanceChecklist">
     
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <version name="Version" column= "Version"/>
+
+    <bag name="Approvals" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistApproval_ClearanceChecklist"/>
+      <one-to-many class="ClearanceChecklistApproval"/>
+    </bag>
+
+    <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistComment_ClearanceChecklist"/>
+      <one-to-many class="ClearanceChecklistComment"/>
+    </bag>
+    
   </class>
 </hibernate-mapping>

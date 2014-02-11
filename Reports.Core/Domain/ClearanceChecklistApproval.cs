@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         public virtual ClearanceChecklist ClearanceChecklist { get; set; }
 
         // TODO Свойство для хранения согласующего отдела
+        public virtual ClearanceChecklistDepartment ClearanceChecklistDepartment { get; set; }
 
         // Согласующий; заполняется по факту согласования
         public virtual User ApprovedBy { get; set; }

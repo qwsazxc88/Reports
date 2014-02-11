@@ -275,6 +275,7 @@
     <Compile Include="Domain\ClearanceChecklist.cs" />
     <Compile Include="Domain\ClearanceChecklistApproval.cs" />
     <Compile Include="Domain\ClearanceChecklistComment.cs" />
+    <Compile Include="Domain\ClearanceChecklistDepartment.cs" />
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Deduction.cs" />
@@ -714,6 +715,7 @@
     <Content Include="Domain\ClearanceChecklist.hbm.xml" />
     <Content Include="Domain\ClearanceChecklistApproval.hbm.xml" />
     <Content Include="Domain\ClearanceChecklistComment.hbm.xml" />
+    <Content Include="Domain\ClearanceChecklistDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
