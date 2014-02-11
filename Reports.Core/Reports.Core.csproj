@@ -712,10 +712,10 @@
     <EmbeddedResource Include="Domain\MissionPurchaseBookRecord.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Domain\ClearanceChecklist.hbm.xml" />
-    <Content Include="Domain\ClearanceChecklistApproval.hbm.xml" />
-    <Content Include="Domain\ClearanceChecklistComment.hbm.xml" />
-    <Content Include="Domain\ClearanceChecklistDepartment.hbm.xml" />
+    <EmbeddedResource Include="Domain\ClearanceChecklist.hbm.xml" />
+    <EmbeddedResource Include="Domain\ClearanceChecklistApproval.hbm.xml" />
+    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
+    <EmbeddedResource Include="Domain\ClearanceChecklistDepartment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
