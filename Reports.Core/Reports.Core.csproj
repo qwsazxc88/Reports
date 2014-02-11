@@ -364,6 +364,7 @@
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
+    <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\CostDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DeductionDto.cs" />

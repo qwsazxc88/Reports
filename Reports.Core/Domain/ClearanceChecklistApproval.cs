@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Reports.Core.Domain
 {
-    public class ClearanceChecklistApproval : AbstractEntity
+    public class ClearanceChecklistApproval : AbstractEntityWithVersion
     {
         // Родительский обходной лист
         public virtual ClearanceChecklist ClearanceChecklist { get; set; }

@@ -4,7 +4,6 @@
     <id name="Id">
       <generator class="native" />
     </id>
-    <version name="Version" column= "Version"/>
     <property name="Name" length="128" not-null="true"/>
   </class>
 </hibernate-mapping>
