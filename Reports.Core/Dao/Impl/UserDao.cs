@@ -988,6 +988,7 @@ namespace Reports.Core.Dao.Impl
                     (select mr.id from [dbo].[MissionReportCost] mrc
                     inner join [dbo].[MissionReport] mr on mr.Id = mrc.ReportId
                     where mrc.IsCostFromPurchaseBook = 1
+                    and mr.AccountantDateAccept is null
                     and mr.UserId = u.Id)
                     order by Name";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
