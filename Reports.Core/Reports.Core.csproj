@@ -263,6 +263,7 @@
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
+    <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />

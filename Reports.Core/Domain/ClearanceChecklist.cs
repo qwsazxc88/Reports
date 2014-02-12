@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Iesi.Collections.Generic;
+using Reports.Core.Domain;
+using Reports.Core.Enum;
 
 namespace Reports.Core.Domain
 {
     /// <summary>
     /// Обходной лист при увольнении
     /// </summary>
-    public class ClearanceChecklist : AbstractEntityWithVersion
+    public class ClearanceChecklist : AbstractGeneralDocument
     {
         // Родительское увольнение
         public virtual Dismissal Dismissal { get; set; }

@@ -177,6 +177,22 @@ namespace Reports.Core.Dao.Impl
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
+        protected const string sqlSelectForListClearanceChecklist =
+                                @"select v.Id as Id,
+                                u.Id as UserId,
+                                '{2}' as Name,
+                                {1} as Date,
+                                {4} as BeginDate,  
+                                {5} as EndDate,
+                                v.Number as Number,
+                                u.Name as UserName,
+                                case when v.DeleteDate is not null then '{0}'
+                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
+                                    else ''
+                                end as RequestStatus,
+                                {6} as RequestType
+                                from {3} v
+                                inner join [dbo].[Users] u on u.Id = v.UserId";
         protected const string sqlSelectForListChildVacation =
                                @"select v.Id as Id,
                                 u.Id as UserId,

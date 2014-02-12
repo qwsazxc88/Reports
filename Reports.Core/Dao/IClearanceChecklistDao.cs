@@ -12,7 +12,7 @@ namespace Reports.Core.Dao
             UserRole role,
             int departmentId,
             int positionId,
-            //int typeId,
+            int typeId,
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,

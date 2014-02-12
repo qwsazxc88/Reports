@@ -77,7 +77,7 @@
                         <div class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</div>
                         <div class="menuitem" id="userChildVacation">@Html.ActionLink("Отпуска по уходу за ребенком", "ChildVacationList", "UserRequest")</div>
                         <div class="menuitem" id="userDismissal">@Html.ActionLink("Увольнения", "DismissalList", "UserRequest")</div>
-                        <div class="menuitem" id="userDismissal">@Html.ActionLink("Обходные листы", "ClearanceChecklistList", "UserRequest")</div>
+                        <div class="menuitem" id="userClearanceChecklistList">@Html.ActionLink("Обходные листы", "ClearanceChecklistList", "UserRequest")</div>
                     
                         if ((dto.UserRole & UserRole.Inspector) == 0)
                         {

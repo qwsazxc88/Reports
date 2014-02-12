@@ -535,6 +535,13 @@ namespace WebMvc.Controllers
              return View(model);
          }
 
+         /*[HttpGet]
+         public ActionResult ClearanceChecklistEdit(int id)
+         {
+             DismissalEditModel model = RequestBl.GetDismissalEditModel(id);
+             return View(model);
+         }*/
+
          #endregion
          #region Mission
          [HttpGet]

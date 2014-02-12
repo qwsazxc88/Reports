@@ -7,6 +7,12 @@
     
     <version name="Version" column= "Version"/>
 
+    <property name="CreateDate" not-null="true"/>
+
+    <property name="Number"  not-null="true"/>
+
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_ClearanceChecklist_User" index="IX_ClearanceChecklist_User_Id"  not-null="true"/>
+
     <bag name="Approvals" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistApproval_ClearanceChecklist"/>
       <one-to-many class="ClearanceChecklistApproval"/>
@@ -16,6 +22,11 @@
       <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistComment_ClearanceChecklist"/>
       <one-to-many class="ClearanceChecklistComment"/>
     </bag>
+
+    <property name="DeleteDate" not-null="false"/>
+
+    <property name="SendTo1C" not-null="false"/>
+    <property name="DeleteAfterSendTo1C" not-null="true"/>
     
   </class>
 </hibernate-mapping>

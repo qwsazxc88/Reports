@@ -2182,6 +2182,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId,
                 model.PositionId,
                 //model.TypeId,
+                0,
                 model.StatusId,
                 //0,
                 model.BeginDate,

@@ -21,7 +21,7 @@ namespace Reports.Core.Dao.Impl
             UserRole role,
             int departmentId,
             int positionId,
-            //int typeId,
+            int typeId,
             int statusId,
             DateTime? beginDate,
             DateTime? endDate,
@@ -31,7 +31,21 @@ namespace Reports.Core.Dao.Impl
             )
         {
             // TODO Replace this stub with necessary code
-            return new List<VacationDto>();
+            string sqlQuery =
+                string.Format(sqlSelectForListClearanceChecklist,
+                                DeleteRequestText,
+                                "v.[CreateDate]",
+                                "Обходной лист",
+                                "[dbo].[ClearanceChecklist]",
+                                "'" + DateTime.MinValue.ToShortDateString() + "'",
+                                "'" + DateTime.MinValue.ToShortDateString() + "'",
+                                typeId
+                );
+            return GetDefaultDocuments(userId, role, departmentId,
+                positionId, typeId,
+                statusId, beginDate, endDate, userName,
+                sqlQuery, sortedBy, sortDescending);
+            //return new List<VacationDto>();
         }
     }
 }
