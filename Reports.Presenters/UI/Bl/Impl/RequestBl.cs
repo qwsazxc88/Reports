@@ -7077,6 +7077,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         else
                             Log.WarnFormat("No mission for mission order with id {0}",missionOrder.Id);
+                        MissionReport report = MissionReportDao.GetReportForOrder(missionOrder.Id);
+                        if(report != null)
+                        {
+                            report.DeleteDate = DateTime.Now;
+                            report.EditDate = DateTime.Now;
+                            MissionReportDao.SaveAndFlush(report);
+                        }
+                        else
+                            Log.WarnFormat("No mission report for mission order with id {0}", missionOrder.Id);
                         /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
                             missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
                         model.IsDelete = false;
@@ -8239,7 +8248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(6, "Не одобрен бухгалтером"),
                                                            new IdNameDto(7, "Требует одобрения руководителем"),
                                                            new IdNameDto(8, "Требует одобрения бухгалтером"),
-                                                           //new IdNameDto(10, "Отклоненные"),
+                                                           new IdNameDto(10, "Отклонен"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -8418,6 +8427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
+            model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
                 model.AccountantFio = entity.AcceptAccountant.FullName + ", " + entity.AcceptAccountant.Email;
             
@@ -8426,7 +8436,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Employee:
                     //if ((entity.Creator.RoleId & (int)UserRole.Employee) > 0)
                     //{
-                        if (!entity.UserDateAccept.HasValue /*&& !entity.DeleteDate.HasValue*/)
+                        if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                         {
                             model.IsEditable = true;
                             model.IsUserApprovedAvailable = true;

@@ -43,6 +43,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSaveAvailable { get; set; }
 
         public bool IsAccountantEditable { get; set; }
+        public bool IsDeleted { get; set; }
 
         public bool ReloadPage { get; set; }
 

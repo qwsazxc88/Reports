@@ -24,9 +24,16 @@
                 @Html.Partial("../UserInfoView", Model)
             </td>
         </tr>
+        @if (Model.IsDeleted)
+        { 
+            <tr>
+                <td colspan="2" style="color:Red">Отчет отклонен</td>
+            </tr>
+        }
         <tr>
             <td colspan="2">
-             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                 <input type="button" value="Добавить расход" name="AddCostBtn" id="AddCostBtn" class="costBtn" onclick="addCost();" 

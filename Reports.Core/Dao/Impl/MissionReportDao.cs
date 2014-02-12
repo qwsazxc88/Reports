@@ -87,7 +87,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                left join [dbo].[Users] uBuh on u.Id = v.AcceptAccountant
+                                left join [dbo].[Users] uBuh on uBuh.Id = v.AcceptAccountant
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id";
                                 //{0}";
 
@@ -101,6 +101,12 @@ namespace Reports.Core.Dao.Impl
                               .Add(Restrictions.Eq("MissionOrder.Id", orderId))
                               .SetProjection(Projections.RowCount())
                               .UniqueResult() > 0;
+        }
+        public virtual MissionReport GetReportForOrder(int orderId)
+        {
+            return (MissionReport)Session.CreateCriteria(typeof(MissionReport))
+                              .Add(Restrictions.Eq("MissionOrder.Id", orderId))
+                              .UniqueResult();
         }
 
         public IList<MissionReportDto> GetDocuments(int userId,
@@ -273,17 +279,17 @@ namespace Reports.Core.Dao.Impl
                     //    statusWhere =
                     //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
                     //    break;
-                    //case 10:
-                    //    statusWhere = @"[DeleteDate] is not null";
-                    //    break;
+                    case 10:
+                        statusWhere = @"v.[DeleteDate] is not null";
+                        break;
                     //case 9:
                     //    statusWhere = @"SendTo1C is not null";
                     //    break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
-                //if (statusId != 10)
-                //    statusWhere += " and DeleteDate is null ";
+                if (statusId != 10)
+                    statusWhere += " and v.DeleteDate is null ";
                 //if (statusId != 9 && statusId != 10)
                 //    statusWhere += " and SendTo1C is null ";
                 if (whereString.Length > 0)

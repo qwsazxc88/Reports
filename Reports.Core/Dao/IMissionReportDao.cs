@@ -19,5 +19,6 @@ namespace Reports.Core.Dao
 
         bool IsReportForOrderExists(int orderId);
         IList<IdNameDto> GetReportsWithPurchaseBookReportCosts(int userId);
+        MissionReport GetReportForOrder(int orderId);
     }
 }
