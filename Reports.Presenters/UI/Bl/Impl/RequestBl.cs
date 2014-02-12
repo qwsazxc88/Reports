@@ -9055,7 +9055,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             statusesList.Insert(0, new IdNameDto(0, SelectAll));
             return statusesList;
         }
-        public void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError)
+        public void SetMissionUserDeptsListModel(MissionUserDeptsListModel model,bool showDepts,bool hasError)
         {
             SetDictionariesToModel(model);
             //SetIsAvailable(model);
@@ -9070,10 +9070,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
                 //    ApproveOrders(model, idsForApprove);
                 //}
-                SetDocumentsToModel(model, user);
+                SetDocumentsToModel(model, user, showDepts);
             }
         }
-        public void SetDocumentsToModel(MissionUserDeptsListModel model, User user)
+        public void SetDocumentsToModel(MissionUserDeptsListModel model, User user,bool showDepts)
         {
             UserRole role = CurrentUser.UserRole;
             model.Documents = MissionOrderDao.GetUserDeptsDocuments(user.Id,
@@ -9084,11 +9084,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.EndDate,
                 model.UserName,
                 model.SortBy,
-                model.SortDescending);
+                model.SortDescending,showDepts);
             model.IsPrintAvailable = model.Documents.Count > 0;
         }
         public PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId, DateTime? beginDate,
-            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending,bool showDepts)
         {
             UserRole role = CurrentUser.UserRole;
             return new PrintMissionUserDeptsListModel
@@ -9101,7 +9101,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                              endDate,
                                                                              userName,
                                                                              sortBy,
-                                                                             sortDescending)
+                                                                             sortDescending,showDepts)
                        };
         }
         #region Mission PurchaseBook Documents

@@ -27,6 +27,6 @@ namespace Reports.Core.Dao
                                                              DateTime? endDate,
                                                              string userName,
                                                              int sortBy,
-                                                             bool? sortDescending);
+                                                             bool? sortDescending,bool showDepts);
     }
 }

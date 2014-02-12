@@ -725,7 +725,7 @@ namespace WebMvc.Controllers
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
         {
             //ModelState.Clear();
-            RequestBl.SetMissionUserDeptsListModel(model, !ValidateModel(model));
+            RequestBl.SetMissionUserDeptsListModel(model, true, !ValidateModel(model));
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
@@ -735,9 +735,6 @@ namespace WebMvc.Controllers
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                 model.BeginDate.Value > model.EndDate.Value)
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
-            //if (model.IsApproveClick && (model.Documents == null || model.Documents.Count == 0
-            //           || model.Documents.Where(x => x.IsChecked).Count() == 0))
-            //    ModelState.AddModelError(string.Empty, "Не выбрано ни одного приказа для согласования.");
             return ModelState.IsValid;
         }
 
@@ -747,7 +744,7 @@ namespace WebMvc.Controllers
             DateTime? endDate, string userName, int sortBy, bool? sortDescending)
         {
             PrintMissionUserDeptsListModel model = 
-                RequestBl.PrintMissionUserDeptsListModel(departmentId,statusId,beginDate,endDate,userName,sortBy,sortDescending);
+                RequestBl.PrintMissionUserDeptsListModel(departmentId,statusId,beginDate,endDate,userName,sortBy,sortDescending,true);
 
             return View(model);
         }
@@ -832,6 +829,45 @@ namespace WebMvc.Controllers
                        ? string.Format(@"{0}/{1}?{2}", localhostUrl, urlTemplate, args)
                        : Url.Content(string.Format(@"{0}?{1}", urlTemplate, args));
         }
+
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult MissionUserCredsList()
+        {
+            var model = RequestBl.GetMissionUserDeptsListModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionUserCredsList(MissionUserDeptsListModel model)
+        {
+            RequestBl.SetMissionUserDeptsListModel(model, false,!ValidateModel(model));
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult PrintMissionUserCredsList(int departmentId, int statusId, DateTime? beginDate,
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+        {
+            PrintMissionUserDeptsListModel model =
+                RequestBl.PrintMissionUserDeptsListModel(departmentId, statusId, beginDate, endDate, userName, sortBy, sortDescending, false);
+
+            return View(model);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
+        public ActionResult GetMissionUserCredsListPrintForm(int departmentId, int statusId, DateTime? beginDate,
+            DateTime? endDate, string userName, int sortBy, bool? sortDescending)
+        {
+            string args =
+                string.Format(
+                    @"departmentId={0}&statusId={1}&beginDate={2}&endDate={3}&userName={4}&sortBy={5}&sortDescending={6}",
+                    departmentId, statusId,
+                    beginDate.HasValue ? beginDate.Value.ToShortDateString() : string.Empty,
+                    endDate.HasValue ? endDate.Value.ToShortDateString() : string.Empty,
+                    Server.UrlEncode(userName), sortBy, sortDescending);
+            return GetPrintForm(args, "PrintMissionUserCredsList");
+        }
+
 
 
         [HttpGet]

@@ -1,0 +1,57 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.PrintMissionUserDeptsListModel
+@{
+    Layout = null;
+    ViewBag.Title = "Реестр на доплату";
+}           
+@using (Html.BeginForm())
+{
+                <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+                <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                   
+                     <th>
+                        № п/п
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:210px">ФИО</div>
+                    </th>
+                     <th>
+                        <div id="sort2" style="min-width:70px">Номер <br/>авансового отчета</div>
+                    </th>
+                    <th>
+                        <div id="sort3"  style="min-width:70px">Дата <br/>авансового отчета</div>
+                    </th>
+                    <th>
+                        <div id="sort4" style="min-width:70px">Сумма доплаты по <br/>авансовому отчету</div>
+                    </th>
+                    <th>
+                        <div id="sort5" style="min-width:70px">Сумма принятая к <br/>учету бухгалтерией</div>
+                    </th>
+                    <th>
+                        <div id="sort6" style="min-width:70px">Сумма - расходы <br/>фактические</div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:130px">Состояние</div>
+                    </th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.ReportNumber</td>
+                            <td>@doc.ReportDate.ToShortDateString()</td>
+                            <td>@RequestBl.FormatSum(doc.DiffSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@doc.Status</td>
+                        </tr>
+                    }
+                }
+            </table>
+}

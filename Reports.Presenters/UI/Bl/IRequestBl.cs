@@ -159,11 +159,11 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionPurchaseBookRecordsListModel(MissionPurchaseBookRecordsListModel model);
 
         MissionUserDeptsListModel GetMissionUserDeptsListModel();
-        void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError);
+        void SetMissionUserDeptsListModel(MissionUserDeptsListModel model, bool hasError,bool showDepts);
 
         PrintMissionUserDeptsListModel PrintMissionUserDeptsListModel(int departmentId, int statusId,
                                                                       DateTime? beginDate,
                                                                       DateTime? endDate, string userName, int sortBy,
-                                                                      bool? sortDescending);
+                                                                      bool? sortDescending,bool showDepts);
     }
 }

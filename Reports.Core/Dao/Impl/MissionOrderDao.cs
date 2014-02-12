@@ -424,7 +424,8 @@ namespace Reports.Core.Dao.Impl
                DateTime? endDate,
                string userName,
                int sortBy,
-               bool? sortDescending)
+               bool? sortDescending,
+               bool showDepts)
         {
             string sqlQuery = @"select 
                             v.Id,
@@ -437,10 +438,13 @@ namespace Reports.Core.Dao.Impl
                             case when v.SendTo1C is null then N'Не выгружено в 1С'
 	                             else N'Выгружено в 1С' end as [Status]
                             from dbo.MissionReport v
-                            inner join dbo.Users u on v.UserId = u.id";
+                            inner join dbo.Users u on v.UserId = u.id and v.[AccountantDateAccept] is not null
+                            and v.[DeleteDate] is null";
             //string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             //whereString = GetTypeWhere(whereString, typeId);
-            string whereString = GetUdStatusWhere(string.Empty, statusId);
+            string whereString = @" (v.AccountantAllSum - v.PurchaseBookAllSum - v.UserSumReceived)" +
+                                 (showDepts ? " < 0 " : " > 0 ");
+            whereString = GetUdStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
