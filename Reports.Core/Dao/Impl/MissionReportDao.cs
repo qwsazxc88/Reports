@@ -437,7 +437,8 @@ namespace Reports.Core.Dao.Impl
                                         from dbo.MissionReport mr
                                         inner join [dbo].[MissionReportCost] mrc on  mr.Id = mrc.ReportId
                                         where mrc.IsCostFromPurchaseBook = 1 and mr.UserId = {0}
-                                        order by Name",userId);
+                                        and mr.AccountantDateAccept is null
+                                        order by Name", userId);
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
