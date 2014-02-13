@@ -25,7 +25,7 @@ namespace Reports.Presenters.UI.ViewModel
     {
         public int CostId { get; set; }
         public int TranId { get; set; }
-        [Display(Name = "Дебит")]
+        [Display(Name = "Дебет")]
         public int DebitAccountId { get; set; }
         public List<IdNameDto> DebitAccounts { get; set; }
         [Display(Name = "Кредит")]
