@@ -10,7 +10,7 @@ namespace Reports.Core.Domain
         // Родительский обходной лист
         public virtual ClearanceChecklist ClearanceChecklist { get; set; }
 
-        // TODO Свойство для хранения согласующего отдела
+        // Согласующее подразделение
         public virtual ClearanceChecklistDepartment ClearanceChecklistDepartment { get; set; }
 
         // Согласующий; заполняется по факту согласования

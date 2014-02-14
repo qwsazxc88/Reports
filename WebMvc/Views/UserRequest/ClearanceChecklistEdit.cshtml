@@ -1,0 +1,90 @@
+﻿@model Reports.Presenters.UI.ViewModel.ClearanceChecklistEditModel
+@{
+    ViewBag.Title = "Редактирование обходного листа";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.UserId)
+    <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+    <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+    
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)                    
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr>
+            @*<tr>
+                <td colspan="2">
+                    @Html.Partial("../UserInfoView", Model)
+                </td>
+            </tr>*@
+            @*@if (Model.IsDeleted)
+            { 
+                <tr>
+                    <td colspan="2" style="color:Red">Обходной лист отклонен</td>
+                </tr>
+            }*@  
+        </table>    
+    </div>
+    
+    <table class="grid" style="width:100%">
+        <tr>
+            <th>
+                <div>Согласующее подразделение</div>
+            </th>
+            <th>
+                <div>Состояние</div>
+            </th>
+            <th>
+                <div>ФИО согласовавшего</div>
+            </th>
+            <th>
+                <div>Дата</div>
+            </th>
+            <th>
+                <div>Дата увольнения</div>
+            </th>
+        </tr>
+        @if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+        {
+            foreach (var approval in Model.ClearanceChecklistApprovals)
+            {
+                <tr>
+                    <td style="text-align:left">
+                        @approval.ClearanceChecklistDepartment
+                    </td>
+                    <td>
+                        @if (approval.ApprovalDate != null)
+                        {
+                            @:Cогласовано
+                        }
+                        else if (approval.Active)
+                        {
+                            @:Cогласовать
+                        }
+                        else
+                        {
+                            @:Не согласовано                            
+                        }
+                    </td>
+                    <td>@approval.ApprovedBy</td>
+                    <td>@(approval.ApprovalDate.HasValue ? @approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "")</td>
+                    <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
+                    @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                    <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
+            </tr>
+            }
+        }
+    </table>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("userClearanceChecklistList");
+    });
+</script>

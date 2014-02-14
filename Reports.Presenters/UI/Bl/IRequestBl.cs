@@ -64,7 +64,8 @@ namespace Reports.Presenters.UI.Bl
                 
         ClearanceChecklistListModel GetClearanceChecklistListModel();
         void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError);
-        // TODO Add all the necessary method declarations
+        ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId);
+        bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error);
 
         TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
         void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model, bool hasError);

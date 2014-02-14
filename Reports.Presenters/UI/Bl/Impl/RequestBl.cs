@@ -63,8 +63,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDismissalDao dismissalDao;
         protected IDismissalCommentDao dismissalCommentDao;
 
-        protected IClearanceChecklistDao clearanceChecklistDao;
-
         protected ITimesheetCorrectionTypeDao timesheetCorrectionTypeDao;
         protected ITimesheetCorrectionDao timesheetCorrectionDao;
         protected ITimesheetCorrectionCommentDao timesheetCorrectionCommentDao;
@@ -231,11 +229,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(dismissalCommentDao); }
             set { dismissalCommentDao = value; }
         }
+
+        protected IClearanceChecklistDao clearanceChecklistDao;
         public IClearanceChecklistDao ClearanceChecklistDao
         {
             get { return Validate.Dependency(clearanceChecklistDao); }
             set { clearanceChecklistDao = value; }
         }
+
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
         {
             get { return Validate.Dependency(timesheetCorrectionTypeDao); }
@@ -468,7 +469,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { configurationService = value; }
             get { return Validate.Dependency(configurationService); }
         }
+
         #endregion
+
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -517,6 +520,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }.OrderBy(x => x.Name).ToList();
         }
         #endregion
+
         #region All requests
         public AllRequestListModel GetAllRequestListModel()
         {
@@ -811,6 +815,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Employment
         public EmploymentListModel GetEmploymentListModel()
         {
@@ -1315,6 +1320,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
         #region Timesheet Correction
         public TimesheetCorrectionListModel GetTimesheetCorrectionListModel()
         {
@@ -1704,6 +1710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Dismissal
         public DismissalListModel GetDismissalListModel()
         {
@@ -2132,12 +2139,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region ClearanceChecklist
 
-        // TODO Finish method
         public ClearanceChecklistListModel GetClearanceChecklistListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             IdNameReadonlyDto dep = GetDepartmentDto(user);
-            ClearanceChecklistListModel model = new ClearanceChecklistListModel
+            var model = new ClearanceChecklistListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
                 DepartmentName = dep.Name,
@@ -2170,7 +2176,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Positions = GetPositions(user);
         }
 
-        public void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
+        protected void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
         {
 
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
@@ -2190,6 +2196,42 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName,
                 model.SortBy,
                 model.SortDescending);
+        }
+
+        public ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId)
+        {
+            // TODO Implementation for GetClearanceChecklistEditModel
+
+            var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
+
+            ClearanceChecklist clearanceChecklist = null;
+            clearanceChecklist = ClearanceChecklistDao.Load(id);
+            if (clearanceChecklist == null)
+                throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
+            model.ClearanceChecklistApprovals = new List<ClearanceChecklistApprovalDto>();
+            foreach (var approval in clearanceChecklist.Approvals)
+            {
+                model.ClearanceChecklistApprovals.Add(
+                    new ClearanceChecklistApprovalDto
+                    {
+                        ClearanceChecklistDepartment = approval.ClearanceChecklistDepartment.Name,
+                        ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
+                        ApprovalDate = approval.ApprovalDate,
+                        // TODO: Implement Active
+                        Active = false
+                    }
+                );
+            }
+            model.EndDate = clearanceChecklist.Dismissal.EndDate;
+
+            return model;
+        }
+       
+        public bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error)
+        {
+            // TODO Implementation for SaveClearanceChecklistEditModel
+            error = "";
+            return false;
         }
 
         #endregion
@@ -2622,6 +2664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region HolidayWork
         public HolidayWorkListModel GetHolidayWorkListModel()
         {
@@ -2967,6 +3010,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Sicklist
         public SicklistListModel GetSicklistListModel()
         {
@@ -3553,6 +3597,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return absences.Any(x => x.BeginDate <= date && x.EndDate >= date);
         }
         #endregion
+
         #region Absence
         public AbsenceListModel GetAbsenceListModel()
         {
@@ -3989,6 +4034,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Vacation list model
         public VacationListModel GetVacationListModel()
         {
@@ -4117,6 +4163,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return positionList;
         }
         #endregion
+
         #region Vacation edit model
         public VacationEditModel GetVacationEditModel(int id,int userId)
         {
@@ -4594,6 +4641,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                , userId, vacationId,isChildVacantion);
         }
         #endregion
+
         #region Child Vacation 
         public ChildVacationListModel GetChildVacationListModel()
         {
@@ -5037,6 +5085,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
         #region Comments
         public  RequestCommentsModel GetCommentsModel(int id,int typeId)
         {
@@ -5356,6 +5405,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Attachment
         public RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
@@ -5446,6 +5496,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Department Tree
         public DepartmentTreeModel GetDepartmentTreeModel(int departmentId)
         {
@@ -5586,6 +5637,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         public AttachmentModel GetPrintFormFileContext(int id,RequestPrintFormTypeEnum typeId)
         {
             RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id,typeId);
@@ -5598,6 +5650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ContextType = "application/pdf"
             };
         }
+
         /*public VacationPrintModel GetVacationPrintModel(int id)
         {
             Vacation vacation = VacationDao.Load(id);
@@ -5743,6 +5796,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new PrintVacationOrderDto { Keyword = "MANFIO",Text = vacation.User.Manager.Name},
                        };
         }*/
+
         protected static string GetMonthNamerRP(int month)
         {
             switch (month)
@@ -5776,6 +5830,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        #region AcceptRequest
         public void GetAcceptRequestsModel(AcceptRequestsModel model)
         {
             SetListboxes(model);
@@ -5786,14 +5841,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 IUser currentUser = AuthenticationService.CurrentUser;
-                if(!string.IsNullOrEmpty(model.AcceptDate) || currentUser.UserRole == UserRole.Manager)
+                if (!string.IsNullOrEmpty(model.AcceptDate) || currentUser.UserRole == UserRole.Manager)
                 {
                     DateTime acceptDate;
-                    if(DateTime.TryParse(model.AcceptDate,out acceptDate))
+                    if (DateTime.TryParse(model.AcceptDate, out acceptDate))
                     {
                         User user = UserDao.Load(currentUser.Id);
                         AcceptRequestDate entity = user.AcceptRequests.Where(x => x.DateAccept == acceptDate).FirstOrDefault();
-                        if(entity == null)
+                        if (entity == null)
                         {
                             entity = new AcceptRequestDate
                                          {
@@ -5808,7 +5863,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         else
                             Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
-                                user.Id,entity.DateAccept,entity.DateCreate);
+                                user.Id, entity.DateAccept, entity.DateCreate);
 
                     }
                 }
@@ -5816,7 +5871,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             catch (Exception ex)
             {
                 model.Error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
-                Log.Error("Exception on SetAccept",ex);
+                Log.Error("Exception on SetAccept", ex);
 
             }
             finally
@@ -5828,7 +5883,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetWeekDtos(AcceptRequestsModel model)
         {
-            DateTime month = new DateTime(model.Year,model.Month,1);
+            DateTime month = new DateTime(model.Year, model.Month, 1);
             IList<AcceptWeekDto> list = GetWeeksDtoList(month);
             DateTime beginDate = list[0].Monday;
             DateTime endDate = list[5].Friday;
@@ -5838,30 +5893,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<IdNameDto> allUserIds = new List<IdNameDto>();
             foreach (AcceptRequestDateDto dto in acceptDates)
             {
-                if(allUserIds.Where(x => x.Id == dto.UserId).FirstOrDefault() == null)
-                    allUserIds.Add(new IdNameDto(dto.UserId,dto.UserName));
+                if (allUserIds.Where(x => x.Id == dto.UserId).FirstOrDefault() == null)
+                    allUserIds.Add(new IdNameDto(dto.UserId, dto.UserName));
             }
             IList<UserAcceptWeekDto> resultList = new List<UserAcceptWeekDto>();
             foreach (IdNameDto idNameDto in allUserIds)
             {
                 IList<AcceptRequestWeekDto> listFroUser = new List<AcceptRequestWeekDto>();
-                IList<AcceptRequestDateDto> userDto = 
+                IList<AcceptRequestDateDto> userDto =
                     acceptDates.Where(x => x.UserId == idNameDto.Id).ToList();
                 foreach (AcceptWeekDto acceptWeekDto in list)
                 {
                     AcceptRequestWeekDto newDto = new AcceptRequestWeekDto
                     {
                         Friday = acceptWeekDto.Friday,
-                        IsAccepted = 
+                        IsAccepted =
                         userDto.Where(x => x.DateAccept == acceptWeekDto.Friday).
                         FirstOrDefault() != null,
                         IsEditable = acceptWeekDto.Friday == DateTime.Today ||
                         acceptWeekDto.Friday.AddDays(3) == DateTime.Today,
                     };
-                    newDto.IsEditable = newDto.IsEditable && 
+                    newDto.IsEditable = newDto.IsEditable &&
                                         !newDto.IsAccepted &&
                                         user.UserRole == UserRole.Manager;
-                    newDto.IsHidden = DateTime.Today < acceptWeekDto.Friday; 
+                    newDto.IsHidden = DateTime.Today < acceptWeekDto.Friday;
                     listFroUser.Add(newDto);
                 }
                 resultList.Add(new UserAcceptWeekDto
@@ -5883,22 +5938,24 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IList<AcceptWeekDto> GetWeeksDtoList(DateTime month)
         {
             IList<AcceptWeekDto> list = new List<AcceptWeekDto>();
-            DateTime firstMonday = month.AddDays((int)month.DayOfWeek == 0 ? -6 : -(int)month.DayOfWeek+1);
+            DateTime firstMonday = month.AddDays((int)month.DayOfWeek == 0 ? -6 : -(int)month.DayOfWeek + 1);
             for (int i = 0; i < 6; i++)
             {
-                DateTime monday = firstMonday.AddDays(i*7);
-                DateTime friday = firstMonday.AddDays(i*7 + 4);
+                DateTime monday = firstMonday.AddDays(i * 7);
+                DateTime friday = firstMonday.AddDays(i * 7 + 4);
                 //if(monday.Month != month.Month && friday.Month != month.Month)
                 //    continue;
-                list.Add( new AcceptWeekDto
+                list.Add(new AcceptWeekDto
                               {
                                   Monday = monday,
                                   Friday = friday
                               });
             }
             return list;
-        }
+        } 
+        #endregion
 
+        #region Constant
         public void GetConstantListModel(ConstantListModel model)
         {
             SetListboxes(model);
@@ -5936,29 +5993,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void GetConstantEditModel(ConstantEditModel model)
         {
             ReloadDictionariesToModel(model);
-            WorkingDaysConstant entity; 
-            if(model.Id != 0)
+            WorkingDaysConstant entity;
+            if (model.Id != 0)
             {
                 entity = WorkingDaysConstantDao.Load(model.Id);
-                if(entity == null)
-                    throw new ArgumentException(string.Format("Не могу загрузить константу (id {0}) из базы данных",model.Id));
+                if (entity == null)
+                    throw new ArgumentException(string.Format("Не могу загрузить константу (id {0}) из базы данных", model.Id));
                 model.Year = entity.Month.Year;
                 model.Month = entity.Month.Month;
             }
-            else if(model.Month != 0)
+            else if (model.Month != 0)
                 entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
             else
             {
                 model.Month = DateTime.Today.Month;
                 entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
             }
-            if(entity != null)
+            if (entity != null)
             {
                 model.Id = entity.Id;
                 model.TS = entity.Version;
                 model.Days = entity.Days.ToString();
                 model.Hours = entity.Hours.ToString();
-            } 
+            }
             else
             {
                 model.Id = 0;
@@ -5971,7 +6028,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Months = GetMonthesList();
         }
-        public bool SaveConstantEditModel(ConstantEditModel model,out string error)
+        public bool SaveConstantEditModel(ConstantEditModel model, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -6027,7 +6084,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 ReloadDictionariesToModel(model);
             }
-        }
+        } 
+        #endregion
+
         #region Deduction
         public DeductionListModel GetDeductionListModel()
         {
@@ -8258,6 +8317,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return table;
         }
         #endregion
+
         #region Mission Report
         public MissionReportsListModel GetMissionReportsListModel()
         {

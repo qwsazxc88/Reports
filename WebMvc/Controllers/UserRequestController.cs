@@ -535,14 +535,22 @@ namespace WebMvc.Controllers
              return View(model);
          }
 
-         /*[HttpGet]
-         public ActionResult ClearanceChecklistEdit(int id)
+         [HttpGet]
+         public ActionResult ClearanceChecklistEdit(int id, int userId)
          {
-             DismissalEditModel model = RequestBl.GetDismissalEditModel(id);
+             ClearanceChecklistEditModel model = RequestBl.GetClearanceChecklistEditModel(id,userId);
              return View(model);
-         }*/
+         }
+
+         [HttpPost]
+         public ActionResult ClearanceChecklistEdit(ClearanceChecklistEditModel model)
+         {
+             model = RequestBl.GetClearanceChecklistEditModel(model.Id, model.UserId);
+             return View(model);
+         }
 
          #endregion
+
          #region Mission
          [HttpGet]
          public ActionResult MissionList()
