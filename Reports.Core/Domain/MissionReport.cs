@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         //public virtual DateTime EndDate { get; set; }
 
         public virtual int Number { get; set; }
+        public virtual string Hotels { get; set; }
 
 
         //public virtual MissionType Type { get; set; }

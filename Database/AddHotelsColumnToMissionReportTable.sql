@@ -1,0 +1,1 @@
+﻿alter table dbo.MissionReport add Hotels NVARCHAR(1024) null

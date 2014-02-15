@@ -8317,6 +8317,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
+            model.Hotels = entity.Hotels;
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
@@ -8680,6 +8681,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             if (model.IsEditable)
             {
+                entity.Hotels = model.Hotels;
                 SaveMissionCosts(entity, model);
             }
             if (model.IsAccountantEditable)

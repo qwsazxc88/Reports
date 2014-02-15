@@ -9,6 +9,7 @@
     <!--<property name="BeginDate" not-null="true"/>
     <property name="EndDate" not-null="true"/>-->
     <property name="Number"  not-null="true"/>
+	<property name="Hotels" length="1024" not-null="false"/>
 
 	  
 	<!--<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionReport_MissionType" index="MissionReport_MissionType"  not-null="false"/>

@@ -15,6 +15,10 @@ namespace Reports.Presenters.UI.ViewModel
         public string DocumentTitle { get; set; }
         public string Costs { get; set; }
 
+        [Display(Name = "Справочно.Проживал в гостинице")]
+        public string Hotels { get; set; }
+
+
         //[Display(Name = "")]
         public string UserFio { get; set; }
         public bool IsUserApproved { get; set; }

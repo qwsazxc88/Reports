@@ -48,6 +48,15 @@
             </td>
         </tr>
         <tr>
+            <td style="vertical-align:top">
+                @Html.LabelFor(m => m.Hotels):
+            </td>
+             <td>
+               @Html.TextBoxFor(model => model.Hotels, Model.IsEditable ? (object)new { maxlength = 1024, style = "width:400px" } : (object)new { @readonly = "read-only",maxlength = 1024, style = "width:400px" }) 
+               <br/> (заполнить в случае безналичной оплаты гостиницы)
+            </td>
+        </tr>
+        <tr>
             <td colspan="2">
                 <hr/>
             </td>
