@@ -9022,6 +9022,90 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
             return model;
         }
+
+
+        public PrintMissionReportViewModel GetPrintMissionReportModel(int id)
+        {
+            PrintMissionReportViewModel model = new PrintMissionReportViewModel();
+            MissionReport report = MissionReportDao.Load(id);
+            if (report == null)
+                throw new ArgumentException(string.Format("Авансовый отчет (id {0}) отсутствует в базе данных."));
+            SetUserInfoModel(report.User, model);
+            model.OrderNumber = report.MissionOrder.Number.ToString();
+            model.DocumentNumber = "АО" + report.Number;
+            model.DateCreated = report.CreateDate.ToShortDateString();
+            model.Hotels = report.Hotels;
+            model.UserFio = report.User.FullName;
+            model.UserPosition = report.User.Position.Name;
+            if(report.ManagerDateAccept.HasValue)
+            {
+                model.ManagerFio = report.AcceptManager.FullName;
+                model.ManagerPosition = report.AcceptManager.Position == null? string.Empty:report.AcceptManager.Position.Name;
+            }
+            if (report.AccountantDateAccept.HasValue)
+            {
+                model.AccountantFio = report.AcceptAccountant.FullName;
+                model.AccountantPosition = report.AcceptAccountant.Position == null? string.Empty: report.AcceptAccountant.Position.Name;
+            }
+            List<PrintCostModel> costs = new List<PrintCostModel>();
+            int currentNumber = 1;
+            int currentCostType = 0;
+            foreach(MissionReportCost cost in report.Costs.OrderBy(x => x.Type.Id))
+            {
+                PrintCostModel costModel = new PrintCostModel
+                                               {
+                                                   AccountantSum = FormatSum(cost.AccountantSum),
+                                                   CostTypeName = cost.Type.Name,
+                                                   GradeSum = FormatSum(cost.Sum),
+                                                   PurchaseBoolSum = FormatSum(cost.BookOfPurchaseSum),
+                                                   UserSum = FormatSum(cost.UserSum)
+                                               };
+                if(currentCostType != cost.Type.Id)
+                {
+                    costModel.Number = currentNumber.ToString();
+                    currentNumber++;
+                }
+                List<PrintTransactionModel> trans = cost.AccountingTransactions.Select(tran => 
+                    new PrintTransactionModel
+                                    {
+                                        Credit = tran.CreditAccount.Number, 
+                                        Debet = tran.DebitAccount.Number, 
+                                        Sum = FormatSum(tran.Sum)
+                                    }).ToList();
+                costModel.Transactions = trans;
+                costs.Add(costModel);
+            }
+            costs.Add(new PrintCostModel
+                          {
+                              AccountantSum = FormatSum(report.AccountantAllSum),
+                              CostTypeName = "ИТОГО Расходов (руб)",
+                              GradeSum = FormatSum(report.AllSum),
+                              Number = currentNumber.ToString(),
+                              PurchaseBoolSum = FormatSum(report.PurchaseBookAllSum),
+                              UserSum = FormatSum(report.UserAllSum),
+                          });
+            currentNumber++;
+            costs.Add(new PrintCostModel
+            {
+              
+                CostTypeName = "Получено в подотчет",
+                Number = currentNumber.ToString(),
+                UserSum = FormatSum(report.UserSumReceived),
+            });
+            currentNumber++;
+            costs.Add(new PrintCostModel
+            {
+
+                CostTypeName = @"""-""Долг за сотрудником/""+""Долг за организацией",
+                Number = currentNumber.ToString(),
+                UserSum = FormatSum(report.AccountantAllSum - report.UserSumReceived - report.PurchaseBookAllSum),
+            });
+            currentNumber++;
+            //model.DocumentNumber = "АО" + model.DocumentNumber;
+            model.Costs = costs;
+            return model;
+        }
+
         #endregion
         
        

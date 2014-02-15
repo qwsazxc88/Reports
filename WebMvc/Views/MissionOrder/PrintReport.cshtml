@@ -1,0 +1,419 @@
+﻿@model Reports.Presenters.UI.ViewModel.PrintMissionReportViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Авансовый отчет";
+}
+<HTML><HEAD>
+
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=GENERATOR content="MSHTML 11.00.9600.16518">
+<link href="@Url.Content("~/Content/PrintForm.css")" rel="stylesheet" type="text/css" />
+</HEAD>
+<BODY><TBODY></TBODY></TABLE>
+<P>
+<P></P>
+<TABLE style="HEIGHT: 322px; WIDTH: 885px">
+<TBODY>
+<TR height=30>
+<TH colspan="2">
+<P align=left><FONT size=4>Авансовый отчет № @Model.DocumentNumber@*</FONT></P></TH>
+<TH>
+<P align=left><FONT size=4>*@ по командировке к Приказу на командировку № @Model.OrderNumber</FONT></P></TH></TR>
+<TR>
+<TD height=30 style="width:250px"><FONT size=4>Дата составления</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.DateCreated</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Организация</FONT></TD>
+<TH  style="text-align:left"><FONT size=4>@Model.Organization</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Номер документа</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.OrderNumber</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Сотрудник</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.UserName</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Табельный номер</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.UserNumber</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Структурное подразделение</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.Department</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Должность</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.Position</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Руководитель</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.ManagerName</FONT></TH></TR>
+<TR>
+<TD height=30><FONT size=4>Кадровик</FONT></TD>
+<TH style="text-align:left"><FONT size=4>@Model.PersonnelName</FONT></TH></TR></TR></TBODY></TABLE>
+<HR>
+<EM><SUP>В. Заполняется по приезду из командировки</SUP></EM> 
+<P></P>
+<P></P>
+<DIV align=left><FONT size=2>
+<TABLE style="WIDTH: 770pt; BORDER-COLLAPSE: collapse;" cellSpacing=0 cellPadding=0 width=1026 border=0  class="grid">
+<COLGROUP>
+<COL style="WIDTH: 22pt; mso-width-source: userset; mso-width-alt: 1060" width=29>
+<COL style="WIDTH: 272pt; mso-width-source: userset; mso-width-alt: 13275" width=363>
+<COL style="WIDTH: 77pt; mso-width-source: userset; mso-width-alt: 3730" width=102>
+<COL style="WIDTH: 72pt; mso-width-source: userset; mso-width-alt: 3510" width=96>
+<COL style="WIDTH: 73pt; mso-width-source: userset; mso-width-alt: 3547" width=97>
+<COL style="WIDTH: 77pt; mso-width-source: userset; mso-width-alt: 3766" width=103>
+<COL style="WIDTH: 89pt; mso-width-source: userset; mso-width-alt: 4352" width=119>
+<COL style="WIDTH: 88pt; mso-width-source: userset; mso-width-alt: 4278" width=117>
+<TBODY>
+<TR style="HEIGHT: 30pt; mso-height-source: userset" height=40>
+<TD class=xl68 style="BORDER-TOP: windowtext 0.5pt solid; HEIGHT: 105pt; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 22pt; BORDER-BOTTOM: black 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=140 rowSpan=2 width=29>
+<P align=center><STRONG><FONT face=Calibri>№</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext 0.5pt solid; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 272pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" rowSpan=2 width=363>
+<P align=center><STRONG><FONT face=Calibri>Расходы оплаченные</FONT></STRONG></P></TD>
+<TD class=xl68 style="BORDER-TOP: windowtext 0.5pt solid; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 77pt; BORDER-BOTTOM: black 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" rowSpan=2 width=102>
+<P align=center><STRONG><FONT face=Calibri>Расчет лимитов (руб.)</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext 0.5pt solid; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 145pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=193 colSpan=2>
+<P align=center><STRONG><FONT face=Calibri>Заполняется сотрудником</FONT></STRONG></P></TD>
+<TD class=xl70 style="BORDER-TOP: windowtext 0.5pt solid; BORDER-RIGHT: black 0.5pt solid; WIDTH: 254pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=339 colSpan=3>
+<P align=center><STRONG><FONT face=Calibri>Заполняется бухгалтерией</FONT></STRONG></P></TD></TR>
+<TR style="HEIGHT: 75pt" height=100>
+<TD class=xl67 style="BORDER-TOP: windowtext; HEIGHT: 75pt; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 72pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" height=100 width=96>
+<P align=center><STRONG><FONT face=Calibri>Оплачено фактически сотрудником (руб.)</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 73pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=97>
+<P align=center><STRONG><FONT face=Calibri>Оплачено организаций за сотрудника (руб.)</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 77pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=103>
+<P align=center><STRONG><FONT face=Calibri>Принято к учету ( руб.)</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 89pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=119>
+<P align=center><STRONG><FONT face=Calibri>Дебет бух. Счета</FONT></STRONG></P></TD>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 88pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=117>
+<P align=center><STRONG><FONT face=Calibri>Кредит бух. Счета</FONT></STRONG></P></TD></TR>
+@if (Model.Costs != null)
+{
+    int i = 0;
+    foreach(var cost in Model.Costs)
+    {
+    <tr>
+        <td style="font-weight: bold;text-align: center;">@cost.Number</td>
+        @if(i >= Model.Costs.Count - 3)
+        {
+            <td style="font-weight: bold;">@cost.CostTypeName</td>
+        }
+        else
+        {
+            <td>@cost.CostTypeName</td>
+        }
+        <td style="text-align: center;">@cost.GradeSum</td>
+        <td style="text-align: center;">@cost.UserSum</td>
+        <td style="text-align: center;">@cost.PurchaseBoolSum</td>
+        <td style="text-align: center;">@cost.AccountantSum</td>
+        <td></td>
+        <td></td>
+    </tr>
+    if (cost.Transactions != null)
+    {
+        foreach(var tran in cost.Transactions)
+        {
+             <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                 <td style="text-align: center;">@tran.Sum</td>
+                <td style="text-align: center;">@tran.Debet</td>
+                <td style="text-align: center;">@tran.Credit</td>
+             </tr>
+        }
+    }
+    i++;
+    }
+}
+@*<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>1</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Суточные (руб. В день командировки)</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>&nbsp;2800</FONT></P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>2800</FONT></P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>&nbsp;2800</FONT></P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>&nbsp;60110810100000034</FONT></P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>&nbsp;60110810100000034</FONT></P></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>2</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Проживание (стоимость номера, руб/сутки)</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri></FONT>&nbsp;</P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>3</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Авиа билеты (руб</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>4</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Ж/д билеты (руб)</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>5</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Проезд (билеты,такси, аэроэкспресс и т.д.)</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>6</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Телефонные переговоры</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>7</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Расходы за пользование интернетом</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>8</FONT></STRONG></P></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>Прочие</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21><STRONG><FONT face=Calibri>&nbsp;</FONT></STRONG></TD>
+<TD class=xl64 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>9</FONT></STRONG></P></TD>
+<TD class=xl65 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><STRONG><FONT face=Calibri>ИТОГО Расходов (руб)</FONT></STRONG></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent">
+<P align=center><FONT face=Calibri>2800</FONT></P></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>10</FONT></STRONG></P></TD>
+<TD class=xl65 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><STRONG><FONT face=Calibri>Получено в подотчет</FONT></STRONG></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>
+<TR style="HEIGHT: 15.75pt" height=21>
+<TD class=xl66 style="BORDER-TOP: windowtext; HEIGHT: 15.75pt; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext 0.5pt solid; BACKGROUND-COLOR: transparent" height=21>
+<P align=center><STRONG><FONT face=Calibri>11</FONT></STRONG></P></TD>
+<TD class=xl65 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><STRONG><FONT face=Calibri>"-"Долг за сотрудником/"+"Долг за организацией</FONT></STRONG></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD>
+<TD class=xl63 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent"><FONT face=Calibri>&nbsp;</FONT></TD></TR>*@
+
+</TBODY></TABLE>*Кроме документов, подтверждающих расходы,необходимо приложить заполненный "Путевой лист" (шаблон на листе "Путевой лист")</FONT></DIV>
+<DIV align=left><FONT size=2></FONT>&nbsp;</DIV>
+<DIV align=left><FONT size=2>Справочно. Проживал в гостинце:&nbsp;&nbsp;&nbsp;</FONT><FONT size=4>@Model.Hotels</FONT></DIV>
+<DIV align=left></DIV>
+<TABLE style="HEIGHT: 22px; WIDTH: 1291px" cellSpacing=0 cols=1 rules=none align=center border=0 frame=void>
+<COLGROUP>
+<COL width=30></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid" height=17 width=716 colSpan=9 align=center>
+<P align=center><FONT size=2>(заполнить в случае безналичной оплаты гостиницы)</FONT></P></TD></TR></TBODY></TABLE></DIV>
+<TABLE cellSpacing=0 cols=10 rules=none border=0 frame=void>
+<TBODY>
+<TR>
+<TD height=17 width=171 colSpan=2 align=center><FONT size=2></FONT></TD>
+<TD width=43 align=left><FONT size=2></FONT></TD>
+<TD width=343 colSpan=4 align=left>
+<P align=center>@Model.UserFio</P></TD>
+<TD width=44 align=left><FONT size=2></FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(подпись сотрудника)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=4 align=center><FONT size=2>(расшифровка, Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE><BR>
+<DIV></DIV>
+<TABLE style="HEIGHT: 33px; WIDTH: 1076px" cellSpacing=0 cols=12 rules=none border=0 frame=void>
+<TBODY>
+<TR>
+<TD height=17 width=86 align=center>
+<P align=center><FONT size=2>Задание сотрудников выполнено,произведенные расходы согласованы</FONT></P></TD>
+<TD width=171 colSpan=2 align=left>
+<P align=center>@Model.ManagerPosition</P></TD>
+<TD width=44 align=left><FONT size=2></FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD>
+<TD width=43 align=left><FONT size=2></FONT></TD>
+<TD width=247 colSpan=2 align=left>
+<P align=center>@Model.ManagerFio</P></TD>
+<TD width=45 align=left><FONT size=2></FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TR>
+<TD height=17 align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(должность руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(расшифровка руководителя,Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE>
+<DIV></DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>
+<TABLE cellSpacing=0 cols=10 rules=none border=0 frame=void>
+<COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=171 colSpan=2 align=center></TD>
+<TD width=43 align=left></TD>
+<TD width=343 colSpan=4 align=left>
+<P align=center>@Model.AccountantFio</P></TD>
+<TD width=44 align=left></TD>
+<TD width=171 colSpan=2 align=left></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(подпись бухгалтера)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=4 align=center><FONT size=2>(расшифровка, Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE></DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>&nbsp; 
+<TABLE style="HEIGHT: 32px; WIDTH: 1078px" cellSpacing=0 cols=13 rules=none border=0 frame=void>
+<TBODY>
+<TR>
+<TD height=17 width=171 colSpan=2 align=left>
+<P align=center><FONT size=2>Авансовый отчет проверен</FONT></P></TD>
+<TD width=171 colSpan=2 align=left>
+<P align=center>@Model.AccountantPosition</P></TD>
+<TD width=44 align=left><FONT size=2></FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD>
+<TD width=43 align=left><FONT size=2></FONT></TD>
+<TD width=247 colSpan=2 align=left>
+<P align=center>@Model.AccountantFio</P></TD>
+<TD width=45 align=left><FONT size=2></FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TR>
+<TD height=17 align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(должность проверяющего)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись )</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(расшифровка руководителя,Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE></DIV>
+<DIV align=left></DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>
+<HR>
+<EM><SUP><FONT size=3>Г. На обратной стороне прикрепите документы, подтверждающие командировочные расходы</FONT></SUP></EM></DIV></FONT><FONT size=2></FONT></BODY></HTML>

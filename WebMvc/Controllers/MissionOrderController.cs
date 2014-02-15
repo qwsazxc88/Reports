@@ -507,6 +507,15 @@ namespace WebMvc.Controllers
                 }
             }*/
         }
+
+
+        [HttpGet]
+        public ActionResult PrintReport(int id)
+        {
+            PrintMissionReportViewModel model = RequestBl.GetPrintMissionReportModel(id);
+
+            return View(model);
+        }
         [HttpGet]
         //[ReportAuthorize(UserRole.Manager)]
         public ActionResult EditCostDialog(int id, string json)

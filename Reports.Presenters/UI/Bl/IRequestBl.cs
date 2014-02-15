@@ -165,5 +165,7 @@ namespace Reports.Presenters.UI.Bl
                                                                       DateTime? beginDate,
                                                                       DateTime? endDate, string userName, int sortBy,
                                                                       bool? sortDescending,bool showDepts);
+
+        PrintMissionReportViewModel GetPrintMissionReportModel(int id);
     }
 }

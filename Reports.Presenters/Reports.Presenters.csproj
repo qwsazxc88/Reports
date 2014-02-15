@@ -182,6 +182,7 @@
     <Compile Include="UI\ViewModel\MissionReportsListModel.cs" />
     <Compile Include="UI\ViewModel\MissionUserDeptsListModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionOrderViewModel.cs" />
+    <Compile Include="UI\ViewModel\PrintMissionReportViewModel.cs" />
     <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />
     <Compile Include="UI\ViewModel\RequestCommentsModel.cs" />
     <Compile Include="UI\ViewModel\SaveCommentModel.cs" />

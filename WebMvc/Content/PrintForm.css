@@ -1,0 +1,19 @@
+﻿table.grid
+{
+  border: 1px solid Black;
+  border-collapse: collapse;
+  color:Black;
+}
+
+table.grid td 
+{
+  border: 1px solid Black;
+  text-align: left;
+}
+
+table.grid th
+{
+  border: 1px solid Black;
+  text-align: center;
+  white-space:nowrap;
+}
