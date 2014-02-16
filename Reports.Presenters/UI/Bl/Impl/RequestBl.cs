@@ -8446,7 +8446,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
-                    bool canEdit = false;
+                    bool canEdit;
                     bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     //if (entity.Creator.RoleId == (int)UserRole.Manager)
                     //{
@@ -8593,10 +8593,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                MissionReport missionReport = null;
                 //if (model.Id != 0)
                 //{
-                missionReport = MissionReportDao.Load(model.Id);
+                MissionReport missionReport = MissionReportDao.Load(model.Id);
 
                 model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", missionReport.Number);
                 model.DocumentNumber =  missionReport.Number.ToString();
@@ -8705,7 +8704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //else
                 //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
             }
-            bool canEdit = false;
+            bool canEdit;
             if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)
                 && !entity.ManagerDateAccept.HasValue
                 && entity.UserDateAccept.HasValue)
@@ -9029,7 +9028,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             PrintMissionReportViewModel model = new PrintMissionReportViewModel();
             MissionReport report = MissionReportDao.Load(id);
             if (report == null)
-                throw new ArgumentException(string.Format("Авансовый отчет (id {0}) отсутствует в базе данных."));
+                throw new ArgumentException(string.Format("Авансовый отчет (id {0}) отсутствует в базе данных.",id));
             SetUserInfoModel(report.User, model);
             model.OrderNumber = report.MissionOrder.Number.ToString();
             model.DocumentNumber = "АО" + report.Number;
@@ -9037,19 +9036,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Hotels = report.Hotels;
             model.UserFio = report.User.FullName;
             model.UserPosition = report.User.Position.Name;
+            if (report.UserDateAccept.HasValue)
+                model.UserAcceptDate = report.UserDateAccept.Value.ToShortDateString();
             if(report.ManagerDateAccept.HasValue)
             {
                 model.ManagerFio = report.AcceptManager.FullName;
+                model.ManagerAcceptDate = report.ManagerDateAccept.Value.ToShortDateString();
                 model.ManagerPosition = report.AcceptManager.Position == null? string.Empty:report.AcceptManager.Position.Name;
             }
             if (report.AccountantDateAccept.HasValue)
             {
                 model.AccountantFio = report.AcceptAccountant.FullName;
+                model.AccountantAcceptDate = report.AccountantDateAccept.Value.ToShortDateString();
                 model.AccountantPosition = report.AcceptAccountant.Position == null? string.Empty: report.AcceptAccountant.Position.Name;
             }
             List<PrintCostModel> costs = new List<PrintCostModel>();
             int currentNumber = 1;
-            int currentCostType = 0;
+            //int currentCostType = 0;
             foreach(MissionReportCost cost in report.Costs.OrderBy(x => x.Type.Id))
             {
                 PrintCostModel costModel = new PrintCostModel
@@ -9060,11 +9063,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    PurchaseBoolSum = FormatSum(cost.BookOfPurchaseSum),
                                                    UserSum = FormatSum(cost.UserSum)
                                                };
-                if(currentCostType != cost.Type.Id)
+                costModel.Number = currentNumber.ToString();
+                currentNumber++;
+                /*if(currentCostType != cost.Type.Id)
                 {
                     costModel.Number = currentNumber.ToString();
                     currentNumber++;
-                }
+                    currentCostType = cost.Type.Id;
+                }*/
                 List<PrintTransactionModel> trans = cost.AccountingTransactions.Select(tran => 
                     new PrintTransactionModel
                                     {
@@ -9100,7 +9106,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Number = currentNumber.ToString(),
                 UserSum = FormatSum(report.AccountantAllSum - report.UserSumReceived - report.PurchaseBookAllSum),
             });
-            currentNumber++;
+            //currentNumber++;
             //model.DocumentNumber = "АО" + model.DocumentNumber;
             model.Costs = costs;
             return model;

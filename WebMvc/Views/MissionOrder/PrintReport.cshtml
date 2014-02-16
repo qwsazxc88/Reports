@@ -80,9 +80,9 @@
 <P align=center><STRONG><FONT face=Calibri>Оплачено организаций за сотрудника (руб.)</FONT></STRONG></P></TD>
 <TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 77pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=103>
 <P align=center><STRONG><FONT face=Calibri>Принято к учету ( руб.)</FONT></STRONG></P></TD>
-<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 89pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=119>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 95pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=119>
 <P align=center><STRONG><FONT face=Calibri>Дебет бух. Счета</FONT></STRONG></P></TD>
-<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 88pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=117>
+<TD class=xl67 style="BORDER-TOP: windowtext; BORDER-RIGHT: windowtext 0.5pt solid; WIDTH: 98pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: windowtext; BACKGROUND-COLOR: transparent" width=117>
 <P align=center><STRONG><FONT face=Calibri>Кредит бух. Счета</FONT></STRONG></P></TD></TR>
 @if (Model.Costs != null)
 {
@@ -317,9 +317,9 @@
 
 </TBODY></TABLE>*Кроме документов, подтверждающих расходы,необходимо приложить заполненный "Путевой лист" (шаблон на листе "Путевой лист")</FONT></DIV>
 <DIV align=left><FONT size=2></FONT>&nbsp;</DIV>
-<DIV align=left><FONT size=2>Справочно. Проживал в гостинце:&nbsp;&nbsp;&nbsp;</FONT><FONT size=4>@Model.Hotels</FONT></DIV>
+<DIV align=left><FONT size=2>Справочно. Проживал в гостинице:&nbsp;&nbsp;&nbsp;</FONT><FONT size=4>@Model.Hotels</FONT></DIV>
 <DIV align=left></DIV>
-<TABLE style="HEIGHT: 22px; WIDTH: 1291px" cellSpacing=0 cols=1 rules=none align=center border=0 frame=void>
+<TABLE style="HEIGHT: 22px; WIDTH: 1026px;BORDER-TOP: #000000 1px" cellSpacing=0 cols=1 rules=none solid frame=void">
 <COLGROUP>
 <COL width=30></COLGROUP>
 <TBODY>
@@ -334,7 +334,7 @@
 <TD width=343 colSpan=4 align=left>
 <P align=center>@Model.UserFio</P></TD>
 <TD width=44 align=left><FONT size=2></FONT></TD>
-<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TD width=171 colSpan=2 align=center><FONT size=2>@Model.UserAcceptDate</FONT></TD></TR>
 <TR>
 <TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(подпись сотрудника)</FONT></TD>
 <TD align=left><FONT size=2></FONT></TD>
@@ -355,7 +355,7 @@
 <TD width=247 colSpan=2 align=left>
 <P align=center>@Model.ManagerFio</P></TD>
 <TD width=45 align=left><FONT size=2></FONT></TD>
-<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TD width=171 colSpan=2 align=center><FONT size=2>@Model.ManagerAcceptDate</FONT></TD></TR>
 <TR>
 <TD height=17 align=left><FONT size=2></FONT></TD>
 <TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(должность руководителя)</FONT></TD>
@@ -378,7 +378,7 @@
 <TD width=343 colSpan=4 align=left>
 <P align=center>@Model.AccountantFio</P></TD>
 <TD width=44 align=left></TD>
-<TD width=171 colSpan=2 align=left></TD></TR>
+<TD width=171 colSpan=2 align=center>@Model.AccountantAcceptDate</TD></TR>
 <TR>
 <TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(подпись бухгалтера)</FONT></TD>
 <TD align=left><FONT size=2></FONT></TD>
@@ -400,7 +400,7 @@
 <TD width=247 colSpan=2 align=left>
 <P align=center>@Model.AccountantFio</P></TD>
 <TD width=45 align=left><FONT size=2></FONT></TD>
-<TD width=171 colSpan=2 align=left><FONT size=2></FONT></TD></TR>
+<TD width=171 colSpan=2 align=center><FONT size=2>@Model.AccountantAcceptDate</FONT></TD></TR>
 <TR>
 <TD height=17 align=left><FONT size=2></FONT></TD>
 <TD align=left><FONT size=2></FONT></TD>

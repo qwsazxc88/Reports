@@ -9,10 +9,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string Hotels { get; set; }
         public string UserPosition { get; set; }
         public string UserFio { get; set; }
+        public string UserAcceptDate { get; set; }
         public string ManagerPosition { get; set; }
         public string ManagerFio { get; set; }
+        public string ManagerAcceptDate { get; set; }
         public string AccountantPosition { get; set; }
         public string AccountantFio { get; set; }
+        public string AccountantAcceptDate { get; set; }
     }
 
     public class PrintCostModel
