@@ -9086,24 +9086,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                               AccountantSum = FormatSum(report.AccountantAllSum),
                               CostTypeName = "ИТОГО Расходов (руб)",
                               GradeSum = FormatSum(report.AllSum),
-                              Number = currentNumber.ToString(),
+                              Number = string.Empty,//currentNumber.ToString(),
                               PurchaseBoolSum = FormatSum(report.PurchaseBookAllSum),
                               UserSum = FormatSum(report.UserAllSum),
                           });
-            currentNumber++;
+            //currentNumber++;
             costs.Add(new PrintCostModel
             {
               
                 CostTypeName = "Получено в подотчет",
-                Number = currentNumber.ToString(),
+                Number = string.Empty,//currentNumber.ToString(),
                 UserSum = FormatSum(report.UserSumReceived),
             });
-            currentNumber++;
+            //currentNumber++;
             costs.Add(new PrintCostModel
             {
 
                 CostTypeName = @"""-""Долг за сотрудником/""+""Долг за организацией",
-                Number = currentNumber.ToString(),
+                Number = string.Empty,//currentNumber.ToString(),
                 UserSum = FormatSum(report.AccountantAllSum - report.UserSumReceived - report.PurchaseBookAllSum),
             });
             //currentNumber++;
