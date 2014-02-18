@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="ExtendedRole" table="[ExtendedRole]">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <version name="Version" column= "Version"/>
+    
+    <property name="Description" length="256" not-null="false"/>
+    
+    <set name="RoleOwners" lazy="true" cascade="save-update">
+      <key column="ExtendedRoleId" foreign-key="FK_UserExtendedRole_ExtendedRole"/>
+      <many-to-many class="User" column="UserId" foreign-key="FK_UserExtendedRole_User"/>
+    </set>
+    
+  </class>
+</hibernate-mapping>

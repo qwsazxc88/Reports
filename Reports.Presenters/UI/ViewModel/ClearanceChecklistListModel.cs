@@ -36,5 +36,12 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
+
+        public ClearanceChecklistListModel()
+        {
+            this.Positions = new List<IdNameDto>();
+            this.Statuses = new List<IdNameDto>();
+            this.Documents = new List<VacationDto>();
+        }
     }
 }

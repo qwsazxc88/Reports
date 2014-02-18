@@ -133,6 +133,10 @@ namespace Reports.Core.Domain
         { 
             get { return (UserRole)RoleId; }
         }
+        
+        // Extended roles
+        public virtual ISet<ExtendedRole> ExtendedRoles { get; set; }
+
         //public virtual bool IsUserResponser
         //{
         //    get { return false; }
@@ -140,12 +144,7 @@ namespace Reports.Core.Domain
 
         public virtual User Manager { get; set; }
         //public virtual User PersonnelManager { get; set; }
-        private IList<User> personnels = new List<User>();
-        public virtual IList<User> Personnels
-        {
-            get { return personnels; }
-            set { personnels = value; }
-        }
+        public virtual IList<User> Personnels { get; set; }
         public virtual IList<AcceptRequestDate> AcceptRequests { get; set; }
         //public virtual User BudgetManager { get; set; }
         //public virtual User OutsourcingManager { get; set; }
@@ -168,10 +167,12 @@ namespace Reports.Core.Domain
 
         public User()
         {
+            this.ExtendedRoles = new HashSet<ExtendedRole>();
+            this.Personnels = new List<User>();
         }
 
         public User(/*string firstName, string middleName, string lastName,*/
-            string name,string code)
+            string name,string code) : this()
         {
             //FirstName = firstName;
             //LastName = lastName;

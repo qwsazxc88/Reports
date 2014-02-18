@@ -2208,7 +2208,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             clearanceChecklist = ClearanceChecklistDao.Load(id);
             if (clearanceChecklist == null)
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
-            model.ClearanceChecklistApprovals = new List<ClearanceChecklistApprovalDto>();
             foreach (var approval in clearanceChecklist.Approvals)
             {
                 model.ClearanceChecklistApprovals.Add(
@@ -2218,7 +2217,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate,
                         // TODO: Implement Active
-                        Active = false
+                        Active = approval.ApprovalDate.HasValue ? false : true
                     }
                 );
             }

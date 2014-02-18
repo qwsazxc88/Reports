@@ -7,8 +7,6 @@
 {
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.UserId)
-    <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
-    <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
     
     <div class="doc-wrap">
         <table style="width:100%">
@@ -61,7 +59,7 @@
                     <td>
                         @if (approval.ApprovalDate != null)
                         {
-                            @:Cогласовано
+                            <span style="color:Green">Cогласовано</span>
                         }
                         else if (approval.Active)
                         {
@@ -69,7 +67,7 @@
                         }
                         else
                         {
-                            @:Не согласовано                            
+                            @:Не согласовано
                         }
                     </td>
                     <td>@approval.ApprovedBy</td>

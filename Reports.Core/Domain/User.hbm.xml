@@ -10,21 +10,27 @@
     <property name="IsNew" not-null="true" />
     <property name="Login" length="64" not-null="true" unique="true"/>
     <property name="_password" length="64" column="Password" not-null="false" access="field"/>
-	<property name="Code" length="32" not-null="false"/>
-	<property name="DateAccept" not-null="false" />
+	  <property name="Code" length="32" not-null="false"/>
+	  <property name="DateAccept" not-null="false" />
     <property name="Name" length="512" not-null="true" />
-	<property name="Email" length="512" not-null="false" />
+	  <property name="Email" length="512" not-null="false" />
     <!--<property name="LastName" length="100" not-null="true" />
     <property name="MiddleName" length="100" not-null="true" />-->
     <!--<property name="Branch" length="100" not-null="true" />
     <property name="Position" length="100" not-null="true" />
     <property name="Department" length="100" not-null="true" />-->
     <property name="DateRelease" not-null="false"/>
-	<property name="Comment" length="512" not-null="false"/>
-  <property name="Cnilc" length="512" not-null="false" />
-	<!--<property name="CanAnswer" not-null="true"/>
-	<property name="Birthday" not-null="false"/>-->
-	<property name="RoleId" not-null="true"/>
+	  <property name="Comment" length="512" not-null="false"/>
+    <property name="Cnilc" length="512" not-null="false" />
+	  <!--<property name="CanAnswer" not-null="true"/>
+	  <property name="Birthday" not-null="false"/>-->
+	  <property name="RoleId" not-null="true"/>
+    
+    <set name="ExtendedRoles" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_UserExtendedRole_User"/>
+      <many-to-many class="ExtendedRole" column="ExtendedRoleId" foreign-key="FK_UserExtendedRole_ExtendedRole"/>
+    </set>
+    
     <property name="LoginAd" length="32" not-null="false" />
     <property name="Rate" not-null="false" />
     <property name="GivesCredit" not-null="true" />
