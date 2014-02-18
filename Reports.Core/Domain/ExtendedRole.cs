@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -11,6 +12,6 @@ namespace Reports.Core.Domain
         public virtual string Description { get; set; }
 
         // Role Owners
-        public virtual ISet<User> RoleOwners { get; set; }
+        public virtual ICollection<User> RoleOwners { get; set; }
     }
 }

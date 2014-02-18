@@ -28,6 +28,12 @@ alter table VacationComment  drop constraint FK_VacationComment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_VacationComment_Vacation]') AND parent_object_id = OBJECT_ID('VacationComment'))
 alter table VacationComment  drop constraint FK_VacationComment_Vacation
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserExtendedRole_User]') AND parent_object_id = OBJECT_ID('UserExtendedRole'))
+alter table UserExtendedRole  drop constraint FK_UserExtendedRole_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserExtendedRole_ExtendedRole]') AND parent_object_id = OBJECT_ID('UserExtendedRole'))
+alter table UserExtendedRole  drop constraint FK_UserExtendedRole_ExtendedRole
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_MissionType]') AND parent_object_id = OBJECT_ID('Mission'))
 alter table Mission  drop constraint FK_Mission_MissionType
 
@@ -358,6 +364,9 @@ alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApp
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ClearanceChecklistDepartment]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
 alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ClearanceChecklistDepartment
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ExtendedRole]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
+alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ExtendedRole
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ApprovedBy]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
 alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ApprovedBy
 
@@ -430,6 +439,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and O
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'[ExtendedRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ExtendedRole]
+if exists (select * from dbo.sysobjects where id = object_id(N'UserExtendedRole') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserExtendedRole
 if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklistDepartment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ClearanceChecklistDepartment
 if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
 if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
@@ -604,6 +615,17 @@ create table TimesheetStatus (
   ShortName NVARCHAR(2) not null,
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
+)
+create table [ExtendedRole] (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Description NVARCHAR(256) null,
+  constraint PK_ExtendedRole primary key (Id)
+)
+create table UserExtendedRole (
+ ExtendedRoleId INT not null,
+  UserId INT not null,
+  constraint PK_UserExtendedRole  primary key (UserId, ExtendedRoleId)
 )
 create table ClearanceChecklistDepartment (
  Id INT IDENTITY NOT NULL,
@@ -1315,6 +1337,7 @@ create table ClearanceChecklistApproval (
   Version INT not null,
   ClearanceChecklistId INT not null,
   ClearanceChecklistDepartmentId INT not null,
+  ExtendedRoleId INT not null,
   ApprovedById INT null,
   ApprovalDate DATETIME null,
   constraint PK_ClearanceChecklistApproval  primary key (Id)
@@ -1535,6 +1558,8 @@ create index IX_VacationComment_User_Id on VacationComment (UserId)
 create index IX_VacationComment_Vacation_Id on VacationComment (VacationId)
 alter table VacationComment add constraint FK_VacationComment_User foreign key (UserId) references [Users]
 alter table VacationComment add constraint FK_VacationComment_Vacation foreign key (VacationId) references Vacation
+alter table UserExtendedRole add constraint FK_UserExtendedRole_User foreign key (UserId) references [Users]
+alter table UserExtendedRole add constraint FK_UserExtendedRole_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
 create index Mission_MissionType on Mission (TypeId)
 create index IX_Mission_User_Id on Mission (UserId)
 create index IX_Mission_CreatorUser_Id on Mission (CreatorId)
@@ -1750,9 +1775,11 @@ alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (Stat
 alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
 create index IX_ClearanceChecklistApproval_ClearanceChecklist_Id on ClearanceChecklistApproval (ClearanceChecklistId)
 create index IX_ClearanceChecklistApproval_ClearanceChecklistDepartment_Id on ClearanceChecklistApproval (ClearanceChecklistDepartmentId)
+create index IX_ClearanceChecklistApproval_ExtendedRole_Id on ClearanceChecklistApproval (ExtendedRoleId)
 create index IX_ClearanceChecklistApproval_ApprovedBy_Id on ClearanceChecklistApproval (ApprovedById)
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklist foreign key (ClearanceChecklistId) references ClearanceChecklist
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklistDepartment foreign key (ClearanceChecklistDepartmentId) references ClearanceChecklistDepartment
+alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ApprovedBy foreign key (ApprovedById) references [Users]
 create index Vacation_VacationType on Vacation (TypeId)
 create index IX_Vacation_User_Id on Vacation (UserId)

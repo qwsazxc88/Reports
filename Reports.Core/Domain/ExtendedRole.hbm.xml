@@ -10,7 +10,7 @@
     
     <property name="Description" length="256" not-null="false"/>
     
-    <set name="RoleOwners" lazy="true" cascade="save-update">
+    <set name="RoleOwners" table="UserExtendedRole" lazy="true" inverse="true" cascade="save-update">
       <key column="ExtendedRoleId" foreign-key="FK_UserExtendedRole_ExtendedRole"/>
       <many-to-many class="User" column="UserId" foreign-key="FK_UserExtendedRole_User"/>
     </set>

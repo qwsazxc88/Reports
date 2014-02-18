@@ -26,7 +26,7 @@
 	  <property name="Birthday" not-null="false"/>-->
 	  <property name="RoleId" not-null="true"/>
     
-    <set name="ExtendedRoles" lazy="true" cascade="save-update">
+    <set name="ExtendedRoles" table="UserExtendedRole" lazy="true" cascade="save-update">
       <key column="UserId" foreign-key="FK_UserExtendedRole_User"/>
       <many-to-many class="ExtendedRole" column="ExtendedRoleId" foreign-key="FK_UserExtendedRole_ExtendedRole"/>
     </set>

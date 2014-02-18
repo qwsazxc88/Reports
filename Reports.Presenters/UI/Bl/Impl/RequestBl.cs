@@ -2204,6 +2204,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
 
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
             ClearanceChecklist clearanceChecklist = null;
             clearanceChecklist = ClearanceChecklistDao.Load(id);
             if (clearanceChecklist == null)
@@ -2217,7 +2219,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate,
                         // TODO: Implement Active
-                        Active = approval.ApprovalDate.HasValue ? false : true
+                        // Active = approval.ApprovalDate.HasValue ? false : true
+                        Active = user.ExtendedRoles.Contains(approval.ExtendedRole)
+                            && !approval.ApprovalDate.HasValue ? true : false
                     }
                 );
             }
@@ -2225,7 +2229,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             return model;
         }
-       
+      
         public bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error)
         {
             // TODO Implementation for SaveClearanceChecklistEditModel

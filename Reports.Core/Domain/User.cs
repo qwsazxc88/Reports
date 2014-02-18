@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -135,7 +136,7 @@ namespace Reports.Core.Domain
         }
         
         // Extended roles
-        public virtual ISet<ExtendedRole> ExtendedRoles { get; set; }
+        public virtual ICollection<ExtendedRole> ExtendedRoles { get; set; }
 
         //public virtual bool IsUserResponser
         //{
@@ -167,7 +168,7 @@ namespace Reports.Core.Domain
 
         public User()
         {
-            this.ExtendedRoles = new HashSet<ExtendedRole>();
+            this.ExtendedRoles = new HashedSet<ExtendedRole>();
             this.Personnels = new List<User>();
         }
 
