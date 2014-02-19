@@ -20,5 +20,9 @@ namespace Reports.Core.Dao
             int sortedBy,
             bool? sortDescending
         );
+
+        ClearanceChecklistApproval GetApprovalById(int id);
+
+        bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval);
     }
 }

@@ -16,11 +16,11 @@
                     <div id="Error" style="color:Red;display:none;"></div>
                 </td>
             </tr>
-            @*<tr>
+            <tr>
                 <td colspan="2">
                     @Html.Partial("../UserInfoView", Model)
                 </td>
-            </tr>*@
+            </tr>
             @*@if (Model.IsDeleted)
             { 
                 <tr>
@@ -29,6 +29,8 @@
             }*@  
         </table>    
     </div>
+    
+    <br />
     
     <table class="grid" style="width:100%">
         <tr>
@@ -57,13 +59,27 @@
                         @approval.ClearanceChecklistDepartment
                     </td>
                     <td>
-                        @if (approval.ApprovalDate != null)
+                        @if (approval.ApprovalDate != "")
                         {
                             <span style="color:Green">Cогласовано</span>
                         }
                         else if (approval.Active)
                         {
-                            @:Cогласовать
+                            @*:Cогласовать*@
+                            @*Ajax.ActionLink("Согласовать",
+                                "ClearanceChecklistEdit",
+                                "UserRequest",
+                                new { id = approval.Id, action = "approve" },
+                                new AjaxOptions { OnSuccess = "ApprovalSuccess" },
+                                new { @class = "approve-link" }
+                            );
+                            Html.ActionLink("Согласовать",
+                                "ClearanceChecklistEdit",
+                                null,
+                                new { id = approval.Id, action = "approve" },
+                                new { @class="approve-link"}
+                            );*@
+                            <a class="approval-link" data-approval-id="@approval.Id" href="">Согласовать</a>
                         }
                         else
                         {
@@ -71,7 +87,7 @@
                         }
                     </td>
                     <td>@approval.ApprovedBy</td>
-                    <td>@(approval.ApprovalDate.HasValue ? @approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "")</td>
+                    <td>@approval.ApprovalDate</td>
                     <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
                     @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                     <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
@@ -82,7 +98,26 @@
 }
 
 <script type="text/javascript">
+    function ApprovalSuccess()
+    {
+        $(this).ReplaceWith("<span style='color:Green'>Cогласовано</span>");
+    }
     $(document).ready(function () {
         setActiveMenuItem("userClearanceChecklistList");
+        // обработка щелчков по ссылкам согласования
+        $(".approval-link").click(function (event) {
+            var $currentApprovalLink = $(this);
+            event.preventDefault();
+            $.post("/UserRequest/ClearanceChecklistApprove",
+                { id: $currentApprovalLink.attr("data-approval-id") },
+                function (data) {
+                    if (data.ok === true) {
+                        $currentApprovalLink.parent().next().text(data.approvedBy.toString());
+                        $currentApprovalLink.parent().next().next().text(data.approvalDate);
+                        $currentApprovalLink.replaceWith("<span style='color:Green'>Cогласовано</span>");
+                    }
+                }
+            );
+        });
     });
 </script>

@@ -548,6 +548,22 @@ namespace WebMvc.Controllers
              model = RequestBl.GetClearanceChecklistEditModel(model.Id, model.UserId);
              return View(model);
          }
+        
+         [HttpPost]
+         public JsonResult ClearanceChecklistApprove(int id)
+         {
+             // TODO Implement the return value
+             string error = "";
+             ClearanceChecklistApprovalDto modifiedApproval;
+             if (RequestBl.SetClearanceChecklistApproval(id, AuthenticationService.CurrentUser.Id, out modifiedApproval, out error))
+             {
+                 return Json(new { ok = true, approvalId = id,  approvedBy = modifiedApproval.ApprovedBy, approvalDate = modifiedApproval.ApprovalDate });
+             }
+             else
+             {
+                 return Json(new { ok = false, approvalId = id, error = error });
+             }
+         }
 
          #endregion
 

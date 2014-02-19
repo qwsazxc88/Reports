@@ -2215,11 +2215,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ClearanceChecklistApprovals.Add(
                     new ClearanceChecklistApprovalDto
                     {
+                        Id = approval.Id,
                         ClearanceChecklistDepartment = approval.ClearanceChecklistDepartment.Name,
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
-                        ApprovalDate = approval.ApprovalDate,
-                        // TODO: Implement Active
-                        // Active = approval.ApprovalDate.HasValue ? false : true
+                        ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
+                        // Checking if the authenticated user has the extended role for approval
+                        // and that the CCL has not been approved yet.
+                        // If both are OK the Active property is set
+                        // and the view will output the approval link in the corresponding row
                         Active = user.ExtendedRoles.Contains(approval.ExtendedRole)
                             && !approval.ApprovalDate.HasValue ? true : false
                     }
@@ -2235,6 +2238,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             // TODO Implementation for SaveClearanceChecklistEditModel
             error = "";
             return false;
+        }
+
+        public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
+        {
+            if (clearanceChecklistDao.SetApproval(approvalId, approvedBy, out modifiedApproval))
+            {
+                error = "";
+                return true;
+            }
+            else
+            {
+                error = "Error updating the record";
+                return false;
+            }
         }
 
         #endregion

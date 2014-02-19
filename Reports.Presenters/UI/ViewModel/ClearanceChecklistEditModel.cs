@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class ClearanceChecklistEditModel
+    public class ClearanceChecklistEditModel : UserInfoModel
     {
         public int UserId { get; set; }
 
