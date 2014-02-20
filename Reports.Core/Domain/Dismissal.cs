@@ -37,6 +37,8 @@ namespace Reports.Core.Domain
         public virtual bool DeleteAfterSendTo1C { get; set; }
 
         public virtual IList<DismissalComment> Comments { get; set; }
+
+        public virtual ClearanceChecklist ClearanceChecklist { get; set; }
         
         #endregion
 
