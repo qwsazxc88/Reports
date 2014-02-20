@@ -65,6 +65,7 @@ namespace Reports.Presenters.UI.Bl
         ClearanceChecklistListModel GetClearanceChecklistListModel();
         void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError);
         ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId);
+        ClearanceChecklistEditModel GetClearanceChecklistEditModelByParentId(int parentId, int userId);
         bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error);
         bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error);
 

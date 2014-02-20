@@ -221,6 +221,16 @@
     </div>
     
     <br />
+    
+    <!-- Clearance checklist related markup -->
+    
+    <a id="clearance-checklist-link" data-dismissal-id="@Model.Id" href='@Url.Action("ClearanceChecklistEdit", new {id = 0, parentId = Model.Id, userId = Model.UserId, timestamp = DateTime.Now })'>Открыть обходной лист</a>
+    <div id="clearance-checklist"></div>
+    
+    <!-- End clearance checklist related markup -->
+    
+    <br />
+    
     <div class="comment-wrap">
     <table style="width:100%">
      <tr>
@@ -239,6 +249,22 @@
             $("#Reduction").width("50px");
             $("#Reason").width("350px");
             setActiveMenuItem("userDismissal");
+
+            // Load clearance checklist
+            $("#clearance-checklist-link").click(function (event) {
+                var containerDiv = $("#clearance-checklist");
+                event.preventDefault();
+                if (!containerDiv.hasClass("contains-clearance-checklist")) {                    
+                    containerDiv.load(this.href);
+                    containerDiv.addClass("contains-clearance-checklist");
+                    $(this).text("Скрыть обходной лист");
+                }
+                else {
+                    containerDiv.empty();
+                    containerDiv.removeClass("contains-clearance-checklist");
+                    $(this).text("Открыть обходной лист");
+                }
+            });
         });    
     function ValidateForm()
     {

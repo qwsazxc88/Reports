@@ -2206,8 +2206,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            ClearanceChecklist clearanceChecklist = null;
-            clearanceChecklist = ClearanceChecklistDao.Load(id);
+            var clearanceChecklist = ClearanceChecklistDao.Load(id);
             if (clearanceChecklist == null)
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
             foreach (var approval in clearanceChecklist.Approvals)
@@ -2230,6 +2229,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.EndDate = clearanceChecklist.Dismissal.EndDate;
 
+            return model;
+        }
+
+        public ClearanceChecklistEditModel GetClearanceChecklistEditModelByParentId(int parentId, int userId)
+        {
+            var parent = DismissalDao.Load(parentId);
+            if (parent == null || parent.ClearanceChecklist == null || parent.ClearanceChecklist.Id == 0)
+                throw new ArgumentException(string.Format("Обходной лист для увольнения (id {0}) не найден в базе данных.", parentId));
+            var model = GetClearanceChecklistEditModel(parent.ClearanceChecklist.Id, userId);
+            // TODO: Replace with implementation
             return model;
         }
       

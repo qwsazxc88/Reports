@@ -143,6 +143,7 @@ namespace WebMvc.Controllers
              return View(model);
          }
          #endregion
+
          #region Employment
          [HttpGet]
          public ActionResult EmploymentList()
@@ -320,6 +321,7 @@ namespace WebMvc.Controllers
          }
 
          #endregion
+
          #region Timesheet Correction
          [HttpGet]
          public ActionResult TimesheetCorrectionList()
@@ -392,6 +394,7 @@ namespace WebMvc.Controllers
          }
 
          #endregion
+
          #region Dismissal
 
          [HttpGet]
@@ -524,7 +527,7 @@ namespace WebMvc.Controllers
          [HttpGet]
          public ActionResult ClearanceChecklistList()
          {
-             ClearanceChecklistListModel model = RequestBl.GetClearanceChecklistListModel();
+             var model = RequestBl.GetClearanceChecklistListModel();
              return View(model);
          }
 
@@ -536,11 +539,27 @@ namespace WebMvc.Controllers
          }
 
          [HttpGet]
-         public ActionResult ClearanceChecklistEdit(int id, int userId)
+         public ActionResult ClearanceChecklistEdit(int id, int? parentId, int userId)
          {
-             ClearanceChecklistEditModel model = RequestBl.GetClearanceChecklistEditModel(id,userId);
-             return View(model);
+             if (parentId == null)
+             {
+                 var model = RequestBl.GetClearanceChecklistEditModel(id, userId);
+                 return View(model);
+             }
+             else
+             {
+                 var model = RequestBl.GetClearanceChecklistEditModelByParentId((int)parentId, userId);
+                 return PartialView(model);
+             }
          }
+        /*
+         [HttpGet]
+         public PartialViewResult ClearanceChecklistEditPartial(int parentId, int userId)
+         {
+             var model = RequestBl.GetClearanceChecklistEditModelByParentId(parentId, userId);
+             // TODO Replace with implementation
+             return PartialView(model);
+         }*/
 
          [HttpPost]
          public ActionResult ClearanceChecklistEdit(ClearanceChecklistEditModel model)
@@ -641,6 +660,7 @@ namespace WebMvc.Controllers
              return ModelState.IsValid;
          }
          #endregion
+
          #region HolidayWork
          [HttpGet]
          public ActionResult HolidayWorkList()
@@ -718,6 +738,7 @@ namespace WebMvc.Controllers
                  model.TimesheetStatusId = model.TimesheetStatusIdHidden;
          }
          #endregion
+
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
@@ -937,6 +958,7 @@ namespace WebMvc.Controllers
              }
          }
          #endregion
+
          #region Absence
          [HttpGet]
          public ActionResult AbsenceList()
@@ -1019,6 +1041,7 @@ namespace WebMvc.Controllers
              return ModelState.IsValid;
          }
          #endregion
+
          #region Vacation
          [HttpGet]
          public ActionResult VacationList()
@@ -1172,6 +1195,7 @@ namespace WebMvc.Controllers
              }
          }
          #endregion
+
          #region Child Vacation
          [HttpGet]
          public ActionResult ChildVacationList()
@@ -1353,6 +1377,7 @@ namespace WebMvc.Controllers
 
   
          #endregion
+
          #region Comments
          [HttpGet]
          public ActionResult RenderComments(int id,int typeId)
@@ -1416,6 +1441,7 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
          #endregion
+
          #region Attachment
          public FileContentResult ViewAttachment(int id/*,int type*/)
          {
@@ -1575,6 +1601,7 @@ namespace WebMvc.Controllers
              return fileContent;
          }
            #endregion
+
          #region Print
          [HttpGet]
          public FileContentResult GetPrintForm(int id, int typeId)
@@ -1883,6 +1910,7 @@ namespace WebMvc.Controllers
          }*/
          #endregion
 
+         #region Misc
          protected void CheckBeginDate(ICheckForEntityBeginDate model)
          {
             CheckRequestDate(model.IsDelete,model.BeginDate);
@@ -2045,15 +2073,16 @@ namespace WebMvc.Controllers
             }
             return ModelState.IsValid;
          }
-         /*[HttpGet]
-         public ActionResult TemplatesList()
-         {
-             return View(new TemplatesListModel());
-         }*/
+        /*[HttpGet]
+        public ActionResult TemplatesList()
+        {
+            return View(new TemplatesListModel());
+        }*/
+         #endregion
     }
 
 
-    /*struct keyWordEntry
+        /*struct keyWordEntry
     {
         public string keyword;
         public int position;
@@ -2066,4 +2095,5 @@ namespace WebMvc.Controllers
             spacesAfter = spaces;
         }
     }*/
+        
 }
