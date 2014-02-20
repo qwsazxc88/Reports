@@ -9,5 +9,6 @@
     <many-to-one name="ExtendedRole" class="ExtendedRole" column="ExtendedRoleId" foreign-key="FK_ClearanceChecklistApproval_ExtendedRole" index="IX_ClearanceChecklistApproval_ExtendedRole_Id" not-null="true" />
     <many-to-one name="ApprovedBy" class="User" column="ApprovedById" foreign-key="FK_ClearanceChecklistApproval_ApprovedBy" index="IX_ClearanceChecklistApproval_ApprovedBy_Id"  not-null="false"/>
     <property name="ApprovalDate" not-null="false"/>
+    <property name="Comment" not-null="false" />
   </class>
 </hibernate-mapping>

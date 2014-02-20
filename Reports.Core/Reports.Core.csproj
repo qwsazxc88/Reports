@@ -275,7 +275,6 @@
     <Compile Include="Domain\ChildVacationComment.cs" />
     <Compile Include="Domain\ClearanceChecklist.cs" />
     <Compile Include="Domain\ClearanceChecklistApproval.cs" />
-    <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Domain\ClearanceChecklistDepartment.cs" />
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
@@ -717,7 +716,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\ClearanceChecklist.hbm.xml" />
     <EmbeddedResource Include="Domain\ClearanceChecklistApproval.hbm.xml" />
-    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
     <EmbeddedResource Include="Domain\ClearanceChecklistDepartment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>

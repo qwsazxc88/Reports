@@ -172,12 +172,6 @@ alter table MissionComment  drop constraint FK_MissionComment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionComment_Mission]') AND parent_object_id = OBJECT_ID('MissionComment'))
 alter table MissionComment  drop constraint FK_MissionComment_Mission
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistComment_User]') AND parent_object_id = OBJECT_ID('ClearanceChecklistComment'))
-alter table ClearanceChecklistComment  drop constraint FK_ClearanceChecklistComment_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistComment_ClearanceChecklist]') AND parent_object_id = OBJECT_ID('ClearanceChecklistComment'))
-alter table ClearanceChecklistComment  drop constraint FK_ClearanceChecklistComment_ClearanceChecklist
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrder_MissionType]') AND parent_object_id = OBJECT_ID('MissionOrder'))
 alter table MissionOrder  drop constraint FK_MissionOrder_MissionType
 
@@ -472,7 +466,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'DismissalComment'
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
-if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklistComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ClearanceChecklistComment
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionOrder') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionOrder
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionDailyAllowance') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionDailyAllowance
 if exists (select * from dbo.sysobjects where id = object_id(N'TerraGraphic') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TerraGraphic
@@ -951,15 +944,6 @@ create table RequestStatus (
   Name NVARCHAR(128) null,
   constraint PK_RequestStatus  primary key (Id)
 )
-create table ClearanceChecklistComment (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  UserId INT not null,
-  ClearanceChecklistId INT not null,
-  DateCreated DATETIME not null,
-  Comment NVARCHAR(256) not null,
-  constraint PK_ClearanceChecklistComment  primary key (Id)
-)
 create table MissionOrder (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1340,6 +1324,7 @@ create table ClearanceChecklistApproval (
   ExtendedRoleId INT not null,
   ApprovedById INT null,
   ApprovalDate DATETIME null,
+  Comment NVARCHAR(255) null,
   constraint PK_ClearanceChecklistApproval  primary key (Id)
 )
 create table MissionGraid (
@@ -1652,10 +1637,6 @@ create index IX_MissionComment_User_Id on MissionComment (UserId)
 create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
 alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
 alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
-create index IX_ClearanceChecklistComment_User_Id on ClearanceChecklistComment (UserId)
-create index IX_ClearanceChecklistComment_ClearanceChecklist_Id on ClearanceChecklistComment (ClearanceChecklistId)
-alter table ClearanceChecklistComment add constraint FK_ClearanceChecklistComment_User foreign key (UserId) references [Users]
-alter table ClearanceChecklistComment add constraint FK_ClearanceChecklistComment_ClearanceChecklist foreign key (ClearanceChecklistId) references ClearanceChecklist
 create index MissionOrder_MissionType on MissionOrder (TypeId)
 create index MissionOrder_MissionGoal on MissionOrder (MissionGoalId)
 create index IX_MissionOrder_Secretary_Id on MissionOrder (SecretaryId)

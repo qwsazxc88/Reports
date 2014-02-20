@@ -20,11 +20,6 @@
       <one-to-many class="ClearanceChecklistApproval"/>
     </bag>
 
-    <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
-      <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistComment_ClearanceChecklist"/>
-      <one-to-many class="ClearanceChecklistComment"/>
-    </bag>
-
     <property name="DeleteDate" not-null="false"/>
 
     <property name="SendTo1C" not-null="false"/>

@@ -15,7 +15,5 @@ namespace Reports.Core.Domain
         public virtual Dismissal Dismissal { get; set; }
         // Согласования
         public virtual IList<ClearanceChecklistApproval> Approvals { get; set; }
-        // Комментарии
-        public virtual IList<ClearanceChecklistComment> Comments { get; set; }
     }
 }

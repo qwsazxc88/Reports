@@ -18,5 +18,7 @@ namespace Reports.Core.Domain
         // Согласующий; заполняется по факту согласования
         public virtual User ApprovedBy { get; set; }
         public virtual DateTime? ApprovalDate { get; set; }
+
+        public virtual string Comment { get; set; }
     }
 }
