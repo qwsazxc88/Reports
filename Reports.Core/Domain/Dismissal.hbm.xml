@@ -37,6 +37,6 @@
       <one-to-many class="DismissalComment"/>
     </bag>
 
-    <one-to-one name="ClearanceChecklist" class="ClearanceChecklist" />
+    <many-to-one name="ClearanceChecklist" class="ClearanceChecklist" column="ClearanceChecklistId" unique="true" cascade="all" />
 	</class>
 </hibernate-mapping>

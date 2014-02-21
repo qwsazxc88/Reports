@@ -236,6 +236,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(clearanceChecklistDao); }
             set { clearanceChecklistDao = value; }
         }
+        protected IClearanceChecklistDepartmentDao clearanceChecklistDepartmentDao;
+        public IClearanceChecklistDepartmentDao ClearanceChecklistDepartmentDao
+        {
+            get { return Validate.Dependency(clearanceChecklistDepartmentDao); }
+            set { clearanceChecklistDepartmentDao = value; }
+        }
 
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
         {
@@ -1960,6 +1966,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
+        // TODO: CREATE CCL IN THIS METHOD
         public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
             error = string.Empty;
@@ -1984,12 +1991,40 @@ namespace Reports.Presenters.UI.Bl.Impl
                         User = user
                     };
                     ChangeEntityProperties(current, dismissal, model, user);
-                    DismissalDao.SaveAndFlush(dismissal);
+                    // DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
+                    // *********************************** create CCL
+                    var clearanceChecklist = new ClearanceChecklist
+                    {
+                        CreateDate = DateTime.Now,
+                        Dismissal = dismissal,
+                        Number = dismissal.Number,
+                        User = user
+                    };
+                    dismissal.ClearanceChecklist = clearanceChecklist;
+                    clearanceChecklistDao.SaveAndFlush(clearanceChecklist);                    
+                    DismissalDao.SaveAndFlush(dismissal);
                 }
                 else
-                {
+                {                    
                     dismissal = DismissalDao.Load(model.Id);
+                    // create CCL approvals
+                    if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                    {
+                        // TODO: implement initial creation of CCL approvals
+                        var clearanceChecklistDepartments = ClearanceChecklistDepartmentDao.GetClearanceChecklistDepartments();
+                        foreach (var clearanceChecklistDepartment in clearanceChecklistDepartments)
+                        {
+                            dismissal.ClearanceChecklist.Approvals.Add(new ClearanceChecklistApproval
+                            {
+                                ClearanceChecklistDepartment = clearanceChecklistDepartment,
+                                ClearanceChecklist = dismissal.ClearanceChecklist,
+                                // TODO: ExtendedRole???
+                            });
+                        }
+                        DismissalDao.SaveAndFlush(dismissal);
+                    }
+                    //
                     string fileName;
                     int? attachmentId = SaveAttachment(dismissal.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Dismissal, out fileName);
                     if (attachmentId.HasValue)
@@ -2218,12 +2253,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ClearanceChecklistDepartment = approval.ClearanceChecklistDepartment.Name,
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
+                        Comment = approval.Comment,
                         // Checking if the authenticated user has the extended role for approval
                         // and that the CCL has not been approved yet.
                         // If both are OK the Active property is set
-                        // and the view will output the approval link in the corresponding row
-                        Active = user.ExtendedRoles.Contains(approval.ExtendedRole)
-                            && !approval.ApprovalDate.HasValue ? true : false
+                        // and the view will output the approval link in the corresponding row                        
+                        Active = user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false
                     }
                 );
             }

@@ -13,7 +13,7 @@
 
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_ClearanceChecklist_User" index="IX_ClearanceChecklist_User_Id"  not-null="true"/>
 
-    <one-to-one name="Dismissal" class="Dismissal" />
+    <one-to-one name="Dismissal" class="Dismissal" constrained="true" foreign-key="none" />
     
     <bag name="Approvals" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistApproval_ClearanceChecklist"/>

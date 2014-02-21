@@ -49,6 +49,9 @@
             <th>
                 <div>Дата увольнения</div>
             </th>
+            <th>
+                <div>Комментарии</div>
+            </th>
         </tr>
         @if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
         {
@@ -89,6 +92,7 @@
                     <td>@approval.ApprovedBy</td>
                     <td>@approval.ApprovalDate</td>
                     <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
+                    <td><div contenteditable="@approval.Active" style="width: 100%">@approval.Comment</div></td>
                     @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                     <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
             </tr>

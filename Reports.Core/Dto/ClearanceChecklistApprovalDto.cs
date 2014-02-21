@@ -12,6 +12,8 @@ namespace Reports.Core.Dto
         public string ApprovedBy { get; set; }
         // Дата согласования
         public string ApprovalDate { get; set; }
+        // Комментарий согласующего
+        public string Comment { get; set; }
         // Доступность для согласования текущим пользователем
         public bool Active { get; set; }
     }

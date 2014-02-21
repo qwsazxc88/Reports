@@ -16,6 +16,9 @@ alter table Dismissal  drop constraint FK_Dismissal_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Dismissal'))
 alter table Dismissal  drop constraint FK_Dismissal_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK6A5EBAA3395AC4A0]') AND parent_object_id = OBJECT_ID('Dismissal'))
+alter table Dismissal  drop constraint FK6A5EBAA3395AC4A0
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AbsenceComment_User]') AND parent_object_id = OBJECT_ID('AbsenceComment'))
 alter table AbsenceComment  drop constraint FK_AbsenceComment_User
 
@@ -582,6 +585,7 @@ create table Dismissal (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   TimesheetStatusId INT null,
+  ClearanceChecklistId INT null unique,
   constraint PK_Dismissal  primary key (Id)
 )
 create table AbsenceComment (
@@ -1535,6 +1539,7 @@ alter table Dismissal add constraint FK_Dismissal_DismissalType foreign key (Typ
 alter table Dismissal add constraint FK_Dismissal_User foreign key (UserId) references [Users]
 alter table Dismissal add constraint FK_Dismissal_CreatorUser foreign key (CreatorId) references [Users]
 alter table Dismissal add constraint FK_Dismissal_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+alter table Dismissal add constraint FK6A5EBAA3395AC4A0 foreign key (ClearanceChecklistId) references ClearanceChecklist
 create index IX_AbsenceComment_User_Id on AbsenceComment (UserId)
 create index IX_AbsenceComment_Absence_Id on AbsenceComment (AbsenceId)
 alter table AbsenceComment add constraint FK_AbsenceComment_User foreign key (UserId) references [Users]
