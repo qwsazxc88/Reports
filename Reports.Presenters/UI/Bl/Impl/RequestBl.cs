@@ -1991,8 +1991,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         User = user
                     };
                     ChangeEntityProperties(current, dismissal, model, user);
-                    // DismissalDao.SaveAndFlush(dismissal);
-                    model.Id = dismissal.Id;
+                    //DismissalDao.SaveAndFlush(dismissal);
+                    //model.Id = dismissal.Id;
                     // *********************************** create CCL
                     var clearanceChecklist = new ClearanceChecklist
                     {
@@ -2004,6 +2004,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     dismissal.ClearanceChecklist = clearanceChecklist;
                     clearanceChecklistDao.SaveAndFlush(clearanceChecklist);                    
                     DismissalDao.SaveAndFlush(dismissal);
+                    model.Id = dismissal.Id;
+                    //
                 }
                 else
                 {                    
