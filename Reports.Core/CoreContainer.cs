@@ -252,6 +252,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IClearanceChecklistDao)).
                         ImplementedBy(typeof(ClearanceChecklistDao)).
                         LifeStyle.Is(type));
+            Register(Component.For(typeof(IClearanceChecklistDepartmentDao)).
+                        ImplementedBy(typeof(ClearanceChecklistDepartmentDao)).
+                        LifeStyle.Is(type));
             Register(Component.For(typeof(ITimesheetCorrectionTypeDao)).
                          ImplementedBy(typeof(TimesheetCorrectionTypeDao)).
                          LifeStyle.Is(type));

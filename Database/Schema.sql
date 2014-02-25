@@ -37,6 +37,9 @@ alter table UserExtendedRole  drop constraint FK_UserExtendedRole_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserExtendedRole_ExtendedRole]') AND parent_object_id = OBJECT_ID('UserExtendedRole'))
 alter table UserExtendedRole  drop constraint FK_UserExtendedRole_ExtendedRole
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistDepartment_ExtendedRole]') AND parent_object_id = OBJECT_ID('ClearanceChecklistDepartment'))
+alter table ClearanceChecklistDepartment  drop constraint FK_ClearanceChecklistDepartment_ExtendedRole
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_MissionType]') AND parent_object_id = OBJECT_ID('Mission'))
 alter table Mission  drop constraint FK_Mission_MissionType
 
@@ -627,6 +630,8 @@ create table UserExtendedRole (
 create table ClearanceChecklistDepartment (
  Id INT IDENTITY NOT NULL,
   Name NVARCHAR(128) not null,
+  ExtendedRoleId INT not null,
+  DaysForApproval INT null,
   constraint PK_ClearanceChecklistDepartment  primary key (Id)
 )
 create table Mission (
@@ -1550,6 +1555,8 @@ alter table VacationComment add constraint FK_VacationComment_User foreign key (
 alter table VacationComment add constraint FK_VacationComment_Vacation foreign key (VacationId) references Vacation
 alter table UserExtendedRole add constraint FK_UserExtendedRole_User foreign key (UserId) references [Users]
 alter table UserExtendedRole add constraint FK_UserExtendedRole_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
+create index IX_ClearanceChecklistDepartment_ExtendedRole on ClearanceChecklistDepartment (ExtendedRoleId)
+alter table ClearanceChecklistDepartment add constraint FK_ClearanceChecklistDepartment_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
 create index Mission_MissionType on Mission (TypeId)
 create index IX_Mission_User_Id on Mission (UserId)
 create index IX_Mission_CreatorUser_Id on Mission (CreatorId)

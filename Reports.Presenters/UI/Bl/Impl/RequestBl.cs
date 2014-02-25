@@ -2010,23 +2010,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {                    
                     dismissal = DismissalDao.Load(model.Id);
-                    // create CCL approvals
-                    if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
-                    {
-                        // TODO: implement initial creation of CCL approvals
-                        var clearanceChecklistDepartments = ClearanceChecklistDepartmentDao.GetClearanceChecklistDepartments();
-                        foreach (var clearanceChecklistDepartment in clearanceChecklistDepartments)
-                        {
-                            dismissal.ClearanceChecklist.Approvals.Add(new ClearanceChecklistApproval
-                            {
-                                ClearanceChecklistDepartment = clearanceChecklistDepartment,
-                                ClearanceChecklist = dismissal.ClearanceChecklist,
-                                // TODO: ExtendedRole???
-                            });
-                        }
-                        DismissalDao.SaveAndFlush(dismissal);
-                    }
-                    //
                     string fileName;
                     int? attachmentId = SaveAttachment(dismissal.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Dismissal, out fileName);
                     if (attachmentId.HasValue)
@@ -2076,6 +2059,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
+                // create CCL approvals if the Dismissal has been approved by the user and two managers
+                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                {
+                    // TODO: implement initial creation of CCL approvals
+                    var clearanceChecklistDepartments = ClearanceChecklistDepartmentDao.GetClearanceChecklistDepartments();
+                    foreach (var clearanceChecklistDepartment in clearanceChecklistDepartments)
+                    {
+                        dismissal.ClearanceChecklist.Approvals.Add(new ClearanceChecklistApproval
+                        {
+                            ClearanceChecklistDepartment = clearanceChecklistDepartment,
+                            ClearanceChecklist = dismissal.ClearanceChecklist,
+                            ExtendedRole = clearanceChecklistDepartment.ExtendedRole
+                            // TODO: ExtendedRole
+                            // ExtendedRole = new ExtendedRole { Description = "Mock Role", RoleOwners = new List<User>(), Id = 0, Version = 0 }
+                        });
+                    }
+                    DismissalDao.SaveAndFlush(dismissal);
+                }
                 return true;
             }
             catch (Exception ex)
