@@ -1966,7 +1966,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
-        // TODO: CREATE CCL IN THIS METHOD
         public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
         {
             error = string.Empty;
@@ -2258,10 +2257,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
                         Comment = approval.Comment,
                         // Checking if the authenticated user has the extended role for approval
-                        // and that the CCL has not been approved yet.
+                        // and that the user's department is allowed to approve today.
                         // If both are OK the Active property is set
                         // and the view will output the approval link in the corresponding row                        
-                        Active = user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false
+                        Active = (user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false) &&
+                            DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
+                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? 0 : -(int)approval.ClearanceChecklistDepartment.DaysForApproval )
                     }
                 );
             }
