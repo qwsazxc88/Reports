@@ -277,8 +277,13 @@
 }
 
 <!-- Clearance checklist related markup -->
-    
-<a id="clearance-checklist-link" data-dismissal-id="@Model.Id" href='@Url.Action("ClearanceChecklistEdit", new {id = 0, parentId = Model.Id, userId = Model.UserId, timestamp = DateTime.Now })'>Открыть обходной лист</a>
+
+<div style="border: 1px solid blue; text-align: right;">
+    <a id="clearance-checklist-link" data-dismissal-id="@Model.Id"
+        href='@Url.Action("ClearanceChecklistEdit", new {id = 0, parentId = Model.Id, userId = Model.UserId, timestamp = DateTime.Now })'>
+        Открыть обходной лист
+    </a>
+</div>
 <div id="clearance-checklist"></div>
     
 <!-- End clearance checklist related markup -->

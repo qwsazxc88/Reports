@@ -24,5 +24,6 @@ namespace Reports.Core.Dao
         ClearanceChecklistApproval GetApprovalById(int id);
 
         bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval);
+        bool SetComment(int approvalId, string comment);
     }
 }

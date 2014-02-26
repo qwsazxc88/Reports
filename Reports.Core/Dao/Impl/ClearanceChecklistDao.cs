@@ -78,5 +78,22 @@ namespace Reports.Core.Dao.Impl
                 return false;
             }
         }
+
+        public bool SetComment(int approvalId, string comment)
+        {
+            var approval = GetApprovalById(approvalId);
+            if (approval != null)
+            {
+                var transaction = Session.BeginTransaction();
+                approval.Comment = comment;
+                Session.Update(approval);
+                transaction.Commit();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

@@ -2302,6 +2302,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        public bool SetClearanceChecklistComment(int approvalId, string comment, out string error)
+        {
+            const int MAX_COMMENT_LENGTH = 255;
+
+            if (comment.Length > MAX_COMMENT_LENGTH) comment = comment.Substring(0, MAX_COMMENT_LENGTH);
+            if (clearanceChecklistDao.SetComment(approvalId, comment))
+            {
+                error = "";
+                return true;
+            }
+            else
+            {
+                error = "Error updating comment";
+                return false;
+            }
+        }
+
         #endregion
 
         #region Mission
