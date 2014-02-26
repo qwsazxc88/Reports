@@ -2262,7 +2262,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // and the view will output the approval link in the corresponding row                        
                         Active = (user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false) &&
                             DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
-                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? 0 : -(int)approval.ClearanceChecklistDepartment.DaysForApproval )
+                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? -14 : -(int)approval.ClearanceChecklistDepartment.DaysForApproval )
                     }
                 );
             }
