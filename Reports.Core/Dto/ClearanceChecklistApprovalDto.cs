@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Dto
 {
@@ -8,6 +9,8 @@ namespace Reports.Core.Dto
         public int Id { get; set; }
         // Согласующее подразделение
         public string ClearanceChecklistDepartment { get; set; }
+        // Список лиц, имеющих право согласования от имени подразделения
+        public IList<string> DepartmentAuthorities { get; set; }
         // Кем согласовано
         public string ApprovedBy { get; set; }
         // Дата согласования

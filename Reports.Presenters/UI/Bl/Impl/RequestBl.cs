@@ -2248,11 +2248,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
             foreach (var approval in clearanceChecklist.Approvals)
             {
+                IList<string> departmentAuthorities = clearanceChecklistDepartmentDao.GetClearanceChecklistDepartmentAuthorities(approval.ClearanceChecklistDepartment.Id)
+                    .Select<User, string>(departmentAuthority => departmentAuthority.FullName).ToList<string>();
+
                 model.ClearanceChecklistApprovals.Add(
                     new ClearanceChecklistApprovalDto
                     {
                         Id = approval.Id,
                         ClearanceChecklistDepartment = approval.ClearanceChecklistDepartment.Name,
+                        DepartmentAuthorities = departmentAuthorities,
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
                         Comment = approval.Comment,
@@ -2266,7 +2270,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 );
             }
+            model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
+            model.DocumentNumber = clearanceChecklist.Number.ToString();
             model.EndDate = clearanceChecklist.Dismissal.EndDate;
+            SetUserInfoModel(user, model);
 
             return model;
         }

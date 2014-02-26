@@ -58,8 +58,14 @@
             foreach (var approval in Model.ClearanceChecklistApprovals)
             {
                 <tr>
-                    <td style="text-align:left">
-                        @approval.ClearanceChecklistDepartment
+                    <td style="text-align:left; vertical-align: top;">
+                        <a class="department-authorities-link" data-approval-id="@approval.Id" href="">@approval.ClearanceChecklistDepartment</a>
+                        <ul id="department-authorities-list" style="display:none" data-approval-id="@approval.Id">
+                            @foreach(var authority in approval.DepartmentAuthorities)
+                            {
+                                <li>@authority</li>
+                            }
+                        </ul>
                     </td>
                     <td>
                         @if (approval.ApprovalDate != "")
@@ -68,20 +74,6 @@
                         }
                         else if (approval.Active)
                         {
-                            @*:Cогласовать*@
-                            @*Ajax.ActionLink("Согласовать",
-                                "ClearanceChecklistEdit",
-                                "UserRequest",
-                                new { id = approval.Id, action = "approve" },
-                                new AjaxOptions { OnSuccess = "ApprovalSuccess" },
-                                new { @class = "approve-link" }
-                            );
-                            Html.ActionLink("Согласовать",
-                                "ClearanceChecklistEdit",
-                                null,
-                                new { id = approval.Id, action = "approve" },
-                                new { @class="approve-link"}
-                            );*@
                             <a class="approval-link" data-approval-id="@approval.Id" href="">Согласовать</a>
                         }
                         else
@@ -148,6 +140,11 @@
                     }
                 }
             );
+        });
+        $(".department-authorities-link").click(function (event) {
+            var $currentAuthoritiesLink = $(this);
+            event.preventDefault();
+            $currentAuthoritiesLink.next("#department-authorities-list").toggle();
         });
     });
 </script>

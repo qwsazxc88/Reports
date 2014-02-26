@@ -23,5 +23,23 @@ namespace Reports.Core.Dao.Impl
             // TODO: Replace with implementation
             // return new List<ClearanceChecklistDepartment>();
         }
+
+        public IList<User> GetClearanceChecklistDepartmentAuthorities(int clearanceChecklistDepartmentId)
+        {
+            ExtendedRole extendedRole = Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
+                .Add(Restrictions.Eq("Id", clearanceChecklistDepartmentId)).UniqueResult<ClearanceChecklistDepartment>().ExtendedRole;
+            var roleOwners = new List<User>();
+            foreach(var roleOwner in extendedRole.RoleOwners)
+            {
+                roleOwners.Add(roleOwner);
+            }
+            return roleOwners;
+            //IList<User> users = Session.CreateCriteria(typeof(User))
+            //    /*.Add(Restrictions.Where<User>(u => u.ExtendedRoles.Contains(extendedRole)))*/.List<User>();
+            //return Session.CreateCriteria(typeof(User))
+            //    .Add(Restrictions.Where<User>(u => u.ExtendedRoles.Contains(extendedRole))).List<User>();
+            // TODO: Replace with implementation
+            //return new List<User>();
+        }
     }
 }

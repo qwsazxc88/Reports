@@ -13,5 +13,10 @@ namespace Reports.Core.Domain
 
         // Role Owners
         public virtual ICollection<User> RoleOwners { get; set; }
+
+        /*public ExtendedRole()
+        {
+            this.RoleOwners = new List<User>();
+        }*/
     }
 }

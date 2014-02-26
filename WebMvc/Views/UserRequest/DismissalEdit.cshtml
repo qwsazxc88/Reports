@@ -278,12 +278,13 @@
 
 <!-- Clearance checklist related markup -->
 
-<div style="border: 1px solid blue; text-align: right;">
+<div style="border: 1px solid black; text-align: center;">
     <a id="clearance-checklist-link" data-dismissal-id="@Model.Id"
         href='@Url.Action("ClearanceChecklistEdit", new {id = 0, parentId = Model.Id, userId = Model.UserId, timestamp = DateTime.Now })'>
         Открыть обходной лист
     </a>
 </div>
+<br />
 <div id="clearance-checklist"></div>
     
 <!-- End clearance checklist related markup -->
