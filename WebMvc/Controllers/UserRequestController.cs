@@ -552,14 +552,6 @@ namespace WebMvc.Controllers
                  return PartialView(model);
              }
          }
-        /*
-         [HttpGet]
-         public PartialViewResult ClearanceChecklistEditPartial(int parentId, int userId)
-         {
-             var model = RequestBl.GetClearanceChecklistEditModelByParentId(parentId, userId);
-             // TODO Replace with implementation
-             return PartialView(model);
-         }*/
 
          [HttpPost]
          public ActionResult ClearanceChecklistEdit(ClearanceChecklistEditModel model)

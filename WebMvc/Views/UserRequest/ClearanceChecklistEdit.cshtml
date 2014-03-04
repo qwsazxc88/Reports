@@ -8,27 +8,30 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.UserId)
     
-    <div class="doc-wrap">
-        <table style="width:100%">
-            <tr>
-                <td colspan="2">
-                    @Html.ValidationSummary(false)                    
-                    <div id="Error" style="color:Red;display:none;"></div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    @Html.Partial("../UserInfoView", Model)
-                </td>
-            </tr>
-            @*@if (Model.IsDeleted)
-            { 
+    if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+    {
+        <div class="doc-wrap">
+            <table style="width:100%">
                 <tr>
-                    <td colspan="2" style="color:Red">Обходной лист отклонен</td>
+                    <td colspan="2">
+                        @Html.ValidationSummary(false)                    
+                        <div id="Error" style="color:Red;display:none;"></div>
+                    </td>
                 </tr>
-            }*@  
-        </table>    
-    </div>
+                <tr>
+                    <td colspan="2">
+                        @Html.Partial("../UserInfoView", Model)
+                    </td>
+                </tr>
+                @*@if (Model.IsDeleted)
+                { 
+                    <tr>
+                        <td colspan="2" style="color:Red">Обходной лист отклонен</td>
+                    </tr>
+                }*@  
+            </table>    
+        </div>
+    }
     
     <br />
     

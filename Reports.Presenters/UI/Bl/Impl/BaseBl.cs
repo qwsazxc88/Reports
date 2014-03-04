@@ -160,6 +160,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             return SendEmail(to, subject, body);
         }
 
+        protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(ISet<User> addresseeList, ClearanceChecklist entity)
+        {
+            const string subject = @"Новый обходной лист";
+            string body = string.Format(@"Новый Обходной лист № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
+                                          <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>",
+                                          entity.Number, entity.CreateDate.ToShortDateString(), entity.Dismissal.User.Name, entity.Dismissal.User.Department.Name);
+            IList<EmailDto> dtoList = new List<EmailDto>();
+            foreach (var addressee in addresseeList)
+            {
+                dtoList.Add(SendEmail(addressee.Email, subject, body));
+            }
+
+            return dtoList;
+        }
+
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
             User creator,bool isDeleted,
             int requestId,int requestNumber,

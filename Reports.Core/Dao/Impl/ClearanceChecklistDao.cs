@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
 using NHibernate.Transform;
+using NHibernate.Criterion;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
@@ -30,7 +32,6 @@ namespace Reports.Core.Dao.Impl
             bool? sortDescending
             )
         {
-            // TODO Replace this stub with necessary code
             string sqlQuery =
                 string.Format(sqlSelectForListClearanceChecklist,
                                 DeleteRequestText,
@@ -47,7 +48,7 @@ namespace Reports.Core.Dao.Impl
                 sqlQuery, sortedBy, sortDescending);
             //return new List<VacationDto>();
         }
-
+        
         public ClearanceChecklistApproval GetApprovalById(int id)
         {
             //var Approval = new ClearanceChecklistApproval();
@@ -55,6 +56,40 @@ namespace Reports.Core.Dao.Impl
             return approval;            
         }
 
+        /// <summary>
+        /// Get all authorities who have the right to approve clearance checklists
+        /// </summary>
+        /// <returns>A collection of all authorities who have the right to approve clearance checklists</returns>
+        public ISet<User> GetClearanceChecklistApprovingAuthorities()
+        {
+            IList<ClearanceChecklistDepartment> clearanceChecklistDepartments =
+                Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
+                    .AddOrder(new Order("Id", true))
+                    .List<ClearanceChecklistDepartment>();
+            IList<ClearanceChecklistRole> clearanceChecklistExtendedRoles = new List<ClearanceChecklistRole>();
+            foreach (var department in clearanceChecklistDepartments)
+            {
+                clearanceChecklistExtendedRoles.Add(department.ExtendedRole);
+            }
+            ISet<User> clearanceChecklistApprovingAuthorities = new HashSet<User>();
+            foreach (var extendedRole in clearanceChecklistExtendedRoles)
+            {
+                foreach (var roleOwner in extendedRole.RoleOwners)
+                {
+                    clearanceChecklistApprovingAuthorities.Add(roleOwner);
+                }
+            }
+
+            return clearanceChecklistApprovingAuthorities;
+        }
+
+        /// <summary>
+        /// Add approval information to a clearance checklist
+        /// </summary>
+        /// <param name="approvalId">ID of the approval that is to be updated</param>
+        /// <param name="approvedBy">The authority whose approval is to be added</param>
+        /// <param name="modifiedApproval">The DTO containing the approval information</param>
+        /// <returns></returns>
         public bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval)
         {
             var approval = GetApprovalById(approvalId);
@@ -62,7 +97,7 @@ namespace Reports.Core.Dao.Impl
             if (approval != null)
             {
                 var transaction = Session.BeginTransaction();
-                approval.ApprovalDate = DateTime.Now;
+                approval.ApprovalDate = DateTime.Now; 
                 approval.ApprovedBy = Session.Get<User>(approvedBy);
                 Session.Update(approval);
                 transaction.Commit();
@@ -79,6 +114,12 @@ namespace Reports.Core.Dao.Impl
             }
         }
 
+        /// <summary>
+        /// Add/modify a comment to an approval for a clearance checklist
+        /// </summary>
+        /// <param name="approvalId">ID of the approval the comment belongs to</param>
+        /// <param name="comment">The text of the comment</param>
+        /// <returns></returns>
         public bool SetComment(int approvalId, string comment)
         {
             var approval = GetApprovalById(approvalId);

@@ -2061,7 +2061,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // create CCL approvals if the Dismissal has been approved by the user and two managers
                 if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
                 {
-                    // TODO: implement initial creation of CCL approvals
                     var clearanceChecklistDepartments = ClearanceChecklistDepartmentDao.GetClearanceChecklistDepartments();
                     foreach (var clearanceChecklistDepartment in clearanceChecklistDepartments)
                     {
@@ -2075,6 +2074,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         });
                     }
                     DismissalDao.SaveAndFlush(dismissal);
+                    SendEmailForClearanceChecklistNeedToApprove(ClearanceChecklistDao.GetClearanceChecklistApprovingAuthorities(), dismissal.ClearanceChecklist);
                 }
                 return true;
             }
@@ -2237,11 +2237,17 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId)
         {
-            // TODO Implementation for GetClearanceChecklistEditModel
+            const int MAX_DAYS_BEFORE_DISMISSAL = 14;
 
             var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
-
-            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                        
+            // User Access Control
+            // User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            if (!CheckUserRights(user, current, id, false))
+                throw new ArgumentException("Доступ запрещен.");
+            // End User Access Control
 
             var clearanceChecklist = ClearanceChecklistDao.Load(id);
             if (clearanceChecklist == null)
@@ -2266,7 +2272,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // and the view will output the approval link in the corresponding row                        
                         Active = (user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false) &&
                             DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
-                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? -14 : -(int)approval.ClearanceChecklistDepartment.DaysForApproval )
+                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistDepartment.DaysForApproval)
                     }
                 );
             }
@@ -2284,7 +2290,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (parent == null || parent.ClearanceChecklist == null || parent.ClearanceChecklist.Id == 0)
                 throw new ArgumentException(string.Format("Обходной лист для увольнения (id {0}) не найден в базе данных.", parentId));
             var model = GetClearanceChecklistEditModel(parent.ClearanceChecklist.Id, userId);
-            // TODO: Replace with implementation
             return model;
         }
       
@@ -2297,6 +2302,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
         {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if(!user.ExtendedRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ExtendedRole))
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
             if (clearanceChecklistDao.SetApproval(approvalId, approvedBy, out modifiedApproval))
             {
                 error = "";
@@ -2312,6 +2322,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistComment(int approvalId, string comment, out string error)
         {
             const int MAX_COMMENT_LENGTH = 255;
+
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if (!user.ExtendedRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ExtendedRole))
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
 
             if (comment.Length > MAX_COMMENT_LENGTH) comment = comment.Substring(0, MAX_COMMENT_LENGTH);
             if (clearanceChecklistDao.SetComment(approvalId, comment))
