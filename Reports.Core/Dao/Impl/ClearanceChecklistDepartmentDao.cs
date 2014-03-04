@@ -20,26 +20,18 @@ namespace Reports.Core.Dao.Impl
             return Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
                    .AddOrder(new Order("Id", true))
                    .List<ClearanceChecklistDepartment>();
-            // TODO: Replace with implementation
-            // return new List<ClearanceChecklistDepartment>();
         }
 
         public IList<User> GetClearanceChecklistDepartmentAuthorities(int clearanceChecklistDepartmentId)
         {
-            ExtendedRole extendedRole = Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
-                .Add(Restrictions.Eq("Id", clearanceChecklistDepartmentId)).UniqueResult<ClearanceChecklistDepartment>().ExtendedRole;
+            ClearanceChecklistRole clearanceChecklistRole = Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
+                .Add(Restrictions.Eq("Id", clearanceChecklistDepartmentId)).UniqueResult<ClearanceChecklistDepartment>().ClearanceChecklistRole;
             var roleOwners = new List<User>();
-            foreach(var roleOwner in extendedRole.RoleOwners)
+            foreach(var roleOwner in clearanceChecklistRole.RoleOwners)
             {
                 roleOwners.Add(roleOwner);
             }
             return roleOwners;
-            //IList<User> users = Session.CreateCriteria(typeof(User))
-            //    /*.Add(Restrictions.Where<User>(u => u.ExtendedRoles.Contains(extendedRole)))*/.List<User>();
-            //return Session.CreateCriteria(typeof(User))
-            //    .Add(Restrictions.Where<User>(u => u.ExtendedRoles.Contains(extendedRole))).List<User>();
-            // TODO: Replace with implementation
-            //return new List<User>();
         }
     }
 }

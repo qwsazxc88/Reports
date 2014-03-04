@@ -299,7 +299,7 @@
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
-    <Compile Include="Domain\ExtendedRole.cs" />
+    <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -721,7 +721,7 @@
     <EmbeddedResource Include="Domain\ClearanceChecklistDepartment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\ExtendedRole.hbm.xml">
+    <EmbeddedResource Include="Domain\ClearanceChecklistRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

@@ -2068,9 +2068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             ClearanceChecklistDepartment = clearanceChecklistDepartment,
                             ClearanceChecklist = dismissal.ClearanceChecklist,
-                            ExtendedRole = clearanceChecklistDepartment.ExtendedRole
-                            // TODO: ExtendedRole
-                            // ExtendedRole = new ExtendedRole { Description = "Mock Role", RoleOwners = new List<User>(), Id = 0, Version = 0 }
+                            ClearanceChecklistRole = clearanceChecklistDepartment.ClearanceChecklistRole
                         });
                     }
                     DismissalDao.SaveAndFlush(dismissal);
@@ -2270,7 +2268,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // and that the user's department is allowed to approve today.
                         // If both are OK the Active property is set
                         // and the view will output the approval link in the corresponding row                        
-                        Active = (user.ExtendedRoles.Contains(approval.ExtendedRole) ? true : false) &&
+                        Active = (user.ClearanceChecklistRoles.Contains(approval.ClearanceChecklistRole) ? true : false) &&
                             DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
                                 approval.ClearanceChecklistDepartment.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistDepartment.DaysForApproval)
                     }
@@ -2303,7 +2301,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            if(!user.ExtendedRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ExtendedRole))
+            if(!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
             }
@@ -2324,7 +2322,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             const int MAX_COMMENT_LENGTH = 255;
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            if (!user.ExtendedRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ExtendedRole))
+            if (!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
             }

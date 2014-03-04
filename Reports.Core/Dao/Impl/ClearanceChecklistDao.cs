@@ -66,15 +66,15 @@ namespace Reports.Core.Dao.Impl
                 Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
                     .AddOrder(new Order("Id", true))
                     .List<ClearanceChecklistDepartment>();
-            IList<ClearanceChecklistRole> clearanceChecklistExtendedRoles = new List<ClearanceChecklistRole>();
+            IList<ClearanceChecklistRole> clearanceChecklistRoles = new List<ClearanceChecklistRole>();
             foreach (var department in clearanceChecklistDepartments)
             {
-                clearanceChecklistExtendedRoles.Add(department.ExtendedRole);
+                clearanceChecklistRoles.Add(department.ClearanceChecklistRole);
             }
             ISet<User> clearanceChecklistApprovingAuthorities = new HashSet<User>();
-            foreach (var extendedRole in clearanceChecklistExtendedRoles)
+            foreach (var clearanceChecklistRole in clearanceChecklistRoles)
             {
-                foreach (var roleOwner in extendedRole.RoleOwners)
+                foreach (var roleOwner in clearanceChecklistRole.RoleOwners)
                 {
                     clearanceChecklistApprovingAuthorities.Add(roleOwner);
                 }

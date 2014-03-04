@@ -13,7 +13,7 @@ namespace Reports.Core.Domain
         // Согласующее подразделение
         public virtual ClearanceChecklistDepartment ClearanceChecklistDepartment { get; set; }
         // Расширенная роль для согласования
-        public virtual ExtendedRole ExtendedRole { get; set; }
+        public virtual ClearanceChecklistRole ClearanceChecklistRole { get; set; }
 
         // Согласующий; заполняется по факту согласования
         public virtual User ApprovedBy { get; set; }

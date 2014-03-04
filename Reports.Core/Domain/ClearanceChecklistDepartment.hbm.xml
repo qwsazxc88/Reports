@@ -5,7 +5,7 @@
       <generator class="native" />
     </id>
     <property name="Name" length="128" not-null="true"/>
-    <many-to-one name="ExtendedRole" class="ExtendedRole" column="ExtendedRoleId" foreign-key="FK_ClearanceChecklistDepartment_ExtendedRole" index="IX_ClearanceChecklistDepartment_ExtendedRole"  not-null="true"/>
+    <many-to-one name="ClearanceChecklistRole" class="ClearanceChecklistRole" column="ClearanceChecklistRoleId" foreign-key="FK_ClearanceChecklistDepartment_ClearanceChecklistRole" index="IX_ClearanceChecklistDepartment_ClearanceChecklistRole"  not-null="true"/>
     <property name="DaysForApproval" not-null="false"/>
   </class>
 </hibernate-mapping>

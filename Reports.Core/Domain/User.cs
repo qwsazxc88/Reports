@@ -136,7 +136,7 @@ namespace Reports.Core.Domain
         }
         
         // Extended roles
-        public virtual ICollection<ExtendedRole> ExtendedRoles { get; set; }
+        public virtual ICollection<ClearanceChecklistRole> ClearanceChecklistRoles { get; set; }
 
         //public virtual bool IsUserResponser
         //{
@@ -168,7 +168,7 @@ namespace Reports.Core.Domain
 
         public User()
         {
-            this.ExtendedRoles = new HashedSet<ExtendedRole>();
+            this.ClearanceChecklistRoles = new HashedSet<ClearanceChecklistRole>();
             this.Personnels = new List<User>();
         }
 
