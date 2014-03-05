@@ -53,7 +53,7 @@
                      || (dto.UserRole & UserRole.Findep) > 0
                       )
                 {
-                    <div id="liMissionOrder" class="mainOn">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
+                    <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -65,41 +65,28 @@
                 </div> 
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
-                 @if (  (dto.UserRole & UserRole.Manager) > 0
+                @if (  (dto.UserRole & UserRole.Manager) > 0
                      || (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
                 {
-                    <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
+                    <div id="liAppointment" class="mainOn">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
                     </div> 
                 }
-        </div>  
-        <div class="podmenu">       
-            <div class="menuitem" id="moAllOrders">@Html.ActionLink("Приказ - реестр", "Index", "MissionOrder")</div> 
-             @if ((dto.UserRole & UserRole.Employee) > 0
-                     || (dto.UserRole & UserRole.Manager) > 0
-                     || (dto.UserRole & UserRole.Accountant) > 0
+            </div>  
+            <div class="podmenu">     
+             @if ((dto.UserRole & UserRole.Manager) > 0
+                     || (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                     || (dto.UserRole & UserRole.Findep) > 0
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
-             {
-                <div class="menuitem" id="moAllReports">@Html.ActionLink("Авансовый отчет - реестр", "MissionReportsList", "MissionOrder")</div> 
+             {  
+                <div class="menuitem" id="moAllOrders">@Html.ActionLink("Реестр заявок", "Index", "Appointment")</div> 
+                <div class="menuitem" id="moAllReports">@Html.ActionLink("Отчет по подбору сотрудника", "Report", "Appointment")</div> 
              }
-             @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Findep) > 0)
-             {
-                <div class="menuitem" id="moAllPurchaseBookDoc">@Html.ActionLink("Книга покупок (документы)", "MissionPurchaseBookDocList", "MissionOrder")</div> 
-                <div class="menuitem" id="moAllPurchaseBookRecords">@Html.ActionLink("Книга покупок (отчет)", "MissionPurchaseBookRecordsList", "MissionOrder")</div> 
-             }
-              @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-             {
-                <div class="menuitem" id="moUserCreds">@Html.ActionLink("Реестр на доплату", "MissionUserCredsList", "MissionOrder")</div> 
-                <div class="menuitem" id="moUserDepts">@Html.ActionLink("Реестр на удержание", "MissionUserDeptsList", "MissionOrder")</div> 
-             }
-            <div class="menuitem" id="moGradeList">@Html.ActionLink("Справочник расчета лимитов", "GradeList", "MissionOrder")</div> 
-            <div class="menuitem" id="moInstructions">@Html.ActionLink("Инструкция", "Instructions", "MissionOrder")</div> 
-            <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
-        </div>
+                <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
+            </div> 
     </div>   
 }
 <script type="text/javascript">
