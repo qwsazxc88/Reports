@@ -236,11 +236,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(clearanceChecklistDao); }
             set { clearanceChecklistDao = value; }
         }
-        protected IClearanceChecklistDepartmentDao clearanceChecklistDepartmentDao;
-        public IClearanceChecklistDepartmentDao ClearanceChecklistDepartmentDao
+        protected IClearanceChecklistRoleDao clearanceChecklistRoleDao;
+        public IClearanceChecklistRoleDao ClearanceChecklistRoleDao
         {
-            get { return Validate.Dependency(clearanceChecklistDepartmentDao); }
-            set { clearanceChecklistDepartmentDao = value; }
+            get { return Validate.Dependency(clearanceChecklistRoleDao); }
+            set { clearanceChecklistRoleDao = value; }
         }
 
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
@@ -2061,14 +2061,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // create CCL approvals if the Dismissal has been approved by the user and two managers
                 if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
                 {
-                    var clearanceChecklistDepartments = ClearanceChecklistDepartmentDao.GetClearanceChecklistDepartments();
-                    foreach (var clearanceChecklistDepartment in clearanceChecklistDepartments)
+                    var clearanceChecklistRoles = ClearanceChecklistRoleDao.GetClearanceChecklistRoles();
+                    foreach (var clearanceChecklistRole in clearanceChecklistRoles)
                     {
                         dismissal.ClearanceChecklist.Approvals.Add(new ClearanceChecklistApproval
                         {
-                            ClearanceChecklistDepartment = clearanceChecklistDepartment,
                             ClearanceChecklist = dismissal.ClearanceChecklist,
-                            ClearanceChecklistRole = clearanceChecklistDepartment.ClearanceChecklistRole
+                            ClearanceChecklistRole = clearanceChecklistRole
                         });
                     }
                     DismissalDao.SaveAndFlush(dismissal);
@@ -2252,25 +2251,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
             foreach (var approval in clearanceChecklist.Approvals)
             {
-                IList<string> departmentAuthorities = clearanceChecklistDepartmentDao.GetClearanceChecklistDepartmentAuthorities(approval.ClearanceChecklistDepartment.Id)
-                    .Select<User, string>(departmentAuthority => departmentAuthority.FullName).ToList<string>();
+                // TODO: CCL Roles
+                IList<string> roleAuthorities = clearanceChecklistRoleDao.GetClearanceChecklistRoleAuthorities(approval.ClearanceChecklistRole)
+                    .Select<User, string>(roleAuthority => roleAuthority.FullName).ToList<string>();
 
                 model.ClearanceChecklistApprovals.Add(
                     new ClearanceChecklistApprovalDto
                     {
                         Id = approval.Id,
-                        ClearanceChecklistDepartment = approval.ClearanceChecklistDepartment.Name,
-                        DepartmentAuthorities = departmentAuthorities,
+                        ClearanceChecklistRole = approval.ClearanceChecklistRole.Description,
+                        RoleAuthorities = roleAuthorities,
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
                         Comment = approval.Comment,
                         // Checking if the authenticated user has the extended role for approval
                         // and that the user's department is allowed to approve today.
                         // If both are OK the Active property is set
-                        // and the view will output the approval link in the corresponding row                        
+                        // and the view will output the approval link in the corresponding row
+
+                        // TODO: CCL Roles
                         Active = (user.ClearanceChecklistRoles.Contains(approval.ClearanceChecklistRole) ? true : false) &&
                             DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
-                                approval.ClearanceChecklistDepartment.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistDepartment.DaysForApproval)
+                                approval.ClearanceChecklistRole.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistRole.DaysForApproval)
                     }
                 );
             }
@@ -2301,6 +2303,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            // TODO: CCL Roles ?
             if(!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
@@ -2322,6 +2325,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             const int MAX_COMMENT_LENGTH = 255;
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            // TODO: CCL Roles ?
             if (!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");

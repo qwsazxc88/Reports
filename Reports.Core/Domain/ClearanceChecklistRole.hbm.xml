@@ -11,9 +11,11 @@
     <property name="Description" length="256" not-null="false"/>
 
     <property name="Code" length="32" not-null="false" />
+
+    <property name="DaysForApproval" not-null="false"/>
     
     <set name="RoleOwners" table="UserClearanceChecklistRole" lazy="true" inverse="true" cascade="save-update">
-      <key column="ClearanceChecklistRoleId" foreign-key="FK_UserClearanceChecklistRole_ClearanceChecklistRole"/>
+      <key column="RoleId" foreign-key="FK_UserClearanceChecklistRole_ClearanceChecklistRole"/>
       <many-to-many class="User" column="UserId" foreign-key="FK_UserClearanceChecklistRole_User"/>
     </set>
     

@@ -62,9 +62,9 @@
             {
                 <tr>
                     <td style="text-align:left; vertical-align: top;">
-                        <a class="department-authorities-link" data-approval-id="@approval.Id" href="">@approval.ClearanceChecklistDepartment</a>
-                        <ul id="department-authorities-list" style="display:none" data-approval-id="@approval.Id">
-                            @foreach(var authority in approval.DepartmentAuthorities)
+                        <a class="role-authorities-link" data-approval-id="@approval.Id" href="">@approval.ClearanceChecklistRole</a>
+                        <ul id="role-authorities-list" style="display:none" data-approval-id="@approval.Id">
+                            @foreach(var authority in approval.RoleAuthorities)
                             {
                                 <li>@authority</li>
                             }
@@ -144,10 +144,10 @@
                 }
             );
         });
-        $(".department-authorities-link").click(function (event) {
+        $(".role-authorities-link").click(function (event) {
             var $currentAuthoritiesLink = $(this);
             event.preventDefault();
-            $currentAuthoritiesLink.next("#department-authorities-list").toggle();
+            $currentAuthoritiesLink.next("#role-authorities-list").toggle();
         });
     });
 </script>

@@ -56,21 +56,26 @@ namespace Reports.Core.Dao.Impl
             return approval;            
         }
 
+     
         /// <summary>
         /// Get all authorities who have the right to approve clearance checklists
         /// </summary>
         /// <returns>A collection of all authorities who have the right to approve clearance checklists</returns>
-        public ISet<User> GetClearanceChecklistApprovingAuthorities()
+        public IList<User> GetClearanceChecklistApprovingAuthorities()
         {
+            /*            
             IList<ClearanceChecklistDepartment> clearanceChecklistDepartments =
                 Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
                     .AddOrder(new Order("Id", true))
                     .List<ClearanceChecklistDepartment>();
-            IList<ClearanceChecklistRole> clearanceChecklistRoles = new List<ClearanceChecklistRole>();
+            // IList<ClearanceChecklistRole> clearanceChecklistRoles = new List<ClearanceChecklistRole>();
+            
             foreach (var department in clearanceChecklistDepartments)
             {
                 clearanceChecklistRoles.Add(department.ClearanceChecklistRole);
             }
+             
+            clearanceChecklistRoles = 
             ISet<User> clearanceChecklistApprovingAuthorities = new HashSet<User>();
             foreach (var clearanceChecklistRole in clearanceChecklistRoles)
             {
@@ -79,7 +84,13 @@ namespace Reports.Core.Dao.Impl
                     clearanceChecklistApprovingAuthorities.Add(roleOwner);
                 }
             }
-
+            */
+            IList<User> clearanceChecklistApprovingAuthorities = new List<User>();
+            clearanceChecklistApprovingAuthorities =
+                Session.CreateCriteria<User>()
+                //.Add(Restrictions.Where<ClearanceChecklistRole>(role => role != null))
+                .Add(Restrictions.Where<ICollection<ClearanceChecklistRole>>(roles => (roles !=null && roles.Count>0)))
+                .List<User>();
             return clearanceChecklistApprovingAuthorities;
         }
 

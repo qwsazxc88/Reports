@@ -8,9 +8,9 @@ namespace Reports.Core.Dto
         // ID
         public int Id { get; set; }
         // Согласующее подразделение
-        public string ClearanceChecklistDepartment { get; set; }
+        public string ClearanceChecklistRole { get; set; }
         // Список лиц, имеющих право согласования от имени подразделения
-        public IList<string> DepartmentAuthorities { get; set; }
+        public IList<string> RoleAuthorities { get; set; }
         // Кем согласовано
         public string ApprovedBy { get; set; }
         // Дата согласования

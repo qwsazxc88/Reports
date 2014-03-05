@@ -10,8 +10,6 @@ namespace Reports.Core.Domain
         // Родительский обходной лист
         public virtual ClearanceChecklist ClearanceChecklist { get; set; }
 
-        // Согласующее подразделение
-        public virtual ClearanceChecklistDepartment ClearanceChecklistDepartment { get; set; }
         // Расширенная роль для согласования
         public virtual ClearanceChecklistRole ClearanceChecklistRole { get; set; }
 

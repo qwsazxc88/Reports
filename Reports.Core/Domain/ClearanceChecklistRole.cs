@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
     {
         public virtual string Description { get; set; }
         public virtual string Code { get; set; }
+        public virtual int? DaysForApproval { get; set; }
 
         // Role Owners
         public virtual ICollection<User> RoleOwners { get; set; }

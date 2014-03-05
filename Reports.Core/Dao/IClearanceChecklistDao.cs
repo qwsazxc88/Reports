@@ -22,7 +22,7 @@ namespace Reports.Core.Dao
         );
 
         ClearanceChecklistApproval GetApprovalById(int id);
-        ISet<User> GetClearanceChecklistApprovingAuthorities();
+        IList<User> GetClearanceChecklistApprovingAuthorities();
 
         bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval);
         bool SetComment(int approvalId, string comment);

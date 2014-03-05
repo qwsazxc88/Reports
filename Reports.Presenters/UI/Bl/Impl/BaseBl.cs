@@ -160,7 +160,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return SendEmail(to, subject, body);
         }
 
-        protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(ISet<User> addresseeList, ClearanceChecklist entity)
+        protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(IList<User> addresseeList, ClearanceChecklist entity)
         {
             const string subject = @"Новый обходной лист";
             string body = string.Format(@"Новый Обходной лист № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
