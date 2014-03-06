@@ -38,7 +38,8 @@ namespace Reports.Core.Domain
 
         public virtual IList<DismissalComment> Comments { get; set; }
 
-        public virtual ClearanceChecklist ClearanceChecklist { get; set; }
+        // Согласования обходного листа
+        public virtual IList<ClearanceChecklistApproval> ClearanceChecklistApprovals { get; set; }
         
         #endregion
 

@@ -37,6 +37,10 @@
       <one-to-many class="DismissalComment"/>
     </bag>
 
-    <many-to-one name="ClearanceChecklist" class="ClearanceChecklist" column="ClearanceChecklistId" unique="true" cascade="all" />
+    <bag name="ClearanceChecklistApprovals" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="DismissalId" foreign-key="FK_ClearanceChecklistApproval_Dismissal"/>
+      <one-to-many class="ClearanceChecklistApproval"/>
+    </bag>
+    
 	</class>
 </hibernate-mapping>

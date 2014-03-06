@@ -16,9 +16,6 @@ alter table Dismissal  drop constraint FK_Dismissal_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Dismissal_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Dismissal'))
 alter table Dismissal  drop constraint FK_Dismissal_TimesheetStatus
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK6A5EBAA3395AC4A0]') AND parent_object_id = OBJECT_ID('Dismissal'))
-alter table Dismissal  drop constraint FK6A5EBAA3395AC4A0
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AbsenceComment_User]') AND parent_object_id = OBJECT_ID('AbsenceComment'))
 alter table AbsenceComment  drop constraint FK_AbsenceComment_User
 
@@ -30,15 +27,6 @@ alter table VacationComment  drop constraint FK_VacationComment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_VacationComment_Vacation]') AND parent_object_id = OBJECT_ID('VacationComment'))
 alter table VacationComment  drop constraint FK_VacationComment_Vacation
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserExtendedRole_User]') AND parent_object_id = OBJECT_ID('UserExtendedRole'))
-alter table UserExtendedRole  drop constraint FK_UserExtendedRole_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserExtendedRole_ExtendedRole]') AND parent_object_id = OBJECT_ID('UserExtendedRole'))
-alter table UserExtendedRole  drop constraint FK_UserExtendedRole_ExtendedRole
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistDepartment_ExtendedRole]') AND parent_object_id = OBJECT_ID('ClearanceChecklistDepartment'))
-alter table ClearanceChecklistDepartment  drop constraint FK_ClearanceChecklistDepartment_ExtendedRole
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Mission_MissionType]') AND parent_object_id = OBJECT_ID('Mission'))
 alter table Mission  drop constraint FK_Mission_MissionType
@@ -358,14 +346,11 @@ alter table TimesheetDay  drop constraint FK_TimesheetDay_Status
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetDay_Timesheet]') AND parent_object_id = OBJECT_ID('TimesheetDay'))
 alter table TimesheetDay  drop constraint FK_TimesheetDay_Timesheet
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ClearanceChecklist]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
-alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ClearanceChecklist
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_Dismissal]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
+alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_Dismissal
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ClearanceChecklistDepartment]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
-alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ClearanceChecklistDepartment
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ExtendedRole]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
-alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ExtendedRole
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ClearanceChecklistRole]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
+alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ClearanceChecklistRole
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ApprovedBy]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
 alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ApprovedBy
@@ -403,9 +388,6 @@ alter table MissionAirTicketTypeGradeValue  drop constraint FK_MissionAirTicketT
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ATTACHMENT_USER_ROLE]') AND parent_object_id = OBJECT_ID('RequestAttachment'))
 alter table RequestAttachment  drop constraint FK_ATTACHMENT_USER_ROLE
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklist_User]') AND parent_object_id = OBJECT_ID('ClearanceChecklist'))
-alter table ClearanceChecklist  drop constraint FK_ClearanceChecklist_User
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_HolidayWorkType]') AND parent_object_id = OBJECT_ID('HolidayWork'))
 alter table HolidayWork  drop constraint FK_HolidayWork_HolidayWorkType
 
@@ -430,6 +412,18 @@ alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
 alter table Document  drop constraint FK_Document_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistRoleRecord_User]') AND parent_object_id = OBJECT_ID('[ClearanceChecklistRoleRecord]'))
+alter table [ClearanceChecklistRoleRecord]  drop constraint FK_ClearanceChecklistRoleRecord_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistRoleRecord_ClearanceChecklistRole]') AND parent_object_id = OBJECT_ID('[ClearanceChecklistRoleRecord]'))
+alter table [ClearanceChecklistRoleRecord]  drop constraint FK_ClearanceChecklistRoleRecord_ClearanceChecklistRole
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistRoleRecord_TargetUser]') AND parent_object_id = OBJECT_ID('[ClearanceChecklistRoleRecord]'))
+alter table [ClearanceChecklistRoleRecord]  drop constraint FK_ClearanceChecklistRoleRecord_TargetUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistRoleRecord_TargetDepartment]') AND parent_object_id = OBJECT_ID('[ClearanceChecklistRoleRecord]'))
+alter table [ClearanceChecklistRoleRecord]  drop constraint FK_ClearanceChecklistRoleRecord_TargetDepartment
+
 if exists (select * from dbo.sysobjects where id = object_id(N'Account') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Account
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionResidenceGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionResidenceGradeValue
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionTrainTicketType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionTrainTicketType
@@ -439,9 +433,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and O
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
-if exists (select * from dbo.sysobjects where id = object_id(N'[ExtendedRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ExtendedRole]
-if exists (select * from dbo.sysobjects where id = object_id(N'UserExtendedRole') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserExtendedRole
-if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklistDepartment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ClearanceChecklistDepartment
 if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
 if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
@@ -498,6 +489,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkCommen
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'[ClearanceChecklistRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ClearanceChecklistRole]
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacation
 if exists (select * from dbo.sysobjects where id = object_id(N'Employment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Employment
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentType
@@ -522,10 +514,10 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistBabyMindi
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestAttachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestAttachment
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
-if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ClearanceChecklist
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'[ClearanceChecklistRoleRecord]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ClearanceChecklistRoleRecord]
 
 create table Account (
  Id INT IDENTITY NOT NULL,
@@ -588,7 +580,6 @@ create table Dismissal (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   TimesheetStatusId INT null,
-  ClearanceChecklistId INT null unique,
   constraint PK_Dismissal  primary key (Id)
 )
 create table AbsenceComment (
@@ -615,24 +606,6 @@ create table TimesheetStatus (
   ShortName NVARCHAR(2) not null,
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
-)
-create table [ExtendedRole] (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Description NVARCHAR(256) null,
-  constraint PK_ExtendedRole primary key (Id)
-)
-create table UserExtendedRole (
- ExtendedRoleId INT not null,
-  UserId INT not null,
-  constraint PK_UserExtendedRole  primary key (UserId, ExtendedRoleId)
-)
-create table ClearanceChecklistDepartment (
- Id INT IDENTITY NOT NULL,
-  Name NVARCHAR(128) not null,
-  ExtendedRoleId INT not null,
-  DaysForApproval INT null,
-  constraint PK_ClearanceChecklistDepartment  primary key (Id)
 )
 create table Mission (
  Id INT IDENTITY NOT NULL,
@@ -1240,6 +1213,14 @@ create table ExportImportAction (
   Month DATETIME null,
   constraint PK_ExportImportAction  primary key (Id)
 )
+create table [ClearanceChecklistRole] (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(32) null,
+  Description NVARCHAR(256) null,
+  DaysForApproval INT null,
+  constraint PK_ClearanceChecklistRole primary key (Id)
+)
 create table ChildVacation (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1328,9 +1309,8 @@ create table TimesheetDay (
 create table ClearanceChecklistApproval (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  ClearanceChecklistId INT not null,
-  ClearanceChecklistDepartmentId INT not null,
-  ExtendedRoleId INT not null,
+  DismissalId INT not null,
+  RoleId INT not null,
   ApprovedById INT null,
   ApprovalDate DATETIME null,
   Comment NVARCHAR(255) null,
@@ -1479,17 +1459,6 @@ create table EmployeeDocumentType (
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
 )
-create table ClearanceChecklist (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  CreateDate DATETIME not null,
-  Number INT not null,
-  UserId INT not null,
-  DeleteDate DATETIME null,
-  SendTo1C DATETIME null,
-  DeleteAfterSendTo1C BIT not null,
-  constraint PK_ClearanceChecklist  primary key (Id)
-)
 create table HolidayWork (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1532,6 +1501,16 @@ create table Document (
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
 )
+create table [ClearanceChecklistRoleRecord] (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  RoleId INT not null,
+  DaysForApproval INT null,
+  TargetUserId INT null,
+  TargetDepartmentId INT null,
+  constraint PK_ClearanceChecklistRoleRecord primary key (Id)
+)
 create index IX_MissionResidenceGradeValue_Residence_Id on MissionResidenceGradeValue (ResidenceId)
 create index IX_MissionResidenceGradeValue_Grade_Id on MissionResidenceGradeValue (GradeId)
 alter table MissionResidenceGradeValue add constraint FK_MissionResidenceGradeValue_Residence foreign key (ResidenceId) references MissionResidence
@@ -1544,7 +1523,6 @@ alter table Dismissal add constraint FK_Dismissal_DismissalType foreign key (Typ
 alter table Dismissal add constraint FK_Dismissal_User foreign key (UserId) references [Users]
 alter table Dismissal add constraint FK_Dismissal_CreatorUser foreign key (CreatorId) references [Users]
 alter table Dismissal add constraint FK_Dismissal_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
-alter table Dismissal add constraint FK6A5EBAA3395AC4A0 foreign key (ClearanceChecklistId) references ClearanceChecklist
 create index IX_AbsenceComment_User_Id on AbsenceComment (UserId)
 create index IX_AbsenceComment_Absence_Id on AbsenceComment (AbsenceId)
 alter table AbsenceComment add constraint FK_AbsenceComment_User foreign key (UserId) references [Users]
@@ -1553,10 +1531,6 @@ create index IX_VacationComment_User_Id on VacationComment (UserId)
 create index IX_VacationComment_Vacation_Id on VacationComment (VacationId)
 alter table VacationComment add constraint FK_VacationComment_User foreign key (UserId) references [Users]
 alter table VacationComment add constraint FK_VacationComment_Vacation foreign key (VacationId) references Vacation
-alter table UserExtendedRole add constraint FK_UserExtendedRole_User foreign key (UserId) references [Users]
-alter table UserExtendedRole add constraint FK_UserExtendedRole_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
-create index IX_ClearanceChecklistDepartment_ExtendedRole on ClearanceChecklistDepartment (ExtendedRoleId)
-alter table ClearanceChecklistDepartment add constraint FK_ClearanceChecklistDepartment_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
 create index Mission_MissionType on Mission (TypeId)
 create index IX_Mission_User_Id on Mission (UserId)
 create index IX_Mission_CreatorUser_Id on Mission (CreatorId)
@@ -1766,13 +1740,11 @@ create index IX_TimesheetDay_Status_Id on TimesheetDay (StatusId)
 create index IX_TimesheetDay_Timesheet_Id on TimesheetDay (TimesheetId)
 alter table TimesheetDay add constraint FK_TimesheetDay_Status foreign key (StatusId) references TimesheetStatus
 alter table TimesheetDay add constraint FK_TimesheetDay_Timesheet foreign key (TimesheetId) references Timesheet
-create index IX_ClearanceChecklistApproval_ClearanceChecklist_Id on ClearanceChecklistApproval (ClearanceChecklistId)
-create index IX_ClearanceChecklistApproval_ClearanceChecklistDepartment_Id on ClearanceChecklistApproval (ClearanceChecklistDepartmentId)
-create index IX_ClearanceChecklistApproval_ExtendedRole_Id on ClearanceChecklistApproval (ExtendedRoleId)
+create index IX_ClearanceChecklistApproval_Dismissal_Id on ClearanceChecklistApproval (DismissalId)
+create index IX_ClearanceChecklistApproval_ClearanceChecklistRole_Id on ClearanceChecklistApproval (RoleId)
 create index IX_ClearanceChecklistApproval_ApprovedBy_Id on ClearanceChecklistApproval (ApprovedById)
-alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklist foreign key (ClearanceChecklistId) references ClearanceChecklist
-alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklistDepartment foreign key (ClearanceChecklistDepartmentId) references ClearanceChecklistDepartment
-alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ExtendedRole foreign key (ExtendedRoleId) references [ExtendedRole]
+alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_Dismissal foreign key (DismissalId) references Dismissal
+alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklistRole foreign key (RoleId) references [ClearanceChecklistRole]
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ApprovedBy foreign key (ApprovedById) references [Users]
 create index Vacation_VacationType on Vacation (TypeId)
 create index IX_Vacation_User_Id on Vacation (UserId)
@@ -1795,8 +1767,6 @@ alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTyp
 alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTypeGradeValue_Grade foreign key (GradeId) references MissionGraid
 create index IX_ATTACHMENT_USER_ROLE_ID on RequestAttachment (CreatorRoleId)
 alter table RequestAttachment add constraint FK_ATTACHMENT_USER_ROLE foreign key (CreatorRoleId) references Role
-create index IX_ClearanceChecklist_User_Id on ClearanceChecklist (UserId)
-alter table ClearanceChecklist add constraint FK_ClearanceChecklist_User foreign key (UserId) references [Users]
 create index HolidayWork_HolidayWorkType on HolidayWork (TypeId)
 create index IX_HolidayWork_User_Id on HolidayWork (UserId)
 create index IX_HolidayWork_CreatorUser_Id on HolidayWork (CreatorId)
@@ -1813,6 +1783,14 @@ create index IX_Document_User_Id on Document (UserId)
 alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
 alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
+create index IX_ClearanceChecklistRoleRecord_User_Id on [ClearanceChecklistRoleRecord] (UserId)
+create index IX_ClearanceChecklistRoleRecord_ClearanceChecklistRole_Id on [ClearanceChecklistRoleRecord] (RoleId)
+create index IX_ClearanceChecklistRoleRecord_TargetUser_Id on [ClearanceChecklistRoleRecord] (TargetUserId)
+create index IX_ClearanceChecklistRoleRecord_TargetDepartment_Id on [ClearanceChecklistRoleRecord] (TargetDepartmentId)
+alter table [ClearanceChecklistRoleRecord] add constraint FK_ClearanceChecklistRoleRecord_User foreign key (UserId) references [Users]
+alter table [ClearanceChecklistRoleRecord] add constraint FK_ClearanceChecklistRoleRecord_ClearanceChecklistRole foreign key (RoleId) references [ClearanceChecklistRole]
+alter table [ClearanceChecklistRoleRecord] add constraint FK_ClearanceChecklistRoleRecord_TargetUser foreign key (TargetUserId) references [Users]
+alter table [ClearanceChecklistRoleRecord] add constraint FK_ClearanceChecklistRoleRecord_TargetDepartment foreign key (TargetDepartmentId) references Department
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 

@@ -236,12 +236,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(clearanceChecklistDao); }
             set { clearanceChecklistDao = value; }
         }
-        protected IClearanceChecklistRoleDao clearanceChecklistRoleDao;
-        public IClearanceChecklistRoleDao ClearanceChecklistRoleDao
-        {
-            get { return Validate.Dependency(clearanceChecklistRoleDao); }
-            set { clearanceChecklistRoleDao = value; }
-        }
 
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
         {
@@ -1990,18 +1984,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         User = user
                     };
                     ChangeEntityProperties(current, dismissal, model, user);
-                    //DismissalDao.SaveAndFlush(dismissal);
-                    //model.Id = dismissal.Id;
-                    // *********************************** create CCL
-                    var clearanceChecklist = new ClearanceChecklist
-                    {
-                        CreateDate = DateTime.Now,
-                        Dismissal = dismissal,
-                        Number = dismissal.Number,
-                        User = user
-                    };
-                    dismissal.ClearanceChecklist = clearanceChecklist;
-                    clearanceChecklistDao.SaveAndFlush(clearanceChecklist);                    
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
                     //
@@ -2061,17 +2043,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // create CCL approvals if the Dismissal has been approved by the user and two managers
                 if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
                 {
-                    var clearanceChecklistRoles = ClearanceChecklistRoleDao.GetClearanceChecklistRoles();
+                    var clearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles();
                     foreach (var clearanceChecklistRole in clearanceChecklistRoles)
                     {
-                        dismissal.ClearanceChecklist.Approvals.Add(new ClearanceChecklistApproval
+                        dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
                         {
-                            ClearanceChecklist = dismissal.ClearanceChecklist,
+                            Dismissal = dismissal,
                             ClearanceChecklistRole = clearanceChecklistRole
                         });
                     }
                     DismissalDao.SaveAndFlush(dismissal);
-                    SendEmailForClearanceChecklistNeedToApprove(ClearanceChecklistDao.GetClearanceChecklistApprovingAuthorities(), dismissal.ClearanceChecklist);
+                    SendEmailForClearanceChecklistNeedToApprove(ClearanceChecklistDao.GetClearanceChecklistApprovingAuthorities(), dismissal);
                 }
                 return true;
             }
@@ -2242,6 +2224,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
+            User currentUser = UserDao.Load(current.Id);
             if (!CheckUserRights(user, current, id, false))
                 throw new ArgumentException("Доступ запрещен.");
             // End User Access Control
@@ -2249,10 +2232,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             var clearanceChecklist = ClearanceChecklistDao.Load(id);
             if (clearanceChecklist == null)
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
-            foreach (var approval in clearanceChecklist.Approvals)
+            foreach (var approval in clearanceChecklist.ClearanceChecklistApprovals)
             {
                 // TODO: CCL Roles
-                IList<string> roleAuthorities = clearanceChecklistRoleDao.GetClearanceChecklistRoleAuthorities(approval.ClearanceChecklistRole)
+                IList<string> roleAuthorities = clearanceChecklistDao.GetClearanceChecklistRoleAuthorities(approval.ClearanceChecklistRole)
                     .Select<User, string>(roleAuthority => roleAuthority.FullName).ToList<string>();
 
                 model.ClearanceChecklistApprovals.Add(
@@ -2270,15 +2253,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // and the view will output the approval link in the corresponding row
 
                         // TODO: CCL Roles
-                        Active = (user.ClearanceChecklistRoles.Contains(approval.ClearanceChecklistRole) ? true : false) &&
-                            DateTime.Now >= clearanceChecklist.Dismissal.EndDate.AddDays(
+                        Active = (this.IsRoleOwner(currentUser, approval.ClearanceChecklistRole) ? true : false) &&
+                            DateTime.Now >= clearanceChecklist.EndDate.AddDays(
                                 approval.ClearanceChecklistRole.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistRole.DaysForApproval)
                     }
                 );
             }
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
-            model.EndDate = clearanceChecklist.Dismissal.EndDate;
+            model.EndDate = clearanceChecklist.EndDate;
             SetUserInfoModel(user, model);
 
             return model;
@@ -2287,9 +2270,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ClearanceChecklistEditModel GetClearanceChecklistEditModelByParentId(int parentId, int userId)
         {
             var parent = DismissalDao.Load(parentId);
-            if (parent == null || parent.ClearanceChecklist == null || parent.ClearanceChecklist.Id == 0)
+            if (parent == null || parent == null || parent.Id == 0)
                 throw new ArgumentException(string.Format("Обходной лист для увольнения (id {0}) не найден в базе данных.", parentId));
-            var model = GetClearanceChecklistEditModel(parent.ClearanceChecklist.Id, userId);
+            var model = GetClearanceChecklistEditModel(parent.Id, userId);
             return model;
         }
       
@@ -2304,7 +2287,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             // TODO: CCL Roles ?
-            if(!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            //if(!user.ClearanceChecklistRoleRecords.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
             }
@@ -2326,7 +2310,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             // TODO: CCL Roles ?
-            if (!user.ClearanceChecklistRoles.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
             }
@@ -2342,6 +2326,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Error updating comment";
                 return false;
             }
+        }
+
+        private bool IsRoleOwner(User user, ClearanceChecklistRole role)
+        {
+            return user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id).Contains<int>(role.Id) ? true : false;
         }
 
         #endregion

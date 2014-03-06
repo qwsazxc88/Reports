@@ -40,6 +40,8 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual string Name { get; set; }
         public virtual string Email { get; set; }
+
+        #region Deleted
         //public const string FirstNameFieldName = "FirstName";
         //public virtual string FirstName { get; set; }
         //{
@@ -73,6 +75,8 @@ namespace Reports.Core.Domain
         //    get { return _department; }
         //    set { _department = value; }
         //}
+        #endregion
+
         public virtual bool IsFirstTimeLogin { get; set; }
         //{
         //    get { return _isFirstTimeLogin; }
@@ -113,6 +117,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? DateRelease { get; set; }
 
         public virtual string Comment { get; set; }
+
+        #region Deleted
         //{
         //    get { return _date; }
         //    set { _date = value; }
@@ -129,6 +135,8 @@ namespace Reports.Core.Domain
         //}
 
         //public virtual Role Role { get; set; }
+        #endregion
+
         public virtual int RoleId { get; set; }
         public virtual UserRole UserRole 
         { 
@@ -136,7 +144,7 @@ namespace Reports.Core.Domain
         }
         
         // Extended roles
-        public virtual ICollection<ClearanceChecklistRole> ClearanceChecklistRoles { get; set; }
+        public virtual IList<ClearanceChecklistRoleRecord> ClearanceChecklistRoleRecords { get; set; }
 
         //public virtual bool IsUserResponser
         //{
@@ -168,7 +176,7 @@ namespace Reports.Core.Domain
 
         public User()
         {
-            this.ClearanceChecklistRoles = new HashedSet<ClearanceChecklistRole>();
+            this.ClearanceChecklistRoleRecords = new List<ClearanceChecklistRoleRecord>();
             this.Personnels = new List<User>();
         }
 

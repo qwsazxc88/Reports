@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Core.Dao
 {
-    public interface IClearanceChecklistDao : IDao<ClearanceChecklist>
+    public interface IClearanceChecklistDao : IDao<Dismissal>
     {
         IList<VacationDto> GetDocuments(
             int userId,
@@ -26,5 +26,8 @@ namespace Reports.Core.Dao
 
         bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval);
         bool SetComment(int approvalId, string comment);
+
+        IList<ClearanceChecklistRole> GetClearanceChecklistRoles();
+        IList<User> GetClearanceChecklistRoleAuthorities(ClearanceChecklistRole clearanceChecklistRole);
     }
 }

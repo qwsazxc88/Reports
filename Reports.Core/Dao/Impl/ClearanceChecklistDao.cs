@@ -5,13 +5,14 @@ using System.Linq;
 using NHibernate;
 using NHibernate.Transform;
 using NHibernate.Criterion;
+using NHibernate.SqlCommand;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
 {
-    public class ClearanceChecklistDao : DefaultDao<ClearanceChecklist>, IClearanceChecklistDao
+    public class ClearanceChecklistDao : DefaultDao<Dismissal>, IClearanceChecklistDao
     {
         public ClearanceChecklistDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -37,7 +38,7 @@ namespace Reports.Core.Dao.Impl
                                 DeleteRequestText,
                                 "v.[CreateDate]",
                                 "Обходной лист",
-                                "[dbo].[ClearanceChecklist]",
+                                "[dbo].[Dismissal]",
                                 "'" + DateTime.MinValue.ToShortDateString() + "'",
                                 "'" + DateTime.MinValue.ToShortDateString() + "'",
                                 typeId
@@ -63,34 +64,14 @@ namespace Reports.Core.Dao.Impl
         /// <returns>A collection of all authorities who have the right to approve clearance checklists</returns>
         public IList<User> GetClearanceChecklistApprovingAuthorities()
         {
-            /*            
-            IList<ClearanceChecklistDepartment> clearanceChecklistDepartments =
-                Session.CreateCriteria(typeof(ClearanceChecklistDepartment))
-                    .AddOrder(new Order("Id", true))
-                    .List<ClearanceChecklistDepartment>();
-            // IList<ClearanceChecklistRole> clearanceChecklistRoles = new List<ClearanceChecklistRole>();
-            
-            foreach (var department in clearanceChecklistDepartments)
-            {
-                clearanceChecklistRoles.Add(department.ClearanceChecklistRole);
-            }
-             
-            clearanceChecklistRoles = 
-            ISet<User> clearanceChecklistApprovingAuthorities = new HashSet<User>();
-            foreach (var clearanceChecklistRole in clearanceChecklistRoles)
-            {
-                foreach (var roleOwner in clearanceChecklistRole.RoleOwners)
-                {
-                    clearanceChecklistApprovingAuthorities.Add(roleOwner);
-                }
-            }
-            */
             IList<User> clearanceChecklistApprovingAuthorities = new List<User>();
             clearanceChecklistApprovingAuthorities =
-                Session.CreateCriteria<User>()
+                Session.CreateCriteria<User>().List<User>()
+                .Where<User>(user => user.ClearanceChecklistRoleRecords != null && user.ClearanceChecklistRoleRecords.Count > 0)
+                .ToList<User>();
                 //.Add(Restrictions.Where<ClearanceChecklistRole>(role => role != null))
-                .Add(Restrictions.Where<ICollection<ClearanceChecklistRole>>(roles => (roles !=null && roles.Count>0)))
-                .List<User>();
+                /*.Add(Restrictions.Where<IList<ClearanceChecklistRoleRecord>>(roles => (roles !=null && roles.Count>0)))
+                .List<User>();*/
             return clearanceChecklistApprovingAuthorities;
         }
 
@@ -146,6 +127,30 @@ namespace Reports.Core.Dao.Impl
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Get a list of all clearance checklist roles
+        /// </summary>
+        /// <returns></returns>
+        public IList<ClearanceChecklistRole> GetClearanceChecklistRoles()
+        {
+            return Session.CreateCriteria<ClearanceChecklistRole>().List<ClearanceChecklistRole>();
+        }
+
+        /// <summary>
+        /// Get all users who own a given role
+        /// </summary>
+        /// <param name="clearanceChecklistRole"></param>
+        /// <returns></returns>
+        public IList<User> GetClearanceChecklistRoleAuthorities(ClearanceChecklistRole clearanceChecklistRole)
+        {
+            // SELECT * FROM User INNER JOIN ClearanceChecklistRoleRecord cclrr ON User.Id = cclrr.UserId WHERE cclrr.RoleId = clearanceChecklistRoleRecord.Id
+            IList<User> roleOwners = Session.CreateCriteria<User>()
+                .CreateAlias("ClearanceChecklistRoleRecords", "c", JoinType.InnerJoin)
+                .Add(Restrictions.Eq("c.Role.Id", clearanceChecklistRole.Id)).List<User>();
+
+            return roleOwners;
         }
     }
 }

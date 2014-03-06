@@ -7,10 +7,17 @@ namespace Reports.Core.Domain
     /// <summary>
     /// Расширенные роли пользователей в дополнение к заданным через RoleId
     /// </summary>
-    public class ClearanceChecklistRole : AbstractEntityWithVersion
+    public class ClearanceChecklistRoleRecord : AbstractEntityWithVersion
     {
-        public virtual string Code { get; set; }
-        public virtual string Description { get; set; }        
+        // RoleOwner
+        public virtual User User { get; set; }
+
+        public virtual ClearanceChecklistRole Role { get; set; }
+
         public virtual int? DaysForApproval { get; set; }
+
+        public virtual User TargetUser { get; set; }
+
+        public virtual Department TargetDepartment { get; set; }
     }
 }

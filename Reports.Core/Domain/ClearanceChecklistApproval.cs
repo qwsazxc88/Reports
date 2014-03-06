@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     public class ClearanceChecklistApproval : AbstractEntityWithVersion
     {
         // Родительский обходной лист
-        public virtual ClearanceChecklist ClearanceChecklist { get; set; }
+        public virtual Dismissal Dismissal { get; set; }
 
         // Расширенная роль для согласования
         public virtual ClearanceChecklistRole ClearanceChecklistRole { get; set; }
