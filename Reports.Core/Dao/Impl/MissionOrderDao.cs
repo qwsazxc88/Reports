@@ -18,6 +18,8 @@ namespace Reports.Core.Dao.Impl
             set { userDao = value; }
         }
 
+        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
+
         public const string sqlSelectForMissionOrderRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
@@ -284,6 +286,8 @@ namespace Reports.Core.Dao.Impl
                                 sqlFlag = "0 as Flag";
                             }
                             break;
+                        default:
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
                     }
                     sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart+" ) ";
@@ -568,6 +572,26 @@ namespace Reports.Core.Dao.Impl
             return string.Format(sqlSelectForMissionOrderRn, sqlQuery, string.Format("ROW_NUMBER() OVER({0})", orderBy));
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
+        }
+
+        public virtual bool CheckOtherOrdersExists(int id,int userId,DateTime beginDate,DateTime endDate)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [Id] != :id
+                                    and [UserId] = :userId
+                                    and ([BeginDate] between :beginDate and :endDate
+                                    or [EndDate] between :beginDate and :endDate
+                                    or :beginDate between [BeginDate] and  [EndDate]
+                                    or :endDate between [BeginDate] and  [EndDate])
+                                    and [DeleteDate] is null
+                                    and (([NeedToAcceptByChief] = 1 and [ChiefDateAccept] is not null)
+	                                    or ([NeedToAcceptByChief] = 0 and [ManagerDateAccept] is not null))";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id).
+                SetDateTime("beginDate", beginDate).
+                SetDateTime("endDate", endDate).
+                SetInt32("userId", userId);
+            return query.UniqueResult<int>() > 0;
         }
 
     }

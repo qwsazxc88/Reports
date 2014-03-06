@@ -28,5 +28,7 @@ namespace Reports.Core.Dao
                                                              string userName,
                                                              int sortBy,
                                                              bool? sortDescending,bool showDepts);
+
+        bool CheckOtherOrdersExists(int id, int userId, DateTime beginDate, DateTime endDate);
     }
 }

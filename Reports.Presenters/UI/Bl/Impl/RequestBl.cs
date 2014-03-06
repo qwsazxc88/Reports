@@ -7018,6 +7018,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
         }
+        public bool CheckOtherOrdersExists(MissionOrderEditModel model)
+        {
+            return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
+                                                   DateTime.Parse(model.EndMissionDate));
+        }
         public bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error)
         {
             error = string.Empty;
@@ -7397,6 +7402,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                            User = entity.User,
                                            AllSum = entity.AllSum,
                                            UserSumReceived = entity.UserAllSum,
+                                           UserAllSum = 0,
                                        };
             List<MissionReportCost> list = new List<MissionReportCost>();
             if(entity.SumDaily.HasValue && entity.SumDaily > 0)
@@ -7408,7 +7414,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                  Report = report,
                                                  Type = types.Where(x => x.Id == 1).First(),
                                                  Sum = entity.SumDaily,
-                                                 UserSum = entity.UserSumDaily,
+                                                 UserSum = null//entity.UserSumDaily,
                                              };
                 list.Add(cost);
             }
@@ -7421,7 +7427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 2).First(),
                     Sum = entity.SumResidence,
-                    UserSum = entity.IsResidencePaid ? null:entity.UserSumResidence,
+                    UserSum = null//entity.IsResidencePaid ? null:entity.UserSumResidence,
                 };
                 list.Add(cost);
             }
@@ -7434,7 +7440,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 3).First(),
                     Sum = entity.SumAir,
-                    UserSum = entity.IsAirTicketsPaid ? null : entity.UserSumAir,
+                    UserSum = null//entity.IsAirTicketsPaid ? null : entity.UserSumAir,
                 };
                 list.Add(cost);
             }
@@ -7447,12 +7453,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Report = report,
                     Type = types.Where(x => x.Id == 4).First(),
                     Sum = entity.SumTrain,
-                    UserSum = entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
+                    UserSum = null//entity.IsTrainTicketsPaid ? null : entity.UserSumTrain,
                 };
                 list.Add(cost);
             }
             report.Costs = list;
-            report.UserAllSum = report.Costs.Sum(x => x.UserSum).Value;
+            //report.UserAllSum = report.Costs.Sum(x => x.UserSum).Value;
             MissionReportDao.SaveAndFlush(report);
 
         }
@@ -8089,7 +8095,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected List<IdNameDto> GetMissionCountries(bool addEmpty)
         {
-            var typeList = MissionCountryDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            List<MissionCountry> countries = MissionCountryDao.LoadAllSorted().ToList();
+            var typeList = countries.ConvertAll(x => new IdNameDtoSort {Id = x.Id, Name = x.Name, SortOrder = x.Id == 1 ? 0 : 1}).
+                OrderBy(x => x.SortOrder).ThenBy(x => x.Name).ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            //var typeList = MissionCountryDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             if (addEmpty)
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
@@ -8342,7 +8351,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                               });
             }
             dto.Trans = trans.ToArray();
-            dto.IsTransactionAvailable = model.IsAccountantEditable;
+            dto.IsTransactionAvailable = model.IsAccountantEditable 
+                && ((cost.BookOfPurchaseSum.HasValue && cost.BookOfPurchaseSum.Value > 0) || !cost.IsCostFromPurchaseBook );
         }
         protected void LoadCosts(MissionReportEditModel model,MissionReport entity)
         {
@@ -8477,6 +8487,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsAccountantEditable = true;
                             model.IsAccountantApproveAvailable = true;
+                            if (model.IsAccountantApproveAvailable &&
+                                entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
+                                (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
+                                model.IsAccountantApproveAvailable = false;
+                            
                         }
                         else
                         {

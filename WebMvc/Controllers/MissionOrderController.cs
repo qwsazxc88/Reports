@@ -10,6 +10,8 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using System.Web.Security;
 using Reports.Core;
+using Reports.Core.Dao;
+using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
@@ -26,6 +28,16 @@ namespace WebMvc.Controllers
         public const int MaxFileSize = 2 * 1024 * 1024;
         public const int MaxCommentLength = 256;
 
+        public const string StrOtherOrdersExists =
+            "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
+
+        public const string SessionMissionOrderFilterName = "MissionOrderFilter";
+        public const string SessionMissionReportFilterName = "MissionReportFilter";
+        public const string SessionMissionUserDeptsListFilterName = "MissionUserDeptsListFilter";
+        public const string SessionMissionUserCredsListFilterName = "MissionUserCredsListFilter";
+        public const string SessionMissionPbDocListFilterName = "MissionPbDocListFilter";
+        public const string SessionMissionPbRecordsListFilterName = "MissionPbRecordsListFilter";
+
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
         {
@@ -35,10 +47,20 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(requestBl);
             }
         }
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get
+            {
+                departmentDao = Ioc.Resolve<IDepartmentDao>();
+                return Validate.Dependency(departmentDao);
+            }
+        }
         [HttpGet]
         public ActionResult Index()
         {
             var model = RequestBl.GetMissionOrderListModel();
+            SetMissionOrderListModelFromSession(model);
             return View(model);
         }
 
@@ -46,11 +68,48 @@ namespace WebMvc.Controllers
         public ActionResult Index(MissionOrderListModel model)
         {
             ModelState.Clear();
-            RequestBl.SetMissionOrderListModel(model, !ValidateModel(model));
+            bool hasError = !ValidateModel(model);
+            if(!hasError)
+                SetMissionOrderFilterToSession(model);
+            RequestBl.SetMissionOrderListModel(model, hasError);
             if(model.HasErrors)
                 ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
         }
+        protected void SetMissionOrderFilterToSession(MissionOrderListModel model)
+        {
+            MissionOrderFilterModel filterModel = new MissionOrderFilterModel
+                                                      {
+                                                          BeginDate = model.BeginDate,
+                                                          DepartmentId = model.DepartmentId,
+                                                          EndDate = model.EndDate,
+                                                          StatusId = model.StatusId,
+                                                          UserName = model.UserName
+                                                      };
+            System.Web.HttpContext.Current.Session[SessionMissionOrderFilterName] = filterModel;
+        }
+        protected void SetMissionOrderListModelFromSession(MissionOrderListModel model)
+        {
+
+            MissionOrderFilterModel filterModel = (MissionOrderFilterModel)System.Web.HttpContext.Current.Session[SessionMissionOrderFilterName];
+            if(filterModel != null)
+            {
+                model.StatusId = filterModel.StatusId;
+                model.BeginDate = filterModel.BeginDate;
+                model.EndDate = filterModel.EndDate;
+                model.UserName = filterModel.UserName;
+                if(AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
+                {
+                    Department dep = DepartmentDao.Load(filterModel.DepartmentId);
+                    if (dep != null)
+                    {
+                        model.DepartmentId = filterModel.DepartmentId;
+                        model.DepartmentName = dep.Name;
+                    }
+                }
+            }
+        }
+
         protected bool ValidateModel(MissionOrderListModel model)
         {
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
@@ -112,11 +171,16 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            return View(model);
+            if (!string.IsNullOrEmpty(error))
+                return View(model);
+            return RedirectToAction("Index");
+
         }
         protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
         {
             //return false;
+            if(RequestBl.CheckOtherOrdersExists(model))
+                ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(MissionOrderEditModel model)
@@ -379,16 +443,53 @@ namespace WebMvc.Controllers
         public ActionResult MissionReportsList()
         {
             var model = RequestBl.GetMissionReportsListModel();
+            SetMissionReportListModelFromSession(model);
             return View(model);
         }
         [HttpPost]
         public ActionResult MissionReportsList(MissionReportsListModel model)
         {
             //ModelState.Clear();
-            RequestBl.SetMissionReportsListModel(model, !ValidateModel(model));
+            bool hasError = !ValidateModel(model);
+            if (!hasError)
+                SetMissionReportFilterToSession(model);
+            RequestBl.SetMissionReportsListModel(model, hasError);
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
+        }
+        protected void SetMissionReportFilterToSession(MissionReportsListModel model)
+        {
+            MissionOrderFilterModel filterModel = new MissionOrderFilterModel
+            {
+                BeginDate = model.BeginDate,
+                DepartmentId = model.DepartmentId,
+                EndDate = model.EndDate,
+                StatusId = model.StatusId,
+                UserName = model.UserName
+            };
+            System.Web.HttpContext.Current.Session[SessionMissionReportFilterName] = filterModel;
+        }
+        protected void SetMissionReportListModelFromSession(MissionReportsListModel model)
+        {
+
+            MissionOrderFilterModel filterModel = (MissionOrderFilterModel)System.Web.HttpContext.Current.Session[SessionMissionReportFilterName];
+            if (filterModel != null)
+            {
+                model.StatusId = filterModel.StatusId;
+                model.BeginDate = filterModel.BeginDate;
+                model.EndDate = filterModel.EndDate;
+                model.UserName = filterModel.UserName;
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
+                {
+                    Department dep = DepartmentDao.Load(filterModel.DepartmentId);
+                    if (dep != null)
+                    {
+                        model.DepartmentId = filterModel.DepartmentId;
+                        model.DepartmentName = dep.Name;
+                    }
+                }
+            }
         }
         protected bool ValidateModel(MissionReportsListModel model)
         {
@@ -432,7 +533,9 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            return View(model);
+            if (!string.IsNullOrEmpty(error))
+                return View(model);
+            return RedirectToAction("MissionReportsList");
         }
         protected void CorrectCheckboxes(MissionReportEditModel model)
         {
@@ -733,16 +836,54 @@ namespace WebMvc.Controllers
         public ActionResult MissionUserDeptsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
+            MissionUserDeptsListModelFromSession(model,false);
             return View(model);
         }
         [HttpPost]
         public ActionResult MissionUserDeptsList(MissionUserDeptsListModel model)
         {
-            //ModelState.Clear();
-            RequestBl.SetMissionUserDeptsListModel(model, true, !ValidateModel(model));
-            //if (model.HasErrors)
-            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
+            bool hasError = !ValidateModel(model);
+            if (!hasError)
+                MissionUserDeptsFilterToSession(model,false);
+            RequestBl.SetMissionUserDeptsListModel(model, true, hasError);
             return View(model);
+        }
+        protected void MissionUserDeptsFilterToSession(MissionUserDeptsListModel model, bool isCred)
+        {
+            MissionOrderFilterModel filterModel = new MissionOrderFilterModel
+            {
+                BeginDate = model.BeginDate,
+                DepartmentId = model.DepartmentId,
+                EndDate = model.EndDate,
+                StatusId = model.StatusId,
+                UserName = model.UserName
+            };
+            System.Web.HttpContext.Current.Session[isCred ?
+                SessionMissionUserCredsListFilterName :
+                SessionMissionUserDeptsListFilterName] = filterModel;
+        }
+        protected void MissionUserDeptsListModelFromSession(MissionUserDeptsListModel model,bool isCred)
+        {
+
+            MissionOrderFilterModel filterModel = (MissionOrderFilterModel)System.Web.HttpContext.Current.Session[isCred ? 
+                SessionMissionUserCredsListFilterName : 
+                SessionMissionUserDeptsListFilterName];
+            if (filterModel != null)
+            {
+                model.StatusId = filterModel.StatusId;
+                model.BeginDate = filterModel.BeginDate;
+                model.EndDate = filterModel.EndDate;
+                model.UserName = filterModel.UserName;
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
+                {
+                    Department dep = DepartmentDao.Load(filterModel.DepartmentId);
+                    if (dep != null)
+                    {
+                        model.DepartmentId = filterModel.DepartmentId;
+                        model.DepartmentName = dep.Name;
+                    }
+                }
+            }
         }
         protected bool ValidateModel(MissionUserDeptsListModel model)
         {
@@ -850,12 +991,16 @@ namespace WebMvc.Controllers
         public ActionResult MissionUserCredsList()
         {
             var model = RequestBl.GetMissionUserDeptsListModel();
+             MissionUserDeptsListModelFromSession(model,true);
             return View(model);
         }
         [HttpPost]
         public ActionResult MissionUserCredsList(MissionUserDeptsListModel model)
         {
-            RequestBl.SetMissionUserDeptsListModel(model, false,!ValidateModel(model));
+            bool hasError = !ValidateModel(model);
+            if (!hasError)
+                MissionUserDeptsFilterToSession(model,true);
+            RequestBl.SetMissionUserDeptsListModel(model, false,hasError);
             return View(model);
         }
         [HttpGet]
@@ -889,13 +1034,42 @@ namespace WebMvc.Controllers
         public ActionResult MissionPurchaseBookRecordsList()
         {
             var model = RequestBl.GetMissionPurchaseBookRecordsListModel();
+            SetMissionPbRecordsListModelFromSession(model);
             return View(model);
         }
         [HttpPost]
         public ActionResult MissionPurchaseBookRecordsList(MissionPurchaseBookRecordsListModel model)
         {
+            SetMissionPbRecordsFilterToSession(model);
             RequestBl.SetMissionPurchaseBookRecordsListModel(model);
             return View(model);
+        }
+        protected void SetMissionPbRecordsFilterToSession(MissionPurchaseBookRecordsListModel model)
+        {
+            MissionOrderFilterModel filterModel = new MissionOrderFilterModel
+            {
+                DepartmentId = model.DepartmentId,
+                UserName = model.UserName
+            };
+            System.Web.HttpContext.Current.Session[SessionMissionPbRecordsListFilterName] = filterModel;
+        }
+        protected void SetMissionPbRecordsListModelFromSession(MissionPurchaseBookRecordsListModel model)
+        {
+
+            MissionOrderFilterModel filterModel = (MissionOrderFilterModel)System.Web.HttpContext.Current.Session[SessionMissionPbRecordsListFilterName];
+            if (filterModel != null)
+            {
+                model.UserName = filterModel.UserName;
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
+                {
+                    Department dep = DepartmentDao.Load(filterModel.DepartmentId);
+                    if (dep != null)
+                    {
+                        model.DepartmentId = filterModel.DepartmentId;
+                        model.DepartmentName = dep.Name;
+                    }
+                }
+            }
         }
 
         [HttpGet]
@@ -903,14 +1077,37 @@ namespace WebMvc.Controllers
         public ActionResult MissionPurchaseBookDocList()
         {
             var model = RequestBl.GetMissionPurchaseBookDocsListModel();
+            SetMissionPbDocListModelFromSession(model);
             return View(model);
         }
        
         [HttpPost]
         public ActionResult MissionPurchaseBookDocList(MissionPurchaseBookDocListModel model)
         {
-            RequestBl.SetMissionPurchaseBookDocsModel(model, !ValidateModel(model));
+            bool hasError = !ValidateModel(model);
+            if (!hasError)
+                SetMissionPbDocFilterToSession(model);
+            RequestBl.SetMissionPurchaseBookDocsModel(model, hasError);
             return View(model);
+        }
+        protected void SetMissionPbDocFilterToSession(MissionPurchaseBookDocListModel model)
+        {
+            MissionOrderFilterModel filterModel = new MissionOrderFilterModel
+            {
+                BeginDate = model.BeginDate, 
+                EndDate = model.EndDate,
+            };
+            System.Web.HttpContext.Current.Session[SessionMissionPbDocListFilterName] = filterModel;
+        }
+        protected void SetMissionPbDocListModelFromSession(MissionPurchaseBookDocListModel model)
+        {
+
+            MissionOrderFilterModel filterModel = (MissionOrderFilterModel)System.Web.HttpContext.Current.Session[SessionMissionPbDocListFilterName];
+            if (filterModel != null)
+            {
+                model.BeginDate = filterModel.BeginDate;
+                model.EndDate = filterModel.EndDate;  
+            }
         }
         protected bool ValidateModel(MissionPurchaseBookDocListModel model)
         {

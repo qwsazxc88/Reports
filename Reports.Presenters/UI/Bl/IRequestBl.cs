@@ -125,6 +125,7 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model);
         CreateMissionOrderModel GetCreateMissionOrderModel();
         void ReloadDictionaries(MissionOrderEditModel model);
+        bool CheckOtherOrdersExists(MissionOrderEditModel model);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);

@@ -25,6 +25,17 @@ function clearErrors() {
     $("#Error").text("");
     $("#Error").hide();
 }
+function clearControlErrors(control) {
+    var form = control.parent();
+    form.find(":input").removeClass("input-validation-error");
+    form.find(".error").remove();
+}
+function addControlError(el, value) {
+    el.addClass("input-validation-error");
+    var msg = value.toString();
+    $("<span/>").addClass("error field-validation-error").text(msg).appendTo(el.parent());
+    if (value.length > 20) $("<span/>").parent().css("width", 500);
+}
 function escapeJson(value) {
     return escape(value); //value.replace('"','\x22');
 }
@@ -121,6 +132,21 @@ function ValidateSumC(control) {
     }
     else if (sum <= 0) {
         addDlgError(control, "Поле должно быть положительным десятичным числом");
+        return undefined;
+    }
+    else
+        return sum;
+}
+function ValidateSumNotNegative(control) {
+    if (control.val() == '')
+        return undefined;
+    var sum = ValidateFloat(control);
+    if (sum == undefined) {
+        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
+        return undefined;
+    }
+    else if (sum < 0) {
+        addDlgError(control, "Поле должно быть неотрицательным десятичным числом");
         return undefined;
     }
     else

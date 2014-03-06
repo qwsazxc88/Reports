@@ -43,4 +43,12 @@ namespace Reports.Presenters.UI.ViewModel
         public bool HasErrors { get; set; }
 
     }
+    public class MissionOrderFilterModel
+    {
+        public int DepartmentId { get; set; }
+        public int StatusId { get; set; }
+        public DateTime? BeginDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string UserName { get; set; }
+    }
 }
