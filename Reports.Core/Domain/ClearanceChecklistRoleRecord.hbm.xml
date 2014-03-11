@@ -26,8 +26,6 @@
       not-null="true"
     />
 
-    <property name="DaysForApproval" not-null="false"/>
-
     <many-to-one
       name="TargetUser"
       class="User"

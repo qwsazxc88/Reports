@@ -14,8 +14,6 @@ namespace Reports.Core.Domain
 
         public virtual ClearanceChecklistRole Role { get; set; }
 
-        public virtual int? DaysForApproval { get; set; }
-
         public virtual User TargetUser { get; set; }
 
         public virtual Department TargetDepartment { get; set; }
