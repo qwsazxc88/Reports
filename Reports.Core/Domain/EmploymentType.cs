@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Тип приема на работу
+    /// </summary>
     public class EmploymentType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

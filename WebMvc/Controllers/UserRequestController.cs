@@ -143,6 +143,7 @@ namespace WebMvc.Controllers
              return View(model);
          }
          #endregion
+
          #region Employment
          [HttpGet]
          public ActionResult EmploymentList()
@@ -320,6 +321,7 @@ namespace WebMvc.Controllers
          }
 
          #endregion
+
          #region Timesheet Correction
          [HttpGet]
          public ActionResult TimesheetCorrectionList()
@@ -392,25 +394,30 @@ namespace WebMvc.Controllers
          }
 
          #endregion
+
          #region Dismissal
+
          [HttpGet]
          public ActionResult DismissalList()
          {
              DismissalListModel model = RequestBl.GetDismissalListModel();
              return View(model);
          }
+
          [HttpPost]
          public ActionResult DismissalList(DismissalListModel model)
          {
              RequestBl.SetDismissalListModel(model, !ValidateModel(model));
              return View(model);
          }
+
          [HttpGet]
          public ActionResult DismissalEdit(int id, int userId)
          {
              DismissalEditModel model = RequestBl.GetDismissalEditModel(id, userId);
              return View(model);
          }
+
          [HttpPost]
          public ActionResult DismissalEdit(DismissalEditModel model)
          {
@@ -440,6 +447,7 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+
          protected void CorrectDropdowns(DismissalEditModel model)
          {
              if (!model.IsPersonnelFieldsEditable)
@@ -448,6 +456,7 @@ namespace WebMvc.Controllers
                  model.StatusId = model.StatusIdHidden;*/
              //model.DaysCount = model.DaysCountHidden;
          }
+
          protected bool ValidateDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto)
          {
              //if (model.BeginDate.HasValue && model.EndDate.HasValue &&
@@ -512,6 +521,76 @@ namespace WebMvc.Controllers
          }
 
          #endregion
+
+         #region ClearanceChecklist
+
+         [HttpGet]
+         public ActionResult ClearanceChecklistList()
+         {
+             var model = RequestBl.GetClearanceChecklistListModel();
+             return View(model);
+         }
+
+         [HttpPost]
+         public ActionResult ClearanceChecklistList(ClearanceChecklistListModel model)
+         {
+             RequestBl.SetClearanceChecklistListModel(model, !ValidateModel(model));
+             return View(model);
+         }
+
+         [HttpGet]
+         public ActionResult ClearanceChecklistEdit(int id, int? parentId, int userId)
+         {
+             if (parentId == null)
+             {
+                 var model = RequestBl.GetClearanceChecklistEditModel(id, userId);
+                 return View(model);
+             }
+             else
+             {
+                 var model = RequestBl.GetClearanceChecklistEditModelByParentId((int)parentId, userId);
+                 return PartialView(model);
+             }
+         }
+
+         [HttpPost]
+         public ActionResult ClearanceChecklistEdit(ClearanceChecklistEditModel model)
+         {
+             model = RequestBl.GetClearanceChecklistEditModel(model.Id, model.UserId);
+             return View(model);
+         }
+        
+         [HttpPost]
+         public JsonResult ClearanceChecklistApprove(int id)
+         {
+             string error = "";
+             ClearanceChecklistApprovalDto modifiedApproval;
+             if (RequestBl.SetClearanceChecklistApproval(id, AuthenticationService.CurrentUser.Id, out modifiedApproval, out error))
+             {
+                 return Json(new { ok = true, approvalId = id,  approvedBy = modifiedApproval.ApprovedBy, approvalDate = modifiedApproval.ApprovalDate });
+             }
+             else
+             {
+                 return Json(new { ok = false, approvalId = id, error = error });
+             }
+         }
+
+         [HttpPost]
+         public JsonResult ClearanceChecklistSaveComment(int id, string comment)
+         {
+             string error = "";
+             if (RequestBl.SetClearanceChecklistComment(id, comment, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }            
+         }
+
+         #endregion
+
          #region Mission
          [HttpGet]
          public ActionResult MissionList()
@@ -586,6 +665,7 @@ namespace WebMvc.Controllers
              return ModelState.IsValid;
          }
          #endregion
+
          #region HolidayWork
          [HttpGet]
          public ActionResult HolidayWorkList()
@@ -663,6 +743,7 @@ namespace WebMvc.Controllers
                  model.TimesheetStatusId = model.TimesheetStatusIdHidden;
          }
          #endregion
+
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
@@ -882,6 +963,7 @@ namespace WebMvc.Controllers
              }
          }
          #endregion
+
          #region Absence
          [HttpGet]
          public ActionResult AbsenceList()
@@ -964,6 +1046,7 @@ namespace WebMvc.Controllers
              return ModelState.IsValid;
          }
          #endregion
+
          #region Vacation
          [HttpGet]
          public ActionResult VacationList()
@@ -1117,6 +1200,7 @@ namespace WebMvc.Controllers
              }
          }
          #endregion
+
          #region Child Vacation
          [HttpGet]
          public ActionResult ChildVacationList()
@@ -1298,6 +1382,7 @@ namespace WebMvc.Controllers
 
   
          #endregion
+
          #region Comments
          [HttpGet]
          public ActionResult RenderComments(int id,int typeId)
@@ -1361,6 +1446,7 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
          #endregion
+
          #region Attachment
          public FileContentResult ViewAttachment(int id/*,int type*/)
          {
@@ -1520,6 +1606,7 @@ namespace WebMvc.Controllers
              return fileContent;
          }
            #endregion
+
          #region Print
          [HttpGet]
          public FileContentResult GetPrintForm(int id, int typeId)
@@ -1828,6 +1915,7 @@ namespace WebMvc.Controllers
          }*/
          #endregion
 
+         #region Misc
          protected void CheckBeginDate(ICheckForEntityBeginDate model)
          {
             CheckRequestDate(model.IsDelete,model.BeginDate);
@@ -1990,15 +2078,16 @@ namespace WebMvc.Controllers
             }
             return ModelState.IsValid;
          }
-         /*[HttpGet]
-         public ActionResult TemplatesList()
-         {
-             return View(new TemplatesListModel());
-         }*/
+        /*[HttpGet]
+        public ActionResult TemplatesList()
+        {
+            return View(new TemplatesListModel());
+        }*/
+         #endregion
     }
 
 
-    /*struct keyWordEntry
+        /*struct keyWordEntry
     {
         public string keyword;
         public int position;
@@ -2011,4 +2100,5 @@ namespace WebMvc.Controllers
             spacesAfter = spaces;
         }
     }*/
+        
 }

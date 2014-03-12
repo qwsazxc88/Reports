@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Тип оплаты/доплаты за работу в выходные и праздничные дни
+    /// </summary>
     public class HolidayWorkType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

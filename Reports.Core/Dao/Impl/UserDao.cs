@@ -56,9 +56,13 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual IList<User> FindByEmail(string email)
         {
-            return Session.CreateCriteria(typeof(User))
-                            .Add( Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String ))
-                            .List<User>();
+            var sessionCriteria = Session.CreateCriteria(typeof(User));
+            var queryResult = sessionCriteria.Add(Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String));
+            var lst = queryResult.List<User>();
+            return lst;
+            //return Session.CreateCriteria(typeof(User))
+            //                .Add( Expression.Sql("lower({alias}.Email) = lower(?)", email, NHibernateUtil.String ))
+            //                .List<User>();
         }
         public virtual IList<User> GetUsersWithRole(UserRole role)
         {

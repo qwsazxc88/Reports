@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Цель командировки
+    /// </summary>
     public class MissionGoal : AbstractEntity
     {
         #region Constants

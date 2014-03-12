@@ -229,6 +229,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(dismissalCommentDao); }
             set { dismissalCommentDao = value; }
         }
+
+        protected IClearanceChecklistDao clearanceChecklistDao;
+        public IClearanceChecklistDao ClearanceChecklistDao
+        {
+            get { return Validate.Dependency(clearanceChecklistDao); }
+            set { clearanceChecklistDao = value; }
+        }
+
         public ITimesheetCorrectionTypeDao TimesheetCorrectionTypeDao
         {
             get { return Validate.Dependency(timesheetCorrectionTypeDao); }
@@ -461,7 +469,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { configurationService = value; }
             get { return Validate.Dependency(configurationService); }
         }
+
         #endregion
+
         #region Create Request
         public CreateRequestModel GetCreateRequestModel(int? userId)
         {
@@ -510,6 +520,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }.OrderBy(x => x.Name).ToList();
         }
         #endregion
+
         #region All requests
         public AllRequestListModel GetAllRequestListModel()
         {
@@ -804,6 +815,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Employment
         public EmploymentListModel GetEmploymentListModel()
         {
@@ -1308,6 +1320,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
         #region Timesheet Correction
         public TimesheetCorrectionListModel GetTimesheetCorrectionListModel()
         {
@@ -1697,6 +1710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Dismissal
         public DismissalListModel GetDismissalListModel()
         {
@@ -1972,9 +1986,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(current, dismissal, model, user);
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
+                    //
                 }
                 else
-                {
+                {                    
                     dismissal = DismissalDao.Load(model.Id);
                     string fileName;
                     int? attachmentId = SaveAttachment(dismissal.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Dismissal, out fileName);
@@ -2025,6 +2040,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
+                // create CCL approvals if the Dismissal has been approved by the user and two managers
+                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                {
+                    var clearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles();
+                    foreach (var clearanceChecklistRole in clearanceChecklistRoles)
+                    {
+                        dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
+                        {
+                            Dismissal = dismissal,
+                            ClearanceChecklistRole = clearanceChecklistRole
+                        });
+                    }
+                    DismissalDao.SaveAndFlush(dismissal);
+                    SendEmailForClearanceChecklistNeedToApprove(ClearanceChecklistDao.GetClearanceChecklistApprovingAuthorities(), dismissal);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -2122,6 +2152,206 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        #region ClearanceChecklist
+
+        public ClearanceChecklistListModel GetClearanceChecklistListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            var model = new ClearanceChecklistListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+                SortBy = 0,
+                SortDescending = null,
+                //Department = GetDepartmentDto(user),
+            };
+            SetDictionariesToModel(model, user);
+            SetInitialDates(model);
+            return model;
+        }
+
+        public void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetDictionariesToModel(model, user);
+            if (hasError)
+                model.Documents = new List<VacationDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+
+        protected void SetDictionariesToModel(ClearanceChecklistListModel model, User user)
+        {
+            //model.Departments = GetDepartments(user);
+            //model.Types = GetDismissalTypes(true);
+            model.Statuses = GetRequestStatuses();
+            model.Positions = GetPositions(user);
+        }
+
+        protected void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
+        {
+
+            //UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            UserRole role = UserRole.OutsourcingManager;
+            model.Documents = ClearanceChecklistDao.GetDocuments(
+                user.Id,
+                role,
+                //model.DepartmentId,
+                //GetDepartmentId(model.Department),
+                model.DepartmentId,
+                model.PositionId,
+                //model.TypeId,
+                0,
+                model.StatusId,
+                //0,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
+        }
+
+        public ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId)
+        {
+            const int MAX_DAYS_BEFORE_DISMISSAL = 14;
+
+            var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
+                        
+            // User Access Control
+            // User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            User user = UserDao.Load(userId);
+            IUser current = AuthenticationService.CurrentUser;
+            User currentUser = UserDao.Load(current.Id);
+            if (!CheckUserRights(user, current, id, false) && !IsRoleOwner(currentUser))
+                throw new ArgumentException("Доступ запрещен.");
+            // End User Access Control
+
+            var clearanceChecklist = ClearanceChecklistDao.Load(id);
+            if (clearanceChecklist == null)
+                throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
+            foreach (var approval in clearanceChecklist.ClearanceChecklistApprovals)
+            {
+                // TODO: CCL Roles
+                IList<string> roleAuthorities = clearanceChecklistDao.GetClearanceChecklistRoleAuthorities(approval.ClearanceChecklistRole)
+                    .Select<User, string>(roleAuthority => roleAuthority.FullName).ToList<string>();
+
+                model.ClearanceChecklistApprovals.Add(
+                    new ClearanceChecklistApprovalDto
+                    {
+                        Id = approval.Id,
+                        ClearanceChecklistRole = approval.ClearanceChecklistRole.Description,
+                        RoleAuthorities = roleAuthorities,
+                        ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
+                        ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
+                        Comment = approval.Comment,
+                        // Checking if the authenticated user has the extended role for approval
+                        // and that the user's department is allowed to approve today.
+                        // If both are OK the Active property is set
+                        // and the view will output the approval link in the corresponding row
+
+                        // TODO: CCL Roles
+                        Active = (this.IsRoleOwner(currentUser, approval.ClearanceChecklistRole) ? true : false) &&
+                            DateTime.Now >= clearanceChecklist.EndDate.AddDays(
+                                approval.ClearanceChecklistRole.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistRole.DaysForApproval)
+                    }
+                );
+            }
+            model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
+            model.DocumentNumber = clearanceChecklist.Number.ToString();
+            model.EndDate = clearanceChecklist.EndDate;
+            SetUserInfoModel(user, model);
+
+            return model;
+        }
+
+        public ClearanceChecklistEditModel GetClearanceChecklistEditModelByParentId(int parentId, int userId)
+        {
+            var parent = DismissalDao.Load(parentId);
+            if (parent == null || parent == null || parent.Id == 0)
+                throw new ArgumentException(string.Format("Обходной лист для увольнения (id {0}) не найден в базе данных.", parentId));
+            var model = GetClearanceChecklistEditModel(parent.Id, userId);
+            return model;
+        }
+      
+        public bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error)
+        {
+            // TODO Implementation for SaveClearanceChecklistEditModel
+            error = "";
+            return false;
+        }
+
+        public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            // TODO: CCL Roles ?
+            //if(!user.ClearanceChecklistRoleRecords.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
+            if (clearanceChecklistDao.SetApproval(approvalId, approvedBy, out modifiedApproval))
+            {
+                error = "";
+                return true;
+            }
+            else
+            {
+                error = "Error updating the record";
+                return false;
+            }
+        }
+
+        public bool SetClearanceChecklistComment(int approvalId, string comment, out string error)
+        {
+            const int MAX_COMMENT_LENGTH = 255;
+
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            // TODO: CCL Roles ?
+            if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
+
+            if (comment.Length > MAX_COMMENT_LENGTH) comment = comment.Substring(0, MAX_COMMENT_LENGTH);
+            if (clearanceChecklistDao.SetComment(approvalId, comment))
+            {
+                error = "";
+                return true;
+            }
+            else
+            {
+                error = "Error updating comment";
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the given user owns the given clearance checklist role
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        private bool IsRoleOwner(User user, ClearanceChecklistRole role)
+        {
+            return user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id).Contains<int>(role.Id) ? true : false;
+        }
+
+        /// <summary>
+        /// Checks if the given user owns any clearance checklist role
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool IsRoleOwner(User user)
+        {
+            return (user.ClearanceChecklistRoleRecords != null && user.ClearanceChecklistRoleRecords.Count > 0);
+        }
+
+        #endregion
+
         #region Mission
         public MissionListModel GetMissionListModel()
         {
@@ -2550,6 +2780,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region HolidayWork
         public HolidayWorkListModel GetHolidayWorkListModel()
         {
@@ -2895,6 +3126,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Sicklist
         public SicklistListModel GetSicklistListModel()
         {
@@ -3481,6 +3713,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return absences.Any(x => x.BeginDate <= date && x.EndDate >= date);
         }
         #endregion
+
         #region Absence
         public AbsenceListModel GetAbsenceListModel()
         {
@@ -3917,6 +4150,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Vacation list model
         public VacationListModel GetVacationListModel()
         {
@@ -4045,6 +4279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return positionList;
         }
         #endregion
+
         #region Vacation edit model
         public VacationEditModel GetVacationEditModel(int id,int userId)
         {
@@ -4522,6 +4757,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                , userId, vacationId,isChildVacantion);
         }
         #endregion
+
         #region Child Vacation 
         public ChildVacationListModel GetChildVacationListModel()
         {
@@ -4965,6 +5201,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
         #region Comments
         public  RequestCommentsModel GetCommentsModel(int id,int typeId)
         {
@@ -5284,6 +5521,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Attachment
         public RequestAttachmentsModel GetAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
@@ -5374,6 +5612,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         #region Department Tree
         public DepartmentTreeModel GetDepartmentTreeModel(int departmentId)
         {
@@ -5514,6 +5753,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
         public AttachmentModel GetPrintFormFileContext(int id,RequestPrintFormTypeEnum typeId)
         {
             RequestPrintForm printForm = RequestPrintFormDao.FindByRequestAndTypeId(id,typeId);
@@ -5526,6 +5766,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ContextType = "application/pdf"
             };
         }
+
         /*public VacationPrintModel GetVacationPrintModel(int id)
         {
             Vacation vacation = VacationDao.Load(id);
@@ -5671,6 +5912,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                            new PrintVacationOrderDto { Keyword = "MANFIO",Text = vacation.User.Manager.Name},
                        };
         }*/
+
         protected static string GetMonthNamerRP(int month)
         {
             switch (month)
@@ -5704,6 +5946,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        #region AcceptRequest
         public void GetAcceptRequestsModel(AcceptRequestsModel model)
         {
             SetListboxes(model);
@@ -5714,14 +5957,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 IUser currentUser = AuthenticationService.CurrentUser;
-                if(!string.IsNullOrEmpty(model.AcceptDate) || currentUser.UserRole == UserRole.Manager)
+                if (!string.IsNullOrEmpty(model.AcceptDate) || currentUser.UserRole == UserRole.Manager)
                 {
                     DateTime acceptDate;
-                    if(DateTime.TryParse(model.AcceptDate,out acceptDate))
+                    if (DateTime.TryParse(model.AcceptDate, out acceptDate))
                     {
                         User user = UserDao.Load(currentUser.Id);
                         AcceptRequestDate entity = user.AcceptRequests.Where(x => x.DateAccept == acceptDate).FirstOrDefault();
-                        if(entity == null)
+                        if (entity == null)
                         {
                             entity = new AcceptRequestDate
                                          {
@@ -5736,7 +5979,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         else
                             Log.WarnFormat("Request already accepted for user {0} date {1} at {2}",
-                                user.Id,entity.DateAccept,entity.DateCreate);
+                                user.Id, entity.DateAccept, entity.DateCreate);
 
                     }
                 }
@@ -5744,7 +5987,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             catch (Exception ex)
             {
                 model.Error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
-                Log.Error("Exception on SetAccept",ex);
+                Log.Error("Exception on SetAccept", ex);
 
             }
             finally
@@ -5756,7 +5999,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetWeekDtos(AcceptRequestsModel model)
         {
-            DateTime month = new DateTime(model.Year,model.Month,1);
+            DateTime month = new DateTime(model.Year, model.Month, 1);
             IList<AcceptWeekDto> list = GetWeeksDtoList(month);
             DateTime beginDate = list[0].Monday;
             DateTime endDate = list[5].Friday;
@@ -5766,30 +6009,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<IdNameDto> allUserIds = new List<IdNameDto>();
             foreach (AcceptRequestDateDto dto in acceptDates)
             {
-                if(allUserIds.Where(x => x.Id == dto.UserId).FirstOrDefault() == null)
-                    allUserIds.Add(new IdNameDto(dto.UserId,dto.UserName));
+                if (allUserIds.Where(x => x.Id == dto.UserId).FirstOrDefault() == null)
+                    allUserIds.Add(new IdNameDto(dto.UserId, dto.UserName));
             }
             IList<UserAcceptWeekDto> resultList = new List<UserAcceptWeekDto>();
             foreach (IdNameDto idNameDto in allUserIds)
             {
                 IList<AcceptRequestWeekDto> listFroUser = new List<AcceptRequestWeekDto>();
-                IList<AcceptRequestDateDto> userDto = 
+                IList<AcceptRequestDateDto> userDto =
                     acceptDates.Where(x => x.UserId == idNameDto.Id).ToList();
                 foreach (AcceptWeekDto acceptWeekDto in list)
                 {
                     AcceptRequestWeekDto newDto = new AcceptRequestWeekDto
                     {
                         Friday = acceptWeekDto.Friday,
-                        IsAccepted = 
+                        IsAccepted =
                         userDto.Where(x => x.DateAccept == acceptWeekDto.Friday).
                         FirstOrDefault() != null,
                         IsEditable = acceptWeekDto.Friday == DateTime.Today ||
                         acceptWeekDto.Friday.AddDays(3) == DateTime.Today,
                     };
-                    newDto.IsEditable = newDto.IsEditable && 
+                    newDto.IsEditable = newDto.IsEditable &&
                                         !newDto.IsAccepted &&
                                         user.UserRole == UserRole.Manager;
-                    newDto.IsHidden = DateTime.Today < acceptWeekDto.Friday; 
+                    newDto.IsHidden = DateTime.Today < acceptWeekDto.Friday;
                     listFroUser.Add(newDto);
                 }
                 resultList.Add(new UserAcceptWeekDto
@@ -5811,22 +6054,24 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IList<AcceptWeekDto> GetWeeksDtoList(DateTime month)
         {
             IList<AcceptWeekDto> list = new List<AcceptWeekDto>();
-            DateTime firstMonday = month.AddDays((int)month.DayOfWeek == 0 ? -6 : -(int)month.DayOfWeek+1);
+            DateTime firstMonday = month.AddDays((int)month.DayOfWeek == 0 ? -6 : -(int)month.DayOfWeek + 1);
             for (int i = 0; i < 6; i++)
             {
-                DateTime monday = firstMonday.AddDays(i*7);
-                DateTime friday = firstMonday.AddDays(i*7 + 4);
+                DateTime monday = firstMonday.AddDays(i * 7);
+                DateTime friday = firstMonday.AddDays(i * 7 + 4);
                 //if(monday.Month != month.Month && friday.Month != month.Month)
                 //    continue;
-                list.Add( new AcceptWeekDto
+                list.Add(new AcceptWeekDto
                               {
                                   Monday = monday,
                                   Friday = friday
                               });
             }
             return list;
-        }
+        } 
+        #endregion
 
+        #region Constant
         public void GetConstantListModel(ConstantListModel model)
         {
             SetListboxes(model);
@@ -5864,29 +6109,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void GetConstantEditModel(ConstantEditModel model)
         {
             ReloadDictionariesToModel(model);
-            WorkingDaysConstant entity; 
-            if(model.Id != 0)
+            WorkingDaysConstant entity;
+            if (model.Id != 0)
             {
                 entity = WorkingDaysConstantDao.Load(model.Id);
-                if(entity == null)
-                    throw new ArgumentException(string.Format("Не могу загрузить константу (id {0}) из базы данных",model.Id));
+                if (entity == null)
+                    throw new ArgumentException(string.Format("Не могу загрузить константу (id {0}) из базы данных", model.Id));
                 model.Year = entity.Month.Year;
                 model.Month = entity.Month.Month;
             }
-            else if(model.Month != 0)
+            else if (model.Month != 0)
                 entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
             else
             {
                 model.Month = DateTime.Today.Month;
                 entity = WorkingDaysConstantDao.LoadDataForMonth(model.Month, model.Year);
             }
-            if(entity != null)
+            if (entity != null)
             {
                 model.Id = entity.Id;
                 model.TS = entity.Version;
                 model.Days = entity.Days.ToString();
                 model.Hours = entity.Hours.ToString();
-            } 
+            }
             else
             {
                 model.Id = 0;
@@ -5899,7 +6144,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.Months = GetMonthesList();
         }
-        public bool SaveConstantEditModel(ConstantEditModel model,out string error)
+        public bool SaveConstantEditModel(ConstantEditModel model, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -5955,7 +6200,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 ReloadDictionariesToModel(model);
             }
-        }
+        } 
+        #endregion
+
         #region Deduction
         public DeductionListModel GetDeductionListModel()
         {
@@ -8206,6 +8453,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return table;
         }
         #endregion
+
         #region Mission Report
         public MissionReportsListModel GetMissionReportsListModel()
         {

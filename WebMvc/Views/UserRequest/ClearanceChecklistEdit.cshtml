@@ -1,0 +1,153 @@
+﻿@model Reports.Presenters.UI.ViewModel.ClearanceChecklistEditModel
+@{
+    ViewBag.Title = "Редактирование обходного листа";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.UserId)
+    
+    if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+    {
+        <div class="doc-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                        @Html.ValidationSummary(false)                    
+                        <div id="Error" style="color:Red;display:none;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.Partial("../UserInfoView", Model)
+                    </td>
+                </tr>
+                @*@if (Model.IsDeleted)
+                { 
+                    <tr>
+                        <td colspan="2" style="color:Red">Обходной лист отклонен</td>
+                    </tr>
+                }*@  
+            </table>    
+        </div>
+    }
+    
+    <br />
+    
+    <table class="grid" style="width:100%">
+        <tr>
+            <th>
+                <div>Согласующее подразделение</div>
+            </th>
+            <th>
+                <div>Состояние</div>
+            </th>
+            <th>
+                <div>ФИО согласовавшего</div>
+            </th>
+            <th>
+                <div>Дата</div>
+            </th>
+            <th>
+                <div>Дата увольнения</div>
+            </th>
+            <th style="width: 0px;">
+                <div>Комментарии</div>
+            </th>
+        </tr>
+        @if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+        {
+            foreach (var approval in Model.ClearanceChecklistApprovals)
+            {
+                <tr>
+                    <td style="text-align:left; vertical-align: top;">
+                        <a class="role-authorities-link" data-approval-id="@approval.Id" href="">@approval.ClearanceChecklistRole</a>
+                        <ul id="role-authorities-list" style="display:none" data-approval-id="@approval.Id">
+                            @foreach(var authority in approval.RoleAuthorities)
+                            {
+                                <li>@authority</li>
+                            }
+                        </ul>
+                    </td>
+                    <td>
+                        @if (approval.ApprovalDate != "")
+                        {
+                            <span style="color:Green">Cогласовано</span>
+                        }
+                        else if (approval.Active)
+                        {
+                            <a class="approval-link" data-approval-id="@approval.Id" href="">Согласовать</a>
+                        }
+                        else
+                        {
+                            <span style="color:Black">Не согласовано</span>
+                        }
+                    </td>
+                    <td>@approval.ApprovedBy</td>
+                    <td>@approval.ApprovalDate</td>
+                    <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
+                    <td>@if (approval.Active)
+                        {
+                            <textarea rows="1" cols="30" value="@approval.Comment" wrap="soft" maxlength="240" data-approval-id="@approval.Id">@approval.Comment</textarea>
+                            <a class="save-approval-comment-link" data-approval-id="@approval.Id" href="">Сохранить</a>
+                        }
+                        else
+                        {
+                            @approval.Comment
+                        }
+                        </td>
+                    @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                    <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
+            </tr>
+            }
+        }
+    </table>
+}
+
+<script type="text/javascript">
+    function ApprovalSuccess()
+    {
+        $(this).ReplaceWith("<span style='color:Green'>Cогласовано</span>");
+    }
+    $(document).ready(function () {
+        setActiveMenuItem("userClearanceChecklistList");
+        // обработка щелчков по ссылкам согласования
+        $(".approval-link").click(function (event) {
+            var $currentApprovalLink = $(this);
+            event.preventDefault();
+            $.post("/UserRequest/ClearanceChecklistApprove",
+                { id: $currentApprovalLink.attr("data-approval-id") },
+                function (data) {
+                    if (data.ok === true) {
+                        $currentApprovalLink.parent().next().text(data.approvedBy.toString());
+                        $currentApprovalLink.parent().next().next().text(data.approvalDate);
+                        $currentApprovalLink.replaceWith("<span style='color:Green'>Cогласовано</span>");
+                    }
+                }
+            );
+        });
+        $(".save-approval-comment-link").click(function (event) {
+            var $currentSaveLink = $(this);
+            var $currentCommentInput = $currentSaveLink.prev("textarea");
+            event.preventDefault();
+            $.post("/UserRequest/ClearanceChecklistSaveComment",
+                {
+                    id: $currentSaveLink.attr("data-approval-id"),
+                    comment: $currentCommentInput.val()
+                },
+                function (data) {
+                    if (data.ok === true) {
+                        $currentCommentInput.css("background-color", "lightgreen");
+                        setTimeout(function () { $currentCommentInput.css("background-color", "white"); }, 700);
+                    }
+                }
+            );
+        });
+        $(".role-authorities-link").click(function (event) {
+            var $currentAuthoritiesLink = $(this);
+            event.preventDefault();
+            $currentAuthoritiesLink.next("#role-authorities-list").toggle();
+        });
+    });
+</script>

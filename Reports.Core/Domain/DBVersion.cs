@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Версия структуры БД
+    /// </summary>
     public class DBVersion : AbstractEntity
     {
         #region Fields

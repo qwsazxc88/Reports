@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Командировочный грейд
+    /// </summary>
     public class MissionGraid : AbstractEntity
     {
         #region Constants

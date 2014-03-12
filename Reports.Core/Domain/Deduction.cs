@@ -7,7 +7,7 @@ using Reports.Core.Enum;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Удержание
     /// </summary>
     public class Deduction : AbstractEntityWithVersion//AbstractEntity
     {

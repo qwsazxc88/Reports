@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Iesi.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -39,6 +40,8 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual string Name { get; set; }
         public virtual string Email { get; set; }
+
+        #region Deleted
         //public const string FirstNameFieldName = "FirstName";
         //public virtual string FirstName { get; set; }
         //{
@@ -72,6 +75,8 @@ namespace Reports.Core.Domain
         //    get { return _department; }
         //    set { _department = value; }
         //}
+        #endregion
+
         public virtual bool IsFirstTimeLogin { get; set; }
         //{
         //    get { return _isFirstTimeLogin; }
@@ -112,6 +117,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? DateRelease { get; set; }
 
         public virtual string Comment { get; set; }
+
+        #region Deleted
         //{
         //    get { return _date; }
         //    set { _date = value; }
@@ -128,11 +135,17 @@ namespace Reports.Core.Domain
         //}
 
         //public virtual Role Role { get; set; }
+        #endregion
+
         public virtual int RoleId { get; set; }
         public virtual UserRole UserRole 
         { 
             get { return (UserRole)RoleId; }
         }
+        
+        // Extended roles
+        public virtual IList<ClearanceChecklistRoleRecord> ClearanceChecklistRoleRecords { get; set; }
+
         //public virtual bool IsUserResponser
         //{
         //    get { return false; }
@@ -140,12 +153,7 @@ namespace Reports.Core.Domain
 
         public virtual User Manager { get; set; }
         //public virtual User PersonnelManager { get; set; }
-        private IList<User> personnels = new List<User>();
-        public virtual IList<User> Personnels
-        {
-            get { return personnels; }
-            set { personnels = value; }
-        }
+        public virtual IList<User> Personnels { get; set; }
         public virtual IList<AcceptRequestDate> AcceptRequests { get; set; }
         //public virtual User BudgetManager { get; set; }
         //public virtual User OutsourcingManager { get; set; }
@@ -168,10 +176,12 @@ namespace Reports.Core.Domain
 
         public User()
         {
+            this.ClearanceChecklistRoleRecords = new List<ClearanceChecklistRoleRecord>();
+            this.Personnels = new List<User>();
         }
 
         public User(/*string firstName, string middleName, string lastName,*/
-            string name,string code)
+            string name,string code) : this()
         {
             //FirstName = firstName;
             //LastName = lastName;

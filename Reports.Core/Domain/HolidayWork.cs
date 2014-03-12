@@ -7,7 +7,7 @@ using Reports.Core.Enum;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Работа в выходные и праздничные дни
     /// </summary>
     public class HolidayWork : AbstractEntityWithVersion//AbstractEntity
     {

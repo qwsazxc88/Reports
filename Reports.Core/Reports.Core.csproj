@@ -92,6 +92,7 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
@@ -261,6 +263,7 @@
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
     <Compile Include="Domain\AbstractEntity.cs" />
+    <Compile Include="Domain\AbstractGeneralDocument.cs" />
     <Compile Include="Domain\AbstractUsedEntity.cs" />
     <Compile Include="Domain\AbstractUsedEntityWithVersion.cs" />
     <Compile Include="Domain\AcceptRequestDate.cs" />
@@ -270,6 +273,7 @@
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
     <Compile Include="Domain\ChildVacationComment.cs" />
+    <Compile Include="Domain\ClearanceChecklistApproval.cs" />
     <Compile Include="Domain\Contractor.cs" />
     <Compile Include="Domain\DBVersion.cs" />
     <Compile Include="Domain\Deduction.cs" />
@@ -291,6 +295,7 @@
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
+    <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -356,8 +361,10 @@
     <Compile Include="Domain\WorkingDaysConstant.cs" />
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
+    <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
+    <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\CostDto.cs" />
     <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DeductionDto.cs" />
@@ -705,6 +712,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\MissionPurchaseBookRecord.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistApproval.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistRole.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistRoleRecord.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

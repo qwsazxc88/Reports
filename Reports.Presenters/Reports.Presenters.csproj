@@ -131,6 +131,8 @@
     <Compile Include="UI\ViewModel\BaseModel.cs" />
     <Compile Include="UI\ViewModel\ChildVacationEditModel.cs" />
     <Compile Include="UI\ViewModel\ChildVacationListModel.cs" />
+    <Compile Include="UI\ViewModel\ClearanceChecklistEditModel.cs" />
+    <Compile Include="UI\ViewModel\ClearanceChecklistListModel.cs" />
     <Compile Include="UI\ViewModel\ConstantEditModel.cs" />
     <Compile Include="UI\ViewModel\ConstantListModel.cs" />
     <Compile Include="UI\ViewModel\CreateMissionOrderModel.cs" />
