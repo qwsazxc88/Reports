@@ -61,6 +61,14 @@ namespace Reports.Presenters.UI.Bl
         DismissalEditModel GetDismissalEditModel(int id, int userId);
         bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
+                
+        ClearanceChecklistListModel GetClearanceChecklistListModel();
+        void SetClearanceChecklistListModel(ClearanceChecklistListModel model, bool hasError);
+        ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId);
+        ClearanceChecklistEditModel GetClearanceChecklistEditModelByParentId(int parentId, int userId);
+        bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error);
+        bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error);
+        bool SetClearanceChecklistComment(int approvalId, string comment, out string error);
 
         TimesheetCorrectionListModel GetTimesheetCorrectionListModel();
         void SetTimesheetCorrectionListModel(TimesheetCorrectionListModel model, bool hasError);
@@ -125,6 +133,7 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model);
         CreateMissionOrderModel GetCreateMissionOrderModel();
         void ReloadDictionaries(MissionOrderEditModel model);
+        bool CheckOtherOrdersExists(MissionOrderEditModel model);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);

@@ -123,6 +123,7 @@
     <Content Include="Content\icon_down_sort_arrow.png" />
     <Content Include="Content\icon_up_sort_arrow.png" />
     <Content Include="Content\loading.gif" />
+    <Content Include="Content\logo-skb.jpg" />
     <Content Include="Content\logo.gif" />
     <Content Include="Content\logobg.gif" />
     <Content Include="Content\PrintForm.css" />
@@ -610,10 +611,16 @@
     <Content Include="Views\MissionOrder\EditRecordDialogError.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\UserRequest\ClearanceChecklistList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Views\MissionOrder\MissionPurchaseBookRecordsList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MissionOrder\MissionUserDeptsList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\UserRequest\ClearanceChecklistEdit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MissionOrder\PrintMissionUserDeptsList.cshtml" />

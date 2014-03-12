@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Рабочий график?
+    /// </summary>
     public class EmploymentHoursType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

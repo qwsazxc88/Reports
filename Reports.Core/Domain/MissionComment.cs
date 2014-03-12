@@ -2,6 +2,9 @@
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Комментарий к командировке
+    /// </summary>
     public class MissionComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }

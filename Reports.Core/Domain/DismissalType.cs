@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Причина увольнения
+    /// </summary>
     public class DismissalType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

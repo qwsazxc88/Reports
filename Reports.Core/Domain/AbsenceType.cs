@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Причина неявки
+    /// </summary>
     public class AbsenceType : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

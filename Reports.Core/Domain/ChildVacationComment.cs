@@ -2,6 +2,9 @@
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Комментарий к отпуску по уходу за ребенком
+    /// </summary>
     public class ChildVacationComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }

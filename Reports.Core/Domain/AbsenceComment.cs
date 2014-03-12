@@ -2,6 +2,9 @@
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Комментарий к неявке
+    /// </summary>
     public class AbsenceComment : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }

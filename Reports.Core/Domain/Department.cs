@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Департамент/офис и т.п.
+    /// </summary>
     public class Department : AbstractEntityWithVersion//AbstractUsedEntity
     {
         #region Constants

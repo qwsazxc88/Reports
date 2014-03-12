@@ -7,7 +7,7 @@ using Reports.Core.Enum;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Увольнение
     /// </summary>
     public class Dismissal : AbstractEntityWithVersion//AbstractEntity
     {
@@ -37,6 +37,9 @@ namespace Reports.Core.Domain
         public virtual bool DeleteAfterSendTo1C { get; set; }
 
         public virtual IList<DismissalComment> Comments { get; set; }
+
+        // Согласования обходного листа
+        public virtual IList<ClearanceChecklistApproval> ClearanceChecklistApprovals { get; set; }
         
         #endregion
 

@@ -57,9 +57,9 @@ namespace Reports.Presenters.UI.ViewModel
         public string AllSum { get; set; }
         public string UserAllSum { get; set; }
 
-        [Display(Name = "Сумма наличных в подотчет")]
+        [Display(Name = "Сумма наличными в кассе")]
         public string UserSumCash { get; set; }
-        [Display(Name = "Сумма безналичных в подотчет")]
+        [Display(Name = "Сумма на заработную карту")]
         public string UserSumNotCash { get; set; }
 
         [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]

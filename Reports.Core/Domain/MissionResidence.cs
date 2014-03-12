@@ -1,5 +1,8 @@
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// Проживание в командировке
+    /// </summary>
     public class MissionResidence : AbstractEntity
     {
         #region Constants

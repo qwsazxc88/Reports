@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Patient
+    /// Прием на работу?
     /// </summary>
     public class Employment : AbstractEntityWithVersion //AbstractEntity
     {

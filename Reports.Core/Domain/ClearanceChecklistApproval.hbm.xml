@@ -1,0 +1,13 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="ClearanceChecklistApproval">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <many-to-one name="Dismissal" class="Dismissal" column="DismissalId" foreign-key="FK_ClearanceChecklistApproval_Dismissal" index="IX_ClearanceChecklistApproval_Dismissal_Id"  not-null="true"/>
+    <many-to-one name="ClearanceChecklistRole" class="ClearanceChecklistRole" column="RoleId" foreign-key="FK_ClearanceChecklistApproval_ClearanceChecklistRole" index="IX_ClearanceChecklistApproval_ClearanceChecklistRole_Id" not-null="true" />
+    <many-to-one name="ApprovedBy" class="User" column="ApprovedById" foreign-key="FK_ClearanceChecklistApproval_ApprovedBy" index="IX_ClearanceChecklistApproval_ApprovedBy_Id"  not-null="false"/>
+    <property name="ApprovalDate" not-null="false"/>
+    <property name="Comment" not-null="false" />
+  </class>
+</hibernate-mapping>

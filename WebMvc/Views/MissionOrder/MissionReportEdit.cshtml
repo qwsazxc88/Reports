@@ -53,7 +53,13 @@
             </td>
              <td>
                @Html.TextBoxFor(model => model.Hotels, Model.IsEditable ? (object)new { maxlength = 1024, style = "width:400px" } : (object)new { @readonly = "read-only",maxlength = 1024, style = "width:400px" }) 
-               <br/> (заполнить в случае безналичной оплаты гостиницы)
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td>
+                (если оплачено организацией за сотрудника - указать название гостиницы, если самостоятельно - указать "нет")
             </td>
         </tr>
         <tr>
@@ -242,6 +248,12 @@
         });
         function ValidateForm()
         {
+            clearControlErrors($("#Hotels"));
+            if($("#Hotels").val() == '' )
+            {
+                addControlError($("#Hotels"),'Обязательное поле');
+                return false;
+            }
             return true;
         }
         function ManagerReject()

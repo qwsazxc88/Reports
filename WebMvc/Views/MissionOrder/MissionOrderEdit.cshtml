@@ -35,7 +35,7 @@
                 <input type="hidden" id="GoalIdHidden" name="GoalIdHidden" value="@Model.GoalIdHidden" />
             </td>
         </tr>
-        <tr>
+        <tr id="trType">
             <td>
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
@@ -119,7 +119,7 @@
                             @Html.TextBoxFor(m => m.AllSumDaily, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                           @*@Html.TextBoxFor(model => model.UserAllSumDaily, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                         <td>
                         </td>
@@ -132,7 +132,7 @@
                             @Html.TextBoxFor(m => m.AllSumResidence, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                           @*@Html.TextBoxFor(model => model.UserAllSumResidence, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                         <td>
                                 @Html.CheckBox("IsResidencePaid", Model.IsResidencePaid, Model.IsEditable ? (object)new { onchange = "IsResidencePaidChange();" } : (object)new { disabled = "disabled" }) 
@@ -150,7 +150,7 @@
                             @Html.TextBoxFor(m => m.AllSumAir, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                           @*@Html.TextBoxFor(model => model.UserAllSumAir, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                          <td>
                                 @Html.CheckBox("IsAirTicketsPaid", Model.IsAirTicketsPaid, Model.IsEditable ? (object)new { onchange = "IsAirTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
@@ -168,7 +168,7 @@
                             @Html.TextBoxFor(m => m.AllSumTrain, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                           @Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                           @*@Html.TextBoxFor(model => model.UserAllSumTrain, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserSum();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) *@
                         </td>
                          <td>
                                 @Html.CheckBox("IsTrainTicketsPaid", Model.IsTrainTicketsPaid, Model.IsEditable ? (object)new { onchange = "IsTrainTicketsPaidChange();" } : (object)new { disabled = "disabled" }) 
@@ -206,7 +206,7 @@
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                @Html.TextBoxFor(model => model.UserSumCash, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserCashNotCashSums();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
         <tr  id="trUserSumNotCash">
@@ -214,7 +214,7 @@
                 @Html.LabelFor(m => m.UserSumNotCash):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserCashNotCashSums();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
          <tr>
@@ -459,19 +459,36 @@
             IsTrainTicketsPaidChange();
         });
         function ValidateForm() {
+            clearEditTargetErrors($("#trType"));
+            clearErrors();
             if($("#IsSecritaryEditable").val == "True")
                 return true;
-            if(!CalcUserSum())
-                return false;
+            /*if(!CalcUserSum())
+                return false;*/
             if(!CalcUserCashNotCashSums())
                 return false;
-            clearErrors();
             var targets = JSON.parse($("#Targets").val());
             if(targets.List.length == 0)
             {
                addError("Необходимо указать хотя бы одно место назначения");
                return false;
-            }    
+            }   
+            var hasError = false;
+            jQuery.each(targets.List, function( i, val ) {
+                if((val.CountryId == 1 && $("#TypeId").val() != 1) ||
+                       (val.CountryId == 2 && $("#TypeId").val() != 2) || 
+                       (val.CountryId == 3 && $("#TypeId").val() != 4) ||
+                       (val.CountryId == 4 && $("#TypeId").val() != 3))
+                 {
+                   hasError = true;
+                 }
+            });
+            if(hasError)
+            {
+                //addError("Страна места назначения должна совпадать с типом командировки");
+                addEditTargetError($("#TypeId"),"Страна места назначения должна совпадать с типом командировки");
+                return false;
+            }
             return true;
         }
         /*function SetApprovedForAllAndValidateForm() {
@@ -824,6 +841,8 @@
             var result = true;
             var beginDate = undefined;
             var endDate = undefined;
+
+           
             result = validate_FieldIsNotEmptyAddError($("#BeginDate"));
             if (result) {
                 try {
@@ -853,6 +872,14 @@
                     addEditTargetError($("#BeginDate"), "Дата начала не может превышать дату окончания");
                     result = false;
                 }
+                 if(($("#CountryId").val() == 1 && $("#TypeId").val() != 1) ||
+                       ($("#CountryId").val() == 2 && $("#TypeId").val() != 2) || 
+                       ($("#CountryId").val() == 3 && $("#TypeId").val() != 4) ||
+                       ($("#CountryId").val() == 4 && $("#TypeId").val() != 3))
+                 {
+                    addEditTargetError($("#CountryId"), "Страна должна совпадать с типом командировки");
+                     result = false;
+                 }
                  var targets = JSON.parse($("#Targets").val());
                  var targetId = $("#TargetId").val();
                  var hasError = false;
@@ -966,17 +993,34 @@
             clearEditTargetErrors($("#trUserSumNotCash"));
             var allCashSum = 0;
             var sum = ValidateSum($("#UserSumCash"));
+            var sumCash = 0;
             if(sum != undefined)
+            {
+                sumCash = sum;
                 allCashSum = allCashSum + sum;
+            }
             else if ($("#UserSumCash").val() != '')
                 return false;
             sum = ValidateSum($("#UserSumNotCash"));
+
+            var sumNotCash = 0;
             if(sum != undefined)
+            {
+                sumNotCash = sum;
                 allCashSum = allCashSum + sum;
+            }
             else if ($("#UserSumNotCash").val() != '')
                 return false;
-
-            if(allCashSum > 0)
+            var allSumStr = ReplaceToRussianDecimalPointC(allCashSum.toString());
+            $("#UserAllSum").val(allSumStr);
+            if(sumCash > 0 && sumNotCash > 0)
+            {
+                addEditTargetError($("#UserSumCash"),"Только одна из сумм - наличными в кассе или на заработную карту - может быть указана.");
+                return false;
+            }
+            return true;
+           
+            /*if(allCashSum > 0)
             {
                 if($("#UserAllSum").val() != '')
                 {
@@ -1001,10 +1045,10 @@
                     return true;
                   addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
                   return false; 
-            }
+            }*/
         }
         function CalcUserSum() {
-            var isError = false;
+            /*var isError = false;
             clearEditTargetErrors($("#AllTargetSums"));
             var allSum = 0;
             var sum = ValidateSum($("#UserAllSumDaily"));
@@ -1029,7 +1073,7 @@
                 isError = true;
             var allSumStr = ReplaceToRussianDecimalPointC(allSum.toString());
             $("#UserAllSum").val(allSumStr);
-            return !isError;
+            return !isError;*/
         }
         function ValidateSum(control)
         {
@@ -1051,15 +1095,15 @@
         }
         function IsTrainTicketsPaidChange()
         {
-            OnCheckboxChange($("#IsTrainTicketsPaid"),$("#UserAllSumTrain"));
+            //OnCheckboxChange($("#IsTrainTicketsPaid"),$("#UserAllSumTrain"));
         }
         function IsAirTicketsPaidChange()
         {
-            OnCheckboxChange($("#IsAirTicketsPaid"),$("#UserAllSumAir"));
+            //OnCheckboxChange($("#IsAirTicketsPaid"),$("#UserAllSumAir"));
         }
         function IsResidencePaidChange()
         {
-            OnCheckboxChange($("#IsResidencePaid"),$("#UserAllSumResidence"));
+            //OnCheckboxChange($("#IsResidencePaid"),$("#UserAllSumResidence"));
         }
         function OnCheckboxChange(checkbox,input)
         {
