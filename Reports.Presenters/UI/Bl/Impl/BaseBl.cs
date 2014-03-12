@@ -167,10 +167,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                           <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>",
                                           entity.Number, entity.CreateDate.ToShortDateString(), entity.User.Name, entity.User.Department.Name);
             IList<EmailDto> dtoList = new List<EmailDto>();
-            foreach (var addressee in addresseeList)
+            /*foreach (var addressee in addresseeList)
             {
                 dtoList.Add(SendEmail(addressee.Email, subject, body));
-            }
+            }*/
+            dtoList.Add(SendEmail(addresseeList[0].Email, subject, body));
 
             return dtoList;
         }
