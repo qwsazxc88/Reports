@@ -123,6 +123,7 @@
     <Content Include="Content\icon_down_sort_arrow.png" />
     <Content Include="Content\icon_up_sort_arrow.png" />
     <Content Include="Content\loading.gif" />
+    <Content Include="Content\logo-skb.jpg" />
     <Content Include="Content\logo.gif" />
     <Content Include="Content\logobg.gif" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
