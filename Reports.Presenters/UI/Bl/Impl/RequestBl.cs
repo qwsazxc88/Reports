@@ -2195,7 +2195,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
         {
 
-            UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            //UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
+            UserRole role = UserRole.OutsourcingManager;
             model.Documents = ClearanceChecklistDao.GetDocuments(
                 user.Id,
                 role,
@@ -2225,7 +2226,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(userId);
             IUser current = AuthenticationService.CurrentUser;
             User currentUser = UserDao.Load(current.Id);
-            if (!CheckUserRights(user, current, id, false))
+            if (!CheckUserRights(user, current, id, false) && !IsRoleOwner(currentUser))
                 throw new ArgumentException("Доступ запрещен.");
             // End User Access Control
 
@@ -2328,9 +2329,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        /// <summary>
+        /// Checks if the given user owns the given clearance checklist role
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
         private bool IsRoleOwner(User user, ClearanceChecklistRole role)
         {
             return user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id).Contains<int>(role.Id) ? true : false;
+        }
+
+        /// <summary>
+        /// Checks if the given user owns any clearance checklist role
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool IsRoleOwner(User user)
+        {
+            return (user.ClearanceChecklistRoleRecords != null && user.ClearanceChecklistRoleRecords.Count > 0);
         }
 
         #endregion

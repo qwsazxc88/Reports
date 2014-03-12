@@ -510,6 +510,7 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
+
         protected int GetRequestsCountForTypeOneDay(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
                 int userId, UserRole userRole)
         {
