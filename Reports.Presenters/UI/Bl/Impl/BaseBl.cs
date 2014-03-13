@@ -17,6 +17,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl
     {
+        protected string SelectAll = "Все";
+
         public static string[] RublesWords =
                                         {
                                             "рубль",
@@ -510,6 +512,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                               Name = string.Empty,
                               IsReadOnly = false,
                           };
+        }
+        public static void SetInitialDates(BeginEndCreateDate model)
+        {
+            DateTime today = DateTime.Today;
+            model.BeginDate = new DateTime(today.Year, today.Month, 1);
+            model.EndDate = today;
         }
 
         protected static string GetMonth(DateTime month)

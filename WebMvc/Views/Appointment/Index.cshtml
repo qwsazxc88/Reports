@@ -1,0 +1,260 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.AppointmentListModel
+@{
+    Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
+    ViewBag.Title = "Реестр заявок";
+}
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+      <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.UserName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.UserName)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+        @if (Model.IsAddAvailable)
+        {
+          <div class="action-wrap">
+            <table style="width:100%">
+                    <tr>
+                            <td>
+                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateAppointmentRequest", "Appointment")'"/>                                                                             
+                            </td>
+                            @*<td style = "text-align:right">
+                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
+                                @if(Model.IsApproveAvailable)
+                                {
+   
+                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
+                                }
+                            </td>*@
+                   </tr>
+              </table>  
+           </div>
+        }
+        </td>
+    </tr>   
+    @* <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                     <th>
+                        № п/п
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                    </th>
+                     <th>
+                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>приказа</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                    </th>
+                     <th>
+                        <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                    </th>
+                     <th>
+                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                    </th>
+                    <th>
+                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                    </th>
+                     <th>
+                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                    </th>
+                     <th>
+                        <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
+                    </th>
+                     <th>
+                        <div id="sort16" style="min-width:70px"><a href="#"  onclick = "SortChanged(16);">Авиа <br/>билеты</a></div>
+                    </th>
+                    <th>
+                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Ж/д <br/>билеты</a></div>
+                    </th>
+                     @if (Model.IsApproveAvailable)
+                     {
+                        <th>
+                             <input type="checkbox" id="setAll" onclick="setSelection();" />
+                        </th>
+                     }
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    int i = 0;
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.UserName</td>
+                             <td>@doc.Dep7Name</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>
+                            </td>
+                            <td>@doc.EditDate.ToShortDateString()</td>
+                            <td>@doc.MissionType</td>
+                            <td>@doc.MissionKind</td>
+                            <td>@doc.Target</td>
+                            <td>@doc.Grade</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@doc.HasMission</td>
+                            <td>@doc.NeedSecretary</td>
+                            <td>@doc.State</td>
+                            <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
+                            <td>@doc.AirTicketType</td>
+                            <td>@doc.TrainTicketType</td>
+                            @if (Model.IsApproveAvailable)
+                            {
+                                <td>@if(doc.Flag)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
+                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
+                                        i++;
+                                    }
+                                </td>
+                            }
+                        </tr>
+                       
+                    }
+                }
+            </table>    
+         <td>
+       </tr>*@
+    </table> 
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("appAllRequests");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+    }
+    /*function setSelection()
+    {
+        if($("#setAll").is(':checked'))
+            $(".selcheck").attr('checked','checked');
+        else
+            $(".selcheck").removeAttr('checked');
+    }
+     function approveClick()
+    {
+        clearErrors();
+        if($(".selcheck").filter(':checked').length == 0)
+        {
+            addError("Не выбрано ни одного приказа для согласования");
+            return false;
+        }
+        $("#IsApproveClick").val('True');
+        return true;
+    }*/
+ </script>

@@ -35,6 +35,10 @@ namespace Reports.Presenters
                         .ImplementedBy(typeof(RequestBl))
                         .LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IAppointmentBl))
+                        .ImplementedBy(typeof(AppointmentBl))
+                        .LifeStyle.Is(type));
+
             Register(Component.For(typeof(IAutoComplete))
                        .ImplementedBy(typeof(AutoComplete))
                        .LifeStyle.Is(type));

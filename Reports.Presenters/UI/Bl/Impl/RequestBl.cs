@@ -18,7 +18,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class RequestBl : BaseBl, IRequestBl
     {
-        protected string SelectAll = "Все";
+       
         protected string EmptyDepartmentName = string.Empty;
         protected string ChildVacationTimesheetStatusShortName = "ОЖ";
 
@@ -3733,12 +3733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             return model;
         }
-        public static void SetInitialDates(BeginEndCreateDate model)
-        {
-            DateTime today = DateTime.Today;
-            model.BeginDate = new DateTime(today.Year,today.Month,1);
-            model.EndDate = today;
-        }
+        
         protected List<IdNameDto> GetAbsenceTypes(bool addAll)
         {
             var typeList = AbsenceTypeDao.LoadAllSorted().
