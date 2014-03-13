@@ -2197,6 +2197,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
             UserRole role = UserRole.OutsourcingManager;
+            model.DepartmentId = 0;
+            model.PositionId = 0;
             model.Documents = ClearanceChecklistDao.GetDocuments(
                 user.Id,
                 role,
