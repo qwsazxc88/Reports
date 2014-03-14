@@ -42,9 +42,9 @@
       <one-to-many class="ClearanceChecklistApproval"/>
     </bag>
 
-    <property name="RegistryNumber" length="256" not-null="false"/>
+    <property name="RegistryNumber" not-null="false"/>
     <property name="PersonalIncomeTax" precision="19" scale="2" not-null="false"/>
-    <property name="OKTMO" length="256" not-null="false"/>
+    <property name="OKTMO" length="8" not-null="false"/>
     
 	</class>
 </hibernate-mapping>

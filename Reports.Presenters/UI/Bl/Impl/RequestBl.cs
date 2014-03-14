@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Dao.Impl;
@@ -21,6 +22,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected string SelectAll = "Все";
         protected string EmptyDepartmentName = string.Empty;
         protected string ChildVacationTimesheetStatusShortName = "ОЖ";
+        protected string OKTMOFormatError = "Ошибка формата ОКТМО";
 
         public const int VacationFirstTimesheetStatisId = 8;
         public const int VacationLastTimesheetStatisId = 12;
@@ -2262,6 +2264,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 );
             }
+            model.IsBottomEnabled = current.UserRole == UserRole.OutsourcingManager ? true : false;
+            model.RegistryNumber = clearanceChecklist.RegistryNumber;
+            model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
+            model.OKTMO = clearanceChecklist.OKTMO;
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
             model.EndDate = clearanceChecklist.EndDate;
@@ -2310,6 +2316,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistComment(int approvalId, string comment, out string error)
         {
             const int MAX_COMMENT_LENGTH = 255;
+            error = String.Empty;
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             // TODO: CCL Roles ?
@@ -2320,13 +2327,48 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (comment.Length > MAX_COMMENT_LENGTH) comment = comment.Substring(0, MAX_COMMENT_LENGTH);
             if (clearanceChecklistDao.SetComment(approvalId, comment))
-            {
-                error = "";
+            {                
                 return true;
             }
             else
             {
                 error = "Error updating comment";
+                return false;
+            }
+        }
+
+        public bool SetClearanceChecklistBottomFields(int id, int? registryNumber, decimal? personalIncomeTax, string oKTMO, out string error)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            Regex oKTMORegEx = new Regex(@"^\d{8}$|^$");
+            error = String.Empty;
+            
+            if (current.UserRole != UserRole.OutsourcingManager)
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
+            
+            // Field format checks
+            // TODO: Replace with implementation
+            if (!oKTMORegEx.IsMatch(oKTMO))
+            {
+                error += OKTMOFormatError;
+            }
+
+            if (error == String.Empty)
+            {
+                if (clearanceChecklistDao.SetBottomFields(id, registryNumber, personalIncomeTax, oKTMO))
+                {
+                    return true;
+                }
+                else
+                {
+                    error = "Error updating fields";
+                    return false;
+                }
+            }
+            else
+            {
                 return false;
             }
         }

@@ -580,7 +580,9 @@
     <EmbeddedResource Include="Domain\DismissalType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Dismissal.hbm.xml" />
+    <EmbeddedResource Include="Domain\Dismissal.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Domain\DismissalComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>

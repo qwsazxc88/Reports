@@ -26,6 +26,7 @@ namespace Reports.Core.Dao
 
         bool SetApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval);
         bool SetComment(int approvalId, string comment);
+        bool SetBottomFields(int clearanceChecklistId, int? registryNumber, decimal? personalIncomeTax, string oKTMO);
 
         IList<ClearanceChecklistRole> GetClearanceChecklistRoles();
         IList<User> GetClearanceChecklistRoleAuthorities(ClearanceChecklistRole clearanceChecklistRole);

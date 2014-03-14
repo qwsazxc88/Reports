@@ -15,11 +15,13 @@ namespace Reports.Presenters.UI.ViewModel
 
         // Props assigned by outsourcing
         // Номер реестра
-        public string RegistryNumber { get; set; }
+        public int? RegistryNumber { get; set; }
         // Сумма НДФЛ
-        public decimal PersonalIncomeTax { get; set; }
+        public decimal? PersonalIncomeTax { get; set; }
         // ОКТМО
         public string OKTMO { get; set; }
+
+        public bool IsBottomEnabled { get; set; }
 
         public DateTime EndDate { get; set; }
 

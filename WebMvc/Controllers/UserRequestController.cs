@@ -589,6 +589,20 @@ namespace WebMvc.Controllers
              }            
          }
 
+         [HttpPost]
+         public JsonResult ClearanceChecklistSaveBottomFields(int id, int? registryNumber, decimal? personalIncomeTax, string oKTMO)
+         {
+             string error = "";
+             if (RequestBl.SetClearanceChecklistBottomFields(id, registryNumber, personalIncomeTax, oKTMO, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }
+         }
+
          #endregion
 
          #region Mission

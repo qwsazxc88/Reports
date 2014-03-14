@@ -129,6 +129,23 @@ namespace Reports.Core.Dao.Impl
             }
         }
 
+        public bool SetBottomFields(int clearanceChecklistId, int? registryNumber, decimal? personalIncomeTax, string oKTMO)
+        {
+            var clearanceChecklist = Session.Get<Dismissal>(clearanceChecklistId);
+            if (clearanceChecklist != null)
+            {
+                var transaction = Session.BeginTransaction();
+                clearanceChecklist.RegistryNumber = registryNumber;
+                clearanceChecklist.PersonalIncomeTax = personalIncomeTax;
+                clearanceChecklist.OKTMO = oKTMO;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Get a list of all clearance checklist roles
         /// </summary>
