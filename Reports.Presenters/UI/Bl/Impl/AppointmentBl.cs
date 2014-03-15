@@ -33,15 +33,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Одобрен сотрудником"),
-                                                           new IdNameDto(2, "Не одобрен сотрудником"),
-                                                           new IdNameDto(3, "Одобрен руководителем"),
-                                                           new IdNameDto(4, "Не одобрен руководителем"),
-                                                           new IdNameDto(5, "Одобрен бухгалтером"),
-                                                           new IdNameDto(6, "Не одобрен бухгалтером"),
-                                                           new IdNameDto(7, "Требует одобрения руководителем"),
-                                                           new IdNameDto(8, "Требует одобрения бухгалтером"),
-                                                           new IdNameDto(10, "Отклонен"),
+                                                           new IdNameDto(1, "Заявка создана"),
+                                                           new IdNameDto(2, "Не одобрена вышестоящим руководителем"),
+                                                           new IdNameDto(3, "Одобрена вышестоящим руководителем"),
+                                                           new IdNameDto(4, "Принята в работу"),
+                                                           new IdNameDto(5, "Отменена"),
+                                                           //new IdNameDto(4, "Не одобрен руководителем"),
+                                                           //new IdNameDto(6, "Не одобрен бухгалтером"),
+                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
+                                                           //new IdNameDto(8, "Требует одобрения бухгалтером"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
