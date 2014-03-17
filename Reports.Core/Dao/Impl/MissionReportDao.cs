@@ -192,6 +192,9 @@ namespace Reports.Core.Dao.Impl
                                 //sqlFlag = "0 as Flag";
                             }
                             break;
+                        default:
+                            throw new ArgumentException(string.Format(MissionOrderDao.StrInvalidManagerLevel, 
+                                userId, currentUser.Level));
                     }
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart + " ) ";

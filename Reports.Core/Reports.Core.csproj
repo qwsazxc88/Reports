@@ -269,6 +269,9 @@
     <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Account.cs" />
     <Compile Include="Domain\AccountingTransaction.cs" />
+    <Compile Include="Domain\Appointment.cs" />
+    <Compile Include="Domain\AppointmentComment.cs" />
+    <Compile Include="Domain\AppointmentReason.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
@@ -725,6 +728,15 @@
     <EmbeddedResource Include="Domain\ClearanceChecklistRoleRecord.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Appointment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReason.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
