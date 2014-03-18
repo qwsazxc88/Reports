@@ -29,7 +29,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
 
-        public IList<VacationDto> Documents { get; set; }
+        public IList<ClearanceChecklistDto> Documents { get; set; }
 
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
@@ -41,7 +41,7 @@ namespace Reports.Presenters.UI.ViewModel
         {
             this.Positions = new List<IdNameDto>();
             this.Statuses = new List<IdNameDto>();
-            this.Documents = new List<VacationDto>();
+            this.Documents = new List<ClearanceChecklistDto>();
         }
     }
 }

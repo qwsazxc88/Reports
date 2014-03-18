@@ -7,7 +7,7 @@ namespace Reports.Core.Dao
 {
     public interface IClearanceChecklistDao : IDao<Dismissal>
     {
-        IList<VacationDto> GetDocuments(
+        IList<ClearanceChecklistDto> GetClearanceChecklistDocuments(
             int userId,
             UserRole role,
             int departmentId,

@@ -2181,7 +2181,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
             if (hasError)
-                model.Documents = new List<VacationDto>();
+                model.Documents = new List<ClearanceChecklistDto>();
             else
                 SetDocumentsToModel(model, user);
         }
@@ -2201,7 +2201,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = UserRole.OutsourcingManager;
             model.DepartmentId = 0;
             model.PositionId = 0;
-            model.Documents = ClearanceChecklistDao.GetDocuments(
+            model.Documents = ClearanceChecklistDao.GetClearanceChecklistDocuments(
                 user.Id,
                 role,
                 //model.DepartmentId,

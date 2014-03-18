@@ -103,6 +103,12 @@
                         <th>
                             <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
                         </th>
+                        <th>
+                            Номер реестра
+                        </th>
+                        <th>
+                            ОКТМО
+                        </th>
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
@@ -116,6 +122,8 @@
                                 <td>@doc.Date</td>
                                 <td>@doc.Number</td>
                                 <td>@doc.RequestStatus</td>
+                                <td>@String.Format("{0:D11}", doc.RegistryNumber)</td>
+                                <td>@doc.OKTMO</td>
                                 @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                                 <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
