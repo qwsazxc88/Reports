@@ -37,14 +37,15 @@ namespace Reports.Core.Dao.Impl
                 string.Format(sqlSelectForListClearanceChecklist,
                                 DeleteRequestText,
                                 "Обходной лист",
-                                "v.[CreateDate]",                                
+                                "v.[CreateDate]",
                                 "[dbo].[Dismissal]",
                                 "'" + DateTime.MinValue.ToShortDateString() + "'",
-                                "'" + DateTime.MinValue.ToShortDateString() + "'",
+                                "v.[EndDate]",
+                                //"'" + DateTime.MinValue.ToShortDateString() + "'",
                                 typeId,
-                                "v.RegistryNumber",
-                                "v.PersonalIncomeTax",
-                                "v.OKTMO"
+                                "v.[RegistryNumber]",
+                                "v.[PersonalIncomeTax]",
+                                "v.[OKTMO]"
                 );
             string whereString = GetWhereForUserRole(role, userId);
             whereString = GetTypeWhere(whereString, typeId);

@@ -95,7 +95,10 @@
                             <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
                         </th>
                         <th>
-                            <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                            <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата создания</a></div>
+                        </th>
+                        <th>
+                            Дата окончания Т.Д.
                         </th>
                         <th>
                             <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
@@ -120,6 +123,7 @@
                                 </td>
                                 <td>@doc.UserName</td>
                                 <td>@doc.Date</td>
+                                <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>
                                 <td>@doc.Number</td>
                                 <td>@doc.RequestStatus</td>
                                 <td>@String.Format("{0:D11}", doc.RegistryNumber)</td>
