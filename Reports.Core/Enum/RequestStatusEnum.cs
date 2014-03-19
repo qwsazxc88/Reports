@@ -23,6 +23,7 @@
         Deduction = 10,
         MissionOrder = 11,
         MissionReport = 12,
+        Appointment = 13,
     }
     public enum RequestAttachmentTypeEnum
     {

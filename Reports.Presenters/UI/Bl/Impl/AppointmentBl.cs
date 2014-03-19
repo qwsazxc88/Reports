@@ -1,12 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Reports.Core;
+using Reports.Core.Dao;
+using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class AppointmentBl : BaseBl, IAppointmentBl
     {
+        public const string StrException = "Исключение:";
+        public const string StrCommentCreationDedied = "Добавление комментария запрещено";
+        #region DAOs
+        protected IAppointmentDao appointmentDao;
+        public IAppointmentDao AppointmentDao
+        {
+            get { return Validate.Dependency(appointmentDao); }
+            set { appointmentDao = value; }
+        }
+        protected IAppointmentCommentDao appointmentCommentDao;
+        public IAppointmentCommentDao AppointmentCommentDao
+        {
+            get { return Validate.Dependency(appointmentCommentDao); }
+            set { appointmentCommentDao = value; }
+        }
+        #endregion
+
         public AppointmentListModel GetAppointmentListModel()
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -46,5 +68,66 @@ namespace Reports.Presenters.UI.Bl.Impl
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
         }
+
+        public AppointmentEditModel GetAppointmentEditModel(int id)
+        {
+            AppointmentEditModel model = new AppointmentEditModel {Id = id};
+            return model;
+        }
+
+        #region Comments
+        public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
+        {
+            CommentsModel commentModel = new CommentsModel
+            {
+                RequestId = id,
+                RequestTypeId = (int)typeId,
+                Comments = new List<RequestCommentModel>(),
+                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && id > 0,
+            };
+            Appointment entity = AppointmentDao.Load(id);
+            if ((entity.Comments != null) && (entity.Comments.Count() > 0))
+            {
+                commentModel.Comments = entity.Comments.OrderBy(x => x.DateCreated).ToList().
+                    ConvertAll(x => new RequestCommentModel
+                    {
+                        Comment = x.Comment,
+                        CreatedDate = x.DateCreated.ToString(),
+                        Creator = x.User.FullName,
+                    });
+            }
+            return commentModel;
+            //Vacation vacation = VacationDao.Load(id);
+        }
+        public bool SaveComment(SaveCommentModel model)
+        {
+            try
+            {
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
+                {
+                    model.Error = StrCommentCreationDedied;
+                    return false;
+                }
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                Appointment entity = AppointmentDao.Load(model.DocumentId);
+                AppointmentComment comment = new AppointmentComment
+                {
+                    Comment = model.Comment,
+                    Appointment = entity,
+                    DateCreated = DateTime.Now,
+                    User = user,
+                };
+                AppointmentCommentDao.MergeAndFlush(comment);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AppointmentCommentDao.RollbackTran();
+                Log.Error("Exception", ex);
+                model.Error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+        }
+        #endregion
     }
 }

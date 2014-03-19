@@ -21,7 +21,7 @@ namespace WebMvc.Controllers
         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep)]
     public class UserRequestController : BaseController
     {
-        public const int MaxCommentLength = 256;
+        
         public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;

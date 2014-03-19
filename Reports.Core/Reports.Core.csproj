@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
+    <Compile Include="Dao\IAppointmentCommentDao.cs" />
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
@@ -143,12 +144,15 @@
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AccountDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentCommentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
+    <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />

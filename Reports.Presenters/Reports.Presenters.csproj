@@ -128,6 +128,7 @@
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AllRequestListModel.cs" />
+    <Compile Include="UI\ViewModel\AppointmentEditModel.cs" />
     <Compile Include="UI\ViewModel\AppointmentListModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\InstructionsViewModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\ManagerInfoModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />
     <Compile Include="UI\ViewModel\MissionOrderEditModel.cs" />

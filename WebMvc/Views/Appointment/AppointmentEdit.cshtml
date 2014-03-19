@@ -1,0 +1,43 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.AppointmentEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
+    ViewBag.Title = "Заявка на подбор сотрудника";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                    @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Partial("ManagerInfoView", Model)
+                </td>
+            </tr>
+            @if (Model.IsDeleted)
+            { 
+            <tr>
+                <td colspan="2" style="color:Red">Приказ отклонен</td>
+            </tr>
+            }
+        </table>
+    </div>
+    <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+}

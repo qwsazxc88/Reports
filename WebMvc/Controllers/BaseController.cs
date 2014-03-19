@@ -17,6 +17,7 @@ namespace WebMvc.Controllers
         //protected IBaseBl baseBl;
 
         #endregion
+        public const int MaxCommentLength = 256;
 
         public IAuthenticationService AuthenticationService
         {
