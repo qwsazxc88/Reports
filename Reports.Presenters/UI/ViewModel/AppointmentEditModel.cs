@@ -34,14 +34,55 @@ namespace Reports.Presenters.UI.ViewModel
         public int ReasonIdHidden { get; set; }
         public IList<IdNameDto> Reasons;
 
-        [Display(Name = "Должность")]
+        //[Display(Name = "Должность")]
         public string ReasonPosition { get; set; }
-
-        [Display(Name = "С даты")]
+        //[Display(Name = "С даты")]
         public string ReasonBeginDate { get; set; }
 
+        [Display(Name = "Работа на период")]
+        public string Period { get; set; }
+        [Display(Name = "График работы")]
+        public string Schedule { get; set; }
 
-        public string ReasonPersonnelStore { get; set; }
+        [Display(Name = "Заработная плата (оклад)")]
+        public string Salary { get; set; }
+
+        [Display(Name = "Заработная плата (премия)")]
+        public string Bonus { get; set; }
+
+        [Display(Name = "Форма оформления сотрудника")]
+        public int TypeId { get; set; }
+        public int TypeIdHidden { get; set; }
+        public IList<IdNameDto> Types;
+
+        [Display(Name = "Доп. Предложения/компенсации")]
+        public string Compensation { get; set; }
+
+        [Display(Name = "Требования по образованию")]
+        public string EducationRequirements { get; set; }
+
+        [Display(Name = "Требования по опыту работы")]
+        public string ExperienceRequirements { get; set; }
+
+        [Display(Name = "Прочие требования")]
+        public string OtherRequirements { get; set; }
+
+        [Display(Name = "Доп. требования")]
+        public string AdditionalRequirements { get; set; }
+
+        [Display(Name = "Должностные обязанности")]
+        public string Responsibility { get; set; }
+
+        [Display(Name = "Желательная дата выхода")]
+        public string DesirableBeginDate { get; set; }
+
+        [Display(Name = "Проверка наличия вакансии")]
+        public int IsVacationExists { get; set; }
+        public int IsVacationExistsHidden { get; set; }
+        public IList<IdNameDto> IsVacationExistsValues;
+
+        [Display(Name = "Работа с даты")]
+        public string BeginDate { get; set; }
 
 
         public bool IsEditable { get; set; }

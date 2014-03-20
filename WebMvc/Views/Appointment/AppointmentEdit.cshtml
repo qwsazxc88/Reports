@@ -83,7 +83,8 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.ReasonPosition):
+                  <span id="ReasonPositionLabel">Должность:</span>
+                    @*@Html.LabelFor(m => m.ReasonPosition):*@
                 </td>
                 <td>
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
@@ -91,7 +92,8 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.ReasonBeginDate):
+                    <span id="ReasonDateLabel">С даты:</span>
+                    @*@Html.LabelFor(m => m.ReasonBeginDate):*@
                 </td>
                 <td>
                     @if (Model.IsEditable)
@@ -105,11 +107,69 @@
                     } 
                 </td>
             </tr>
-             <tr>
+            @* <tr>
                <td colspan="2">
                    @Html.TextBoxFor(model => model.ReasonPersonnelStore, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
+            </tr>*@
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Period):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Period, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
             </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.Schedule):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Salary):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.Bonus):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.TypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Compensation):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.EducationRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+
         </table>
     </div>
     <br />
