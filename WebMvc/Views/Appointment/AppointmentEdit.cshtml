@@ -28,6 +28,88 @@
                 <td colspan="2" style="color:Red">Приказ отклонен</td>
             </tr>
             }
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.DepartmentName):
+                </td>
+                <td>
+                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                  @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
+                    @if (!Model.IsEditable)
+                    {
+                        <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                    }            
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.City):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.City, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PositionId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PositionIdHidden" name="PositionIdHidden" value="@Model.PositionIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.VacationCount):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.VacationCount, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ReasonId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ReasonPosition):
+                </td>
+                <td>
+                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ReasonBeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.ReasonBeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.ReasonBeginDate)
+                        @Html.HiddenFor(model => model.ReasonBeginDate)
+                    } 
+                </td>
+            </tr>
+             <tr>
+               <td colspan="2">
+                   @Html.TextBoxFor(model => model.ReasonPersonnelStore, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
         </table>
     </div>
     <br />
@@ -41,3 +123,11 @@
         </table>
     </div>
 }
+<script type="text/javascript">
+ var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+ var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+  $(document).ready(function () {
+    $("#BeginDate").datepicker();
+    $(".hasDatepicker").width("75px");
+   });
+</script> 

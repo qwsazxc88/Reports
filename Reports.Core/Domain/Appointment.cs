@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
-using Reports.Core.Domain;
-using Reports.Core.Enum;
 
 namespace Reports.Core.Domain
 {
@@ -12,6 +9,7 @@ namespace Reports.Core.Domain
     public class Appointment : AbstractEntityWithVersion
     {
         #region Fields
+
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
 
@@ -21,7 +19,7 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; }
         public virtual string City { get; set; }
         public virtual Position Position { get; set; }
-        public virtual int? VacationCount { get; set; }
+        public virtual int VacationCount { get; set; }
         public virtual AppointmentReason Reason { get; set; }
         public virtual DateTime? ReasonBeginDate { get; set; }
         public virtual string ReasonPosition { get; set; }
@@ -33,7 +31,7 @@ namespace Reports.Core.Domain
         public virtual decimal Salary { get; set; }
         public virtual decimal Bonus { get; set; }
         public virtual bool Type { get; set; }
-        public virtual decimal Compensation { get; set; }
+        public virtual string Compensation { get; set; }
 
         public virtual string EducationRequirements { get; set; }
         public virtual string ExperienceRequirements { get; set; }
@@ -44,10 +42,10 @@ namespace Reports.Core.Domain
         public virtual bool IsVacationExists { get; set; }
         public virtual DateTime? BeginDate { get; set; }
 
-        
+
         public virtual User Creator { get; set; }
 
-       
+
         public virtual DateTime? ManagerDateAccept { get; set; }
         public virtual User AcceptManager { get; set; }
         public virtual DateTime? ChiefDateAccept { get; set; }
@@ -60,7 +58,7 @@ namespace Reports.Core.Domain
         public virtual User DeleteUser { get; set; }
 
         public virtual DateTime? SendTo1C { get; set; }
-       
+
         //public virtual bool DeleteAfterSendTo1C { get; set; }
 
         //public virtual Mission Mission { get; set; }
@@ -69,12 +67,14 @@ namespace Reports.Core.Domain
 
         public virtual IList<AppointmentComment> Comments { get; set; }
 
-      
         #endregion
 
         #region Properties
+
         #endregion
+
         #region Constructors
+
         #endregion
     }
 }
