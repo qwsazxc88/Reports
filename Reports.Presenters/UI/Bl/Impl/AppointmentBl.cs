@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
+using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -14,6 +16,8 @@ namespace Reports.Presenters.UI.Bl.Impl
     {
         public const string StrException = "Исключение:";
         public const string StrCommentCreationDedied = "Добавление комментария запрещено";
+        public const string StrAppointmentNotFound = "Не найдена заявка (id {0}) в базе данных";
+        public const string StrAccessIsDenied = "Доступ запрещен";
         #region DAOs
         protected IAppointmentDao appointmentDao;
         public IAppointmentDao AppointmentDao
@@ -72,6 +76,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         public AppointmentEditModel GetAppointmentEditModel(int id)
         {
             AppointmentEditModel model = new AppointmentEditModel {Id = id};
+            Appointment entity = null;
+            if (id != 0)
+            {
+                entity = AppointmentDao.Load(id);
+                if (entity == null)
+                    throw new ValidationException(string.Format(StrAppointmentNotFound, id));
+            }
+            //User user = UserDao.Load(model.UserId);
+            IUser current = AuthenticationService.CurrentUser;
+            //if (!CheckUserRights(current, id, entity, false))
+            //    throw new ArgumentException(StrAccessIsDenied);
+
+            //model.Id = entity.Id;
+            //model.Version = entity.Version;
+            //model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
+            //model.DocumentNumber = entity.Number.ToString();
+            //model.DateCreated = entity.CreateDate.ToShortDateString();
+            //model.Hotels = entity.Hotels;
+
+            //SetUserInfoModel(user, model);
+            //LoadDictionaries(model);
+            //SetFlagsState(id, user, entity, model);
+            //SetHiddenFields(model);
             return model;
         }
 

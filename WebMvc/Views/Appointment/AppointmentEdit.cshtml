@@ -14,7 +14,6 @@
                 <td colspan="2">
                     @Html.ValidationSummary(false)
                     <div id="Error" style="color:Red;display:none;"></div>
-                    @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
                 </td>
             </tr>
             <tr>
@@ -169,7 +168,135 @@
                     @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
-
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ExperienceRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.OtherRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AdditionalRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.AdditionalRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+               <tr>
+                <td>
+                    @Html.LabelFor(m => m.Responsibility):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DesirableBeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.DesirableBeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.DesirableBeginDate)
+                        @Html.HiddenFor(model => model.DesirableBeginDate)
+                    } 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsVacationExists):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.BeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.BeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.BeginDate)
+                        @Html.HiddenFor(model => model.BeginDate)
+                    } 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsManagerApproved):
+                </td>
+                <td>
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
+@*                    @if (!Model.IsManagerApproveAvailable)
+                    {
+                        <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
+                    }*@
+                    <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
+                    <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
+                    @Html.LabelFor(model => model.ManagerFio)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsChiefApproved):
+                </td>
+                <td>
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
+                  @*  @if (!Model.IsChiefApproveAvailable)
+                    {
+                        <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
+                    }*@
+                    <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
+                     @Html.LabelFor(model => model.ChiefFio)
+                    @*<input type="hidden" id="IsChiefRejectAvailable" name="IsChiefRejectAvailable" value="@Model.IsChiefRejectAvailable" />*@
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsPersonnelApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsPersonnelApproved", Model.IsPersonnelApproved, Model.IsPersonnelApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                    <input type="hidden" id="IsPersonnelApproveAvailable" name="IsPersonnelApproveAvailable" value="@Model.IsPersonnelApproveAvailable" />
+                     @Html.LabelFor(model => model.PersonnelFio)
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsStaffApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Принял в работу
+                    @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
+                    Уведомлен
+                    <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
+                    @Html.LabelFor(model => model.StaffFio)
+                </td>
+            </tr>
         </table>
     </div>
     <br />
@@ -188,6 +315,8 @@
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
     $("#BeginDate").datepicker();
+    $("#DesirableBeginDate").datepicker();
+    $("#ReasonBeginDate").datepicker();
     $(".hasDatepicker").width("75px");
    });
 </script> 
