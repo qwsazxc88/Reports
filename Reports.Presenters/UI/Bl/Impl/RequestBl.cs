@@ -2222,6 +2222,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId)
         {
             const int MAX_DAYS_BEFORE_DISMISSAL = 14;
+            
+            string[] PIT_DISPLAY_ROLES = {"Бухгалтерия - выплаты", "Кадры"};
 
             var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
                         
@@ -2266,7 +2268,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.IsBottomEnabled = current.UserRole == UserRole.OutsourcingManager ? true : false;
             model.RegistryNumber = clearanceChecklist.RegistryNumber;
-            model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
+            if(IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            {
+                model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
+            }
             model.OKTMO = clearanceChecklist.OKTMO;
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
@@ -2381,7 +2386,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         private bool IsRoleOwner(User user, ClearanceChecklistRole role)
         {
-            return user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id).Contains<int>(role.Id) ? true : false;
+            IEnumerable<int> userRoleIds = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id);
+            return userRoleIds.Contains<int>(role.Id) ? true : false;
+        }
+
+        private bool IsRoleOwner(User user, string roleDescription)
+        {
+            IEnumerable<string> userRoleDescriptions = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Description);
+            return userRoleDescriptions.Contains<string>(roleDescription) ? true : false;
+        }
+
+        private bool IsRoleOwner(User user, string[] roleDescriptions)
+        {
+            bool isRoleOwner = false;
+            IEnumerable<string> userRoleDescriptions = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Description);
+            foreach(var roleDescription in roleDescriptions)
+            {
+                if (userRoleDescriptions.Contains<string>(roleDescription))
+                {
+                    isRoleOwner = true;
+                }
+            }
+
+            return isRoleOwner;
         }
 
         /// <summary>
