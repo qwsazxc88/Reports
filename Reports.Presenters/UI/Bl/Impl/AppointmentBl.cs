@@ -19,6 +19,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrAppointmentNotFound = "Не найдена заявка (id {0}) в базе данных";
         public const string StrAccessIsDenied = "Доступ запрещен";
         public const string StrUserNotManager = "Вы (пользователь {0}) не являетесь руководителем или членом правления - создание заявки запрещено";
+        public const string StrIncorrectManagerLevel  = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
+        public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
+        public const string StrIncorrectReasonId = "Неверное основание появления вакансии {0}.";
         #region DAOs
         protected IAppointmentDao appointmentDao;
         public IAppointmentDao AppointmentDao
@@ -99,23 +102,55 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity == null)
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
+                model.AdditionalRequirements = entity.AdditionalRequirements;
+                model.Bonus = FormatSum(entity.Bonus);
+                model.City = entity.City;
+                model.Compensation = entity.Compensation;
+                model.DateCreated = FormatDate(entity.CreateDate);
+                model.DepartmentId = entity.Department.Id;
+                model.DepartmentName = entity.Department.Name;
+                model.DesirableBeginDate = FormatDate(entity.DesirableBeginDate);
+                model.EducationRequirements = entity.EducationRequirements;
+                model.ExperienceRequirements = entity.ExperienceRequirements;
+                model.IsVacationExists = entity.IsVacationExists ? 1 : 0;
+                model.DocumentNumber = entity.Number.ToString();
+                model.OtherRequirements = entity.OtherRequirements;
+                model.Period = entity.Period;
+                model.PositionId = entity.Position.Id;
+                model.ReasonId = entity.Reason.Id;
+                // hardcode using database Ids from [dbo].[AppointmentReason] 
+                switch (entity.Reason.Id)
+                {
+                    case 1:
+                    case 2:
+                        model.ReasonPosition = entity.ReasonPosition;
+                        model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
+                        break;
+                    case 3:
+                        model.ReasonPosition = entity.ReasonPersonnelStore;
+                        break;
+                    case 4:
+                    case 5:
+                        model.ReasonPosition = entity.ReasonUser;
+                        model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
+                        break;
+                    default:
+                        throw new ArgumentException(string.Format(StrIncorrectReasonId,entity.Reason.Id));
+                }
+                model.Responsibility = entity.Responsibility;
+                model.Salary = FormatSum(entity.Salary);
+                model.Schedule = entity.Schedule;
+                model.TypeId = entity.Type?1:0;
+                model.UserId = entity.Creator.Id;//todo ???
+                model.VacationCount = entity.VacationCount.ToString();
+                model.Version = entity.Version;
             }
             else
             {
                 creator = currUser;
             }
-            //User user = UserDao.Load(model.UserId);
-           
-            //if (!CheckUserRights(current, id, entity, false))
+            //if (!CheckUserRights(current, id, entity, false)) todo ???
             //    throw new ArgumentException(StrAccessIsDenied);
-
-            //model.Id = entity.Id;
-            //model.Version = entity.Version;
-            //model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
-            //model.DocumentNumber = entity.Number.ToString();
-            //model.DateCreated = entity.CreateDate.ToShortDateString();
-            //model.Hotels = entity.Hotels;
-
             SetManagerInfoModel(creator, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, entity, model);
@@ -147,6 +182,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonnelFio = entity.AcceptPersonnel.FullName;
             if (entity.AcceptStaff != null && entity.StaffDateAccept.HasValue)
                 model.StaffFio = entity.AcceptStaff.FullName;
+
             if(entity.DeleteDate.HasValue)
             {
                 if (entity.DeleteUser.Id == entity.Creator.Id)
@@ -154,22 +190,72 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     model.ChiefFio = entity.DeleteUser.FullName;
                 model.IsStaffReceiveRejectMail = true;// todo Need flag on entity ?
+                if (entity.AcceptStaff != null)
+                    model.StaffFio = entity.AcceptStaff.FullName;
             }
             switch (current.UserRole)
             {
                 case UserRole.Manager:
+                    if(current.Id == entity.Creator.Id && !entity.DeleteDate.HasValue)
+                    {
+                            model.IsManagerRejectAvailable = true;
+                            if (!entity.ManagerDateAccept.HasValue)
+                            {
+                                model.IsManagerApproveAvailable = true;
+                                model.IsEditable = true;
+                            }
+                    }
+                    else if (!entity.DeleteDate.HasValue && IsManagerChiefForCreator(current, entity.Creator))
+                    {
+                        if(entity.ManagerDateAccept.HasValue)
+                        {
+                            model.IsManagerRejectAvailable = true;
+                            if (!entity.ChiefDateAccept.HasValue)
+                                model.IsChiefApproveAvailable = true;
+                        }
+                    }
                     break;
                 case UserRole.Director:
+                    if (!entity.DeleteDate.HasValue)
+                    {
+                        model.IsManagerRejectAvailable = true;
+                        if (!entity.ChiefDateAccept.HasValue)
+                            model.IsChiefApproveAvailable = true;
+                    }
                     break;
                 case UserRole.PersonnelManager:
+                    if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
+                        !entity.PersonnelDateAccept.HasValue)
+                        model.IsPersonnelApproveAvailable = true;
+                    
                     break;
                 case UserRole.StaffManager:
+                    if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
+                         entity.PersonnelDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
+                        model.IsStaffApproveAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
                     break;
             }
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
+                || model.IsChiefApproveAvailable || model.IsManagerRejectAvailable ||
+                model.IsPersonnelApproveAvailable || model.IsStaffApproveAvailable;
         }
-
+        protected bool IsManagerChiefForCreator(User current, User creator)
+        {
+            if(current.Level < 2 || current.Level > 6)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,current.Level,current.Id));
+            if(creator.Department == null)
+                throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
+            if (current.Department == null)
+                throw new ValidationException(string.Format(StrNoDepartmentForManager, current.Id));
+            switch (current.Level)
+            {
+                default:
+                    return current.Level < creator.Level &&
+                           creator.Department.Path.StartsWith(current.Department.Path);
+            }
+        }
         protected void SetFlagsState(AppointmentEditModel model, bool state)
         {
             model.IsEditable = state;
@@ -202,6 +288,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionIdHidden = model.PositionId;
             model.ReasonIdHidden = model.ReasonId;
             model.TypeIdHidden = model.TypeId;
+            model.IsManagerApprovedHidden = model.IsManagerApproved;
+            model.IsChiefApprovedHidden = model.IsChiefApproved;
+            model.IsPersonnelApprovedHidden = model.IsPersonnelApproved;
+            model.IsStaffApprovedHidden = model.IsStaffApproved;
         }
         protected void SetManagerInfoModel(User user, ManagerInfoModel model)
         {
@@ -222,6 +312,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Comments = new List<RequestCommentModel>(),
                 IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && id > 0,
             };
+            if (id == 0)
+                return commentModel;
             Appointment entity = AppointmentDao.Load(id);
             if ((entity.Comments != null) && (entity.Comments.Count() > 0))
             {

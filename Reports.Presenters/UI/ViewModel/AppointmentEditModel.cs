@@ -88,26 +88,28 @@ namespace Reports.Presenters.UI.ViewModel
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
+        public bool? IsManagerApprovedHidden { get; set; }
         public string ManagerFio { get; set; }
-        //public bool? IsManagerApprovedHidden { get; set; }
 
          [Display(Name = "Вышестоящий руководитель")]
         public bool? IsChiefApproved { get; set; }
         public bool IsChiefApproveAvailable { get; set; }
-        public string ChiefFio { get; set; }
         //public bool IsChiefRejectAvailable { get; set; }
-        //public bool? IsChiefApprovedHidden { get; set; }
+        public bool? IsChiefApprovedHidden { get; set; }
+        public string ChiefFio { get; set; }
 
         [Display(Name = "Кадровая служба")]
         public bool IsPersonnelApproved { get; set; }
         public bool IsPersonnelApproveAvailable { get; set; }
+        public bool IsPersonnelApprovedHidden { get; set; }
         public string PersonnelFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
         public bool IsStaffApproved { get; set; }
         public bool IsStaffApproveAvailable { get; set; }
-        public string StaffFio { get; set; }
         public bool IsStaffReceiveRejectMail { get; set; }
+        public bool IsStaffApprovedHidden { get; set; }
+        public string StaffFio { get; set; }
 
         public bool IsEditable { get; set; }
         public bool IsDeleted { get; set; }

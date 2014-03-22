@@ -610,6 +610,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return words[2];
             }
         }
+        public static string FormatSum(decimal sum)
+        {
+            return (int)sum == sum ? ((int)sum).ToString() : sum.ToString("0.00");
+        }
+        public static string FormatSum(decimal? sum)
+        {
+            return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
+        }
+        public static string FormatDate(DateTime? date)
+        {
+            return date.HasValue ? date.Value.ToShortDateString() : string.Empty;
+        }
+        public static string FormatDate(DateTime date)
+        {
+            return date.ToShortDateString();
+        }
 
     }
     public class BlockGSSAPINTLMCredential : ICredentialsByHost

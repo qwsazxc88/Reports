@@ -7252,14 +7252,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetHiddenFields(model);
             return model;
         }
-        public static string FormatSum(decimal sum)
-        {
-            return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
-        }
-        public static string FormatSum(decimal? sum)
-        {
-            return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
-        }
+        
         public bool CheckOtherOrdersExists(MissionOrderEditModel model)
         {
             return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),

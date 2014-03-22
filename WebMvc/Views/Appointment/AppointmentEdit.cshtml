@@ -40,7 +40,7 @@
             <tr>
                 <td colspan="2">
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
-                    @if (!Model.IsEditable)
+                    @if (Model.IsEditable)
                     {
                         <input type="button" value="Выбрать" onclick="changeDepartment();"/>
                     }            
@@ -243,18 +243,22 @@
             </tr>
              <tr>
                 <td>
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
                     @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
                     @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
-@*                    @if (!Model.IsManagerApproveAvailable)
-                    {
-                        <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
-                    }*@
+                    <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
                     <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
                     <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
-                    @Html.LabelFor(model => model.ManagerFio)
+                    @Model.ManagerFio
+                    <input type="hidden" id="ManagerFio" name="ManagerFio" value="@Model.ManagerFio" />
                 </td>
             </tr>
             <tr>
@@ -264,13 +268,10 @@
                 <td>
                     @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
                     @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
-                  @*  @if (!Model.IsChiefApproveAvailable)
-                    {
-                        <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
-                    }*@
+                    <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
-                     @Html.LabelFor(model => model.ChiefFio)
-                    @*<input type="hidden" id="IsChiefRejectAvailable" name="IsChiefRejectAvailable" value="@Model.IsChiefRejectAvailable" />*@
+                     @Model.ChiefFio
+                     <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
                 </td>
             </tr>
              <tr>
@@ -281,7 +282,9 @@
                     @Html.CheckBox("IsPersonnelApproved", Model.IsPersonnelApproved, Model.IsPersonnelApproveAvailable ? null : (object)new { disabled = "disabled" }) 
                     Отправить на согласование
                     <input type="hidden" id="IsPersonnelApproveAvailable" name="IsPersonnelApproveAvailable" value="@Model.IsPersonnelApproveAvailable" />
-                     @Html.LabelFor(model => model.PersonnelFio)
+                    <input type="hidden" id="IsPersonnelApprovedHidden" name="IsPersonnelApprovedHidden" value="@Model.IsPersonnelApprovedHidden" />
+                     @Model.PersonnelFio
+                     <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
                 </td>
             </tr>
              <tr>
@@ -294,7 +297,9 @@
                     @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
                     Уведомлен
                     <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
-                    @Html.LabelFor(model => model.StaffFio)
+                    <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
+                    @Model.StaffFio
+                    <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
                 </td>
             </tr>
         </table>
@@ -304,7 +309,7 @@
         <table style="width:100%">
              <tr>
                 <td colspan="2">
-                    <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
                 </td>
             </tr>
         </table>
