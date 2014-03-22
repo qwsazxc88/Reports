@@ -40,7 +40,7 @@ namespace Reports.Core.Domain
         public virtual string Responsibility { get; set; }
         public virtual DateTime? DesirableBeginDate { get; set; }
         public virtual bool IsVacationExists { get; set; }
-        public virtual DateTime? BeginDate { get; set; }
+        //public virtual DateTime? BeginDate { get; set; }
 
 
         public virtual User Creator { get; set; }

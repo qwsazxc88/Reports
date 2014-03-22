@@ -399,11 +399,14 @@ namespace Reports.Core
              LifeStyle.Is(type));
 
             Register(Component.For(typeof(IAppointmentCommentDao)).
-             ImplementedBy(typeof(AppointmentCommentDao)).
-             LifeStyle.Is(type));
+                ImplementedBy(typeof(AppointmentCommentDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(IAppointmentDao)).
-              ImplementedBy(typeof(AppointmentDao)).
-              LifeStyle.Is(type));
+                ImplementedBy(typeof(AppointmentDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentReasonDao)).
+                ImplementedBy(typeof(AppointmentReasonDao)).
+                LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

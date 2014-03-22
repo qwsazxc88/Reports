@@ -18,6 +18,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrCommentCreationDedied = "Добавление комментария запрещено";
         public const string StrAppointmentNotFound = "Не найдена заявка (id {0}) в базе данных";
         public const string StrAccessIsDenied = "Доступ запрещен";
+        public const string StrUserNotManager = "Вы (пользователь {0}) не являетесь руководителем или членом правления - создание заявки запрещено";
         #region DAOs
         protected IAppointmentDao appointmentDao;
         public IAppointmentDao AppointmentDao
@@ -30,6 +31,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(appointmentCommentDao); }
             set { appointmentCommentDao = value; }
+        }
+        protected IPositionDao positionDao;
+        public IPositionDao PositionDao
+        {
+            get { return Validate.Dependency(positionDao); }
+            set { positionDao = value; }
+        }
+        protected IAppointmentReasonDao appointmentReasonDao;
+        public IAppointmentReasonDao AppointmentReasonDao
+        {
+            get { return Validate.Dependency(appointmentReasonDao); }
+            set { appointmentReasonDao = value; }
         }
         #endregion
 
@@ -77,14 +90,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             AppointmentEditModel model = new AppointmentEditModel {Id = id};
             Appointment entity = null;
+            User creator;
+            IUser current = AuthenticationService.CurrentUser;
+            User currUser = UserDao.Load(current.Id);
             if (id != 0)
             {
                 entity = AppointmentDao.Load(id);
                 if (entity == null)
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
+                creator = entity.Creator;
+            }
+            else
+            {
+                creator = currUser;
             }
             //User user = UserDao.Load(model.UserId);
-            IUser current = AuthenticationService.CurrentUser;
+           
             //if (!CheckUserRights(current, id, entity, false))
             //    throw new ArgumentException(StrAccessIsDenied);
 
@@ -95,13 +116,102 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.DateCreated = entity.CreateDate.ToShortDateString();
             //model.Hotels = entity.Hotels;
 
-            //SetUserInfoModel(user, model);
-            //LoadDictionaries(model);
-            //SetFlagsState(id, user, entity, model);
-            //SetHiddenFields(model);
+            SetManagerInfoModel(creator, model);
+            LoadDictionaries(model);
+            SetFlagsState(id, currUser, entity, model);
+            SetHiddenFields(model);
             return model;
         }
+        protected void SetFlagsState(int id, User current, Appointment entity, AppointmentEditModel model)
+        {
+            SetFlagsState(model, false);
+            if(model.Id == 0)
+            {
+                if (current.UserRole != UserRole.Manager && current.UserRole != UserRole.Director)
+                    throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
+                model.IsEditable = true;
+                model.IsSaveAvailable = true;
+                model.IsManagerApproveAvailable = true;
+                return;
+            }
+            model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
+            model.IsChiefApproved = entity.ChiefDateAccept.HasValue;
+            model.IsPersonnelApproved = entity.PersonnelDateAccept.HasValue;
+            model.IsStaffApproved = entity.StaffDateAccept.HasValue;
+            model.IsDeleted = entity.DeleteDate.HasValue;
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName;
+            if (entity.AcceptChief != null && entity.ChiefDateAccept.HasValue)
+                model.ChiefFio = entity.AcceptChief.FullName;
+            if (entity.AcceptPersonnel != null && entity.PersonnelDateAccept.HasValue)
+                model.PersonnelFio = entity.AcceptPersonnel.FullName;
+            if (entity.AcceptStaff != null && entity.StaffDateAccept.HasValue)
+                model.StaffFio = entity.AcceptStaff.FullName;
+            if(entity.DeleteDate.HasValue)
+            {
+                if (entity.DeleteUser.Id == entity.Creator.Id)
+                    model.ManagerFio = entity.DeleteUser.FullName;
+                else
+                    model.ChiefFio = entity.DeleteUser.FullName;
+                model.IsStaffReceiveRejectMail = true;// todo Need flag on entity ?
+            }
+            switch (current.UserRole)
+            {
+                case UserRole.Manager:
+                    break;
+                case UserRole.Director:
+                    break;
+                case UserRole.PersonnelManager:
+                    break;
+                case UserRole.StaffManager:
+                    break;
+                case UserRole.OutsourcingManager:
+                    break;
+            }
+        }
 
+        protected void SetFlagsState(AppointmentEditModel model, bool state)
+        {
+            model.IsEditable = state;
+            model.IsSaveAvailable = state;
+            model.IsChiefApproveAvailable = state;
+            model.IsManagerApproveAvailable = state;
+            model.IsManagerRejectAvailable = state;
+            model.IsPersonnelApproveAvailable = state;
+            model.IsStaffApproveAvailable = state;
+        }
+        protected void LoadDictionaries(AppointmentEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
+            model.Types = new List<IdNameDto>
+                              {
+                                  new IdNameDto {Id = 0,Name = "Бессрочная"},
+                                  new IdNameDto {Id = 1,Name = "Срочная"},
+                              };
+            model.Positions = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
+            model.Reasons = AppointmentReasonDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.IsVacationExistsValues = new List<IdNameDto>
+                              {
+                                  new IdNameDto {Id = 1,Name = "Есть"},
+                                  new IdNameDto {Id = 0,Name = "Нет"},
+                              };
+        }
+        protected void SetHiddenFields(AppointmentEditModel model)
+        {
+            model.IsVacationExistsHidden = model.IsVacationExists;
+            model.PositionIdHidden = model.PositionId;
+            model.ReasonIdHidden = model.ReasonId;
+            model.TypeIdHidden = model.TypeId;
+        }
+        protected void SetManagerInfoModel(User user, ManagerInfoModel model)
+        {
+            model.Department = user.Department == null ? string.Empty : user.Department.Name;
+            if (user.Organization != null)
+                model.Organization = user.Organization.Name;
+            if (user.Position != null)
+                model.Position = user.Position.Name;
+            model.UserName = user.FullName;
+        }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
         {

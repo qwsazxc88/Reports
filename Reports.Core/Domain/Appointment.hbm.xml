@@ -34,7 +34,7 @@
 	<property name="Responsibility" length="128" not-null="true"/>
 	<property name="DesirableBeginDate" not-null="false"/>
 	<property name="IsVacationExists" not-null="true"/>
-	<property name="BeginDate" not-null="false"/>
+	<!--<property name="BeginDate" not-null="false"/>-->
 	  
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Appointment_CreatorUser" index="IX_Appointment_CreatorUser_Id"  not-null="true"/>
 	<property name="ManagerDateAccept" not-null="false"/>
