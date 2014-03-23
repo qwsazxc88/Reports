@@ -23,8 +23,8 @@ namespace Reports.Core.Domain
         public virtual AppointmentReason Reason { get; set; }
         public virtual DateTime? ReasonBeginDate { get; set; }
         public virtual string ReasonPosition { get; set; }
-        public virtual string ReasonPersonnelStore { get; set; }
-        public virtual string ReasonUser { get; set; }
+        //public virtual string ReasonPersonnelStore { get; set; }
+        //public virtual string ReasonUser { get; set; }
 
         public virtual string Period { get; set; }
         public virtual string Schedule { get; set; }

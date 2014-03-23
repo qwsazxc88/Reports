@@ -18,8 +18,8 @@
 	
 	<property name="ReasonBeginDate" not-null="false"/>
 	<property name="ReasonPosition" length="64" not-null="false"/>
-	<property name="ReasonPersonnelStore" length="64" not-null="false"/>
-	<property name="ReasonUser" length="64" not-null="false"/>
+	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
+	<property name="ReasonUser" length="64" not-null="false"/>-->
 
 	<property name="Period"  length="128" not-null="true"/>
 	<property name="Schedule" length="64" not-null="true"/>

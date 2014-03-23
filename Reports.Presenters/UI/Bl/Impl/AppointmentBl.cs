@@ -53,6 +53,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             //IdNameReadonlyDto dep = GetDepartmentDto(user);
+            UserRole role = AuthenticationService.CurrentUser.UserRole;
             AppointmentListModel model = new AppointmentListModel
             {
                 UserId = AuthenticationService.CurrentUser.Id,
@@ -62,6 +63,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetInitialDates(model);
             SetDictionariesToModel(model);
+            model.IsAddAvailable = role == UserRole.Manager || role == UserRole.Director;
             //SetInitialStatus(model);
             //SetIsAvailable(model);
             return model;
@@ -123,17 +125,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     case 1:
                     case 2:
+                    //case 3:
+                    case 4:
+                    case 5:
                         model.ReasonPosition = entity.ReasonPosition;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
                         break;
                     case 3:
-                        model.ReasonPosition = entity.ReasonPersonnelStore;
+                        model.ReasonPosition = entity.ReasonPosition;
+                        model.ReasonBeginDate = string.Empty;
                         break;
-                    case 4:
+                    /*case 4:
                     case 5:
                         model.ReasonPosition = entity.ReasonUser;
                         model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
-                        break;
+                        break;*/
                     default:
                         throw new ArgumentException(string.Format(StrIncorrectReasonId,entity.Reason.Id));
                 }
@@ -148,6 +154,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
             {
                 creator = currUser;
+                model.IsVacationExists = 1;
+                SetCreatorDepartment(creator, model);
             }
             //if (!CheckUserRights(current, id, entity, false)) todo ???
             //    throw new ArgumentException(StrAccessIsDenied);
@@ -156,6 +164,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, currUser, entity, model);
             SetHiddenFields(model);
             return model;
+        }
+        protected void SetCreatorDepartment(User creator,AppointmentEditModel model)
+        {
+            if (creator.UserRole == UserRole.Manager)
+            {
+                if (creator.Department == null)
+                    throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
+                model.DepartmentId = creator.Department.Id;
+                model.DepartmentName = creator.Department.Name;
+            }
         }
         protected void SetFlagsState(int id, User current, Appointment entity, AppointmentEditModel model)
         {

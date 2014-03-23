@@ -88,7 +88,7 @@
                     <tr>
                             <td>
                                 <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
-                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment")'"/>                                                                             
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
                             </td>
                             @*<td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />

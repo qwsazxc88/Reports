@@ -24,7 +24,7 @@
             @if (Model.IsDeleted)
             { 
             <tr>
-                <td colspan="2" style="color:Red">Приказ отклонен</td>
+                <td colspan="2" style="color:Red">Заявка отклонена</td>
             </tr>
             }
              <tr>
@@ -72,11 +72,11 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td style="width:270px">
                     @Html.LabelFor(m => m.ReasonId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
@@ -89,7 +89,7 @@
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
-            <tr>
+            <tr  id="ReasonDateTr">
                 <td>
                     <span id="ReasonDateLabel">С даты:</span>
                     @*@Html.LabelFor(m => m.ReasonBeginDate):*@
@@ -295,11 +295,16 @@
                     @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
                     Принял в работу
                     @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
-                    Уведомлен
+                    Уведомлен об отклонении заявки
                     <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
                     <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
                     @Model.StaffFio
                     <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
+                </td>
+            </tr>
+             <tr>
+                <td colspan="2">
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
                 </td>
             </tr>
         </table>
@@ -323,5 +328,54 @@
     $("#DesirableBeginDate").datepicker();
     $("#ReasonBeginDate").datepicker();
     $(".hasDatepicker").width("75px");
+    onReasonChange();
    });
+    function ValidateForm()
+    {
+        var result = true;
+        if(!IsFieldNotEmpty($("#City")))
+            result = false;
+        return result;
+    }
+    function IsFieldNotEmpty(control)
+    {
+        clearControlErrors(control);
+        if(control.val() == '' )
+        {
+            addControlError(control,'Обязательное поле');
+            return false;
+        }
+        return true;
+    }
+    function onReasonChange()
+    {
+        var reasonId = $("#ReasonId").val();
+        switch(reasonId)
+        {
+            case '1':
+                $("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+            break
+            case '2':
+                $("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+            break
+            case '3':
+                $("#ReasonPositionLabel").text('');
+            break
+            case '4':
+                $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
+                $("#ReasonDateLabel").text('Дата ухода:');
+            break
+            case '5':
+                $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
+                $("#ReasonDateLabel").text('Дата увольнения:');
+            break
+        }
+        if(reasonId == 3)
+            $("#ReasonDateTr").hide();
+        else
+            $("#ReasonDateTr").show();
+            
+    }
 </script> 
