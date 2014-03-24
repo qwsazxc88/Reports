@@ -81,8 +81,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int IsVacationExistsHidden { get; set; }
         public IList<IdNameDto> IsVacationExistsValues;
 
-        [Display(Name = "Работа с даты")]
-        public string BeginDate { get; set; }
+        //[Display(Name = "Работа с даты")]
+        //public string BeginDate { get; set; }
 
         [Display(Name = "Руководитель (заказчик)")]
         public bool? IsManagerApproved { get; set; }

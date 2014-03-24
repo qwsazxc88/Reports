@@ -42,7 +42,7 @@
                   @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
                     @if (Model.IsEditable)
                     {
-                        <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                        <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
                     }            
                 </td>
             </tr>
@@ -225,7 +225,7 @@
                     <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
                 </td>
             </tr>
-             <tr>
+            @* <tr>
                 <td>
                     @Html.LabelFor(m => m.BeginDate):
                 </td>
@@ -240,7 +240,7 @@
                         @Html.HiddenFor(model => model.BeginDate)
                     } 
                 </td>
-            </tr>
+            </tr>*@
              <tr>
                 <td>
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
@@ -333,7 +333,52 @@
     function ValidateForm()
     {
         var result = true;
+        /*clearControlErrors($("#SelectDepartmentBtn"));
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать департамент');
+            result = false;
+        }*/
         if(!IsFieldNotEmpty($("#City")))
+            result = false;
+        if(!IsFieldNotEmpty($("#VacationCount")))
+            result = false;
+        else if( ValidateInt($("#VacationCount")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#ReasonPosition")))
+            result = false;
+        if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
+        {
+            if(!IsFieldNotEmpty($("#ReasonBeginDate")))
+                result = false;
+//            else
+//            {
+//                var strDate = $("#ReasonBeginDate").val().split("T")[0];
+//                strDate = strDate.replace('.', '-')
+//                var date = jQuery.datepicker.parseDate( "dd-mm-yyyy", strDate);
+//            }
+        }
+        if(!IsFieldNotEmpty($("#Period")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Schedule")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Salary")))
+            result = false;
+        else if (ValidateSumC($("#Salary")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Bonus")))
+            result = false;
+        else if (ValidateSumNotNegative($("#Bonus")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Compensation")))
+            result = false;
+        if(!IsFieldNotEmpty($("#EducationRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#ExperienceRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Responsibility")))
+            result = false;
+        if(!IsFieldNotEmpty($("#DesirableBeginDate")))
             result = false;
         return result;
     }
