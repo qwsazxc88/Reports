@@ -30,6 +30,11 @@
       <key column="UserId" foreign-key="FK_ClearanceChecklistRoleRecord_User"/>
       <one-to-many class="ClearanceChecklistRoleRecord" />
     </bag>
+
+    <bag name="MissionOrderRoleRecords" table="UserMissionOrderRoleRecord" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_MissionOrderRoleRecord_User"/>
+      <one-to-many class="MissionOrderRoleRecord" />
+    </bag>
     
     <property name="LoginAd" length="32" not-null="false" />
     <property name="Rate" not-null="false" />

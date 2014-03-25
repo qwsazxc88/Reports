@@ -7105,7 +7105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue)
                 {
                     bool canEdit;
-                    if(IsUserManagerForEmployee(entity.User,CurrentUser,out canEdit) && canEdit)
+                    if ((IsUserManagerForEmployee(entity.User, CurrentUser, out canEdit) && canEdit) || CanUserApproveMissionOrderForEmployee(entity.User, CurrentUser))
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = UserDao.Load(CurrentUser.Id);
@@ -7513,7 +7513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
             }
             bool canEdit = false;
-            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
+            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current))
             {
                 if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
@@ -7922,7 +7922,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit = false;
-                    bool isUserManager =  IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
                     {
                          if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
@@ -8053,7 +8053,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current,out canEdit);
+                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current);
                     if (isManager)
                     {
                         if (isSave)
@@ -8092,6 +8092,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
+        /// <summary>
+        /// Checks if the authenticated user is a manager of the specified employee
+        /// </summary>
+        /// <param name="user">Employee</param>
+        /// <param name="current">Authenticated user</param>
+        /// <param name="canEdit">Result output</param>
+        /// <returns>true/false for check success/failure</returns>
         protected bool IsUserManagerForEmployee(User user, IUser current,out bool canEdit)
         {
             canEdit = false;
@@ -8168,6 +8175,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             return false;
+        }
+        protected bool CanUserApproveMissionOrderForEmployee(User user, IUser current)
+        {
+            User currentUser = UserDao.Load(current.Id);
+            if (currentUser == null)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+            // Get the number of role records that allow the authenticated user to approve the current mission order
+            int relevantRoleRecordsCount = currentUser.MissionOrderRoleRecords
+                .Where<MissionOrderRoleRecord>(roleRecord =>
+                    roleRecord.Role.Id == 1 &&
+                    (roleRecord.TargetUser == user || roleRecord.TargetDepartment == user.Department))
+                .ToList<MissionOrderRoleRecord>()
+                .Count;
+            // If any roles satisfying the conditions have been found
+            return (relevantRoleRecordsCount > 0) ? true : false;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
         {
@@ -8486,7 +8508,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = order.EditDate.ToShortDateString();
             return model;
         }
-
 
         public GradeListViewModel GetGradeListModel()
         {
@@ -9448,8 +9469,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
         
-       
-
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -9921,7 +9940,5 @@ namespace Reports.Presenters.UI.Bl.Impl
             return documentVersion;
         }
         #endregion
-
     }
-
 }

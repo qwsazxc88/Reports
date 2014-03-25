@@ -362,6 +362,8 @@
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
+    <Compile Include="Domain\MissionOrderRole.cs" />
+    <Compile Include="Domain\MissionOrderRoleRecord.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
@@ -726,6 +728,16 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\ClearanceChecklistRoleRecord.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionOrderRoleRecord.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionOrderRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

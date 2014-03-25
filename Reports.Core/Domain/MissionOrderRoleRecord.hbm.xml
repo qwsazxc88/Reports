@@ -19,7 +19,7 @@
 
     <many-to-one
       name="Role"
-      class="ClearanceChecklistRole"
+      class="MissionOrderRole"
       column="RoleId"
       foreign-key="FK_MissionOrderRoleRecord_MissionOrderRole"
       index="IX_MissionOrderRoleRecord_MissionOrderRole_Id"
