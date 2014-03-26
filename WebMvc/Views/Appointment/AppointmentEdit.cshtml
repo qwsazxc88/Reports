@@ -333,12 +333,12 @@
     function ValidateForm()
     {
         var result = true;
-        /*clearControlErrors($("#SelectDepartmentBtn"));
+        clearControlErrors($("#SelectDepartmentBtn"));
         if($("#DepartmentId").val() == 0)
         {
-            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать департамент');
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
             result = false;
-        }*/
+        }
         if(!IsFieldNotEmpty($("#City")))
             result = false;
         if(!IsFieldNotEmpty($("#VacationCount")))

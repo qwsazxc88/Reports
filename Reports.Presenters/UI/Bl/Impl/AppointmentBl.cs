@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
+using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -156,6 +157,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = currUser;
                 model.IsVacationExists = 1;
                 SetCreatorDepartment(creator, model);
+                model.UserId = currUser.Id;
             }
             //if (!CheckUserRights(current, id, entity, false)) todo ???
             //    throw new ArgumentException(StrAccessIsDenied);
@@ -310,6 +312,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsChiefApprovedHidden = model.IsChiefApproved;
             model.IsPersonnelApprovedHidden = model.IsPersonnelApproved;
             model.IsStaffApprovedHidden = model.IsStaffApproved;
+            model.DateCreatedHidden = model.DateCreated;
         }
         protected void SetManagerInfoModel(User user, ManagerInfoModel model)
         {
@@ -319,6 +322,294 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
+        }
+
+        public void ReloadDictionaries(AppointmentEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetManagerInfoModel(user, model);
+            LoadDictionaries(model);
+            if (model.Id == 0)
+            {
+                model.DateCreated = DateTime.Today.ToShortDateString();
+            }
+            else
+            {
+                Appointment entity = AppointmentDao.Load(model.Id);
+                model.DocumentNumber = entity.Number.ToString();
+                model.DateCreated = entity.CreateDate.ToShortDateString();
+                if (entity.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+                // no need to load ManagerFio and other because no error in model after manager approve
+            }
+        }
+
+        public bool SaveAppointmentEditModel(AppointmentEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                Appointment entity = null;
+                if (model.Id != 0)
+                {
+                    entity = AppointmentDao.Load(model.Id);
+                }
+                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }*/
+
+                if (model.Id == 0)
+                {
+                    entity = new Appointment()
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
+                        EditDate = DateTime.Now,
+                    };
+                    ChangeEntityProperties(current, entity, model, user);
+                    AppointmentDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                }
+                else
+                {
+                    if (entity.Version != model.Version)
+                    {
+                        error = "Приказ был изменен другим пользователем.";
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    //if (model.IsDelete)
+                    //{
+                    //    if (current.UserRole == UserRole.OutsourcingManager)
+                    //        entity.DeleteAfterSendTo1C = true;
+                    //    entity.DeleteDate = DateTime.Now;
+                    //    //missionOrder.CreateDate = DateTime.Now;
+                    //    MissionOrderDao.SaveAndFlush(entity);
+                    //    if (entity.Mission != null)
+                    //    {
+                    //        Mission mission = entity.Mission;
+                    //        if (mission.SendTo1C.HasValue)
+                    //            mission.DeleteAfterSendTo1C = true;
+                    //        mission.DeleteDate = DateTime.Now;
+                    //        mission.CreateDate = DateTime.Now;
+                    //        MissionDao.SaveAndFlush(mission);
+                    //    }
+                    //    else
+                    //        Log.WarnFormat("No mission for mission order with id {0}", entity.Id);
+                    //    MissionReport report = MissionReportDao.GetReportForOrder(entity.Id);
+                    //    if (report != null)
+                    //    {
+                    //        report.DeleteDate = DateTime.Now;
+                    //        report.EditDate = DateTime.Now;
+                    //        MissionReportDao.SaveAndFlush(report);
+                    //    }
+                    //    else
+                    //        Log.WarnFormat("No mission report for mission order with id {0}", entity.Id);
+                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
+                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
+                    //    model.IsDelete = false;
+                    //}
+                    //else
+                    //{
+                        ChangeEntityProperties(current, entity, model, user);
+                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
+                        //string country = GetStringForList(cityList);
+                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
+                        //string org = GetStringForList(orgList);
+                        AppointmentDao.SaveAndFlush(entity);
+                        if (entity.Version != model.Version)
+                        {
+                            entity.EditDate = DateTime.Now;
+                            AppointmentDao.SaveAndFlush(entity);
+                        }
+                    }
+                    if (entity.DeleteDate.HasValue)
+                        model.IsDeleted = true;
+                //}
+                model.DocumentNumber = entity.Number.ToString();
+                model.Version = entity.Version;
+                model.DateCreated = entity.CreateDate.ToShortDateString();
+                SetFlagsState(entity.Id, user, entity, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AppointmentDao.RollbackTran();
+                Log.Error("Error on SaveAppointmentEditModel:", ex);
+                error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+            finally
+            {
+                SetManagerInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, User user)
+        {
+            //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+            if (model.IsEditable)
+            {
+                //entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
+                //entity.EndDate = DateTime.Parse(model.EndMissionDate);
+                //entity.Goal = MissionGoalDao.Load(model.GoalId);
+                //entity.Type = MissionTypeDao.Load(model.TypeId);
+                //entity.Kind = model.Kind;
+                //entity.UserAllSum = Decimal.Parse(model.UserAllSum);
+                //entity.UserSumDaily = GetSum(model.UserAllSumDaily);
+                //entity.UserSumResidence = GetSum(model.UserAllSumResidence);
+                //entity.UserSumAir = GetSum(model.UserAllSumAir);
+                //entity.UserSumTrain = GetSum(model.UserAllSumTrain);
+                //entity.AllSum = Decimal.Parse(model.AllSum);
+                //entity.SumDaily = Decimal.Parse(model.AllSumDaily);
+                //entity.SumResidence = Decimal.Parse(model.AllSumResidence);
+                //entity.SumAir = Decimal.Parse(model.AllSumAir);
+                //entity.SumTrain = Decimal.Parse(model.AllSumTrain);
+                //entity.UserSumCash = GetSum(model.UserSumCash);
+                //entity.UserSumNotCash = GetSum(model.UserSumNotCash);
+                //entity.NeedToAcceptByChiefAsManager = isDirectorManager;
+                //entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
+                //entity.IsResidencePaid = model.IsResidencePaid;
+                //entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
+                //entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
+                //model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+                //SaveMissionTargets(entity, model);
+            }
+            //if (model.IsSecritaryEditable)
+            //{
+            //    if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
+            //        entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
+            //        entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber ||
+            //        model.AirTicketType != entity.AirTicketType ||
+            //        model.TrainTicketType != entity.TrainTicketType)
+            //    {
+            //        entity.Secretary = UserDao.Load(current.Id);
+            //        model.SecretaryFio = entity.Secretary.FullName;
+            //    }
+            //    entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber) ? null : model.ResidenceRequestNumber;
+            //    entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
+            //    entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
+            //    entity.AirTicketType = model.AirTicketType;
+            //    entity.TrainTicketType = model.TrainTicketType;
+            //}
+
+            //if (current.UserRole == UserRole.Employee && current.Id == model.UserId
+            //    && !entity.UserDateAccept.HasValue
+            //    && model.IsUserApproved)
+            //{
+            //    entity.UserDateAccept = DateTime.Now;
+            //    entity.AcceptUser = UserDao.Load(current.Id);
+            //    if (isDirectorManager)
+            //    {
+            //        entity.NeedToAcceptByChiefAsManager = true;
+            //        SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+            //    }
+            //    else
+            //        SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
+            //}
+            //bool canEdit = false;
+            //if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user, current, out canEdit))
+            //{
+            //    if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
+            //    {
+            //        entity.UserDateAccept = DateTime.Now;
+            //        entity.AcceptUser = UserDao.Load(current.Id);
+            //    }
+            //    if (!entity.ManagerDateAccept.HasValue)
+            //    {
+            //        if (model.IsManagerApproved.HasValue)
+            //        {
+            //            if (model.IsManagerApproved.Value)
+            //            {
+            //                entity.ManagerDateAccept = DateTime.Now;
+            //                entity.AcceptManager = UserDao.Load(current.Id);
+            //                /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
+            //                    entity.UserDateAccept = DateTime.Now;*/
+            //                if (!entity.NeedToAcceptByChief)
+            //                {
+            //                    CreateMission(entity);
+            //                    SendEmailForMissionOrderConfirm(CurrentUser, entity);
+            //                }
+            //                else
+            //                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+            //            }
+            //            else
+            //            {
+            //                model.IsManagerApproved = null;
+            //                if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
+            //                {
+            //                    entity.UserDateAccept = null;
+            //                    SendEmailForMissionOrderReject(CurrentUser, entity);
+            //                }
+            //            }
+            //        }
+            //    }
+            //    /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
+            //        entity.UserDateAccept = DateTime.Now;*/
+            //}
+            //if (current.UserRole == UserRole.Director)
+            //{
+            //    if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
+            //    {
+            //        if (model.IsManagerApproved.HasValue)
+            //        {
+            //            if (model.IsManagerApproved.Value)
+            //            {
+            //                User currentUser = UserDao.Load(current.Id);
+            //                entity.ManagerDateAccept = DateTime.Now;
+            //                entity.AcceptManager = currentUser;
+            //                if (entity.NeedToAcceptByChief)
+            //                {
+            //                    entity.ChiefDateAccept = DateTime.Now;
+            //                    entity.AcceptChief = currentUser;
+            //                }
+            //                CreateMission(entity);
+            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+            //            }
+            //            else
+            //            {
+            //                entity.UserDateAccept = null;
+            //                model.IsManagerApproved = null;
+            //                SendEmailForMissionOrderReject(CurrentUser, entity);
+            //            }
+            //        }
+            //    }
+            //    if (entity.NeedToAcceptByChief)
+            //    {
+            //        if (model.IsChiefApproved.HasValue)
+            //        {
+            //            if (model.IsChiefApproved.Value)
+            //            {
+            //                User currentUser = UserDao.Load(current.Id);
+            //                entity.ChiefDateAccept = DateTime.Now;
+            //                entity.AcceptChief = currentUser;
+            //                if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
+            //                {
+            //                    entity.ManagerDateAccept = DateTime.Now;
+            //                    entity.AcceptManager = currentUser;
+            //                }
+            //                CreateMission(entity);
+            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+            //            }
+            //            else
+            //            {
+            //                entity.UserDateAccept = null;
+            //                model.IsUserApproved = false;
+            //                entity.ManagerDateAccept = null;
+            //                model.IsManagerApproved = null;
+            //                SendEmailForMissionOrderReject(CurrentUser, entity);
+            //            }
+            //        }
+            //    }
+            //}
+
         }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)

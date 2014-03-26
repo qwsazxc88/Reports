@@ -11,5 +11,8 @@ namespace Reports.Presenters.UI.Bl
 
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
         bool SaveComment(SaveCommentModel model);
+
+        void ReloadDictionaries(AppointmentEditModel model);
+        bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
     }
 }

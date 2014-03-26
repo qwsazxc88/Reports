@@ -37,6 +37,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IUserDao userDao;
         protected ISettingsDao settingsDao;
         protected IDepartmentDao departmentDao;
+        protected IRequestNextNumberDao requestNextNumberDao;
         #endregion
         public IAuthenticationService AuthenticationService
         {
@@ -57,6 +58,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
+        }
+        public IRequestNextNumberDao RequestNextNumberDao
+        {
+            get { return Validate.Dependency(requestNextNumberDao); }
+            set { requestNextNumberDao = value; }
         }
 
         public IUser CurrentUser

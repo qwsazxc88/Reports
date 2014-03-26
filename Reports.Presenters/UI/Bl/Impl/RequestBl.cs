@@ -36,7 +36,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //protected IUserToDepartmentDao userToDepartmentDao;
         protected ITimesheetStatusDao timesheetStatusDao;
         protected IVacationCommentDao vacationCommentDao;
-        protected IRequestNextNumberDao requestNextNumberDao;
+        //protected IRequestNextNumberDao requestNextNumberDao;
         protected IRoleDao roleDao;
 
         protected IAbsenceTypeDao absenceTypeDao;
@@ -127,11 +127,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(vacationCommentDao); }
             set { vacationCommentDao = value; }
         }
-        public IRequestNextNumberDao RequestNextNumberDao
+        /*public IRequestNextNumberDao RequestNextNumberDao
         {
             get { return Validate.Dependency(requestNextNumberDao); }
             set { requestNextNumberDao = value; }
-        }
+        }*/
         public IAbsenceTypeDao AbsenceTypeDao
         {
             get { return Validate.Dependency(absenceTypeDao); }
