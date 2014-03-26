@@ -163,7 +163,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(IList<User> addresseeList, Dismissal entity)
         {
             const string subject = @"Новый обходной лист";
-            const string notificationEmail = "RogozinaIE@sovcombank.ru";
+            const string notificationEmail = "list-retired@sovcombank.ru";
             string body = string.Format(@"Новый Обходной лист № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
                                           <a href=""http://rcb.homelinux.com:8002"">Кадровый портал</a>",
                                           entity.Number, entity.CreateDate.ToShortDateString(), entity.User.Name, entity.User.Department.Name);
@@ -172,7 +172,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 dtoList.Add(SendEmail(addressee.Email, subject, body));
             }*/
-            dtoList.Add(SendEmail(addresseeList[0].Email, subject, body));
+            // dtoList.Add(SendEmail(addresseeList[0].Email, subject, body));
             dtoList.Add(SendEmail(notificationEmail, subject, body));
 
             return dtoList;
