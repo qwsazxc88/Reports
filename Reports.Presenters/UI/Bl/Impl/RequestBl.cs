@@ -7196,7 +7196,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName,
                 model.SortBy,
                 model.SortDescending);
-        }
+        }        
         public void SetDictionariesToModel(MissionOrderListModel model)
         {
             model.Statuses = GetMoStatuses();
@@ -8443,7 +8443,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
-
+        
         public PrintMissionOrderViewModel GetPrintMissionOrderModel(int id)
         {
             PrintMissionOrderViewModel model = new PrintMissionOrderViewModel();
