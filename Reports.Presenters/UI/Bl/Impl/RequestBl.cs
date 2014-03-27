@@ -7105,7 +7105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue)
                 {
                     bool canEdit;
-                    if ((IsUserManagerForEmployee(entity.User, CurrentUser, out canEdit) && canEdit) || CanUserApproveMissionOrderForEmployee(entity.User, CurrentUser))
+                    if ((IsUserManagerForEmployee(entity.User, CurrentUser, out canEdit) && canEdit) || CanUserApproveMissionOrderForEmployee(entity.User, CurrentUser, out canEdit))
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = UserDao.Load(CurrentUser.Id);
@@ -7513,7 +7513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
             }
             bool canEdit = false;
-            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current))
+            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
             {
                 if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
@@ -7922,7 +7922,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit = false;
-                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser);
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
                     {
                          if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
@@ -8053,7 +8053,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current);
+                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
                     if (isManager)
                     {
                         if (isSave)
@@ -8176,7 +8176,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             return false;
         }
-        protected bool CanUserApproveMissionOrderForEmployee(User user, IUser current)
+        protected bool CanUserApproveMissionOrderForEmployee(User user, IUser current, out bool canEdit)
         {
             User currentUser = UserDao.Load(current.Id);
             if (currentUser == null)
@@ -8189,7 +8189,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 .ToList<MissionOrderRoleRecord>()
                 .Count;
             // If any roles satisfying the conditions have been found
-            return (relevantRoleRecordsCount > 0) ? true : false;
+            canEdit = (relevantRoleRecordsCount > 0) ? true : false;
+            return canEdit;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
         {

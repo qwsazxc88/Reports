@@ -142,11 +142,33 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            //
+            whereString = String.Format("({0})", whereString);
+            whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
+            IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
+            /*
+            sqlQuery = sqlSelectForMoList;
+            whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
+            whereString += String.Format(" and u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+            query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            foreach (var document in query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>())
+            {
+                documentList.Add(document);
+            }
+            */
+            return documentList;
         }
       
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
