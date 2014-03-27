@@ -14,7 +14,7 @@ namespace WebMvc.Controllers
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
         public const string StrDesirableBeginDateIsSmall = "Желательная дата выхода должна быть не ранее 2 недель с момента создания заявки";
-        public const string StrInvalidDepartment = "Указан неверный департамент";
+        public const string StrInvalidDepartment = "Указан неверное структурное подразделение.У вас нет права создания заявки для него.";
 
         protected IAppointmentBl appointmentBl;
         public IAppointmentBl AppointmentBl
