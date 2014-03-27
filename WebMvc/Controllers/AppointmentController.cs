@@ -14,6 +14,7 @@ namespace WebMvc.Controllers
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
         public const string StrDesirableBeginDateIsSmall = "Желательная дата выхода должна быть не ранее 2 недель с момента создания заявки";
+        public const string StrInvalidDepartment = "Указан неверный департамент";
 
         protected IAppointmentBl appointmentBl;
         public IAppointmentBl AppointmentBl
@@ -42,7 +43,7 @@ namespace WebMvc.Controllers
 
             CorrectCheckboxes(model);
             CorrectDropdowns(model);
-            if (!ValidateMissionOrderEditModel(model))
+            if (!ValidateAppointmentEditModel(model))
             {
                 AppointmentBl.ReloadDictionaries(model);
                 return View(model);
@@ -64,7 +65,7 @@ namespace WebMvc.Controllers
                 return View(model);
             return RedirectToAction("Index");
         }
-        protected bool ValidateMissionOrderEditModel(AppointmentEditModel model)
+        protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {
             //return false;
             //if (RequestBl.CheckOtherOrdersExists(model))
@@ -105,6 +106,8 @@ namespace WebMvc.Controllers
                 }
             }
             //todo need to check department
+            if(!AppointmentBl.CheckDepartment(model.DepartmentId))
+                ModelState.AddModelError(string.Empty, StrInvalidDepartment);
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(AppointmentEditModel model)

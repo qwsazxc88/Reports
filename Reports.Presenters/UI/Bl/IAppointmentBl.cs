@@ -13,6 +13,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveComment(SaveCommentModel model);
 
         void ReloadDictionaries(AppointmentEditModel model);
+        bool CheckDepartment(int departmentId);
         bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
     }
 }

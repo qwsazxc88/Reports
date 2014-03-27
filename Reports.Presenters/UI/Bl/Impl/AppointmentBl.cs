@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
-using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -23,6 +22,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrIncorrectManagerLevel  = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
         public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
         public const string StrIncorrectReasonId = "Неверное основание появления вакансии {0}.";
+        public const string StrDepartmentNotFound = "Не найдено структурное подразделение (id {0}) в базе данных";
+        public const string StrUserNotFound = "Не найден пользователь (id {0}) в базе данных";
+        public const int MinManagerLevel = 2;
+        public const int MaxManagerLevel = 6;
         #region DAOs
         protected IAppointmentDao appointmentDao;
         public IAppointmentDao AppointmentDao
@@ -225,21 +228,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsEditable = true;
                             }
                     }
-                    else if (!entity.DeleteDate.HasValue && IsManagerChiefForCreator(current, entity.Creator))
+                    else if (!entity.DeleteDate.HasValue 
+                            && entity.ManagerDateAccept.HasValue 
+                            && entity.Creator.Id != current.Id
+                            && IsManagerChiefForCreator(current, entity.Creator))
                     {
-                        if(entity.ManagerDateAccept.HasValue)
-                        {
                             model.IsManagerRejectAvailable = true;
                             if (!entity.ChiefDateAccept.HasValue)
                                 model.IsChiefApproveAvailable = true;
-                        }
                     }
                     break;
                 case UserRole.Director:
-                    if (!entity.DeleteDate.HasValue)
+                    if (!entity.DeleteDate.HasValue && IsDirectorChiefForCreator(current,entity.Creator)
+                            /*&& (entity.Creator.Department.ItemLevel == 2)
+                            && entity.Creator.Id != current.Id*/)
                     {
                         model.IsManagerRejectAvailable = true;
-                        if (!entity.ChiefDateAccept.HasValue)
+                        if (!entity.ChiefDateAccept.HasValue )
                             model.IsChiefApproveAvailable = true;
                     }
                     break;
@@ -261,9 +266,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 || model.IsChiefApproveAvailable || model.IsManagerRejectAvailable ||
                 model.IsPersonnelApproveAvailable || model.IsStaffApproveAvailable;
         }
+        protected bool IsDirectorChiefForCreator(User current, User creator)
+        {
+            return (creator.Department.ItemLevel == 2) && creator.Id != current.Id;
+        }
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
-            if(current.Level < 2 || current.Level > 6)
+            if(current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,current.Level,current.Id));
             if(creator.Department == null)
                 throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
@@ -272,7 +281,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (current.Level)
             {
                 default:
-                    return current.Level < creator.Level &&
+                    return current.Level + 1 == creator.Level &&
                            creator.Department.Path.StartsWith(current.Department.Path);
             }
         }
@@ -324,6 +333,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.UserName = user.FullName;
         }
 
+        public bool CheckDepartment(int departmentId)
+        {
+            Department dep = DepartmentDao.Load(departmentId);
+            if(dep == null)
+                throw new ArgumentException(string.Format(StrDepartmentNotFound,departmentId));
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Director)
+                return true;
+            User currUser = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if(currUser == null)
+                throw new ArgumentException(string.Format(StrUserNotFound, authenticationService.CurrentUser.Id));
+            if (currUser.Department == null)
+                throw new ValidationException(string.Format(StrNoDepartmentForManager, currUser.Id));
+            if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
+            switch (currUser.Level)
+            {
+                default:
+                    return dep.Path.StartsWith(currUser.Department.Path);
+            }
+        }
         public void ReloadDictionaries(AppointmentEditModel model)
         {
             User user = UserDao.Load(model.UserId);
@@ -343,19 +372,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // no need to load ManagerFio and other because no error in model after manager approve
             }
         }
-
         public bool SaveAppointmentEditModel(AppointmentEditModel model, out string error)
         {
             error = string.Empty;
-            User user = null;
+            User creator = null;
             try
             {
-                user = UserDao.Load(model.UserId);
+                creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
                 Appointment entity = null;
                 if (model.Id != 0)
                 {
                     entity = AppointmentDao.Load(model.Id);
+                    if(entity == null)
+                        throw new ValidationException(string.Format(StrAppointmentNotFound, model.Id));
                 }
                 /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
                 {
@@ -365,14 +395,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (model.Id == 0)
                 {
-                    entity = new Appointment()
+                    entity = new Appointment
                     {
                         CreateDate = DateTime.Now,
-                        Creator = UserDao.Load(current.Id),
+                        Creator = creator,//UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
                         EditDate = DateTime.Now,
                     };
-                    ChangeEntityProperties(current, entity, model, user);
+                    ChangeEntityProperties(current, entity, model, creator);
                     AppointmentDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
                 }
@@ -417,7 +447,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //else
                     //{
-                        ChangeEntityProperties(current, entity, model, user);
+                        ChangeEntityProperties(current, entity, model, creator);
                         //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
                         //string country = GetStringForList(cityList);
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
@@ -435,7 +465,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
-                SetFlagsState(entity.Id, user, entity, model);
+                SetFlagsState(entity.Id, creator, entity, model);
                 return true;
             }
             catch (Exception ex)
@@ -447,7 +477,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             finally
             {
-                SetManagerInfoModel(user, model);
+                SetManagerInfoModel(creator, model);
                 LoadDictionaries(model);
                 SetHiddenFields(model);
             }
@@ -455,161 +485,145 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, User user)
         {
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+            User currUser = UserDao.Load(current.Id);
             if (model.IsEditable)
             {
-                //entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
-                //entity.EndDate = DateTime.Parse(model.EndMissionDate);
-                //entity.Goal = MissionGoalDao.Load(model.GoalId);
-                //entity.Type = MissionTypeDao.Load(model.TypeId);
-                //entity.Kind = model.Kind;
-                //entity.UserAllSum = Decimal.Parse(model.UserAllSum);
-                //entity.UserSumDaily = GetSum(model.UserAllSumDaily);
-                //entity.UserSumResidence = GetSum(model.UserAllSumResidence);
-                //entity.UserSumAir = GetSum(model.UserAllSumAir);
-                //entity.UserSumTrain = GetSum(model.UserAllSumTrain);
-                //entity.AllSum = Decimal.Parse(model.AllSum);
-                //entity.SumDaily = Decimal.Parse(model.AllSumDaily);
-                //entity.SumResidence = Decimal.Parse(model.AllSumResidence);
-                //entity.SumAir = Decimal.Parse(model.AllSumAir);
-                //entity.SumTrain = Decimal.Parse(model.AllSumTrain);
-                //entity.UserSumCash = GetSum(model.UserSumCash);
-                //entity.UserSumNotCash = GetSum(model.UserSumNotCash);
-                //entity.NeedToAcceptByChiefAsManager = isDirectorManager;
-                //entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
-                //entity.IsResidencePaid = model.IsResidencePaid;
-                //entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
-                //entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
-                //model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
-                //SaveMissionTargets(entity, model);
+                entity.AdditionalRequirements = model.AdditionalRequirements;
+                entity.Bonus = Decimal.Parse(model.Bonus);
+                entity.City = model.City;
+                entity.Compensation = model.Compensation;
+                entity.Department = DepartmentDao.Load(model.DepartmentId);
+                entity.DesirableBeginDate = DateTime.Parse(model.DesirableBeginDate);
+                entity.EducationRequirements = model.EducationRequirements;
+                entity.ExperienceRequirements = model.ExperienceRequirements;
+                entity.IsVacationExists = model.IsVacationExists == 1?true:false;
+                entity.OtherRequirements = model.OtherRequirements;
+                entity.Period = model.Period;
+                entity.Position = PositionDao.Load(model.PositionId);
+                entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
+                entity.ReasonBeginDate = model.ReasonId != 3 ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
+                entity.ReasonPosition = model.ReasonPosition;
+                entity.Responsibility = model.Responsibility;
+                entity.Salary = Decimal.Parse(model.Salary);
+                entity.Schedule = model.Schedule;
+                entity.Type = model.TypeId == 1?true:false;
+                entity.VacationCount = int.Parse(model.VacationCount);
             }
-            //if (model.IsSecritaryEditable)
-            //{
-            //    if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
-            //        entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
-            //        entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber ||
-            //        model.AirTicketType != entity.AirTicketType ||
-            //        model.TrainTicketType != entity.TrainTicketType)
-            //    {
-            //        entity.Secretary = UserDao.Load(current.Id);
-            //        model.SecretaryFio = entity.Secretary.FullName;
-            //    }
-            //    entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber) ? null : model.ResidenceRequestNumber;
-            //    entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
-            //    entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
-            //    entity.AirTicketType = model.AirTicketType;
-            //    entity.TrainTicketType = model.TrainTicketType;
-            //}
-
-            //if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-            //    && !entity.UserDateAccept.HasValue
-            //    && model.IsUserApproved)
-            //{
-            //    entity.UserDateAccept = DateTime.Now;
-            //    entity.AcceptUser = UserDao.Load(current.Id);
-            //    if (isDirectorManager)
-            //    {
-            //        entity.NeedToAcceptByChiefAsManager = true;
-            //        SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
-            //    }
-            //    else
-            //        SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
-            //}
-            //bool canEdit = false;
-            //if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user, current, out canEdit))
-            //{
-            //    if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
-            //    {
-            //        entity.UserDateAccept = DateTime.Now;
-            //        entity.AcceptUser = UserDao.Load(current.Id);
-            //    }
-            //    if (!entity.ManagerDateAccept.HasValue)
-            //    {
-            //        if (model.IsManagerApproved.HasValue)
-            //        {
-            //            if (model.IsManagerApproved.Value)
-            //            {
-            //                entity.ManagerDateAccept = DateTime.Now;
-            //                entity.AcceptManager = UserDao.Load(current.Id);
-            //                /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
-            //                    entity.UserDateAccept = DateTime.Now;*/
-            //                if (!entity.NeedToAcceptByChief)
-            //                {
-            //                    CreateMission(entity);
-            //                    SendEmailForMissionOrderConfirm(CurrentUser, entity);
-            //                }
-            //                else
-            //                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
-            //            }
-            //            else
-            //            {
-            //                model.IsManagerApproved = null;
-            //                if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
-            //                {
-            //                    entity.UserDateAccept = null;
-            //                    SendEmailForMissionOrderReject(CurrentUser, entity);
-            //                }
-            //            }
-            //        }
-            //    }
-            //    /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
-            //        entity.UserDateAccept = DateTime.Now;*/
-            //}
-            //if (current.UserRole == UserRole.Director)
-            //{
-            //    if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
-            //    {
-            //        if (model.IsManagerApproved.HasValue)
-            //        {
-            //            if (model.IsManagerApproved.Value)
-            //            {
-            //                User currentUser = UserDao.Load(current.Id);
-            //                entity.ManagerDateAccept = DateTime.Now;
-            //                entity.AcceptManager = currentUser;
-            //                if (entity.NeedToAcceptByChief)
-            //                {
-            //                    entity.ChiefDateAccept = DateTime.Now;
-            //                    entity.AcceptChief = currentUser;
-            //                }
-            //                CreateMission(entity);
-            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
-            //            }
-            //            else
-            //            {
-            //                entity.UserDateAccept = null;
-            //                model.IsManagerApproved = null;
-            //                SendEmailForMissionOrderReject(CurrentUser, entity);
-            //            }
-            //        }
-            //    }
-            //    if (entity.NeedToAcceptByChief)
-            //    {
-            //        if (model.IsChiefApproved.HasValue)
-            //        {
-            //            if (model.IsChiefApproved.Value)
-            //            {
-            //                User currentUser = UserDao.Load(current.Id);
-            //                entity.ChiefDateAccept = DateTime.Now;
-            //                entity.AcceptChief = currentUser;
-            //                if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
-            //                {
-            //                    entity.ManagerDateAccept = DateTime.Now;
-            //                    entity.AcceptManager = currentUser;
-            //                }
-            //                CreateMission(entity);
-            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
-            //            }
-            //            else
-            //            {
-            //                entity.UserDateAccept = null;
-            //                model.IsUserApproved = false;
-            //                entity.ManagerDateAccept = null;
-            //                model.IsManagerApproved = null;
-            //                SendEmailForMissionOrderReject(CurrentUser, entity);
-            //            }
-            //        }
-            //    }
-            //}
-
+            switch (current.UserRole)
+            {
+                case UserRole.Manager:
+                    if(current.Id == entity.Creator.Id)
+                    {
+                        if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
+                            && model.IsManagerApproved.HasValue 
+                            && !model.IsManagerApproved.Value)
+                        {
+                            entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;
+                            //todo need to send email and reject reports
+                            //if(entity.AcceptStaff != null)
+                            //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
+                        }
+                        if(!entity.DeleteDate.HasValue && model.IsManagerApproveAvailable 
+                            && model.IsManagerApproved.HasValue 
+                            && model.IsManagerApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = currUser;
+                            //SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                        }
+                    }
+                    else if(IsManagerChiefForCreator(currUser,entity.Creator))
+                    {
+                        if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
+                           && model.IsChiefApproved.HasValue
+                           && !model.IsChiefApproved.Value)
+                        {
+                            entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;
+                            //todo need to send email and reject reports
+                            //if(entity.AcceptStaff != null)
+                            //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
+                        }
+                        if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
+                            && model.IsChiefApproved.HasValue
+                            && model.IsChiefApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = currUser;
+                            //SendEmailForAppointmentChiefAccept(currUser, entity);
+                        }
+                    }
+                    break;
+                case UserRole.Director:
+                    if (current.Id == entity.Creator.Id)
+                    {
+                        if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
+                            && model.IsManagerApproved.HasValue
+                            && !model.IsManagerApproved.Value)
+                        {
+                            entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;
+                            //todo need to send email and reject reports
+                            //if(entity.AcceptStaff != null)
+                            //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
+                        }
+                        if (!entity.DeleteDate.HasValue && model.IsManagerApproveAvailable
+                            && model.IsManagerApproved.HasValue
+                            && model.IsManagerApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = currUser;
+                            //SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                        }
+                    }
+                    else if (IsDirectorChiefForCreator(currUser, entity.Creator))
+                    {
+                        if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
+                           && model.IsChiefApproved.HasValue
+                           && !model.IsChiefApproved.Value)
+                        {
+                            entity.DeleteDate = DateTime.Now;
+                            entity.DeleteUser = currUser;
+                            //todo need to send email and reject reports
+                            //if(entity.AcceptStaff != null)
+                            //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
+                        }
+                        if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
+                            && model.IsChiefApproved.HasValue
+                            && model.IsChiefApproved.Value)
+                        {
+                            entity.ManagerDateAccept = DateTime.Now;
+                            entity.AcceptManager = currUser;
+                            //SendEmailForAppointmentChiefAccept(currUser, entity);
+                        }
+                    }
+                    break;
+                case UserRole.PersonnelManager:
+                    if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
+                        !entity.PersonnelDateAccept.HasValue 
+                        && model.IsPersonnelApproveAvailable
+                        && model.IsPersonnelApproved)
+                    {
+                        entity.PersonnelDateAccept = DateTime.Now;
+                        entity.AcceptPersonnel = currUser;
+                        //SendEmailForAppointmentPersonnelAccept(currUser, entity);
+                    }
+                    break;
+                case UserRole.StaffManager:
+                    if (!entity.DeleteDate.HasValue && entity.PersonnelDateAccept.HasValue &&
+                       !entity.StaffDateAccept.HasValue
+                       && model.IsStaffApproveAvailable
+                       && model.IsStaffApproved)
+                    {
+                        entity.StaffDateAccept = DateTime.Now;
+                        entity.AcceptStaff = currUser;
+                        //todo need to create report
+                    }
+                    break;
+                case UserRole.OutsourcingManager:
+                    break;
+            }
         }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
