@@ -85,17 +85,17 @@ namespace Reports.Presenters.UI.ViewModel
         //public string BeginDate { get; set; }
 
         [Display(Name = "Руководитель (заказчик)")]
-        public bool? IsManagerApproved { get; set; }
+        public bool IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
-        public bool? IsManagerApprovedHidden { get; set; }
+        public bool IsManagerApprovedHidden { get; set; }
         public string ManagerFio { get; set; }
 
          [Display(Name = "Вышестоящий руководитель")]
-        public bool? IsChiefApproved { get; set; }
+        public bool IsChiefApproved { get; set; }
         public bool IsChiefApproveAvailable { get; set; }
         //public bool IsChiefRejectAvailable { get; set; }
-        public bool? IsChiefApprovedHidden { get; set; }
+        public bool IsChiefApprovedHidden { get; set; }
         public string ChiefFio { get; set; }
 
         [Display(Name = "Кадровая служба")]
@@ -113,6 +113,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsEditable { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsDelete { get; set; }
         public bool IsSaveAvailable { get; set; }
         public bool ReloadPage { get; set; }
 

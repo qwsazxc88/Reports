@@ -45,12 +45,14 @@ namespace WebMvc.Controllers
             CorrectDropdowns(model);
             if (!ValidateAppointmentEditModel(model))
             {
+                model.IsDelete = false;
                 AppointmentBl.ReloadDictionaries(model);
                 return View(model);
             }
             string error;
             if (!AppointmentBl.SaveAppointmentEditModel(model, out error))
             {
+                model.IsDelete = false;
                 if (model.ReloadPage)
                 {
                     ModelState.Clear();
@@ -61,6 +63,8 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
+            model.IsDelete = false;
+            return View(model);
             if (!string.IsNullOrEmpty(error))
                 return View(model);
             return RedirectToAction("Index");
@@ -122,13 +126,13 @@ namespace WebMvc.Controllers
         }
         protected void CorrectCheckboxes(AppointmentEditModel model)
         {
-            if (!model.IsManagerApproveAvailable && !model.IsManagerApproved.HasValue)
+            if (!model.IsManagerApproveAvailable)
             {
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");
                 model.IsManagerApproved = model.IsManagerApprovedHidden;
             }
-            if (!model.IsChiefApproveAvailable && !model.IsChiefApproved.HasValue)
+            if (!model.IsChiefApproveAvailable)
             {
                 if (ModelState.ContainsKey("IsChiefApproved"))
                     ModelState.Remove("IsChiefApproved");

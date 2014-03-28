@@ -192,8 +192,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsManagerApproveAvailable = true;
                 return;
             }
-            model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
-            model.IsChiefApproved = entity.ChiefDateAccept.HasValue;
+            model.IsManagerApproved = entity.ManagerDateAccept.HasValue; 
+            model.IsChiefApproved = entity.ChiefDateAccept.HasValue; 
             model.IsPersonnelApproved = entity.PersonnelDateAccept.HasValue;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
@@ -255,8 +255,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
-                         entity.PersonnelDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
+                    if (!entity.DeleteDate.HasValue && 
+                        entity.PersonnelDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                         model.IsStaffApproveAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
@@ -515,8 +515,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(current.Id == entity.Creator.Id)
                     {
                         if(model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
-                            && model.IsManagerApproved.HasValue 
-                            && !model.IsManagerApproved.Value)
+                            && model.IsDelete)
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
@@ -525,8 +524,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
                         if(!entity.DeleteDate.HasValue && model.IsManagerApproveAvailable 
-                            && model.IsManagerApproved.HasValue 
-                            && model.IsManagerApproved.Value)
+                            && model.IsManagerApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
@@ -536,8 +534,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
                     {
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
-                           && model.IsChiefApproved.HasValue
-                           && !model.IsChiefApproved.Value)
+                           && model.IsDelete)
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
@@ -546,8 +543,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
                         if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
-                            && model.IsChiefApproved.HasValue
-                            && model.IsChiefApproved.Value)
+                            && model.IsChiefApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
@@ -559,8 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (current.Id == entity.Creator.Id)
                     {
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
-                            && model.IsManagerApproved.HasValue
-                            && !model.IsManagerApproved.Value)
+                             && model.IsDelete)
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
@@ -569,8 +564,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
                         if (!entity.DeleteDate.HasValue && model.IsManagerApproveAvailable
-                            && model.IsManagerApproved.HasValue
-                            && model.IsManagerApproved.Value)
+                            && model.IsManagerApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
@@ -580,8 +574,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (IsDirectorChiefForCreator(currUser, entity.Creator))
                     {
                         if (model.IsManagerRejectAvailable && !entity.DeleteDate.HasValue
-                           && model.IsChiefApproved.HasValue
-                           && !model.IsChiefApproved.Value)
+                           && model.IsDelete)
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
@@ -590,8 +583,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
                         if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
-                            && model.IsChiefApproved.HasValue
-                            && model.IsChiefApproved.Value)
+                            && model.IsChiefApproved)
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;

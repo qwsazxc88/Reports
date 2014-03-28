@@ -252,13 +252,16 @@
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
-                    @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
-                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
+                    @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                   @* @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить*@
                     <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
                     <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
                     <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
                     @Model.ManagerFio
                     <input type="hidden" id="ManagerFio" name="ManagerFio" value="@Model.ManagerFio" />
+                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
                 </td>
             </tr>
             <tr>
@@ -266,8 +269,10 @@
                     @Html.LabelFor(m => m.IsChiefApproved):
                 </td>
                 <td>
-                    @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
-                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить
+                    @Html.CheckBox("IsChiefApproved", Model.IsChiefApproved, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                  @*  @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить*@
                     <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
                      @Model.ChiefFio
@@ -330,6 +335,12 @@
     $(".hasDatepicker").width("75px");
     onReasonChange();
    });
+    function Delete() {
+        if(!ValidateForm())
+            return false;
+        $("#IsDelete").val("true");
+        return true;
+    }
     function ValidateForm()
     {
         var result = true;
