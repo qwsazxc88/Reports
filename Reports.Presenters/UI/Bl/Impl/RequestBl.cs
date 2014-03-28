@@ -3636,6 +3636,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.OutsourcingManager:
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
@@ -3643,7 +3644,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsTypeEditable = true;
                         break;
                 }
-                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager || currentUserRole == UserRole.OutsourcingManager)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -3683,6 +3684,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManager:
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
@@ -3703,10 +3705,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                    /*
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
-                    break;
+                    break;*/
             }
 
             model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);

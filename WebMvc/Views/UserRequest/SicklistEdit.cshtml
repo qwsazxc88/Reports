@@ -120,7 +120,7 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
-    @if (Model.ExperienceIn1C == true)
+    @if (!(Model.ExperienceIn1C == true))
     {
     <tr>
         <td>
