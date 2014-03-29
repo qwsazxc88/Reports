@@ -24,7 +24,7 @@
             @if (Model.IsDeleted)
             { 
             <tr>
-                <td colspan="2" style="color:Red">Заявка отклонена</td>
+                <td colspan="2" style="color:Red">Заявка отклонена. Отклонил @Model.DeleteUser</td>
             </tr>
             }
              <tr>
@@ -261,7 +261,7 @@
                     <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
                     @Model.ManagerFio
                     <input type="hidden" id="ManagerFio" name="ManagerFio" value="@Model.ManagerFio" />
-                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
+                    
                 </td>
             </tr>
             <tr>
@@ -308,8 +308,11 @@
                 </td>
             </tr>
              <tr>
-                <td colspan="2">
+                <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                </td>
+                <td style="text-align:right">
+                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
                 </td>
             </tr>
         </table>
@@ -336,8 +339,8 @@
     onReasonChange();
    });
     function Delete() {
-        if(!ValidateForm())
-            return false;
+        /*if(!ValidateForm())
+            return false;*/
         $("#IsDelete").val("true");
         return true;
     }

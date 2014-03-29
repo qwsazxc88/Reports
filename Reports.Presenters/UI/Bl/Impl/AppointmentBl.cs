@@ -208,13 +208,15 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if(entity.DeleteDate.HasValue)
             {
-                if (entity.DeleteUser.Id == entity.Creator.Id)
+                /*if (entity.DeleteUser.Id == entity.Creator.Id)
                     model.ManagerFio = entity.DeleteUser.FullName;
                 else
-                    model.ChiefFio = entity.DeleteUser.FullName;
-                model.IsStaffReceiveRejectMail = true;// todo Need flag on entity ?
+                    model.ChiefFio = entity.DeleteUser.FullName;*/
+                model.DeleteUser = entity.DeleteUser.FullName;
                 if (entity.AcceptStaff != null)
-                    model.StaffFio = entity.AcceptStaff.FullName;
+                    model.IsStaffReceiveRejectMail = true;// todo Need flag on entity ?
+                /*if (entity.AcceptStaff != null)
+                    model.StaffFio = entity.AcceptStaff.FullName;*/
             }
             switch (current.UserRole)
             {
@@ -263,7 +265,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || model.IsManagerRejectAvailable ||
+                || model.IsChiefApproveAvailable || /*model.IsManagerRejectAvailable ||*/
                 model.IsPersonnelApproveAvailable || model.IsStaffApproveAvailable;
         }
         protected bool IsDirectorChiefForCreator(User current, User creator)
@@ -486,7 +488,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             User currUser = UserDao.Load(current.Id);
-            if (model.IsEditable)
+            if (!model.IsDelete && model.IsEditable)
             {
                 entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.Bonus = Decimal.Parse(model.Bonus);

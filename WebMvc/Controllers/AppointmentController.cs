@@ -74,6 +74,8 @@ namespace WebMvc.Controllers
             //return false;
             //if (RequestBl.CheckOtherOrdersExists(model))
             //    ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
+            if (model.IsDelete)
+                return true;
             if(model.ReasonId != 3 && !string.IsNullOrEmpty(model.ReasonBeginDate))
             {
                 DateTime beginDate;
