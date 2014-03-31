@@ -15,6 +15,7 @@ namespace WebMvc.Controllers
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
         public const string StrDesirableBeginDateIsSmall = "Желательная дата выхода должна быть не ранее 2 недель с момента создания заявки";
         public const string StrInvalidDepartment = "Указан неверное структурное подразделение.У вас нет права создания заявки для него.";
+        public const string StrInvalidListDates = "Дата в поле <Период с> не может быть больше даты в поле <по>.";
 
         protected IAppointmentBl appointmentBl;
         public IAppointmentBl AppointmentBl
@@ -30,6 +31,20 @@ namespace WebMvc.Controllers
         {
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
+        }
+        [HttpPost]
+        public ActionResult Index(AppointmentListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            AppointmentBl.SetAppointmentListModel(model, hasError);
+            return View(model);
+        }
+        protected bool ValidateModel(AppointmentListModel model)
+        {
+            if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", StrInvalidListDates);
+            return ModelState.IsValid;
         }
         [HttpGet]
         public ActionResult AppointmentEdit(int id)

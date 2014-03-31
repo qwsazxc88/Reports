@@ -8,7 +8,7 @@ namespace Reports.Presenters.UI.ViewModel
     public class AppointmentListModel : BeginEndCreateDate
     {
         public IList<IdNameDto> Statuses;
-        public int UserId { get; set; }
+        //public int UserId { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
@@ -27,7 +27,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
 
-        public IList<MissionOrderDto> Documents { get; set; }
+        public IList<AppointmentDto> Documents { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

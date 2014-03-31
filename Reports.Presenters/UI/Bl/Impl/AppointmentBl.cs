@@ -60,7 +60,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = AuthenticationService.CurrentUser.UserRole;
             AppointmentListModel model = new AppointmentListModel
             {
-                UserId = AuthenticationService.CurrentUser.Id,
+                //UserId = AuthenticationService.CurrentUser.Id,
                 DepartmentName = string.Empty,
                 DepartmentId = 0,
                 DepartmentReadOnly = false,
@@ -93,6 +93,35 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
+        }
+
+        public void SetAppointmentListModel(AppointmentListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            if (hasError)
+                model.Documents = new List<AppointmentDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(AppointmentListModel model, User user)
+        {
+            UserRole role = user.UserRole;
+            model.Documents = new List<AppointmentDto>();
+            //model.Documents = AppointmentDao.GetDocuments(
+            //    user.Id,
+            //    role,
+            //    //GetDepartmentId(model.Department),
+            //    model.DepartmentId,
+            //    //model.PositionId,
+            //    //model.TypeId,
+            //    //0,
+            //    model.StatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    model.UserName,
+            //    model.SortBy,
+            //    model.SortDescending);
         }
 
         public AppointmentEditModel GetAppointmentEditModel(int id)

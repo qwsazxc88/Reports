@@ -372,6 +372,7 @@
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
+    <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\CostDto.cs" />
