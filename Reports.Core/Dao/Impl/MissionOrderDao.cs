@@ -143,7 +143,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             //
-            whereString = String.Format("({0} and u.Level>3)", whereString);
+            whereString = String.Format("({0} and (u.Level>3 or u.Id = {1}))", whereString, userId);
             whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
             whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
             //
