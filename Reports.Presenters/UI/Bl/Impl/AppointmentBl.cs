@@ -203,10 +203,32 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (creator.UserRole == UserRole.Manager)
             {
-                if (creator.Department == null)
-                    throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
-                model.DepartmentId = creator.Department.Id;
-                model.DepartmentName = creator.Department.Name;
+                List<DepartmentDto> departments;
+                switch (creator.Level)
+                {
+                    case 2:
+                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 2).ToList();
+                        if(departments.Count > 0)
+                        {
+                            model.DepartmentId = departments[0].Id;
+                            model.DepartmentName = departments[0].Name;
+                        }
+                        break;
+                    case 3:
+                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 3).ToList();
+                        if(departments.Count > 0)
+                        {
+                            model.DepartmentId = departments[0].Id;
+                            model.DepartmentName = departments[0].Name;
+                        }
+                        break;
+                    default:     
+                        if (creator.Department == null)
+                            throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
+                        model.DepartmentId = creator.Department.Id;
+                        model.DepartmentName = creator.Department.Name;
+                        break;
+                }
             }
         }
         protected void SetFlagsState(int id, User current, Appointment entity, AppointmentEditModel model)
@@ -309,8 +331,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
             if (current.Department == null)
                 throw new ValidationException(string.Format(StrNoDepartmentForManager, current.Id));
+            List<DepartmentDto> departments;
             switch (current.Level)
             {
+                case 2:
+                    if (creator.Level != 3)
+                        return false;
+                    IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
+                    return managers.Any(x => x == creator.Id);
+                    //departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2).ToList();
+                    //return departments.Any(x => creator.Department.Path.StartsWith(x.Path));)
+                case 3:
+                    if (creator.Level != 4)
+                        return false;
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3).ToList();
+                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
                 default:
                     return current.Level + 1 == creator.Level &&
                            creator.Department.Path.StartsWith(current.Department.Path);
@@ -378,8 +413,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ValidationException(string.Format(StrNoDepartmentForManager, currUser.Id));
             if (currUser.Level < MinManagerLevel || currUser.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel, currUser.Level, currUser.Id));
+            List<DepartmentDto> departments;
             switch (currUser.Level)
             {
+                case 2:
+                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 2).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
+                case 3:
+                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 3).ToList();
+                    return departments.Any(x => dep.Path.StartsWith(x.Path));
                 default:
                     return dep.Path.StartsWith(currUser.Department.Path);
             }

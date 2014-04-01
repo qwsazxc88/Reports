@@ -277,6 +277,8 @@
     <Compile Include="Domain\AccountingTransaction.cs" />
     <Compile Include="Domain\Appointment.cs" />
     <Compile Include="Domain\AppointmentComment.cs" />
+    <Compile Include="Domain\AppointmentManager23ToDepartment3.cs" />
+    <Compile Include="Domain\AppointmentManager2ToManager3.cs" />
     <Compile Include="Domain\AppointmentReason.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
@@ -379,6 +381,7 @@
     <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
+    <Compile Include="Dto\DepartmentDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -744,6 +747,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentReason.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentManager23ToDepartment3.hbm.xml" />
+    <EmbeddedResource Include="Domain\AppointmentManager2ToManager3.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
