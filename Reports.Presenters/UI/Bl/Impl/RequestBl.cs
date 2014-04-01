@@ -3379,7 +3379,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true) || !CheckUserRightsForEntity(user,current,model))
+                if (!CheckUserRights(user, current,model.Id,true) /* || !CheckUserRightsForEntity(user,current,model)*/)
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3513,9 +3513,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if (current.UserRole == UserRole.PersonnelManager
+            if ((current.UserRole == UserRole.PersonnelManager
                 && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
-                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
+                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)) || current.UserRole == UserRole.OutsourcingManager)
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -3719,6 +3719,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     || model.IsPersonnelFieldsEditable  /*|| model.IsApprovedEnable*/
                                     || model.IsDatesEditable;
         }
+        /// <summary>
+        /// Set all model flags to the same state
+        /// </summary>
+        /// <param name="model">Model</param>
+        /// <param name="state">State to set the model flags to</param>
         protected void SetFlagsState(SicklistEditModel model, bool state)
         {
             model.IsApprovedByManager = state;
