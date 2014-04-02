@@ -58,6 +58,12 @@ alter table Sicklist  drop constraint FK_Sicklist_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_CreatorUser]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_CreatorUser
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_ApprovedByManagerUser]') AND parent_object_id = OBJECT_ID('Sicklist'))
+alter table Sicklist  drop constraint FK_Sicklist_ApprovedByManagerUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_ApprovedByPersonnelManagerUser]') AND parent_object_id = OBJECT_ID('Sicklist'))
+alter table Sicklist  drop constraint FK_Sicklist_ApprovedByPersonnelManagerUser
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
 
@@ -672,7 +678,9 @@ create table Sicklist (
   UserId INT not null,
   CreatorId INT not null,
   UserDateAccept DATETIME null,
+  ApprovedByManagerId INT null,
   ManagerDateAccept DATETIME null,
+  ApprovedByPersonnelManagerId INT null,
   PersonnelManagerDateAccept DATETIME null,
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
@@ -1583,6 +1591,8 @@ create index Sicklist_SicklistPaymentPercent on Sicklist (PaymentPercentId)
 create index Sicklist_SicklistPaymentRestrictType on Sicklist (PaymentRestrictTypeId)
 create index IX_Sicklist_User_Id on Sicklist (UserId)
 create index IX_Sicklist_CreatorUser_Id on Sicklist (CreatorId)
+create index IX_Sicklist_ApprovedByManagerUser_Id on Sicklist (ApprovedByManagerId)
+create index IX_Sicklist_ApprovedByPersonnelManagerUser_Id on Sicklist (ApprovedByPersonnelManagerId)
 create index Sicklist_TimesheetStatus on Sicklist (TimesheetStatusId)
 alter table Sicklist add constraint FK_Sicklist_SicklistType foreign key (TypeId) references SicklistType
 alter table Sicklist add constraint FK_Sicklist_BabyMindingType foreign key (BabyMindingTypeId) references SicklistBabyMindingType
@@ -1590,6 +1600,8 @@ alter table Sicklist add constraint FK_Sicklist_SicklistPaymentPercent foreign k
 alter table Sicklist add constraint FK_Sicklist_SicklistPaymentRestrictType foreign key (PaymentRestrictTypeId) references SicklistPaymentRestrictType
 alter table Sicklist add constraint FK_Sicklist_User foreign key (UserId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_CreatorUser foreign key (CreatorId) references [Users]
+alter table Sicklist add constraint FK_Sicklist_ApprovedByManagerUser foreign key (ApprovedByManagerId) references [Users]
+alter table Sicklist add constraint FK_Sicklist_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)
 alter table AcceptRequestDate add constraint FK_AcceptRequestDate_User foreign key (UserId) references [Users]
