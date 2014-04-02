@@ -3340,6 +3340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
                 model.ExperienceIn1C = user.ExperienceIn1C;
+                model.ApprovedByManager = sicklist.ApprovedByManager != null ? sicklist.ApprovedByManager.FullName : " - ";
+                model.ApprovedByPersonnelManager = sicklist.ApprovedByPersonnelManager != null ? sicklist.ApprovedByPersonnelManager.FullName : " - ";
                 SetHiddenFields(model);
                 if (sicklist.DeleteDate.HasValue)
                     model.IsDeleted = true;
@@ -3507,6 +3509,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApproved)
                 {
                     entity.ManagerDateAccept = DateTime.Now;
+                    entity.ApprovedByManager = UserDao.Load(current.Id);
                     //!!! need to send e-mail
                     SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                         entity.Number, RequestTypeEnum.Sicklist, false);
@@ -3528,11 +3531,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
+                        entity.ApprovedByPersonnelManager = UserDao.Load(current.Id);
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Sicklist, false);
                     }
-                    if(model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        entity.ApprovedByManager = UserDao.Load(current.Id);
+                    }
+
                 }
             }
             if(model.IsDatesEditable)
