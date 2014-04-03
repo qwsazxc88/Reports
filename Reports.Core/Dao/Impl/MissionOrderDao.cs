@@ -143,7 +143,6 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             //
-            // whereString = String.Format("({0} and (u.Level>3 or u.Id = {1}))", whereString, userId);
             whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
             whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
             //
@@ -312,6 +311,7 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
                     }
                     sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
+                    // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = String.Format(" u.Level>3 and {0} ) ", sqlQueryPart);
                     return sqlQueryPart;
                 case UserRole.Director:
