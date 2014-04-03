@@ -107,21 +107,17 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(AppointmentListModel model, User user)
         {
             UserRole role = user.UserRole;
-            model.Documents = new List<AppointmentDto>();
-            //model.Documents = AppointmentDao.GetDocuments(
-            //    user.Id,
-            //    role,
-            //    //GetDepartmentId(model.Department),
-            //    model.DepartmentId,
-            //    //model.PositionId,
-            //    //model.TypeId,
-            //    //0,
-            //    model.StatusId,
-            //    model.BeginDate,
-            //    model.EndDate,
-            //    model.UserName,
-            //    model.SortBy,
-            //    model.SortDescending);
+            //model.Documents = new List<AppointmentDto>();
+            model.Documents = AppointmentDao.GetDocuments(
+                user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.SortBy,
+                model.SortDescending);
         }
 
         public AppointmentEditModel GetAppointmentEditModel(int id)
