@@ -3339,6 +3339,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsContinued = sicklist.IsContinued;
                 //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
+                model.ExperienceIn1C = user.ExperienceIn1C;
                 SetHiddenFields(model);
                 if (sicklist.DeleteDate.HasValue)
                     model.IsDeleted = true;

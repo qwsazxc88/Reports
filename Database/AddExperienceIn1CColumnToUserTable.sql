@@ -1,0 +1,1 @@
+﻿alter table dbo.Users add ExperienceIn1C BIT null

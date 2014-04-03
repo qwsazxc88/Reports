@@ -310,6 +310,18 @@ alter table Absence  drop constraint FK_Absence_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Absence'))
 alter table Absence  drop constraint FK_Absence_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderRoleRecord_User]') AND parent_object_id = OBJECT_ID('[MissionOrderRoleRecord]'))
+alter table [MissionOrderRoleRecord]  drop constraint FK_MissionOrderRoleRecord_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderRoleRecord_MissionOrderRole]') AND parent_object_id = OBJECT_ID('[MissionOrderRoleRecord]'))
+alter table [MissionOrderRoleRecord]  drop constraint FK_MissionOrderRoleRecord_MissionOrderRole
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderRoleRecord_TargetUser]') AND parent_object_id = OBJECT_ID('[MissionOrderRoleRecord]'))
+alter table [MissionOrderRoleRecord]  drop constraint FK_MissionOrderRoleRecord_TargetUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderRoleRecord_TargetDepartment]') AND parent_object_id = OBJECT_ID('[MissionOrderRoleRecord]'))
+alter table [MissionOrderRoleRecord]  drop constraint FK_MissionOrderRoleRecord_TargetDepartment
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ChildVacation_User]') AND parent_object_id = OBJECT_ID('ChildVacation'))
 alter table ChildVacation  drop constraint FK_ChildVacation_User
 
@@ -489,6 +501,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkCommen
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'[MissionOrderRoleRecord]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [MissionOrderRoleRecord]
 if exists (select * from dbo.sysobjects where id = object_id(N'[ClearanceChecklistRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ClearanceChecklistRole]
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacation
 if exists (select * from dbo.sysobjects where id = object_id(N'Employment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Employment
@@ -506,6 +519,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrecti
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
+if exists (select * from dbo.sysobjects where id = object_id(N'[MissionOrderRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [MissionOrderRole]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReportCost') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReportCost
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionAirTicketTypeGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionAirTicketTypeGradeValue
@@ -1145,6 +1159,7 @@ create table [Users] (
   GivesCredit BIT not null,
   Level INT null,
   Grade INT null,
+  ExperienceIn1C BIT null,
   IsMainManager BIT not null,
   ManagerId INT null,
   OrganizationId INT null,
@@ -1219,6 +1234,15 @@ create table ExportImportAction (
   Date DATETIME not null,
   Month DATETIME null,
   constraint PK_ExportImportAction  primary key (Id)
+)
+create table [MissionOrderRoleRecord] (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  RoleId INT not null,
+  TargetUserId INT null,
+  TargetDepartmentId INT null,
+  constraint PK_MissionOrderRoleRecord primary key (Id)
 )
 create table [ClearanceChecklistRole] (
  Id INT IDENTITY NOT NULL,
@@ -1400,6 +1424,14 @@ create table UserLogin (
   Date DATETIME not null,
   RoleId INT null,
   constraint PK_UserLogin  primary key (Id)
+)
+create table [MissionOrderRole] (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(32) null,
+  Description NVARCHAR(256) null,
+  DaysForApproval INT null,
+  constraint PK_MissionOrderRole primary key (Id)
 )
 create table Organization (
  Id INT IDENTITY NOT NULL,
@@ -1722,6 +1754,14 @@ alter table Absence add constraint FK_Absence_AbsenceType foreign key (TypeId) r
 alter table Absence add constraint FK_Absence_User foreign key (UserId) references [Users]
 alter table Absence add constraint FK_Absence_CreatorUser foreign key (CreatorId) references [Users]
 alter table Absence add constraint FK_Absence_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_MissionOrderRoleRecord_User_Id on [MissionOrderRoleRecord] (UserId)
+create index IX_MissionOrderRoleRecord_MissionOrderRole_Id on [MissionOrderRoleRecord] (RoleId)
+create index IX_MissionOrderRoleRecord_TargetUser_Id on [MissionOrderRoleRecord] (TargetUserId)
+create index IX_MissionOrderRoleRecord_TargetDepartment_Id on [MissionOrderRoleRecord] (TargetDepartmentId)
+alter table [MissionOrderRoleRecord] add constraint FK_MissionOrderRoleRecord_User foreign key (UserId) references [Users]
+alter table [MissionOrderRoleRecord] add constraint FK_MissionOrderRoleRecord_MissionOrderRole foreign key (RoleId) references [MissionOrderRole]
+alter table [MissionOrderRoleRecord] add constraint FK_MissionOrderRoleRecord_TargetUser foreign key (TargetUserId) references [Users]
+alter table [MissionOrderRoleRecord] add constraint FK_MissionOrderRoleRecord_TargetDepartment foreign key (TargetDepartmentId) references Department
 create index IX_ChildVacation_User_Id on ChildVacation (UserId)
 create index IX_ChildVacation_CreatorUser_Id on ChildVacation (CreatorId)
 create index ChildVacation_TimesheetStatus on ChildVacation (TimesheetStatusId)

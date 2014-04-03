@@ -149,6 +149,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApprovedForAll { get; set; }
         public bool IsApprovedForAllEnable { get; set; }
 
-
+        public bool? ExperienceIn1C { get; set; }
     }
 }
