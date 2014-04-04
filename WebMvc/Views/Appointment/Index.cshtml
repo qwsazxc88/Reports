@@ -104,7 +104,7 @@
         }
         </td>
     </tr>   
-    @* <tr>
+     <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
@@ -114,62 +114,62 @@
                         № п/п
                     </th>
                     <th>
-                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                        <div id="sort1" style="min-width:70px"><a href="#" onclick = "SortChanged(1);">Номер<br/> заявки</a></div>
                     </th>
                      <th>
-                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
+                        <div id="sort2" style="min-width:70px"><a href="#"  onclick = "SortChanged(2);">Номер<br/> отчета</a></div>
                     </th>
                     <th>
-                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>приказа</a></div>
+                        <div id="sort3"  style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> (заказчик)</a></div>
                     </th>
                     <th>
-                        <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Дата</a></div>
+                        <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
                     <th>
-                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                    </th>
+                    @* <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение 6 ур.</a></div>
+                    </th>*@
+                    <th>
+                        <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Уровень<br/> ЗП</a></div>
                     </th>
                      <th>
-                        <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                        <div id="sort11" style="min-width:80px"><a href="#"  onclick = "SortChanged(11);">Желательная<br/> дата выхода</a></div>
                     </th>
                     <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
-                    </th>
-                    <th>
-                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
-                    </th>
-                    <th>
-                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
-                    </th>
-                    <th>
-                        <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                        <div id="sort12" style="min-width:80px"><a href="#"  onclick = "SortChanged(12);">Причина<br/> подбора</a></div>
                     </th>
                      <th>
-                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                        <div id="sort13"  style="min-width:50px"><a href="#"  onclick = "SortChanged(13);">Кандидат<br/> подобран</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:100px"><a href="#"  onclick = "SortChanged(14);">ФИО<br/> кандидата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort15"  style="min-width:110px"><a href="#"  onclick = "SortChanged(15);">Тел.<br/> кандидата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort16" style="min-width:110px"><a href="#"  onclick = "SortChanged(16);">E-mail<br/> кандидата</a></div>
                     </th>
                     <th>
-                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
-                    </th>
-                     <th>
-                        <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
-                    </th>
-                     <th>
-                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
-                    </th>
-                     <th>
-                        <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
-                    </th>
-                     <th>
-                        <div id="sort16" style="min-width:70px"><a href="#"  onclick = "SortChanged(16);">Авиа <br/>билеты</a></div>
+                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Принят<br/> на работу</a></div>
                     </th>
                     <th>
-                        <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Ж/д <br/>билеты</a></div>
+                        <div id="sort18" style="min-width:110px"><a href="#"  onclick = "SortChanged(18);">Не принят<br/> (причина отказа)</a></div>
                     </th>
-                     @if (Model.IsApproveAvailable)
-                     {
-                        <th>
-                             <input type="checkbox" id="setAll" onclick="setSelection();" />
-                        </th>
-                     }
+                    <th>
+                        <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -178,42 +178,33 @@
                     {
                         <tr>
                             <td>@doc.Number</td>
-                            <td>@doc.UserName</td>
-                             <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>
+                                <a class="ui-notify-close" href='@Url.Action("AppointmentEdit", new { id = doc.Id })' style="cursor:hand">@doc.AppNumber</a>
                             </td>
-                            <td>@doc.EditDate.ToShortDateString()</td>
-                            <td>@doc.MissionType</td>
-                            <td>@doc.MissionKind</td>
-                            <td>@doc.Target</td>
-                            <td>@doc.Grade</td>
-                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
-                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
-                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
-                            <td>@doc.HasMission</td>
-                            <td>@doc.NeedSecretary</td>
-                            <td>@doc.State</td>
-                            <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
-                            <td>@doc.AirTicketType</td>
-                            <td>@doc.TrainTicketType</td>
-                            @if (Model.IsApproveAvailable)
-                            {
-                                <td>@if(doc.Flag)
-                                    {
-                                        @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
-                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
-                                        i++;
-                                    }
-                                </td>
-                            }
+                            <td></td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.PositionName</td>
+                            <td>@doc.Dep3Name</td>
+                            @*<td>@doc.Dep6Name</td>*@
+                            <td>@doc.CanPosition</td>
+                            <td>@doc.Period</td>
+                            <td>@doc.Schedule</td>
+                            <td>@RequestBl.FormatSum(@doc.Salary)</td>
+                            <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>
+                            <td>@doc.Reason</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
-                       
                     }
                 }
             </table>    
          <td>
-       </tr>*@
+       </tr>
     </table> 
 }
 <script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>

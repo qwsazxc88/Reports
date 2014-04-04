@@ -23,13 +23,14 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForAppointmentList =
             @"select 
                                 v.Number as AppNumber,
+                                N'' as ReportNumber,
                                 v.Id as Id,
                                 v.EditDate as EditDate,
                                 -- u.Id as UserId,
                                 u.Name as UserName,
                                 pos.Name as PositionName,
                                 dep3.Name as Dep3Name,
-                                dep6.Name as Dep6Name,
+                                 -- dep6.Name as Dep6Name,
                                 aPos.Name as CanPosition, 
                                 v.Period as Period,
                                 v.Schedule as Schedule,
@@ -40,10 +41,11 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                                 inner join dbo.Position aPos on v.PositionId = aPos.Id
                                 inner join [dbo].[Users] u on u.Id = v.CreatorId
-                                inner join dbo.Position pos on u.PositionId = pos.Id
+                                left join dbo.Position pos on u.PositionId = pos.Id
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
-                                left join dbo.Department dep6 on dep6.[Path] like dep.[Path]+N'%' and dep6.ItemLevel = 6";
+                                -- left join dbo.Department dep6 on dep6.[Path] like dep.[Path]+N'%' and dep6.ItemLevel = 6
+                                ";
                                 //{1}";
          public override IQuery CreateQuery(string sqlQuery)
          {
@@ -55,7 +57,7 @@ namespace Reports.Core.Dao.Impl
                  AddScalar("UserName", NHibernateUtil.String).
                  AddScalar("PositionName", NHibernateUtil.String).
                  AddScalar("Dep3Name", NHibernateUtil.String).
-                 AddScalar("Dep6Name", NHibernateUtil.String).
+                 //AddScalar("Dep6Name", NHibernateUtil.String).
                  AddScalar("CanPosition", NHibernateUtil.String).
                  AddScalar("Period", NHibernateUtil.String).
                  AddScalar("Schedule", NHibernateUtil.String).
@@ -141,7 +143,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by AppNumber";
                     break;
                 case 2:
-                    orderBy += @" order by Dep7Name";
+                    orderBy += @" order by ReportNumber";
                     break;
                 case 3:
                     orderBy = @" order by UserName";
@@ -249,16 +251,30 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Manager:
                    
                     const string sqlQueryPartTemplate = @" (u.Id = {0}) or ({1}) ";
-                    string sqlQueryPart = string.Empty;
-                    string sqlDepQueryPart = string.Empty;
+                    string sqlQueryPart;
+                    string sqlDepQueryPart;
                     switch (currentUser.Level)
                     {
                         case 2:
-
-                            
+                            // todo manager2 to department ???
+                            sqlDepQueryPart = string.Format(
+                            @" exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager2ToManager3 dmtom on  dmtom.Manager2Id = uC.[Id]
+                                    where uC.Id = {0} and dmtom.Manager3Id = u.Id
+                                )", currentUser.Id);
                             break;
                         case 3:
-                            //sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5", "3", currentUser.Id);
+                            sqlDepQueryPart = string.Format(
+                                @" exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager23ToDepartment3 dmtod on  dmtod.ManagerId = uC.[Id]
+                                    inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
+                                    where uC.Id = {0}
+                                    and dep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = dep.ItemLevel
+                                )", currentUser.Id);
                             break;
                         case 4:
                         case 5:
@@ -279,7 +295,8 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
                     return sqlQueryPart;
                 case UserRole.Director:
-                    sqlDepQueryPart = @" u.Level = 2 ";
+                    sqlDepQueryPart = string.Format(@" (u.Level = 2) or (u.RoleId = {0} and u.Id != {1}) ",
+                                                    (int)UserRole.Director,userId);
                     sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
                     return sqlQueryPart;
                 case UserRole.PersonnelManager:
