@@ -26,6 +26,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrUserNotFound = "Не найден пользователь (id {0}) в базе данных";
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
+        public const int RequeredDepartmentLevel = 7;
+
+        public virtual int GetRequeredDepartmentLevel()
+        {
+            return RequeredDepartmentLevel;
+        }
         #region DAOs
         protected IAppointmentDao appointmentDao;
         public IAppointmentDao AppointmentDao
@@ -359,6 +365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void LoadDictionaries(AppointmentEditModel model)
         {
+            model.DepartmentRequiredLevel = 7;
             model.CommentsModel = GetCommentsModel(model.Id,RequestTypeEnum.Appointment);
             model.Types = new List<IdNameDto>
                               {
@@ -395,11 +402,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.UserName = user.FullName;
         }
 
-        public bool CheckDepartment(int departmentId)
+        public bool CheckDepartment(int departmentId,out int level)
         {
+            level = 0;
             Department dep = DepartmentDao.Load(departmentId);
             if(dep == null)
                 throw new ArgumentException(string.Format(StrDepartmentNotFound,departmentId));
+            level = dep.ItemLevel.Value;
+            if (dep.ItemLevel != RequeredDepartmentLevel)
+                return false;
             if (AuthenticationService.CurrentUser.UserRole == UserRole.Director)
                 return true;
             User currUser = UserDao.Load(AuthenticationService.CurrentUser.Id);

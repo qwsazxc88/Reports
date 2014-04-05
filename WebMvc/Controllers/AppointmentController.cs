@@ -14,7 +14,8 @@ namespace WebMvc.Controllers
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
         public const string StrDesirableBeginDateIsSmall = "Желательная дата выхода должна быть не ранее 2 недель с момента создания заявки";
-        public const string StrInvalidDepartment = "Указан неверное структурное подразделение.У вас нет права создания заявки для него.";
+        public const string StrInvalidDepartment = "Указано неверное структурное подразделение.У вас нет права создания заявки для него.";
+        public const string StrInvalidDepartmentLevel = "Выбор структурного подразделения уровня {0} обязателен";
         public const string StrInvalidListDates = "Дата в поле <Период с> не может быть больше даты в поле <по>.";
 
         protected IAppointmentBl appointmentBl;
@@ -127,8 +128,15 @@ namespace WebMvc.Controllers
                 }
             }
             //todo need to check department
-            if(!AppointmentBl.CheckDepartment(model.DepartmentId))
-                ModelState.AddModelError(string.Empty, StrInvalidDepartment);
+            int depLevel;
+            if (!AppointmentBl.CheckDepartment(model.DepartmentId, out depLevel))
+            {
+                if(depLevel != AppointmentBl.GetRequeredDepartmentLevel())
+                    ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel, 
+                        AppointmentBl.GetRequeredDepartmentLevel()));
+                else
+                    ModelState.AddModelError("SelectDepartmentBtn", StrInvalidDepartment);
+            }
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(AppointmentEditModel model)

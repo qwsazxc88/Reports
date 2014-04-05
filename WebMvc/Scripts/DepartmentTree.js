@@ -57,6 +57,14 @@ function ValidateDepartment() {
         addDepSelError("Необходимо выбрать структурное подразделение не менее 2 уровня");
         return false;
     }*/
+    clearDepSelErrors();
+    if ($('#DepartmentRequiredLevel').val()) {
+        var ctrlName = '#Level' + $('#DepartmentRequiredLevel').val() + 'ID';
+        if (!$(ctrlName).val()) {
+            addDepSelError("Выбор структурного подразделения уровня " + $('#DepartmentRequiredLevel').val() + " обязателен");
+            return false;
+        }
+    }
     if ($('#Level2ID').val() == 0) {
         addDepSelError("Не выбрано подразделение");
         return false;

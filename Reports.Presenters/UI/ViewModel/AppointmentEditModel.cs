@@ -15,6 +15,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "В структурное подразделение")]
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
+        public int DepartmentRequiredLevel { get; set; }
 
         [Display(Name = "Место работы (город)")]
         //[Required(ErrorMessageResourceName = "AppointmentEditModel_City_Required",ErrorMessageResourceType = typeof(Resources))]
