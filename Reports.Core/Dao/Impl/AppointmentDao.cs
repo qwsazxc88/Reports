@@ -16,6 +16,12 @@ namespace Reports.Core.Dao.Impl
             get { return Validate.Dependency(userDao); }
             set { userDao = value; }
         }
+        protected IDepartmentDao departmentDao;
+        public IDepartmentDao DepartmentDao
+        {
+            get { return Validate.Dependency(departmentDao); }
+            set { departmentDao = value; }
+        }
          protected const string sqlSelectForAppointmentRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
@@ -29,9 +35,10 @@ namespace Reports.Core.Dao.Impl
                                 -- u.Id as UserId,
                                 u.Name as UserName,
                                 pos.Name as PositionName,
-                                dep3.Name as Dep3Name,
-                                 -- dep6.Name as Dep6Name,
+                                mapDep7.Name as ManDep7Name,
                                 aPos.Name as CanPosition, 
+                                dep3.Name as Dep3Name,
+                                dep7.Name as Dep7Name,
                                 v.Period as Period,
                                 v.Schedule as Schedule,
                                 v.Salary+v.Bonus as Salary,
@@ -42,9 +49,13 @@ namespace Reports.Core.Dao.Impl
                                 inner join dbo.Position aPos on v.PositionId = aPos.Id
                                 inner join [dbo].[Users] u on u.Id = v.CreatorId
                                 left join dbo.Position pos on u.PositionId = pos.Id
-                                inner join dbo.Department dep on u.DepartmentId = dep.Id
-                                left join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
-                                -- left join dbo.Department dep6 on dep6.[Path] like dep.[Path]+N'%' and dep6.ItemLevel = 6
+                                inner join dbo.Department dep on v.DepartmentId = dep.Id
+                                inner join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
+                                inner join dbo.Department dep7 on dep.[Path] like dep7.[Path]+N'%' and dep7.ItemLevel = 7
+                                left join [dbo].[Users] uEmp on uEmp.Login +
+                                    case when u.RoleId & 512 > 0 then N'H' else N'R' end  
+                                    = u.Login and uEmp.RoleId = 2 
+                                left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
                                 ";
                                 //{1}";
          public override IQuery CreateQuery(string sqlQuery)
@@ -56,9 +67,10 @@ namespace Reports.Core.Dao.Impl
                  //AddScalar("UserId", NHibernateUtil.Int32).
                  AddScalar("UserName", NHibernateUtil.String).
                  AddScalar("PositionName", NHibernateUtil.String).
-                 AddScalar("Dep3Name", NHibernateUtil.String).
-                 //AddScalar("Dep6Name", NHibernateUtil.String).
+                 AddScalar("ManDep7Name", NHibernateUtil.String).
                  AddScalar("CanPosition", NHibernateUtil.String).
+                 AddScalar("Dep3Name", NHibernateUtil.String).
+                 AddScalar("Dep7Name", NHibernateUtil.String).
                  AddScalar("Period", NHibernateUtil.String).
                  AddScalar("Schedule", NHibernateUtil.String).
                  AddScalar("Salary", NHibernateUtil.Decimal).
@@ -151,14 +163,17 @@ namespace Reports.Core.Dao.Impl
                 case 4:
                     orderBy = @" order by PositionName";
                     break;
+                case 20:
+                    orderBy = @" order by ManDep7Name";
+                    break;
+                case 7:
+                    orderBy = @" order by CanPosition";
+                    break;
                 case 5:
                     orderBy = @" order by Dep3Name";
                     break;
                 case 6:
-                    orderBy = @" order by Dep6Name";
-                    break;
-                case 7:
-                    orderBy = @" order by CanPosition";
+                    orderBy = @" order by Dep7Name";
                     break;
                 case 8:
                     orderBy = @" order by Period";
@@ -237,7 +252,8 @@ namespace Reports.Core.Dao.Impl
             {
                 if (whereString.Length > 0)
                     whereString += @" and ";
-                whereString += string.Format(@" v.DepartmentId = {0} ", departmentId);
+                Department dep = DepartmentDao.Load(departmentId);
+                whereString += string.Format(@" mapDep7.Path  like '{0}' and mapDep7.ItemLevel = {1}", dep.Path + "%", 7);
             }
             return whereString;
         }
@@ -250,7 +266,7 @@ namespace Reports.Core.Dao.Impl
             {
                 case UserRole.Manager:
                    
-                    const string sqlQueryPartTemplate = @" (u.Id = {0}) or ({1}) ";
+                    const string sqlQueryPartTemplate = @" ((u.Id = {0}) or ({1})) ";
                     string sqlQueryPart;
                     string sqlDepQueryPart;
                     switch (currentUser.Level)
@@ -295,7 +311,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
                     return sqlQueryPart;
                 case UserRole.Director:
-                    sqlDepQueryPart = string.Format(@" (u.Level = 2) or (u.RoleId = {0} and u.Id != {1}) ",
+                    sqlDepQueryPart = string.Format(@" ((u.Level = 2) or (u.RoleId = {0} and u.Id != {1})) ",
                                                     (int)UserRole.Director,userId);
                     sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
                     return sqlQueryPart;

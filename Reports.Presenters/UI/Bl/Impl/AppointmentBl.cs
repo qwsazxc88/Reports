@@ -112,7 +112,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetDocumentsToModel(AppointmentListModel model, User user)
         {
-            UserRole role = user.UserRole;
+            UserRole role = AuthenticationService.CurrentUser.UserRole;
             //model.Documents = new List<AppointmentDto>();
             model.Documents = AppointmentDao.GetDocuments(
                 user.Id,

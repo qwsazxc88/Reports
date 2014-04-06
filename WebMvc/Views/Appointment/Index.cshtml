@@ -125,14 +125,17 @@
                     <th>
                         <div id="sort4" style="min-width:130px"><a href="#"  onclick = "SortChanged(4);">Должность<br/> заказчика</a></div>
                     </th>
-                    <th>
-                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                     <th>
+                        <div id="sort20" style="min-width:130px"><a href="#"  onclick = "SortChanged(20);">Подразделение<br/> 7 ур.</a></div>
                     </th>
-                    @* <th>
-                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение 6 ур.</a></div>
-                    </th>*@
                     <th>
                         <div id="sort7" style="min-width:130px"><a href="#"  onclick = "SortChanged(7);">Должность<br/> кандидата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort5" style="min-width:130px"><a href="#"  onclick = "SortChanged(5);">Дирекция<br/> 3 ур.</a></div>
+                    </th>
+                     <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур.</a></div>
                     </th>
                     <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
@@ -184,9 +187,10 @@
                             <td></td>
                             <td>@doc.UserName</td>
                             <td>@doc.PositionName</td>
-                            <td>@doc.Dep3Name</td>
-                            @*<td>@doc.Dep6Name</td>*@
+                            <td>@doc.ManDep7Name</td>
                             <td>@doc.CanPosition</td>
+                            <td>@doc.Dep3Name</td>
+                            <td>@doc.Dep7Name</td>
                             <td>@doc.Period</td>
                             <td>@doc.Schedule</td>
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
