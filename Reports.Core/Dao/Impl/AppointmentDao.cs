@@ -50,6 +50,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join [dbo].[Users] u on u.Id = v.CreatorId
                                 left join dbo.Position pos on u.PositionId = pos.Id
                                 inner join dbo.Department dep on v.DepartmentId = dep.Id
+                                inner join dbo.Department crDep on u.DepartmentId = crDep.Id
                                 inner join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 inner join dbo.Department dep7 on dep.[Path] like dep7.[Path]+N'%' and dep7.ItemLevel = 7
                                 left join [dbo].[Users] uEmp on uEmp.Login +
@@ -279,7 +280,17 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join  dbo.AppointmentManager2ToManager3 dmtom on  dmtom.Manager2Id = uC.[Id]
                                     where uC.Id = {0} and dmtom.Manager3Id = u.Id
-                                )", currentUser.Id);
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager23ToDepartment3 dmtod on  dmtod.ManagerId = uC.[Id]
+                                    inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
+                                    where uC.Id = {0}
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                )
+                                ", currentUser.Id);
                             break;
                         case 3:
                             sqlDepQueryPart = string.Format(
@@ -289,7 +300,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join  dbo.AppointmentManager23ToDepartment3 dmtod on  dmtod.ManagerId = uC.[Id]
                                     inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
                                     where uC.Id = {0}
-                                    and dep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = dep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         case 4:
@@ -301,8 +312,8 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
                                     where uC.Id = {0}
-                                    and dep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = dep.ItemLevel
-                                )",currentUser.Id);
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                )", currentUser.Id);
                             break;
                         default:
                             throw new ArgumentException(string.Format(MissionOrderDao.StrInvalidManagerLevel, 

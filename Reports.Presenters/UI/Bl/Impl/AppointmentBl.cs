@@ -197,7 +197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    throw new ArgumentException(StrAccessIsDenied);
             SetManagerInfoModel(creator, model);
             LoadDictionaries(model);
-            SetFlagsState(id, currUser, entity, model);
+            SetFlagsState(id, currUser,current.UserRole, entity, model);
             SetHiddenFields(model);
             return model;
         }
@@ -233,12 +233,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
         }
-        protected void SetFlagsState(int id, User current, Appointment entity, AppointmentEditModel model)
+        protected void SetFlagsState(int id, User current,UserRole  currRole, Appointment entity, AppointmentEditModel model)
         {
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if (current.UserRole != UserRole.Manager && current.UserRole != UserRole.Director)
+                if (currRole != UserRole.Manager && currRole != UserRole.Director)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -271,7 +271,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 /*if (entity.AcceptStaff != null)
                     model.StaffFio = entity.AcceptStaff.FullName;*/
             }
-            switch (current.UserRole)
+            switch (currRole)
             {
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id && !entity.DeleteDate.HasValue)
@@ -323,12 +323,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected bool IsDirectorChiefForCreator(User current, User creator)
         {
-            return (creator.Department.ItemLevel == 2) && creator.Id != current.Id;
+            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,
+                        creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
+            return (creator.Level.Value == 2);
         }
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
-            if(current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
-                throw new ValidationException(string.Format(StrIncorrectManagerLevel,current.Level,current.Id));
+            if( !current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,
+                        current.Level.HasValue? current.Level.Value.ToString():"<не указан>" ,current.Id)); 
+            if( !creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,
+                        creator.Level.HasValue?creator.Level.Value.ToString():"<не указан>",creator.Id));
             if(creator.Department == null)
                 throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
             if (current.Department == null)
@@ -337,12 +344,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (current.Level)
             {
                 case 2:
-                    if (creator.Level != 3)
-                        return false;
+                    //if (creator.Level != 3)
+                    //    return false;
                     IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    return managers.Any(x => x == creator.Id);
-                    //departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2).ToList();
-                    //return departments.Any(x => creator.Department.Path.StartsWith(x.Path));)
+                    if(managers.Any(x => x == creator.Id) && creator.Level.Value == 3)
+                        return true;
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2).ToList();
+                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path)) && creator.Level == 4;
                 case 3:
                     if (creator.Level != 4)
                         return false;
@@ -405,6 +413,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool CheckDepartment(int departmentId,out int level)
         {
             level = 0;
+            if (CurrentUser.UserRole != UserRole.Manager)
+                return true;
             Department dep = DepartmentDao.Load(departmentId);
             if(dep == null)
                 throw new ArgumentException(string.Format(StrDepartmentNotFound,departmentId));
@@ -545,7 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
-                SetFlagsState(entity.Id, creator, entity, model);
+                SetFlagsState(entity.Id, UserDao.Load(current.Id),current.UserRole, entity, model);
                 return true;
             }
             catch (Exception ex)
@@ -625,8 +635,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
                             && model.IsChiefApproved)
                         {
-                            entity.ManagerDateAccept = DateTime.Now;
-                            entity.AcceptManager = currUser;
+                            entity.ChiefDateAccept = DateTime.Now;
+                            entity.AcceptChief = currUser;
                             //SendEmailForAppointmentChiefAccept(currUser, entity);
                         }
                     }
@@ -665,8 +675,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!entity.DeleteDate.HasValue && model.IsChiefApproveAvailable
                             && model.IsChiefApproved)
                         {
-                            entity.ManagerDateAccept = DateTime.Now;
-                            entity.AcceptManager = currUser;
+                            entity.ChiefDateAccept = DateTime.Now;
+                            entity.AcceptChief = currUser;
                             //SendEmailForAppointmentChiefAccept(currUser, entity);
                         }
                     }
