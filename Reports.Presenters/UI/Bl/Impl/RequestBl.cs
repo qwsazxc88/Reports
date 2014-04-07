@@ -7065,7 +7065,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsAddAvailable = currentUser.IsMainManager && ((currentUser.Level == 2) ||
                                            (currentUser.Level == 3) ||
                                            (currentUser.Level == 5));
-                    model.IsApproveAvailable = model.IsAddAvailable;
+                    model.IsApproveAvailable = model.IsAddAvailable || (currentUser.MissionOrderRoleRecords
+                        .Where<MissionOrderRoleRecord>(morr => morr.Role.Id == 1)
+                        .FirstOrDefault<MissionOrderRoleRecord>() != null);
                     break;
                 case UserRole.Director:
                     model.IsApproveAvailable = true;
