@@ -175,6 +175,9 @@
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
+                    <th>
+                        Стаж<br />в 1С
+                    </th>
                  @*   <th>
                         Дата окончания
                     </th>*@
@@ -195,6 +198,7 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
+                            <td style="text-align:center;">@(doc.UserExperienceIn1C == true ? "+" : String.Empty)</td>
                             @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>

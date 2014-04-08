@@ -14,7 +14,8 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public IList<VacationDto> GetDocuments(
+
+        public IList<SicklistDto> GetSicklistDocuments(
                int userId, 
                UserRole role,
                int departmentId,
@@ -29,19 +30,37 @@ namespace Reports.Core.Dao.Impl
                bool? sortDescending
             )
         {
-            string sqlQuery = string.Format(sqlSelectForList,
+            string sqlQuery =
+                string.Format(sqlSelectForListSicklist,
                     DeleteRequestText,
                     "dbo.SicklistType",
                     "v.[CreateDate]",
                     "Болезнь (неявка)",
                     "[dbo].[Sicklist]",
                     "v.[BeginDate]",
-                    "v.[EndDate]");
+                    "v.[EndDate]"
+                );
 
-            return GetDefaultDocuments(userId, role, departmentId,
-                positionId, typeId,
-                statusId, beginDate, endDate,userName,
-                sqlQuery, sortedBy, sortDescending);
+            string whereString = GetWhereForUserRole(role, userId);
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
+
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+
+            return query.SetResultTransformer(Transformers.AliasToBean<SicklistDto>()).List<SicklistDto>();
+
+            //return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+
+            //return GetDefaultDocuments(userId, role, departmentId,
+            //    positionId, typeId,
+            //    statusId, beginDate, endDate,userName,
+            //    sqlQuery, sortedBy, sortDescending);
 
 //            string sqlQuery =
 //                string.Format(@"select v.Id as Id,
@@ -69,6 +88,22 @@ namespace Reports.Core.Dao.Impl
 //            if (paymentPercentTypeId != 0)
 //                query.SetInt32("paymentPercentTypeId", paymentPercentTypeId);
 //            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+        }
+
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean);                
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Reports.Core.Dao
 {
     public interface ISicklistDao : IDao<Sicklist>
     {
-        IList<VacationDto> GetDocuments(
+        IList<SicklistDto> GetSicklistDocuments(
             int userId, 
             UserRole role,
             int departmentId,

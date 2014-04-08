@@ -569,7 +569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
 
            
-            result.AddRange(SicklistDao.GetDocuments(
+            result.AddRange(SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 model.DepartmentId,
@@ -3264,7 +3264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
             if(hasError)
-                model.Documents = new List<VacationDto>();
+                model.Documents = new List<SicklistDto>();
             else
                 SetDocumentsToModel(model, user);
         }
@@ -3279,7 +3279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            model.Documents = SicklistDao.GetDocuments(
+            model.Documents = SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 //GetDepartmentId(model.Department),
