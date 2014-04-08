@@ -3696,7 +3696,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManager:
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
-                        if (model.AttachmentId > 0)
+                        if (model.AttachmentId > 0 &&
+                            (currentUserRole == UserRole.PersonnelManager ||
+                            (currentUserRole == UserRole.OutsourcingManager && user.ExperienceIn1C != true)))
                         {
                             model.IsApprovedEnable = true;
                             model.IsApprovedForAllEnable = true;
