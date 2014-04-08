@@ -4828,6 +4828,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
             model.UserNumber = user.Code;
+            model.UserEmail = user.Email;
         }
         protected List<IdNameDto> GetTimesheetStatusesForVacation()
         {

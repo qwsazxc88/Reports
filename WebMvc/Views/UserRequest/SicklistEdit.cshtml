@@ -303,6 +303,15 @@
                 @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, (object)new { disabled = "disabled" }) *@
 
                 @Html.LabelFor(model => model.IsApprovedByUser)
+                @if(Model.UserEmail != "")
+                {
+                    @:(<a href="mailto:@Model.UserEmail">@Model.UserName</a>)
+                }
+                else
+                {
+                    @:(@Model.UserName)
+                }
+
                 @if (!Model.IsApprovedByUserEnable)
                 {
                     <input type="hidden" id="IsApprovedByUserHidden" name="IsApprovedByUserHidden" value="@Model.IsApprovedByUser" />
