@@ -1,0 +1,10 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="AppointmentManager2ParentToManager2Child">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <!--<version name="Version" column= "Version"/>-->
+	<many-to-one name="Parent" class="User" column="ParentId" foreign-key="FK_AppointmentManager2ParentToManager2Child_Parent" index="IX_AppointmentManager2ParentToManager2Child_Parent"  not-null="true"/>
+    <many-to-one name="Child" class="User" column="ChildId" foreign-key="FK_AppointmentManager2ParentToManager2Child_Child" index="IX_AppointmentManager2ParentToManager2Child_Child"  not-null="true"/>  
+   </class>
+</hibernate-mapping>

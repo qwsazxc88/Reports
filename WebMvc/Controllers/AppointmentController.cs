@@ -8,7 +8,7 @@ using WebMvc.Attributes;
 namespace WebMvc.Controllers
 {
     [PreventSpam]
-    [ReportAuthorize(UserRole.Director | UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
+    [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
     public class AppointmentController : BaseController
     {
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";

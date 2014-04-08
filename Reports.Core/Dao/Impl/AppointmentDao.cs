@@ -108,7 +108,15 @@ namespace Reports.Core.Dao.Impl
                                             where [Manager2Id] = {0}", managerId);
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32);
-            return query./*SetResultTransformer(Transformers.AliasToBean(typeof(int))).*/List<int>();
+            return query.List<int>();
+        }
+        public virtual IList<int> GetChildrenManager2ForManager2(int parentId)
+        {
+            string sqlQuery = string.Format(@" select [ChildId]  as Id from [dbo].[AppointmentManager2ParentToManager2Child]
+                                            where [ParentId] = {0}", parentId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32);
+            return query.List<int>();
         }
         public IList<AppointmentDto> GetDocuments(int userId,
                 UserRole role,
@@ -268,7 +276,6 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Manager:
                    
                     const string sqlQueryPartTemplate = @" ((u.Id = {0}) or ({1})) ";
-                    string sqlQueryPart;
                     string sqlDepQueryPart;
                     switch (currentUser.Level)
                     {
@@ -289,6 +296,13 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
                                     where uC.Id = {0}
                                     and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                )
+                                or
+                                exists 
+                                ( 
+                                    select uC.Id from dbo.Users uC
+                                    inner join  dbo.AppointmentManager2ParentToManager2Child dmtom on  dmtom.ParentId = uC.[Id]
+                                    where uC.Id = {0} and dmtom.ChildId = u.Id
                                 )
                                 ", currentUser.Id);
                             break;
@@ -319,13 +333,13 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(MissionOrderDao.StrInvalidManagerLevel, 
                                 userId, currentUser.Level));
                     }
-                    sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
+                    string sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
                     return sqlQueryPart;
-                case UserRole.Director:
-                    sqlDepQueryPart = string.Format(@" ((u.Level = 2) or (u.RoleId = {0} and u.Id != {1})) ",
-                                                    (int)UserRole.Director,userId);
-                    sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
-                    return sqlQueryPart;
+                //case UserRole.Director:
+                //    sqlDepQueryPart = string.Format(@" ((u.Level = 2) or (u.RoleId = {0} and u.Id != {1})) ",
+                //                                    (int)UserRole.Director,userId);
+                //    sqlQueryPart = string.Format(sqlQueryPartTemplate,currentUser.Id,sqlDepQueryPart);
+                //    return sqlQueryPart;
                 case UserRole.PersonnelManager:
                 case UserRole.OutsourcingManager:
                 case UserRole.StaffManager:

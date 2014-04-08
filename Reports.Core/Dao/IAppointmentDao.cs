@@ -9,6 +9,7 @@ namespace Reports.Core.Dao
     {
         IList<DepartmentDto> GetDepartmentsForManager23(int managerId, int level);
         IList<int> GetManager3ForManager2(int managerId);
+        IList<int> GetChildrenManager2ForManager2(int parentId);
 
         IList<AppointmentDto> GetDocuments(int userId,
                                            UserRole role,
