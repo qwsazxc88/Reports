@@ -40,6 +40,12 @@ namespace Reports.Core.Domain
 
         // Согласования обходного листа
         public virtual IList<ClearanceChecklistApproval> ClearanceChecklistApprovals { get; set; }
+        // Номер реестра обходного листа
+        public virtual int? RegistryNumber { get; set; }
+        // Сумма НДФЛ
+        public virtual decimal? PersonalIncomeTax { get; set; }
+        // ОКТМО
+        public virtual string OKTMO { get; set; }
         
         #endregion
 

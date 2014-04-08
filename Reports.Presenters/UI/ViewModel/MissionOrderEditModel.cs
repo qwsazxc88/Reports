@@ -59,7 +59,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Сумма наличными в кассе")]
         public string UserSumCash { get; set; }
-        [Display(Name = "Сумма на заработную карту")]
+        [Display(Name = "Сумма на зарплатную карту")]
         public string UserSumNotCash { get; set; }
 
         [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]
@@ -67,13 +67,14 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsUserApprovedAvailable { get; set; }
         public bool IsUserApprovedHidden { get; set; }
 
-        [Display(Name = "Командировка приходится на выходные/праздничные дни или  её продолжительность более семи дней")]
+        [Display(Name = "Командировка приходится на выходные/праздничные дни или её продолжительность более семи дней")]
         public bool IsChiefApproveNeed { get; set; }
         public bool IsChiefApproveNeedHidden { get; set; }
 
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool? IsManagerApprovedHidden { get; set; }
+        
 
         public bool? IsChiefApproved { get; set; }
         public bool IsChiefApproveAvailable { get; set; }

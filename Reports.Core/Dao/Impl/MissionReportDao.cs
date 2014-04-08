@@ -127,6 +127,10 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            //
+            whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -197,7 +201,8 @@ namespace Reports.Core.Dao.Impl
                                 userId, currentUser.Level));
                     }
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
-                    return sqlQueryPart + " ) ";
+                    sqlQueryPart = String.Format(" u.Level>3 and {0} ) ", sqlQueryPart);
+                    return sqlQueryPart;
 //                case UserRole.Director:
 //                    //User currUser = UserDao.Load(userId);
 //                    //if(currUser == null)

@@ -118,10 +118,12 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApprovedByManager { get; set; }
         public bool IsApprovedByManagerHidden { get; set; }
         public bool IsApprovedByManagerEnable { get; set; }
+        public string ApprovedByManager { get; set; }
         [Display(Name = "Кадровик cогласен ")]
         public bool IsApprovedByPersonnelManager { get; set; }
         public bool IsApprovedByPersonnelManagerHidden { get; set; }
         public bool IsApprovedByPersonnelManagerEnable { get; set; }
+        public string ApprovedByPersonnelManager { get; set; }
         [Display(Name = "Выгружен в 1C")]
         public bool IsPostedTo1C { get; set; }
         public bool IsPostedTo1CHidden { get; set; }
@@ -149,6 +151,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApprovedForAll { get; set; }
         public bool IsApprovedForAllEnable { get; set; }
 
-
+        public bool? ExperienceIn1C { get; set; }
     }
 }

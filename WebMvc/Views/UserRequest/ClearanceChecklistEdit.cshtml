@@ -8,8 +8,8 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.UserId)
     
-    if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
-    {
+if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+{
         <div class="doc-wrap">
             <table style="width:100%">
                 <tr>
@@ -31,7 +31,7 @@
                 }*@  
             </table>    
         </div>
-    }
+}
     
     <br />
     
@@ -64,7 +64,7 @@
                     <td style="text-align:left; vertical-align: top;">
                         <a class="role-authorities-link" data-approval-id="@approval.Id" href="">@approval.ClearanceChecklistRole</a>
                         <ul id="role-authorities-list" style="display:none" data-approval-id="@approval.Id">
-                            @foreach(var authority in approval.RoleAuthorities)
+                            @foreach (var authority in approval.RoleAuthorities)
                             {
                                 <li>@authority</li>
                             }
@@ -101,17 +101,59 @@
                     <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
             </tr>
             }
+
         }
     </table>
+    
+    @* Здесь добавляем вывод пунктов 52-55 *@
+    <br />        
+    <form action="#">
+        <table style="margin-bottom: 16px;">
+            <tbody>
+                <tr>
+                    <td>
+                        <label>Номер реестра<br /><input type="text" id="registry-number" value="@String.Format("{0:D11}", Model.RegistryNumber)" @(Model.IsBottomEnabled ? "" : "disabled")/></label>
+                    </td>
+                    <td>
+                        <label>Сумма НДФЛ<br /><input type="text" id="personal-income-tax" value="@Model.PersonalIncomeTax" @(Model.IsBottomEnabled ? "" : "disabled")/></label>
+                    </td>
+                    <td>
+                        <label>ОКТМО<br /><input type="text" id="oktmo" value="@Model.OKTMO" @(Model.IsBottomEnabled ? "" : "disabled")/></label>
+                    </td>
+                    <td style="vertical-align: bottom;">
+                        @if(Model.IsBottomEnabled)
+                        {
+                            <a class="save-bottom-fields-link" data-clearance-checklist-id="@Model.Id" href="">Сохранить</a>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>            
 }
 
 <script type="text/javascript">
+    
     function ApprovalSuccess()
     {
         $(this).ReplaceWith("<span style='color:Green'>Cогласовано</span>");
     }
+
+    function showInputActionResult(inputs, isOk) {
+        var color = isOk ? "lightgreen" : "pink";
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].css("background-color", color);
+        }
+        setTimeout(function () {
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].css("background-color", "white");
+            }
+        }, 700);
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("userClearanceChecklistList");
+
         // обработка щелчков по ссылкам согласования
         $(".approval-link").click(function (event) {
             var $currentApprovalLink = $(this);
@@ -127,6 +169,7 @@
                 }
             );
         });
+
         $(".save-approval-comment-link").click(function (event) {
             var $currentSaveLink = $(this);
             var $currentCommentInput = $currentSaveLink.prev("textarea");
@@ -138,16 +181,43 @@
                 },
                 function (data) {
                     if (data.ok === true) {
-                        $currentCommentInput.css("background-color", "lightgreen");
-                        setTimeout(function () { $currentCommentInput.css("background-color", "white"); }, 700);
+                        showInputActionResult([$currentCommentInput], true);
                     }
                 }
             );
         });
+
         $(".role-authorities-link").click(function (event) {
             var $currentAuthoritiesLink = $(this);
             event.preventDefault();
             $currentAuthoritiesLink.next("#role-authorities-list").toggle();
         });
+
+        // Save outsourcing-edited fields
+        $(".save-bottom-fields-link").click(function (event) {
+            var $currentSaveLink = $(this);
+            var $registryNumberInput = $("#registry-number");
+            var $personalIncomeTaxInput = $("#personal-income-tax");
+            var $oKTMOInput = $("#oktmo");
+            event.preventDefault();
+            $.post("/UserRequest/ClearanceChecklistSaveBottomFields",
+                {
+                    id: $currentSaveLink.attr("data-clearance-checklist-id"),
+                    registryNumber: $registryNumberInput.val(),
+                    personalIncomeTax: $personalIncomeTaxInput.val(),
+                    oKTMO: $oKTMOInput.val()
+                },
+                function (data) {
+                    if (data.ok === true) {
+                        showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], true);
+                    }
+                    else {
+                        showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], false);
+                    }
+                }
+            );
+        });
+
+
     });
 </script>

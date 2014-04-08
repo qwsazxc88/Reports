@@ -45,6 +45,7 @@ namespace Reports.Core.Dao.Impl
                 statusId, beginDate, endDate,userName, 
                 sqlQuery,sortedBy,sortDescending);
 
+            #region Deleted
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             //string whereString = GetWhereForUserRole(role, userId);
             //whereString = GetTypeWhere(whereString, typeId);
@@ -148,6 +149,7 @@ namespace Reports.Core.Dao.Impl
             if (departmentId != 0)
                 query.SetInt32("departmentId", departmentId);*/
             //return query.SetResultTransformer(Transformers.AliasToBean(typeof (VacationDto))).List<VacationDto>();
+            #endregion
         }
         public DateTime? GetDismissalDateForUser(int userId)
         {

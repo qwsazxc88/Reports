@@ -19,7 +19,7 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
-        public IList<VacationDto> GetDocuments(
+        public IList<ClearanceChecklistDto> GetClearanceChecklistDocuments(
             int userId,
             UserRole role,
             int departmentId,
@@ -36,18 +36,48 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery =
                 string.Format(sqlSelectForListClearanceChecklist,
                                 DeleteRequestText,
-                                "v.[CreateDate]",
                                 "Обходной лист",
+                                "v.[CreateDate]",
                                 "[dbo].[Dismissal]",
                                 "'" + DateTime.MinValue.ToShortDateString() + "'",
-                                "'" + DateTime.MinValue.ToShortDateString() + "'",
-                                typeId
+                                "v.[EndDate]",
+                                //"'" + DateTime.MinValue.ToShortDateString() + "'",
+                                typeId,
+                                "v.[RegistryNumber]",
+                                "v.[PersonalIncomeTax]",
+                                "v.[OKTMO]"
                 );
-            return GetDefaultDocuments(userId, role, departmentId,
-                positionId, typeId,
-                statusId, beginDate, endDate, userName,
-                sqlQuery, sortedBy, sortDescending);
-            //return new List<VacationDto>();
+            string whereString = GetWhereForUserRole(role, userId);
+            whereString = GetTypeWhere(whereString, typeId);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetPositionWhere(whereString, positionId);
+            whereString = GetDepartmentWhere(whereString, departmentId);
+            whereString = GetUserNameWhere(whereString, userName);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
+            IQuery query = CreateQuery(sqlQuery);
+            AddDatesToQuery(query, beginDate, endDate, userName);
+            //query.SetResultTransformer(Transformers.
+            // return query.SetResultTransformer(Transformers.AliasToBean(typeof(ClearanceChecklistDto))).List<ClearanceChecklistDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean<ClearanceChecklistDto>()).List<ClearanceChecklistDto>();
+        }
+
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("RegistryNumber", NHibernateUtil.Int32).
+                AddScalar("PersonalIncomeTax", NHibernateUtil.Decimal).
+                AddScalar("OKTMO", NHibernateUtil.String);
         }
         
         public ClearanceChecklistApproval GetApprovalById(int id)
@@ -121,6 +151,23 @@ namespace Reports.Core.Dao.Impl
                 approval.Comment = comment;
                 Session.Update(approval);
                 transaction.Commit();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool SetBottomFields(int clearanceChecklistId, int? registryNumber, decimal? personalIncomeTax, string oKTMO)
+        {
+            var clearanceChecklist = Session.Get<Dismissal>(clearanceChecklistId);
+            if (clearanceChecklist != null)
+            {
+                var transaction = Session.BeginTransaction();
+                clearanceChecklist.RegistryNumber = registryNumber;
+                clearanceChecklist.PersonalIncomeTax = personalIncomeTax;
+                clearanceChecklist.OKTMO = oKTMO;
                 return true;
             }
             else

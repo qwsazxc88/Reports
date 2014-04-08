@@ -145,6 +145,7 @@ namespace Reports.Core.Domain
         
         // Extended roles
         public virtual IList<ClearanceChecklistRoleRecord> ClearanceChecklistRoleRecords { get; set; }
+        public virtual IList<MissionOrderRoleRecord> MissionOrderRoleRecords { get; set; }
 
         //public virtual bool IsUserResponser
         //{
@@ -170,6 +171,7 @@ namespace Reports.Core.Domain
         public virtual bool GivesCredit { get; set; }
         public virtual int? Level { get; set; }
         public virtual int? Grade { get; set; }
+        public virtual bool? ExperienceIn1C { get; set; }
         #endregion
 
         #region Constructors

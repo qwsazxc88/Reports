@@ -13,6 +13,16 @@ namespace Reports.Presenters.UI.ViewModel
 
         public IList<ClearanceChecklistApprovalDto> ClearanceChecklistApprovals { get; set; }
 
+        // Props assigned by outsourcing
+        // Номер реестра
+        public int? RegistryNumber { get; set; }
+        // Сумма НДФЛ
+        public decimal? PersonalIncomeTax { get; set; }
+        // ОКТМО
+        public string OKTMO { get; set; }
+
+        public bool IsBottomEnabled { get; set; }
+
         public DateTime EndDate { get; set; }
 
         public ClearanceChecklistEditModel()

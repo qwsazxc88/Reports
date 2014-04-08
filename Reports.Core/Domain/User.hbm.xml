@@ -30,13 +30,21 @@
       <key column="UserId" foreign-key="FK_ClearanceChecklistRoleRecord_User"/>
       <one-to-many class="ClearanceChecklistRoleRecord" />
     </bag>
+
+    <bag name="MissionOrderRoleRecords" table="UserMissionOrderRoleRecord" lazy="true" cascade="save-update">
+      <key column="UserId" foreign-key="FK_MissionOrderRoleRecord_User"/>
+      <one-to-many class="MissionOrderRoleRecord" />
+    </bag>
     
     <property name="LoginAd" length="32" not-null="false" />
     <property name="Rate" not-null="false" />
     <property name="GivesCredit" not-null="true" />
     <property name="Level" not-null="false" />
     <property name="Grade" not-null="false" />
-	<property name="IsMainManager" not-null="true" />
+
+    <property name="ExperienceIn1C" not-null="false" />
+
+    <property name="IsMainManager" not-null="true" />
     
 	<!--<many-to-one name="Role" class="Role" column="RoleId" foreign-key="FK_USER_ROLE" index="IX_USER_ROLE_ID"  not-null="true"/>-->
 	<many-to-one name="Manager" class="User" column="ManagerId" foreign-key="FK_User_UserManager" index="IX_User_UserManager_Id"  not-null="false"/>

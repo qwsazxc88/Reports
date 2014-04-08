@@ -26,6 +26,10 @@ create table [ClearanceChecklistRoleRecord] (
   constraint PK_ClearanceChecklistRoleRecord primary key (Id)
 )
 
+alter table [Dismissal] add RegistryNumber INT null
+alter table [Dismissal] add PersonalIncomeTax DECIMAL(19, 2) null
+alter table [Dismissal] add OKTMO NVARCHAR(8) null
+
 create index IX_ClearanceChecklistApproval_Dismissal_Id on ClearanceChecklistApproval (DismissalId)
 create index IX_ClearanceChecklistApproval_ClearanceChecklistRole_Id on ClearanceChecklistApproval (RoleId)
 create index IX_ClearanceChecklistApproval_ApprovedBy_Id on ClearanceChecklistApproval (ApprovedById)

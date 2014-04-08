@@ -180,8 +180,8 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForListClearanceChecklist =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
-                                '{2}' as Name,
-                                {1} as Date,
+                                '{1}' as Name,
+                                {2} as Date,
                                 {4} as BeginDate,  
                                 {5} as EndDate,
                                 v.Number as Number,
@@ -190,7 +190,10 @@ namespace Reports.Core.Dao.Impl
                                      when v.SendTo1C is not null then 'Выгружено в 1с' 
                                     else ''
                                 end as RequestStatus,
-                                {6} as RequestType
+                                {6} as RequestType,
+                                {7} as RegistryNumber,
+                                {8} as PersonalIncomeTax,
+                                {9} as OKTMO
                                 from {3} v
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
         protected const string sqlSelectForListChildVacation =

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MissionOrderRoleRecord" table="[MissionOrderRoleRecord]">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <version name="Version" column= "Version"/>
+
+    <many-to-one
+      name="User"
+      class="User"
+      column="UserId"
+      foreign-key="FK_MissionOrderRoleRecord_User"
+      index="IX_MissionOrderRoleRecord_User_Id"
+      not-null="true"
+    />
+
+    <many-to-one
+      name="Role"
+      class="MissionOrderRole"
+      column="RoleId"
+      foreign-key="FK_MissionOrderRoleRecord_MissionOrderRole"
+      index="IX_MissionOrderRoleRecord_MissionOrderRole_Id"
+      not-null="true"
+    />
+
+    <many-to-one
+      name="TargetUser"
+      class="User"
+      column="TargetUserId"
+      foreign-key="FK_MissionOrderRoleRecord_TargetUser"
+      index="IX_MissionOrderRoleRecord_TargetUser_Id"
+      not-null="false"
+    />
+
+    <many-to-one
+      name="TargetDepartment"
+      class="Department"
+      column="TargetDepartmentId"
+      foreign-key="FK_MissionOrderRoleRecord_TargetDepartment"
+      index="IX_MissionOrderRoleRecord_TargetDepartment_Id"
+      not-null="false"
+    />
+
+  </class>
+</hibernate-mapping>

@@ -120,6 +120,8 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
+    @if (!(Model.ExperienceIn1C == true))
+    {
     <tr>
         <td>
             @Html.LabelFor(m => m.ExperienceYears):
@@ -145,6 +147,7 @@
             @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев 
          </td>
     </tr>
+    }
     <tr>
         <td>
             @Html.LabelFor(m => m.PaymentPercentTypeId):
@@ -315,7 +318,7 @@
                 <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
                 @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager) {<text>checked="checked"</text>} />
-                @Html.LabelFor(model => model.IsApprovedByManager)
+                @Html.LabelFor(model => model.IsApprovedByManager) (@Model.ApprovedByManager)
                 @if (!Model.IsApprovedByManagerEnable)
                 {
                     <input type="hidden" id="IsApprovedByManagerHidden" name="IsApprovedByManagerHidden" value="@Model.IsApprovedByManager" />
@@ -328,7 +331,7 @@
                 @*@Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager)
                                                                                                                                    {<text>checked="checked"</text>} />
-                @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
+                @Html.LabelFor(model => model.IsApprovedByPersonnelManager) (@Model.ApprovedByPersonnelManager)
                 @if (!Model.IsApprovedByPersonnelManagerEnable)
                 {
                     <input type="hidden" id="IsApprovedByPersonnelManagerHidden" name="IsApprovedByPersonnelManagerHidden" value="@Model.IsApprovedByPersonnelManager" />

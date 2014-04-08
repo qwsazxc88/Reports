@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Dao.Impl;
@@ -21,6 +22,7 @@ namespace Reports.Presenters.UI.Bl.Impl
        
         protected string EmptyDepartmentName = string.Empty;
         protected string ChildVacationTimesheetStatusShortName = "ОЖ";
+        protected string OKTMOFormatError = "Ошибка формата ОКТМО";
 
         public const int VacationFirstTimesheetStatisId = 8;
         public const int VacationLastTimesheetStatisId = 12;
@@ -2179,7 +2181,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
             if (hasError)
-                model.Documents = new List<VacationDto>();
+                model.Documents = new List<ClearanceChecklistDto>();
             else
                 SetDocumentsToModel(model, user);
         }
@@ -2197,7 +2199,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
             UserRole role = UserRole.OutsourcingManager;
-            model.Documents = ClearanceChecklistDao.GetDocuments(
+            model.DepartmentId = 0;
+            model.PositionId = 0;
+            model.Documents = ClearanceChecklistDao.GetClearanceChecklistDocuments(
                 user.Id,
                 role,
                 //model.DepartmentId,
@@ -2218,6 +2222,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ClearanceChecklistEditModel GetClearanceChecklistEditModel(int id, int userId)
         {
             const int MAX_DAYS_BEFORE_DISMISSAL = 14;
+            
+            string[] PIT_DISPLAY_ROLES = {"Бухгалтерия - выплаты", "Кадры"};
 
             var model = new ClearanceChecklistEditModel { Id = id, UserId = userId };
                         
@@ -2260,6 +2266,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 );
             }
+            model.IsBottomEnabled = current.UserRole == UserRole.OutsourcingManager ? true : false;
+            model.RegistryNumber = clearanceChecklist.RegistryNumber;
+            if(IsRoleOwner(currentUser, PIT_DISPLAY_ROLES) || (currentUser.UserRole & UserRole.OutsourcingManager) == UserRole.OutsourcingManager)
+            {
+                model.PersonalIncomeTax = clearanceChecklist.PersonalIncomeTax;
+            }
+            model.OKTMO = clearanceChecklist.OKTMO;
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
             model.EndDate = clearanceChecklist.EndDate;
@@ -2308,6 +2321,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistComment(int approvalId, string comment, out string error)
         {
             const int MAX_COMMENT_LENGTH = 255;
+            error = String.Empty;
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             // TODO: CCL Roles ?
@@ -2318,13 +2332,48 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (comment.Length > MAX_COMMENT_LENGTH) comment = comment.Substring(0, MAX_COMMENT_LENGTH);
             if (clearanceChecklistDao.SetComment(approvalId, comment))
-            {
-                error = "";
+            {                
                 return true;
             }
             else
             {
                 error = "Error updating comment";
+                return false;
+            }
+        }
+
+        public bool SetClearanceChecklistBottomFields(int id, int? registryNumber, decimal? personalIncomeTax, string oKTMO, out string error)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            Regex oKTMORegEx = new Regex(@"^\d{8}$|^$");
+            error = String.Empty;
+            
+            if (current.UserRole != UserRole.OutsourcingManager)
+            {
+                throw new ArgumentException("Доступ запрещен.");
+            }
+            
+            // Field format checks
+            // TODO: Replace with implementation
+            if (!oKTMORegEx.IsMatch(oKTMO))
+            {
+                error += OKTMOFormatError;
+            }
+
+            if (error == String.Empty)
+            {
+                if (clearanceChecklistDao.SetBottomFields(id, registryNumber, personalIncomeTax, oKTMO))
+                {
+                    return true;
+                }
+                else
+                {
+                    error = "Error updating fields";
+                    return false;
+                }
+            }
+            else
+            {
                 return false;
             }
         }
@@ -2337,7 +2386,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         private bool IsRoleOwner(User user, ClearanceChecklistRole role)
         {
-            return user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id).Contains<int>(role.Id) ? true : false;
+            IEnumerable<int> userRoleIds = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Id);
+            return userRoleIds.Contains<int>(role.Id) ? true : false;
+        }
+
+        private bool IsRoleOwner(User user, string roleDescription)
+        {
+            IEnumerable<string> userRoleDescriptions = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Description);
+            return userRoleDescriptions.Contains<string>(roleDescription) ? true : false;
+        }
+
+        private bool IsRoleOwner(User user, string[] roleDescriptions)
+        {
+            bool isRoleOwner = false;
+            IEnumerable<string> userRoleDescriptions = user.ClearanceChecklistRoleRecords.Select(roleRecord => roleRecord.Role.Description);
+            foreach(var roleDescription in roleDescriptions)
+            {
+                if (userRoleDescriptions.Contains<string>(roleDescription))
+                {
+                    isRoleOwner = true;
+                }
+            }
+
+            return isRoleOwner;
         }
 
         /// <summary>
@@ -3268,6 +3339,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsContinued = sicklist.IsContinued;
                 //model.Is2010Calculate = entity.Is2010Calculate;
                 model.IsAddToFullPayment = sicklist.IsAddToFullPayment;
+                model.ExperienceIn1C = user.ExperienceIn1C;
+                model.ApprovedByManager = sicklist.ApprovedByManager != null ? sicklist.ApprovedByManager.FullName : " - ";
+                model.ApprovedByPersonnelManager = sicklist.ApprovedByPersonnelManager != null ? sicklist.ApprovedByPersonnelManager.FullName : " - ";
                 SetHiddenFields(model);
                 if (sicklist.DeleteDate.HasValue)
                     model.IsDeleted = true;
@@ -3307,7 +3381,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                if (!CheckUserRights(user, current,model.Id,true) || !CheckUserRightsForEntity(user,current,model))
+                if (!CheckUserRights(user, current,model.Id,true) /* || !CheckUserRightsForEntity(user,current,model)*/)
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
@@ -3435,15 +3509,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.IsApproved)
                 {
                     entity.ManagerDateAccept = DateTime.Now;
+                    entity.ApprovedByManager = UserDao.Load(current.Id);
                     //!!! need to send e-mail
                     SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if (current.UserRole == UserRole.PersonnelManager
+            if ((current.UserRole == UserRole.PersonnelManager
                 && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
-                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
+                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)) || current.UserRole == UserRole.OutsourcingManager)
                 )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -3456,11 +3531,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsApproved)
                     {
                         entity.PersonnelManagerDateAccept = DateTime.Now;
+                        entity.ApprovedByPersonnelManager = UserDao.Load(current.Id);
                         SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                             entity.Number, RequestTypeEnum.Sicklist, false);
                     }
-                    if(model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                    if (model.IsApprovedForAll && !entity.ManagerDateAccept.HasValue)
+                    {
                         entity.ManagerDateAccept = DateTime.Now;
+                        entity.ApprovedByManager = UserDao.Load(current.Id);
+                    }
+
                 }
             }
             if(model.IsDatesEditable)
@@ -3564,6 +3644,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsApprovedByManagerEnable = false;
                         //model.IsTimesheetStatusEditable = true;
                         break;
+                    case UserRole.OutsourcingManager:
                     case UserRole.PersonnelManager:
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
@@ -3571,7 +3652,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsTypeEditable = true;
                         break;
                 }
-                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager)
+                if (currentUserRole == UserRole.PersonnelManager || currentUserRole == UserRole.Manager || currentUserRole == UserRole.OutsourcingManager)
                 {
                     model.IsApprovedByUserEnable = false;
                     model.IsApprovedByUserHidden = model.IsApprovedByUser = true;
@@ -3611,6 +3692,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.OutsourcingManager:
                 case UserRole.PersonnelManager:
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
@@ -3631,10 +3713,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
+                    /*
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
-                    break;
+                    break;*/
             }
 
             model.IsBabyMindingTypeEditable = model.IsTypeEditable && (model.TypeId == SicklistTypeDao.SicklistTypeIdBabyMinding);
@@ -3644,6 +3727,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     || model.IsPersonnelFieldsEditable  /*|| model.IsApprovedEnable*/
                                     || model.IsDatesEditable;
         }
+        /// <summary>
+        /// Set all model flags to the same state
+        /// </summary>
+        /// <param name="model">Model</param>
+        /// <param name="state">State to set the model flags to</param>
         protected void SetFlagsState(SicklistEditModel model, bool state)
         {
             model.IsApprovedByManager = state;
@@ -6972,7 +7060,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.IsAddAvailable = currentUser.IsMainManager && ((currentUser.Level == 2) ||
                                            (currentUser.Level == 3) ||
                                            (currentUser.Level == 5));
-                    model.IsApproveAvailable = model.IsAddAvailable;
+                    model.IsApproveAvailable = model.IsAddAvailable || (currentUser.MissionOrderRoleRecords
+                        .Where<MissionOrderRoleRecord>(morr => morr.Role.Id == 1)
+                        .FirstOrDefault<MissionOrderRoleRecord>() != null);
                     break;
                 case UserRole.Director:
                     model.IsApproveAvailable = true;
@@ -7029,7 +7119,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue)
                 {
                     bool canEdit;
-                    if(IsUserManagerForEmployee(entity.User,CurrentUser,out canEdit) && canEdit)
+                    if ((IsUserManagerForEmployee(entity.User, CurrentUser, out canEdit) && canEdit) || CanUserApproveMissionOrderForEmployee(entity.User, CurrentUser, out canEdit))
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = UserDao.Load(CurrentUser.Id);
@@ -7120,7 +7210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName,
                 model.SortBy,
                 model.SortDescending);
-        }
+        }        
         public void SetDictionariesToModel(MissionOrderListModel model)
         {
             model.Statuses = GetMoStatuses();
@@ -7430,7 +7520,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
             }
             bool canEdit = false;
-            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
+            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
             {
                 if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
@@ -7839,7 +7929,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit = false;
-                    bool isUserManager =  IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
                     {
                          if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
@@ -7970,7 +8060,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current,out canEdit);
+                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
                     if (isManager)
                     {
                         if (isSave)
@@ -8009,6 +8099,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
+        /// <summary>
+        /// Checks if the authenticated user is a manager of the specified employee
+        /// </summary>
+        /// <param name="user">Employee</param>
+        /// <param name="current">Authenticated user</param>
+        /// <param name="canEdit">Result output</param>
+        /// <returns>true/false for check success/failure</returns>
         protected bool IsUserManagerForEmployee(User user, IUser current,out bool canEdit)
         {
             canEdit = false;
@@ -8085,6 +8182,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
             return false;
+        }
+        protected bool CanUserApproveMissionOrderForEmployee(User user, IUser current, out bool canEdit)
+        {
+            User currentUser = UserDao.Load(current.Id);
+            if (currentUser == null)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+            // Get the number of role records that allow the authenticated user to approve the current mission order
+            int relevantRoleRecordsCount = currentUser.MissionOrderRoleRecords
+                .Where<MissionOrderRoleRecord>(roleRecord =>
+                    roleRecord.Role.Id == 1 &&
+                    (roleRecord.TargetUser == user || roleRecord.TargetDepartment == user.Department))
+                .ToList<MissionOrderRoleRecord>()
+                .Count;
+            // If any roles satisfying the conditions have been found
+            canEdit = (relevantRoleRecordsCount > 0) ? true : false;
+            return canEdit;
         }
         protected void LoadDictionaries(MissionOrderEditModel model)
         {
@@ -8338,7 +8451,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
-
+        
         public PrintMissionOrderViewModel GetPrintMissionOrderModel(int id)
         {
             PrintMissionOrderViewModel model = new PrintMissionOrderViewModel();
@@ -8403,7 +8516,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = order.EditDate.ToShortDateString();
             return model;
         }
-
 
         public GradeListViewModel GetGradeListModel()
         {
@@ -8693,7 +8805,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit;
-                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     //if (entity.Creator.RoleId == (int)UserRole.Manager)
                     //{
                     //    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
@@ -8807,7 +8919,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit);
+                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
                     if (isManager)
                     {
                         if (isSave)
@@ -8956,7 +9068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
             }
             bool canEdit;
-            if (current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)
+            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
                 && !entity.ManagerDateAccept.HasValue
                 && entity.UserDateAccept.HasValue)
             {
@@ -9365,8 +9477,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
         
-       
-
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
@@ -9838,7 +9948,5 @@ namespace Reports.Presenters.UI.Bl.Impl
             return documentVersion;
         }
         #endregion
-
     }
-
 }
