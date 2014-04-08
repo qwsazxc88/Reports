@@ -3710,7 +3710,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsDatesEditable = true;
                         }
                     }
-                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
                     /*
