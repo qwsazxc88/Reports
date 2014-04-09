@@ -3697,8 +3697,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0 &&
-                            (currentUserRole == UserRole.PersonnelManager ||
-                            (currentUserRole == UserRole.OutsourcingManager && user.ExperienceIn1C != true)))
+                            // Разрешить согласование для кадровиков банка, если стаж добавляется вручную
+                            ((currentUserRole == UserRole.PersonnelManager && user.ExperienceIn1C != true) ||
+                            // Разрешить согласование для расчетчиков-аутсорсеров, если стаж уже есть в 1С
+                            (currentUserRole == UserRole.OutsourcingManager && user.ExperienceIn1C == true)))
                         {
                             model.IsApprovedEnable = true;
                             model.IsApprovedForAllEnable = true;
