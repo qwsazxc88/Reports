@@ -120,6 +120,7 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
+    @Html.HiddenFor(model => Model.ExperienceIn1C)
     @if (!(Model.ExperienceIn1C == true))
     {
     <tr>
@@ -144,7 +145,7 @@
                 @Html.HiddenFor(model => model.ExperienceMonthes)
             } *@
             @Html.TextBoxFor(model => model.ExperienceYears, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) лет
-            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев 
+            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев             
          </td>
     </tr>
     <tr>
