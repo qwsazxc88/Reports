@@ -412,6 +412,7 @@
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
+    <Compile Include="Dto\SicklistDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />

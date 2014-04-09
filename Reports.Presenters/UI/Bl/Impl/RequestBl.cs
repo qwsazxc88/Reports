@@ -569,7 +569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
 
            
-            result.AddRange(SicklistDao.GetDocuments(
+            result.AddRange(SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 model.DepartmentId,
@@ -3264,7 +3264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
             if(hasError)
-                model.Documents = new List<VacationDto>();
+                model.Documents = new List<SicklistDto>();
             else
                 SetDocumentsToModel(model, user);
         }
@@ -3279,7 +3279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            model.Documents = SicklistDao.GetDocuments(
+            model.Documents = SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 //GetDepartmentId(model.Department),
@@ -3696,7 +3696,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.PersonnelManager:
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
-                        if (model.AttachmentId > 0)
+                        if (model.AttachmentId > 0 &&
+                            (currentUserRole == UserRole.PersonnelManager ||
+                            (currentUserRole == UserRole.OutsourcingManager && user.ExperienceIn1C != true)))
                         {
                             model.IsApprovedEnable = true;
                             model.IsApprovedForAllEnable = true;
@@ -3710,7 +3712,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsDatesEditable = true;
                         }
                     }
-                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
                     /*
@@ -4823,6 +4825,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
             model.UserNumber = user.Code;
+            model.UserEmail = user.Email;
         }
         protected List<IdNameDto> GetTimesheetStatusesForVacation()
         {
