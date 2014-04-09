@@ -828,7 +828,7 @@ namespace WebMvc.Controllers
                      UserRole role = AuthenticationService.CurrentUser.UserRole;
                      if ((role == UserRole.Employee && model.IsApprovedByUser) ||
                          (role == UserRole.Manager && model.IsApprovedByManager) ||
-                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                         ((role == UserRole.PersonnelManager || role == UserRole.OutsourcingManager) && model.IsApprovedByPersonnelManager))
                      {
 
                          ModelState.AddModelError(string.Empty,

@@ -3775,11 +3775,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool HaveAbsencesForPeriod(DateTime beginDate,DateTime endDate, int userId,
             int currentUserId,UserRole currentUserRole)
         {
-            if(currentUserRole == UserRole.PersonnelManager)
+            /*if(currentUserRole == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;
                 if(superPersonnelId.HasValue && currentUserId == superPersonnelId.Value)
                     return true;
+            }*/
+            if (currentUserRole == UserRole.OutsourcingManager)
+            {
+                return true;
             }
             DateTime current = DateTime.Today;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
