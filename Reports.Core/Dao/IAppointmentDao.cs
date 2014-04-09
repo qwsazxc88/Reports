@@ -7,7 +7,7 @@ namespace Reports.Core.Dao
 {
     public interface IAppointmentDao : IDao<Appointment>
     {
-        IList<DepartmentDto> GetDepartmentsForManager23(int managerId, int level);
+        IList<DepartmentDto> GetDepartmentsForManager23(int managerId, int level,bool dep3only);
         IList<int> GetManager3ForManager2(int managerId);
         IList<int> GetChildrenManager2ForManager2(int parentId);
 

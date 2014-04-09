@@ -209,7 +209,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 switch (creator.Level)
                 {
                     case 2:
-                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 2).ToList();
+                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 2, false).ToList();
                         if(departments.Count > 0)
                         {
                             model.DepartmentId = departments[0].Id;
@@ -217,7 +217,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                         break;
                     case 3:
-                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 3).ToList();
+                        departments = AppointmentDao.GetDepartmentsForManager23(creator.Id, 3, false).ToList();
                         if(departments.Count > 0)
                         {
                             model.DepartmentId = departments[0].Id;
@@ -341,17 +341,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case 2:
                     IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
-                    if(managers2.Any(x => x == creator.Id) && creator.Level.Value == 2)
+                    if(managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
                         return true;
                     IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    if(managers.Any(x => x == creator.Id) && creator.Level.Value == 3)
+                    if(managers.Any(x => x == creator.Id && creator.Level.Value == 3))
                         return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2).ToList();
-                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path)) && creator.Level == 4;
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2 , true).ToList();
+                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
                     if (creator.Level != 4)
                         return false;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3).ToList();
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
                 default:
                     if(creator.Department == null)
@@ -410,7 +410,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
         }
-
         public bool CheckDepartment(int departmentId,out int level)
         {
             level = 0;
@@ -420,7 +419,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(dep == null)
                 throw new ArgumentException(string.Format(StrDepartmentNotFound,departmentId));
             level = dep.ItemLevel.Value;
-            if (dep.ItemLevel != RequeredDepartmentLevel)
+            if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
             /*if (AuthenticationService.CurrentUser.UserRole == UserRole.Director)
                 return true;*/
@@ -436,10 +435,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(currUser.Id);
                     if (managers2.Count > 0)
                         return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 2).ToList();
+                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 2, false).ToList();
                     return departments.Any(x => dep.Path.StartsWith(x.Path));
                 case 3:
-                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 3).ToList();
+                    departments = AppointmentDao.GetDepartmentsForManager23(currUser.Id, 3, false).ToList();
                     return departments.Any(x => dep.Path.StartsWith(x.Path));
                 default:
                     if (currUser.Department == null)
@@ -622,7 +621,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
-                            //SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                            SendEmailForAppointmentManagerAccept(entity.Creator, entity);
                         }
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
@@ -710,6 +709,45 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.OutsourcingManager:
                     break;
             }
+        }
+        protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
+        {
+            string to = null;
+            switch (creator.UserRole)
+            {
+                case UserRole.Manager:
+                    switch (creator.Level)
+                    {
+                        case 2:
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                        case 6:
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format("SendEmailForAppointmentManagerAccept - неверный уровень руководителя {0}", creator.Id));
+                    }
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("SendEmailForAppointmentManagerAccept - неверная роль пользователя {0}", creator.Id));
+            }
+            string body;
+            string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(creator, entity, out body);
+            return SendEmail(to, subject, body);
+        }
+        protected string GetSubjectAndBodyForAppointmentManagerAcceptRequest(User user, Appointment entity, out string body)
+        {
+
+            body = string.Format("Согласована заявка № {0} на подбор {1}. Дирекция {2} сотрудником {3}",
+                                 entity.Number,
+                                 entity.Position.Name,
+                                 string.Empty,
+                                 user.FullName);
+            const string subject = "Согласование заявки";
+            return subject;
         }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)

@@ -83,17 +83,16 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-        public virtual IList<DepartmentDto> GetDepartmentsForManager23(int managerId, int level)
+        public virtual IList<DepartmentDto> GetDepartmentsForManager23(int managerId, int level,bool dep3only)
         {
             string sqlQuery = string.Format(@" select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[AppointmentManager23ToDepartment3] mtod
                                         inner join [dbo].[Department] d on d.Id = mtod.[DepartmentId]
                                         where mtod.managerId = {0}",managerId);
-            if(level == 2)
+            if(level == 2 && !dep3only)
                 sqlQuery += string.Format(@" union
-                            select d.Id,d.Name,d.Path,d.ItemLevel  from [dbo].[AppointmentManager2ToManager3] mtom
-                            inner join [dbo].[AppointmentManager23ToDepartment3] mtod on  mtom.[Manager3Id] = mtod.[ManagerId]
-                            inner join [dbo].[Department] d on d.Id = mtod.[DepartmentId]
-                            where mtom.[Manager2Id] = {0}", managerId);
+                            select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[AppointmentCreateManager2ToDepartment2] mctod
+                                        inner join [dbo].[Department] d on d.Id = mctod.[DepartmentId]
+                                        where mctod.managerId = {0}", managerId);
 
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
