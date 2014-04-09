@@ -173,7 +173,7 @@ namespace Reports.Core.Dao.Impl
                                           and v.UserDateAccept is null 
                                           then 'Черновик сотрудника'    
                                     else ''
-                                end as RequestStatus,
+                                end as RequestStatus
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
