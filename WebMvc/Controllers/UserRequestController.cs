@@ -914,8 +914,7 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SicklistNumber", "Номер больничного листа должен содержать 12 цифр");
              }
 
-
-             if (model.IsPersonnelFieldsEditable)
+             if (model.IsPersonnelFieldsEditable && AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
              {
                  if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))
                     ModelState.AddModelError("ExperienceYears", "Необходимо заполнить хотя бы одно из полей стажа.");
@@ -938,6 +937,10 @@ namespace WebMvc.Controllers
                          ModelState.AddModelError("ExperienceMonthes",
                                                   "Число месяцев стажа должно быть неотрицательным числом меньшим 12.");
                  }
+             }
+
+             if (model.IsPersonnelFieldsEditable)
+             {
                  if (!model.PaymentBeginDate.HasValue)
                      ModelState.AddModelError("PaymentBeginDate","'Назначить с даты' - обязательное поле.");
 
