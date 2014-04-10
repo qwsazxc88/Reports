@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Transform;
 using Reports.Core.Domain;
@@ -22,7 +23,8 @@ namespace Reports.Core.Dao.Impl
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
         }
-         protected const string sqlSelectForAppointmentRn = @";with res as
+        #region Selects for documents list
+        protected const string sqlSelectForAppointmentRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
 
@@ -58,8 +60,9 @@ namespace Reports.Core.Dao.Impl
                                     = u.Login and uEmp.RoleId = 2 
                                 left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
                                 ";
+        #endregion
                                 //{1}";
-         public override IQuery CreateQuery(string sqlQuery)
+        public override IQuery CreateQuery(string sqlQuery)
          {
              return Session.CreateSQLQuery(sqlQuery).
                  AddScalar("AppNumber", NHibernateUtil.Int32).
@@ -101,6 +104,19 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("ItemLevel", NHibernateUtil.Int32);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentDto))).List<DepartmentDto>();
         }
+        public virtual DepartmentDto GetDepartmentForPathAndLevel(string path,int level)
+        {
+            const string sqlQuery = @"select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[Department]
+                                            where Path+N'%' like :path and ItemLevel = :level";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Path", NHibernateUtil.String).
+                AddScalar("ItemLevel", NHibernateUtil.Int32).
+                SetString("path", path).
+                SetInt32("level", level);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(DepartmentDto))).UniqueResult<DepartmentDto>();
+        }
         public virtual IList<int> GetManager3ForManager2(int managerId)
         {
             string sqlQuery = string.Format(@" select [Manager3Id]  as Id from [dbo].[AppointmentManager2ToManager3]
@@ -117,6 +133,44 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32);
             return query.List<int>();
         }
+        public virtual User GetParentForManager2(int childId)
+        {
+            string sqlQuery = string.Format(@" select u.* from users u
+                    inner join dbo.AppointmentManager2ParentToManager2Child mptomc on mptomc.ParentId = u.id
+                    where mptomc.ChildId = {0}",childId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery);
+            return query.UniqueResult<User>();
+        }
+        public virtual User GetParentForManager3(int childId)
+        {
+            string sqlQuery = string.Format(@"select u.* from users u
+                        inner join dbo.AppointmentManager2ToManager3 mptomc on mptomc.Manager2Id = u.id
+                        where mptomc.Manager3Id = {0}", childId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery);
+            return query.UniqueResult<User>();
+        }
+        public virtual List<User> GetParentForManager4Department(int departmentId)
+        {
+            string sqlQuery = string.Format(@"select distinct u.* from users u
+                            inner join  dbo.AppointmentManager23ToDepartment3 mtod on mtod.ManagerId = u.Id
+                            inner join dbo.Department dParent on dParent.Id = mtod.DepartmentId
+                            inner join dbo.Department dChild on dChild.Path like dParent.Path +N'%' 
+                            and dChild.ItemLevel = dParent.ItemLevel + 1
+                            where dChild.Id = {0}", departmentId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery);
+            return query.List<User>().ToList();
+        }
+        public virtual List<User> GetParentForManagerDepartment(int departmentId)
+        {
+            string sqlQuery = string.Format(@"select distinct u.* from users u
+                        inner join dbo.Department dParent on dParent.Id = u.DepartmentId
+                        inner join dbo.Department dChild on dChild.Path like dParent.Path +N'%' 
+                        and dChild.ItemLevel = dParent.ItemLevel + 1
+                        where dChild.Id = {0}", departmentId);
+            IQuery query = Session.CreateSQLQuery(sqlQuery);
+            return query.List<User>().ToList();
+        }
+        #region Search documents for list
         public IList<AppointmentDto> GetDocuments(int userId,
                 UserRole role,
                 int departmentId,
@@ -347,5 +401,6 @@ namespace Reports.Core.Dao.Impl
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
             }
         }
+        #endregion
     }
 }

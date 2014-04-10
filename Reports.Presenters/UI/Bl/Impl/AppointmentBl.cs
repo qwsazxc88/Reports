@@ -24,6 +24,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrIncorrectReasonId = "Неверное основание появления вакансии {0}.";
         public const string StrDepartmentNotFound = "Не найдено структурное подразделение (id {0}) в базе данных";
         public const string StrUserNotFound = "Не найден пользователь (id {0}) в базе данных";
+        public const string StrEmailForAppointmentManagerAcceptIncorrectManagerLevel = "SendEmailForAppointmentManagerAccept - неверный уровень руководителя {0}";
+        public const string StrEmailForAppointmentManagerAcceptIncorrectRole = "SendEmailForAppointmentManagerAccept - неверная роль пользователя {0}";
+        public const string StrEmailForAppointmentManagerAcceptDepartment3NotFound = "SendEmailForAppointmentManagerAccept - не найдена дирекция уровня 3 для структурного подразделения (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptParent2NotFound = "Не найден вышестоящий руководитель для руководителя уровня 2 (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptParent3NotFound = "Не найден вышестоящий руководитель для руководителя уровня 3 (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptParentNotFound = "Не найден вышестоящий руководитель для руководителя (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptNoEmail = "Не указан email руководителя (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptText = "Согласована заявка № {0} на подбор {1}. Дирекция {2} сотрудником {3}";
+        public const string StrEmailForAppointmentManagerAcceptSubject = "Согласование заявки";
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
         public const int RequeredDepartmentLevel = 7;
@@ -495,7 +504,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Appointment),
                         EditDate = DateTime.Now,
                     };
-                    ChangeEntityProperties(current, entity, model, creator);
+                    ChangeEntityProperties(current, entity, model, creator,out error);
                     AppointmentDao.SaveAndFlush(entity);
                     model.Id = entity.Id;
                 }
@@ -540,7 +549,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //else
                     //{
-                        ChangeEntityProperties(current, entity, model, creator);
+                    ChangeEntityProperties(current, entity, model, creator, out error);
                         //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
                         //string country = GetStringForList(cityList);
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
@@ -575,8 +584,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
-        protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, User user)
+        protected void ChangeEntityProperties(IUser current, Appointment entity, AppointmentEditModel model, 
+            User user,out string error)
         {
+            error = string.Empty;
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             User currUser = UserDao.Load(current.Id);
             if (!model.IsDelete && model.IsEditable)
@@ -621,7 +632,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = currUser;
-                            SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                            EmailDto dto = SendEmailForAppointmentManagerAccept(entity.Creator, entity);
+                            if (!string.IsNullOrEmpty(dto.Error))
+                                error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                        dto.Error);
                         }
                     }
                     else if(IsManagerChiefForCreator(currUser,entity.Creator))
@@ -712,27 +726,77 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
-            string to = null;
+            string to = string.Empty;
+            User user;
+            List<User> users;
             switch (creator.UserRole)
             {
                 case UserRole.Manager:
                     switch (creator.Level)
                     {
                         case 2:
+                            user = AppointmentDao.GetParentForManager2(creator.Id);
+                            if (user == null)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id) };
+                            }
+                            if (string.IsNullOrEmpty(user.Email))
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
+                            }
+                            to = user.Email;
                             break;
                         case 3:
+                            user = AppointmentDao.GetParentForManager3(creator.Id);
+                            if(user == null)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id) };
+                            }
+                            if (string.IsNullOrEmpty(user.Email))
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
+                            }
+                            to = user.Email;
                             break;
                         case 4:
+                            users = AppointmentDao.GetParentForManager4Department(creator.Department.Id);
+                            if (users.Count == 0)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id) };
+                            }
+                            foreach (User usr in users)
+                            {
+                                if (string.IsNullOrEmpty(usr.Email))
+                                    Log.WarnFormat("No email for manager (id {0})", usr.Id);
+                                to += ";"+usr.Email;
+                            }
                             break;
                         case 5:
                         case 6:
+                            users = AppointmentDao.GetParentForManagerDepartment(creator.Department.Id);
+                            if (users.Count == 0)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id) };
+                            }
+                            foreach (User usr in users)
+                            {
+                                if (string.IsNullOrEmpty(usr.Email))
+                                    Log.WarnFormat("No email for manager (id {0})", usr.Id);
+                                to += ";"+usr.Email;
+                            }
                             break;
                         default:
-                            throw new ArgumentException(string.Format("SendEmailForAppointmentManagerAccept - неверный уровень руководителя {0}", creator.Id));
+                            throw new ArgumentException(string.Format(StrEmailForAppointmentManagerAcceptIncorrectManagerLevel, creator.Id));
                     }
                     break;
                 default:
-                    throw new ArgumentException(string.Format("SendEmailForAppointmentManagerAccept - неверная роль пользователя {0}", creator.Id));
+                    throw new ArgumentException(string.Format(StrEmailForAppointmentManagerAcceptIncorrectRole, creator.Id));
             }
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(creator, entity, out body);
@@ -740,13 +804,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected string GetSubjectAndBodyForAppointmentManagerAcceptRequest(User user, Appointment entity, out string body)
         {
-
-            body = string.Format("Согласована заявка № {0} на подбор {1}. Дирекция {2} сотрудником {3}",
+            DepartmentDto dep3 = AppointmentDao.GetDepartmentForPathAndLevel(entity.Department.Path, 3);
+            if(dep3 == null)
+                throw new ArgumentException(string.Format(StrEmailForAppointmentManagerAcceptDepartment3NotFound, entity.Department.Id));
+            body = string.Format(StrEmailForAppointmentManagerAcceptText,
                                  entity.Number,
                                  entity.Position.Name,
-                                 string.Empty,
+                                 dep3.Name,
                                  user.FullName);
-            const string subject = "Согласование заявки";
+            const string subject = StrEmailForAppointmentManagerAcceptSubject;
             return subject;
         }
         #region Comments
