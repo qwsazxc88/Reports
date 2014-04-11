@@ -31,6 +31,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrEmailForAppointmentManagerAcceptParent3NotFound = "Не найден вышестоящий руководитель для руководителя уровня 3 (id {0})";
         public const string StrEmailForAppointmentManagerAcceptParentNotFound = "Не найден вышестоящий руководитель для руководителя (id {0})";
         public const string StrEmailForAppointmentManagerAcceptNoEmail = "Не указан email руководителя (id {0})";
+        public const string StrEmailForAppointmentManagerAcceptNoEmails = "Не указаны email руководителей для пользователя (id {0})";
         public const string StrEmailForAppointmentManagerAcceptText = "Согласована заявка № {0} на подбор {1}. Дирекция {2} сотрудником {3}";
         public const string StrEmailForAppointmentManagerAcceptSubject = "Согласование заявки";
         public const int MinManagerLevel = 2;
@@ -727,8 +728,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
-            User user;
-            List<User> users;
+            IdNameDto user;
+            List<IdNameDto> users;
             switch (creator.UserRole)
             {
                 case UserRole.Manager:
@@ -741,12 +742,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id) };
                             }
-                            if (string.IsNullOrEmpty(user.Email))
+                            if (string.IsNullOrEmpty(user.Name))
                             {
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
                             }
-                            to = user.Email;
+                            to = user.Name;
                             break;
                         case 3:
                             user = AppointmentDao.GetParentForManager3(creator.Id);
@@ -755,12 +756,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id) };
                             }
-                            if (string.IsNullOrEmpty(user.Email))
+                            if (string.IsNullOrEmpty(user.Name))
                             {
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
                             }
-                            to = user.Email;
+                            to = user.Name;
                             break;
                         case 4:
                             users = AppointmentDao.GetParentForManager4Department(creator.Department.Id);
@@ -769,12 +770,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id) };
                             }
-                            foreach (User usr in users)
+                            foreach (IdNameDto usr in users)
                             {
-                                if (string.IsNullOrEmpty(usr.Email))
+                                if (string.IsNullOrEmpty(usr.Name))
                                     Log.WarnFormat("No email for manager (id {0})", usr.Id);
-                                to += ";"+usr.Email;
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(to))
+                                        to = usr.Name;
+                                    else
+                                        to += ";" + usr.Name;
+                                }
                             }
+                            
                             break;
                         case 5:
                         case 6:
@@ -784,11 +792,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParentNotFound, creator.Id) };
                             }
-                            foreach (User usr in users)
+                            foreach (IdNameDto usr in users)
                             {
-                                if (string.IsNullOrEmpty(usr.Email))
+                                if (string.IsNullOrEmpty(usr.Name))
                                     Log.WarnFormat("No email for manager (id {0})", usr.Id);
-                                to += ";"+usr.Email;
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(to))
+                                        to = usr.Name;
+                                    else
+                                        to += ";"+ usr.Name;
+                                }
                             }
                             break;
                         default:
@@ -797,6 +811,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 default:
                     throw new ArgumentException(string.Format(StrEmailForAppointmentManagerAcceptIncorrectRole, creator.Id));
+            }
+            if (string.IsNullOrEmpty(to))
+            {
+                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmails, creator.Id);
+                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmails, creator.Id) };
             }
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(creator, entity, out body);

@@ -79,6 +79,11 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
+            else
+            {
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
             model.IsDelete = false;
             return View(model);
             if (!string.IsNullOrEmpty(error))

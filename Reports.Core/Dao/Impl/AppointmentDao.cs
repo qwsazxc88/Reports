@@ -106,8 +106,8 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual DepartmentDto GetDepartmentForPathAndLevel(string path,int level)
         {
-            const string sqlQuery = @"select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[Department]
-                                            where Path+N'%' like :path and ItemLevel = :level";
+            const string sqlQuery = @"select d.Id,d.Name,d.Path,d.ItemLevel from [dbo].[Department] d
+                                            where :path like Path+N'%' and ItemLevel = :level";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
@@ -133,42 +133,50 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32);
             return query.List<int>();
         }
-        public virtual User GetParentForManager2(int childId)
+        public virtual IdNameDto GetParentForManager2(int childId)
         {
-            string sqlQuery = string.Format(@" select u.* from users u
+            string sqlQuery = string.Format(@" select u.Id,u.email as Name from users u
                     inner join dbo.AppointmentManager2ParentToManager2Child mptomc on mptomc.ParentId = u.id
                     where mptomc.ChildId = {0}",childId);
-            IQuery query = Session.CreateSQLQuery(sqlQuery);
-            return query.UniqueResult<User>();
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                    AddScalar("Id", NHibernateUtil.Int32).
+                    AddScalar("Name", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult<IdNameDto>();
         }
-        public virtual User GetParentForManager3(int childId)
+        public virtual IdNameDto GetParentForManager3(int childId)
         {
-            string sqlQuery = string.Format(@"select u.* from users u
+            string sqlQuery = string.Format(@"select u.Id,u.email as Name from users u
                         inner join dbo.AppointmentManager2ToManager3 mptomc on mptomc.Manager2Id = u.id
                         where mptomc.Manager3Id = {0}", childId);
-            IQuery query = Session.CreateSQLQuery(sqlQuery);
-            return query.UniqueResult<User>();
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                    AddScalar("Id", NHibernateUtil.Int32).
+                    AddScalar("Name", NHibernateUtil.String);;
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult<IdNameDto>();
         }
-        public virtual List<User> GetParentForManager4Department(int departmentId)
+        public virtual List<IdNameDto> GetParentForManager4Department(int departmentId)
         {
-            string sqlQuery = string.Format(@"select distinct u.* from users u
+            string sqlQuery = string.Format(@"select distinct  u.Id,u.email as Name from users u
                             inner join  dbo.AppointmentManager23ToDepartment3 mtod on mtod.ManagerId = u.Id
                             inner join dbo.Department dParent on dParent.Id = mtod.DepartmentId
                             inner join dbo.Department dChild on dChild.Path like dParent.Path +N'%' 
                             and dChild.ItemLevel = dParent.ItemLevel + 1
                             where dChild.Id = {0}", departmentId);
-            IQuery query = Session.CreateSQLQuery(sqlQuery);
-            return query.List<User>().ToList();
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                    AddScalar("Id", NHibernateUtil.Int32).
+                    AddScalar("Name", NHibernateUtil.String); ;
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
         }
-        public virtual List<User> GetParentForManagerDepartment(int departmentId)
+        public virtual List<IdNameDto> GetParentForManagerDepartment(int departmentId)
         {
-            string sqlQuery = string.Format(@"select distinct u.* from users u
+            string sqlQuery = string.Format(@"select distinct u.Id,u.email as Name from users u
                         inner join dbo.Department dParent on dParent.Id = u.DepartmentId
                         inner join dbo.Department dChild on dChild.Path like dParent.Path +N'%' 
                         and dChild.ItemLevel = dParent.ItemLevel + 1
                         where dChild.Id = {0}", departmentId);
-            IQuery query = Session.CreateSQLQuery(sqlQuery);
-            return query.List<User>().ToList();
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                    AddScalar("Id", NHibernateUtil.Int32).
+                    AddScalar("Name", NHibernateUtil.String); ;
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
         }
         #region Search documents for list
         public IList<AppointmentDto> GetDocuments(int userId,
