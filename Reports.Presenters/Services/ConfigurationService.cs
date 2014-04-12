@@ -187,6 +187,8 @@ namespace Reports.Presenters.Services
         public const string keySicklistTypeIdBabyMinding = "SicklistTypeIdBabyMinding";
         public const string keySuperPersonnelId = "SuperPersonnelId";
         public const string keyDefaultDeductionEmail = "DefaultDeductionEmail";
+        public const string keyAppointmentPersonnelManagerEmail = "AppointmentPersonnelManagerEmail";
+        public const string keyAppointmentStaffManagerEmail = "AppointmentStaffManagerEmail";
 
         #region IConfigurationService Members
 
@@ -244,6 +246,14 @@ namespace Reports.Presenters.Services
         public string DefaultDeductionEmail
         {
             get { return ConfigurationManager.AppSettings[keyDefaultDeductionEmail]; }
+        }
+        public string AppointmentPersonnelManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyAppointmentPersonnelManagerEmail]; }
+        }
+        public string AppointmentStaffManagerEmail
+        {
+            get { return ConfigurationManager.AppSettings[keyAppointmentStaffManagerEmail]; }
         }
 
         public int UsersDocumentsDelayInDays

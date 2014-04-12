@@ -180,6 +180,11 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsStaffApproved");
                 model.IsStaffApproved = model.IsStaffApprovedHidden;
             }
+            if(model.IsDelete)
+            {
+                if (ModelState.ContainsKey("IsStaffReceiveRejectMail"))
+                    ModelState.Remove("IsStaffReceiveRejectMail");
+            }
            
             /*if (model.IsManagerApproveAvailable && model.IsManagerApproved.HasValue
                 && !model.IsManagerApproved.Value)

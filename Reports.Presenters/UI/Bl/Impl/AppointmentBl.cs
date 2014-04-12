@@ -7,6 +7,7 @@ using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
+using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
@@ -32,8 +33,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrEmailForAppointmentManagerAcceptParentNotFound = "Не найден вышестоящий руководитель для руководителя (id {0})";
         public const string StrEmailForAppointmentManagerAcceptNoEmail = "Не указан email руководителя (id {0})";
         public const string StrEmailForAppointmentManagerAcceptNoEmails = "Не указаны email руководителей для пользователя (id {0})";
-        public const string StrEmailForAppointmentManagerAcceptText = "Согласована заявка № {0} на подбор {1}. Дирекция {2} сотрудником {3}";
+        public const string StrEmailForAppointmentManagerAcceptText = "Согласована заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}";
         public const string StrEmailForAppointmentManagerAcceptSubject = "Согласование заявки";
+        public const string StrEmailForPersonnalManagerNotFound = "Не задан адрес рассылки для кадровиков в конфигурационном файле";
+        public const string StrEmailForStaffManagerNotFound = "Не задан адрес рассылки для сотрудников по подбору персонала в конфигурационном файле";
+
+        public const string StrEmailForAppointmentManagerRejectText = "Отменена заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}";
+        public const string StrEmailForAppointmentManagerRejectSubject = "Отмена заявки";
+
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
         public const int RequeredDepartmentLevel = 7;
@@ -68,6 +75,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { appointmentReasonDao = value; }
         }
         #endregion
+        protected IConfigurationService configurationService;
+        public IConfigurationService ConfigurationService
+        {
+            set { configurationService = value; }
+            get { return Validate.Dependency(configurationService); }
+        }
 
         public AppointmentListModel GetAppointmentListModel()
         {
@@ -624,6 +637,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
+                            SendEmailForAppointmentReject(currUser, entity);
                             //todo need to send email and reject reports
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
@@ -646,6 +660,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
+                            SendEmailForAppointmentReject(currUser, entity);
                             //todo need to send email and reject reports
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
@@ -655,7 +670,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ChiefDateAccept = DateTime.Now;
                             entity.AcceptChief = currUser;
-                            //SendEmailForAppointmentChiefAccept(currUser, entity);
+                            EmailDto dto = SendEmailForAppointmentChiefAccept(currUser, entity);
+                            if (!string.IsNullOrEmpty(dto.Error))
+                                error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                        dto.Error);
                         }
                     }
                     break;
@@ -707,7 +725,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.PersonnelDateAccept = DateTime.Now;
                         entity.AcceptPersonnel = currUser;
-                        //SendEmailForAppointmentPersonnelAccept(currUser, entity);
+                        EmailDto dto = SendEmailForAppointmentPersonnelAccept(currUser, entity);
+                        if (!string.IsNullOrEmpty(dto.Error))
+                            error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
+                                    dto.Error);
                     }
                     break;
                 case UserRole.StaffManager:
@@ -724,6 +745,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.OutsourcingManager:
                     break;
             }
+        }
+        #region Emails
+        protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
+        {
+            string personnelManagerEmail = ConfigurationService.AppointmentPersonnelManagerEmail;
+            if(string.IsNullOrEmpty(personnelManagerEmail))
+                throw new ValidationException(StrEmailForPersonnalManagerNotFound);
+            string body;
+            string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(chief, entity, out body);
+            return SendEmail(personnelManagerEmail, subject, body);
+        }
+        protected EmailDto SendEmailForAppointmentPersonnelAccept(User personnel, Appointment entity)
+        {
+            string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
+            if (string.IsNullOrEmpty(staffManagerEmail))
+                throw new ValidationException(StrEmailForStaffManagerNotFound);
+            string body;
+            string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(personnel, entity, out body);
+            return SendEmail(staffManagerEmail, subject, body);
         }
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
@@ -824,16 +864,80 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected string GetSubjectAndBodyForAppointmentManagerAcceptRequest(User user, Appointment entity, out string body)
         {
             DepartmentDto dep3 = AppointmentDao.GetDepartmentForPathAndLevel(entity.Department.Path, 3);
-            if(dep3 == null)
-                throw new ArgumentException(string.Format(StrEmailForAppointmentManagerAcceptDepartment3NotFound, entity.Department.Id));
+            if (dep3 == null)
+                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptDepartment3NotFound,entity.Department.Id);
             body = string.Format(StrEmailForAppointmentManagerAcceptText,
                                  entity.Number,
                                  entity.Position.Name,
-                                 dep3.Name,
+                                 dep3 == null?"<не найдено в базе данных>":dep3.Name,
                                  user.FullName);
             const string subject = StrEmailForAppointmentManagerAcceptSubject;
             return subject;
         }
+        protected EmailDto SendEmailForAppointmentReject(User user, Appointment entity)
+        {
+            string to = string.Empty;
+            if (entity.ManagerDateAccept.HasValue)
+            {
+                if (!string.IsNullOrEmpty(entity.AcceptManager.Email))
+                    to += entity.AcceptManager.Email;
+                else
+                    Log.ErrorFormat("No email for manager (id {0})",entity.AcceptManager.Id);
+            }
+            if (entity.ChiefDateAccept.HasValue)
+            {
+                if (!string.IsNullOrEmpty(entity.AcceptChief.Email))
+                {
+                    if (string.IsNullOrEmpty(to))
+                        to = entity.AcceptChief.Email;
+                    else
+                        to += ";" + entity.AcceptChief.Email;
+                }
+                else
+                    Log.ErrorFormat("No email for chief (id {0})", entity.AcceptChief.Id);
+            }
+            if (entity.PersonnelDateAccept.HasValue)
+            {
+                if (!string.IsNullOrEmpty(entity.AcceptPersonnel.Email))
+                {
+                    if (string.IsNullOrEmpty(to))
+                        to = entity.AcceptPersonnel.Email;
+                    else
+                        to += ";" + entity.AcceptPersonnel.Email;
+                }
+                else
+                    Log.ErrorFormat("No email for personnel (id {0})", entity.AcceptPersonnel.Id);
+            }
+            if (entity.StaffDateAccept.HasValue)
+            {
+                if (!string.IsNullOrEmpty(entity.AcceptStaff.Email))
+                {
+                    if (string.IsNullOrEmpty(to))
+                        to = entity.AcceptStaff.Email;
+                    else
+                        to += ";" + entity.AcceptStaff.Email;
+                }
+                else
+                    Log.ErrorFormat("No email for staff (id {0})", entity.AcceptStaff.Id);
+            }
+            string body;
+            string subject = GetSubjectAndBodyForAppointmentRejectRequest(user, entity, out body);
+            return SendEmail(to, subject, body);
+        }
+        protected string GetSubjectAndBodyForAppointmentRejectRequest(User user, Appointment entity, out string body)
+        {
+            DepartmentDto dep3 = AppointmentDao.GetDepartmentForPathAndLevel(entity.Department.Path, 3);
+            if (dep3 == null)
+                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptDepartment3NotFound, entity.Department.Id);
+            body = string.Format(StrEmailForAppointmentManagerRejectText,
+                                 entity.Number,
+                                 entity.Position.Name,
+                                 dep3 == null ? "<не найдена в базе данных>" : dep3.Name,
+                                 user.FullName);
+            const string subject = StrEmailForAppointmentManagerRejectSubject;
+            return subject;
+        }
+        #endregion
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
         {
