@@ -54,6 +54,7 @@ namespace Reports.Presenters.UI.ViewModel
 
 
         public bool IsPersonnelFieldsEditable { get; set; }
+        public bool IsExperienceEditable { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Назначить с даты")]

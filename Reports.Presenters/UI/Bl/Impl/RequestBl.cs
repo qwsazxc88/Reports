@@ -3651,10 +3651,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case UserRole.PersonnelManager:                        
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
-                        // Разрешение редактирования больничного листа только для кадровиков банка
+                        model.IsPersonnelFieldsEditable = true;
+                        // Разрешение редактирования стажа только для кадровиков банка
                         if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
                         {
-                            model.IsPersonnelFieldsEditable = true;
+                            model.IsExperienceEditable = true;
                         }
                         model.IsTypeEditable = true;
                         break;
@@ -3743,9 +3744,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
+                            model.IsPersonnelFieldsEditable = true;
+                            // Разрешение редактирования стажа только для кадровиков банка
                             if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
                             {
-                                model.IsPersonnelFieldsEditable = true;
+                                model.IsExperienceEditable = true;
                             }
                             model.IsDatesEditable = true;
                         }
@@ -3801,6 +3804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteAvailable = state;
 
             model.IsPersonnelFieldsEditable = state;
+            model.IsExperienceEditable = state;
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
