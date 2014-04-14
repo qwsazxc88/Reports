@@ -1,0 +1,35 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="AppointmentReport">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	<property name="EditDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+
+	  
+	
+	<many-to-one name="Appointment" class="Appointment" column="AppointmentId" foreign-key="FK_AppointmentReport_Appointment" index="AppointmentReport_Appointment"  not-null="true"/>
+	<property name="Name" length="64" not-null="true"/>
+	<property name="Phone" length="32" not-null="true"/>
+	<property name="Email" length="32" not-null="true"/>
+	<property name="ColloquyDate" not-null="false"/>
+	<many-to-one name="Type" class="AppointmentEducationType" column="TypeId" foreign-key="FK_AppointmentReport_AppointmentEducationType" index="AppointmentReport_AppointmentEducationType"  not-null="true"/>
+	<property name="EducationTime" length="32" not-null="false"/>
+	<property name="TempLogin" length="32" not-null="false"/>
+	<property name="TempPassword" length="32" not-null="false"/>
+	<property name="RejectReason" length="128" not-null="false"/>
+	<property name="IsEducationExists" not-null="false"/>
+	<property name="DateAccept" not-null="false"/>
+	  
+	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_AppointmentReport_CreatorUser" index="IX_AppointmentReport_CreatorUser_Id"  not-null="true"/>
+	<property name="StaffDateAccept" not-null="false"/>
+	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_AppointmentReport_StaffUser" index="IX_AppointmentReport_StaffUser"  not-null="false"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_AppointmentReport_AcceptManager" index="IX_AppointmentReport_AcceptManager"  not-null="false"/>
+	<property name="DeleteDate" not-null="false"/>
+	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_AppointmentReport_DeleteUser" index="IX_AppointmentReport_DeleteUser"  not-null="false"/>
+	<property name="SendTo1C" not-null="false"/>
+	</class>
+</hibernate-mapping>
