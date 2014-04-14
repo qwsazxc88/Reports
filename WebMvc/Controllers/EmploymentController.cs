@@ -16,5 +16,14 @@ namespace WebMvc.Controllers
             return View();
         }
 
+        public ActionResult GeneralInfo()
+        {
+            return View();
+        }
+
+        public ActionResult Passport()
+        {
+            return View();
+        }
     }
 }

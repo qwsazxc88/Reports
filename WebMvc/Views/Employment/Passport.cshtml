@@ -1,6 +1,155 @@
-﻿@{
-    ViewBag.Title = "Паспортные данные";
+﻿@model Reports.Presenters.UI.ViewModel.Employment.PassportModel
+@{
+    ViewBag.Title = "Прием - Паспортные данные";
 }
 
-<h2>Passport</h2>
+@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td style="width: 300px;">
+                @Html.LabelFor(m => m.InternalPassportSeries)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternalPassportSeries)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternalPassportNumber)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternalPassportNumber)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternalPassportDateOfIssue)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternalPassportDateOfIssue)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternalPassportIssuedBy)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternalPassportIssuedBy)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternalPassportSubdivisionCode)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.RegistrationDate)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.RegistrationDate)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ZipCode)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.ZipCode)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Region)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Region)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.District)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.District)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.City)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.City)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Street)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Street)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.StreetNumber)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.StreetNumber)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Building)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Building)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Appartment)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Appartment)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternationalPassportSeries)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternationalPassportSeries)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternationalPassportNumber)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternationalPassportNumber)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternationalPassportDateOfIssue)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternationalPassportDateOfIssue)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.InternationalPassportIssuedBy)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.InternationalPassportIssuedBy)
+            </td>
+        </tr>
+    </table>
+}
 

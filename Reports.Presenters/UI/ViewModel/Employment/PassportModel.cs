@@ -19,7 +19,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         public string InternalPassportIssuedBy { get; set; }
         [Display(Name = "Код подразделения"),
             StringLength(6, ErrorMessage = "Должно быть 6 знаков.")]
-        public string SubdivisionCode { get; set; }
+        public string InternalPassportSubdivisionCode { get; set; }
         [Display(Name = "Дата регистрации"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime RegistrationDate { get; set; }

@@ -1,6 +1,124 @@
-﻿@{
-    ViewBag.Title = "Общая информация";
+﻿@model Reports.Presenters.UI.ViewModel.Employment.GeneralInfoModel
+@{
+    ViewBag.Title = "Прием - Общая информация";
 }
 
-<h2>General</h2>
-
+@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td style="width: 300px;">
+                @Html.LabelFor(m => m.LastName)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.LastName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.FirstName)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.FirstName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Patronymic)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Patronymic)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.NameChange)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.NameChange)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Citizenship)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Citizenship)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.DateOfBirth)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.DateOfBirth)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Место рождения
+            </td>
+            <td>
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.CountryOfBirth)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.CountryOfBirth)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.RegionOfBirth)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.RegionOfBirth)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.CityOfBirth)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.CityOfBirth)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.INN)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.INN)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.SNILS)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.SNILS)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Disabilities)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Disabilities)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.IsResident)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.IsResident)
+            </td>
+        </tr>
+    </table>
+    
+    <input type="submit" />
+}
