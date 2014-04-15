@@ -1,6 +1,11 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.EducationModel
+@{
     ViewBag.Title = "Прием - Образование";
 }
 
-<h2>Education</h2>
-
+@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        
+    </table>
+}

@@ -1,6 +1,19 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.FamilyModel
+@{
     ViewBag.Title = "Прием - Состав семьи";
 }
 
-<h2>Family</h2>
+@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td style="width: 300px;">
+                
+            </td>
+            <td>
+                
+            </td>
+        </tr>
+    </table>
+}
 

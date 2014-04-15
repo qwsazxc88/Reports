@@ -25,5 +25,15 @@ namespace WebMvc.Controllers
         {
             return View();
         }
+
+        public ActionResult Education()
+        {
+            return View();
+        }
+
+        public ActionResult Family()
+        {
+            return View();
+        }
     }
 }

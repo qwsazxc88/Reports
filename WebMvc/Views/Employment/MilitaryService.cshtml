@@ -1,6 +1,34 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.MilitaryServiceModel
+@{
     ViewBag.Title = "Прием - Воинский учет";
 }
 
-<h2>MilitaryService</h2>
-
+@using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <table>
+        <tr>
+            <td style="width: 300px;">
+                @Html.LabelFor(m => m.IsLiableForMilitaryService)
+            </td>
+            <td>
+                 @Html.TextBoxFor(m => m.IsLiableForMilitaryService)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Commissariat)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Commissariat)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.CombatFitness)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.CombatFitness)
+            </td>
+        </tr>
+    </table>
+}

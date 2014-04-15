@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment
 {
@@ -8,11 +10,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             // RegularExpression("^[А-Я]{1}[а-я]*$"),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public string LastName { get; set; }
         [Display(Name = "Имя"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public string FirstName { get; set; }
         [Display(Name = "Отчество"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
@@ -21,22 +23,21 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             StringLength(350, ErrorMessage = "Не более 350 знаков.")]
         public string NameChange { get; set; }
 
-        // TODO: Gender
-        //[Display(Name = "Пол")]
-        //public string Gender { get; set; }
+        [Display(Name = "Пол")]
+        public bool IsMale { get; set; }
         
         [Display(Name = "Гражданство"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public string Citizenship { get; set; }
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public DateTime DateOfBirth { get; set; }
 
         [Display(Name = "Страна"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public string CountryOfBirth { get; set; }
         [Display(Name = "Область"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
@@ -46,18 +47,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         public string DistrictOfBirth { get; set; }
         [Display(Name = "Населенный пункт (город, поселок и т.п.)"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required()]
+            Required(ErrorMessage = "Обязательное поле")]
         public string CityOfBirth { get; set; }
 
         // TODO: Иностранные языки
 
         [Display(Name = "ИНН №"),
-            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр."),
-            Required()]
+            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string INN { get; set; }
         [Display(Name = "СНИЛС №"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            RegularExpression(@"^(\d{3}-){3}\d{2}$]", ErrorMessage = "Требуется формат xxx-xxx-xxx-xx")]
+            RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string SNILS { get; set; }
 
         [Display(Name = "Инвалидность"),
@@ -67,8 +68,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "Резидент")]
         public bool IsResident { get; set; }
 
-        [Display(Name = "Согласен на обработку своих персональных данных"),
-            Required()]
+        [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; }
     }
 }
