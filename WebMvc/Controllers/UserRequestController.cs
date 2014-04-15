@@ -916,7 +916,7 @@ namespace WebMvc.Controllers
 
              if (model.IsPersonnelFieldsEditable && AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
              {
-                 if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))
+                 if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears) && !(model.ExperienceIn1C == true))
                     ModelState.AddModelError("ExperienceYears", "Необходимо заполнить хотя бы одно из полей стажа.");
                  
                  if (!string.IsNullOrEmpty(model.ExperienceYears))
