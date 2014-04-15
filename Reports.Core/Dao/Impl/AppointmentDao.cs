@@ -133,7 +133,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32);
             return query.List<int>();
         }
-        public virtual IdNameDto GetParentForManager2(int childId)
+        public virtual List<IdNameDto> GetParentForManager2(int childId)
         {
             string sqlQuery = string.Format(@" select u.Id,u.email as Name from users u
                     inner join dbo.AppointmentManager2ParentToManager2Child mptomc on mptomc.ParentId = u.id
@@ -141,9 +141,9 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                     AddScalar("Id", NHibernateUtil.Int32).
                     AddScalar("Name", NHibernateUtil.String);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult<IdNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
         }
-        public virtual IdNameDto GetParentForManager3(int childId)
+        public virtual List<IdNameDto> GetParentForManager3(int childId)
         {
             string sqlQuery = string.Format(@"select u.Id,u.email as Name from users u
                         inner join dbo.AppointmentManager2ToManager3 mptomc on mptomc.Manager2Id = u.id
@@ -151,7 +151,7 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                     AddScalar("Id", NHibernateUtil.Int32).
                     AddScalar("Name", NHibernateUtil.String);;
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).UniqueResult<IdNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>().ToList();
         }
         public virtual List<IdNameDto> GetParentForManager4Department(int departmentId)
         {

@@ -776,8 +776,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                     switch (creator.Level)
                     {
                         case 2:
-                            user = AppointmentDao.GetParentForManager2(creator.Id);
-                            if (user == null)
+                            users = AppointmentDao.GetParentForManager2(creator.Id);
+                            if (users.Count == 0)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id) };
+                            }
+                            foreach (IdNameDto usr in users)
+                            {
+                                if (string.IsNullOrEmpty(usr.Name))
+                                    Log.WarnFormat("No email for manager (id {0})", usr.Id);
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(to))
+                                        to = usr.Name;
+                                    else
+                                        to += ";" + usr.Name;
+                                }
+                            }
+                            /*if (user == null)
                             {
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent2NotFound, creator.Id) };
@@ -787,11 +804,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
                             }
-                            to = user.Name;
+                            to = user.Name;*/
                             break;
                         case 3:
-                            user = AppointmentDao.GetParentForManager3(creator.Id);
-                            if(user == null)
+                            users = AppointmentDao.GetParentForManager3(creator.Id);
+                            if (users.Count == 0)
+                            {
+                                Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id);
+                                return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id) };
+                            }
+                            foreach (IdNameDto usr in users)
+                            {
+                                if (string.IsNullOrEmpty(usr.Name))
+                                    Log.WarnFormat("No email for manager (id {0})", usr.Id);
+                                else
+                                {
+                                    if (string.IsNullOrEmpty(to))
+                                        to = usr.Name;
+                                    else
+                                        to += ";" + usr.Name;
+                                }
+                            }
+                            /*if(user == null)
                             {
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptParent3NotFound, creator.Id) };
@@ -801,7 +835,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptNoEmail, user.Id);
                                 return new EmailDto { Error = string.Format(StrEmailForAppointmentManagerAcceptNoEmail, user.Id) };
                             }
-                            to = user.Name;
+                            to = user.Name;*/
                             break;
                         case 4:
                             users = AppointmentDao.GetParentForManager4Department(creator.Department.Id);

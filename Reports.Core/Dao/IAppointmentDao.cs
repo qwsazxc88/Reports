@@ -11,8 +11,8 @@ namespace Reports.Core.Dao
         IList<int> GetManager3ForManager2(int managerId);
         IList<int> GetChildrenManager2ForManager2(int parentId);
         DepartmentDto GetDepartmentForPathAndLevel(string path, int level);
-        IdNameDto GetParentForManager2(int childId);
-        IdNameDto GetParentForManager3(int childId);
+        List<IdNameDto> GetParentForManager2(int childId);
+        List<IdNameDto> GetParentForManager3(int childId);
         List<IdNameDto> GetParentForManager4Department(int departmentId);
         List<IdNameDto> GetParentForManagerDepartment(int departmentId);
 
