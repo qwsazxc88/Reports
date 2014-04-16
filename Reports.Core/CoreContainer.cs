@@ -407,6 +407,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IAppointmentReasonDao)).
                 ImplementedBy(typeof(AppointmentReasonDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentReportDao)).
+               ImplementedBy(typeof(AppointmentReportDao)).
+               LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

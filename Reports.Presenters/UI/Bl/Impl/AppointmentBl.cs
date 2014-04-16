@@ -41,6 +41,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrEmailForAppointmentManagerRejectText = "Отменена заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}";
         public const string StrEmailForAppointmentManagerRejectSubject = "Отмена заявки";
 
+        public const string StrAppointmentReportNotFound = "Не найден отчет (id {0}) в базе данных";
+        public const string StrAppointmentReportIncorrectId = "Неправильный идентификатор отчета (0)";
+
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
         public const int RequeredDepartmentLevel = 7;
@@ -73,6 +76,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(appointmentReasonDao); }
             set { appointmentReasonDao = value; }
+        }
+        protected IAppointmentReportDao appointmentReportDao;
+        public IAppointmentReportDao AppointmentReportDao
+        {
+            get { return Validate.Dependency(appointmentReportDao); }
+            set { appointmentReportDao = value; }
         }
         #endregion
         protected IConfigurationService configurationService;
@@ -1028,5 +1037,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        public AppointmentReportEditModel GetAppointmentReportEditModel(int id)
+        {
+            AppointmentReportEditModel model = new AppointmentReportEditModel { Id = id };
+            AppointmentReport entity = null;
+            User creator;
+            IUser current = AuthenticationService.CurrentUser;
+            User currUser = UserDao.Load(current.Id);
+            if(id == 0)
+                throw new ValidationException(StrAppointmentReportIncorrectId);
+            entity = AppointmentReportDao.Get(id);
+            if (entity == null)
+                throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+
+
+            return model;
+        }
     }
 }

@@ -17,5 +17,7 @@ namespace Reports.Presenters.UI.Bl
         bool CheckDepartment(int departmentId, out int level);
         int GetRequeredDepartmentLevel();
         bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
+
+        AppointmentReportEditModel GetAppointmentReportEditModel(int id);
     }
 }

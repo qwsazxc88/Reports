@@ -201,5 +201,13 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsManagerApproved");
             }*/
         }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
+        public ActionResult AppointmentReportEdit(int id)
+        {
+            AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
+            return View(model);
+        }
     }
 }
