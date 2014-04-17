@@ -5,26 +5,37 @@ namespace Reports.Presenters.UI.ViewModel.Employment
 {
     public class PassportModel
     {
-        [Display(Name = "Серия"),
-            StringLength(4, ErrorMessage = "Должно быть 4 знака.")]
+        [Display(Name = "Серия", Prompt = "4 цифры"),
+            StringLength(4, ErrorMessage = "Должно быть 4 знака."),
+            RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSeries { get; set; }
-        [Display(Name = "Номер"),
-            StringLength(6, ErrorMessage = "Должно быть 6 знаков.")]
+        [Display(Name = "Номер", Prompt = "6 цифр"),
+            StringLength(6, ErrorMessage = "Должно быть 6 знаков."),
+            RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportNumber { get; set; }
         [Display(Name = "Дата выдачи"),
-            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
+            Required(ErrorMessage = "Обязательное поле")]
         public DateTime InternalPassportDateOfIssue { get; set; }
         [Display(Name = "Кем выдан"),
-            StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]
+            StringLength(150, ErrorMessage = "Должно быть 50 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportIssuedBy { get; set; }
-        [Display(Name = "Код подразделения"),
-            StringLength(6, ErrorMessage = "Должно быть 6 знаков.")]
+        [Display(Name = "Код подразделения", Prompt = "6 цифр"),
+            StringLength(6, ErrorMessage = "Должно быть 6 знаков."),
+            RegularExpression(@"^\d{3}-\d{3}$", ErrorMessage = "Требуется формат ###-###"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string InternalPassportSubdivisionCode { get; set; }
         [Display(Name = "Дата регистрации"),
-            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
+            Required(ErrorMessage = "Обязательное поле")]
         public DateTime RegistrationDate { get; set; }
-        [Display(Name = "Почтовый индекс"),
-            StringLength(6, ErrorMessage = "Должно быть 6 знаков.")]
+        [Display(Name = "Почтовый индекс", Prompt = "6 цифр"),
+            StringLength(6, ErrorMessage = "Должно быть 6 знаков."),
+            RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
+            Required(ErrorMessage = "Обязательное поле")]
         public string ZipCode { get; set; }
         [Display(Name = "Область"),
             StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]
@@ -33,7 +44,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]
         public string District { get; set; }
         [Display(Name = "Населенный пункт"),
-            StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]
+            StringLength(50, ErrorMessage = "Должно быть 50 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
         public string City { get; set; }
         [Display(Name = "Улица"),
             StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]

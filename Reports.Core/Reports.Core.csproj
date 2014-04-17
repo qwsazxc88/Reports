@@ -375,6 +375,7 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
+    <Compile Include="Dto\Employment\NameChangeDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />

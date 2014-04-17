@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using Reports.Core.Dto.Employment;
 
 namespace Reports.Presenters.UI.ViewModel.Employment
 {
@@ -9,7 +10,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment
     {
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            // RegularExpression("^[А-Я]{1}[а-я]*$"),
             Required(ErrorMessage = "Обязательное поле")]
         public string LastName { get; set; }
         [Display(Name = "Имя"),
@@ -19,9 +19,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "Отчество"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Patronymic { get; set; }
-        [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине"),
-            StringLength(350, ErrorMessage = "Не более 350 знаков.")]
-        public string NameChange { get; set; }
+        [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине")]
+        public List<NameChangeDto> NameChanges { get; set; }
 
         [Display(Name = "Пол")]
         public bool IsMale { get; set; }
@@ -43,7 +42,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string RegionOfBirth { get; set; }
         [Display(Name = "Район"),
-            StringLength(50, ErrorMessage = "Должно быть 50 знаков.")]
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string DistrictOfBirth { get; set; }
         [Display(Name = "Населенный пункт (город, поселок и т.п.)"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
@@ -52,11 +51,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment
 
         // TODO: Иностранные языки
 
-        [Display(Name = "ИНН №"),
+        [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
             Required(ErrorMessage = "Обязательное поле")]
         public string INN { get; set; }
-        [Display(Name = "СНИЛС №"),
+        [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
             RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
             Required(ErrorMessage = "Обязательное поле")]
         public string SNILS { get; set; }

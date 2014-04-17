@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Reports.Presenters.UI.ViewModel.Employment;
+using Reports.Core.Dto.Employment;
 
 namespace WebMvc.Controllers
 {
@@ -18,7 +20,16 @@ namespace WebMvc.Controllers
 
         public ActionResult GeneralInfo()
         {
-            return View();
+            var model = new GeneralInfoModel();
+            model.NameChanges = new List<NameChangeDto>();
+            model.NameChanges.Add(new NameChangeDto { PreviousName = "Vasya", Date = new DateTime(), Place = "NV", Reason = "Marriage" });
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult GeneralInfo(GeneralInfoModel model)
+        {
+            return View(model);
         }
 
         public ActionResult Passport()

@@ -7,156 +7,172 @@
 @{Html.EnableUnobtrusiveJavaScript();}
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <table>
-        <tr>
-            <td style="width: 300px;">
-                @Html.LabelFor(m => m.LastName)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.LastName)
-                @Html.ValidationMessageFor(m => m.LastName)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.FirstName)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.FirstName)
-                @Html.ValidationMessageFor(m => m.FirstName)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Patronymic)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.Patronymic)
-                @Html.ValidationMessageFor(m => m.Patronymic)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.NameChange)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.NameChange)
-                @Html.ValidationMessageFor(m => m.NameChange)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.IsMale)
-            </td>
-            <td>
-                @Html.DropDownList("IsMale", new List<SelectListItem>
-                    { new SelectListItem {Value = "true", Text = "М"},
-                      new SelectListItem {Value = "false", Text = "Ж"}
-                    })
-                @Html.ValidationMessageFor(m => m.IsMale)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Citizenship)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.Citizenship)
-                @Html.ValidationMessageFor(m => m.Citizenship)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.DateOfBirth)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.DateOfBirth)
-                @Html.ValidationMessageFor(m => m.DateOfBirth)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Место рождения
-            </td>
-            <td>
-                &nbsp;
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.CountryOfBirth)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.CountryOfBirth)
-                @Html.ValidationMessageFor(m => m.CountryOfBirth)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.RegionOfBirth)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.RegionOfBirth)
-                @Html.ValidationMessageFor(m => m.RegionOfBirth)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.CityOfBirth)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.CityOfBirth)
-                @Html.ValidationMessageFor(m => m.CityOfBirth)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.INN)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.INN)
-                @Html.ValidationMessageFor(m => m.INN)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.SNILS)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.SNILS)
-                @Html.ValidationMessageFor(m => m.SNILS)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Disabilities)
-            </td>
-            <td>
-                @Html.TextBoxFor(m => m.Disabilities)
-                @Html.ValidationMessageFor(m => m.Disabilities)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.IsResident)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.IsResident)
-                @Html.ValidationMessageFor(m => m.IsResident)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
-                @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
-            </td>
-        </tr>
-    </table>
-    
-    <input type="submit" />
+    <div class="doc-wrap">
+        <table>
+            <tr>
+                <td style="width: 300px;">
+                    @Html.LabelFor(m => m.LastName)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.LastName)
+                    @Html.ValidationMessageFor(m => m.LastName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.FirstName)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.FirstName)
+                    @Html.ValidationMessageFor(m => m.FirstName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Patronymic)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Patronymic)
+                    @Html.ValidationMessageFor(m => m.Patronymic)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.NameChanges)
+                </td>
+                <td>
+                    @for (var i = 0; i < Model.NameChanges.Count; i++)
+                    {
+                        @Html.LabelFor(m => m.NameChanges[i].PreviousName);
+                        @Html.TextBoxFor(m => m.NameChanges[i].PreviousName);
+                        @Html.LabelFor(m => m.NameChanges[i].Date);
+                        @Html.EditorFor(m => m.NameChanges[i].Date);
+                        @Html.LabelFor(m => m.NameChanges[i].Place);
+                        @Html.EditorFor(m => m.NameChanges[i].Place);
+                        @Html.LabelFor(m => m.NameChanges[i].Reason);
+                        @Html.EditorFor(m => m.NameChanges[i].Reason);
+                        
+                        
+                        //Html.Editor("UserInformation.RolesForUser[" + i + "].InRole");
+                    }
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsMale)
+                </td>
+                <td>
+                    @Html.DropDownList("IsMale", new List<SelectListItem>
+                        { new SelectListItem {Value = "true", Text = "М"},
+                          new SelectListItem {Value = "false", Text = "Ж"}
+                        })
+                    @Html.ValidationMessageFor(m => m.IsMale)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Citizenship)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Citizenship)
+                    @Html.ValidationMessageFor(m => m.Citizenship)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DateOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DateOfBirth)
+                    @Html.ValidationMessageFor(m => m.DateOfBirth)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Место рождения
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CountryOfBirth)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.CountryOfBirth)
+                    @Html.ValidationMessageFor(m => m.CountryOfBirth)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.RegionOfBirth)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.RegionOfBirth)
+                    @Html.ValidationMessageFor(m => m.RegionOfBirth)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CityOfBirth)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.CityOfBirth)
+                    @Html.ValidationMessageFor(m => m.CityOfBirth)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.INN)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.INN)
+                    @Html.ValidationMessageFor(m => m.INN)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.SNILS)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.SNILS)
+                    @Html.ValidationMessageFor(m => m.SNILS)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Disabilities)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Disabilities)
+                    @Html.ValidationMessageFor(m => m.Disabilities)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsResident)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.IsResident)
+                    @Html.ValidationMessageFor(m => m.IsResident)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
+                    @Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+                </td>
+            </tr>
+        </table>
+
+        <br /><br /><button type="submit">Сохранить</button>
+
+    </div>
 }
 
 <script type="text/javascript">
