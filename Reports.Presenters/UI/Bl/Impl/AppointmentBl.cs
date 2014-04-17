@@ -83,6 +83,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentReportDao); }
             set { appointmentReportDao = value; }
         }
+        protected IAppointmentEducationTypeDao appointmentEducationTypeDao;
+        public IAppointmentEducationTypeDao AppointmentEducationTypeDao
+        {
+            get { return Validate.Dependency(appointmentEducationTypeDao); }
+            set { appointmentEducationTypeDao = value; }
+        }
         #endregion
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -404,6 +410,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelApproveAvailable = state;
             model.IsStaffApproveAvailable = state;
         }
+
         protected void LoadDictionaries(AppointmentEditModel model)
         {
             model.DepartmentRequiredLevel = 7;
@@ -646,8 +653,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
-                            SendEmailForAppointmentReject(currUser, entity);
-                            //todo need to send email and reject reports
+                            EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
+                            if (!string.IsNullOrEmpty(dto.Error))
+                                error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
+                            //todo need to reject reports
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
@@ -669,8 +678,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.DeleteDate = DateTime.Now;
                             entity.DeleteUser = currUser;
-                            SendEmailForAppointmentReject(currUser, entity);
-                            //todo need to send email and reject reports
+                            EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
+                            if (!string.IsNullOrEmpty(dto.Error))
+                                error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
+                            //todo need to reject reports
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
@@ -1050,9 +1061,94 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity = AppointmentReportDao.Get(id);
             if (entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+            model.Version = entity.Version;
+            model.TypeId = entity.Type.Id;
+            model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
+            model.UserId = entity.Creator.Id;
+            model.Name = entity.Name;
+            model.DocumentNumber = entity.Number.ToString();
+            model.Phone = entity.Phone;
+            model.Email = entity.Email;
+            model.ColloquyDate = FormatDate(entity.ColloquyDate);
+            model.EducationTime = entity.EducationTime;
+            model.RejectReason = entity.RejectReason;
+            model.DateAccept = FormatDate(entity.DateAccept);
+            
 
-
+            SetManagerInfoModel(entity.Appointment.Creator, model);
+            LoadDictionaries(model);
+            SetFlagsState(id, currUser, current.UserRole, entity, model);
+            SetHiddenFields(model,entity);
             return model;
+        }
+        protected void LoadDictionaries(AppointmentReportEditModel model)
+        {
+            model.IsEducationExistsValues = new List<IdNameDto>
+                              {
+                                  new IdNameDto {Id = 0,Name = "Нет"},
+                                  new IdNameDto {Id = 1,Name = "Да"},
+                              }.OrderBy(x => x.Name).ToList();
+            model.Types = AppointmentEducationTypeDao.LoadAllSorted().ToList().
+                          ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+        }
+        protected void SetFlagsState(AppointmentReportEditModel model, bool state)
+        {
+            model.IsEditable = state;
+            model.IsSaveAvailable = state;
+            model.IsManagerApproveAvailable = state;
+            model.IsManagerRejectAvailable = state;
+            model.IsStaffApproveAvailable = state;
+        }
+        protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
+        {
+            SetFlagsState(model, false);
+            model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
+            model.IsStaffApproved = entity.StaffDateAccept.HasValue;
+            model.IsDeleted = entity.DeleteDate.HasValue;
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName;
+            if (entity.AcceptStaff != null && entity.StaffDateAccept.HasValue)
+                model.StaffFio = entity.AcceptStaff.FullName;
+            if (entity.DeleteDate.HasValue)
+                model.DeleteUser = entity.DeleteUser.FullName;
+            
+            switch (currRole)
+            {
+                case UserRole.Manager:
+                    if (current.Id == entity.Appointment.Creator.Id 
+                        && entity.StaffDateAccept.HasValue
+                        && !entity.DeleteDate.HasValue)
+                    {
+                        model.IsManagerRejectAvailable = true;
+                        if (!entity.ManagerDateAccept.HasValue)
+                        {
+                            model.IsManagerApproveAvailable = true;
+                            model.IsEditable = true;
+                        }
+                    }
+                    break;
+                case UserRole.StaffManager:
+                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue)
+                        model.IsStaffApproveAvailable = true;
+                    break;
+                case UserRole.OutsourcingManager:
+                    break;
+            }
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable || model.IsStaffApproveAvailable;
+        }
+        protected void SetHiddenFields(AppointmentReportEditModel model, AppointmentReport entity)
+        {
+            model.DepartmentName = entity.Appointment.Department.Name;
+            model.City = entity.Appointment.City;
+            model.CandidatePosition = entity.Appointment.Position.Name;
+            model.VacationCount = entity.Appointment.VacationCount.ToString();
+            model.Reason = entity.Appointment.Reason.Name;
+            model.AppointmentNumber = entity.Appointment.Number.ToString();
+            model.TypeIdHidden = model.TypeId;
+            model.IsEducationExistsHidden = model.IsEducationExists;
+            model.IsManagerApprovedHidden = model.IsManagerApproved;
+            model.IsStaffApprovedHidden = model.IsStaffApproved;
+            model.DateCreatedHidden = model.DateCreated;
         }
     }
 }

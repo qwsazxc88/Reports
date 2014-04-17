@@ -90,6 +90,7 @@
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
     <Compile Include="Dao\IAppointmentCommentDao.cs" />
+    <Compile Include="Dao\IAppointmentEducationTypeDao.cs" />
     <Compile Include="Dao\IAppointmentReasonDao.cs" />
     <Compile Include="Dao\IAppointmentReportDao.cs" />
     <Compile Include="Dao\IChiefToUserDao.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Dao\Impl\AccountDao.cs" />
     <Compile Include="Dao\Impl\AppointmentCommentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentEducationTypeDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReportDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />

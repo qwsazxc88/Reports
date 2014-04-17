@@ -62,7 +62,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Служба по подбору")]
         public bool IsStaffApproved { get; set; }
         public bool IsStaffApproveAvailable { get; set; }
-        public bool IsStaffReceiveRejectMail { get; set; }
+        //public bool IsStaffReceiveRejectMail { get; set; }
         public bool IsStaffApprovedHidden { get; set; }
         public string StaffFio { get; set; }
 
