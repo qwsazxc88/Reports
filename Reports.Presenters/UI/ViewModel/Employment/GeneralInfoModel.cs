@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 using Reports.Core.Dto.Employment;
 
 namespace Reports.Presenters.UI.ViewModel.Employment
@@ -20,7 +19,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Patronymic { get; set; }
         [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине")]
-        public List<NameChangeDto> NameChanges { get; set; }
+        public IList<NameChangeDto> NameChanges { get; set; }
 
         [Display(Name = "Пол")]
         public bool IsMale { get; set; }

@@ -2,7 +2,6 @@
 @{
     ViewBag.Title = "Прием - Общая информация";
 }
-
 @{Html.EnableClientValidation();}
 @{Html.EnableUnobtrusiveJavaScript();}
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -41,21 +40,14 @@
                     @Html.LabelFor(m => m.NameChanges)
                 </td>
                 <td>
-                    @for (var i = 0; i < Model.NameChanges.Count; i++)
-                    {
-                        @Html.LabelFor(m => m.NameChanges[i].PreviousName);
-                        @Html.TextBoxFor(m => m.NameChanges[i].PreviousName);
-                        @Html.LabelFor(m => m.NameChanges[i].Date);
-                        @Html.EditorFor(m => m.NameChanges[i].Date);
-                        @Html.LabelFor(m => m.NameChanges[i].Place);
-                        @Html.EditorFor(m => m.NameChanges[i].Place);
-                        @Html.LabelFor(m => m.NameChanges[i].Reason);
-                        @Html.EditorFor(m => m.NameChanges[i].Reason);
-                        
-                        
-                        //Html.Editor("UserInformation.RolesForUser[" + i + "].InRole");
-                    }
+                    <div style="border: 1px solid lightgray; padding: 5px;">
 
+                    <div id="name-changes-container">
+                        @Html.Partial("Employment/NameChanges")
+                    </div>
+
+                    <button id="add-name-change-button">Добавить новую запись</button>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -178,5 +170,8 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#DateOfBirth').datepicker();
+        $('#add-name-change-button').click(function () {
+            
+        });
     });
 </script>
