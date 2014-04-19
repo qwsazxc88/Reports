@@ -89,6 +89,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentEducationTypeDao); }
             set { appointmentEducationTypeDao = value; }
         }
+        protected IRequestAttachmentDao requestAttachmentDao;
+        public IRequestAttachmentDao RequestAttachmentDao
+        {
+            get { return Validate.Dependency(requestAttachmentDao); }
+            set { requestAttachmentDao = value; }
+        }
         #endregion
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -1090,6 +1096,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RejectReason = entity.RejectReason;
             model.DateAccept = FormatDate(entity.DateAccept);
             SetManagerInfoModel(entity.Appointment.Creator, model);
+            SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.AppointmentReport);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, current.UserRole, entity, model);
             SetHiddenFields(model,entity);
@@ -1143,8 +1150,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue)
                     {
-                        model.IsStaffApproveAvailable = true;
                         model.IsEditable = true;
+                        if (model.AttachmentId > 0)
+                            model.IsStaffApproveAvailable = true;
                     }
                     break;
                 case UserRole.OutsourcingManager:
@@ -1165,6 +1173,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApprovedHidden = model.IsManagerApproved;
             model.IsStaffApprovedHidden = model.IsStaffApproved;
             model.DateCreatedHidden = model.DateCreated;
+        }
+        protected void SetAttachmentToModel(IAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.AttachmentId = attach.Id;
+            model.Attachment = attach.FileName;
         }
     }
 }

@@ -4,7 +4,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class AppointmentReportEditModel : ManagerInfoModel, IContainId
+    public class AppointmentReportEditModel : ManagerInfoModel, IContainId, IAttachment
     {
         public int Version { get; set; }
 
@@ -83,6 +83,10 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Кандидат принят на работу с даты")]
         public string DateAccept { get; set; }
+
+        [Display(Name = "Скан")]
+        public string Attachment { get; set; }
+        public int AttachmentId { get; set; }
 
     }
 }
