@@ -24,6 +24,7 @@
         MissionOrder = 11,
         MissionReport = 12,
         Appointment = 13,
+        AppointmentReport = 14,
     }
     public enum RequestAttachmentTypeEnum
     {

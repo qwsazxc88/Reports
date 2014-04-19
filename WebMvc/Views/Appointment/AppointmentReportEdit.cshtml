@@ -28,7 +28,7 @@
             </tr>
             }
              <tr>
-                <td>
+                <td style="width:250px">
                     @Html.LabelFor(m => m.DepartmentName):
                 </td>
                 <td>
@@ -117,7 +117,7 @@
                     @Html.LabelFor(m => m.AppointmentNumber):
                 </td>
                 <td>
-                    <label>@Model.AppointmentNumberAppointmentNumber</label>
+                    <label>@Model.AppointmentNumber</label>
                     <input type="hidden" id="AppointmentNumber" name="AppointmentNumber" value="@Model.AppointmentNumber" />
                 </td>
             </tr>
@@ -225,7 +225,6 @@
     $("#DateAccept").datepicker();
     $("#ColloquyDate").datepicker();
     $(".hasDatepicker").width("75px");
-    onReasonChange();
    });
     function Delete() {
         /*if(!ValidateForm())
@@ -236,46 +235,29 @@
     function ValidateForm()
     {
         var result = true;
-        clearControlErrors($("#SelectDepartmentBtn"));
-        if($("#DepartmentId").val() == 0)
+        clearControlErrors($("#EducationTime"));
+//        if($("#DepartmentId").val() == 0)
+//        {
+//            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+//            result = false;
+//        }
+        if(!IsFieldNotEmpty($("#Name")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Phone")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Email")))
+            result = false;
+        else if (!isEmailAddress($("#Email").val()))
         {
-            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            addControlError($("#Email"),'Неправильный адрес');
             result = false;
         }
-        if(!IsFieldNotEmpty($("#City")))
-            result = false;
-        if(!IsFieldNotEmpty($("#VacationCount")))
-            result = false;
-        else if( ValidateInt($("#VacationCount")) == undefined)
-            result = false;
-        if(!IsFieldNotEmpty($("#ReasonPosition")))
-            result = false;
-        if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
+        if($("#TypeId").val() == 1)
         {
-            if(!IsFieldNotEmpty($("#ReasonBeginDate")))
+            if(!IsFieldNotEmpty($("#EducationTime")))
                 result = false;
         }
-        if(!IsFieldNotEmpty($("#Period")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Schedule")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Salary")))
-            result = false;
-        else if (ValidateSumC($("#Salary")) == undefined)
-            result = false;
-        if(!IsFieldNotEmpty($("#Bonus")))
-            result = false;
-        else if (ValidateSumNotNegative($("#Bonus")) == undefined)
-            result = false;
-        if(!IsFieldNotEmpty($("#Compensation")))
-            result = false;
-        if(!IsFieldNotEmpty($("#EducationRequirements")))
-            result = false;
-        if(!IsFieldNotEmpty($("#ExperienceRequirements")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Responsibility")))
-            result = false;
-        if(!IsFieldNotEmpty($("#DesirableBeginDate")))
+        if(!IsFieldNotEmpty($("#ColloquyDate")))
             result = false;
         return result;
     }
@@ -289,35 +271,12 @@
         }
         return true;
     }
-    function onReasonChange()
-    {
-        var reasonId = $("#ReasonId").val();
-        switch(reasonId)
-        {
-            case '1':
-                $("#ReasonPositionLabel").text('Должность:');
-                $("#ReasonDateLabel").text('С даты:');
-            break
-            case '2':
-                $("#ReasonPositionLabel").text('Должность:');
-                $("#ReasonDateLabel").text('С даты:');
-            break
-            case '3':
-                $("#ReasonPositionLabel").text('');
-            break
-            case '4':
-                $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
-                $("#ReasonDateLabel").text('Дата ухода:');
-            break
-            case '5':
-                $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
-                $("#ReasonDateLabel").text('Дата увольнения:');
-            break
-        }
-        if(reasonId == 3)
-            $("#ReasonDateTr").hide();
-        else
-            $("#ReasonDateTr").show();
-            
+    
+
+    function isEmailAddress(str) {
+        var pattern =/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        return pattern.test(str);  // returns a boolean
     }
+
+
 </script> 

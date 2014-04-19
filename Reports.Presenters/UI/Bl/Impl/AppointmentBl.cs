@@ -410,7 +410,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPersonnelApproveAvailable = state;
             model.IsStaffApproveAvailable = state;
         }
-
         protected void LoadDictionaries(AppointmentEditModel model)
         {
             model.DepartmentRequiredLevel = 7;
@@ -428,7 +427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   new IdNameDto {Id = 0,Name = "Нет"},
                               };
         }
-        protected void SetHiddenFields(AppointmentEditModel model)
+        protected void SetHiddenFields(AppointmentEditModel model)  
         {
             model.IsVacationExistsHidden = model.IsVacationExists;
             model.PositionIdHidden = model.PositionId;
@@ -579,7 +578,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     //else
                     //{
-                    ChangeEntityProperties(current, entity, model, creator, out error);
+                        ChangeEntityProperties(current, entity, model, creator, out error);
                         //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
                         //string country = GetStringForList(cityList);
                         //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
@@ -759,12 +758,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.StaffDateAccept = DateTime.Now;
                         entity.AcceptStaff = currUser;
-                        //todo need to create report
+                        CreateAppointmentReport(entity,currUser);
                     }
                     break;
                 case UserRole.OutsourcingManager:
                     break;
             }
+        }
+        public void CreateAppointmentReport(Appointment entity,User creator)
+        {
+            AppointmentReport report = new AppointmentReport
+                                           {
+                                               Appointment = entity,
+                                               Creator = creator,
+                                               CreateDate = DateTime.Now,
+                                               EditDate = DateTime.Now,
+                                               Email = string.Empty,
+                                               Name = string.Empty,
+                                               Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.AppointmentReport),
+                                               Phone = string.Empty,
+                                               Type = AppointmentEducationTypeDao.Get(1), 
+                                           };
+            AppointmentReportDao.Save(report);
         }
         #region Emails
         protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
@@ -1053,7 +1068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             AppointmentReportEditModel model = new AppointmentReportEditModel { Id = id };
             AppointmentReport entity = null;
-            User creator;
+            //User creator;
             IUser current = AuthenticationService.CurrentUser;
             User currUser = UserDao.Load(current.Id);
             if(id == 0)
@@ -1062,6 +1077,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
             model.Version = entity.Version;
+            model.DateCreated = FormatDate(entity.CreateDate);
             model.TypeId = entity.Type.Id;
             model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
             model.UserId = entity.Creator.Id;
@@ -1073,8 +1089,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.EducationTime = entity.EducationTime;
             model.RejectReason = entity.RejectReason;
             model.DateAccept = FormatDate(entity.DateAccept);
-            
-
             SetManagerInfoModel(entity.Appointment.Creator, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, current.UserRole, entity, model);
@@ -1088,7 +1102,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   new IdNameDto {Id = 0,Name = "Нет"},
                                   new IdNameDto {Id = 1,Name = "Да"},
                               }.OrderBy(x => x.Name).ToList();
-            model.Types = AppointmentEducationTypeDao.LoadAllSorted().ToList().
+            model.Types = AppointmentEducationTypeDao.LoadAll().ToList().
                           ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
         protected void SetFlagsState(AppointmentReportEditModel model, bool state)
@@ -1121,15 +1135,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         model.IsManagerRejectAvailable = true;
                         if (!entity.ManagerDateAccept.HasValue)
-                        {
                             model.IsManagerApproveAvailable = true;
-                            model.IsEditable = true;
-                        }
+                            
+                        
                     }
                     break;
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue)
+                    {
                         model.IsStaffApproveAvailable = true;
+                        model.IsEditable = true;
+                    }
                     break;
                 case UserRole.OutsourcingManager:
                     break;
