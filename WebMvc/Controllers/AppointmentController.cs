@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Web;
 using System.Web.Mvc;
 using Reports.Core;
+using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -11,12 +14,18 @@ namespace WebMvc.Controllers
     [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
     public class AppointmentController : BaseController
     {
+        public const int MaxFileSize = 2 * 1024 * 1024;
+
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
         public const string StrDesirableBeginDateIsSmall = "Желательная дата выхода должна быть не ранее 2 недель с момента создания заявки";
         public const string StrInvalidDepartment = "Указано неверное структурное подразделение.У вас нет права создания заявки для него.";
         public const string StrInvalidDepartmentLevel = "Выбор структурного подразделения уровня {0} обязателен";
         public const string StrInvalidListDates = "Дата в поле <Период с> не может быть больше даты в поле <по>.";
+        public const string StrFileSizeError = "Размер прикрепленного файла не может превышать {0} Мб.";
+
+        public const string StrInvalidColloquyDate = "Неверная дата собеседования";
+        public const string StrInvalidDateAccept = "Неверная дата приема на работу";
 
         protected IAppointmentBl appointmentBl;
         public IAppointmentBl AppointmentBl
@@ -208,6 +217,123 @@ namespace WebMvc.Controllers
         {
             AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AppointmentReportEdit(AppointmentReportEditModel model)
+        {
+            CorrectCheckboxes(model);
+            CorrectDropdowns(model);
+            UploadFileDto fileDto = GetFileContext(Request,ModelState);
+            if (!ValidateAppointmentReportEditModel(model, fileDto))
+            {
+                model.IsDelete = false;
+                AppointmentBl.ReloadDictionariesToModel(model);
+                return View(model);
+            }
+
+            string error;
+            if (!AppointmentBl.SaveAppointmentReportEditModel(model, fileDto, out error))
+            {
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(AppointmentBl.GetAppointmentReportEditModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateAppointmentReportEditModel(AppointmentReportEditModel model,UploadFileDto fileDto)
+        {
+            if (model.IsDelete)
+                return true;
+            if (!string.IsNullOrEmpty(model.ColloquyDate))
+            {
+                DateTime colloquyDate;
+                if (!DateTime.TryParse(model.ColloquyDate, out colloquyDate))
+                    ModelState.AddModelError("ColloquyDate", StrInvalidColloquyDate);
+            }
+            if (!string.IsNullOrEmpty(model.DateAccept))
+            {
+                DateTime dateAccept;
+                if (!DateTime.TryParse(model.DateAccept, out dateAccept))
+                    ModelState.AddModelError("DateAccept", StrInvalidDateAccept);
+            }
+            return ModelState.IsValid;
+        }
+        protected void CorrectCheckboxes(AppointmentReportEditModel model)
+        {
+            if (!model.IsStaffApproveAvailable)
+            {
+                if (ModelState.ContainsKey("IsStaffApproved"))
+                    ModelState.Remove("IsStaffApproved");
+                model.IsStaffApproved = model.IsStaffApprovedHidden;
+            }
+            if (!model.IsManagerApproveAvailable)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+                model.IsManagerApproved = model.IsManagerApprovedHidden;
+            }
+        }
+        protected void CorrectDropdowns(AppointmentReportEditModel model)
+        {
+            if (!model.IsEditable)
+            {
+                model.TypeId = model.TypeIdHidden;
+                model.IsEducationExists = model.IsEducationExistsHidden;
+            }
+        }
+
+        public static UploadFileDto GetFileContext(HttpRequestBase request, ModelStateDictionary modelState)
+        {
+            if (request.Files.Count == 0)
+                return null;
+            string file = request.Files.GetKey(0);
+            return GetFileContext(request,modelState,file);
+        }
+        protected static UploadFileDto GetFileContext(HttpRequestBase request, ModelStateDictionary modelState, string file)
+        {
+            HttpPostedFileBase hpf = request.Files[file];
+            if ((hpf == null) || (hpf.ContentLength == 0))
+                return null;
+            if (hpf.ContentLength > MaxFileSize)
+            {
+                modelState.AddModelError("", string.Format(StrFileSizeError, MaxFileSize / (1024 * 1024)));
+                return null;
+            }
+            byte[] context = GetFileData(hpf);
+            return new UploadFileDto
+            {
+                Context = context,
+                ContextType = hpf.ContentType,
+                FileName = Path.GetFileName(hpf.FileName),
+            };
+        }
+        protected static byte[] GetFileData(HttpPostedFileBase file)
+        {
+            var length = file.ContentLength;
+            var fileContent = new byte[length];
+            file.InputStream.Read(fileContent, 0, length);
+            return fileContent;
+        }
+
+        public FileContentResult ViewAttachment(int id)
+        {
+            try
+            {
+                AttachmentModel model = AppointmentBl.GetFileContext(id);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on ViewAttachment:", ex);
+                throw;
+            }
         }
     }
 }

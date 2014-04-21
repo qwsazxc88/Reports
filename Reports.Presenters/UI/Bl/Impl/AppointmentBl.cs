@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
+using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -40,9 +41,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrEmailForAppointmentManagerRejectText = "Отменена заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}";
         public const string StrEmailForAppointmentManagerRejectSubject = "Отмена заявки";
+       
 
         public const string StrAppointmentReportNotFound = "Не найден отчет (id {0}) в базе данных";
         public const string StrAppointmentReportIncorrectId = "Неправильный идентификатор отчета (0)";
+        public const string StrAttachmentAlreadyExists = "Found existing attachment for appointment report id {0} and type {1} (id {2})";
+
 
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
@@ -94,6 +98,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(requestAttachmentDao); }
             set { requestAttachmentDao = value; }
+        }
+
+        protected IRoleDao roleDao;
+        public IRoleDao RoleDao
+        {
+            get { return Validate.Dependency(roleDao); }
+            set { roleDao = value; }
         }
         #endregion
         protected IConfigurationService configurationService;
@@ -448,10 +459,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetManagerInfoModel(User user, ManagerInfoModel model)
         {
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
-            if (user.Organization != null)
-                model.Organization = user.Organization.Name;
-            if (user.Position != null)
-                model.Position = user.Position.Name;
+            model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
+            model.Position = user.Position != null ? user.Position.Name : string.Empty;
             model.UserName = user.FullName;
         }
         public bool CheckDepartment(int departmentId,out int level)
@@ -547,7 +556,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (entity.Version != model.Version)
                     {
-                        error = "Приказ был изменен другим пользователем.";
+                        error = "Заявка была изменена другим пользователем.";
                         model.ReloadPage = true;
                         return false;
                     }
@@ -623,7 +632,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user,out string error)
         {
             error = string.Empty;
-            //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             User currUser = UserDao.Load(current.Id);
             if (!model.IsDelete && model.IsEditable)
             {
@@ -1086,7 +1094,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = FormatDate(entity.CreateDate);
             model.TypeId = entity.Type.Id;
             model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
-            model.UserId = entity.Creator.Id;
+            model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
             model.DocumentNumber = entity.Number.ToString();
             model.Phone = entity.Phone;
@@ -1162,12 +1170,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetHiddenFields(AppointmentReportEditModel model, AppointmentReport entity)
         {
-            model.DepartmentName = entity.Appointment.Department.Name;
-            model.City = entity.Appointment.City;
-            model.CandidatePosition = entity.Appointment.Position.Name;
-            model.VacationCount = entity.Appointment.VacationCount.ToString();
-            model.Reason = entity.Appointment.Reason.Name;
-            model.AppointmentNumber = entity.Appointment.Number.ToString();
+            if (entity != null)
+            {
+                model.DepartmentName = entity.Appointment.Department.Name;
+                model.City = entity.Appointment.City;
+                model.CandidatePosition = entity.Appointment.Position.Name;
+                model.VacationCount = entity.Appointment.VacationCount.ToString();
+                model.Reason = entity.Appointment.Reason.Name;
+                model.AppointmentNumber = entity.Appointment.Number.ToString();
+            }
             model.TypeIdHidden = model.TypeId;
             model.IsEducationExistsHidden = model.IsEducationExists;
             model.IsManagerApprovedHidden = model.IsManagerApproved;
@@ -1183,6 +1194,205 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             model.AttachmentId = attach.Id;
             model.Attachment = attach.FileName;
+        }
+        public void ReloadDictionariesToModel(AppointmentReportEditModel model)
+        {
+            User user = UserDao.Load(model.UserId);
+            SetManagerInfoModel(user, model);
+            LoadDictionaries(model);
+            AppointmentReport entity = AppointmentReportDao.Load(model.Id);
+            model.DocumentNumber = entity.Number.ToString();
+            model.DateCreated = entity.CreateDate.ToShortDateString();
+            if (entity.DeleteDate.HasValue)
+                model.IsDeleted = true;
+        }
+        public bool SaveAppointmentReportEditModel(AppointmentReportEditModel model, UploadFileDto fileDto,out string error)
+        {
+            error = string.Empty;
+            User creator = null;
+            AppointmentReport entity = null;
+            try
+            {
+                //creator = UserDao.Load(model.UserId);
+                IUser current = AuthenticationService.CurrentUser;
+                //AppointmentReport entity = null;
+                entity = AppointmentReportDao.Get(model.Id);
+                if (entity == null)
+                    throw new ValidationException(string.Format(StrAppointmentReportNotFound, model.Id));
+                creator = UserDao.Load(entity.Appointment.Creator.Id);
+                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }*/
+                if (entity.Version != model.Version)
+                {
+                    error = "Отчет был изменен другим пользователем.";
+                    model.ReloadPage = true;
+                    return false;
+                }
+                string fileName;
+                int? attachmentId = SaveAttachment(entity.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.AppointmentReport, out fileName);
+                if (attachmentId.HasValue)
+                {
+                    model.AttachmentId = attachmentId.Value;
+                    model.Attachment = fileName;
+                }
+                    //if (model.IsDelete)
+                    //{
+                    //    if (current.UserRole == UserRole.OutsourcingManager)
+                    //        entity.DeleteAfterSendTo1C = true;
+                    //    entity.DeleteDate = DateTime.Now;
+                    //    //missionOrder.CreateDate = DateTime.Now;
+                    //    MissionOrderDao.SaveAndFlush(entity);
+                    //    if (entity.Mission != null)
+                    //    {
+                    //        Mission mission = entity.Mission;
+                    //        if (mission.SendTo1C.HasValue)
+                    //            mission.DeleteAfterSendTo1C = true;
+                    //        mission.DeleteDate = DateTime.Now;
+                    //        mission.CreateDate = DateTime.Now;
+                    //        MissionDao.SaveAndFlush(mission);
+                    //    }
+                    //    else
+                    //        Log.WarnFormat("No mission for mission order with id {0}", entity.Id);
+                    //    MissionReport report = MissionReportDao.GetReportForOrder(entity.Id);
+                    //    if (report != null)
+                    //    {
+                    //        report.DeleteDate = DateTime.Now;
+                    //        report.EditDate = DateTime.Now;
+                    //        MissionReportDao.SaveAndFlush(report);
+                    //    }
+                    //    else
+                    //        Log.WarnFormat("No mission report for mission order with id {0}", entity.Id);
+                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
+                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
+                    //    model.IsDelete = false;
+                    //}
+                    //else
+                    //{
+                ChangeEntityProperties(current, entity, model, creator, out error);
+                //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
+                //string country = GetStringForList(cityList);
+                //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
+                //string org = GetStringForList(orgList);
+                AppointmentReportDao.SaveAndFlush(entity);
+                if (entity.Version != model.Version)
+                {
+                    entity.EditDate = DateTime.Now;
+                    AppointmentReportDao.SaveAndFlush(entity);
+                }
+                if (entity.DeleteDate.HasValue)
+                    model.IsDeleted = true;
+                model.DocumentNumber = entity.Number.ToString();
+                model.Version = entity.Version;
+                model.DateCreated = entity.CreateDate.ToShortDateString();
+                SetFlagsState(entity.Id, UserDao.Load(current.Id), current.UserRole, entity, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                AppointmentDao.RollbackTran();
+                Log.Error("Error on SaveAppointmentReportEditModel:", ex);
+                error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+            finally
+            {
+                SetManagerInfoModel(creator, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model,entity);
+            }
+        }
+        protected void ChangeEntityProperties(IUser current, AppointmentReport entity, AppointmentReportEditModel model,
+           User user, out string error)
+        {
+            error = string.Empty;
+            User currUser = UserDao.Get(current.Id);
+            if (!model.IsDelete && model.IsEditable)
+            {
+                entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
+                entity.IsEducationExists = model.IsEducationExists == 1 ? true : false; 
+                //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
+                //model.UserId = entity.Creator.Id;
+                entity.Name = model.Name;
+                entity.Phone = model.Phone;
+                entity.Email = model.Email;
+                entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
+                entity.EducationTime = model.EducationTime;
+                entity.RejectReason = model.RejectReason;
+                if(!string.IsNullOrEmpty(model.DateAccept))
+                    entity.DateAccept = DateTime.Parse(model.DateAccept);
+            }
+            switch (current.UserRole)
+            {
+                case UserRole.StaffManager:
+                {
+                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue
+                        && model.IsStaffApproved && model.AttachmentId > 0)
+                    {
+                        entity.StaffDateAccept = DateTime.Now;
+                        entity.AcceptStaff = currUser;
+                    }
+                }
+                break;
+                case UserRole.Manager:
+                {
+                    if(!entity.DeleteDate.HasValue && entity.StaffDateAccept.HasValue
+                        && !entity.ManagerDateAccept.HasValue 
+                        && entity.Appointment.Creator.Id == current.Id 
+                        && model.IsManagerApproved)
+                    {
+                        entity.ManagerDateAccept = DateTime.Now;
+                        entity.AcceptManager = currUser;
+                    }
+                }
+                break;
+                case UserRole.OutsourcingManager:
+                break;
+            }
+        }
+
+        public AttachmentModel GetFileContext(int id/*,int typeId*/)
+        {
+            RequestAttachment attachment = RequestAttachmentDao.Load(id);
+            return new AttachmentModel
+            {
+                Context = attachment.UncompressContext,
+                FileName = attachment.FileName,
+                ContextType = attachment.ContextType
+            };
+        }
+        protected int? SaveAttachment(int entityId, int id, UploadFileDto dto, RequestAttachmentTypeEnum type, out string attachment)
+        {
+            attachment = string.Empty;
+            if (dto == null)
+                return new int?();
+            RequestAttachment attach = id != 0 ? 
+               RequestAttachmentDao.Get(id) :
+               new RequestAttachment
+               {
+                   RequestId = entityId,
+                   RequestType = (int)type,
+                   CreatorRole = RoleDao.Load((int)CurrentUser.UserRole),
+               };
+            if (id == 0)
+            {
+                RequestAttachment existingAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entityId, type);
+                if (existingAttach != null)
+                {
+                    Log.InfoFormat(StrAttachmentAlreadyExists, entityId, type, existingAttach.Id);
+                    attach = existingAttach;
+                }
+            }
+            attach.DateCreated = DateTime.Now;
+            attach.UncompressContext = dto.Context;
+            attach.ContextType = dto.ContextType;
+            attach.FileName = dto.FileName;
+            attach.CreatorRole = RoleDao.Load((int)CurrentUser.UserRole);
+            RequestAttachmentDao.SaveAndFlush(attach);
+            attachment = attach.FileName;
+            return attach.Id;
         }
     }
 }

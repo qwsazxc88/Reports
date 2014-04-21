@@ -1,4 +1,5 @@
-﻿using Reports.Core.Enum;
+﻿using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
@@ -19,5 +20,10 @@ namespace Reports.Presenters.UI.Bl
         bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
 
         AppointmentReportEditModel GetAppointmentReportEditModel(int id);
+        void ReloadDictionariesToModel(AppointmentReportEditModel model);
+        bool SaveAppointmentReportEditModel(AppointmentReportEditModel model, UploadFileDto fileDto, out string error);
+
+
+        AttachmentModel GetFileContext(int id /*,int typeId*/);
     }
 }
