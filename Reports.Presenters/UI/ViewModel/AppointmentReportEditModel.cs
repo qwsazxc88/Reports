@@ -71,6 +71,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string DeleteUser { get; set; }
         public bool IsDelete { get; set; }
         public bool IsSaveAvailable { get; set; }
+        public bool IsDeleteScanAvailable { get; set; }
         public bool ReloadPage { get; set; }
 
         [Display(Name = "Отказано по причине")]

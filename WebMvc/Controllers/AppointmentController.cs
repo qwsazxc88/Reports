@@ -2,6 +2,7 @@
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
@@ -334,6 +335,28 @@ namespace WebMvc.Controllers
                 Log.Error("Error on ViewAttachment:", ex);
                 throw;
             }
+        }
+        [HttpGet]
+        public ContentResult DeleteAttachment(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = AppointmentBl.DeleteAttachment(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
         }
     }
 }

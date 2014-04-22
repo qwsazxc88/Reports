@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
-using Reports.Core.Dao.Impl;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
@@ -1077,7 +1076,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
-
+        #region Appointment Report
         public AppointmentReportEditModel GetAppointmentReportEditModel(int id)
         {
             AppointmentReportEditModel model = new AppointmentReportEditModel { Id = id };
@@ -1093,7 +1092,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Version = entity.Version;
             model.DateCreated = FormatDate(entity.CreateDate);
             model.TypeId = entity.Type.Id;
-            model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
+            model.IsEducationExists = !entity.IsEducationExists.HasValue ? -1 : (entity.IsEducationExists.Value ? 1 : 0);
             model.UserId = entity.Appointment.Creator.Id;
             model.Name = entity.Name;
             model.DocumentNumber = entity.Number.ToString();
@@ -1114,6 +1113,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.IsEducationExistsValues = new List<IdNameDto>
                               {
+                                  new IdNameDto {Id = -1,Name = string.Empty},
                                   new IdNameDto {Id = 0,Name = "Нет"},
                                   new IdNameDto {Id = 1,Name = "Да"},
                               }.OrderBy(x => x.Name).ToList();
@@ -1127,6 +1127,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproveAvailable = state;
             model.IsManagerRejectAvailable = state;
             model.IsStaffApproveAvailable = state;
+            model.IsDeleteScanAvailable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
@@ -1156,12 +1157,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue)
+                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue
+                        && current.Id == entity.Appointment.AcceptStaff.Id)
                     {
                         model.IsEditable = true;
+                        if (!entity.ManagerDateAccept.HasValue)
+                            model.IsManagerRejectAvailable = true;
                         if (model.AttachmentId > 0)
+                        {
                             model.IsStaffApproveAvailable = true;
+                            model.IsDeleteScanAvailable = true;
+                        }
                     }
+                    
                     break;
                 case UserRole.OutsourcingManager:
                     break;
@@ -1238,49 +1246,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.AttachmentId = attachmentId.Value;
                     model.Attachment = fileName;
                 }
-                    //if (model.IsDelete)
-                    //{
-                    //    if (current.UserRole == UserRole.OutsourcingManager)
-                    //        entity.DeleteAfterSendTo1C = true;
-                    //    entity.DeleteDate = DateTime.Now;
-                    //    //missionOrder.CreateDate = DateTime.Now;
-                    //    MissionOrderDao.SaveAndFlush(entity);
-                    //    if (entity.Mission != null)
-                    //    {
-                    //        Mission mission = entity.Mission;
-                    //        if (mission.SendTo1C.HasValue)
-                    //            mission.DeleteAfterSendTo1C = true;
-                    //        mission.DeleteDate = DateTime.Now;
-                    //        mission.CreateDate = DateTime.Now;
-                    //        MissionDao.SaveAndFlush(mission);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission for mission order with id {0}", entity.Id);
-                    //    MissionReport report = MissionReportDao.GetReportForOrder(entity.Id);
-                    //    if (report != null)
-                    //    {
-                    //        report.DeleteDate = DateTime.Now;
-                    //        report.EditDate = DateTime.Now;
-                    //        MissionReportDao.SaveAndFlush(report);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission report for mission order with id {0}", entity.Id);
-                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
-                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
-                    //    model.IsDelete = false;
-                    //}
-                    //else
-                    //{
-                ChangeEntityProperties(current, entity, model, creator, out error);
-                //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
-                //string country = GetStringForList(cityList);
-                //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
-                //string org = GetStringForList(orgList);
-                AppointmentReportDao.SaveAndFlush(entity);
-                if (entity.Version != model.Version)
+                if (model.IsDelete)
                 {
-                    entity.EditDate = DateTime.Now;
+                    switch (current.UserRole)
+                    {
+                        case UserRole.StaffManager:
+                            if (!entity.DeleteDate.HasValue && !entity.ManagerDateAccept.HasValue
+                                 && entity.Appointment.AcceptStaff.Id == current.Id)
+                            {
+                                entity.DeleteDate = DateTime.Now;
+                                entity.DeleteUser = entity.Appointment.AcceptStaff;
+                            }
+                            break;
+                        case UserRole.Manager:
+                            if (!entity.DeleteDate.HasValue && entity.StaffDateAccept.HasValue
+                                && entity.Appointment.Creator.Id == current.Id
+                                && !entity.DateAccept.HasValue)
+                            {
+                                entity.DeleteDate = DateTime.Now;
+                                entity.DeleteUser = entity.Appointment.AcceptStaff;
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    ChangeEntityProperties(current, entity, model, creator, out error);
                     AppointmentReportDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
+                        AppointmentReportDao.SaveAndFlush(entity);
+                    }
                 }
                 if (entity.DeleteDate.HasValue)
                     model.IsDeleted = true;
@@ -1312,7 +1309,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!model.IsDelete && model.IsEditable)
             {
                 entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
-                entity.IsEducationExists = model.IsEducationExists == 1 ? true : false; 
+                if(model.IsEducationExists > 0)
+                    entity.IsEducationExists = model.IsEducationExists == 1 ? true : false; 
+                else
+                    entity.IsEducationExists = new bool?();
                 //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
                 //model.UserId = entity.Creator.Id;
                 entity.Name = model.Name;
@@ -1329,7 +1329,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.StaffManager:
                 {
                     if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue
-                        && model.IsStaffApproved && model.AttachmentId > 0)
+                        && model.IsStaffApproved && model.AttachmentId > 0
+                        && entity.Appointment.AcceptStaff.Id == current.Id)
                     {
                         entity.StaffDateAccept = DateTime.Now;
                         entity.AcceptStaff = currUser;
@@ -1352,6 +1353,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 break;
             }
         }
+        #endregion
 
         public AttachmentModel GetFileContext(int id/*,int typeId*/)
         {
@@ -1393,6 +1395,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             RequestAttachmentDao.SaveAndFlush(attach);
             attachment = attach.FileName;
             return attach.Id;
+        }
+        public bool DeleteAttachment(DeleteAttacmentModel model)
+        {
+            RequestAttachmentDao.Delete(model.Id);
+            return true;
         }
     }
 }

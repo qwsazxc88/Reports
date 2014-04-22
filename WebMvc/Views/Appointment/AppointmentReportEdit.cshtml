@@ -143,11 +143,13 @@
                 <td>
                     @if (!string.IsNullOrEmpty(Model.Attachment))
                     {
-                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
-                        <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
-                        <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
-                       @* <input type="hidden" id="AttachmentTypeId" name="AttachmentTypeId" value="@Model.AttachmentTypeId" />*@
+                        <a class="ui-notify-close" id="ScanUrl" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
                     }
+                    <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                    <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                    <input type="hidden" id="IsDeleteScanAvailable" name="IsDeleteScanAvailable" value="@Model.IsDeleteScanAvailable" />
+                    <input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment();" @if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
                 </td>
             </tr>
             <tr @if (!Model.IsEditable) {<text>style="display:none"</text>}>    
@@ -227,7 +229,7 @@
                                                                                            {<text>style="display:none"</text>}/>
                 </td>
                 <td style="text-align:right">
-                    <input type="submit" value="Не рассматривается резюме" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
+                    <input type="submit" value="Отклонить отчет" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
                                                                                       {<text>style="display:none"</text>}/>
                 </td>
             </tr>
@@ -293,6 +295,31 @@
         var pattern =/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         return pattern.test(str);  // returns a boolean
     }
+    function deleteAttachment(){
+        var id =  $("#AttachmentId").val(); 
+        var actionUrl="@Url.Action("DeleteAttachment", "Appointment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                alert('Ошибка удаления скана:'+ result.Error);
+                                //$("#AttachmentError").text(result.Error);
+                                //$("#AttachmentError").show(); 
 
+                            }
+                            else{
+                               $("#Attachment").val("");
+                               $("#AttachmentId").val("0"); 
+                               $("#IsDeleteScanAvailable").val("false");      
+                               $("#DeleteScanBtn").hide();       
+                               $("#IsStaffApproveAvailable").val("false");     
+                               $("#IsStaffApproved").attr("checked",false);
+                               $("#IsStaffApproved").attr("disabled","disable");
+                                $("#ScanUrl").hide();                          
+                           }
+                       }
+                     );
+        return false;
+    }
 
 </script> 

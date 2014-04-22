@@ -25,5 +25,6 @@ namespace Reports.Presenters.UI.Bl
 
 
         AttachmentModel GetFileContext(int id /*,int typeId*/);
+        bool DeleteAttachment(DeleteAttacmentModel model);
     }
 }
