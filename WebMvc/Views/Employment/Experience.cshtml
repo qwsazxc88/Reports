@@ -1,6 +1,75 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.ExperienceModel
+@{
     ViewBag.Title = "Прием - Трудовая деятельность";
 }
 
-<h2>Experience</h2>
+@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.Partial("Employment/ExperienceItems")
 
+    <table>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ExperienceYears) @Html.EditorFor(m => m.ExperienceYears)&nbsp;@Html.LabelFor(m => m.ExperienceMonths) @Html.EditorFor(m => m.ExperienceMonths)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Сведения о трудовой книжке
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookSeries)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookSeries)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookNumber)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookNumber)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookDateOfIssue)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookDateOfIssue)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Сведения о вкладыше в трудовую книжку
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookSupplementSeries)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookSupplementSeries)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookSupplementNumber)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookSupplementNumber)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.WorkBookSupplementDateOfIssue)
+            </td>
+        </tr>
+    </table>
+}

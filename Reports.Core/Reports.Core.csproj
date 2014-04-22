@@ -377,6 +377,13 @@
     <Compile Include="Dto\EmailDto.cs" />
     <Compile Include="Dto\Employment\NameChangeDto.cs" />
     <Compile Include="Dto\Employment\HigherEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment\PostGraduateEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment\CertificationDto.cs" />
+    <Compile Include="Dto\Employment\TrainingDto.cs" />
+    <Compile Include="Dto\Employment\FamilyMemberDto.cs" />
+    <Compile Include="Dto\Employment\ExperienceItemDto.cs" />
+    <Compile Include="Dto\Employment\CandidateDto.cs" />
+    <Compile Include="Dto\Employment\ReferenceDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Core.Dto.Employment
 {
-    public class HigherEducationDiplomaDto
+    public class PostGraduateEducationDiplomaDto
     {
         [Display(Name = "Наименование образовательного учреждения"),
             StringLength(100, ErrorMessage = "Не более 100 знаков."),
@@ -35,24 +35,9 @@ namespace Reports.Core.Dto.Employment
             Required(ErrorMessage = "Обязательное поле")]
         public DateTime GraduationYear { get; set; }
 
-        [Display(Name = "Квалификация по диплому"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
-        public string Qualification { get; set; }
-
         [Display(Name = "Специальность по диплому"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Speciality { get; set; }
-
-        [Display(Name = "Профессия основная"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
-        public string Profession { get; set; }
-
-        [Display(Name = "Факультет/отделение"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
-        public string Department { get; set; }
     }
 }

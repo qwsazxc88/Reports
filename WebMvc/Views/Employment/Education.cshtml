@@ -3,14 +3,51 @@
     ViewBag.Title = "Прием - Образование";
 }
 
-@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <table>
         <tr>
-            <td colspan="2">Сведения об образовании (высшее, неполное высшее)</td>
+            <td>Сведения об образовании (высшее, неполное высшее)</td>
         </tr>
         <tr>
-            <td></td>
+            <td>
+                <div id="higher-education-diplomas-container">
+                    @Html.Partial("Employment/HigherEducationDiplomas")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Послевузовское образование</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="postgraduate-education-diplomas-container">
+                    @Html.Partial("Employment/PostGraduateEducationDiplomas")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Сведения о дополнительном образовании</td>
+        </tr>
+        <tr>
+            <td>Аттестация</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="certifications-container">
+                    @Html.Partial("Employment/Certifications")
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Повышение квалификации</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="training-container">
+                    @Html.Partial("Employment/Training")
+                </div>
+            </td>
         </tr>
     </table>
 }

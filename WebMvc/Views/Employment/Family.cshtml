@@ -3,17 +3,38 @@
     ViewBag.Title = "Прием - Состав семьи";
 }
 
-@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
     <table>
         <tr>
-            <td style="width: 300px;">
-                
-            </td>
-            <td>
-                
-            </td>
+            <th>
+                Степень родства
+            </th>
+            <th>
+                ФИО
+            </th>
+            <th>
+                Паспортные данные
+            </th>
+            <th>
+                Дата и место рождения
+            </th>
+            <th>
+                Место работы, должность, (рабочий, мобильный телефон)
+            </th>
+            <th>
+                Адрес места жительства, (домашний, мобильный телефон)
+            </th>
         </tr>
     </table>
+    <button type="submit" id="add-family-member-button">Добавить новую запись</button>
 }
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#add-family-member-button").click(function () {
+            $("#cmd").val("add-family-member");
+        });
+    });
+</script>

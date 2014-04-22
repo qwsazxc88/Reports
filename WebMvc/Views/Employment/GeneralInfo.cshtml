@@ -4,8 +4,10 @@
 }
 @{Html.EnableClientValidation();}
 @{Html.EnableUnobtrusiveJavaScript();}
-@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {
+    <input type="hidden" id="cmd" name="cmd" />
+    
     <div class="doc-wrap">
         <table>
             <tr>
@@ -46,7 +48,7 @@
                         @Html.Partial("Employment/NameChanges")
                     </div>
 
-                    <button id="add-name-change-button">Добавить новую запись</button>
+                    <button type="submit" id="add-name-change-button">Добавить новую запись</button>
                     </div>
                 </td>
             </tr>
@@ -169,9 +171,9 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#DateOfBirth').datepicker();
-        $('#add-name-change-button').click(function () {
-            
+        $("#DateOfBirth").datepicker();
+        $("#add-name-change-button").click(function () {
+            $("#cmd").val("add-name-change");
         });
     });
 </script>

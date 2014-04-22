@@ -1,6 +1,86 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.RosterModel
+@{
     ViewBag.Title = "Прием - Реестр по приему";
 }
 
-<h2>Roster</h2>
+<table>
 
+@foreach (var candidate in Model.Roster)
+{
+  
+    <tr>
+        
+        @* № по порядку *@
+        
+        <td>
+            @candidate.Name
+        </td>
+
+        @* Дирекция *@
+
+        <td>
+            @candidate.WorkCity
+        </td>
+
+        @* Структурное подразделение *@
+
+        <td>
+            @candidate.Position
+        </td>
+        
+        
+        <td>
+            @candidate.EmploymentDate
+        </td>
+        
+        <td>
+            @candidate.EmploymentOrderNumber
+        </td>
+        
+        <td>
+            @candidate.EmploymentOrderDate
+        </td>
+
+        <td>
+            @candidate.ContractNumber
+        </td>
+
+        <td>
+            @candidate.ContractDate
+        </td>
+
+        @* Вид работы (осн./совм.) *@
+        @* Характер работы (пост./врем.) *@
+
+        <td>
+            @candidate.ProbationaryPeriod
+        </td>
+
+        <td>
+            @candidate.Timetable
+        </td>
+
+        <td>
+            @candidate.DateOfBirth
+        </td>
+
+        <td>
+            @candidate.DateOfBirth
+        </td>
+
+        <td>
+            @candidate.Disabilities
+        </td>
+
+        <td>
+            @candidate.Grade
+        </td>
+
+        <td>
+            @candidate.Status
+        </td>
+
+    </tr>
+}
+
+</table>

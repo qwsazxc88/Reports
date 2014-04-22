@@ -29,5 +29,17 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "Квартира"),
             StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
         public string Appartment { get; set; }
+        [Display(Name = "Телефон рабочий"),
+            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+        public string WorkPhone { get; set; }
+        [Display(Name = "Телефон домашний"),
+            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+        public string HomePhone { get; set; }
+        [Display(Name = "Телефон мобильный"),
+            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+        public string Mobile { get; set; }
+        [Display(Name = "E-mail"),
+            StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
+        public string Email { get; set; }
     }
 }

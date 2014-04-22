@@ -7,7 +7,12 @@
 {
     <table>
         <tr>
-            <td style="width: 300px;">
+            <td colspan="2" style="width: 300px;">
+                Фактическое место жительства
+            </td>
+        </tr>
+        <tr>
+            <td>
                 @Html.LabelFor(m => m.ZipCode)
             </td>
             <td>
@@ -68,6 +73,43 @@
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Appartment)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                Контактные номера
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.WorkPhone)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.WorkPhone)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.HomePhone)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.HomePhone)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Mobile)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Mobile)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Email)
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Email)
             </td>
         </tr>
     </table>

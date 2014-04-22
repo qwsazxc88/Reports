@@ -1,6 +1,9 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment.PersonnelManagersModel
+@{
     ViewBag.Title = "Прием - Кадры";
 }
 
-<h2>PersonnelManagers</h2>
-
+@using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.EditorForModel()
+}

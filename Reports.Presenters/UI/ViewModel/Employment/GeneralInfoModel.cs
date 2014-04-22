@@ -68,5 +68,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment
 
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; }
+
+        public GeneralInfoModel()
+        {
+            this.NameChanges = new List<NameChangeDto>();
+        }
     }
 }

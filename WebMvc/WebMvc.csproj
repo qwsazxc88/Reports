@@ -654,6 +654,7 @@
     <Content Include="Views\Employment\CustomReport.cshtml" />
     <Content Include="Views\Employment\Signers.cshtml" />
     <Content Include="Views\Shared\Employment\NameChanges.cshtml" />
+    <Content Include="Views\Shared\Employment\HigherEducationDiplomas.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
