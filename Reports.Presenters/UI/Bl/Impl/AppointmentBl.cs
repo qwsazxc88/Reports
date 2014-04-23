@@ -50,6 +50,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
         public const int RequeredDepartmentLevel = 7;
+        public const int PasswordLength = 8;
 
         public virtual int GetRequeredDepartmentLevel()
         {
@@ -1371,14 +1372,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = currUser;
-                        entity.TempLogin = entity.Id.ToString(); 
-                        // todo need generate password
+                        entity.TempLogin = entity.Id.ToString();
+                        entity.TempPassword = CreatePassword(PasswordLength);
                     }
                 }
                 break;
                 case UserRole.OutsourcingManager:
                 break;
             }
+        }
+        public static string CreatePassword(int length)
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            string res = string.Empty;
+            Random rnd = new Random();
+            while (0 < length--)
+                res += valid[rnd.Next(valid.Length)];
+            return res;
+        }
+
+        public PrintLoginFormModel GetPrintLoginFormModel(int id)
+        {
+            AppointmentReport entity = AppointmentReportDao.Get(id);
+            if(entity == null)
+                throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+            return new PrintLoginFormModel
+                       {
+                           Login = entity.TempLogin,
+                           Password = entity.TempPassword,
+                           Name = entity.Name,
+                       };
         }
         #endregion
 

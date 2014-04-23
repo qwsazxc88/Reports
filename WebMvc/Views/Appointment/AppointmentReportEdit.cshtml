@@ -237,6 +237,9 @@
              <tr>
                 <td colspan="2">
                    <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id}) + "'");" @if (!Model.IsAddAvailable) {<text>style="display:none"</text>}/>
+                   <input type="button" value="Печать логина и пароля" name="PrintButton" onclick="window.location.href='@Url.Action("GetLoginPrintForm", new { id = Model.Id })';" 
+                                                                @if (!Model.IsPrintLoginAvailable) {<text>style="display:none"</text>}  />
+
                 </td>
               </tr>
         </table>

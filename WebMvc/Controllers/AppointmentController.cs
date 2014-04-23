@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using System.Web.Security;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Presenters.UI.Bl;
@@ -360,6 +364,89 @@ namespace WebMvc.Controllers
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
+        }
+
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
+        public ActionResult PrintLoginForm(int id)
+        {
+            PrintLoginFormModel model = AppointmentBl.GetPrintLoginFormModel(id);
+            return View(model);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
+        public ActionResult GetLoginPrintForm(int id)
+        {
+            string args = string.Format(@"id={0}",id);
+            return GetPrintForm(args, "PrintLoginForm");
+        }
+        [HttpGet]
+        public ActionResult GetPrintForm(string arguments, string actionName)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var argumrnts = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                    GetConverterCommandParam(arguments, actionName)
+                    , cookieName, authCookie.Value);
+                argumrnts.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = argumrnts.ToString(),
+                        UseShellExecute = true
+                    },
+                    EnableRaisingEvents = true
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return MissionOrderController.GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "MissionOrder.pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetPrintForm", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+        protected virtual string GetConverterCommandParam(string args, string actionName)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            string urlTemplate = string.Format("Appointment/{0}", actionName);
+            //string args = @"/" + id;
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}?{2}", localhostUrl, urlTemplate, args)
+                       : Url.Content(string.Format(@"{0}?{1}", urlTemplate, args));
         }
     }
 }

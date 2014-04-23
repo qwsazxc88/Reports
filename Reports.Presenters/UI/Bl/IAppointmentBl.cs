@@ -22,6 +22,7 @@ namespace Reports.Presenters.UI.Bl
         AppointmentReportEditModel GetAppointmentReportEditModel(int id);
         void ReloadDictionariesToModel(AppointmentReportEditModel model);
         bool SaveAppointmentReportEditModel(AppointmentReportEditModel model, UploadFileDto fileDto, out string error);
+        PrintLoginFormModel GetPrintLoginFormModel(int id);
 
 
         AttachmentModel GetFileContext(int id /*,int typeId*/);
