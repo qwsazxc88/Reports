@@ -1130,6 +1130,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteScanAvailable = state;
             model.IsManagerEditable = state;
             model.IsAddAvailable = state;
+            model.IsPrintLoginAvailable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
@@ -1156,7 +1157,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!entity.ManagerDateAccept.HasValue)
                                 model.IsManagerApproveAvailable = true;
                             else
+                            {
                                 model.IsManagerEditable = true;
+                                if(!string.IsNullOrEmpty(entity.TempLogin))
+                                    model.IsPrintLoginAvailable = true;
+                            }
                         }
                     }
                     break;
@@ -1366,6 +1371,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = currUser;
+                        entity.TempLogin = entity.Id.ToString(); 
+                        // todo need generate password
                     }
                 }
                 break;

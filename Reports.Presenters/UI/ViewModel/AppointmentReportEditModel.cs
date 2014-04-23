@@ -69,6 +69,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsEditable { get; set; }
         public bool IsManagerEditable { get; set; }
+        public bool IsPrintLoginAvailable { get; set; }
         public bool IsDeleted { get; set; }
         public string DeleteUser { get; set; }
         public bool IsDelete { get; set; }
