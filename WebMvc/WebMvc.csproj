@@ -659,6 +659,7 @@
   <ItemGroup>
     <None Include="Content\files\Памятка - командировки.doc" />
     <Content Include="Views\Appointment\AppointmentReportEdit.cshtml" />
+    <Content Include="Views\Appointment\PrintLoginForm.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
