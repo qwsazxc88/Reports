@@ -177,6 +177,7 @@
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
@@ -195,7 +196,7 @@
                     @Html.LabelFor(m => m.RejectReason):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.RejectReason, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                    @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
               <tr>
@@ -203,16 +204,16 @@
                     @Html.LabelFor(m => m.IsEducationExists):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.DateAccept):
+                    @Html.LabelFor(m => m.DateAccept)
                 </td>
                 <td>
-                    @if (Model.IsEditable)
+                    @if (Model.IsManagerEditable)
                     {
                         @Html.EditorFor(model => model.DateAccept)
                     }
@@ -233,6 +234,11 @@
                                                                                       {<text>style="display:none"</text>}/>
                 </td>
             </tr>
+             <tr>
+                <td colspan="2">
+                   <input type="button" value="Добавить кандидата"  onclick="@("window.location.href='" + @Url.Action("CreateReport", new { id = Model.Id}) + "'");" @if (!Model.IsAddAvailable) {<text>style="display:none"</text>}/>
+                </td>
+              </tr>
         </table>
     </div>
 }
@@ -245,38 +251,58 @@
     $(".hasDatepicker").width("75px");
    });
     function Delete() {
-        /*if(!ValidateForm())
-            return false;*/
+        if($("#IsManagerEditable").val())
+        {
+           clearControlErrors($("#DateAccept"));
+            if($("#DateAccept").val())
+            {
+                addControlError($("#DateAccept"),'Поле не может быть заполнено,если отчет отклоняется');
+                return false;
+            }
+        }
         $("#IsDelete").val("true");
         return true;
     }
     function ValidateForm()
     {
         var result = true;
-        clearControlErrors($("#EducationTime"));
-//        if($("#DepartmentId").val() == 0)
-//        {
-//            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
-//            result = false;
-//        }
-        if(!IsFieldNotEmpty($("#Name")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Phone")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Email")))
-            result = false;
-        else if (!isEmailAddress($("#Email").val()))
+        if($("#IsEditable").val())
         {
-            addControlError($("#Email"),'Неправильный адрес');
-            result = false;
-        }
-        if($("#TypeId").val() == 1)
-        {
-            if(!IsFieldNotEmpty($("#EducationTime")))
+            if(!IsFieldNotEmpty($("#Name")))
+                result = false;
+            if(!IsFieldNotEmpty($("#Phone")))
+                result = false;
+            if(!IsFieldNotEmpty($("#Email")))
+                result = false;
+            else if (!isEmailAddress($("#Email").val()))
+            {
+                addControlError($("#Email"),'Неправильный адрес');
+                result = false;
+            }
+            clearControlErrors($("#EducationTime"));
+            if($("#TypeId").val() == 1)
+            {
+                if(!IsFieldNotEmpty($("#EducationTime")))
+                    result = false;
+            }
+            if(!IsFieldNotEmpty($("#ColloquyDate")))
                 result = false;
         }
-        if(!IsFieldNotEmpty($("#ColloquyDate")))
-            result = false;
+        clearControlErrors($("#IsEducationExists"));
+        clearControlErrors($("#RejectReason"));
+        if($("#IsManagerEditable").val())
+        {
+            if(($("#DateAccept").val()) && ($("#IsEducationExists").val() == -1))
+            {
+                 addControlError($("#IsEducationExists"),'Нужно указать прошел ли кандидат обучение');
+                 result = false;
+            }
+            if($("#RejectReason").val())
+            {
+                addControlError($("#RejectReason"),'Поле не может быть заполнено,если указана дата приема кандидата на работу');
+                 result = false;
+            }
+        }
         return result;
     }
     function IsFieldNotEmpty(control)

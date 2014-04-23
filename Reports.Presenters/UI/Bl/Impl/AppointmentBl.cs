@@ -1128,6 +1128,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerRejectAvailable = state;
             model.IsStaffApproveAvailable = state;
             model.IsDeleteScanAvailable = state;
+            model.IsManagerEditable = state;
+            model.IsAddAvailable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
@@ -1146,35 +1148,40 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.Manager:
                     if (current.Id == entity.Appointment.Creator.Id 
-                        && entity.StaffDateAccept.HasValue
-                        && !entity.DeleteDate.HasValue)
+                       && !entity.DeleteDate.HasValue && !entity.DateAccept.HasValue)
                     {
-                        model.IsManagerRejectAvailable = true;
-                        if (!entity.ManagerDateAccept.HasValue)
-                            model.IsManagerApproveAvailable = true;
-                            
-                        
+                        if (entity.StaffDateAccept.HasValue)
+                        {
+                            model.IsManagerRejectAvailable = true;
+                            if (!entity.ManagerDateAccept.HasValue)
+                                model.IsManagerApproveAvailable = true;
+                            else
+                                model.IsManagerEditable = true;
+                        }
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue
+                    if (!entity.DeleteDate.HasValue && !entity.DateAccept.HasValue
                         && current.Id == entity.Appointment.AcceptStaff.Id)
                     {
-                        model.IsEditable = true;
-                        if (!entity.ManagerDateAccept.HasValue)
-                            model.IsManagerRejectAvailable = true;
-                        if (model.AttachmentId > 0)
+                        if(!entity.StaffDateAccept.HasValue)
                         {
-                            model.IsStaffApproveAvailable = true;
-                            model.IsDeleteScanAvailable = true;
+                            model.IsEditable = true;
+                            if (!entity.ManagerDateAccept.HasValue)
+                                model.IsManagerRejectAvailable = true;
+                            if (model.AttachmentId > 0)
+                            {
+                                model.IsStaffApproveAvailable = true;
+                                model.IsDeleteScanAvailable = true;
+                            }
                         }
+                        model.IsAddAvailable = true;
                     }
-                    
                     break;
                 case UserRole.OutsourcingManager:
                     break;
             }
-            model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable || model.IsStaffApproveAvailable;
+            model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable || model.IsStaffApproveAvailable;
         }
         protected void SetHiddenFields(AppointmentReportEditModel model, AppointmentReport entity)
         {
@@ -1239,6 +1246,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ReloadPage = true;
                     return false;
                 }
+                if (entity.DeleteDate.HasValue)
+                {
+                    error = "Отчет был отклонен.";
+                    model.ReloadPage = true;
+                    return false;
+                }
                 string fileName;
                 int? attachmentId = SaveAttachment(entity.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.AppointmentReport, out fileName);
                 if (attachmentId.HasValue)
@@ -1265,6 +1278,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 entity.DeleteDate = DateTime.Now;
                                 entity.DeleteUser = entity.Appointment.AcceptStaff;
+                                entity.RejectReason = model.RejectReason;
                             }
                             break;
                     }
@@ -1306,23 +1320,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User currUser = UserDao.Get(current.Id);
-            if (!model.IsDelete && model.IsEditable)
+            if (!model.IsDelete)
             {
-                entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
-                if(model.IsEducationExists > 0)
-                    entity.IsEducationExists = model.IsEducationExists == 1 ? true : false; 
-                else
-                    entity.IsEducationExists = new bool?();
-                //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
-                //model.UserId = entity.Creator.Id;
-                entity.Name = model.Name;
-                entity.Phone = model.Phone;
-                entity.Email = model.Email;
-                entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
-                entity.EducationTime = model.EducationTime;
-                entity.RejectReason = model.RejectReason;
-                if(!string.IsNullOrEmpty(model.DateAccept))
-                    entity.DateAccept = DateTime.Parse(model.DateAccept);
+                if (model.IsEditable)
+                {
+                    //model.IsEducationExists = !entity.IsEducationExists.HasValue ? 0 : (entity.IsEducationExists.Value ? 1 : 0);
+                    //model.UserId = entity.Creator.Id;
+                    entity.Type = AppointmentEducationTypeDao.Get(model.TypeId);
+                    entity.Name = model.Name;
+                    entity.Phone = model.Phone;
+                    entity.Email = model.Email;
+                    entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
+                    entity.EducationTime = model.EducationTime;
+                    //entity.RejectReason = model.RejectReason;
+                }
+                if (model.IsManagerEditable)
+                {
+                    if (model.IsEducationExists > 0)
+                        entity.IsEducationExists = model.IsEducationExists == 1 ? true : false;
+                    else
+                        entity.IsEducationExists = new bool?();
+                    if (!string.IsNullOrEmpty(model.DateAccept))
+                        entity.DateAccept = DateTime.Parse(model.DateAccept);
+                }
             }
             switch (current.UserRole)
             {

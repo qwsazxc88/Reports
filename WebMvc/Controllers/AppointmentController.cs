@@ -286,6 +286,9 @@ namespace WebMvc.Controllers
             if (!model.IsEditable)
             {
                 model.TypeId = model.TypeIdHidden;
+            }
+            if (!model.IsManagerEditable)
+            {
                 model.IsEducationExists = model.IsEducationExistsHidden;
             }
         }

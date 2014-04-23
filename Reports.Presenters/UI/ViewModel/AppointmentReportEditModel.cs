@@ -65,8 +65,10 @@ namespace Reports.Presenters.UI.ViewModel
         //public bool IsStaffReceiveRejectMail { get; set; }
         public bool IsStaffApprovedHidden { get; set; }
         public string StaffFio { get; set; }
+        public bool IsAddAvailable { get; set; }
 
         public bool IsEditable { get; set; }
+        public bool IsManagerEditable { get; set; }
         public bool IsDeleted { get; set; }
         public string DeleteUser { get; set; }
         public bool IsDelete { get; set; }
@@ -77,7 +79,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Отказано по причине")]
         public string RejectReason { get; set; }
 
-        [Display(Name = "Обучение пройдено/не   пройдено")]
+        [Display(Name = "Обучение пройдено/не пройдено")]
         public int IsEducationExists { get; set; }
         public int IsEducationExistsHidden { get; set; }
         public IList<IdNameDto> IsEducationExistsValues;
