@@ -1396,6 +1396,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport entity = AppointmentReportDao.Get(id);
             if(entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
+            if (entity.AcceptManager == null || CurrentUser.Id != entity.AcceptManager.Id)
+                throw new ValidationException(StrAccessIsDenied);
             return new PrintLoginFormModel
                        {
                            Login = entity.TempLogin,

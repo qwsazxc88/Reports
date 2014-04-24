@@ -411,13 +411,18 @@ namespace WebMvc.Controllers
                     {
                         FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
                         Arguments = argumrnts.ToString(),
-                        UseShellExecute = true
+                        UseShellExecute = true,
+                        //UseShellExecute = false,
+                        //RedirectStandardOutput = true,
+                        //RedirectStandardError = true,    
                     },
-                    EnableRaisingEvents = true
+                    EnableRaisingEvents = true,
                 };
                 serverSideProcess.Start();
+                //string stdoutx = serverSideProcess.StandardOutput.ReadToEnd();
+                //string stderrx = serverSideProcess.StandardError.ReadToEnd();       
                 serverSideProcess.WaitForExit();
-                return MissionOrderController.GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "MissionOrder.pdf");
+                return MissionOrderController.GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "TempLoginPassword.pdf");
             }
             catch (Exception ex)
             {

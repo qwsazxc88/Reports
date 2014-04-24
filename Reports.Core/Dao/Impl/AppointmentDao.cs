@@ -45,8 +45,19 @@ namespace Reports.Core.Dao.Impl
                                 v.Schedule as Schedule,
                                 v.Salary+v.Bonus as Salary,
                                 v.DesirableBeginDate as DesirableBeginDate,
-                                ar.Name as Reason
+                                ar.Name as Reason,
+                                r.[Id] as RId,
+                                r.[Number] as RNumber,
+                                case when r.[Id] is null then N'' else case when r.[StaffDateAccept] is null then N'Нет' else N'Да' end end as RStaffAccept,
+                                r.Name as RName,
+                                r.[Phone] as Phone,
+                                r.[Email] as Email,
+                                case when r.[Id] is null then  N'' else case when r.[DateAccept] is null then N'Нет' else N'Да' end end as RApprove,
+                                case when r.[Id] is null then  N'' else case when r.[DeleteDate] is null then N'' else r.[RejectReason] end end as RReject,
+                                ur.Name as StaffName
                                 from dbo.Appointment v
+                                left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
+                                left join [dbo].[Users] ur on ur.Id = r.CreatorId
                                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
                                 inner join dbo.Position aPos on v.PositionId = aPos.Id
                                 inner join [dbo].[Users] u on u.Id = v.CreatorId
@@ -63,24 +74,33 @@ namespace Reports.Core.Dao.Impl
         #endregion
                                 //{1}";
         public override IQuery CreateQuery(string sqlQuery)
-         {
-             return Session.CreateSQLQuery(sqlQuery).
-                 AddScalar("AppNumber", NHibernateUtil.Int32).
-                 AddScalar("Id", NHibernateUtil.Int32).
-                 AddScalar("EditDate", NHibernateUtil.DateTime).
-                 //AddScalar("UserId", NHibernateUtil.Int32).
-                 AddScalar("UserName", NHibernateUtil.String).
-                 AddScalar("PositionName", NHibernateUtil.String).
-                 AddScalar("ManDep7Name", NHibernateUtil.String).
-                 AddScalar("CanPosition", NHibernateUtil.String).
-                 AddScalar("Dep3Name", NHibernateUtil.String).
-                 AddScalar("Dep7Name", NHibernateUtil.String).
-                 AddScalar("Period", NHibernateUtil.String).
-                 AddScalar("Schedule", NHibernateUtil.String).
-                 AddScalar("Salary", NHibernateUtil.Decimal).
-                 AddScalar("DesirableBeginDate", NHibernateUtil.DateTime).
-                 AddScalar("Reason", NHibernateUtil.String).
-                 AddScalar("Number", NHibernateUtil.Int32);
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("AppNumber", NHibernateUtil.Int32).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                //AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("PositionName", NHibernateUtil.String).
+                AddScalar("ManDep7Name", NHibernateUtil.String).
+                AddScalar("CanPosition", NHibernateUtil.String).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("Dep7Name", NHibernateUtil.String).
+                AddScalar("Period", NHibernateUtil.String).
+                AddScalar("Schedule", NHibernateUtil.String).
+                AddScalar("Salary", NHibernateUtil.Decimal).
+                AddScalar("DesirableBeginDate", NHibernateUtil.DateTime).
+                AddScalar("Reason", NHibernateUtil.String).
+                AddScalar("RId", NHibernateUtil.Int32).
+                AddScalar("RNumber", NHibernateUtil.Int32).
+                AddScalar("RStaffAccept", NHibernateUtil.String).
+                AddScalar("RName", NHibernateUtil.String).
+                AddScalar("Phone", NHibernateUtil.String).
+                AddScalar("Email", NHibernateUtil.String).
+                AddScalar("RApprove", NHibernateUtil.String).
+                AddScalar("RReject", NHibernateUtil.String).
+                AddScalar("StaffName", NHibernateUtil.String).
+                AddScalar("Number", NHibernateUtil.Int32);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)

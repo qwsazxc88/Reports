@@ -18,6 +18,15 @@ namespace Reports.Core.Dto
                 public decimal Salary {get;set;}
                 public DateTime? DesirableBeginDate {get;set;}
                 public string Reason {get;set;}
+                public int? RId { get; set; }
+                public int? RNumber { get; set; }
+                public string RStaffAccept { get; set; }
+                public string RName { get; set; }
+                public string Phone { get; set; }
+                public string Email { get; set; }
+                public string RApprove { get; set; }
+                public string RReject { get; set; }
+                public string StaffName { get; set; }
                 public int Number {get;set;}
     }
 }
