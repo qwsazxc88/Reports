@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Script.Serialization;
 using System.Web.Security;
 using Reports.Core;
@@ -41,6 +42,7 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(appointmentBl);
             }
         }
+        #region Appointment
         [HttpGet]
         public ActionResult Index()
         {
@@ -215,7 +217,9 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsManagerApproved");
             }*/
         }
+        #endregion
 
+        #region AppointmentReport
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult AppointmentReportEdit(int id)
@@ -223,7 +227,13 @@ namespace WebMvc.Controllers
             AppointmentReportEditModel model = AppointmentBl.GetAppointmentReportEditModel(id);
             return View(model);
         }
-
+        [HttpGet]
+        [ReportAuthorize(UserRole.StaffManager)]
+        public ActionResult CreateReport(int id)
+        {
+            int newReportId = AppointmentBl.CreateNewReport(id);
+            return RedirectToAction("AppointmentReportEdit", new RouteValueDictionary { { "id", newReportId } });
+        }
         [HttpPost]
         public ActionResult AppointmentReportEdit(AppointmentReportEditModel model)
         {
@@ -297,6 +307,7 @@ namespace WebMvc.Controllers
             }
         }
 
+        #region FileContext
         public static UploadFileDto GetFileContext(HttpRequestBase request, ModelStateDictionary modelState)
         {
             if (request.Files.Count == 0)
@@ -329,7 +340,8 @@ namespace WebMvc.Controllers
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
         }
-
+        #endregion
+        #region Attachment
         public FileContentResult ViewAttachment(int id)
         {
             try
@@ -365,8 +377,8 @@ namespace WebMvc.Controllers
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
         }
-
-
+        #endregion
+        #region PrintLogin
         [HttpGet]
         [ReportAuthorize(UserRole.Manager)]
         public ActionResult PrintLoginForm(int id)
@@ -453,5 +465,7 @@ namespace WebMvc.Controllers
                        ? string.Format(@"{0}/{1}?{2}", localhostUrl, urlTemplate, args)
                        : Url.Content(string.Format(@"{0}?{1}", urlTemplate, args));
         }
+        #endregion
+        #endregion
     }
 }

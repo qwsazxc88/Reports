@@ -4,7 +4,7 @@ namespace Reports.Core.Dto
     public class AppointmentDto
     {
                 public int AppNumber {get;set;}
-                public int ReportNumber { get; set; }
+                //public int ReportNumber { get; set; }
                 public int Id {get;set;}
                 public DateTime EditDate { get; set; }
                 public string UserName {get;set;}

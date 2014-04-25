@@ -24,6 +24,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
         public const string StrIncorrectReasonId = "Неверное основание появления вакансии {0}.";
         public const string StrDepartmentNotFound = "Не найдено структурное подразделение (id {0}) в базе данных";
+        public const string StrDepartmentLevelNotFound = "Не указан уровень структурного подразделения (id {0}) в базе данных";
         public const string StrUserNotFound = "Не найден пользователь (id {0}) в базе данных";
         public const string StrEmailForAppointmentManagerAcceptIncorrectManagerLevel = "SendEmailForAppointmentManagerAccept - неверный уровень руководителя {0}";
         public const string StrEmailForAppointmentManagerAcceptIncorrectRole = "SendEmailForAppointmentManagerAccept - неверная роль пользователя {0}";
@@ -40,12 +41,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrEmailForAppointmentManagerRejectText = "Отменена заявка № {0} на подбор {1}, дирекция {2} сотрудником {3}";
         public const string StrEmailForAppointmentManagerRejectSubject = "Отмена заявки";
-       
 
         public const string StrAppointmentReportNotFound = "Не найден отчет (id {0}) в базе данных";
         public const string StrAppointmentReportIncorrectId = "Неправильный идентификатор отчета (0)";
         public const string StrAttachmentAlreadyExists = "Found existing attachment for appointment report id {0} and type {1} (id {2})";
-
+        public const string StrAppointmentWasDeleted = "Заявка на подбор сотрудника отклонена, создание отчета невозможно";
+        public const string CannotCreateReport = "Вам запрещено создание отчета";
 
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
@@ -471,6 +472,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             Department dep = DepartmentDao.Load(departmentId);
             if(dep == null)
                 throw new ArgumentException(string.Format(StrDepartmentNotFound,departmentId));
+            if (!dep.ItemLevel.HasValue)
+                throw new ArgumentException(string.Format(StrDepartmentLevelNotFound, departmentId));
             level = dep.ItemLevel.Value;
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
@@ -526,13 +529,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                Appointment entity = null;
-                if (model.Id != 0)
-                {
-                    entity = AppointmentDao.Load(model.Id);
-                    if(entity == null)
-                        throw new ValidationException(string.Format(StrAppointmentNotFound, model.Id));
-                }
+                Appointment entity;
+                /*if (model.Id != 0)
+                    entity = AppointmentDao.Get(model.Id);*/
                 /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
                 {
                     error = "Редактирование заявки запрещено";
@@ -554,6 +553,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
+                    entity = AppointmentDao.Get(model.Id);
+                    if (entity == null)
+                        throw new ValidationException(string.Format(StrAppointmentNotFound, model.Id));
                     if (entity.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -772,19 +774,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         entity.StaffDateAccept = DateTime.Now;
                         entity.AcceptStaff = currUser;
-                        CreateAppointmentReport(entity,currUser);
+                        CreateAppointmentReport(entity/*,currUser*/);
                     }
                     break;
                 case UserRole.OutsourcingManager:
                     break;
             }
         }
-        public void CreateAppointmentReport(Appointment entity,User creator)
+        public int CreateAppointmentReport(Appointment entity/*,User creator*/)
         {
             AppointmentReport report = new AppointmentReport
                                            {
                                                Appointment = entity,
-                                               Creator = creator,
+                                               Creator = entity.AcceptStaff,
                                                CreateDate = DateTime.Now,
                                                EditDate = DateTime.Now,
                                                Email = string.Empty,
@@ -794,6 +796,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                Type = AppointmentEducationTypeDao.Get(1), 
                                            };
             AppointmentReportDao.Save(report);
+            return report.Id;
         }
         #region Emails
         protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
@@ -817,7 +820,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
-            IdNameDto user;
+            //IdNameDto user;
             List<IdNameDto> users;
             switch (creator.UserRole)
             {
@@ -1081,13 +1084,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         public AppointmentReportEditModel GetAppointmentReportEditModel(int id)
         {
             AppointmentReportEditModel model = new AppointmentReportEditModel { Id = id };
-            AppointmentReport entity = null;
             //User creator;
             IUser current = AuthenticationService.CurrentUser;
             User currUser = UserDao.Load(current.Id);
             if(id == 0)
                 throw new ValidationException(StrAppointmentReportIncorrectId);
-            entity = AppointmentReportDao.Get(id);
+            AppointmentReport entity = AppointmentReportDao.Get(id);
             if (entity == null)
                 throw new ValidationException(string.Format(StrAppointmentReportNotFound, id));
             model.Version = entity.Version;
@@ -1283,7 +1285,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 && !entity.DateAccept.HasValue)
                             {
                                 entity.DeleteDate = DateTime.Now;
-                                entity.DeleteUser = entity.Appointment.AcceptStaff;
+                                entity.DeleteUser = entity.Appointment.Creator;
                                 entity.RejectReason = model.RejectReason;
                             }
                             break;
@@ -1326,6 +1328,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User currUser = UserDao.Get(current.Id);
+            bool dateAcceptSet = false;
             if (!model.IsDelete)
             {
                 if (model.IsEditable)
@@ -1340,6 +1343,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.EducationTime = model.EducationTime;
                     //entity.RejectReason = model.RejectReason;
                 }
+                
                 if (model.IsManagerEditable)
                 {
                     if (model.IsEducationExists > 0)
@@ -1347,7 +1351,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                         entity.IsEducationExists = new bool?();
                     if (!string.IsNullOrEmpty(model.DateAccept))
+                    {
                         entity.DateAccept = DateTime.Parse(model.DateAccept);
+                        dateAcceptSet = true;
+                    }
                 }
             }
             switch (current.UserRole)
@@ -1375,11 +1382,42 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
                     }
+                    if(!entity.DeleteDate.HasValue 
+                        && entity.Appointment.Creator.Id == current.Id 
+                        && dateAcceptSet)
+                            RejectReportsExceptId(entity.Appointment.Id,entity.Id,
+                                entity.Appointment.Creator, 
+                                string.Format("Другой кандидат принят на работу (отчет № {0})",entity.Number));
                 }
                 break;
                 case UserRole.OutsourcingManager:
                 break;
             }
+        }
+        protected void RejectReportsExceptId(int appointmentId,int exceptReportId,User user,string rejectReason)
+        {
+            List<AppointmentReport> list = AppointmentReportDao.LoadForAppointmentId(appointmentId);
+            foreach (AppointmentReport report in list)
+            {
+                if(report.Id != exceptReportId && !report.DeleteDate.HasValue)
+                {
+                    report.DeleteUser = user;
+                    report.DeleteDate = DateTime.Now;
+                    report.RejectReason = rejectReason;
+                    AppointmentReportDao.SaveAndFlush(report);
+                }
+            }
+        }
+        public int CreateNewReport(int otherReportId)
+        {
+            AppointmentReport entity = AppointmentReportDao.Get(otherReportId);
+            if (entity == null)
+                throw new ValidationException(string.Format(StrAppointmentReportNotFound, otherReportId));
+            if(entity.Appointment.DeleteDate.HasValue)
+                throw new ValidationException(string.Format(StrAppointmentWasDeleted));
+            if(CurrentUser.Id != entity.Appointment.AcceptStaff.Id)
+                throw new ValidationException(string.Format(CannotCreateReport));
+            return CreateAppointmentReport(entity.Appointment/*,entity.Appointment.AcceptStaff*/);
         }
         public static string CreatePassword(int length)
         {
@@ -1390,7 +1428,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 res += valid[rnd.Next(valid.Length)];
             return res;
         }
-
         public PrintLoginFormModel GetPrintLoginFormModel(int id)
         {
             AppointmentReport entity = AppointmentReportDao.Get(id);

@@ -31,7 +31,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForAppointmentList =
             @"select 
                                 v.Number as AppNumber,
-                                N'' as ReportNumber,
+                                -- N'' as ReportNumber,
                                 v.Id as Id,
                                 v.EditDate as EditDate,
                                 -- u.Id as UserId,
@@ -245,7 +245,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by AppNumber";
                     break;
                 case 2:
-                    orderBy += @" order by ReportNumber";
+                    orderBy += @" order by RNumber";
                     break;
                 case 3:
                     orderBy = @" order by UserName";
@@ -280,21 +280,27 @@ namespace Reports.Core.Dao.Impl
                 case 12:
                     orderBy = @" order by Reason";
                     break;
-                //case 13:
-                //    orderBy = @" order by BeginDate,EndDate";
-                //    break;
-                //case 14:
-                //    orderBy = @" order by NeedSecretary";
-                //    break;
-                //case 15:
-                //    orderBy = @" order by MissionKind";
-                //    break;
-                //case 16:
-                //    orderBy = @" order by AirTicketType";
-                //    break;
-                //case 17:
-                //    orderBy = @" order by TrainTicketType";
-                //    break;
+                case 13:
+                    orderBy = @" order by RStaffAccept";
+                    break;
+                case 14:
+                    orderBy = @" order by RName";
+                    break;
+                case 15:
+                    orderBy = @" order by Phone";
+                    break;
+                case 16:
+                    orderBy = @" order by Email";
+                    break;
+                case 17:
+                    orderBy = @" order by RApprove";
+                    break;
+                case 18:
+                    orderBy = @" order by RReject";
+                    break;
+                case 19:
+                    orderBy = @" order by StaffName";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -312,23 +318,26 @@ namespace Reports.Core.Dao.Impl
                 switch (statusId)
                 {
                     case 1://1, "Заявка создана"
-                        statusWhere = @"ManagerDateAccept is null ";
+                        statusWhere = @"v.ManagerDateAccept is null ";
                         break;
                     case 2://2, "Не одобрена вышестоящим руководителем"
-                        statusWhere = @"ManagerDateAccept is not null and ChiefDateAccept is null ";
+                        statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null ";
                         break;
                     case 3://3, "Одобрена вышестоящим руководителем"
-                        statusWhere = @"ChiefDateAccept is not null  ";
+                        statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
+                        break;
+                    case 4://4, "Принята в работу"
+                        statusWhere = @"v.StaffDateAccept is not null ";
                         break;
                     case 5://5, "Отменена"
-                        statusWhere = @"DeleteDate is not null";
+                        statusWhere = @"v.DeleteDate is not null";
                         break;
                    
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
                 if( statusId != 5)
-                    statusWhere += " and DeleteDate is null ";
+                    statusWhere += " and v.DeleteDate is null ";
                 if (whereString.Length > 0)
                     whereString += @" and ";
                 whereString += @" " + statusWhere;

@@ -17,7 +17,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool DepartmentReadOnly { get; set; }
 
 
-        [Display(Name = "Статус приказа")]
+        [Display(Name = "Статус заявки")]
         public int StatusId { get; set; }
 
         [Display(Name = "ФИО сотрудника")]
