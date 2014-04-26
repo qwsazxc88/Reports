@@ -1157,6 +1157,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerEditable = state;
             model.IsAddAvailable = state;
             model.IsPrintLoginAvailable = state;
+            model.IsColloquyDateEditable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
@@ -1181,11 +1182,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsManagerRejectAvailable = true;
                             if (!entity.ManagerDateAccept.HasValue)
+                            {
                                 model.IsManagerApproveAvailable = true;
+                                model.IsColloquyDateEditable = true;
+                            }
                             else
                             {
                                 model.IsManagerEditable = true;
-                                if(!string.IsNullOrEmpty(entity.TempLogin))
+                                if (!string.IsNullOrEmpty(entity.TempLogin))
                                     model.IsPrintLoginAvailable = true;
                             }
                         }
@@ -1372,7 +1376,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.EducationTime = model.EducationTime;
                     //entity.RejectReason = model.RejectReason;
                 }
-                
+                if(model.IsColloquyDateEditable)
+                {
+                    entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
+                }
                 if (model.IsManagerEditable)
                 {
                     if (model.IsEducationExists > 0)

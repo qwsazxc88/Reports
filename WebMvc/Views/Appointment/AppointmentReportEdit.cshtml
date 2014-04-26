@@ -101,7 +101,7 @@
                     @Html.LabelFor(m => m.ColloquyDate):
                 </td>
                 <td>
-                    @if (Model.IsEditable)
+                    @if (Model.IsEditable || Model.IsColloquyDateEditable)
                     {
                         @Html.EditorFor(model => model.ColloquyDate)
                     }
@@ -178,6 +178,7 @@
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
                 <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
+                <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
@@ -255,15 +256,18 @@
     $(".hasDatepicker").width("75px");
    });
     function Delete() {
+        var result = true;
         if($("#IsManagerEditable").val())
         {
-           clearControlErrors($("#DateAccept"));
+            clearControlErrors($("#DateAccept"));
             if($("#DateAccept").val())
             {
                 addControlError($("#DateAccept"),'Поле не может быть заполнено,если отчет отклоняется');
-                return false;
+                result = false;
             }
         }
+        if(!result)
+            return false;
         $("#IsDelete").val("true");
         return true;
     }
@@ -290,6 +294,11 @@
                     result = false;
             }
             if(!IsFieldNotEmpty($("#ColloquyDate")))
+                result = false;
+        }
+        if($("#IsColloquyDateEditable").val())
+        {
+             if(!IsFieldNotEmpty($("#ColloquyDate")))
                 result = false;
         }
         clearControlErrors($("#IsEducationExists"));
