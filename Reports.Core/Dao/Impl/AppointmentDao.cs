@@ -48,12 +48,20 @@ namespace Reports.Core.Dao.Impl
                                 ar.Name as Reason,
                                 r.[Id] as RId,
                                 r.[Number] as RNumber,
-                                case when r.[Id] is null then N'' else case when r.[StaffDateAccept] is null then N'Нет' else N'Да' end end as RStaffAccept,
+                                case when r.[Id] is null then N''
+                                     when r.[StaffDateAccept] is null then N'Нет' 
+                                     else N'Да' end as RStaffAccept,
                                 r.Name as RName,
                                 r.[Phone] as Phone,
                                 r.[Email] as Email,
-                                case when r.[Id] is null then  N'' else case when r.[DateAccept] is null then N'Нет' else N'Да' end end as RApprove,
-                                case when r.[Id] is null then  N'' else case when r.[DeleteDate] is null then N'' else r.[RejectReason] end end as RReject,
+                                case when r.[Id] is null then  N'' 
+                                     when r.[DateAccept] is null and r.[DeleteDate] is null then N''
+                                     when r.[DateAccept] is null then N'Нет' 
+                                     else N'Да' end as RApprove,
+                                case when r.[Id] is null then  N''
+                                     when r.[DateAccept] is null and r.[DeleteDate] is null then N'' 
+                                     when r.[DeleteDate] is null then N'' 
+                                     else r.[RejectReason] end as RReject,
                                 ur.Name as StaffName
                                 from dbo.Appointment v
                                 left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id

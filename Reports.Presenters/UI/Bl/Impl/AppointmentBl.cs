@@ -47,6 +47,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrAttachmentAlreadyExists = "Found existing attachment for appointment report id {0} and type {1} (id {2})";
         public const string StrAppointmentWasDeleted = "Заявка на подбор сотрудника отклонена, создание отчета невозможно";
         public const string CannotCreateReport = "Вам запрещено создание отчета";
+        public const string StrOtherReportUserAccepted = "Дата приема на работу уже указана для другого кандидата (отчет {0})";
+        public const string StrMultipleAccessError = "Отчет был изменен другим пользователем.";
+        public const string StrReportWasRejected = "Отчет был отклонен.";
+        public const string StrAppointmentWasRejected = "Заявка была отклонена.";
 
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
@@ -315,15 +319,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.AcceptStaff != null && entity.StaffDateAccept.HasValue)
                 model.StaffFio = entity.AcceptStaff.FullName;
 
+            bool isApprovedReportExists = AppointmentReportDao.IsApprovedReportForAppointmentIdExists(entity.Id);
             if(entity.DeleteDate.HasValue)
             {
-                /*if (entity.DeleteUser.Id == entity.Creator.Id)
-                    model.ManagerFio = entity.DeleteUser.FullName;
-                else
-                    model.ChiefFio = entity.DeleteUser.FullName;*/
                 model.DeleteUser = entity.DeleteUser.FullName;
                 if (entity.AcceptStaff != null)
-                    model.IsStaffReceiveRejectMail = true;// todo Need flag on entity ?
+                    model.IsStaffReceiveRejectMail = true;
+                // todo Need flag on entity ?
                 /*if (entity.AcceptStaff != null)
                     model.StaffFio = entity.AcceptStaff.FullName;*/
             }
@@ -332,7 +334,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     if(current.Id == entity.Creator.Id && !entity.DeleteDate.HasValue)
                     {
-                            model.IsManagerRejectAvailable = true;
+                            if(!isApprovedReportExists)
+                                model.IsManagerRejectAvailable = true;
                             if (!entity.ManagerDateAccept.HasValue)
                             {
                                 model.IsManagerApproveAvailable = true;
@@ -344,7 +347,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.Creator.Id != current.Id
                             && IsManagerChiefForCreator(current, entity.Creator))
                     {
-                            model.IsManagerRejectAvailable = true;
+                            if (!isApprovedReportExists)
+                                model.IsManagerRejectAvailable = true;
                             if (!entity.ChiefDateAccept.HasValue)
                                 model.IsChiefApproveAvailable = true;
                     }
@@ -455,7 +459,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsChiefApprovedHidden = model.IsChiefApproved;
             model.IsPersonnelApprovedHidden = model.IsPersonnelApproved;
             model.IsStaffApprovedHidden = model.IsStaffApproved;
-            model.DateCreatedHidden = model.DateCreated;
+            //model.DateCreatedHidden = model.DateCreated;
         }
         protected void SetManagerInfoModel(User user, ManagerInfoModel model)
         {
@@ -671,7 +675,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
-                            //todo need to reject reports
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
@@ -696,7 +700,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             EmailDto dto = SendEmailForAppointmentReject(currUser, entity);
                             if (!string.IsNullOrEmpty(dto.Error))
                                 error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",dto.Error);
-                            //todo need to reject reports
+                            RejectReports(entity.Id, currUser, "Заявка отклонена");
                             //if(entity.AcceptStaff != null)
                             //    SendEmailForAppointmentReject(entity.AcceptStaff, entity);
                         }
@@ -797,6 +801,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                                            };
             AppointmentReportDao.Save(report);
             return report.Id;
+        }
+        protected void RejectReports(int appointmentId,User user, string rejectReason)
+        {
+            List<AppointmentReport> list = AppointmentReportDao.LoadForAppointmentId(appointmentId);
+            foreach (AppointmentReport report in list)
+            {
+                if (!report.DeleteDate.HasValue)
+                {
+                    if (report.DateAccept.HasValue)
+                    {
+                        Log.ErrorFormat(StrOtherReportUserAccepted, report.Number);
+                        throw new ValidationException(string.Format(StrOtherReportUserAccepted, report.Number));
+                    }
+                    report.DeleteUser = user;
+                    report.DeleteDate = DateTime.Now;
+                    report.RejectReason = rejectReason;
+                    AppointmentReportDao.SaveAndFlush(report);
+                }
+            }
         }
         #region Emails
         protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
@@ -1206,7 +1229,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsEducationExistsHidden = model.IsEducationExists;
             model.IsManagerApprovedHidden = model.IsManagerApproved;
             model.IsStaffApprovedHidden = model.IsStaffApproved;
-            model.DateCreatedHidden = model.DateCreated;
+            //model.DateCreatedHidden = model.DateCreated;
         }
         protected void SetAttachmentToModel(IAttachment model, int id, RequestAttachmentTypeEnum type)
         {
@@ -1250,13 +1273,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }*/
                 if (entity.Version != model.Version)
                 {
-                    error = "Отчет был изменен другим пользователем.";
+                    error = StrMultipleAccessError;
                     model.ReloadPage = true;
                     return false;
                 }
                 if (entity.DeleteDate.HasValue)
                 {
-                    error = "Отчет был отклонен.";
+                    error = StrReportWasRejected;
+                    model.ReloadPage = true;
+                    return false;
+                }
+                if (entity.Appointment.DeleteDate.HasValue)
+                {
+                    error = StrAppointmentWasRejected;
                     model.ReloadPage = true;
                     return false;
                 }
@@ -1382,12 +1411,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
                     }
-                    if(!entity.DeleteDate.HasValue 
-                        && entity.Appointment.Creator.Id == current.Id 
-                        && dateAcceptSet)
-                            RejectReportsExceptId(entity.Appointment.Id,entity.Id,
-                                entity.Appointment.Creator, 
-                                string.Format("Другой кандидат принят на работу (отчет № {0})",entity.Number));
+                    if (!entity.DeleteDate.HasValue && entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
+                    {
+                        RejectReportsExceptId(entity.Appointment.Id, entity.Id, entity.Appointment.Creator,
+                                              string.Format("Другой кандидат принят на работу (отчет № {0})",
+                                                            entity.Number));
+                    }
                 }
                 break;
                 case UserRole.OutsourcingManager:
@@ -1401,6 +1430,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if(report.Id != exceptReportId && !report.DeleteDate.HasValue)
                 {
+                    if (report.DateAccept.HasValue)
+                    {
+                        Log.ErrorFormat(StrOtherReportUserAccepted, report.Number);
+                        throw new ValidationException(string.Format(StrOtherReportUserAccepted, report.Number));
+                    }
                     report.DeleteUser = user;
                     report.DeleteDate = DateTime.Now;
                     report.RejectReason = rejectReason;

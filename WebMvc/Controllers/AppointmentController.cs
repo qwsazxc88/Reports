@@ -142,9 +142,9 @@ namespace WebMvc.Controllers
                 else
                 {
                     DateTime createDate = DateTime.Today;
-                    if (!string.IsNullOrEmpty(model.DateCreatedHidden))
-                        DateTime.TryParse(model.DateCreatedHidden, out createDate);
-                    if(beginDate.Subtract(createDate).Days < 14)
+                    if (!string.IsNullOrEmpty(model.DateCreated))
+                        createDate = DateTime.Parse(model.DateCreated);
+                    if (beginDate.Subtract(createDate).Days < 14)
                         ModelState.AddModelError("DesirableBeginDate", StrDesirableBeginDateIsSmall);
                 }
             }

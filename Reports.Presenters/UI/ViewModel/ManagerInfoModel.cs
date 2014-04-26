@@ -6,7 +6,7 @@ namespace Reports.Presenters.UI.ViewModel
     {
         [Display(Name = "Дата составления")]
         public string DateCreated { get; set; }
-        public string DateCreatedHidden { get; set; }
+        //public string DateCreatedHidden { get; set; }
 
         [Display(Name = "Организация")]
         public string Organization { get; set; }

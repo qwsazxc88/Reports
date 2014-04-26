@@ -17,5 +17,13 @@ namespace Reports.Core.Dao.Impl
             return Session.CreateCriteria(typeof(AppointmentReport))
                           .Add(Restrictions.Eq("Appointment.Id", id)).List<AppointmentReport>().ToList();
         }
+        public virtual bool IsApprovedReportForAppointmentIdExists(int id)
+        {
+            List<AppointmentReport> list = Session.CreateCriteria(typeof(AppointmentReport))
+                          .Add(Restrictions.Eq("Appointment.Id", id))
+                          .Add(Restrictions.IsNotNull("DateAccept"))
+                          .List<AppointmentReport>().ToList();
+            return list.Count > 0;
+        }
     }
 }
