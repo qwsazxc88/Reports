@@ -3823,6 +3823,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(superPersonnelId.HasValue && currentUserId == superPersonnelId.Value)
                     return true;
             }
+            if (currentUserRole == UserRole.Employee)
+            {
+                return true;
+            }
             DateTime current = DateTime.Today;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
             if(current.Day == 1)
