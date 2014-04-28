@@ -42,6 +42,8 @@
             <input type="hidden" id="BabyMindingTypeIdHidden" name="BabyMindingTypeIdHidden" value="@Model.BabyMindingTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             <input type="hidden" id="SicklistTypeIdBabyMindingHidden" name="SicklistTypeIdBabyMindingHidden" value="@Model.SicklistTypeIdBabyMindingHidden" />
+            @Html.HiddenFor(model => Model.ExperienceIn1C)
+            @Html.HiddenFor(model => Model.IsExperienceEditable)
             @Html.LabelFor(m => m.TypeId):
         </td>
         <td>
@@ -120,6 +122,7 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
+    
     @if (!(Model.ExperienceIn1C == true))
     {
     <tr>
@@ -127,24 +130,8 @@
             @Html.LabelFor(m => m.ExperienceYears):
         </td>
         <td>
-          @*  @if (Model.IsPersonnelFieldsEditable)
-            {
-                @Html.EditorFor(model => model.ExperienceYears) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceYears))
-                                                                {<text> лет</text>} 
-                @Html.EditorFor(model => model.ExperienceMonthes) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceMonthes))
-                                                                  {<text> месяцев</text>}
-            }
-            else
-            {
-                @Html.DisplayFor(model => model.ExperienceYears) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceYears))
-                                                                 { <text> лет</text>} 
-                @Html.DisplayFor(model => model.ExperienceMonthes) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceMonthes))
-                                                                   { <text> месяцев</text>}
-                @Html.HiddenFor(model => model.ExperienceYears)
-                @Html.HiddenFor(model => model.ExperienceMonthes)
-            } *@
             @Html.TextBoxFor(model => model.ExperienceYears, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) лет
-            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев 
+            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев             
          </td>
     </tr>
     <tr>

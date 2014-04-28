@@ -3629,6 +3629,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
@@ -3645,10 +3646,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.OutsourcingManager:
-                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        break;
+                    case UserRole.PersonnelManager:                        
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
+                        // Разрешение редактирования стажа только для кадровиков банка
+                        if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
+                        {
+                            model.IsExperienceEditable = true;
+                        }
                         model.IsTypeEditable = true;
                         break;
                 }
@@ -3693,25 +3701,59 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.OutsourcingManager:
+                    // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
+                    if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
+                        user.ExperienceIn1C == true)
+                    {
+                        model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;                        
+                    }
+                    break;
                 case UserRole.PersonnelManager:
+                    // Разрешить согласование для кадровиков банка и аутсорсинга
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
-                        if (model.AttachmentId > 0 &&
-                            (currentUserRole == UserRole.PersonnelManager ||
-                            (currentUserRole == UserRole.OutsourcingManager && user.ExperienceIn1C != true)))
+                        if (model.AttachmentId > 0)
                         {
-                            model.IsApprovedEnable = true;
-                            model.IsApprovedForAllEnable = true;
+                            // Расчетчики аутсорсинга могут согласовать,
+                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
+                            {
+                                // если стаж есть в 1С или добавлен кадровиком банка
+                                if (user.ExperienceIn1C == true || model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0)
+                                {
+                                    model.IsApprovedEnable = true;
+                                    model.IsApprovedForAllEnable = true;
+                                }
+                            }
+                            // Кадровики банка могут согласовать,
+                            else
+                            {
+                                // если стаж добавлен вручную
+                                if (user.ExperienceIn1C != true && (model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0))
+                                {
+                                    model.IsApprovedEnable = true;
+                                    model.IsApprovedForAllEnable = true;
+                                }
+                            }
                         }
+
                         //model.IsApprovedByPersonnelManagerEnable = true;
+
+                        // разрешить редактирование документа кадровиками, если он еще не выгружен в 1С
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
+                            // Разрешение редактирования стажа только для кадровиков банка
+                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
+                            {
+                                model.IsExperienceEditable = true;
+                            }
                             model.IsDatesEditable = true;
                         }
                     }
+                    // Разрешить удаление, если согласовано всеми и выгружено в 1С
                     else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
@@ -3762,6 +3804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteAvailable = state;
 
             model.IsPersonnelFieldsEditable = state;
+            model.IsExperienceEditable = state;
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
@@ -3773,6 +3816,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool HaveAbsencesForPeriod(DateTime beginDate,DateTime endDate, int userId,
             int currentUserId,UserRole currentUserRole)
         {
+            // Не выдавать ошибки конфликта дат для расчетчиков аутсорсинга
             if(currentUserRole == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;

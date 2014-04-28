@@ -201,7 +201,7 @@ namespace Reports.Core.Dao.Impl
                                 userId, currentUser.Level));
                     }
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
-                    sqlQueryPart = String.Format(" u.Level>3 and {0} ) ", sqlQueryPart);
+                    sqlQueryPart = String.Format(" (u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
                     return sqlQueryPart;
 //                case UserRole.Director:
 //                    //User currUser = UserDao.Load(userId);
