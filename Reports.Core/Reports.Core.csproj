@@ -89,6 +89,10 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
+    <Compile Include="Dao\IAppointmentCommentDao.cs" />
+    <Compile Include="Dao\IAppointmentEducationTypeDao.cs" />
+    <Compile Include="Dao\IAppointmentReasonDao.cs" />
+    <Compile Include="Dao\IAppointmentReportDao.cs" />
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
@@ -143,12 +147,18 @@
     <Compile Include="Dao\Impl\AbsenceDao.cs" />
     <Compile Include="Dao\Impl\AbsenceTypeDao.cs" />
     <Compile Include="Dao\Impl\AccountDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentCommentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReportDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
     <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
+    <Compile Include="Dao\IAppointmentDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
@@ -269,6 +279,15 @@
     <Compile Include="Domain\AcceptRequestDate.cs" />
     <Compile Include="Domain\Account.cs" />
     <Compile Include="Domain\AccountingTransaction.cs" />
+    <Compile Include="Domain\Appointment.cs" />
+    <Compile Include="Domain\AppointmentComment.cs" />
+    <Compile Include="Domain\AppointmentCreateManager2ToDepartment2.cs" />
+    <Compile Include="Domain\AppointmentEducationType.cs" />
+    <Compile Include="Domain\AppointmentManager23ToDepartment3.cs" />
+    <Compile Include="Domain\AppointmentManager2ParentToManager2Child.cs" />
+    <Compile Include="Domain\AppointmentManager2ToManager3.cs" />
+    <Compile Include="Domain\AppointmentReason.cs" />
+    <Compile Include="Domain\AppointmentReport.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
@@ -365,6 +384,7 @@
     <Compile Include="Domain\MissionOrderRole.cs" />
     <Compile Include="Domain\MissionOrderRoleRecord.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
+    <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
     <Compile Include="Dto\ClearanceChecklistApprovalDto.cs" />
     <Compile Include="Dto\ClearanceChecklistDto.cs" />
@@ -372,6 +392,7 @@
     <Compile Include="Dto\DateTimeDto.cs" />
     <Compile Include="Dto\DeductionDto.cs" />
     <Compile Include="Dto\DepartmentChildrenDto.cs" />
+    <Compile Include="Dto\DepartmentDto.cs" />
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
@@ -409,6 +430,7 @@
     <Compile Include="Dto\UsersListItemDto.cs" />
     <Compile Include="Dto\VacationDto.cs" />
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
+    <Compile Include="Dto\SicklistDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
@@ -751,6 +773,31 @@
     <EmbeddedResource Include="Domain\MissionOrderRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Appointment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReason.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentManager23ToDepartment3.hbm.xml" />
+    <EmbeddedResource Include="Domain\AppointmentManager2ToManager3.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentManager2ParentToManager2Child.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentCreateManager2ToDepartment2.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReport.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentEducationType.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -21,7 +21,7 @@ namespace WebMvc.Controllers
         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep)]
     public class UserRequestController : BaseController
     {
-        public const int MaxCommentLength = 256;
+        
         public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;
@@ -828,7 +828,7 @@ namespace WebMvc.Controllers
                      UserRole role = AuthenticationService.CurrentUser.UserRole;
                      if ((role == UserRole.Employee && model.IsApprovedByUser) ||
                          (role == UserRole.Manager && model.IsApprovedByManager) ||
-                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))
+                         ((role == UserRole.PersonnelManager || role == UserRole.OutsourcingManager) && model.IsApprovedByPersonnelManager))
                      {
 
                          ModelState.AddModelError(string.Empty,
@@ -914,10 +914,9 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("SicklistNumber", "Номер больничного листа должен содержать 12 цифр");
              }
 
-
-             if (model.IsPersonnelFieldsEditable)
+             if (model.IsPersonnelFieldsEditable && AuthenticationService.CurrentUser.UserRole != UserRole.OutsourcingManager)
              {
-                 if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears))
+                 if (string.IsNullOrEmpty(model.ExperienceYears) && string.IsNullOrEmpty(model.ExperienceYears) && !(model.ExperienceIn1C == true))
                     ModelState.AddModelError("ExperienceYears", "Необходимо заполнить хотя бы одно из полей стажа.");
                  
                  if (!string.IsNullOrEmpty(model.ExperienceYears))
@@ -938,6 +937,10 @@ namespace WebMvc.Controllers
                          ModelState.AddModelError("ExperienceMonthes",
                                                   "Число месяцев стажа должно быть неотрицательным числом меньшим 12.");
                  }
+             }
+
+             if (model.IsPersonnelFieldsEditable)
+             {
                  if (!model.PaymentBeginDate.HasValue)
                      ModelState.AddModelError("PaymentBeginDate","'Назначить с даты' - обязательное поле.");
 

@@ -365,7 +365,7 @@ namespace WebMvc.Controllers
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
-                return GetFile(Response,Request,Server,filePath, fileName, @"application/pdf");
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "MissionOrder.pdf");
             }
             catch (Exception ex)
             {
@@ -388,7 +388,7 @@ namespace WebMvc.Controllers
             }
         }
         public static ActionResult GetFile(HttpResponseBase Response, HttpRequestBase Request,HttpServerUtilityBase Server,
-            string filePath, string fileName, string contentType)
+            string filePath, string fileName, string contentType, string userFileName)
         {
             byte[] value;
             using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
@@ -396,7 +396,7 @@ namespace WebMvc.Controllers
                 value = new byte[stream.Length];
                 stream.Read(value, 0, (int)stream.Length);
             }
-            const string userFileName = "MissionOrder.pdf";
+            //const string userFileName = "MissionOrder.pdf";
             //const string contentType = "application/pdf";
             Response.Clear();
             if (Request.Browser.Browser == "IE")
@@ -953,7 +953,7 @@ namespace WebMvc.Controllers
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
-                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf");
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "MissionOrder.pdf");
             }
             catch (Exception ex)
             {

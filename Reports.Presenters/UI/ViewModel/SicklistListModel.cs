@@ -40,7 +40,7 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<IdNameDto> Statuses;
 
         //[Display(Name = "Документы")]
-        public IList<VacationDto> Documents { get; set; }
+        public IList<SicklistDto> Documents { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

@@ -19,7 +19,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class RequestBl : BaseBl, IRequestBl
     {
-        protected string SelectAll = "Все";
+       
         protected string EmptyDepartmentName = string.Empty;
         protected string ChildVacationTimesheetStatusShortName = "ОЖ";
         protected string OKTMOFormatError = "Ошибка формата ОКТМО";
@@ -38,7 +38,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         //protected IUserToDepartmentDao userToDepartmentDao;
         protected ITimesheetStatusDao timesheetStatusDao;
         protected IVacationCommentDao vacationCommentDao;
-        protected IRequestNextNumberDao requestNextNumberDao;
+        //protected IRequestNextNumberDao requestNextNumberDao;
         protected IRoleDao roleDao;
 
         protected IAbsenceTypeDao absenceTypeDao;
@@ -129,11 +129,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(vacationCommentDao); }
             set { vacationCommentDao = value; }
         }
-        public IRequestNextNumberDao RequestNextNumberDao
+        /*public IRequestNextNumberDao RequestNextNumberDao
         {
             get { return Validate.Dependency(requestNextNumberDao); }
             set { requestNextNumberDao = value; }
-        }
+        }*/
         public IAbsenceTypeDao AbsenceTypeDao
         {
             get { return Validate.Dependency(absenceTypeDao); }
@@ -569,7 +569,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
 
            
-            result.AddRange(SicklistDao.GetDocuments(
+            result.AddRange(SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 model.DepartmentId,
@@ -3264,7 +3264,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
             if(hasError)
-                model.Documents = new List<VacationDto>();
+                model.Documents = new List<SicklistDto>();
             else
                 SetDocumentsToModel(model, user);
         }
@@ -3279,7 +3279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(SicklistListModel model, User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            model.Documents = SicklistDao.GetDocuments(
+            model.Documents = SicklistDao.GetSicklistDocuments(
                 user.Id,
                 role,
                 //GetDepartmentId(model.Department),
@@ -3629,6 +3629,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (id == 0)
             {
                 model.IsSaveAvailable = true;
@@ -3645,10 +3646,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         //model.IsTimesheetStatusEditable = true;
                         break;
                     case UserRole.OutsourcingManager:
-                    case UserRole.PersonnelManager:
+                        model.IsApprovedByPersonnelManagerEnable = false;
+                        break;
+                    case UserRole.PersonnelManager:                        
                         model.IsApprovedByPersonnelManagerEnable = false;
                         model.IsTimesheetStatusEditable = true;
                         model.IsPersonnelFieldsEditable = true;
+                        // Разрешение редактирования стажа только для кадровиков банка
+                        if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
+                        {
+                            model.IsExperienceEditable = true;
+                        }
                         model.IsTypeEditable = true;
                         break;
                 }
@@ -3693,24 +3701,60 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.OutsourcingManager:
+                    // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
+                    if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
+                        user.ExperienceIn1C == true)
+                    {
+                        model.IsApprovedEnable = true;
+                        model.IsApprovedForAllEnable = true;                        
+                    }
+                    break;
                 case UserRole.PersonnelManager:
+                    // Разрешить согласование для кадровиков банка и аутсорсинга
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
                         {
-                            model.IsApprovedEnable = true;
-                            model.IsApprovedForAllEnable = true;
+                            // Расчетчики аутсорсинга могут согласовать,
+                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
+                            {
+                                // если стаж есть в 1С или добавлен кадровиком банка
+                                if (user.ExperienceIn1C == true || model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0)
+                                {
+                                    model.IsApprovedEnable = true;
+                                    model.IsApprovedForAllEnable = true;
+                                }
+                            }
+                            // Кадровики банка могут согласовать,
+                            else
+                            {
+                                // если стаж добавлен вручную
+                                if (user.ExperienceIn1C != true && (model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0))
+                                {
+                                    model.IsApprovedEnable = true;
+                                    model.IsApprovedForAllEnable = true;
+                                }
+                            }
                         }
+
                         //model.IsApprovedByPersonnelManagerEnable = true;
+
+                        // разрешить редактирование документа кадровиками, если он еще не выгружен в 1С
                         if (!entity.SendTo1C.HasValue)
                         {
                             model.IsTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
+                            // Разрешение редактирования стажа только для кадровиков банка
+                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
+                            {
+                                model.IsExperienceEditable = true;
+                            }
                             model.IsDatesEditable = true;
                         }
                     }
-                    else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    // Разрешить удаление, если согласовано всеми и выгружено в 1С
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
                     /*
@@ -3760,6 +3804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleteAvailable = state;
 
             model.IsPersonnelFieldsEditable = state;
+            model.IsExperienceEditable = state;
 
             model.IsApproved = state;
             model.IsApprovedEnable = state;
@@ -3771,6 +3816,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool HaveAbsencesForPeriod(DateTime beginDate,DateTime endDate, int userId,
             int currentUserId,UserRole currentUserRole)
         {
+            // Не выдавать ошибки конфликта дат для расчетчиков аутсорсинга
             if(currentUserRole == UserRole.PersonnelManager)
             {
                 int? superPersonnelId = ConfigurationService.SuperPersonnelId;
@@ -3821,12 +3867,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             return model;
         }
-        public static void SetInitialDates(BeginEndCreateDate model)
-        {
-            DateTime today = DateTime.Today;
-            model.BeginDate = new DateTime(today.Year,today.Month,1);
-            model.EndDate = today;
-        }
+        
         protected List<IdNameDto> GetAbsenceTypes(bool addAll)
         {
             var typeList = AbsenceTypeDao.LoadAllSorted().
@@ -4828,6 +4869,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
             model.UserNumber = user.Code;
+            model.UserEmail = user.Email;
         }
         protected List<IdNameDto> GetTimesheetStatusesForVacation()
         {
@@ -7347,14 +7389,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetHiddenFields(model);
             return model;
         }
-        public static string FormatSum(decimal sum)
-        {
-            return (int)sum == sum ? ((int)sum).ToString(): sum.ToString("0.00");
-        }
-        public static string FormatSum(decimal? sum)
-        {
-            return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
-        }
+        
         public bool CheckOtherOrdersExists(MissionOrderEditModel model)
         {
             return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),

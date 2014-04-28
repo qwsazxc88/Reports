@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using log4net;
@@ -20,13 +16,14 @@ namespace WebMvc.Attributes
         //The Error Message that will be displayed in case of excessive Requests
         public string ErrorMessage = "Форма отправлена повторно.";
         //This will store the URL to Redirect errors to
-        public string redirectURL=@"~/Error/DoubleSubmitError";
+        public string redirectURL = @"~/Error/DoubleSubmitError";
         //public string CookieName = "Unique";
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            var cache = filterContext.HttpContext.Cache;
-            if (filterContext.ActionParameters == null || filterContext.ActionParameters.Count() == 0 || !filterContext.ActionParameters.ContainsKey("model"))
+            Cache cache = filterContext.HttpContext.Cache;
+            if (filterContext.ActionParameters == null || filterContext.ActionParameters.Count() == 0 ||
+                !filterContext.ActionParameters.ContainsKey("model"))
             {
                 base.OnActionExecuting(filterContext);
                 return;
@@ -40,17 +37,17 @@ namespace WebMvc.Attributes
                 // wasn't of the expected type => no need to continue any further
                 return;
             }
-            if(model.Guid != null)
+            if (model.Guid != null)
             {
                 string guid = model.Guid;
                 if (cache[guid] != null)
                 {
-                    int count = (int)cache[guid];
+                    var count = (int) cache[guid];
                     count++;
                     cache[guid] = count;
-                    if (count > 1 )
+                    if (count > 1)
                     {
-                        Log.ErrorFormat("Double submit error for request {0}, user {1}",idModel.Id,idModel.UserId);
+                        Log.ErrorFormat("Double submit error for request {0}, user {1}", idModel.Id, idModel.UserId);
                         //filterContext.Controller.ViewData.ModelState.AddModelError(string.Empty, ErrorMessage););
                         if (idModel.Id == 0)
                         {
@@ -60,7 +57,7 @@ namespace WebMvc.Attributes
                     }
                     model.Guid = (Guid.NewGuid()).ToString();
                     cache.Add(model.Guid, 0, null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration,
-                                CacheItemPriority.Default, null);
+                              CacheItemPriority.Default, null);
                 }
                 else
                 {
@@ -68,7 +65,6 @@ namespace WebMvc.Attributes
                     cache.Add(model.Guid, 0, null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration,
                               CacheItemPriority.Default, null);
                 }
-
             }
             else
             {
@@ -97,7 +93,7 @@ namespace WebMvc.Attributes
             //    filterContext.HttpContext.Response.AddHeader(CookieName,newGuid);
             //    cache.Add(newGuid, 0, null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             //}
-            
+
             //////Store our HttpContext (for easier reference and code brevity)
             ////var request = filterContext.HttpContext.Request;
             //////Store our HttpContext.Cache (for easier reference and code brevity)
@@ -127,11 +123,11 @@ namespace WebMvc.Attributes
             ////    //if the Request is valid or not
             ////    cache.Add(hashValue, new Guid(), null, DateTime.Now.AddSeconds(DelayRequest), Cache.NoSlidingExpiration, CacheItemPriority.Default, null);
             ////}
-            
         }
+
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
-            var cache = filterContext.HttpContext.Cache;
+            Cache cache = filterContext.HttpContext.Cache;
             var result = filterContext.Result as ViewResultBase;
             if (result == null)
             {

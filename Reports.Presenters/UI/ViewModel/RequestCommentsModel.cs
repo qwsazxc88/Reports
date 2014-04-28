@@ -15,4 +15,12 @@ namespace Reports.Presenters.UI.ViewModel
         public string CreatedDate { get; set; }
         public string Comment { get; set; }
     }
+
+    public class CommentsModel
+    {
+        public int RequestId { get; set; }
+        public int RequestTypeId { get; set; }
+        public IList<RequestCommentModel> Comments { get; set; }
+        public bool IsAddAvailable { get; set; }
+    }
 }

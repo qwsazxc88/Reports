@@ -1,0 +1,35 @@
+﻿@model Reports.Presenters.UI.ViewModel.PrintLoginFormModel
+@{
+    Layout = null;
+    ViewBag.Title = "Временные логин и пароль кандидата";
+}           
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+            <tr>
+                <td style='width:25%'>
+                    @Html.LabelFor(m => m.Name):
+                </td>
+                <td>
+                     <label>@Model.Name</label>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.Login):
+                </td>
+                <td>
+                     <label>@Model.Login</label>
+                </td>
+            </tr>
+              <tr>
+                <td>
+                    @Html.LabelFor(m => m.Password):
+                </td>
+                <td>
+                     <label>@Model.Password</label>
+                </td>
+            </tr>
+    </table>
+}
+

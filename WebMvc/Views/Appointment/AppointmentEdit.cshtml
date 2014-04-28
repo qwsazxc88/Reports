@@ -1,0 +1,442 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.AppointmentEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutAppointment.cshtml";
+    ViewBag.Title = "Заявка на подбор сотрудника";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Partial("ManagerInfoView", Model)
+                </td>
+            </tr>
+            @if (Model.IsDeleted)
+            { 
+            <tr>
+                <td colspan="2" style="color:Red">Заявка отклонена. Отклонил(а) @Model.DeleteUser</td>
+            </tr>
+            }
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.DepartmentName):
+                </td>
+                <td>
+                    <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                    <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                    <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                    <input type="hidden" id="DepartmentRequiredLevel" name="DepartmentRequiredLevel" value="@Model.DepartmentRequiredLevel" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                  @*  <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />*@
+                    @if (Model.IsEditable)
+                    {
+                        <input type="button" id="SelectDepartmentBtn" value="Выбрать" onclick="changeDepartment();"/>
+                    }            
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.City):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.City, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PositionId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PositionIdHidden" name="PositionIdHidden" value="@Model.PositionIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.VacationCount):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.VacationCount, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+            <tr>
+                <td style="width:270px">
+                    @Html.LabelFor(m => m.ReasonId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ReasonId, new SelectList(Model.Reasons, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onReasonChange();" } : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                  <span id="ReasonPositionLabel">Должность:</span>
+                    @*@Html.LabelFor(m => m.ReasonPosition):*@
+                </td>
+                <td>
+                   @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr  id="ReasonDateTr">
+                <td>
+                    <span id="ReasonDateLabel">С даты:</span>
+                    @*@Html.LabelFor(m => m.ReasonBeginDate):*@
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.ReasonBeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.ReasonBeginDate)
+                        @Html.HiddenFor(model => model.ReasonBeginDate)
+                    } 
+                </td>
+            </tr>
+            @* <tr>
+               <td colspan="2">
+                   @Html.TextBoxFor(model => model.ReasonPersonnelStore, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Period):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Period, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.Schedule):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Schedule, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Salary):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Salary, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.Bonus):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Bonus, Model.IsEditable ? (object)new { @class = "fixedSize" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.TypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Compensation):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Compensation, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.EducationRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.EducationRequirements, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ExperienceRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.ExperienceRequirements, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.OtherRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AdditionalRequirements):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.AdditionalRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+               <tr>
+                <td>
+                    @Html.LabelFor(m => m.Responsibility):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Responsibility, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DesirableBeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.DesirableBeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.DesirableBeginDate)
+                        @Html.HiddenFor(model => model.DesirableBeginDate)
+                    } 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsVacationExists):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.IsVacationExists, new SelectList(Model.IsVacationExistsValues, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="IsVacationExistsHidden" name="IsVacationExistsHidden" value="@Model.IsVacationExistsHidden" />
+                </td>
+            </tr>
+            @* <tr>
+                <td>
+                    @Html.LabelFor(m => m.BeginDate):
+                </td>
+                <td>
+                    @if (Model.IsEditable)
+                    {
+                        @Html.EditorFor(model => model.BeginDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.BeginDate)
+                        @Html.HiddenFor(model => model.BeginDate)
+                    } 
+                </td>
+            </tr>*@
+             <tr>
+                <td>
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
+                    @Html.LabelFor(m => m.IsManagerApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsManagerApproved", Model.IsManagerApproved, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                   @* @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить*@
+                    <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
+                    <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
+                    <input type="hidden" id="IsManagerRejectAvailable" name="IsManagerRejectAvailable" value="@Model.IsManagerRejectAvailable" />
+                    @Model.ManagerFio
+                    <input type="hidden" id="ManagerFio" name="ManagerFio" value="@Model.ManagerFio" />
+                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsChiefApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsChiefApproved", Model.IsChiefApproved, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                  @*  @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Отправить на согласование
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsManagerRejectAvailable ? null : (object)new { disabled = "disabled" }) Отменить*@
+                    <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
+                    <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
+                     @Model.ChiefFio
+                     <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsPersonnelApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsPersonnelApproved", Model.IsPersonnelApproved, Model.IsPersonnelApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Отправить на согласование
+                    <input type="hidden" id="IsPersonnelApproveAvailable" name="IsPersonnelApproveAvailable" value="@Model.IsPersonnelApproveAvailable" />
+                    <input type="hidden" id="IsPersonnelApprovedHidden" name="IsPersonnelApprovedHidden" value="@Model.IsPersonnelApprovedHidden" />
+                     @Model.PersonnelFio
+                     <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsStaffApproved):
+                </td>
+                <td>
+                    @Html.CheckBox("IsStaffApproved", Model.IsStaffApproved, Model.IsStaffApproveAvailable ? null : (object)new { disabled = "disabled" }) 
+                    Принял в работу
+                    @Html.CheckBox("IsStaffReceiveRejectMail", Model.IsStaffReceiveRejectMail, (object)new { disabled = "disabled" }) 
+                    Уведомлен об отклонении заявки
+                    <input type="hidden" id="IsStaffApproveAvailable" name="IsStaffApproveAvailable" value="@Model.IsStaffApproveAvailable" />
+                    <input type="hidden" id="IsStaffApprovedHidden" name="IsStaffApprovedHidden" value="@Model.IsStaffApprovedHidden" />
+                    @Model.StaffFio
+                    <input type="hidden" id="StaffFio" name="StaffFio" value="@Model.StaffFio" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                </td>
+                <td style="text-align:right">
+                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+ var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+ var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+  $(document).ready(function () {
+    $("#BeginDate").datepicker();
+    $("#DesirableBeginDate").datepicker();
+    $("#ReasonBeginDate").datepicker();
+    $(".hasDatepicker").width("75px");
+    onReasonChange();
+   });
+    function Delete() {
+        /*if(!ValidateForm())
+            return false;*/
+        $("#IsDelete").val("true");
+        return true;
+    }
+    function ValidateForm()
+    {
+        var result = true;
+        clearControlErrors($("#SelectDepartmentBtn"));
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            result = false;
+        }
+        if(!IsFieldNotEmpty($("#City")))
+            result = false;
+        if(!IsFieldNotEmpty($("#VacationCount")))
+            result = false;
+        else if( ValidateInt($("#VacationCount")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#ReasonPosition")))
+            result = false;
+        if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
+        {
+            if(!IsFieldNotEmpty($("#ReasonBeginDate")))
+                result = false;
+//            else
+//            {
+//                var strDate = $("#ReasonBeginDate").val().split("T")[0];
+//                strDate = strDate.replace('.', '-')
+//                var date = jQuery.datepicker.parseDate( "dd-mm-yyyy", strDate);
+//            }
+        }
+        if(!IsFieldNotEmpty($("#Period")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Schedule")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Salary")))
+            result = false;
+        else if (ValidateSumC($("#Salary")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Bonus")))
+            result = false;
+        else if (ValidateSumNotNegative($("#Bonus")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Compensation")))
+            result = false;
+        if(!IsFieldNotEmpty($("#EducationRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#ExperienceRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Responsibility")))
+            result = false;
+        if(!IsFieldNotEmpty($("#DesirableBeginDate")))
+            result = false;
+        return result;
+    }
+    function IsFieldNotEmpty(control)
+    {
+        clearControlErrors(control);
+        if(control.val() == '' )
+        {
+            addControlError(control,'Обязательное поле');
+            return false;
+        }
+        return true;
+    }
+    function onReasonChange()
+    {
+        var reasonId = $("#ReasonId").val();
+        switch(reasonId)
+        {
+            case '1':
+                $("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+            break
+            case '2':
+                $("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+            break
+            case '3':
+                $("#ReasonPositionLabel").text('');
+            break
+            case '4':
+                $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
+                $("#ReasonDateLabel").text('Дата ухода:');
+            break
+            case '5':
+                $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
+                $("#ReasonDateLabel").text('Дата увольнения:');
+            break
+        }
+        if(reasonId == 3)
+            $("#ReasonDateTr").hide();
+        else
+            $("#ReasonDateTr").show();
+            
+    }
+</script> 

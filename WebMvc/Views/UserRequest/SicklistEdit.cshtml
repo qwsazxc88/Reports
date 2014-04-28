@@ -42,6 +42,8 @@
             <input type="hidden" id="BabyMindingTypeIdHidden" name="BabyMindingTypeIdHidden" value="@Model.BabyMindingTypeIdHidden" />
             <input type="hidden" id="DaysCountHidden" name="DaysCountHidden" value="@Model.DaysCountHidden" />
             <input type="hidden" id="SicklistTypeIdBabyMindingHidden" name="SicklistTypeIdBabyMindingHidden" value="@Model.SicklistTypeIdBabyMindingHidden" />
+            @Html.HiddenFor(model => Model.ExperienceIn1C)
+            @Html.HiddenFor(model => Model.IsExperienceEditable)
             @Html.LabelFor(m => m.TypeId):
         </td>
         <td>
@@ -120,6 +122,7 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
+    
     @if (!(Model.ExperienceIn1C == true))
     {
     <tr>
@@ -127,27 +130,10 @@
             @Html.LabelFor(m => m.ExperienceYears):
         </td>
         <td>
-          @*  @if (Model.IsPersonnelFieldsEditable)
-            {
-                @Html.EditorFor(model => model.ExperienceYears) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceYears))
-                                                                {<text> лет</text>} 
-                @Html.EditorFor(model => model.ExperienceMonthes) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceMonthes))
-                                                                  {<text> месяцев</text>}
-            }
-            else
-            {
-                @Html.DisplayFor(model => model.ExperienceYears) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceYears))
-                                                                 { <text> лет</text>} 
-                @Html.DisplayFor(model => model.ExperienceMonthes) if (Model.IsPersonnelFieldsEditable || !string.IsNullOrEmpty(Model.ExperienceMonthes))
-                                                                   { <text> месяцев</text>}
-                @Html.HiddenFor(model => model.ExperienceYears)
-                @Html.HiddenFor(model => model.ExperienceMonthes)
-            } *@
             @Html.TextBoxFor(model => model.ExperienceYears, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) лет
-            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев 
+            @Html.TextBoxFor(model => model.ExperienceMonthes, Model.IsPersonnelFieldsEditable ? null : (object)new { @readonly = "readonly" }) месяцев             
          </td>
     </tr>
-    }
     <tr>
         <td>
             @Html.LabelFor(m => m.PaymentPercentTypeId):
@@ -157,6 +143,7 @@
             <input type="hidden" id="PaymentPercentTypeIdHidden" name="PaymentPercentTypeIdHidden" value="@Model.PaymentPercentTypeIdHidden" />
         </td>
     </tr>
+    }    
     <tr>
         <td>
             @Html.LabelFor(m => m.PaymentRestrictTypeId):
@@ -272,9 +259,9 @@
      <tr>
         <td colspan="2">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                              {<text>style="display:none"</text>}/>
             <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
-                                                                            {<text>style="display:none"</text>}/>
+                                                                                                                     {<text>style="display:none"</text>}/>
             </div>
          </td>
     </tr>
@@ -287,21 +274,31 @@
                         <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
                         <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
                         <input type="submit" value="Отправить на согласование" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
-                                                                        {<text>style="display:none"</text>}/>  
+                                                                                                                              {<text>style="display:none"</text>}/>  
                                                                         
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                        {<text>style="display:none"</text>}/>                     
+                                                                                                                  {<text>style="display:none"</text>}/>                     
             </td>
     </tr>
     <tr>
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
-                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser)
+                                                                                                           {<text>checked="checked"</text>} />
                 @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, (object)new { disabled = "disabled" }) *@
 
                 @Html.LabelFor(model => model.IsApprovedByUser)
+                @if(Model.UserEmail != "")
+                {
+                    @:(<a href="mailto:@Model.UserEmail">@Model.UserName</a>)
+                }
+                else
+                {
+                    @:(@Model.UserName)
+                }
+
                 @if (!Model.IsApprovedByUserEnable)
                 {
                     <input type="hidden" id="IsApprovedByUserHidden" name="IsApprovedByUserHidden" value="@Model.IsApprovedByUser" />
@@ -317,7 +314,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
                 @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager)
+                                                                                                                 {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByManager) (@Model.ApprovedByManager)
                 @if (!Model.IsApprovedByManagerEnable)
                 {

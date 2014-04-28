@@ -398,6 +398,22 @@ namespace Reports.Core
              ImplementedBy(typeof(MissionPurchaseBookRecordDao)).
              LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IAppointmentCommentDao)).
+                ImplementedBy(typeof(AppointmentCommentDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentDao)).
+                ImplementedBy(typeof(AppointmentDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentReasonDao)).
+                ImplementedBy(typeof(AppointmentReasonDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentReportDao)).
+               ImplementedBy(typeof(AppointmentReportDao)).
+               LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentEducationTypeDao)).
+               ImplementedBy(typeof(AppointmentEducationTypeDao)).
+               LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

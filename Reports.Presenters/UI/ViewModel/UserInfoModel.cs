@@ -32,6 +32,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Кадровик(и)")]
         public string PersonnelName { get; set; }
 
+        [Display(Name = "E-mail")]
+        public string UserEmail { get; set; }
+
         //public string Prefix = "К";
         //public string DocPrefix = "КУ";
     }

@@ -108,10 +108,12 @@
     <Compile Include="Services\IUser.cs" />
     <Compile Include="UI\Attributes.cs" />
     <Compile Include="UI\Bl\IAdminBl.cs" />
+    <Compile Include="UI\Bl\IAppointmentBl.cs" />
     <Compile Include="UI\Bl\IAutoComplete.cs" />
     <Compile Include="UI\Bl\IBaseBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
     <Compile Include="UI\Bl\Impl\AdminBl.cs" />
+    <Compile Include="UI\Bl\Impl\AppointmentBl.cs" />
     <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
@@ -126,6 +128,9 @@
     <Compile Include="UI\ViewModel\AddAttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AddCommentModel.cs" />
     <Compile Include="UI\ViewModel\AllRequestListModel.cs" />
+    <Compile Include="UI\ViewModel\AppointmentEditModel.cs" />
+    <Compile Include="UI\ViewModel\AppointmentListModel.cs" />
+    <Compile Include="UI\ViewModel\AppointmentReportEditModel.cs" />
     <Compile Include="UI\ViewModel\AttachmentModel.cs" />
     <Compile Include="UI\ViewModel\AutoImportModel.cs" />
     <Compile Include="UI\ViewModel\BaseModel.cs" />
@@ -187,6 +192,7 @@
     <Compile Include="UI\ViewModel\InformationListModel.cs" />
     <Compile Include="UI\ViewModel\InstructionsViewModel.cs" />
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
+    <Compile Include="UI\ViewModel\ManagerInfoModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />
     <Compile Include="UI\ViewModel\MissionOrderEditModel.cs" />
@@ -198,6 +204,7 @@
     <Compile Include="UI\ViewModel\MissionReportEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionReportsListModel.cs" />
     <Compile Include="UI\ViewModel\MissionUserDeptsListModel.cs" />
+    <Compile Include="UI\ViewModel\PrintLoginFormModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionOrderViewModel.cs" />
     <Compile Include="UI\ViewModel\PrintMissionReportViewModel.cs" />
     <Compile Include="UI\ViewModel\RequestAttachmentsModel.cs" />

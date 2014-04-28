@@ -1,0 +1,61 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Appointment">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	<property name="EditDate" not-null="true"/>
+    <property name="Number"  not-null="true"/>
+
+	  
+	
+	<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Appointment_Department" index="Appointment_Department"  not-null="true"/>
+	<property name="City" length="64" not-null="true"/>
+	<many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Appointment_Position" index="Appointment_Position"  not-null="true"/>
+	<property name="VacationCount"  not-null="true"/>
+	<many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_Appointment_AppointmentReason" index="Appointment_AppointmentReason"  not-null="true"/>
+	
+	<property name="ReasonBeginDate" not-null="false"/>
+	<property name="ReasonPosition" length="64" not-null="false"/>
+	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
+	<property name="ReasonUser" length="64" not-null="false"/>-->
+
+	<property name="Period"  length="128" not-null="true"/>
+	<property name="Schedule" length="64" not-null="true"/>
+	<property name="Salary" not-null="true"/>
+	<property name="Bonus" not-null="true"/>
+	<property name="Type" not-null="true"/>
+	<property name="Compensation" length="128" not-null="true"/>
+	<property name="EducationRequirements"  length="64" not-null="true"/>
+	<property name="ExperienceRequirements"  length="32" not-null="true"/>
+	<property name="OtherRequirements"  length="128" not-null="false"/>
+	<property name="AdditionalRequirements" length="128" not-null="false"/>
+	<property name="Responsibility" length="128" not-null="true"/>
+	<property name="DesirableBeginDate" not-null="false"/>
+	<property name="IsVacationExists" not-null="true"/>
+	<!--<property name="BeginDate" not-null="false"/>-->
+	  
+	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Appointment_CreatorUser" index="IX_Appointment_CreatorUser_Id"  not-null="true"/>
+	<property name="ManagerDateAccept" not-null="false"/>
+	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_Appointment_AcceptManager" index="IX_Appointment_AcceptManager"  not-null="false"/>
+	<property name="ChiefDateAccept" not-null="false"/>
+	<many-to-one name="AcceptChief" class="User" column="AcceptChiefId" foreign-key="FK_Appointment_AcceptChief" index="IX_Appointment_AcceptChief"  not-null="false"/>
+	<property name="PersonnelDateAccept" not-null="false"/>
+	<many-to-one name="AcceptPersonnel" class="User" column="AcceptPersonnelId" foreign-key="FK_Appointment_PersonnelUser" index="IX_Appointment_PersonnelUser"  not-null="false"/>
+	<property name="StaffDateAccept" not-null="false"/>
+	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_Appointment_StaffUser" index="IX_Appointment_StaffUser"  not-null="false"/>
+	<property name="DeleteDate" not-null="false"/>
+	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_Appointment_DeleteUser" index="IX_Appointment_DeleteUser"  not-null="false"/>
+	<property name="SendTo1C" not-null="false"/>
+	<!--<property name="DeleteAfterSendTo1C" not-null="true"/>-->
+	  <!--<bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="AppointmentId" foreign-key="FK_AppointmentTarget_Appointment"/>
+		  <one-to-many class="MissionTarget"/>
+	  </bag>-->
+	  <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+		<key column="AppointmentId" foreign-key="FK_AppointmentComment_Appointment"/>
+		<one-to-many class="AppointmentComment"/>
+	  </bag>
+	</class>
+</hibernate-mapping>

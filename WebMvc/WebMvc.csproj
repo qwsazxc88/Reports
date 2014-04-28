@@ -96,6 +96,7 @@
     <Compile Include="Attributes\ReportAuthorizeAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\AutoCompleteController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DeductionController.cs" />
@@ -636,7 +637,30 @@
     <Content Include="Views\MissionOrder\PrintReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\Shared\_MenuPartialAppointment.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutAppointment.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Appointment\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Appointment\AppointmentEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Appointment\ManagerInfoView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Home\CommentPartial.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Home\AddCommentDialog.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Content\files\Памятка - командировки.doc" />
+    <Content Include="Views\Appointment\AppointmentReportEdit.cshtml" />
+    <Content Include="Views\Appointment\PrintLoginForm.cshtml" />
     <Content Include="Views\Employment\Index.cshtml" />
     <Content Include="Views\Employment\GeneralInfo.cshtml" />
     <Content Include="Views\Employment\Passport.cshtml" />

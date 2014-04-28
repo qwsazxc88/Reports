@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
@@ -15,6 +16,13 @@ namespace WebMvc.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
+
+
+        public const string StrInvalidCommentType = "Неверный тип комментария {0}";
+        public const string StrCommentIsRequired = "Комментарий - обязательное поле";
+        public const string StrCommentLengthError = "Длина поля 'Комментарий' не может превышать {0} символов.";
+        public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
+
         protected IRequestBl requestBl;
 
         public IRequestBl RequestBl
@@ -23,6 +31,16 @@ namespace WebMvc.Controllers
             {
                 requestBl = Ioc.Resolve<IRequestBl>();
                 return Validate.Dependency(requestBl);
+            }
+        }
+
+        protected IAppointmentBl appointmentBl;
+        public IAppointmentBl AppointmentBl
+        {
+            get
+            {
+                appointmentBl = Ioc.Resolve<IAppointmentBl>();
+                return Validate.Dependency(appointmentBl);
             }
         }
 
@@ -166,5 +184,84 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+
+        #region Comments
+        [HttpGet]
+        public ActionResult RenderComments(int id, int typeId)
+        {
+            //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+            CommentsModel model; 
+            switch (typeId)
+            {
+                case (int)RequestTypeEnum.Appointment:
+                    model = AppointmentBl.GetCommentsModel(id, (RequestTypeEnum)typeId);
+                    break;
+                default:
+                    throw new ArgumentException(string.Format(StrInvalidCommentType,typeId)); 
+            }
+            //CommentsModel model = RequestBl.GetCommentsModel(id, typeId);
+            return PartialView("CommentPartial", model);
+        }
+        [HttpGet]
+        public ActionResult AddCommentDialog(int id, int typeId)
+        {
+            try
+            {
+                AddCommentModel model = new AddCommentModel { DocumentId = id };
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = StrCommentsLoadError + ex.GetBaseException().Message;
+                return PartialView("DialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        [HttpPost]
+        public ContentResult SaveComment(int id, int typeId, string comment)
+        {
+            bool saveResult = false;
+            string error;
+            try
+            {
+                if (comment == null || string.IsNullOrEmpty(comment.Trim()))
+                {
+                    error = StrCommentIsRequired;
+                }
+                else if (comment.Trim().Length > MaxCommentLength)
+                {
+                    error = string.Format(StrCommentLengthError, MaxCommentLength);
+                }
+                else
+                {
+                    var model = new SaveCommentModel
+                    {
+                        DocumentId = id,
+                        TypeId = typeId,
+                        Comment = comment.Trim(),
+                    };
+                    //saveResult = RequestBl.SaveComment(model);
+                    switch (typeId)
+                    {
+                        case (int)RequestTypeEnum.Appointment:
+                            saveResult = AppointmentBl.SaveComment(model);
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format(StrInvalidCommentType, typeId));
+                    }
+                    error = model.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveComment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        #endregion
     }
 }

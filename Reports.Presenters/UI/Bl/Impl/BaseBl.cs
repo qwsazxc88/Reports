@@ -17,6 +17,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class BaseBl : IBaseBl
     {
+        protected string SelectAll = "Все";
+
         public static string[] RublesWords =
                                         {
                                             "рубль",
@@ -35,6 +37,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IUserDao userDao;
         protected ISettingsDao settingsDao;
         protected IDepartmentDao departmentDao;
+        protected IRequestNextNumberDao requestNextNumberDao;
         #endregion
         public IAuthenticationService AuthenticationService
         {
@@ -55,6 +58,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(departmentDao); }
             set { departmentDao = value; }
+        }
+        public IRequestNextNumberDao RequestNextNumberDao
+        {
+            get { return Validate.Dependency(requestNextNumberDao); }
+            set { requestNextNumberDao = value; }
         }
 
         public IUser CurrentUser
@@ -513,6 +521,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                               IsReadOnly = false,
                           };
         }
+        public static void SetInitialDates(BeginEndCreateDate model)
+        {
+            DateTime today = DateTime.Today;
+            model.BeginDate = new DateTime(today.Year, today.Month, 1);
+            model.EndDate = today;
+        }
 
         protected static string GetMonth(DateTime month)
         {
@@ -603,6 +617,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     return words[2];
             }
+        }
+        public static string FormatSum(decimal sum)
+        {
+            return (int)sum == sum ? ((int)sum).ToString() : sum.ToString("0.00");
+        }
+        public static string FormatSum(decimal? sum)
+        {
+            return !sum.HasValue ? string.Empty : FormatSum(sum.Value);
+        }
+        public static string FormatDate(DateTime? date)
+        {
+            return date.HasValue ? date.Value.ToShortDateString() : string.Empty;
+        }
+        public static string FormatDate(DateTime date)
+        {
+            return date.ToShortDateString();
         }
 
     }
