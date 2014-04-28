@@ -24,16 +24,14 @@ namespace Reports.Core.Dto.Employment
         public string Number { get; set; }
 
         [Display(Name = "Год поступления"),
-            StringLength(4, ErrorMessage = "4 знака"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime AdmissionYear { get; set; }
+        public string AdmissionYear { get; set; }
 
         [Display(Name = "Год окончания"),
-            StringLength(4, ErrorMessage = "4 знака"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime GraduationYear { get; set; }
+        public string GraduationYear { get; set; }
 
         [Display(Name = "Квалификация по диплому"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
@@ -54,5 +52,18 @@ namespace Reports.Core.Dto.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Department { get; set; }
+
+        public HigherEducationDiplomaDto()
+        {
+            IssuedBy = "МГУ";
+            Series = "AB";
+            Number = "1234567";
+            AdmissionYear = "1997";
+            GraduationYear = "2002";
+            Qualification = "xxx";
+            Speciality = "yyy";
+            Profession = "zzz";
+            Department = "Finance";
+        }
     }
 }

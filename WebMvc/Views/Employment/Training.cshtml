@@ -5,62 +5,66 @@
 
 @using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <table>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Type)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.Type)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Description)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.Description)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.BeginningDate)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.BeginningDate)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.EndDate)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.EndDate)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.IsComplete)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.IsComplete)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.ReasonsForIncompleteTraining)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.ReasonsForIncompleteTraining)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Results)
-            </td>
-            <td>
-                 @Html.TextBoxFor(m => m.Results)
-            </td>
-        </tr>
-    </table>
+    <div class="doc-wrap">
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Type)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.Type)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Description)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.Description)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.BeginningDate)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.BeginningDate)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.EndDate)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.EndDate)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsComplete)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.IsComplete)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ReasonsForIncompleteTraining)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.ReasonsForIncompleteTraining)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Results)
+                </td>
+                <td>
+                     @Html.TextBoxFor(m => m.Results)
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit">Сохранить</button>
+    </div>
 }

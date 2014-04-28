@@ -18,5 +18,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment
 
         [Display(Name = "Повышение квалификации")]
         public IList<TrainingDto> Training { get; set; }
+
+        public EducationModel()
+        {
+            this.HigherEducationDiplomas = new List<HigherEducationDiplomaDto>();
+            this.PostGraduateEducationDiplomas = new List<PostGraduateEducationDiplomaDto>();
+            this.Certifications = new List<CertificationDto>();
+            this.Training = new List<TrainingDto>();
+        }
     }
 }

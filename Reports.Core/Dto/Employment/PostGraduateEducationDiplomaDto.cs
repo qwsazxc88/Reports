@@ -24,20 +24,28 @@ namespace Reports.Core.Dto.Employment
         public string Number { get; set; }
 
         [Display(Name = "Год поступления"),
-            StringLength(4, ErrorMessage = "4 знака"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime AdmissionYear { get; set; }
+        public string AdmissionYear { get; set; }
 
         [Display(Name = "Год окончания"),
-            StringLength(4, ErrorMessage = "4 знака"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime GraduationYear { get; set; }
+        public string GraduationYear { get; set; }
 
         [Display(Name = "Специальность по диплому"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Speciality { get; set; }
+
+        public PostGraduateEducationDiplomaDto()
+        {
+            this.IssuedBy = "ДГТУ";
+            this.Series = "AF";
+            this.Number = "324234234";
+            this.AdmissionYear = "2000";
+            this.GraduationYear = "2005";
+            this.Speciality = "Veterinarian";
+        }
     }
 }

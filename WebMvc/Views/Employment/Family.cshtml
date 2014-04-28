@@ -5,36 +5,144 @@
 
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
-    <table>
-        <tr>
-            <th>
-                Степень родства
-            </th>
-            <th>
-                ФИО
-            </th>
-            <th>
-                Паспортные данные
-            </th>
-            <th>
-                Дата и место рождения
-            </th>
-            <th>
-                Место работы, должность, (рабочий, мобильный телефон)
-            </th>
-            <th>
-                Адрес места жительства, (домашний, мобильный телефон)
-            </th>
-        </tr>
-    </table>
-    <button type="submit" id="add-family-member-button">Добавить новую запись</button>
+    <input type="hidden" id="cmd" name="cmd" />
+    
+    <div class="doc-wrap">
+        @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
+        <table>
+        <thead>
+            <tr>
+                <th>
+                    Степень родства
+                </th>
+                <th>
+                    ФИО
+                </th>
+                <th>
+                    Паспортные данные
+                </th>
+                <th>
+                    Дата рождения
+                </th>
+                <th>
+                    Место рождения
+                </th>
+                <th>
+                    Место работы, должность, (рабочий, мобильный телефон)
+                </th>
+                <th>
+                    Адрес места жительства, (домашний, мобильный телефон)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Spouse)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Spouse.Name)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Spouse.PassportData)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Spouse.DateOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Spouse.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Spouse.WorksAt)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Spouse.Contacts)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Father)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.Name)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.PassportData)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.DateOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.WorksAt)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Father.Contacts)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Mother)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.Name)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.PassportData)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.DateOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.WorksAt)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Mother.Contacts)
+                </td>
+            </tr>
+            @for (var i = 0; i < Model.Children.Count; i++)
+            {
+                <tr>
+                    <td>
+                        Ребенок
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.Children[i].Name)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.Children[i].PassportData)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.Children[i].DateOfBirth)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.Children[i].PlaceOfBirth)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.Children[i].WorksAt)
+                    </td>
+                    <td>
+                        @Html.TextAreaFor(m => m.Children[i].Contacts)
+                    </td>
+                </tr>
+            }
+        </tbody>
+        </table>
+        <button type="submit" id="add-child-button">Добавить ребенка</button>
+        <br /><br />
+        <button type="submit">Сохранить</button>
+    </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#add-family-member-button").click(function () {
-            $("#cmd").val("add-family-member");
+        $("#add-child-button").click(function () {
+            $("#cmd").val("add-child");
         });
     });
 </script>

@@ -25,5 +25,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "ФИО совместно проживающих"),
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string Cohabitants { get; set; }
+
+        public FamilyModel()
+        {
+            this.Children = new List<FamilyMemberDto>();
+        }
     }
 }

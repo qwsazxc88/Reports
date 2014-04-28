@@ -18,6 +18,8 @@ namespace WebMvc.Controllers
             return View();
         }
 
+        // General Info
+
         public ActionResult GeneralInfo()
         {
             var model = new GeneralInfoModel();            
@@ -27,92 +29,237 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GeneralInfo(GeneralInfoModel model, string cmd = "")
         {
-            if (cmd == "add-name-change")
+            switch (cmd)
             {
-                //if (model.NameChanges == null)
-                //{
-                //    model.NameChanges = new List<NameChangeDto>();
-                //}
-                model.NameChanges.Add(new NameChangeDto { PreviousName = "John", Date = new DateTime(), Place = "NV", Reason = "Marriage" });
+                case "add-name-change":
+                    model.NameChanges.Add(new NameChangeDto());
+                    break;
+                default:
+                    break;
             }
             return View(model);
         }
-        /*
-        [HttpPost]
-        public PartialViewResult AddNameChange(GeneralInfoModel model)
-        {
-            model.NameChanges.Add(new NameChangeDto { PreviousName = "John", Date = new DateTime(), Place = "NV", Reason = "Marriage" });
-            return PartialView("Employment/NameChanges", model);
-        }*/
+
+        // Passport
 
         public ActionResult Passport()
         {
-            return View();
+            var model = new PassportModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Passport(PassportModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Education
 
         public ActionResult Education()
         {
-            return View();
+            var model = new EducationModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Education(EducationModel model, string cmd = "")
+        {
+            switch (cmd)
+            {
+                case "add-higher-education-diploma":
+                    model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto());
+                    break;
+                case "add-postgraduate-education-diploma":
+                    model.PostGraduateEducationDiplomas.Add(new PostGraduateEducationDiplomaDto());
+                    break;
+                case "add-certification":
+                    model.Certifications.Add(new CertificationDto());
+                    break;
+                case "add-training":
+                    model.Training.Add(new TrainingDto());
+                    break;
+                default:
+                    break;
+            }
+
+            return View(model);
+        }
+
+        // Family
 
         public ActionResult Family()
         {
-            return View();
+            var model = new FamilyModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Family(FamilyModel model, string cmd = "")
+        {
+            switch (cmd)
+            {
+                case "add-child":
+                    model.Children.Add(new FamilyMemberDto());
+                    break;
+                default:
+                    break;
+            }
+            return View(model);
+        }
+
+        // Military Service
 
         public ActionResult MilitaryService()
         {
-            return View();
+            var model = new MilitaryServiceModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult MilitaryService(MilitaryServiceModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Experience
 
         public ActionResult Experience()
         {
-            return View();
+            var model = new ExperienceModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Experience(ExperienceModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Contacts
 
         public ActionResult Contacts()
         {
-            return View();
+            var model = new ContactsModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Contacts(ContactsModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Background Check
 
         public ActionResult BackgroundCheck()
         {
-            return View();
+            var model = new BackgroundCheckModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult BackgroundCheck(BackgroundCheckModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Training
 
         public ActionResult Training()
         {
-            return View();
+            var model = new TrainingModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Training(TrainingModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Application Letter
 
         public ActionResult ApplicationLetter()
         {
-            return View();
+            var model = new ApplicationLetterModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult ApplicationLetter(ApplicationLetterModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Filled out by managers
 
         public ActionResult Managers()
         {
-            return View();
+            var model = new ManagersModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Managers(ManagersModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Filled out by personnel managers
 
         public ActionResult PersonnelManagers()
         {
-            return View();
+            var model = new PersonnelManagersModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult PersonnelManagers(PersonnelManagersModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Employment roster
 
         public ActionResult Roster()
         {
-            return View();
+            var model = new RosterModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult Roster(RosterModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Custom report
 
         public ActionResult CustomReport()
         {
-            return View();
+            var model = new CustomReportModel();
+            return View(model);
         }
+
+        [HttpPost]
+        public ActionResult CustomReport(CustomReportModel model, string cmd = "")
+        {
+            return View(model);
+        }
+
+        // Signers
 
         public ActionResult Signers()
         {
-            return View();
+            var model = new SignersModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Signers(SignersModel model, string cmd = "")
+        {
+            return View(model);
         }
     }
 }

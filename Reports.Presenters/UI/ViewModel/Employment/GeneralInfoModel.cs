@@ -28,15 +28,17 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Citizenship { get; set; }
+
+        [Display(Name = "Вид застрахованного лица"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            Required(ErrorMessage = "Обязательное поле")]
+        public string InsuredPersonType { get; set; }
+
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
         public DateTime DateOfBirth { get; set; }
 
-        [Display(Name = "Страна"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
-        public string CountryOfBirth { get; set; }
         [Display(Name = "Область"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string RegionOfBirth { get; set; }
@@ -48,7 +50,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             Required(ErrorMessage = "Обязательное поле")]
         public string CityOfBirth { get; set; }
 
-        // TODO: Иностранные языки
+        [Display(Name = "Знание иностранных языков")]
+        public IList<ForeignLanguageDto> ForeignLanguages { get; set; }
 
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
@@ -59,9 +62,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment
             Required(ErrorMessage = "Обязательное поле")]
         public string SNILS { get; set; }
 
-        [Display(Name = "Инвалидность"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string Disabilities { get; set; }
+        [Display(Name = "Инвалидность")]
+        public IList<DisabilityDto> Disabilities { get; set; }
 
         [Display(Name = "Резидент")]
         public bool IsResident { get; set; }
@@ -72,6 +74,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         public GeneralInfoModel()
         {
             this.NameChanges = new List<NameChangeDto>();
+            this.ForeignLanguages = new List<ForeignLanguageDto>();
+            this.Disabilities = new List<DisabilityDto>();
         }
     }
 }

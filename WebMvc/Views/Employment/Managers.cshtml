@@ -5,5 +5,9 @@
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.EditorForModel()
+    <div class="doc-wrap">
+        @Html.EditorForModel()
+        <br />
+        <button type="submit">Сохранить</button>
+    </div>
 }

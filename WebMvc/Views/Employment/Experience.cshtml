@@ -5,71 +5,119 @@
 
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.Partial("Employment/ExperienceItems")
+    <div class="doc-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Начало работы
+                    </th>
+                    <th>
+                        Окончание работы
+                    </th>
+                    <th>
+                        Организация
+                    </th>
+                    <th>
+                        Должность
+                    </th>
+                    <th>
+                        Адрес организации,<br />телефон отдела кадров,<br />секретаря
+                    </th>
+                </tr>
+            </thead>
+            <tbody>                
+                    @for (var i = 0; i < Model.ExperienceItems.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.EditorFor(m => m.ExperienceItems[i].BeginningDate)
+                            </td>  
+                            <td>
+                                @Html.EditorFor(m => m.ExperienceItems[i].EndDate)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.ExperienceItems[i].Company)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.ExperienceItems[i].Position)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.ExperienceItems[i].CompanyContacts)
+                            </td>
+                        </tr>
+                    }                
+            </tbody>
+        </table>
 
-    <table>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.ExperienceYears) @Html.EditorFor(m => m.ExperienceYears)&nbsp;@Html.LabelFor(m => m.ExperienceMonths) @Html.EditorFor(m => m.ExperienceMonths)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Сведения о трудовой книжке
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookSeries)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookSeries)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookNumber)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookNumber)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookDateOfIssue)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookDateOfIssue)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Сведения о вкладыше в трудовую книжку
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookSupplementSeries)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookSupplementSeries)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookSupplementNumber)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookSupplementNumber)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.WorkBookSupplementDateOfIssue)
-            </td>
-        </tr>
-    </table>
+        <fieldset style="border: 1px solid lightgray">
+            <legend>Сведения о трудовой книжке</legend>
+            <table>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.ExperienceYears)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.ExperienceYears)&nbsp;@Html.LabelFor(m => m.ExperienceMonths) @Html.EditorFor(m => m.ExperienceMonths)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSeries)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSeries)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookNumber)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookDateOfIssue)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookDateOfIssue)
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    
+        <fieldset style="border: 1px solid lightgray">
+            <legend>Сведения о вкладыше в трудовую книжку</legend>
+            <table>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementSeries)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementSeries)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementNumber)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementDateOfIssue)
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+
+        <button type="submit">Сохранить</button>
+    </div>
 }

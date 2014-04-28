@@ -5,46 +5,50 @@
 
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <table>
-        <tr>
-            <td style="width: 300px;">
-                @Html.LabelFor(m => m.IsLiableForMilitaryService)
-            </td>
-            <td>
-                 @Html.EditorFor(m => m.IsLiableForMilitaryService)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Commissariat)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Commissariat)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.CombatFitness)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.CombatFitness)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.CombatFitness)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.CombatFitness)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(m => m.Commissariat)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Commissariat)
-            </td>
-        </tr>
-    </table>
+    <div class="doc-wrap">
+        <table>
+            <tr>
+                <td style="width: 300px;">
+                    @Html.LabelFor(m => m.IsLiableForMilitaryService)
+                </td>
+                <td>
+                     @Html.EditorFor(m => m.IsLiableForMilitaryService)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Commissariat)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Commissariat)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CombatFitness)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.CombatFitness)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CombatFitness)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.CombatFitness)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Commissariat)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Commissariat)
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit">Сохранить</button>
+    </div>
 }

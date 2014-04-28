@@ -24,5 +24,13 @@ namespace Reports.Core.Dto.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Reason { get; set; }
+
+        public NameChangeDto()
+        {
+            this.PreviousName = "John";            
+            this.Date = new DateTime();
+            this.Place = "NV";
+            this.Reason = "Marriage";
+        }
     }
 }

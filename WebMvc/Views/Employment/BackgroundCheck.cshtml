@@ -5,5 +5,232 @@
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    @Html.EditorForModel()
+    <div class="doc-wrap">
+        <table>
+            <tr>
+                <td style="width: 500px;">
+                    @Html.LabelFor(m => m.AverageSalary)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.AverageSalary)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Liabilities)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Liabilities)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DismissalReason)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DismissalReason)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PreviousSuperior)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.PreviousSuperior)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PositionSought)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.PositionSought)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.MilitaryOperationsExperience)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.MilitaryOperationsExperience)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.HasDriversLicense)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.HasDriversLicense)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DriversLicenseNumber)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DriversLicenseNumber)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DriversLicenseDateOfIssue)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DriversLicenseDateOfIssue)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DriversLicenseCategories)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DriversLicenseCategories)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DrivingExperience)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.DrivingExperience)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.HasAutomobile)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.HasAutomobile)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AutomobileMake)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.AutomobileMake)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AutomobileLicensePlateNumber)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.AutomobileLicensePlateNumber)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsReadyForBusinessTrips)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.IsReadyForBusinessTrips)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Sports)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Sports)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Hobbies)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Hobbies)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ImportantEvents)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.ImportantEvents)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.References)
+                </td>
+                <td>
+                    @for (var i = 0; i < Model.References.Count; i++)
+                    {
+                        <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].LastName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].LastName)
+                                </td>                                
+                            </tr>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].FirstName):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].FirstName)
+                                </td>                                
+                            </tr>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].Patronymic):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].Patronymic)
+                                </td>                                
+                            </tr>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].WorksAt):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].WorksAt)
+                                </td>                                
+                            </tr>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].Position):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].Position)
+                                </td>                                
+                            </tr>
+                            <tr>                                
+                                <td>
+                                    @Html.LabelFor(m => m.References[i].Phone):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(m => m.References[i].Phone)
+                                </td>                                
+                            </tr>
+                        </table>
+                    }
+
+                    <button type="submit" id="add-reference-button">Добавить рекомендацию</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ChronicalDiseases)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.ChronicalDiseases)
+                </td>
+            </tr>
+        </table>
+
+        <button type="submit">Сохранить</button>
+    </div>
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#add-reference-button").click(function () {
+            $("#cmd").val("add-reference");
+        });
+    });
+</script>

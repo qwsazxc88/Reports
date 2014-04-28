@@ -24,7 +24,7 @@ namespace Reports.Core.Dto.Employment
         public string Position { get; set; }
 
         [Display(Name = "Телефон (рабочий, мобильный)")]
-        public string Patronymic { get; set; }
+        public string Phone { get; set; }
 
         [Display(Name = "Откуда Вас знает рекомендующий")]
         public string Relation { get; set; }

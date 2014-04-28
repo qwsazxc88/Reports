@@ -41,5 +41,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime WorkBookSupplementDateOfIssue { get; set; }
+
+        public ExperienceModel()
+        {
+            this.ExperienceItems = new List<ExperienceItemDto>();
+        }
     }
 }

@@ -14,12 +14,12 @@ namespace Reports.Core.Dto.Employment
         public string CertificateIssuedBy { get; set; }
 
         [Display(Name = "Серия"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков."),
+            StringLength(10, ErrorMessage = "Не более 10 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Series { get; set; }
 
         [Display(Name = "Номер"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков."),
+            StringLength(10, ErrorMessage = "Не более 10 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Number { get; set; }
 
@@ -37,5 +37,15 @@ namespace Reports.Core.Dto.Employment
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string Speciality { get; set; }
+
+        public TrainingDto()
+        {
+            this.CertificateIssuedBy = "РЭА";
+            this.Series = "AG";
+            this.Number = "6565465456";
+            this.BeginningDate = new DateTime();
+            this.EndDate = new DateTime();
+            this.Speciality = "Accountant";
+        }
     }
 }

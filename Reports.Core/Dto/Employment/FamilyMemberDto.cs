@@ -39,6 +39,17 @@ namespace Reports.Core.Dto.Employment
 
         [Display(Name = "Адрес места жительства, (домашний, мобильный телефон)"),
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
-        public string WorksAt { get; set; }
+        public string Contacts { get; set; }
+
+        public FamilyMemberDto()
+        {
+            this.Relation = "Ребенок";
+            this.Name = "Петров П.П.";
+            this.PassportData = "345v3g443t5f5";
+            this.DateOfBirth = new DateTime();
+            this.PlaceOfBirth = "Ростов-на-Дону";
+            this.WorksAt = "Детский сад";
+            this.Contacts = "???";
+        }
     }
 }

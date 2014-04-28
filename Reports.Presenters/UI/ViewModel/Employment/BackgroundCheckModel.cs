@@ -39,7 +39,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         public string DriversLicenseCategories { get; set; }
 
         [Display(Name = "Водительский стаж")]
-        public int? DriversLicenseCategories { get; set; }
+        public int? DrivingExperience { get; set; }
 
         [Display(Name = "Имеете ли Вы автомобиль")]
         public bool HasAutomobile { get; set; }
@@ -54,7 +54,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment
         public bool IsReadyForBusinessTrips { get; set; }
 
         [Display(Name = "Какими видами спорта Вы занимаетесь (занимались ранее), имеете ли спортивные разряды и/или звания")]
-        public IList<string> Sport { get; set; }
+        public string Sports { get; set; }
 
         [Display(Name = "Ваши увлечения")]
         public string Hobbies { get; set; }
@@ -64,5 +64,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment
 
         [Display(Name = "Рекомендации должностных лиц, знающих Вас по предыдущим местам работы, или рекомендации кого-либо из сотрудников нашего банка")]
         public IList<ReferenceDto> References { get; set; }
+
+        [Display(Name = "Наличие хронических заболеваний (по желанию, если есть, то перечислите)")]
+        public string ChronicalDiseases { get; set; }
+
+        public BackgroundCheckModel()
+        {
+            this.Liabilities = new List<string>();
+            this.References = new List<ReferenceDto>();
+        }
     }
 }

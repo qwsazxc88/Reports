@@ -384,6 +384,8 @@
     <Compile Include="Dto\Employment\ExperienceItemDto.cs" />
     <Compile Include="Dto\Employment\CandidateDto.cs" />
     <Compile Include="Dto\Employment\ReferenceDto.cs" />
+    <Compile Include="Dto\Employment\DisabilityDto.cs" />
+    <Compile Include="Dto\Employment\ForeignLanguageDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />

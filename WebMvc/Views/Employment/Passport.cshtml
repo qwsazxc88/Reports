@@ -6,9 +6,11 @@
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Внутренний паспорт</legend>
         <table>
             <tr>
-                <td style="width: 300px;">
+                <td>
                     @Html.LabelFor(m => m.InternalPassportSeries)
                 </td>
                 <td>
@@ -30,7 +32,7 @@
                     @Html.LabelFor(m => m.InternalPassportDateOfIssue)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.InternalPassportDateOfIssue)
+                    @Html.TextBoxFor(m => m.InternalPassportDateOfIssue, new { Class = "datetime" })
                     @Html.ValidationMessageFor(m => m.InternalPassportDateOfIssue)
                 </td>
             </tr>
@@ -57,7 +59,7 @@
                     @Html.LabelFor(m => m.RegistrationDate)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.RegistrationDate)
+                    @Html.TextBoxFor(m => m.RegistrationDate, new { Class = "datetime" })
                     @Html.ValidationMessageFor(m => m.RegistrationDate)
                 </td>
             </tr>
@@ -133,6 +135,12 @@
                     @Html.ValidationMessageFor(m => m.Appartment)
                 </td>
             </tr>
+        </table>
+        </fieldset>
+
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Заграничный паспорт</legend>
+        <table>            
             <tr>
                 <td>
                     @Html.LabelFor(m => m.InternationalPassportSeries)
@@ -156,7 +164,7 @@
                     @Html.LabelFor(m => m.InternationalPassportDateOfIssue)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.InternationalPassportDateOfIssue)
+                    @Html.TextBoxFor(m => m.InternationalPassportDateOfIssue, new { Class = "datetime" })
                     @Html.ValidationMessageFor(m => m.InternationalPassportDateOfIssue)
                 </td>
             </tr>
@@ -168,25 +176,18 @@
                     @Html.TextBoxFor(m => m.InternationalPassportIssuedBy)
                     @Html.ValidationMessageFor(m => m.InternationalPassportIssuedBy)
                 </td>
-            </tr>
+            </tr>            
         </table>
+        </fieldset>
 
-        <br /><br /><button type="submit">Сохранить</button>
+        <button type="submit">Сохранить</button>
 
     </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#InternalPassportDateOfIssue').datepicker({
-            changeYear: true,
-            yearRange: "-50:+0"
-        });
-        $('#RegistrationDate').datepicker({
-            changeYear: true,
-            yearRange: "-50:+0"
-        });
-        $('#InternationalPassportDateOfIssue').datepicker({
+        $('.datetime').datepicker({
             changeYear: true,
             yearRange: "-50:+0"
         });
