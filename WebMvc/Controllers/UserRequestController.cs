@@ -815,6 +815,21 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+         
+         [HttpPost]
+         public JsonResult SicklistSendErrorNotification(int id)
+         {
+             string error = "";
+             if (RequestBl.ResetSicklistApprovals(id, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }
+         }
+         
          protected bool ValidateSicklistEditModel(SicklistEditModel model, UploadFileDto fileDto
              /*out bool needToReload,out string error*/)
          {

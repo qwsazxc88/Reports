@@ -28,7 +28,7 @@
         <td>
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
             <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-             <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+            <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
             <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
@@ -262,15 +262,22 @@
                                                                                               {<text>style="display:none"</text>}/>
             <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
                                                                                                                      {<text>style="display:none"</text>}/>
-            </div>
-
-            @if (Model.IsApprovedByUserEnable || (Model.IsApprovedByUser && !Model.IsApprovedByManagerEnable && !Model.IsApprovedByPersonnelManagerEnable))
-            {
-                <div style="background-color: yellow; border: 1px solid red; padding: 5px; font-style: italic; display: inline;">
-                    Не забудьте отправить заполненную заявку на согласование
-                </div>
-            }            
+            </div>            
          </td>
+    </tr>
+    <tr>
+             <td colspan="2">
+                @{
+                    var approvalNoticeEnabled = Model.IsApprovedByUserEnable || (Model.IsApprovedByUser && !Model.IsApprovedByManagerEnable && !Model.IsApprovedByManager);
+                }
+
+                @if (approvalNoticeEnabled)
+                {
+                    <div style="background-color: yellow; border: 1px solid red; padding: 5px; font-style: italic; display: inline;">
+                        По окончании редактирования не забудьте отправить заявку на согласование
+                    </div>
+                }
+             </td>
     </tr>
     <tr>
              <td colspan="2" style="height:15px">
@@ -286,7 +293,11 @@
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                                                                  {<text>style="display:none"</text>}/>                     
+                                                                                                                  {<text>style="display:none"</text>}/>
+                        @if (Model.IsErrorNotificationAvailable)
+                        {
+                            <a class="send-error-notification-link" href="">Отправить сообщение сотруднику</a>
+                        }
             </td>
     </tr>
     <tr>
@@ -389,6 +400,19 @@
                 OnChangeType(this.value);
             });
             setActiveMenuItem("userSicklist");
+
+            $(".send-error-notification-link").click(function (event) {
+                event.preventDefault();
+                $.post("/UserRequest/SicklistSendErrorNotification",
+                {
+                    id: $("#Id").val()
+                },
+                function (data) {                    
+                    if (data.ok) {
+                        location.reload(true);
+                    }
+                });
+            });
 
         });
         function OnChangeType(value) {
