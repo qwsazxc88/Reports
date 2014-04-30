@@ -50,8 +50,8 @@ namespace Reports.Core.Domain
         public virtual User AcceptManager { get; set; }
         public virtual DateTime? ChiefDateAccept { get; set; }
         public virtual User AcceptChief { get; set; }
-        public virtual DateTime? PersonnelDateAccept { get; set; }
-        public virtual User AcceptPersonnel { get; set; }
+        //public virtual DateTime? PersonnelDateAccept { get; set; }
+        //public virtual User AcceptPersonnel { get; set; }
         public virtual DateTime? StaffDateAccept { get; set; }
         public virtual User AcceptStaff { get; set; }
         public virtual DateTime? DeleteDate { get; set; }

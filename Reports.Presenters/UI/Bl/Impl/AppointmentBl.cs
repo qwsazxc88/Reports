@@ -310,15 +310,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue; 
             model.IsChiefApproved = entity.ChiefDateAccept.HasValue; 
-            model.IsPersonnelApproved = entity.PersonnelDateAccept.HasValue;
+            //model.IsPersonnelApproved = entity.PersonnelDateAccept.HasValue;
             model.IsStaffApproved = entity.StaffDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
                 model.ManagerFio = entity.AcceptManager.FullName;
             if (entity.AcceptChief != null && entity.ChiefDateAccept.HasValue)
                 model.ChiefFio = entity.AcceptChief.FullName;
-            if (entity.AcceptPersonnel != null && entity.PersonnelDateAccept.HasValue)
-                model.PersonnelFio = entity.AcceptPersonnel.FullName;
+            //if (entity.AcceptPersonnel != null && entity.PersonnelDateAccept.HasValue)
+            //    model.PersonnelFio = entity.AcceptPersonnel.FullName;
             if (entity.AcceptStaff != null && entity.StaffDateAccept.HasValue)
                 model.StaffFio = entity.AcceptStaff.FullName;
 
@@ -366,23 +366,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //            model.IsChiefApproveAvailable = true;
                 //    }
                 //    break;
-                case UserRole.PersonnelManager:
+                /*case UserRole.PersonnelManager:
                     if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
                         !entity.PersonnelDateAccept.HasValue)
                         model.IsPersonnelApproveAvailable = true;
                     
-                    break;
+                    break;*/
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && 
-                        entity.PersonnelDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
+                    if (!entity.DeleteDate.HasValue &&
+                        entity.ChiefDateAccept.HasValue && !entity.StaffDateAccept.HasValue)
                         model.IsStaffApproveAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
                     break;
+                default:
+                    throw new ArgumentException(string.Format("Недопустимая роль {0}",currRole));
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerApproveAvailable 
-                || model.IsChiefApproveAvailable || /*model.IsManagerRejectAvailable ||*/
-                model.IsPersonnelApproveAvailable || model.IsStaffApproveAvailable;
+                || model.IsChiefApproveAvailable || /*model.IsManagerRejectAvailable ||
+                model.IsPersonnelApproveAvailable ||*/ model.IsStaffApproveAvailable;
         }
         /*protected bool IsDirectorChiefForCreator(User current, User creator)
         {
@@ -432,7 +434,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsChiefApproveAvailable = state;
             model.IsManagerApproveAvailable = state;
             model.IsManagerRejectAvailable = state;
-            model.IsPersonnelApproveAvailable = state;
+            //model.IsPersonnelApproveAvailable = state;
             model.IsStaffApproveAvailable = state;
         }
         protected void LoadDictionaries(AppointmentEditModel model)
@@ -460,7 +462,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TypeIdHidden = model.TypeId;
             model.IsManagerApprovedHidden = model.IsManagerApproved;
             model.IsChiefApprovedHidden = model.IsChiefApproved;
-            model.IsPersonnelApprovedHidden = model.IsPersonnelApproved;
+            //model.IsPersonnelApprovedHidden = model.IsPersonnelApproved;
             model.IsStaffApprovedHidden = model.IsStaffApproved;
             //model.DateCreatedHidden = model.DateCreated;
         }
@@ -758,7 +760,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //SendEmailForAppointmentChiefAccept(currUser, entity);
                         }
                     }
-                    break;*/
+                    break;
                 case UserRole.PersonnelManager:
                     if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
                         !entity.PersonnelDateAccept.HasValue 
@@ -772,9 +774,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             error = string.Format("Заявка обработана успешно,но есть ошибка при отправке оповещений: {0}",
                                     dto.Error);
                     }
-                    break;
+                    break;*/
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && entity.PersonnelDateAccept.HasValue &&
+                    if (!entity.DeleteDate.HasValue && entity.ChiefDateAccept.HasValue &&
                        !entity.StaffDateAccept.HasValue
                        && model.IsStaffApproveAvailable
                        && model.IsStaffApproved)
@@ -786,6 +788,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
+                default:
+                    throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }
         }
         public int CreateAppointmentReport(Appointment entity/*,User creator*/)
@@ -827,14 +831,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Emails
         protected EmailDto SendEmailForAppointmentChiefAccept(User chief, Appointment entity)
         {
-            string personnelManagerEmail = ConfigurationService.AppointmentPersonnelManagerEmail;
-            if(string.IsNullOrEmpty(personnelManagerEmail))
-                throw new ValidationException(StrEmailForPersonnalManagerNotFound);
+            string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
+            if (string.IsNullOrEmpty(staffManagerEmail))
+                throw new ValidationException(StrEmailForStaffManagerNotFound);
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(chief, entity, out body);
-            return SendEmail(personnelManagerEmail, subject, body);
+            return SendEmail(staffManagerEmail, subject, body);
         }
-        protected EmailDto SendEmailForAppointmentPersonnelAccept(User personnel, Appointment entity)
+        /*protected EmailDto SendEmailForAppointmentPersonnelAccept(User personnel, Appointment entity)
         {
             string staffManagerEmail = ConfigurationService.AppointmentStaffManagerEmail;
             if (string.IsNullOrEmpty(staffManagerEmail))
@@ -842,7 +846,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             string body;
             string subject = GetSubjectAndBodyForAppointmentManagerAcceptRequest(personnel, entity, out body);
             return SendEmail(staffManagerEmail, subject, body);
-        }
+        }*/
         protected EmailDto SendEmailForAppointmentManagerAccept(User creator, Appointment entity)
         {
             string to = string.Empty;
@@ -1008,7 +1012,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     Log.ErrorFormat("No email for chief (id {0})", entity.AcceptChief.Id);
             }
-            if (entity.PersonnelDateAccept.HasValue)
+            /*if (entity.PersonnelDateAccept.HasValue)
             {
                 if (!string.IsNullOrEmpty(entity.AcceptPersonnel.Email))
                 {
@@ -1019,7 +1023,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                     Log.ErrorFormat("No email for personnel (id {0})", entity.AcceptPersonnel.Id);
-            }
+            }*/
             if (entity.StaffDateAccept.HasValue)
             {
                 if (!string.IsNullOrEmpty(entity.AcceptStaff.Email))
@@ -1218,6 +1222,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     break;
+                default:
+                    throw new ArgumentException(string.Format("Недопустимая роль {0}", currRole));
             }
             model.IsSaveAvailable = model.IsEditable || model.IsManagerEditable || model.IsManagerApproveAvailable || model.IsStaffApproveAvailable;
         }
@@ -1325,6 +1331,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.RejectReason = model.RejectReason;
                             }
                             break;
+                        default:
+                            throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
                     }
                 }
                 else
@@ -1431,6 +1439,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 break;
                 case UserRole.OutsourcingManager:
                 break;
+                default:
+                    throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }
         }
         protected void RejectReportsExceptId(int appointmentId,int exceptReportId,User user,string rejectReason)

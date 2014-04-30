@@ -42,8 +42,8 @@
 	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_Appointment_AcceptManager" index="IX_Appointment_AcceptManager"  not-null="false"/>
 	<property name="ChiefDateAccept" not-null="false"/>
 	<many-to-one name="AcceptChief" class="User" column="AcceptChiefId" foreign-key="FK_Appointment_AcceptChief" index="IX_Appointment_AcceptChief"  not-null="false"/>
-	<property name="PersonnelDateAccept" not-null="false"/>
-	<many-to-one name="AcceptPersonnel" class="User" column="AcceptPersonnelId" foreign-key="FK_Appointment_PersonnelUser" index="IX_Appointment_PersonnelUser"  not-null="false"/>
+	<!--<property name="PersonnelDateAccept" not-null="false"/>
+	<many-to-one name="AcceptPersonnel" class="User" column="AcceptPersonnelId" foreign-key="FK_Appointment_PersonnelUser" index="IX_Appointment_PersonnelUser"  not-null="false"/>-->
 	<property name="StaffDateAccept" not-null="false"/>
 	<many-to-one name="AcceptStaff" class="User" column="AcceptStaffId" foreign-key="FK_Appointment_StaffUser" index="IX_Appointment_StaffUser"  not-null="false"/>
 	<property name="DeleteDate" not-null="false"/>

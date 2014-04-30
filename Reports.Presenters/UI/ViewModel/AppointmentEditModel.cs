@@ -100,11 +100,11 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsChiefApprovedHidden { get; set; }
         public string ChiefFio { get; set; }
 
-        [Display(Name = "Кадровая служба")]
-        public bool IsPersonnelApproved { get; set; }
-        public bool IsPersonnelApproveAvailable { get; set; }
-        public bool IsPersonnelApprovedHidden { get; set; }
-        public string PersonnelFio { get; set; }
+        //[Display(Name = "Кадровая служба")]
+        //public bool IsPersonnelApproved { get; set; }
+        //public bool IsPersonnelApproveAvailable { get; set; }
+        //public bool IsPersonnelApprovedHidden { get; set; }
+        //public string PersonnelFio { get; set; }
 
         [Display(Name = "Служба по подбору")]
         public bool IsStaffApproved { get; set; }

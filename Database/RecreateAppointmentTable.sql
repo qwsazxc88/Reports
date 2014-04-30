@@ -63,8 +63,8 @@ create table Appointment (
   AcceptManagerId INT null,
   ChiefDateAccept DATETIME null,
   AcceptChiefId INT null,
-  PersonnelDateAccept DATETIME null,
-  AcceptPersonnelId INT null,
+  -- PersonnelDateAccept DATETIME null,
+  -- AcceptPersonnelId INT null,
   StaffDateAccept DATETIME null,
   AcceptStaffId INT null,
   DeleteDate DATETIME null,
@@ -81,7 +81,7 @@ create index Appointment_AppointmentReason on Appointment (ReasonId)
 create index IX_Appointment_CreatorUser_Id on Appointment (CreatorId)
 create index IX_Appointment_AcceptManager on Appointment (AcceptManagerId)
 create index IX_Appointment_AcceptChief on Appointment (AcceptChiefId)
-create index IX_Appointment_PersonnelUser on Appointment (AcceptPersonnelId)
+-- create index IX_Appointment_PersonnelUser on Appointment (AcceptPersonnelId)
 create index IX_Appointment_StaffUser on Appointment (AcceptStaffId)
 create index IX_Appointment_DeleteUser on Appointment (DeleteUserId)
 alter table Appointment add constraint FK_Appointment_Department foreign key (DepartmentId) references Department
@@ -89,7 +89,7 @@ alter table Appointment add constraint FK_Appointment_AppointmentReason foreign 
 alter table Appointment add constraint FK_Appointment_CreatorUser foreign key (CreatorId) references [Users]
 alter table Appointment add constraint FK_Appointment_AcceptManager foreign key (AcceptManagerId) references [Users]
 alter table Appointment add constraint FK_Appointment_AcceptChief foreign key (AcceptChiefId) references [Users]
-alter table Appointment add constraint FK_Appointment_PersonnelUser foreign key (AcceptPersonnelId) references [Users]
+-- alter table Appointment add constraint FK_Appointment_PersonnelUser foreign key (AcceptPersonnelId) references [Users]
 alter table Appointment add constraint FK_Appointment_StaffUser foreign key (AcceptStaffId) references [Users]
 alter table Appointment add constraint FK_Appointment_DeleteUser foreign key (DeleteUserId) references [Users]
 
