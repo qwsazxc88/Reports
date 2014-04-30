@@ -1373,7 +1373,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Phone = model.Phone;
                     entity.Email = model.Email;
                     entity.ColloquyDate = DateTime.Parse(model.ColloquyDate);
-                    entity.EducationTime = model.EducationTime;
+                    entity.EducationTime = model.TypeId == 1 ? model.EducationTime : null;
                     //entity.RejectReason = model.RejectReason;
                 }
                 if(model.IsColloquyDateEditable)
