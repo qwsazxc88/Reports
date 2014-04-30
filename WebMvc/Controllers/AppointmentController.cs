@@ -102,9 +102,9 @@ namespace WebMvc.Controllers
             }
             model.IsDelete = false;
             return View(model);
-            if (!string.IsNullOrEmpty(error))
+            /*if (!string.IsNullOrEmpty(error))
                 return View(model);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index");*/
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {
@@ -164,7 +164,7 @@ namespace WebMvc.Controllers
         {
             if (!model.IsEditable)
             {
-                model.PositionId = model.PositionIdHidden;
+                //model.PositionId = model.PositionIdHidden;
                 model.ReasonId = model.ReasonIdHidden;
                 model.TypeId = model.TypeIdHidden;
                 model.IsVacationExists = model.IsVacationExistsHidden;

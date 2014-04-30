@@ -23,9 +23,10 @@ namespace Reports.Presenters.UI.ViewModel
         public string City { get; set; }
 
         [Display(Name = "Должность")]
-        public int PositionId { get; set; }
-        public int PositionIdHidden { get; set; }
-        public IList<IdNameDto> Positions;
+        public string PositionName { get; set; }
+        //public int PositionId { get; set; }
+        //public int PositionIdHidden { get; set; }
+        //public IList<IdNameDto> Positions;
 
         [Display(Name = "Количество вакансий")]
         public string VacationCount { get; set; }
@@ -40,8 +41,8 @@ namespace Reports.Presenters.UI.ViewModel
         //[Display(Name = "С даты")]
         public string ReasonBeginDate { get; set; }
 
-        [Display(Name = "Работа на период")]
-        public string Period { get; set; }
+        //[Display(Name = "Работа на период")]
+        //public string Period { get; set; }
         [Display(Name = "График работы")]
         public string Schedule { get; set; }
 
@@ -68,8 +69,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Прочие требования")]
         public string OtherRequirements { get; set; }
 
-        [Display(Name = "Доп. требования")]
-        public string AdditionalRequirements { get; set; }
+        //[Display(Name = "Доп. требования")]
+        //public string AdditionalRequirements { get; set; }
 
         [Display(Name = "Должностные обязанности")]
         public string Responsibility { get; set; }

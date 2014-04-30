@@ -18,7 +18,7 @@ namespace Reports.Core.Domain
 
         public virtual Department Department { get; set; }
         public virtual string City { get; set; }
-        public virtual Position Position { get; set; }
+        public virtual string PositionName { get; set; }
         public virtual int VacationCount { get; set; }
         public virtual AppointmentReason Reason { get; set; }
         public virtual DateTime? ReasonBeginDate { get; set; }
@@ -26,7 +26,7 @@ namespace Reports.Core.Domain
         //public virtual string ReasonPersonnelStore { get; set; }
         //public virtual string ReasonUser { get; set; }
 
-        public virtual string Period { get; set; }
+        //public virtual string Period { get; set; }
         public virtual string Schedule { get; set; }
         public virtual decimal Salary { get; set; }
         public virtual decimal Bonus { get; set; }
@@ -36,7 +36,7 @@ namespace Reports.Core.Domain
         public virtual string EducationRequirements { get; set; }
         public virtual string ExperienceRequirements { get; set; }
         public virtual string OtherRequirements { get; set; }
-        public virtual string AdditionalRequirements { get; set; }
+        //public virtual string AdditionalRequirements { get; set; }
         public virtual string Responsibility { get; set; }
         public virtual DateTime? DesirableBeginDate { get; set; }
         public virtual bool IsVacationExists { get; set; }

@@ -12,7 +12,8 @@
 	
 	<many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Appointment_Department" index="Appointment_Department"  not-null="true"/>
 	<property name="City" length="64" not-null="true"/>
-	<many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Appointment_Position" index="Appointment_Position"  not-null="true"/>
+  <property name="PositionName" length="64" not-null="true"/>
+	<!--<many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Appointment_Position" index="Appointment_Position"  not-null="true"/>-->
 	<property name="VacationCount"  not-null="true"/>
 	<many-to-one name="Reason" class="AppointmentReason" column="ReasonId" foreign-key="FK_Appointment_AppointmentReason" index="Appointment_AppointmentReason"  not-null="true"/>
 	
@@ -21,7 +22,7 @@
 	<!--<property name="ReasonPersonnelStore" length="64" not-null="false"/>
 	<property name="ReasonUser" length="64" not-null="false"/>-->
 
-	<property name="Period"  length="128" not-null="true"/>
+	<!--<property name="Period"  length="128" not-null="true"/>-->
 	<property name="Schedule" length="64" not-null="true"/>
 	<property name="Salary" not-null="true"/>
 	<property name="Bonus" not-null="true"/>
@@ -30,7 +31,7 @@
 	<property name="EducationRequirements"  length="64" not-null="true"/>
 	<property name="ExperienceRequirements"  length="32" not-null="true"/>
 	<property name="OtherRequirements"  length="128" not-null="false"/>
-	<property name="AdditionalRequirements" length="128" not-null="false"/>
+	<!--<property name="AdditionalRequirements" length="128" not-null="false"/>-->
 	<property name="Responsibility" length="128" not-null="true"/>
 	<property name="DesirableBeginDate" not-null="false"/>
 	<property name="IsVacationExists" not-null="true"/>

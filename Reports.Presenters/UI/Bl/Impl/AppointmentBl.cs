@@ -199,7 +199,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity == null)
                     throw new ValidationException(string.Format(StrAppointmentNotFound, id));
                 creator = entity.Creator;
-                model.AdditionalRequirements = entity.AdditionalRequirements;
+                //model.AdditionalRequirements = entity.AdditionalRequirements;
                 model.Bonus = FormatSum(entity.Bonus);
                 model.City = entity.City;
                 model.Compensation = entity.Compensation;
@@ -212,8 +212,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsVacationExists = entity.IsVacationExists ? 1 : 0;
                 model.DocumentNumber = entity.Number.ToString();
                 model.OtherRequirements = entity.OtherRequirements;
-                model.Period = entity.Period;
-                model.PositionId = entity.Position.Id;
+                //model.Period = entity.Period;
+                model.PositionName = entity.PositionName;
                 model.ReasonId = entity.Reason.Id;
                 // hardcode using database Ids from [dbo].[AppointmentReason] 
                 switch (entity.Reason.Id)
@@ -221,6 +221,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case 1:
                     case 2:
                     //case 3:
+                        model.ReasonPosition = null;
+                        model.ReasonBeginDate = FormatDate(entity.ReasonBeginDate);
+                        break;
                     case 4:
                     case 5:
                         model.ReasonPosition = entity.ReasonPosition;
@@ -441,7 +444,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                   new IdNameDto {Id = 0,Name = "Бессрочная"},
                                   new IdNameDto {Id = 1,Name = "Срочная"},
                               };
-            model.Positions = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
+            //model.Positions = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
             model.Reasons = AppointmentReasonDao.LoadAll().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             model.IsVacationExistsValues = new List<IdNameDto>
                               {
@@ -452,7 +455,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetHiddenFields(AppointmentEditModel model)  
         {
             model.IsVacationExistsHidden = model.IsVacationExists;
-            model.PositionIdHidden = model.PositionId;
+            //model.PositionIdHidden = model.PositionId;
             model.ReasonIdHidden = model.ReasonId;
             model.TypeIdHidden = model.TypeId;
             model.IsManagerApprovedHidden = model.IsManagerApproved;
@@ -641,7 +644,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User currUser = UserDao.Load(current.Id);
             if (!model.IsDelete && model.IsEditable)
             {
-                entity.AdditionalRequirements = model.AdditionalRequirements;
+                //entity.AdditionalRequirements = model.AdditionalRequirements;
                 entity.Bonus = Decimal.Parse(model.Bonus);
                 entity.City = model.City;
                 entity.Compensation = model.Compensation;
@@ -651,11 +654,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.ExperienceRequirements = model.ExperienceRequirements;
                 entity.IsVacationExists = model.IsVacationExists == 1?true:false;
                 entity.OtherRequirements = model.OtherRequirements;
-                entity.Period = model.Period;
-                entity.Position = PositionDao.Load(model.PositionId);
+                //entity.Period = model.Period;
+                entity.PositionName = model.PositionName;//PositionDao.Load(model.PositionId);
                 entity.Reason = AppointmentReasonDao.Load(model.ReasonId);
                 entity.ReasonBeginDate = model.ReasonId != 3 ? DateTime.Parse(model.ReasonBeginDate) : new DateTime?();
-                entity.ReasonPosition = model.ReasonPosition;
+                entity.ReasonPosition =  model.ReasonId != 1 && model.ReasonId != 2 ?model.ReasonPosition:null;
                 entity.Responsibility = model.Responsibility;
                 entity.Salary = Decimal.Parse(model.Salary);
                 entity.Schedule = model.Schedule;
@@ -977,7 +980,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptDepartment3NotFound,entity.Department.Id);
             body = string.Format(StrEmailForAppointmentManagerAcceptText,
                                  entity.Number,
-                                 entity.Position.Name,
+                                 entity.PositionName,
                                  dep3 == null?"<не найдено в базе данных>":dep3.Name,
                                  user.FullName);
             const string subject = StrEmailForAppointmentManagerAcceptSubject;
@@ -1040,7 +1043,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.ErrorFormat(StrEmailForAppointmentManagerAcceptDepartment3NotFound, entity.Department.Id);
             body = string.Format(StrEmailForAppointmentManagerRejectText,
                                  entity.Number,
-                                 entity.Position.Name,
+                                 entity.PositionName,
                                  dep3 == null ? "<не найдена в базе данных>" : dep3.Name,
                                  user.FullName);
             const string subject = StrEmailForAppointmentManagerRejectSubject;
@@ -1055,7 +1058,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 RequestId = id,
                 RequestTypeId = (int)typeId,
                 Comments = new List<RequestCommentModel>(),
-                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager && id > 0,
+                IsAddAvailable = /*AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager &&*/ id > 0,
             };
             if (id == 0)
                 return commentModel;
@@ -1077,11 +1080,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
+                /*if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
                 {
                     model.Error = StrCommentCreationDedied;
                     return false;
-                }
+                }*/
                 User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
                 Appointment entity = AppointmentDao.Load(model.DocumentId);
                 AppointmentComment comment = new AppointmentComment
@@ -1224,7 +1227,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.DepartmentName = entity.Appointment.Department.Name;
                 model.City = entity.Appointment.City;
-                model.CandidatePosition = entity.Appointment.Position.Name;
+                model.CandidatePosition = entity.Appointment.PositionName;
                 model.VacationCount = entity.Appointment.VacationCount.ToString();
                 model.Reason = entity.Appointment.Reason.Name;
                 model.AppointmentNumber = entity.Appointment.Number.ToString();
