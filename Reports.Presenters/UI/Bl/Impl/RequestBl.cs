@@ -3702,12 +3702,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
-                    if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
+                    /*if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
                         user.ExperienceIn1C == true)
                     {
                         model.IsApprovedEnable = true;
                         model.IsApprovedForAllEnable = true;                        
-                    }
+                    }*/
                     break;
                 case UserRole.PersonnelManager:
                     // Разрешить согласование для кадровиков банка и аутсорсинга
@@ -3737,7 +3737,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 if (user.ExperienceIn1C != true && (model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0))
                                 {
                                     model.IsApprovedEnable = true;
-                                    model.IsApprovedForAllEnable = true;
                                 }
                             }
                         }
