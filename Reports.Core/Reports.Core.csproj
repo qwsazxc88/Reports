@@ -311,6 +311,16 @@
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
+    <Compile Include="Domain\Employment\BackgroundCheck.cs" />
+    <Compile Include="Domain\Employment\EmploymentCandidate.cs" />
+    <Compile Include="Domain\Employment\Liability.cs" />
+    <Compile Include="Domain\Employment\Automobile.cs" />
+    <Compile Include="Domain\Employment\Reference.cs" />
+    <Compile Include="Domain\Employment\HigherEducationDiploma.cs" />
+    <Compile Include="Domain\Employment\PostGraduateEducationDiploma.cs" />
+    <Compile Include="Domain\Employment\Certification.cs" />
+    <Compile Include="Domain\Employment\Training.cs" />
+    <Compile Include="Domain\Employment\ExperienceItem.cs" />
     <Compile Include="Domain\EnumFormatter.cs" />
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
@@ -799,6 +809,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentEducationType.hbm.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
