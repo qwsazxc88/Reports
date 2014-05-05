@@ -169,6 +169,8 @@ namespace Reports.Core.Dao.Impl
                 clearanceChecklist.RegistryNumber = registryNumber;
                 clearanceChecklist.PersonalIncomeTax = personalIncomeTax;
                 clearanceChecklist.OKTMO = oKTMO;
+                Session.Update(clearanceChecklist);
+                transaction.Commit();
                 return true;
             }
             else

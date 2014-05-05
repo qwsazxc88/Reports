@@ -21,5 +21,6 @@ namespace Reports.Core.Dao
             int sortedBy,
             bool? sortDescending
             );
+        bool ResetApprovals(int id);
     }
 }

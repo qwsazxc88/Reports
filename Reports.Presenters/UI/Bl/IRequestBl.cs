@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.Bl
 
         bool HaveAbsencesForPeriod(DateTime beginDate, DateTime endDate, int userId,
                                    int currentUserId, UserRole currentUserRole);
-
+        bool ResetSicklistApprovals(int id, out string error);
 
         HolidayWorkListModel GetHolidayWorkListModel();
         void SetHolidayWorkListModel(HolidayWorkListModel model, bool hasError);
