@@ -7,6 +7,6 @@ namespace Reports.Core.Domain.Employment
 {
     public class HigherEducationDiploma : AbstractEntity
     {
-        
+        public virtual User User { get; set; }
     }
 }

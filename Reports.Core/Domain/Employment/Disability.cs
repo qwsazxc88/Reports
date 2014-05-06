@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Reports.Core.Domain.Employment
 {
-    public class Training : AbstractEntity
+    public class Disability : AbstractEntity
     {
         public virtual User User { get; set; }
     }

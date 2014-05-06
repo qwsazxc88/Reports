@@ -7,6 +7,7 @@ namespace Reports.Core.Domain.Employment
 {
     public class Automobile : AbstractEntity
     {
+        public virtual User User { get; set; }
         public virtual string Make { get; set; }
         public virtual string LicensePlateNumber { get; set; }
     }
