@@ -105,5 +105,23 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean);                
         }
+
+        public bool ResetApprovals(int id)
+        {
+            var sicklist = Session.Get<Sicklist>(id);
+            if (sicklist != null)
+            {
+                var transaction = Session.BeginTransaction();
+                sicklist.ManagerDateAccept = null;
+                sicklist.UserDateAccept = null;
+                Session.Update(sicklist);
+                transaction.Commit();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

@@ -44,12 +44,14 @@ namespace WebMvc.Controllers
         }
         #region Appointment
         [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult Index()
         {
             var model = AppointmentBl.GetAppointmentListModel();
             return View(model);
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult Index(AppointmentListModel model)
         {
             bool hasError = !ValidateModel(model);
@@ -64,12 +66,14 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(int id)
         {
             AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id);
             return View(model);
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult AppointmentEdit(AppointmentEditModel model)
         {
 
@@ -102,9 +106,9 @@ namespace WebMvc.Controllers
             }
             model.IsDelete = false;
             return View(model);
-            if (!string.IsNullOrEmpty(error))
+            /*if (!string.IsNullOrEmpty(error))
                 return View(model);
-            return RedirectToAction("Index");
+            return RedirectToAction("Index");*/
         }
         protected bool ValidateAppointmentEditModel(AppointmentEditModel model)
         {
@@ -164,7 +168,7 @@ namespace WebMvc.Controllers
         {
             if (!model.IsEditable)
             {
-                model.PositionId = model.PositionIdHidden;
+                //model.PositionId = model.PositionIdHidden;
                 model.ReasonId = model.ReasonIdHidden;
                 model.TypeId = model.TypeIdHidden;
                 model.IsVacationExists = model.IsVacationExistsHidden;
@@ -184,12 +188,12 @@ namespace WebMvc.Controllers
                     ModelState.Remove("IsChiefApproved");
                 model.IsChiefApproved = model.IsChiefApprovedHidden;
             }
-            if (!model.IsPersonnelApproveAvailable)
+            /*if (!model.IsPersonnelApproveAvailable)
             {
                 if (ModelState.ContainsKey("IsPersonnelApproved"))
                     ModelState.Remove("IsPersonnelApproved");
                 model.IsPersonnelApproved = model.IsPersonnelApprovedHidden;
-            }
+            }*/
             if (!model.IsStaffApproveAvailable)
             {
                 if (ModelState.ContainsKey("IsStaffApproved"))
@@ -235,6 +239,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AppointmentReportEdit", new RouteValueDictionary { { "id", newReportId } });
         }
         [HttpPost]
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public ActionResult AppointmentReportEdit(AppointmentReportEditModel model)
         {
             CorrectCheckboxes(model);
@@ -342,6 +347,7 @@ namespace WebMvc.Controllers
         }
         #endregion
         #region Attachment
+        [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
         public FileContentResult ViewAttachment(int id)
         {
             try
@@ -356,6 +362,7 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.StaffManager)]
         public ContentResult DeleteAttachment(int id)
         {
             bool saveResult;

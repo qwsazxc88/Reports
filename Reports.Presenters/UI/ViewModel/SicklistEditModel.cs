@@ -138,6 +138,9 @@ namespace Reports.Presenters.UI.ViewModel
         public int AttachmentId { get; set; }
         //public int AttachmentTypeId { get; set; }
 
+        // Сообщение пользователю об ошибках
+        public bool IsErrorNotificationAvailable { get; set; }
+
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsDelete { get; set; }

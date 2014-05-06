@@ -126,7 +126,7 @@
                     @Html.LabelFor(m => m.TypeId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
@@ -254,7 +254,22 @@
     $("#DateAccept").datepicker();
     $("#ColloquyDate").datepicker();
     $(".hasDatepicker").width("75px");
+     onTypeChange();
    });
+   function onTypeChange()
+   {
+        if($("#IsEditable").val())
+        {
+            var typeId = $("#TypeId").val();
+            if(typeId == 1)
+                $("#EducationTime").removeAttr("readonly");
+            else
+            {
+                $("#EducationTime").val('');
+                $("#EducationTime").attr("readonly", "readonly");
+            }
+        }            
+    }
     function Delete() {
         var result = true;
         if($("#IsManagerEditable").val())

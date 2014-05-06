@@ -3702,37 +3702,47 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.OutsourcingManager:
                     // Разрешить согласование для аутсорсеров, если стаж уже есть в 1С
-                    if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
+                    /*if (!entity.PersonnelManagerDateAccept.HasValue && model.AttachmentId > 0 &&
                         user.ExperienceIn1C == true)
                     {
                         model.IsApprovedEnable = true;
                         model.IsApprovedForAllEnable = true;                        
-                    }
+                    }*/
                     break;
                 case UserRole.PersonnelManager:
-                    // Разрешить согласование для кадровиков банка и аутсорсинга
+                    // Разрешить согласование для кадровиков банка и расчетчиков аутсорсинга
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
                         {
-                            // Расчетчики аутсорсинга могут согласовать,
+                            // Расчетчики аутсорсинга
                             if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
                             {
-                                // если стаж есть в 1С или добавлен кадровиком банка
+                                // могут согласовать, если стаж есть в 1С или добавлен кадровиком банка
                                 if (user.ExperienceIn1C == true || model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0)
                                 {
-                                    model.IsApprovedEnable = true;
-                                    model.IsApprovedForAllEnable = true;
+                                    if (entity.ManagerDateAccept.HasValue)
+                                    {
+                                        model.IsApprovedEnable = true;
+                                    }
+                                    else
+                                    {
+                                        model.IsApprovedForAllEnable = true;
+                                    }                                    
+                                }
+                                // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                                if (entity.UserDateAccept != null && entity.SendTo1C == null)
+                                {
+                                    model.IsErrorNotificationAvailable = true;
                                 }
                             }
                             // Кадровики банка могут согласовать,
                             else
                             {
                                 // если стаж добавлен вручную
-                                if (user.ExperienceIn1C != true && (model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0))
+                                if (user.ExperienceIn1C != true && (model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0) && entity.ManagerDateAccept.HasValue)
                                 {
                                     model.IsApprovedEnable = true;
-                                    model.IsApprovedForAllEnable = true;
                                 }
                             }
                         }
@@ -3823,6 +3833,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(superPersonnelId.HasValue && currentUserId == superPersonnelId.Value)
                     return true;
             }
+            if (currentUserRole == UserRole.Employee)
+            {
+                return true;
+            }
             DateTime current = DateTime.Today;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
             if(current.Day == 1)
@@ -3845,6 +3859,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected  bool IsAbsenceExists(IList<BeginEndDateDto> absences,DateTime date)
         {
             return absences.Any(x => x.BeginDate <= date && x.EndDate >= date);
+        }
+
+        public bool ResetSicklistApprovals(int id, out string error)
+        {
+            error = String.Empty;
+
+            Sicklist sicklist = SicklistDao.Load(id);
+
+            if (sicklist != null && SendEmailForSicklistError(sicklist) && sicklistDao.ResetApprovals(id))
+            {
+                return true;
+            }
+            else
+            {
+                error = "Error updating comment";
+                return false;
+            }
         }
         #endregion
 

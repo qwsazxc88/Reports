@@ -38,10 +38,11 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 pos.Name as PositionName,
                                 mapDep7.Name as ManDep7Name,
-                                aPos.Name as CanPosition, 
+                                -- aPos.Name as CanPosition, 
+                                v.PositionName as CanPosition, 
                                 dep3.Name as Dep3Name,
                                 dep7.Name as Dep7Name,
-                                v.Period as Period,
+                                -- v.Period as Period,
                                 v.Schedule as Schedule,
                                 v.Salary+v.Bonus as Salary,
                                 v.DesirableBeginDate as DesirableBeginDate,
@@ -67,7 +68,7 @@ namespace Reports.Core.Dao.Impl
                                 left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
                                 left join [dbo].[Users] ur on ur.Id = r.CreatorId
                                 inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
-                                inner join dbo.Position aPos on v.PositionId = aPos.Id
+                                -- inner join dbo.Position aPos on v.PositionId = aPos.Id
                                 inner join [dbo].[Users] u on u.Id = v.CreatorId
                                 left join dbo.Position pos on u.PositionId = pos.Id
                                 inner join dbo.Department dep on v.DepartmentId = dep.Id
@@ -94,7 +95,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CanPosition", NHibernateUtil.String).
                 AddScalar("Dep3Name", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
-                AddScalar("Period", NHibernateUtil.String).
+                //AddScalar("Period", NHibernateUtil.String).
                 AddScalar("Schedule", NHibernateUtil.String).
                 AddScalar("Salary", NHibernateUtil.Decimal).
                 AddScalar("DesirableBeginDate", NHibernateUtil.DateTime).

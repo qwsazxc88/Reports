@@ -186,6 +186,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             return dtoList;
         }
 
+        protected bool SendEmailForSicklistError(Sicklist entity)
+        {
+            string subject = @"Ошибки в заявке";
+            string to = entity.User.Email;
+            string body = string.Format(@"Ваша заявка №{0} от {1} (больничный лист) содержит ошибки. Описание ошибок приведено в комментариях к заявке.<br/>
+                                          Это письмо сформировано автоматически, ответы на него обрабатываться не будут.<br/>
+                                          <a href=""https://ruscount.com:8002"">Кадровый портал</a>",
+                                          entity.Number, entity.CreateDate.ToShortDateString());
+            EmailDto dto = GetEmailDto(null, to, subject, body);
+            dto.From = "noreply@ruscount.ru";
+
+            return SendEmail(dto);
+        }
+
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
             User creator,bool isDeleted,
             int requestId,int requestNumber,
@@ -344,9 +358,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             dto.Body = body;
             return dto;
         }
-
-
-
+                
         protected void SendEmail(IEmailDtoSupport model,
             string to, string subject, string body)
         {

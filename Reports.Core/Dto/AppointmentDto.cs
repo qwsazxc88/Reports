@@ -13,7 +13,7 @@ namespace Reports.Core.Dto
                 public string CanPosition {get;set;}
                 public string Dep3Name { get; set; }
                 public string Dep7Name {get;set;}
-                public string Period {get;set;}
+                //public string Period {get;set;}
                 public string Schedule {get;set;}
                 public decimal Salary {get;set;}
                 public DateTime? DesirableBeginDate {get;set;}

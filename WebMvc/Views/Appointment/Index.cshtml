@@ -137,9 +137,9 @@
                      <th>
                         <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Подразделение<br/> 7 ур.</a></div>
                     </th>
-                    <th>
+                   @* <th>
                         <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Работа<br/> на период</a></div>
-                    </th>
+                    </th>*@
                     <th>
                         <div id="sort9" style="min-width:80px"><a href="#"  onclick = "SortChanged(9);">График<br/> работы</a></div>
                     </th>
@@ -196,7 +196,7 @@
                             <td>@doc.CanPosition</td>
                             <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
-                            <td>@doc.Period</td>
+                           @* <td>@doc.Period</td>*@
                             <td>@doc.Schedule</td>
                             <td>@RequestBl.FormatSum(@doc.Salary)</td>
                             <td>@doc.DesirableBeginDate.Value.ToShortDateString()</td>

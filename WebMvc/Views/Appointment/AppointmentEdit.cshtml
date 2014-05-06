@@ -57,11 +57,12 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.PositionId):
+                    @Html.LabelFor(m => m.PositionName):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
-                    <input type="hidden" id="PositionIdHidden" name="PositionIdHidden" value="@Model.PositionIdHidden" />
+                  @Html.TextBoxFor(model => model.PositionName, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
+                    @*@Html.DropDownListFor(model => model.PositionId, new SelectList(Model.Positions, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PositionIdHidden" name="PositionIdHidden" value="@Model.PositionIdHidden" />*@
                 </td>
             </tr>
             <tr>
@@ -81,10 +82,9 @@
                     <input type="hidden" id="ReasonIdHidden" name="ReasonIdHidden" value="@Model.ReasonIdHidden" />
                 </td>
             </tr>
-            <tr>
+            <tr id="ReasonPositionTr">
                 <td>
                   <span id="ReasonPositionLabel">Должность:</span>
-                    @*@Html.LabelFor(m => m.ReasonPosition):*@
                 </td>
                 <td>
                    @Html.TextBoxFor(model => model.ReasonPosition, Model.IsEditable ? (object)new { maxlength = 50 }  : (object)new { @readonly = "read-only" }) 
@@ -112,14 +112,14 @@
                    @Html.TextBoxFor(model => model.ReasonPersonnelStore, Model.IsEditable ? (object)new { maxlength = 50 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>*@
-            <tr>
+           @* <tr>
                 <td>
                     @Html.LabelFor(m => m.Period):
                 </td>
                 <td>
                     @Html.TextBoxFor(model => model.Period, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
-            </tr>
+            </tr>*@
              <tr>
                 <td>
                     @Html.LabelFor(m => m.Schedule):
@@ -185,14 +185,14 @@
                     @Html.TextBoxFor(model => model.OtherRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
-            <tr>
+            @*<tr>
                 <td>
                     @Html.LabelFor(m => m.AdditionalRequirements):
                 </td>
                 <td>
                     @Html.TextBoxFor(model => model.AdditionalRequirements, Model.IsEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
                 </td>
-            </tr>
+            </tr>*@
                <tr>
                 <td>
                     @Html.LabelFor(m => m.Responsibility):
@@ -281,7 +281,7 @@
                      <input type="hidden" id="ChiefFio" name="ChiefFio" value="@Model.ChiefFio" />
                 </td>
             </tr>
-             <tr>
+            @* <tr>
                 <td>
                     @Html.LabelFor(m => m.IsPersonnelApproved):
                 </td>
@@ -293,7 +293,7 @@
                      @Model.PersonnelFio
                      <input type="hidden" id="PersonnelFio" name="PersonnelFio" value="@Model.PersonnelFio" />
                 </td>
-            </tr>
+            </tr>*@
              <tr>
                 <td>
                     @Html.LabelFor(m => m.IsStaffApproved):
@@ -357,12 +357,17 @@
         }
         if(!IsFieldNotEmpty($("#City")))
             result = false;
+        if(!IsFieldNotEmpty($("#PositionName")))
+            result = false;
         if(!IsFieldNotEmpty($("#VacationCount")))
             result = false;
         else if( ValidateInt($("#VacationCount")) == undefined)
             result = false;
-        if(!IsFieldNotEmpty($("#ReasonPosition")))
-            result = false;
+        if(!jQuery($("#ReasonPosition")).is(':hidden') && jQuery($("#ReasonPosition")).css('display') != 'none')
+        {
+            if(!IsFieldNotEmpty($("#ReasonPosition")))
+                result = false;
+        }
         if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
         {
             if(!IsFieldNotEmpty($("#ReasonBeginDate")))
@@ -374,8 +379,8 @@
 //                var date = jQuery.datepicker.parseDate( "dd-mm-yyyy", strDate);
 //            }
         }
-        if(!IsFieldNotEmpty($("#Period")))
-            result = false;
+//        if(!IsFieldNotEmpty($("#Period")))
+//            result = false;
         if(!IsFieldNotEmpty($("#Schedule")))
             result = false;
         if(!IsFieldNotEmpty($("#Salary")))
@@ -414,23 +419,28 @@
         switch(reasonId)
         {
             case '1':
-                $("#ReasonPositionLabel").text('Должность:');
+                //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $("#ReasonPositionTr").hide();
             break
             case '2':
-                $("#ReasonPositionLabel").text('Должность:');
+                //$("#ReasonPositionLabel").text('Должность:');
                 $("#ReasonDateLabel").text('С даты:');
+                $("#ReasonPositionTr").hide();
             break
             case '3':
                 $("#ReasonPositionLabel").text('');
+                $("#ReasonPositionTr").show();
             break
             case '4':
                 $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
                 $("#ReasonDateLabel").text('Дата ухода:');
+                $("#ReasonPositionTr").show();
             break
             case '5':
                 $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
                 $("#ReasonDateLabel").text('Дата увольнения:');
+                $("#ReasonPositionTr").show();
             break
         }
         if(reasonId == 3)
