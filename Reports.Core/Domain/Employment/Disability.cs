@@ -8,5 +8,10 @@ namespace Reports.Core.Domain.Employment
     public class Disability : AbstractEntity
     {
         public virtual User User { get; set; }
+        public virtual string CertificateSeries { get; set; }
+        public virtual string CertificateNumber { get; set; }
+        public virtual DateTime DateOfIssue { get; set; }
+        public virtual string DisabilityDegree { get; set; }
+        public virtual DateTime CerificateExpirationDate { get; set; }
     }
 }

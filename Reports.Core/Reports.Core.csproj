@@ -312,9 +312,16 @@
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
     <Compile Include="Domain\Employment\BackgroundCheck.cs" />
+    <Compile Include="Domain\Employment\Disability.cs" />
     <Compile Include="Domain\Employment\EmploymentCandidate.cs" />
+    <Compile Include="Domain\Employment\Experience.cs" />
+    <Compile Include="Domain\Employment\Family.cs" />
+    <Compile Include="Domain\Employment\FamilyMember.cs" />
+    <Compile Include="Domain\Employment\ForeignLanguage.cs" />
+    <Compile Include="Domain\Employment\GeneralInfo.cs" />
     <Compile Include="Domain\Employment\Liability.cs" />
     <Compile Include="Domain\Employment\Automobile.cs" />
+    <Compile Include="Domain\Employment\NameChange.cs" />
     <Compile Include="Domain\Employment\Reference.cs" />
     <Compile Include="Domain\Employment\HigherEducationDiploma.cs" />
     <Compile Include="Domain\Employment\PostGraduateEducationDiploma.cs" />

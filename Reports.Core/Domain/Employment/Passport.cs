@@ -5,10 +5,8 @@ using System.Text;
 
 namespace Reports.Core.Domain.Employment
 {
-    public class ForeignLanguage : AbstractEntity
+    public class Passport : AbstractEntity
     {
         public virtual User User { get; set; }
-        public virtual string LanguageName { get; set; }
-        public virtual string Level { get; set; }
     }
 }

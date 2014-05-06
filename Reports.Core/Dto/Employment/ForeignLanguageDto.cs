@@ -11,7 +11,7 @@ namespace Reports.Core.Dto.Employment
         [Display(Name = "Язык")]
         public string LanguageName { get; set; }
 
-        [Display(Name = "Номер справки")]
+        [Display(Name = "Уровень")]
         public string Level { get; set; }
     }
 }
