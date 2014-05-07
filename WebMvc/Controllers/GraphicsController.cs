@@ -179,11 +179,11 @@ namespace WebMvc.Controllers
             }
             else
             {
-                int hours;
-                if (!int.TryParse(model.Hours, out hours) || hours < 0 || hours > 24)
+                decimal hours;
+                if (!decimal.TryParse(model.Hours, out hours) || hours < 0 || hours > 24)
                 {
                     //ModelState.AddModelError("Hours", "Поле 'План' должно быть целым числом от 0 до 24");
-                    model.Error = "Поле 'План' должно быть целым числом от 0 до 24";
+                    model.Error = "Поле 'План' должно быть числом от 0 до 24";
                 }
                 else
                     model.TpHours = hours;

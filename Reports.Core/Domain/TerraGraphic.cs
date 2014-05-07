@@ -6,7 +6,7 @@ namespace Reports.Core.Domain
     {
         public virtual int UserId { get; set; }
         public virtual DateTime Day { get; set; }
-        public virtual int Hours { get; set; }
+        public virtual decimal Hours { get; set; }
         public virtual int PointId { get; set; }
         public virtual bool? IsCreditAvailable { get; set; }
     }

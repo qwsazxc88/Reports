@@ -72,11 +72,20 @@ function ValidateEditPoint() {
         addTerraEditError("Необходимо указать поле 'План'");
         return false;
     }
-    var hours = parseInt($("#Hours").val(), 10);
+    var hours = ValidateFloat($("#Hours"));
+    if (hours == undefined) {
+        addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+        return false;
+    }
+    if ((hours < 0) || (hours > 24)) {
+        addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+        return false;
+    }
+    /*var hours = parseInt($("#Hours").val(), 10);
     if (isNaN(hours) || (hours < 0) || (hours > 24)) {
         addTerraEditError("Поле 'План' должно быть целым числом от 0 до 24");
         return false;
-    }
+    }*/
     return true;
 }
 function SaveEditPoint() {

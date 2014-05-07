@@ -19,6 +19,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string Error { get; set; }
 
         public DateTime TpDay { get; set; }
-        public int TpHours { get; set; }
+        public decimal TpHours { get; set; }
     }
 }

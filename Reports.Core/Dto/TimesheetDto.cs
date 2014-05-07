@@ -38,7 +38,7 @@ namespace Reports.Core.Dto
         public DateTime EndDate { get; set; }
         public int TimesheetStatusId { get; set; }
         public string TimesheetCode { get; set; }
-        public int? TimesheetHours { get; set; }
+        public decimal? TimesheetHours { get; set; }
         public int UserId { get; set; }
         public string UserName { get; set; }
         public bool IsDismissalDay { get; set; }
@@ -62,7 +62,7 @@ namespace Reports.Core.Dto
         public string Day { get; set; }
         //public int StatusId { get; set; }
         //public string Status { get; set; }
-        public int? Hours { get; set; }
+        public decimal? Hours { get; set; }
         public int? TerraPointId { get; set; }
         public string TerraPointName { get; set; }
         public string TerraPointTitle { get; set; }

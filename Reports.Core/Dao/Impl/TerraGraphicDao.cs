@@ -56,7 +56,7 @@ namespace Reports.Core.Dao.Impl
               AddScalar("Id", NHibernateUtil.Int32).
               AddScalar("UserId", NHibernateUtil.Int32).
               AddScalar("Day", NHibernateUtil.DateTime).
-              AddScalar("Hours", NHibernateUtil.Int32).
+              AddScalar("Hours", NHibernateUtil.Decimal).
               AddScalar("PointId", NHibernateUtil.Int32).
               AddScalar("IsCreditAvailable", NHibernateUtil.Boolean).
               AddScalar("PointName", NHibernateUtil.String).

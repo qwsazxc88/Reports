@@ -664,7 +664,7 @@ namespace Reports.Core.Dao.Impl
                       && (idNameDto.DateRelease.Value.Month >= month))))
                     )
                 {
-                    List<int> userStats = new List<int> { 0,0,0,0,0 };
+                    List<decimal> userStats = new List<decimal> { 0,0,0,0,0 };
                     List<int> userStatsDays = new List<int> { 0, 0, 0, 0, 0 }; 
                     foreach (var dayRequestsDto in dtoList)
                     {
@@ -680,11 +680,11 @@ namespace Reports.Core.Dao.Impl
                             TerraGraphicDbDto tg =
                                 tgList.Where(x => x.UserId == idNameDto.Id && x.Day == date).FirstOrDefault();
                             bool isDayInFuture = DateTime.Today < date;
-                            int? timesheetHours;
+                            decimal? timesheetHours;
                             if (tg != null)
                                 timesheetHours = tg.Hours;
                             else
-                                timesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours;
+                                timesheetHours = isHoliday ? new decimal?() : isDayInFuture ? new int?() : workHours;
                             RequestDto newDto = new RequestDto
                                                     {
                                                         BeginDate = date,
@@ -738,7 +738,7 @@ namespace Reports.Core.Dao.Impl
                 //      && (idNameDto.DateRelease.Value.Month >= month))))
                 //    )
                 //{
-                    List<int> userStats = new List<int> { 0, 0, 0, 0, 0 };
+                    List<decimal> userStats = new List<decimal> { 0, 0, 0, 0, 0 };
                     List<int> userStatsDays = new List<int> { 0, 0, 0, 0, 0 };
                     foreach (var dayRequestsDto in dtoList)
                     {
@@ -753,7 +753,7 @@ namespace Reports.Core.Dao.Impl
                             //bool isDayInFuture = DateTime.Today < date;
                             TerraGraphicDbDto tg = tgList.Where(x => x.UserId == idNameDto.Id && x.Day == date).FirstOrDefault();
                             bool isDayInFuture = DateTime.Today < date;
-                            int? timesheetHours;
+                            decimal? timesheetHours;
                             if (tg != null)
                                 timesheetHours = tg.Hours;
                             else
@@ -792,7 +792,7 @@ namespace Reports.Core.Dao.Impl
             return dtoList;
         }
    
-        protected void AddToUserStats(List<int> userStats, List<int> userStatsDays, 
+        protected void AddToUserStats(List<decimal> userStats, List<int> userStatsDays, 
             List<RequestDto> userRequestList,bool isHoliday,int? workHours)
         {
             if (isHoliday)

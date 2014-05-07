@@ -762,7 +762,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
+                        null //GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
                         : graphicEntity.Hours;
                     wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     string graphic = string.Empty;
@@ -824,7 +824,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //        StatCode = "Б",
                     //    });
                     int sumDays = 0;
-                    int sum = 0;
+                    decimal sum = 0;
                     string graphic = null;
                     for (int i = 0; i < 5; i++)
                     {
@@ -1159,7 +1159,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
+                        null//GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
                         : graphicEntity.Hours;
                     wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     userDtoList.AddRange(userList);
@@ -1206,7 +1206,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //        StatCode = "Б",
                     //    });
                     int sumDays = 0;
-                    int sum = 0;
+                    decimal sum = 0;
                     string graphic = null;
                     for (int i = 0; i < 5; i++)
                     {
@@ -1553,7 +1553,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
-                    int? hours = new int?();  
+                    decimal? hours = new decimal?();  
                     TerraGraphicDbDto graphicEntity = tgList.Where(x => x.UserId == userId && x.Day == dayRequestsDto.Day).FirstOrDefault();
                     if (graphicEntity == null)
                     {
@@ -1599,7 +1599,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     IsCredits = "Кредиты",
                     TerraPointName = "Точка",
                 });
-                int? planHours = userDayList.Sum(x => x.Hours);
+                decimal? planHours = userDayList.Sum(x => x.Hours);
                 int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
                 userDayList.Add(new TerraGraphicDayDto
                 {
