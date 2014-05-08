@@ -706,7 +706,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
             IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,tgList);
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,tgList,true);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -762,7 +762,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        null //GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
+                        GetDefaultGraphicsForUser(wgtList,workDays, userId, dayRequestsDto.Day) 
                         : graphicEntity.Hours;
                     wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     string graphic = string.Empty;
@@ -1159,7 +1159,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorkingGraphic graphicEntity = wgList.Where(x => x.UserId == userId &&
                                                                x.Day == dayRequestsDto.Day).FirstOrDefault();
                     wgHours = graphicEntity == null ?
-                        null//GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
+                        GetDefaultGraphicsForUser(wgtList, workDays, userId, dayRequestsDto.Day)
                         : graphicEntity.Hours;
                     wgHoursSum += wgHours.HasValue ? wgHours.Value : 0;
                     userDtoList.AddRange(userList);
@@ -1517,7 +1517,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
                 (model.Month, model.Year, user.Id, user.UserRole, dayDtoList, uDtoList, workDays
-                ,new List<TerraGraphicDbDto>());
+                ,new List<TerraGraphicDbDto>(),false);
             Log.Debug("SetGraphicsInfo:After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,

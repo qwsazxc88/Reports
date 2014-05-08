@@ -322,7 +322,7 @@ namespace Reports.Core.Dao.Impl
                 BeginDate = requestDto.EndDate.AddDays(1),
                 EndDate = endDate,
                 TimesheetCode = EmptyStatusCode,
-                TimesheetHours = new int?(),
+                TimesheetHours = new decimal?(),
                 TimesheetStatusId = 0,
                 UserId = requestDto.UserId,
                 UserName = requestDto.UserName,
@@ -456,7 +456,7 @@ namespace Reports.Core.Dao.Impl
                                                                              BeginDate = beginDate, 
                                                                              EndDate = requestDto.BeginDate.AddDays(-1), 
                                                                              TimesheetCode = EmptyStatusCode, 
-                                                                             TimesheetHours = new int?(), 
+                                                                             TimesheetHours = new decimal?(), 
                                                                              TimesheetStatusId = 0, 
                                                                              UserId = requestDto.UserId, 
                                                                              UserName = requestDto.UserName,
@@ -647,7 +647,7 @@ namespace Reports.Core.Dao.Impl
         public IList<DayRequestsDto> GetRequestsForMonth(
             int month, int year, int managerId, UserRole managerRole,
             IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users,
-            IList<WorkingCalendar> workDays, IList<TerraGraphicDbDto> tgList
+            IList<WorkingCalendar> workDays, IList<TerraGraphicDbDto> tgList, bool setEmptyDays
             )
         {
             IList<RequestDto> requests = GetRequests(dtoList.First().Day, dtoList.Last().Day,
@@ -671,6 +671,7 @@ namespace Reports.Core.Dao.Impl
                         DateTime date = dayRequestsDto.Day;
                         //DayOfWeek dayOfweek = date.DayOfWeek;
                         int? workHours = CoreUtils.GetHoursForDay(workDays, date);
+                        decimal? workHoursD = workHours.HasValue? Convert.ToDecimal(workHours):new decimal?();
                         bool isHoliday = CoreUtils.IsDayHoliday(workDays, date);//(dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                         List<RequestDto> userRequestList = requests.Where(x =>
                                                                           (date >= x.BeginDate && date <= x.EndDate &&
@@ -680,11 +681,11 @@ namespace Reports.Core.Dao.Impl
                             TerraGraphicDbDto tg =
                                 tgList.Where(x => x.UserId == idNameDto.Id && x.Day == date).FirstOrDefault();
                             bool isDayInFuture = DateTime.Today < date;
-                            decimal? timesheetHours;
+                            decimal? timesheetHours = new decimal?();
                             if (tg != null)
                                 timesheetHours = tg.Hours;
-                            else
-                                timesheetHours = isHoliday ? new decimal?() : isDayInFuture ? new int?() : workHours;
+                            else if(setEmptyDays)
+                                timesheetHours = isHoliday ? new decimal?() : isDayInFuture ? new decimal?() : workHoursD;
                             RequestDto newDto = new RequestDto
                                                     {
                                                         BeginDate = date,
@@ -744,6 +745,7 @@ namespace Reports.Core.Dao.Impl
                     {
                         DateTime date = dayRequestsDto.Day;
                         int? workHours = CoreUtils.GetHoursForDay(workDays, date);
+                        decimal? workHoursD = workHours.HasValue ? Convert.ToDecimal(workHours) : new decimal?();
                         bool isHoliday = CoreUtils.IsDayHoliday(workDays, date);//(dayOfweek == DayOfWeek.Sunday) || (dayOfweek == DayOfWeek.Saturday);
                         List<RequestDto> userRequestList = requests.Where(x =>
                                                                           (date >= x.BeginDate && date <= x.EndDate &&
@@ -757,7 +759,7 @@ namespace Reports.Core.Dao.Impl
                             if (tg != null)
                                 timesheetHours = tg.Hours;
                             else
-                                timesheetHours = isHoliday ? new int?() : isDayInFuture ? new int?() : workHours;
+                                timesheetHours = isHoliday ? new decimal?() : isDayInFuture ? new decimal?() : workHoursD;
 
                             RequestDto newDto = new RequestDto
                             {
