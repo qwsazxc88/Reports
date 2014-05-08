@@ -1,4 +1,4 @@
-﻿@model Reports.Presenters.UI.ViewModel.Employment.ExperienceModel
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
 @{
     ViewBag.Title = "Прием - Трудовая деятельность";
 }
@@ -6,7 +6,7 @@
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
-        <table>
+        <table class="grid">
             <thead>
                 <tr>
                     <th>
@@ -22,7 +22,7 @@
                         Должность
                     </th>
                     <th>
-                        Адрес организации,<br />телефон отдела кадров,<br />секретаря
+                        Адрес организации,<br />телефон отдела кадров, секретаря
                     </th>
                 </tr>
             </thead>

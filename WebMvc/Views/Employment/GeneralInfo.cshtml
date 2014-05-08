@@ -1,4 +1,4 @@
-﻿@model Reports.Presenters.UI.ViewModel.Employment.GeneralInfoModel
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
 @{
     ViewBag.Title = "Прием - Общая информация";
 }
@@ -50,7 +50,7 @@
                         @for (var i = 0; i < Model.NameChanges.Count; i++)
                         {
                             // Изменения ФИО                        
-                            <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                            <table class="grid" data-id=@i>
                                 <tr>                                
                                     <td>
                                         @Html.LabelFor(m => m.NameChanges[i].PreviousName):
@@ -162,7 +162,7 @@
                 </td>
                 <td>
                     <div id="foreign-languages-container">
-                        <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;">
+                        <table class="grid">
                             <thead>
                                 <tr>
                                     <th>
@@ -214,7 +214,7 @@
                 </td>
                 <td>
                     <div id="disabilities-container">
-                        <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                        <table class="grid">
                             <thead>
                                 <tr>
                                     <th>

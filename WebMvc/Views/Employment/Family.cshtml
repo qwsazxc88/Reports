@@ -1,4 +1,4 @@
-﻿@model Reports.Presenters.UI.ViewModel.Employment.FamilyModel
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.FamilyModel
 @{
     ViewBag.Title = "Прием - Состав семьи";
 }
@@ -9,7 +9,7 @@
     
     <div class="doc-wrap">
         @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
-        <table>
+        <table class="grid">
         <thead>
             <tr>
                 <th>
@@ -56,7 +56,7 @@
                     @Html.EditorFor(m => m.Spouse.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.Contacts)
+                    @Html.TextAreaFor(m => m.Spouse.Contacts, new { style = "width: 90%;" })
                 </td>
             </tr>
             <tr>
@@ -79,7 +79,7 @@
                     @Html.EditorFor(m => m.Father.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Father.Contacts)
+                    @Html.TextAreaFor(m => m.Father.Contacts, new { style = "width: 90%;" })
                 </td>
             </tr>
             <tr>
@@ -102,7 +102,7 @@
                     @Html.EditorFor(m => m.Mother.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Mother.Contacts)
+                    @Html.TextAreaFor(m => m.Mother.Contacts, new { style = "width: 90%;" })
                 </td>
             </tr>
             @for (var i = 0; i < Model.Children.Count; i++)
@@ -127,7 +127,7 @@
                         @Html.EditorFor(m => m.Children[i].WorksAt)
                     </td>
                     <td>
-                        @Html.TextAreaFor(m => m.Children[i].Contacts)
+                        @Html.TextAreaFor(m => m.Children[i].Contacts, new { style = "width: 90%;" })
                     </td>
                 </tr>
             }

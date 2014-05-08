@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 
-namespace Reports.Core.Dto.Employment
+namespace Reports.Core.Dto.Employment2
 {
     public class FamilyMemberDto
     {

@@ -10,8 +10,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int Id { get; set; }
         public int Version { get; set; }
         public int UserId { get; set; }
-
-
+                
         [Display(Name = "Вид невыхода")]
         public int AbsenceTypeId { get; set; }
         public int AbsenceTypeIdHidden { get; set; }

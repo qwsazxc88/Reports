@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Reports.Presenters.UI.ViewModel.Employment
+namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class PassportModel
     {

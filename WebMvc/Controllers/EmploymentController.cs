@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Reports.Presenters.UI.ViewModel.Employment;
-using Reports.Core.Dto.Employment;
+using Reports.Presenters.UI.ViewModel.Employment2;
+using Reports.Core.Dto.Employment2;
 
 namespace WebMvc.Controllers
 {

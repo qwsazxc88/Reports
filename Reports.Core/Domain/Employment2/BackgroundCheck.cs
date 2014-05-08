@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Reports.Core.Domain.Employment
+namespace Reports.Core.Domain.Employment2
 {
     public class BackgroundCheck : AbstractEntityWithVersion
     {

@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Reports.Core.Dto.Employment;
+using Reports.Core.Dto.Employment2;
 
-namespace Reports.Presenters.UI.ViewModel.Employment
+namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class GeneralInfoModel
     {
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
             Required(ErrorMessage = "Обязательное поле")]
         public string LastName { get; set; }
         [Display(Name = "Имя"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
             Required(ErrorMessage = "Обязательное поле")]
         public string FirstName { get; set; }
         [Display(Name = "Отчество"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+            StringLength(50, ErrorMessage = "Не более 50 знаков."),
+            RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),]
         public string Patronymic { get; set; }
+
         [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине")]
         public IList<NameChangeDto> NameChanges { get; set; }
 
