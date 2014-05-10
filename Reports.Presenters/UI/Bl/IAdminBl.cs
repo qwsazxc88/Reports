@@ -30,5 +30,7 @@ namespace Reports.Presenters.UI.Bl
         void GetInformationListModel(InformationListModel model);
         void GetEditInfoModel(EditInfoModel model);
         bool SaveInfo(EditInfoModel model);
+
+        bool ConvertAttachments(DeleteAttacmentModel model);
     }
 }

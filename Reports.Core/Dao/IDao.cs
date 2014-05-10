@@ -22,6 +22,8 @@ namespace Reports.Core.Dao
         TEntity FindById(TIdentifier id);
         IList<TEntity> FindAll();
         void RollbackTran();
+        void BeginTran();
+        void CommitTran();
     }
 
     public interface IDao<TEntity> : IDao<TEntity, int>

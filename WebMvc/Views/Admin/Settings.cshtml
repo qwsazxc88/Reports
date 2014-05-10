@@ -5,6 +5,11 @@
 @using (Html.BeginForm())
 {
 <table style="width:100%">
+    @*<tr>
+        <td colspan="2">
+            <input type="button" id="ConvertRequestAttachmentBtn" value="Преобразовать прикрепленные файлы" onclick="convertAttachments();" />
+        </td>
+    </tr>*@
     <tr>
         <td colspan="2">
             @Html.ValidationSummary(false, "")
@@ -173,6 +178,26 @@
                                                 clearErrors();
                                   });
 
+    }
+    function convertAttachments(){
+        $("#ConvertRequestAttachmentBtn").attr("disabled", "disabled");
+        var actionUrl="@Url.Action("ConvertAttachments", "Admin")";
+        var url = actionUrl;
+        $.getJSON(url,
+                       function (result) {
+                            $("#ConvertRequestAttachmentBtn").removeAttr("disabled");
+                            if(result.Error != ''){
+                                alert('Ошибка преобразования файлов:'+ result.Error);
+                                //$("#AttachmentError").text(result.Error);
+                                //$("#AttachmentError").show(); 
+
+                            }
+                            else{
+                                alert('Файлы преобразованы успешно');
+                           }
+                       }
+                     );
+        return false;
     }
 </script>
 }

@@ -33,5 +33,10 @@ namespace Reports.Core.Dto
         public List<decimal> userStats { get; set; }
         public List<int> userStatsDays { get; set; }
     }
+    public class IdContextDto
+    {
+        public int Id { get; set; }
+        public byte[] Context { get; set; }
+    }
     
 }
