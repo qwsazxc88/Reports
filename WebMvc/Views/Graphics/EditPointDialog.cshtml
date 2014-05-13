@@ -43,6 +43,35 @@
                 </tr>
                 <tr>
                     <td colspan="2">
+                       Фактически
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.FactEpLevel1ID, new SelectList(Model.FactEpLevel1, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel1IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.FactEpLevel2ID, new SelectList(Model.FactEpLevel2, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel2IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.DropDownListFor(model => model.FactEpLevel3ID, new SelectList(Model.FactEpLevel3, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel3IDChange();" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.FactHours):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.FactHours, new { style = "width:60px" }) 
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td colspan="2">
                     @*    @Html.ValidationSummary(false)*@
                         <div id="EditPointError" style="color:Red;display:none;"/>
                          <input type="hidden" id="Id" name="Id" value="@Model.Id" />

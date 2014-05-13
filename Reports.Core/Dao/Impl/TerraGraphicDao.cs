@@ -45,10 +45,10 @@ namespace Reports.Core.Dao.Impl
                                 ,Hours
                                 ,PointId
                                 ,IsCreditAvailable
-                                ,ShortName as PointName
-                                ,Name as PointTitle
+                                ,case when tp.Id is not null then ShortName else N'Вых' end  as PointName
+                                ,case when tp.Id is not null then Name else N'Выходной' end  as PointTitle
                                 from dbo.TerraGraphic tg
-                                inner join dbo.TerraPoint tp on tp.Id = tg.PointId
+                                left join dbo.TerraPoint tp on tp.Id = tg.PointId
                           where 
                           tg.Day between :beginDate and :endDate
                           and tg.UserId in (:userList)";

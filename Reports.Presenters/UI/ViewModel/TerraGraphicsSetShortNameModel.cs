@@ -38,6 +38,16 @@ namespace Reports.Presenters.UI.ViewModel
         public string Hours { get; set; }
 
 
+        public List<IdNameDto> FactEpLevel1 { get; set; }
+        public List<IdNameDto> FactEpLevel2 { get; set; }
+        public List<IdNameDto> FactEpLevel3 { get; set; }
+        public int FactEpLevel1ID { get; set; }
+        public int FactEpLevel2ID { get; set; }
+        public int FactEpLevel3ID { get; set; }
+
+        [Display(Name = "Факт")]
+        public string FactHours { get; set; }
+
        
         public bool IsEditable { get; set; }
         public bool IsCreditsEditable { get; set; }

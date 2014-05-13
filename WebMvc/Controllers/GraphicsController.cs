@@ -137,7 +137,8 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Manager)]
-        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits)
+        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits,
+            int factPointId, string factHours)
         {
             TerraPointSaveModel model = new TerraPointSaveModel
                                             {
@@ -147,6 +148,8 @@ namespace WebMvc.Controllers
                                                 Hours = hours,
                                                 PointId = pointId,
                                                 UserId = userId,
+                                                FactHours = factHours,
+                                                FactPointId = factPointId,
                                             };
             try
             {
@@ -187,6 +190,17 @@ namespace WebMvc.Controllers
                 }
                 else
                     model.TpHours = hours;
+            }
+            if (!string.IsNullOrEmpty(model.FactHours))
+            {
+                decimal hours;
+                if (!decimal.TryParse(model.FactHours, out hours) || hours < 0 || hours > 24)
+                {
+                    //ModelState.AddModelError("Hours", "Поле 'План' должно быть целым числом от 0 до 24");
+                    model.Error = "Поле 'Факт' должно быть числом от 0 до 24";
+                }
+                else
+                    model.TpFactHours = hours;
             }
             return string.IsNullOrEmpty(model.Error);
         }

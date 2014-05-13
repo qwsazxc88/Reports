@@ -30,7 +30,7 @@
         draggable: false,
         resizable: false,
         width: 750,
-        height: 340,
+        height: 520,
         close: function (event, ui) {
             $(this).dialog("destroy").remove();
         },
@@ -68,30 +68,45 @@ function deletePoint() {
 }
 function ValidateEditPoint() {
     //clearTerraEditErrors();
+    var result = true;
     if ($('#Hours').val() == '') {
         addTerraEditError("Необходимо указать поле 'План'");
-        return false;
+        result = false;
     }
-    var hours = ValidateFloat($("#Hours"));
-    if (hours == undefined) {
-        addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
-        return false;
+    else {
+        var hours = ValidateFloat($("#Hours"));
+        if (hours == undefined) {
+            addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            result = false;
+        } else if ((hours < 0) || (hours > 24)) {
+            addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            result = false;
+        }
     }
-    if ((hours < 0) || (hours > 24)) {
-        addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
-        return false;
+    if ($('#FactHours').val() != '') {
+        var hours = ValidateFloat($("#FactHours"));
+        if (hours == undefined) {
+            addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
+            result = false;
+        } else if ((hours < 0) || (hours > 24)) {
+            addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
+            result = false;
+        }
     }
+    return result;
+
     /*var hours = parseInt($("#Hours").val(), 10);
     if (isNaN(hours) || (hours < 0) || (hours > 24)) {
         addTerraEditError("Поле 'План' должно быть целым числом от 0 до 24");
         return false;
     }*/
-    return true;
+   // return true;
 }
 function SaveEditPoint() {
     clearTerraEditErrors();
     var url = actionEditPointSaveUrl + '?pointId=' + $('#EpLevel3ID').val() + "&id=" + $('#Id').val() + "&userId=" + $('#UserId').val() + "&day=" + $('#Day').val()
-                + "&hours=" + $('#Hours').val() + "&credits=" + $('#Credit').val();
+                + "&hours=" + $('#Hours').val() + "&credits=" + $('#Credit').val() + '&factPointId=' + $('#FactEpLevel3ID').val()
+                + "&factHours=" + $('#FactHours').val();
     $.getJSON(url,
         function (result) {
             if (result.Error != "") {
@@ -104,9 +119,71 @@ function SaveEditPoint() {
                 
             }
         });
+    }
+
+    function disableFact() {
+        $('#FactEpLevel2ID').attr("disabled", "disabled");
+        setEmptyValuesToDropdown('FactEpLevel2ID');
+        $('#FactEpLevel2ID').val(0);
+        $('#FactEpLevel3ID').attr("disabled", "disabled");
+        setEmptyValuesToDropdown('FactEpLevel3ID');
+        $('#FactEpLevel3ID').val(0);
+        $('#FactHours').attr("disabled", "disabled");
+        $('#FactHours').val(0);
+        $('#Credit').attr("disabled", "disabled");
+        $('#Credit').val(0);
+    }
+
+    function enableFact() {
+        $('#FactEpLevel2ID').removeAttr("disabled");
+        $('#FactEpLevel3ID').removeAttr("disabled");
+        $('#FactHours').removeAttr("disabled");
+        if ($('#EpLevel1ID').val() != -1)
+            $('#Credit').removeAttr("disabled");
+    }
+    function disablePlan() {
+        $('#EpLevel2ID').attr("disabled", "disabled");
+        setEmptyValuesToDropdown('EpLevel2ID');
+        $('#EpLevel2ID').val(0);
+        $('#EpLevel3ID').attr("disabled", "disabled");
+        setEmptyValuesToDropdown('EpLevel3ID');
+        $('#EpLevel3ID').val(0);
+        $('#Hours').attr("disabled", "disabled");
+        $('#Hours').val(0);
+        $('#Credit').attr("disabled", "disabled");
+        $('#Credit').val(0);
+    }
+
+    function enablePlan() {
+        $('#EpLevel2ID').removeAttr("disabled");
+        $('#EpLevel3ID').removeAttr("disabled");
+        $('#Hours').removeAttr("disabled");
+        if ($('#FactEpLevel1ID').val() != -1)
+            $('#Credit').removeAttr("disabled");
+    }
+    function TerraGraphicsFactEpLevel1IDChange() {
+        if ($('#FactEpLevel1ID').val() == -1) {
+            disableFact(); 
+        }
+        else {
+            enableFact();
+            GetEditTgChilds('FactEpLevel2ID', $('#FactEpLevel1ID').val(), 2);
+        }
 }
+function TerraGraphicsFactEpLevel2IDChange() {
+    GetEditTgChilds('FactEpLevel3ID', $('#FactEpLevel2ID').val(), 3);
+}
+function TerraGraphicsFactEpLevel3IDChange() {
+}
+
 function TerraGraphicsEpLevel1IDChange() {
-    GetEditTgChilds('EpLevel2ID', $('#EpLevel1ID').val(), 2);
+    if ($('#EpLevel1ID').val() == -1) {
+        disablePlan();
+    }
+    else {
+        enablePlan();
+        GetEditTgChilds('EpLevel2ID', $('#EpLevel1ID').val(), 2);
+    }
 }
 function TerraGraphicsEpLevel2IDChange() {
     GetEditTgChilds('EpLevel3ID', $('#EpLevel2ID').val(), 3);
@@ -124,7 +201,10 @@ $.getJSON(url,
         else {
             setTgValuesToDropdown(controlName, result.Children);
             if (level == 2) {
-                setTgValuesToDropdown('EpLevel3ID', result.Level3Children);
+                if (controlName.indexOf('Fact') == 0)
+                    setTgValuesToDropdown('FactEpLevel3ID', result.Level3Children);
+                else
+                    setTgValuesToDropdown('EpLevel3ID', result.Level3Children);
             }
         }
     });
@@ -295,6 +375,13 @@ function setTgValuesToDropdown(controlName, data) {
     $.each(data, function (item, data) {
         optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
     })
+    optionsValues += '</select>';
+    var options = $('#' + controlName);
+    options.replaceWith(optionsValues);
+}
+function setEmptyValuesToDropdown(controlName) {
+    var optionsValues = '<select style = "width:95%" id="' + controlName + '" name="' + controlName + '">';
+    optionsValues += '<option value="0"></option>';
     optionsValues += '</select>';
     var options = $('#' + controlName);
     options.replaceWith(optionsValues);
