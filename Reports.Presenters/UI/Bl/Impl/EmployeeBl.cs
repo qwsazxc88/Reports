@@ -1555,14 +1555,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
                     decimal? hours = new decimal?();  
                     TerraGraphicDbDto graphicEntity = tgList.Where(x => x.UserId == userId && x.Day == dayRequestsDto.Day).FirstOrDefault();
-                    if (graphicEntity == null)
+                    if(graphicEntity != null)
+                        hours = graphicEntity.Hours;
+
+                    string status = userList.Aggregate(string.Empty,
+                                                    (curr, requestDto) => curr + requestDto.TimesheetCode + "/");
+                    /*if (graphicEntity == null)
                     {
                         RequestDto rDto = userList.Where(x => x.TimesheetHours.HasValue).FirstOrDefault();
                         if (rDto != null)
                             hours = rDto.TimesheetHours.Value;
                     }
                     else
-                        hours = graphicEntity.Hours;
+                        hours = graphicEntity.Hours;*/
                     RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
                     if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
                         beginUserDate = employmentDay.BeginDate;
@@ -1595,6 +1600,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                 : (string.IsNullOrEmpty(graphicEntity.FactPointName)
                                                                        ? "!"
                                                                        : graphicEntity.FactPointName),
+                                            TabelStatus = status.Substring(0, status.Length - 1),
                     });
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
@@ -1606,6 +1612,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     IsCredits = "Кредиты",
                     TerraPointName = "Точка",
                     FactPointName = "Точка",
+                    TabelStatus = "Табель",
                 });
                 decimal? planHours = userDayList.Sum(x => x.Hours);
                 decimal? factHours = userDayList.Sum(x => x.FactHours);

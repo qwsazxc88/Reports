@@ -94,14 +94,12 @@
                                                     <input type="hidden" id="@timesheetDayHoursPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours"/>*@
                                                 </td>
                                             </tr>
-                                           @* <tr>
+                                           <tr>
                                                 <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
-                                                    @day.Status
-                                                </td>
-                                            </tr>*@
-                                          @*  @if (dto.IsHoursVisible)
-                                            {*@
-                                                <tr>
+                                                    @day.TabelStatus
+                                                 </td>
+                                            </tr>
+                                            <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
                                                     @if (j == 0)
                                                     {
@@ -113,9 +111,6 @@
                                                     }
                                                     </td>
                                                 </tr>
-                                           @* }*@
-                                            @* @if (dto.IsGraphicVisible)
-                                             {*@
                                                 <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
                                                         @if (string.IsNullOrEmpty(day.TerraPointTitle))
@@ -128,6 +123,11 @@
                                                         }
                     
                                                     </td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                        @day.IsCredits
+                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
@@ -155,11 +155,7 @@
                                                     </td>
                                                 </tr>
                                             @* }*@
-                                            <tr>
-                                                <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
-                                                    @day.IsCredits
-                                                 </td>
-                                            </tr>
+                                            
                                         </table >
                                    </td> 
                                                     j++;
