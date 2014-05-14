@@ -683,7 +683,7 @@ namespace Reports.Core.Dao.Impl
                             bool isDayInFuture = DateTime.Today < date;
                             decimal? timesheetHours = new decimal?();
                             if (tg != null)
-                                timesheetHours = tg.Hours;
+                                timesheetHours = tg.FactHours;
                             else if(setEmptyDays)
                                 timesheetHours = isHoliday ? new decimal?() : isDayInFuture ? new decimal?() : workHoursD;
                             RequestDto newDto = new RequestDto
@@ -702,7 +702,7 @@ namespace Reports.Core.Dao.Impl
                             dayRequestsDto.Requests.Add(newDto);
                             if(tg != null)
                             {
-                                userStats[0] += tg.Hours;
+                                userStats[0] += tg.FactHours.HasValue?tg.FactHours.Value:0;
                                 userStatsDays[0]++;
                             }
                             else
