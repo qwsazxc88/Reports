@@ -15,8 +15,17 @@
                 disableEditSaveButton();
                 disableEditClearButton();
             }
-            if ($('#Id').val() == 0)
+            if ($('#Id').val() == 0) {
                 disableEditClearButton();
+            }
+            if ($('#FactEpLevel1ID').val() == -1) 
+                disableFact();
+            else
+                enableFact()
+            if ($('#EpLevel1ID').val() == -1) 
+                disablePlan();
+            else
+                enablePlan();
         }
     }
     );
@@ -68,28 +77,34 @@ function deletePoint() {
 }
 function ValidateEditPoint() {
     //clearTerraEditErrors();
+    clearDlgErrors($("#EditPointTable"));
     var result = true;
     if ($('#Hours').val() == '') {
-        addTerraEditError("Необходимо указать поле 'План'");
+        //addTerraEditError("Необходимо указать поле 'План'");
+        addDlgError($('#Hours'), "Необходимо указать поле 'План'");
         result = false;
     }
     else {
         var hours = ValidateFloat($("#Hours"));
         if (hours == undefined) {
-            addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            //addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            addDlgError($('#Hours'), "Поле 'План' должно быть числом от 0 до 24");
             result = false;
         } else if ((hours < 0) || (hours > 24)) {
-            addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            //addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
+            addDlgError($('#Hours'), "Поле 'План' должно быть числом от 0 до 24");
             result = false;
         }
     }
     if ($('#FactHours').val() != '') {
         var hours = ValidateFloat($("#FactHours"));
         if (hours == undefined) {
-            addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
+            addDlgError($('#FactHours'), "Поле 'Факт' должно быть числом от 0 до 24");
+            //addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
             result = false;
         } else if ((hours < 0) || (hours > 24)) {
-            addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
+            addDlgError($('#FactHours'), "Поле 'Факт' должно быть числом от 0 до 24");
+            //addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
             result = false;
         }
     }

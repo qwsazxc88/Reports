@@ -7015,11 +7015,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Day = tg.Day.ToString("dd.MM.yyyy");
                 model.IsEditable = true;
                 //model.UserId = tg.UserId;
-                model.Hours = tg.Hours.ToString();
-                model.FactHours = tg.FactHours.HasValue?tg.Hours.ToString():string.Empty;
-
+                model.Hours = FormatSum(tg.Hours);//tg.Hours.ToString();
+                model.FactHours = FormatSum(tg.FactHours);//tg.FactHours.HasValue?tg.Hours.ToString():string.Empty;
                 if (!tg.PointId.HasValue)
                 {
+                    model.EpLevel1ID = -1;
                     model.EpLevel2 = new List<IdNameDto>();
                     model.EpLevel3 = new List<IdNameDto>(); 
                 }
@@ -7033,6 +7033,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (!tg.FactPointId.HasValue)
                 {
+                    model.FactEpLevel1ID = -1;
                     model.FactEpLevel2 = new List<IdNameDto>();
                     model.FactEpLevel3 = new List<IdNameDto>();
                 }

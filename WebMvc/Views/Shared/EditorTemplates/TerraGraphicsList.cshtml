@@ -1,4 +1,5 @@
 ﻿@using System.Globalization;
+@using Reports.Presenters.UI.Bl.Impl
 @using Reports.Core.Dto;
 @{ 
     int i = 0;
@@ -108,7 +109,7 @@
                                                     }
                                                     else
                                                     {
-                                                     @day.Hours
+                                                        @BaseBl.FormatSum(day.Hours)
                                                     }
                                                     </td>
                                                 </tr>
@@ -124,6 +125,31 @@
                                                         else
                                                         {
                                                             <div title="@day.TerraPointTitle">@day.TerraPointName</div>
+                                                        }
+                    
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                    @if (j == 0)
+                                                    {
+                                                        <text>Факт</text>
+                                                    }
+                                                    else
+                                                    {
+                                                        @BaseBl.FormatSum(day.FactHours)
+                                                    }
+                                                    </td>
+                                                </tr>
+                                                 <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
+                                                        @if (string.IsNullOrEmpty(day.FactPointTitle))
+                                                        {
+                                                            @day.FactPointName
+                                                        }
+                                                        else
+                                                        {
+                                                            <div title="@day.FactPointTitle">@day.FactPointName</div>
                                                         }
                     
                                                     </td>

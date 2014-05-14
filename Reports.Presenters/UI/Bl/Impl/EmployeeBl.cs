@@ -1588,6 +1588,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                         : graphicEntity.PointName),
                                             TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
                                             IsEditable = user.UserRole == UserRole.Manager,
+
+                                            FactHours = graphicEntity == null ? null : graphicEntity.FactHours,
+                                            FactPointTitle = graphicEntity == null ? string.Empty : graphicEntity.FactPointTitle,
+                                            FactPointName = graphicEntity == null ? string.Empty
+                                                                : (string.IsNullOrEmpty(graphicEntity.FactPointName)
+                                                                       ? "!"
+                                                                       : graphicEntity.FactPointName),
                     });
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
@@ -1598,8 +1605,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     StatCode = string.Empty,
                     IsCredits = "Кредиты",
                     TerraPointName = "Точка",
+                    FactPointName = "Точка",
                 });
                 decimal? planHours = userDayList.Sum(x => x.Hours);
+                decimal? factHours = userDayList.Sum(x => x.FactHours);
                 int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
                 userDayList.Add(new TerraGraphicDayDto
                 {
@@ -1616,6 +1625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     isHoliday = false,
                     Hours = planHours,
                     StatCode = "План",
+                    FactHours = factHours,
                 });
                 User usr = users.Where(x => x.Id == userId).FirstOrDefault();
                 if (usr == null)

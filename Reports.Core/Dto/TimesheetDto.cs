@@ -66,6 +66,10 @@ namespace Reports.Core.Dto
         public int? TerraPointId { get; set; }
         public string TerraPointName { get; set; }
         public string TerraPointTitle { get; set; }
+        public decimal? FactHours { get; set; }
+        public int? FactPointId { get; set; }
+        public string FactPointName { get; set; }
+        public string FactPointTitle { get; set; }
         public string IsCredits { get; set; }
         public bool isHoliday { get; set; }
         //public string Graphic { get; set; }
