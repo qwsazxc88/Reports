@@ -94,23 +94,11 @@
                                                     <input type="hidden" id="@timesheetDayHoursPrefix" name="@timesheetDayHoursPrefix" value="@day.Hours"/>*@
                                                 </td>
                                             </tr>
-                                           <tr>
+                                           @*<tr>
                                                 <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
                                                     @day.TabelStatus
                                                  </td>
-                                            </tr>
-                                            <tr>
-                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
-                                                    @if (j == 0)
-                                                    {
-                                                        <text>План</text>
-                                                    }
-                                                    else
-                                                    {
-                                                        @BaseBl.FormatSum(day.Hours)
-                                                    }
-                                                    </td>
-                                                </tr>
+                                            </tr>*@
                                                 <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
                                                         @if (string.IsNullOrEmpty(day.TerraPointTitle))
@@ -126,20 +114,20 @@
                                                 </tr>
                                                 <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
-                                                        @day.IsCredits
-                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
                                                     @if (j == 0)
                                                     {
-                                                        <text>Факт</text>
+                                                        <text>План час.</text>
                                                     }
                                                     else
                                                     {
-                                                        @BaseBl.FormatSum(day.FactHours)
+                                                        @BaseBl.FormatSum(day.Hours)
                                                     }
                                                     </td>
+                                                </tr>
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                        @day.IsCredits
+                                                     </td>
                                                 </tr>
                                                  <tr>
                                                     <td nowrap style="border:1px solid black;padding:0px;min-width:30px;text-align:center;height:18px;">
@@ -154,6 +142,19 @@
                     
                                                     </td>
                                                 </tr>
+                                                <tr>
+                                                    <td nowrap style="border:1px solid black;padding:0px;width:30px;text-align:center;height:18px;min-height:18px;">
+                                                    @if (j == 0)
+                                                    {
+                                                        <text>Факт час.</text>
+                                                    }
+                                                    else
+                                                    {
+                                                        @BaseBl.FormatSum(day.FactHours)
+                                                    }
+                                                    </td>
+                                                </tr>
+                                                
                                             @* }*@
                                             
                                         </table >

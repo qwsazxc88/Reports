@@ -62,7 +62,7 @@ namespace Reports.Core.Dto
         public string Day { get; set; }
         //public int StatusId { get; set; }
         //public string Status { get; set; }
-        public string TabelStatus { get; set; }
+        //public string TabelStatus { get; set; }
         public decimal? Hours { get; set; }
         public int? TerraPointId { get; set; }
         public string TerraPointName { get; set; }

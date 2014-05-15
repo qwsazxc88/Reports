@@ -1558,8 +1558,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(graphicEntity != null)
                         hours = graphicEntity.Hours;
 
-                    string status = userList.Aggregate(string.Empty,
-                                                    (curr, requestDto) => curr + requestDto.TimesheetCode + "/");
+                    /*string status = userList.Aggregate(string.Empty,
+                                                    (curr, requestDto) => curr + requestDto.TimesheetCode + "/");*/
                     /*if (graphicEntity == null)
                     {
                         RequestDto rDto = userList.Where(x => x.TimesheetHours.HasValue).FirstOrDefault();
@@ -1600,7 +1600,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                 : (string.IsNullOrEmpty(graphicEntity.FactPointName)
                                                                        ? "!"
                                                                        : graphicEntity.FactPointName),
-                                            TabelStatus = status.Substring(0, status.Length - 1),
+                                            //TabelStatus = status.Substring(0, status.Length - 1),
                     });
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
@@ -1610,9 +1610,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     isHoliday = false,
                     StatCode = string.Empty,
                     IsCredits = "Кредиты",
-                    TerraPointName = "Точка",
-                    FactPointName = "Точка",
-                    TabelStatus = "Табель",
+                    TerraPointName = "Точка план",
+                    FactPointName = "Точка факт",
+                    //TabelStatus = "Табель",
                 });
                 decimal? planHours = userDayList.Sum(x => x.Hours);
                 decimal? factHours = userDayList.Sum(x => x.FactHours);
