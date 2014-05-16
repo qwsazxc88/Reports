@@ -1,4 +1,5 @@
 ﻿alter table [dbo].[TerraGraphic] alter column [PointId] int null
+alter table [dbo].[TerraGraphic] alter column [Hours] DECIMAL(19,2) null
 alter table [dbo].[TerraGraphic] add FactHours  DECIMAL(19,2) null
 alter table [dbo].[TerraGraphic] add FactPointId int null
 

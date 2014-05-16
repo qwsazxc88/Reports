@@ -79,7 +79,13 @@ namespace WebMvc.Controllers
                 DateTime tpDay;
                 if(!DateTime.TryParse(day,CultureInfo.GetCultureInfo("ru-RU"),DateTimeStyles.None,out tpDay))
                     throw new ArgumentException(string.Format("Неправильная дата {0}",day));
-                TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel{Id = id,Day = day,UserId = userId};
+                TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel
+                                                        {
+                                                            Id = id,
+                                                            Day = day,
+                                                            UserId = userId,
+                                                            tpDay = tpDay,
+                                                        };
                 RequestBl.SetEditPointDialogModel(model);
                 return PartialView(model);
             }

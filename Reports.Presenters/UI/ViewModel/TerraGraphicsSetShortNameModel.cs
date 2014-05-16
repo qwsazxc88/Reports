@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto;
 
@@ -21,6 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int Id { get; set; }
         public string Day { get; set; }
         public int UserId { get; set; }
+        public DateTime tpDay { get; set; }
 
         public List<IdNameDto> EpLevel1 { get; set; }
         public List<IdNameDto> EpLevel2 { get; set; }
@@ -33,9 +35,11 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Кредиты")]
         public int Credit { get; set; }
         public List<IdNameDto> Credits { get; set; }
+        public bool IsCreditsEditable { get; set; }
 
         [Display(Name = "План")]
         public string Hours { get; set; }
+        public bool IsPlanEditable { get; set; }
 
 
         public List<IdNameDto> FactEpLevel1 { get; set; }
@@ -44,12 +48,15 @@ namespace Reports.Presenters.UI.ViewModel
         public int FactEpLevel1ID { get; set; }
         public int FactEpLevel2ID { get; set; }
         public int FactEpLevel3ID { get; set; }
-
         [Display(Name = "Факт")]
         public string FactHours { get; set; }
+        public bool IsFactVisible { get; set; }
 
        
         public bool IsEditable { get; set; }
-        public bool IsCreditsEditable { get; set; }
+        
+
+        public bool IsDeleteEnable { get; set; }
+        
     }
 }

@@ -12,6 +12,11 @@
                 </tr>
                 <tr>
                     <td colspan="2">
+                       <b>План</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
                         @Html.DropDownListFor(model => model.EpLevel1ID, new SelectList(Model.EpLevel1, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsEpLevel1IDChange();" }) 
                     </td>
                 </tr>
@@ -28,6 +33,7 @@
                 <tr>
                     <td style="width:50px">
                         @Html.LabelFor(m => m.Credit):
+                        <input type="hidden" id="IsCreditsEditable" name="IsCreditsEditable" value="@Model.IsCreditsEditable" />
                     </td>
                     <td>
                         @Html.DropDownListFor(model => model.Credit, new SelectList(Model.Credits, "ID", "Name"), Model.IsCreditsEditable ? null : (object)new { disabled = "disabled" }) 
@@ -41,27 +47,27 @@
                         @Html.TextBoxFor(model => model.Hours, new { style = "width:60px" }) 
                     </td>
                 </tr>
-                <tr>
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td colspan="2">
-                       Фактически
+                       <b>Факт</b>
                     </td>
                 </tr>
-                <tr>
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td colspan="2">
                         @Html.DropDownListFor(model => model.FactEpLevel1ID, new SelectList(Model.FactEpLevel1, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel1IDChange();" }) 
                     </td>
                 </tr>
-                <tr>
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td colspan="2">
                         @Html.DropDownListFor(model => model.FactEpLevel2ID, new SelectList(Model.FactEpLevel2, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel2IDChange();" }) 
                     </td>
                 </tr>
-                <tr>
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td colspan="2">
                         @Html.DropDownListFor(model => model.FactEpLevel3ID, new SelectList(Model.FactEpLevel3, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel3IDChange();" }) 
                     </td>
                 </tr>
-                <tr>
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td>
                         @Html.LabelFor(m => m.FactHours):
                     </td>
@@ -77,6 +83,8 @@
                          <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                          <input type="hidden" id="Day" name="Day" value="@Model.Day" />
                          <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                         <input type="hidden" id="IsDeleteEnable" name="IsDeleteEnable" value="@Model.IsDeleteEnable" />
+                         <input type="hidden" id="IsPlanEditable" name="IsPlanEditable" value="@Model.IsPlanEditable" />
                      </td>
                 </tr>
     </table>

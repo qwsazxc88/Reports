@@ -10,22 +10,29 @@
         if (status == "error") {
             var msg = "Произошла ошибка: ";
             $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+            disableEditSaveButton();
+            disableEditClearButton();
         } else if (status == "success") {
             if ($('#EditPointTableLoadError').val() != undefined) {
                 disableEditSaveButton();
                 disableEditClearButton();
             }
-            if ($('#Id').val() == 0) {
+            if ($('#IsDeleteEnable').val() == 'False') {
                 disableEditClearButton();
             }
-            if ($('#FactEpLevel1ID').val() == -1) 
+            if ($('#IsPlanEditable').val() == 'False') {
+                disablePlan(false);
+            }
+            else
+                enablePlan();
+            /*if ($('#FactEpLevel1ID').val() == -1) 
                 disableFact();
             else
                 enableFact()
             if ($('#EpLevel1ID').val() == -1) 
                 disablePlan();
             else
-                enablePlan();
+                enablePlan();*/
         }
     }
     );
@@ -137,12 +144,13 @@ function SaveEditPoint() {
     }
 
     function disableFact() {
-        $('#FactEpLevel2ID').attr("disabled", "disabled");
+       
         setEmptyValuesToDropdown('FactEpLevel2ID');
         $('#FactEpLevel2ID').val(0);
-        $('#FactEpLevel3ID').attr("disabled", "disabled");
+        $('#FactEpLevel2ID').attr("disabled", "disabled");
         setEmptyValuesToDropdown('FactEpLevel3ID');
         $('#FactEpLevel3ID').val(0);
+        $('#FactEpLevel3ID').attr("disabled", "disabled");
         $('#FactHours').attr("disabled", "disabled");
         $('#FactHours').val(0);
         $('#Credit').attr("disabled", "disabled");
@@ -156,15 +164,18 @@ function SaveEditPoint() {
         if ($('#EpLevel1ID').val() != -1)
             $('#Credit').removeAttr("disabled");
     }
-    function disablePlan() {
+    function disablePlan(setHours) {
+        if (!setHours)
+            $('#EpLevel1ID').attr("disabled", "disabled");
+        //setEmptyValuesToDropdown('EpLevel2ID');
+        //$('#EpLevel2ID').val(0);
         $('#EpLevel2ID').attr("disabled", "disabled");
-        setEmptyValuesToDropdown('EpLevel2ID');
-        $('#EpLevel2ID').val(0);
+        //setEmptyValuesToDropdown('EpLevel3ID');
+        //$('#EpLevel3ID').val(0);
         $('#EpLevel3ID').attr("disabled", "disabled");
-        setEmptyValuesToDropdown('EpLevel3ID');
-        $('#EpLevel3ID').val(0);
         $('#Hours').attr("disabled", "disabled");
-        $('#Hours').val(0);
+        if(setHours)
+            $('#Hours').val(0);
         $('#Credit').attr("disabled", "disabled");
         $('#Credit').val(0);
     }
@@ -173,8 +184,7 @@ function SaveEditPoint() {
         $('#EpLevel2ID').removeAttr("disabled");
         $('#EpLevel3ID').removeAttr("disabled");
         $('#Hours').removeAttr("disabled");
-        if ($('#FactEpLevel1ID').val() != -1)
-            $('#Credit').removeAttr("disabled");
+        $('#Credit').removeAttr("disabled");
     }
     function TerraGraphicsFactEpLevel1IDChange() {
         if ($('#FactEpLevel1ID').val() == -1) {

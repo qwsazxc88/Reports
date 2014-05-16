@@ -6925,7 +6925,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", model.Id));
             }
             tg.Day = model.TpDay;
-            tg.Hours = model.TpHours;
+            tg.Hours = string.IsNullOrEmpty(model.Hours) ? new decimal?() : model.TpHours; //model.TpHours;
             tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
             tg.PointId = model.PointId == 0? new int?() : model.PointId;
             tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
@@ -6985,27 +6985,63 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsCreditsEditable = user.GivesCredit;
             List<TerraPoint> l1 = LoadTpListForLevelAndParentId(1, string.Empty);
             List<IdNameDto> l1List = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
-            l1List.Add(new IdNameDto {Id = -1,Name = "Выходной"});
-            model.EpLevel1 = l1List;
+            //l1List.Add(new IdNameDto {Id = -1,Name = ""});
             model.FactEpLevel1 = l1List;
+            if (model.Id == 0 && model.tpDay.Date < DateTime.Today)
+            {
+                List<IdNameDto> l1List1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                l1List1.Add(new IdNameDto { Id = 0, Name = string.Empty });
+                model.EpLevel1 = l1List1;
+            }
+            else
+                model.EpLevel1 = l1List;
+
+            if (model.tpDay.Date >= DateTime.Today)
+            {
+                model.IsPlanEditable = true;
+                model.IsDeleteEnable = true;
+            }
+            if (model.tpDay.Date <= DateTime.Today)
+                model.IsFactVisible = true;
+               
+
+
             if(model.Id == 0)
             {
-                TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(CurrentUser.Id);
-                if(tpToUser == null)
+                if (model.tpDay.Date < DateTime.Today)
                 {
+                    model.EpLevel1ID = 0;
+                    model.EpLevel2 = new List<IdNameDto>();
+                    model.EpLevel3 = new List<IdNameDto>();
                     TerraPoint p1 = l1[0];
                     List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, p1.Code1C);//TerraPointDao.FindByLevelAndParentId(2, p1.Code1C).ToList();
-                    model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    //model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
                     model.FactEpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
                     TerraPoint p2 = l2[0];
                     List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
-                    model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    //model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
                     model.FactEpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    
                 }
                 else
                 {
-                    LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id,model,false);
-                    LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id, model,true);
+                    TerraPointToUser tpToUser = TerraPointToUserDao.FindByUserId(CurrentUser.Id);
+                    if (tpToUser == null)
+                    {
+                        TerraPoint p1 = l1[0];
+                        List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, p1.Code1C);//TerraPointDao.FindByLevelAndParentId(2, p1.Code1C).ToList();
+                        model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                        model.FactEpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                        TerraPoint p2 = l2[0];
+                        List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
+                        model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                        model.FactEpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    }
+                    else
+                    {
+                        LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id, model, false);
+                        LoadTerraPoints23Level(tpToUser.TerraPoint.ParentId, tpToUser.TerraPoint.Id, model, true);
+                    }
                 }
             }
             else
@@ -7019,7 +7055,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FactHours = FormatSum(tg.FactHours);//tg.FactHours.HasValue?tg.Hours.ToString():string.Empty;
                 if (!tg.PointId.HasValue)
                 {
-                    model.EpLevel1ID = -1;
+                    model.EpLevel1ID = 0;
                     model.EpLevel2 = new List<IdNameDto>();
                     model.EpLevel3 = new List<IdNameDto>(); 
                 }
@@ -7033,15 +7069,18 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (!tg.FactPointId.HasValue)
                 {
-                    model.FactEpLevel1ID = -1;
+                    List<IdNameDto> l1List1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    l1List1.Add(new IdNameDto { Id = 0, Name = string.Empty });
+                    model.FactEpLevel1 = l1List1;
+                    model.FactEpLevel1ID = 0;
                     model.FactEpLevel2 = new List<IdNameDto>();
-                    model.FactEpLevel3 = new List<IdNameDto>();
+                    model.FactEpLevel3 = new List<IdNameDto>(); 
                 }
                 else
                 {
                     TerraPoint tp = TerraPointDao.Load(tg.FactPointId.Value);
                     if (tp == null)
-                        throw new ArgumentException(string.Format("Фактическая точка (ID {0}) отсутствует в базе данных", tg.PointId));
+                        throw new ArgumentException(string.Format("Фактическая точка (ID {0}) отсутствует в базе данных", tg.FactPointId));
                     LoadTerraPoints23Level(tp.ParentId, tp.Id, model,true);
                 }
             }
