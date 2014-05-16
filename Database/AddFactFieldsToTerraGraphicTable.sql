@@ -2,6 +2,7 @@
 alter table [dbo].[TerraGraphic] alter column [Hours] DECIMAL(19,2) null
 alter table [dbo].[TerraGraphic] add FactHours  DECIMAL(19,2) null
 alter table [dbo].[TerraGraphic] add FactPointId int null
+alter table [dbo].[TerraGraphic] add IsHoliday bit default 0
 
 ALTER TABLE [dbo].[TerraGraphic]  WITH CHECK ADD  CONSTRAINT [FK_TerraGraphic_TerraPoint1] FOREIGN KEY([FactPointId])
 REFERENCES [dbo].[TerraPoint] ([Id])
