@@ -37,9 +37,10 @@ namespace Reports.Presenters.UI.ViewModel
         public List<IdNameDto> Credits { get; set; }
         public bool IsCreditsEditable { get; set; }
 
-        [Display(Name = "План")]
+        [Display(Name = "План часы")]
         public string Hours { get; set; }
         public bool IsPlanEditable { get; set; }
+        public bool IsPlanHoliday { get; set; }
 
 
         public List<IdNameDto> FactEpLevel1 { get; set; }
@@ -48,9 +49,10 @@ namespace Reports.Presenters.UI.ViewModel
         public int FactEpLevel1ID { get; set; }
         public int FactEpLevel2ID { get; set; }
         public int FactEpLevel3ID { get; set; }
-        [Display(Name = "Факт")]
+        [Display(Name = "Факт часы")]
         public string FactHours { get; set; }
         public bool IsFactVisible { get; set; }
+        public bool IsFactHoliday { get; set; }
 
        
         public bool IsEditable { get; set; }

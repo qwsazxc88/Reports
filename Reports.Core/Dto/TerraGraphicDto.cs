@@ -7,7 +7,7 @@ namespace Reports.Core.Dto
         public virtual int Id { get; set; }
         public virtual int UserId { get; set; }
         public virtual DateTime Day { get; set; }
-        public virtual decimal Hours { get; set; }
+        public virtual decimal? Hours { get; set; }
         public virtual int? PointId { get; set; }
         public virtual decimal? FactHours { get; set; }
         public virtual int? FactPointId { get; set; }

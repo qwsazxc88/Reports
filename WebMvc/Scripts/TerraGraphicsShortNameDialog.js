@@ -21,18 +21,20 @@
                 disableEditClearButton();
             }
             if ($('#IsPlanEditable').val() == 'False') {
+                $('#SetDefaultPoint').attr("disabled", "disabled");
                 disablePlan(false);
             }
-            else
+            else {
                 enablePlan();
-            /*if ($('#FactEpLevel1ID').val() == -1) 
-                disableFact();
-            else
-                enableFact()
-            if ($('#EpLevel1ID').val() == -1) 
-                disablePlan();
-            else
-                enablePlan();*/
+                if($('#IsPlanHoliday').val() == 'True')
+                    disablePlanHours();
+                else
+                    enablePlanHours();
+            }
+              if($('#IsFactHoliday').val() == 'True')
+                    disableFactHours();
+                else
+                    enableFactHours();
         }
     }
     );
@@ -86,31 +88,43 @@ function ValidateEditPoint() {
     //clearTerraEditErrors();
     clearDlgErrors($("#EditPointTable"));
     var result = true;
-    if ($('#Hours').val() == '') {
-        //addTerraEditError("Необходимо указать поле 'План'");
-        addDlgError($('#Hours'), "Необходимо указать поле 'План'");
+    if (($('#IsPlanEditable').val() == 'False') && ($('#FactHours').val() == '')) {
+        addDlgError($('#FactHours'), "Необходимо указать часы");
         result = false;
+        return result;
     }
-    else {
+    if (($('#IsFactVisible').val() == 'False') && ($('#Hours').val() == '')) {
+        addDlgError($('#Hours'), "Необходимо указать часы");
+        result = false;
+        return result;
+    }
+    if (($('#IsFactVisible').val() == 'True') && ($('#Hours').val() == '') &&
+        ($('#IsPlanEditable').val() == 'True') && ($('#FactHours').val() == '')) {
+        addDlgError($('#Hours'), "Необходимо указать часы (плановые или фактические)");
+        result = false;
+        return result;
+    }
+
+    if ($('#Hours').val() != '') {
         var hours = ValidateFloat($("#Hours"));
         if (hours == undefined) {
             //addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
-            addDlgError($('#Hours'), "Поле 'План' должно быть числом от 0 до 24");
+            addDlgError($('#Hours'), "Часы должны быть числом от 0 до 24");
             result = false;
         } else if ((hours < 0) || (hours > 24)) {
             //addTerraEditError("Поле 'План' должно быть числом от 0 до 24");
-            addDlgError($('#Hours'), "Поле 'План' должно быть числом от 0 до 24");
+            addDlgError($('#Hours'), "Часы должны быть числом от 0 до 24");
             result = false;
         }
     }
     if ($('#FactHours').val() != '') {
         var hours = ValidateFloat($("#FactHours"));
         if (hours == undefined) {
-            addDlgError($('#FactHours'), "Поле 'Факт' должно быть числом от 0 до 24");
+            addDlgError($('#FactHours'), "Часы должны должно быть числом от 0 до 24");
             //addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
             result = false;
         } else if ((hours < 0) || (hours > 24)) {
-            addDlgError($('#FactHours'), "Поле 'Факт' должно быть числом от 0 до 24");
+            addDlgError($('#FactHours'), "Часы должны быть числом от 0 до 24");
             //addTerraEditError("Поле 'Факт' должно быть числом от 0 до 24");
             result = false;
         }
@@ -144,34 +158,32 @@ function SaveEditPoint() {
     }
 
     function disableFact() {
-       
         setEmptyValuesToDropdown('FactEpLevel2ID');
-        $('#FactEpLevel2ID').val(0);
+        //$('#FactEpLevel2ID').val(0);
         $('#FactEpLevel2ID').attr("disabled", "disabled");
         setEmptyValuesToDropdown('FactEpLevel3ID');
-        $('#FactEpLevel3ID').val(0);
+        //$('#FactEpLevel3ID').val(0);
         $('#FactEpLevel3ID').attr("disabled", "disabled");
-        $('#FactHours').attr("disabled", "disabled");
-        $('#FactHours').val(0);
-        $('#Credit').attr("disabled", "disabled");
-        $('#Credit').val(0);
+        disableFactHours();
     }
 
     function enableFact() {
         $('#FactEpLevel2ID').removeAttr("disabled");
         $('#FactEpLevel3ID').removeAttr("disabled");
-        $('#FactHours').removeAttr("disabled");
-        if ($('#EpLevel1ID').val() != -1)
-            $('#Credit').removeAttr("disabled");
+        enableFactHours();
     }
+    function disableFactHours() {
+        $('#FactHours').attr("disabled", "disabled");
+        $('#FactHours').val(0);
+    }
+    function enableFactHours() {
+        $('#FactHours').removeAttr("disabled");
+    }
+
     function disablePlan(setHours) {
         if (!setHours)
             $('#EpLevel1ID').attr("disabled", "disabled");
-        //setEmptyValuesToDropdown('EpLevel2ID');
-        //$('#EpLevel2ID').val(0);
         $('#EpLevel2ID').attr("disabled", "disabled");
-        //setEmptyValuesToDropdown('EpLevel3ID');
-        //$('#EpLevel3ID').val(0);
         $('#EpLevel3ID').attr("disabled", "disabled");
         $('#Hours').attr("disabled", "disabled");
         if(setHours)
@@ -179,10 +191,20 @@ function SaveEditPoint() {
         $('#Credit').attr("disabled", "disabled");
         $('#Credit').val(0);
     }
-
     function enablePlan() {
         $('#EpLevel2ID').removeAttr("disabled");
         $('#EpLevel3ID').removeAttr("disabled");
+        enablePlanHours();
+//        $('#Hours').removeAttr("disabled");
+//        $('#Credit').removeAttr("disabled");
+    }
+    function disablePlanHours() {
+        $('#Hours').attr("disabled", "disabled");
+        $('#Hours').val(0);
+        $('#Credit').attr("disabled", "disabled");
+        $('#Credit').val(0);
+    }
+    function enablePlanHours() {
         $('#Hours').removeAttr("disabled");
         $('#Credit').removeAttr("disabled");
     }
@@ -202,13 +224,13 @@ function TerraGraphicsFactEpLevel3IDChange() {
 }
 
 function TerraGraphicsEpLevel1IDChange() {
-    if ($('#EpLevel1ID').val() == -1) {
-        disablePlan();
-    }
-    else {
-        enablePlan();
+//    if ($('#EpLevel1ID').val() == -1) {
+//        disablePlan();
+//    }
+//    else {
+//        enablePlan();
         GetEditTgChilds('EpLevel2ID', $('#EpLevel1ID').val(), 2);
-    }
+    //}
 }
 function TerraGraphicsEpLevel2IDChange() {
     GetEditTgChilds('EpLevel3ID', $('#EpLevel2ID').val(), 3);
@@ -224,6 +246,20 @@ $.getJSON(url,
             addTerraEditError(result.Error, true);
         }
         else {
+            if(result.IsHoliday)
+            {
+                if (controlName.indexOf('Fact') == 0)
+                    disableFactHours();
+                else
+                    disablePlanHours();
+            }
+            else
+            {
+                if (controlName.indexOf('Fact') == 0)
+                    enableFactHours();
+                else
+                    enablePlanHours();
+            }
             setTgValuesToDropdown(controlName, result.Children);
             if (level == 2) {
                 if (controlName.indexOf('Fact') == 0)
@@ -268,6 +304,7 @@ function disableEditSaveButton() {
 function disableEditClearButton() {
     $(".ui-dialog-buttonpane button:contains('Удалить')").button("disable");
 }
+
 
 
 

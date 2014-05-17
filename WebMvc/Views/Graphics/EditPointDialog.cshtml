@@ -7,7 +7,7 @@
     <table border="0" cellpadding="0" cellspacing="0" id = "EditPointTable" style="width:100%;height:100px">
                <tr>
                     <td colspan="2">
-                       <input type="button" value="Записать по умолчанию" name="SetDefaultPoint" onclick="return SetDefaultPoint();"/> 
+                       <input type="button" value="Записать по умолчанию" id="SetDefaultPoint" name="SetDefaultPoint" onclick="return SetDefaultPoint();"/> 
                     </td>
                 </tr>
                 <tr>
@@ -31,7 +31,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:50px">
+                    <td style="width:100px">
                         @Html.LabelFor(m => m.Credit):
                         <input type="hidden" id="IsCreditsEditable" name="IsCreditsEditable" value="@Model.IsCreditsEditable" />
                     </td>
@@ -85,6 +85,9 @@
                          <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                          <input type="hidden" id="IsDeleteEnable" name="IsDeleteEnable" value="@Model.IsDeleteEnable" />
                          <input type="hidden" id="IsPlanEditable" name="IsPlanEditable" value="@Model.IsPlanEditable" />
+                          <input type="hidden" id="IsPlanHoliday" name="IsPlanHoliday" value="@Model.IsPlanHoliday" />
+                         <input type="hidden" id="IsFactHoliday" name="IsFactHoliday" value="@Model.IsFactHoliday" />
+                         <input type="hidden" id="IsFactVisible" name="IsFactVisible" value="@Model.IsFactVisible" />
                      </td>
                 </tr>
     </table>

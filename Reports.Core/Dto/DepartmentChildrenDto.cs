@@ -10,6 +10,7 @@ namespace Reports.Core.Dto
     public class TerraPointChildrenDto : DepartmentChildrenDto
     {
         public List<IdNameDto> Level3Children { get; set; }
+        public bool IsHoliday { get; set; }
         public string ShortName { get; set; }
     }
     public class TerraPointShortNameDto 

@@ -6807,11 +6807,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public TerraPointChildrenDto GetTerraPointChildren(int parentId, int level)
         {
+            bool isHoliday = false;
             try
             {
                 TerraPoint parent = TerraPointDao.Load(parentId);
                 if (parent == null)
                     throw new ArgumentException(string.Format("Точка с Id {0} отсутствует в базе данных",parentId));
+                isHoliday = parent.IsHoliday;
                 List<IdNameDto> children;
                 List<IdNameDto> level3Children = new List<IdNameDto>();
                 string shortName;
@@ -6842,6 +6844,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                Children = children,
                                Level3Children = level3Children,
                                ShortName = shortName,
+                               IsHoliday = isHoliday,
                            };
             }
             catch (Exception ex)
@@ -6916,7 +6919,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             TerraGraphic tg;
             if(model.Id == 0)
             {
-                tg = new TerraGraphic();
+                tg = new TerraGraphic {Day = model.TpDay, UserId = model.UserId};
             }
             else
             {
@@ -6924,13 +6927,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(tg == null)
                     throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", model.Id));
             }
-            tg.Day = model.TpDay;
-            tg.Hours = string.IsNullOrEmpty(model.Hours) ? new decimal?() : model.TpHours; //model.TpHours;
-            tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
-            tg.PointId = model.PointId == 0? new int?() : model.PointId;
-            tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
-            tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours; 
-            tg.UserId = model.UserId;
+            if (model.TpDay.Date < DateTime.Today)
+            {
+                tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
+                tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours;
+            }
+            else
+            {
+                tg.Hours = string.IsNullOrEmpty(model.Hours) ? new decimal?() : model.TpHours; //model.TpHours;
+                tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
+                tg.PointId = model.PointId == 0 ? new int?() : model.PointId;
+                tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
+                tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours;
+            }
             TerraGraphicDao.SaveAndFlush(tg);
             model.Error = string.Empty;
         }
@@ -7021,7 +7030,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
                     //model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
                     model.FactEpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
-                    
+                    TerraPoint p3 = l3[0];
+                    if (p3.IsHoliday)
+                        model.IsPlanHoliday = true;
                 }
                 else
                 {
@@ -7036,6 +7047,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
                         model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
                         model.FactEpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                        TerraPoint p3 = l3[0];
+                        if (p3.IsHoliday)
+                            model.IsPlanHoliday = true;
                     }
                     else
                     {
@@ -7069,12 +7083,23 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 if (!tg.FactPointId.HasValue)
                 {
-                    List<IdNameDto> l1List1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
-                    l1List1.Add(new IdNameDto { Id = 0, Name = string.Empty });
-                    model.FactEpLevel1 = l1List1;
-                    model.FactEpLevel1ID = 0;
-                    model.FactEpLevel2 = new List<IdNameDto>();
-                    model.FactEpLevel3 = new List<IdNameDto>(); 
+                    TerraPoint p1 = l1[0];
+                    List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, p1.Code1C);//TerraPointDao.FindByLevelAndParentId(2, p1.Code1C).ToList();
+                    //model.EpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    model.FactEpLevel2 = l2.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    TerraPoint p2 = l2[0];
+                    List<TerraPoint> l3 = LoadTpListForLevelAndParentId(3, p2.Code1C);//TerraPointDao.FindByLevelAndParentId(3, p2.Code1C).ToList();
+                    //model.EpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    model.FactEpLevel3 = l3.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name + (!string.IsNullOrEmpty(x.ShortName) ? " ( " + x.ShortName + " )" : string.Empty) });
+                    TerraPoint p3 = l3[0];
+                    if (p3.IsHoliday)
+                        model.IsPlanHoliday = true;
+                    //List<IdNameDto> l1List1 = l1.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                    //l1List1.Add(new IdNameDto { Id = 0, Name = string.Empty });
+                    //model.FactEpLevel1 = l1List1;
+                    //model.FactEpLevel1ID = 0;
+                    //model.FactEpLevel2 = new List<IdNameDto>();
+                    //model.FactEpLevel3 = new List<IdNameDto>(); 
                 }
                 else
                 {
@@ -7101,6 +7126,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             TerraPoint l3Point = TerraPointDao.Load(level3Id);
             if (l3Point == null)
                 throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", level3Id));
+            if(factPoint)
+            {
+                if (l3Point.IsHoliday)
+                    model.IsFactHoliday = true;
+            }
+            else
+            {
+                if (l3Point.IsHoliday)
+                    model.IsPlanHoliday = true;
+            }
             IdNameDto tp2 = LoadByCode1AndPath(parentId,l3Point.Path);
             List<TerraPoint> l2 = LoadTpListForLevelAndParentId(2, tp2.Name);
             if (factPoint)

@@ -1594,9 +1594,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
                                             IsEditable = user.UserRole == UserRole.Manager,
 
-                                            FactHours = graphicEntity == null ? null : graphicEntity.FactHours,
-                                            FactPointTitle = graphicEntity == null ? string.Empty : graphicEntity.FactPointTitle,
-                                            FactPointName = graphicEntity == null ? string.Empty
+                                            FactHours = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? null : graphicEntity.FactHours,
+                                            FactPointTitle = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty : graphicEntity.FactPointTitle,
+                                            FactPointName = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty
                                                                 : (string.IsNullOrEmpty(graphicEntity.FactPointName)
                                                                        ? "!"
                                                                        : graphicEntity.FactPointName),
