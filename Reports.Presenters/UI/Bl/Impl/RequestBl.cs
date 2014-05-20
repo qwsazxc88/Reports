@@ -7005,10 +7005,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             else
                 model.EpLevel1 = l1List;
 
+
+            model.IsDeleteEnable = model.tpDay.Date >= DateTime.Today && model.Id > 0;
             if (model.tpDay.Date >= DateTime.Today)
             {
                 model.IsPlanEditable = true;
-                model.IsDeleteEnable = true;
+
             }
             if (model.tpDay.Date <= DateTime.Today)
                 model.IsFactVisible = true;

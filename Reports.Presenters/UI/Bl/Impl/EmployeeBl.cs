@@ -704,9 +704,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
-            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
+            //IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,tgList,true);
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,
+                /*tgList*/new List<TerraGraphicDbDto>(), true);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -1112,10 +1113,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(beginDate, endDate);
-            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds,beginDate,endDate);
+            //IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds,beginDate,endDate);
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForYear
-                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays,tgList);
+                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays,/*tgList*/new List<TerraGraphicDbDto>());
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
