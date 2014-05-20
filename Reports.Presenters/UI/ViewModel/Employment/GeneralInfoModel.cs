@@ -21,6 +21,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),]
         public string Patronymic { get; set; }
+        [Display(Name = "Отчество отсутствует")]
+        public bool IsPatronymicAbsent { get; set; }
 
         [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине")]
         public IList<NameChangeDto> NameChanges { get; set; }

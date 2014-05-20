@@ -5,7 +5,7 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class TrainingModel
+    public class OnsiteTrainingModel
     {
         [Display(Name = "Вид обучения"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]

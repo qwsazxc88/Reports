@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Reports.Core.Domain.Employment2
+namespace Reports.Core.Domain
 {
-    public class Training : AbstractEntity
+    public class Training : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
-        public virtual string Type { get; set; }
-        public virtual string Description { get; set; }
-        public virtual DateTime BeginningDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public bool IsComplete { get; set; }
-        public string ReasonsForIncompleteTraining { get; set; }
-        public string Results { get; set; }
+        public virtual string CertificateIssuedBy { get; set; }
+        public virtual string Series { get; set; }
+        public virtual string Number { get; set; }
+        public virtual DateTime? BeginningDate { get; set; }
+        public virtual DateTime? EndDate { get; set; }
+        public virtual string Speciality { get; set; }
     }
 }

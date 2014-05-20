@@ -1,0 +1,36 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="BackgroundCheck" dynamic-update="true" table="BackgroundCheck">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="AverageSalary" precision="19" scale="2" not-null="false"/>
+    <bag name="Liabilities" lazy="true" cascade="all-delete-orphan">
+      <key column="BackgroundCheckId" foreign-key="FK_Liability_BackgroundCheck"/>
+      <one-to-many class="FinancialLiability"/>
+    </bag>
+    <property name="PreviousDismissalReason" length="250" not-null="false"/>
+    <property name="PreviousSuperior" length="250" not-null="false"/>
+    <many-to-one name="PositionSought" class="Position" column="PositionSoughtId" foreign-key="FK_BackgroundCheck_PositionSought" index="BackgroundCheck_PositionSought"  not-null="false"/>
+    <property name="MilitaryOperationsExperience" length="10" not-null="false"/>
+    <property name="DriversLicenseDateOfIssue" not-null="false"/>
+    <property name="DriversLicenseCategories" not-null="false"/>
+    <property name="DrivingExperience" not-null="false"/>
+    <bag name="Automobiles" lazy="true" cascade="all-delete-orphan">
+      <key column="BackgroundCheckId" foreign-key="FK_Automobile_BackgroundCheck"/>
+      <one-to-many class="Automobile"/>
+    </bag>
+    <property name="IsReadyForBusinessTrips" not-null="false"/>
+    <property name="Sports" length="250" not-null="false"/>
+    <property name="Hobbies" length="250" not-null="false"/>
+    <property name="ImportantEvents" length="250" not-null="false"/>
+    <bag name="References" lazy="true" cascade="all-delete-orphan">
+      <key column="BackgroundCheckId" foreign-key="FK_Reference_BackgroundCheck"/>
+      <one-to-many class="Reference"/>
+    </bag>
+    <property name="ChronicalDiseases" length="250" not-null="false"/>
+    
+  </class>
+</hibernate-mapping>

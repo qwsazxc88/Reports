@@ -307,19 +307,30 @@
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
+    <Compile Include="Domain\Employment2\MilitaryRank.cs" />
+    <Compile Include="Domain\Employment2\MilitaryReserveCategory.cs" />
+    <Compile Include="Domain\Employment2\MilitarySpecialityCategory.cs" />
+    <Compile Include="Domain\Employment2\FinancialLiability.cs" />
+    <Compile Include="Domain\Employment2\OnsiteTrainingType.cs" />
+    <Compile Include="Domain\Employment2\GeneralInfo.cs" />
+    <Compile Include="Domain\Employment2\Passport.cs" />
+    <Compile Include="Domain\Employment2\Education.cs" />
+    <Compile Include="Domain\Employment2\Family.cs" />
+    <Compile Include="Domain\Employment2\MilitaryService.cs" />
+    <Compile Include="Domain\Employment2\Experience.cs" />
+    <Compile Include="Domain\Employment2\Contacts.cs" />
+    <Compile Include="Domain\Employment2\BackgroundCheck.cs" />
+    <Compile Include="Domain\Employment2\OnsiteTraining.cs" />
+    <Compile Include="Domain\Employment2\Managers.cs" />
+    <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
+    <Compile Include="Domain\Employment2\FamilyRelationship.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
-    <Compile Include="Domain\Employment2\BackgroundCheck.cs" />
     <Compile Include="Domain\Employment2\Disability.cs" />
-    <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
-    <Compile Include="Domain\Employment2\Experience.cs" />
-    <Compile Include="Domain\Employment2\Family.cs" />
     <Compile Include="Domain\Employment2\FamilyMember.cs" />
     <Compile Include="Domain\Employment2\ForeignLanguage.cs" />
-    <Compile Include="Domain\Employment2\GeneralInfo.cs" />
-    <Compile Include="Domain\Employment2\Liability.cs" />
     <Compile Include="Domain\Employment2\Automobile.cs" />
     <Compile Include="Domain\Employment2\NameChange.cs" />
     <Compile Include="Domain\Employment2\Reference.cs" />
@@ -332,6 +343,7 @@
     <Compile Include="Domain\Enums.cs" />
     <Compile Include="Domain\ExportImportAction.cs" />
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
+    <Compile Include="Domain\Candidate.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -400,6 +412,10 @@
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
     <Compile Include="Domain\MissionOrderRole.cs" />
     <Compile Include="Domain\MissionOrderRoleRecord.cs" />
+    <Compile Include="Domain\Employment2\Country.cs" />
+    <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
+    <Compile Include="Domain\Employment2\TaxpayerStatus.cs" />
+    <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
@@ -816,7 +832,113 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentEducationType.hbm.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Country.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\InsuredPersonType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\TaxpayerStatus.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\DocumentType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\MilitaryReserveCategory.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\MilitaryRank.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\MilitarySpecialityCategory.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\FinancialLiability.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Training.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Candidate.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Passport.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Education.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Family.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\MilitaryService.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\OnsiteTraining.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PersonnelManagers.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Automobile.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Certification.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Disability.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\ExperienceItem.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\FamilyMember.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\ForeignLanguage.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\HigherEducationDiploma.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\NameChange.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\OnsiteTrainingType.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PostGraduateEducationDiploma.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\FamilyRelationship.hbm.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

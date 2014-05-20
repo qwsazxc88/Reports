@@ -1,0 +1,18 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Reference" dynamic-update="true" table="Reference">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="LastName" length="50" not-null="false"/>
+    <property name="FirstName" length="50" not-null="false"/>
+    <property name="Patronymic" length="50" not-null="false"/>
+    <property name="WorksAt" length="50" not-null="false"/>
+    <property name="Position" length="50" not-null="false"/>
+    <property name="Phone" length="10" not-null="false"/>
+    <property name="Relation" length="50" not-null="false"/>
+
+  </class>
+</hibernate-mapping>

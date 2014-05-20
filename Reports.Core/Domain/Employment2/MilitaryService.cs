@@ -1,19 +1,44 @@
-п»їusing System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 
-namespace Reports.Core.Domain.Employment
+namespace Reports.Core.Domain
 {
-    public class MilitaryService : AbstractEntity
+    public class MilitaryService : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
-        public bool IsLiableForMilitaryService { get; set; }
-        public string MilitaryCardNumber { get; set; }
-        public DateTime MilitaryCardDate { get; set; }
-        
-        public string MilitarySpecialityCode { get; set; }
-        public string CombatFitness { get; set; }
-        public string Commissariat { get; set; }
+        #region Constants
+        #endregion
+
+        #region Fields
+        #endregion
+
+        #region Properties
+        public virtual bool? IsLiableForMilitaryService { get; set; } // OK
+        public virtual string MilitaryCardNumber { get; set; } // OK
+        public virtual DateTime? MilitaryCardDate { get; set; } // OK
+        public virtual MilitaryReserveCategory ReserveCategory { get; set; } // OK
+        public virtual MilitaryRank Rank { get; set; } // OK
+        public virtual MilitarySpecialityCategory SpecialityCategory { get; set; } // Состав (профиль) | SpecialityCategory
+        public virtual string MilitarySpecialityCode { get; set; } // OK
+        public virtual string CombatFitness { get; set; } // ?
+        public virtual string Commissariat { get; set; } // OK
+        // Состоит на воинском учете? | MilitaryServiceRegistration
+        // Категория персонала | MilitaryPersonnelCategory
+        // Тип | MilitaryPersonnelType
+        // Мобилизационное предписание | ?
+        // Призыв на военную службу | ?
+        // Скан военного билета
+        // Скан мобилизационного талона
+        #endregion
+
+        #region Constructors
+        #endregion
+
+        #region Methods
+        #endregion
+
+        #region System.Object overrides
+        #endregion
+
+        #region MetaData
+        #endregion
     }
 }

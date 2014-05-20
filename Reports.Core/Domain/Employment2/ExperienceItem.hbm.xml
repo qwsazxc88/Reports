@@ -1,0 +1,16 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="ExperienceItem" dynamic-update="true" table="ExperienceItem">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="BeginningDate" not-null="false"/>
+    <property name="EndDate" not-null="false"/>
+    <property name="Company" length="50" not-null="false"/>
+    <property name="Position" length="50" not-null="false"/>
+    <property name="CompanyContacts" length="250" not-null="false"/>
+
+  </class>
+</hibernate-mapping>

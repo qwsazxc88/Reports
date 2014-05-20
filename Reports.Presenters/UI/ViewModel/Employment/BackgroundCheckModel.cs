@@ -14,7 +14,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<string> Liabilities { get; set; }
 
         [Display(Name = "Причина смены последнего места работы")]
-        public string DismissalReason { get; set; }
+        public string PreviousDismissalReason { get; set; }
 
         [Display(Name = "ФИО и контактный телефон непосредственного руководителя или руководителя кадровой службы по прежнему месту работы")]
         public string PreviousSuperior { get; set; }

@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Reports.Core.Domain.Employment2
+﻿namespace Reports.Core.Domain
 {
-    public class HigherEducationDiploma : AbstractEntity
+    public class HigherEducationDiploma : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
         public virtual string IssuedBy { get; set; }
         public virtual string Series { get; set; }
         public virtual string Number { get; set; }

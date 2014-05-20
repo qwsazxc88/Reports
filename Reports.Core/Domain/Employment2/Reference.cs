@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Reports.Core.Domain.Employment2
+﻿namespace Reports.Core.Domain
 {
-    public class Reference : AbstractEntity
+    public class Reference : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
         public virtual string LastName { get; set; }
         public virtual string FirstName { get; set; }
         public virtual string Patronymic { get; set; }

@@ -23,7 +23,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // Состав (профиль)
 
         [Display(Name = "Полное кодовое обозначение ВУС"),
-            StringLength(10, ErrorMessage = "Не более 10 знаков.")]
+            StringLength(6, ErrorMessage = "Не более 6 знаков.")]
         public string MilitarySpecialityCode { get; set; }
 
         [Display(Name = "Категория годности к военной службе"),

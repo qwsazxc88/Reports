@@ -1,22 +1,45 @@
-Ôªøusing System;
+using System;
 using System.Collections.Generic;
 
-namespace Reports.Core.Domain.Employment2
+namespace Reports.Core.Domain
 {
     public class BackgroundCheck : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
-        public virtual int? AverageSalary { get; set; }
-        public virtual IList<string> Liabilities { get; set; }
-        public virtual string DismissalReason { get; set; }
-        public virtual string PreviousSuperior { get; set; }
-        public virtual string PositionSought { get; set; }
-        public virtual string MilitaryOperationsExperience { get; set; }
-        public virtual bool HasDriversLicense { get; set; }
-        public virtual DateTime DriversLicenseDateOfIssue { get; set; }
-        // –±–∏—Ç–æ–≤–æ–µ –ø–æ–ª–µ
-        public int DriversLicenseCategories { get; set; }
-        public int? DrivingExperience { get; set; }
+        #region Constants
+        #endregion
 
+        #region Fields
+        #endregion
+
+        #region Properties
+        public virtual decimal? AverageSalary { get; set; } // OK
+        public virtual IList<FinancialLiability> Liabilities { get; set; } // OK-
+        public virtual string PreviousDismissalReason { get; set; } // OK
+        public virtual string PreviousSuperior { get; set; } // OK
+        public virtual string PositionSought { get; set; } // OK
+        public virtual string MilitaryOperationsExperience { get; set; } // OK
+        public virtual DateTime? DriversLicenseDateOfIssue { get; set; } // OK
+        public virtual int? DriversLicenseCategories { get; set; } // OK - ·ËÚÓ‚ÓÂ ÔÓÎÂ
+        public virtual int? DrivingExperience { get; set; } // OK
+        public virtual IList<Automobile> Automobiles { get; set; } // OK-
+        public virtual bool? IsReadyForBusinessTrips { get; set; } // OK
+        public virtual string Sports { get; set; } // OK
+        public virtual string Hobbies { get; set; } // OK
+        public virtual string ImportantEvents { get; set; } // OK
+        public virtual IList<Reference> References { get; set; } // OK-
+        public virtual string ChronicalDiseases { get; set; } // OK
+        #endregion
+
+        #region Constructors
+        #endregion
+
+        #region Methods
+        #endregion
+
+        #region System.Object overrides
+        #endregion
+
+        #region MetaData
+        #endregion
     }
 }

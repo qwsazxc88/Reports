@@ -1,0 +1,18 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="MilitaryService" dynamic-update="true" table="MilitaryService">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <property name="IsLiableForMilitaryService" not-null="false"/>
+    <property name="MilitaryCardNumber" length="20" not-null="false"/>
+    <property name="MilitaryCardDate" not-null="false"/>
+    <many-to-one name="ReserveCategory" class="MilitaryReserveCategory" column="ReserveCategoryId" foreign-key="FK_MilitaryService_ReserveCategory" index="MilitaryService_ReserveCategory"  not-null="false"/>
+    <many-to-one name="Rank" class="MilitaryRank" column="RankId" foreign-key="FK_MilitaryService_Rank" index="MilitaryService_Rank"  not-null="false"/>
+    <many-to-one name="SpecialityCategory" class="MilitarySpecialityCategory" column="SpecialityCategoryId" foreign-key="FK_MilitaryService_SpecialityCategory" index="MilitaryService_SpecialityCategory"  not-null="false"/>
+    <property name="MilitarySpecialityCode" length="6" not-null="false"/>
+    <property name="CombatFitness" length="50" not-null="false"/>
+    <property name="Commissariat" length="100" not-null="false"/>
+  </class>
+</hibernate-mapping>

@@ -35,7 +35,7 @@ namespace WebMvc.Controllers
                     model.NameChanges.Add(new NameChangeDto());
                     break;
                 default:
-                    break;
+                    return RedirectToActionPermanent("Passport");
             }
             return View(model);
         }
@@ -51,7 +51,12 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Passport(PassportModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("Education");
+            }
+            // return View(model);
         }
 
         // Education
@@ -80,7 +85,7 @@ namespace WebMvc.Controllers
                     model.Training.Add(new TrainingDto());
                     break;
                 default:
-                    break;
+                    return RedirectToActionPermanent("Family");
             }
 
             return View(model);
@@ -103,7 +108,7 @@ namespace WebMvc.Controllers
                     model.Children.Add(new FamilyMemberDto());
                     break;
                 default:
-                    break;
+                    return RedirectToActionPermanent("MilitaryService");
             }
             return View(model);
         }
@@ -119,7 +124,12 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult MilitaryService(MilitaryServiceModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("Experience");
+            }
+            // return View(model);
         }
 
         // Experience
@@ -133,7 +143,12 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Experience(ExperienceModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("Contacts");
+            }
+            // return View(model);
         }
 
         // Contacts
@@ -147,7 +162,12 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Contacts(ContactsModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("BackgroundCheck");
+            }
+            // return View(model);
         }
 
         // Background Check
@@ -161,21 +181,31 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("OnsiteTraining");
+            }
+            // return View(model);
         }
 
         // Training
 
-        public ActionResult Training()
+        public ActionResult OnsiteTraining()
         {
-            var model = new TrainingModel();
+            var model = new OnsiteTrainingModel();
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Training(TrainingModel model, string cmd = "")
+        public ActionResult OnsiteTraining(OnsiteTrainingModel model, string cmd = "")
         {
-            return View(model);
+            switch (cmd)
+            {
+                default:
+                    return RedirectToActionPermanent("ApplicationLetter");
+            }
+            // return View(model);
         }
 
         // Application Letter

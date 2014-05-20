@@ -1,0 +1,30 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Passport" dynamic-update="true" table="Passport">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="DocumentType" class="DocumentType" column="DocumentTypeId" foreign-key="FK_Passport_DocumentType" index="Passport_DocumentType"  not-null="false"/>
+    <property name="InternalPassportSeries" length="4" not-null="false"/>
+    <property name="InternalPassportNumber" length="6" not-null="false"/>
+    <property name="InternalPassportDateOfIssue" not-null="false"/>
+    <property name="InternalPassportIssuedBy" length="150" not-null="false"/>
+    <property name="InternalPassportSubdivisionCode" length="7" not-null="false"/>
+    <property name="RegistrationDate" not-null="false"/>
+    <property name="ZipCode" length="6" not-null="false"/>
+    <property name="Region" length="50" not-null="false"/>
+    <property name="District" length="50" not-null="false"/>
+    <property name="City" length="50" not-null="false"/>
+    <property name="Street" length="50" not-null="false"/>
+    <property name="StreetNumber" length="6" not-null="false"/>
+    <property name="Building" length="3" not-null="false"/>
+    <property name="Appartment" length="5" not-null="false"/>
+    <property name="InternationalPassportSeries" length="10" not-null="false"/>
+    <property name="InternationalPassportNumber" length="10" not-null="false"/>
+    <property name="InternationalPassportDateOfIssue" not-null="false"/>
+    <property name="InternationalPassportIssuedBy" length="150" not-null="false"/>
+    
+  </class>
+</hibernate-mapping>

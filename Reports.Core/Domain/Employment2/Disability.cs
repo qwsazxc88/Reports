@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Reports.Core.Domain.Employment2
+namespace Reports.Core.Domain
 {
-    public class Disability : AbstractEntity
+    public class Disability : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
         public virtual string CertificateSeries { get; set; }
         public virtual string CertificateNumber { get; set; }
-        public virtual DateTime DateOfIssue { get; set; }
+        public virtual DateTime? CertificateDateOfIssue { get; set; }
         public virtual string DisabilityDegree { get; set; }
-        public virtual DateTime CerificateExpirationDate { get; set; }
+        public virtual DateTime? CertificateExpirationDate { get; set; }
     }
 }

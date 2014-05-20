@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Reports.Core.Domain.Employment2
+﻿namespace Reports.Core.Domain
 {
-    public class ForeignLanguage : AbstractEntity
+    public class ForeignLanguage : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
         public virtual string LanguageName { get; set; }
         public virtual string Level { get; set; }
     }

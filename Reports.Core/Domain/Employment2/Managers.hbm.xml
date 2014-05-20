@@ -1,0 +1,25 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Managers" dynamic-update="true" table="Managers">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Managers_Position" index="Managers_Position"  not-null="false"/>
+    <many-to-one name="Directorate" class="Department" column="DirectorateId" foreign-key="FK_Managers_Directorate" index="Managers_Directorate"  not-null="false"/>
+    <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Managers_Department" index="Managers_Department"  not-null="false"/>
+    <property name="EmploymentConditions" length="250" not-null="false"/>
+    <property name="Schedule" not-null="false"/>
+    <property name="ProbationaryPeriod" not-null="false"/>
+    <property name="SalaryBasis" precision="19" scale="2" not-null="false"/>
+    <property name="WorkCity" not-null="false"/>
+    <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
+    <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
+    <property name="IsFront" not-null="false"/>
+    <property name="Bonus" precision="19" scale="2" not-null="false"/>
+    <property name="IsLiable" not-null="false"/>
+    <property name="RequestNumber" length="10" not-null="false"/>
+    
+  </class>
+</hibernate-mapping>

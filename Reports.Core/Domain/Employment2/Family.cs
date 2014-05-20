@@ -1,18 +1,34 @@
-п»їusing System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Reports.Core.Domain.Employment2
+namespace Reports.Core.Domain
 {
-    public class Family : AbstractEntity
+    public class Family : AbstractEntityWithVersion
     {
-        public virtual User User { get; set; }
-        public bool MaritalStatus { get; set; }
-        //public FamilyMemberDto Spouse { get; set; }
-        //public FamilyMemberDto Father { get; set; }
-        //public FamilyMemberDto Mother { get; set; }
-        public IList<FamilyMember> FamilyMembers { get; set; }
-        public string Cohabitants { get; set; }
+        #region Constants
+        #endregion
+
+        #region Fields
+        #endregion
+
+        #region Properties
+        public virtual FamilyMember Spouse { get; set; } // OK-
+        public virtual FamilyMember Father { get; set; } // OK-
+        public virtual FamilyMember Mother { get; set; } // OK-
+        public virtual IList<FamilyMember> Children { get; set; } // OK-
+        public virtual string Cohabitants { get; set; } // OK
+        // Скан свидетельства о браке
+        #endregion
+
+        #region Constructors
+        #endregion
+
+        #region Methods
+        #endregion
+
+        #region System.Object overrides
+        #endregion
+
+        #region MetaData
+        #endregion
     }
 }

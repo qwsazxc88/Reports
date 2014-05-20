@@ -1,0 +1,19 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="Experience" dynamic-update="true" table="Experience">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+
+    <bag name="ExperienceItems" lazy="true" cascade="all-delete-orphan">
+      <key column="ExperienceId" foreign-key="FK_ExperienceItem_Experience"/>
+      <one-to-many class="ExperienceItem"/>
+    </bag>
+    <property name="WorkBookSeries" length="10" not-null="false"/>
+    <property name="WorkBookNumber" length="10" not-null="false"/>
+    <property name="WorkBookDateOfIssue" not-null="false"/>
+    <property name="WorkBookSupplementSeries" length="10" not-null="false"/>
+    <property name="WorkBookSupplementNumber" length="10" not-null="false"/>
+    <property name="WorkBookSupplementDateOfIssue" not-null="false"/>
+  </class>
+</hibernate-mapping>

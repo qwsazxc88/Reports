@@ -670,7 +670,7 @@
     <Content Include="Views\Employment\Experience.cshtml" />
     <Content Include="Views\Employment\Contacts.cshtml" />
     <Content Include="Views\Employment\BackgroundCheck.cshtml" />
-    <Content Include="Views\Employment\Training.cshtml" />
+    <Content Include="Views\Employment\OnsiteTraining.cshtml" />
     <Content Include="Views\Employment\ApplicationLetter.cshtml" />
     <Content Include="Views\Employment\Managers.cshtml" />
     <Content Include="Views\Employment\PersonnelManagers.cshtml" />
