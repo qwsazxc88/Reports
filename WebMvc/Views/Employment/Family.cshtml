@@ -1,5 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.FamilyModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Состав семьи";
 }
 
@@ -9,7 +10,8 @@
     
     <div class="doc-wrap">
         @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
-        <table class="grid">
+        <br /><br />
+        <table class="grid centered">
         <thead>
             <tr>
                 <th>
@@ -28,15 +30,15 @@
                     Место рождения
                 </th>
                 <th>
-                    Место работы, должность, (рабочий, мобильный телефон)
+                    Место работы, должность,<br />(рабочий, мобильный телефон)
                 </th>
                 <th>
-                    Адрес места жительства, (домашний, мобильный телефон)
+                    Адрес места жительства,<br />(домашний, мобильный телефон)
                 </th>
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr id="spouse-row" style="display: none;">
                 <td>
                     @Html.LabelFor(m => m.Spouse)
                 </td>
@@ -44,19 +46,19 @@
                     @Html.EditorFor(m => m.Spouse.Name)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Spouse.PassportData)
+                    @Html.TextAreaFor(m => m.Spouse.PassportData)
                 </td>
                 <td>
                     @Html.EditorFor(m => m.Spouse.DateOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Spouse.PlaceOfBirth)
+                    @Html.TextAreaFor(m => m.Spouse.PlaceOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Spouse.WorksAt)
+                    @Html.TextAreaFor(m => m.Spouse.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.Contacts, new { style = "width: 90%;" })
+                    @Html.TextAreaFor(m => m.Spouse.Contacts)
                 </td>
             </tr>
             <tr>
@@ -67,19 +69,19 @@
                     @Html.EditorFor(m => m.Father.Name)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Father.PassportData)
+                    @Html.TextAreaFor(m => m.Father.PassportData)
                 </td>
                 <td>
                     @Html.EditorFor(m => m.Father.DateOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Father.PlaceOfBirth)
+                    @Html.TextAreaFor(m => m.Father.PlaceOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Father.WorksAt)
+                    @Html.TextAreaFor(m => m.Father.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Father.Contacts, new { style = "width: 90%;" })
+                    @Html.TextAreaFor(m => m.Father.Contacts)
                 </td>
             </tr>
             <tr>
@@ -90,19 +92,19 @@
                     @Html.EditorFor(m => m.Mother.Name)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Mother.PassportData)
+                    @Html.TextAreaFor(m => m.Mother.PassportData)
                 </td>
                 <td>
                     @Html.EditorFor(m => m.Mother.DateOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Mother.PlaceOfBirth)
+                    @Html.TextAreaFor(m => m.Mother.PlaceOfBirth)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Mother.WorksAt)
+                    @Html.TextAreaFor(m => m.Mother.WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Mother.Contacts, new { style = "width: 90%;" })
+                    @Html.TextAreaFor(m => m.Mother.Contacts)
                 </td>
             </tr>
             @for (var i = 0; i < Model.Children.Count; i++)
@@ -115,19 +117,19 @@
                         @Html.EditorFor(m => m.Children[i].Name)
                     </td>
                     <td>
-                        @Html.EditorFor(m => m.Children[i].PassportData)
+                        @Html.TextAreaFor(m => m.Children[i].PassportData)
                     </td>
                     <td>
                         @Html.EditorFor(m => m.Children[i].DateOfBirth)
                     </td>
                     <td>
-                        @Html.EditorFor(m => m.Children[i].PlaceOfBirth)
+                        @Html.TextAreaFor(m => m.Children[i].PlaceOfBirth)
                     </td>
                     <td>
-                        @Html.EditorFor(m => m.Children[i].WorksAt)
+                        @Html.TextAreaFor(m => m.Children[i].WorksAt)
                     </td>
                     <td>
-                        @Html.TextAreaFor(m => m.Children[i].Contacts, new { style = "width: 90%;" })
+                        @Html.TextAreaFor(m => m.Children[i].Contacts)
                     </td>
                 </tr>
             }
@@ -135,12 +137,23 @@
         </table>
         <button type="submit" id="add-child-button">Добавить ребенка</button>
         <br /><br />
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
+        setActiveMenuItem("empFamily");
+        $("#MaritalStatus").click(function () {
+            if ($(this).attr("checked") === false) {
+                $("#spouse-row").hide();
+                $("#spouse-row input, #spouse-row textarea").val("");
+            }
+            else {
+                $("#spouse-row").show();
+            }
+        });
         $("#add-child-button").click(function () {
             $("#cmd").val("add-child");
         });

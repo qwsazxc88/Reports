@@ -5,24 +5,37 @@ using System.Web;
 using System.Web.Mvc;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Dto.Employment2;
+using Reports.Core;
+using Reports.Presenters.UI.Bl;
+using Reports.Presenters.UI.ViewModel;
 
 namespace WebMvc.Controllers
 {
     public class EmploymentController : Controller
     {
+        protected IEmploymentBl employmentBl;
+        public IEmploymentBl EmploymentBl
+        {
+            get
+            {
+                employmentBl = Ioc.Resolve<IEmploymentBl>();
+                return Validate.Dependency(employmentBl);
+            }
+        }
+
         //
         // GET: /Employment/
-
+        [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
 
         // General Info
-
+        [HttpGet]
         public ActionResult GeneralInfo()
         {
-            var model = new GeneralInfoModel();            
+            var model = EmploymentBl.GetGeneralInfoModel();
             return View(model);
         }
 
@@ -41,10 +54,10 @@ namespace WebMvc.Controllers
         }
 
         // Passport
-
+        [HttpGet]
         public ActionResult Passport()
         {
-            var model = new PassportModel();
+            var model = EmploymentBl.GetPassportModel();
             return View(model);
         }
 
@@ -60,7 +73,7 @@ namespace WebMvc.Controllers
         }
 
         // Education
-
+        [HttpGet]
         public ActionResult Education()
         {
             var model = new EducationModel();
@@ -92,7 +105,7 @@ namespace WebMvc.Controllers
         }
 
         // Family
-
+        [HttpGet]
         public ActionResult Family()
         {
             var model = new FamilyModel();
@@ -114,10 +127,10 @@ namespace WebMvc.Controllers
         }
 
         // Military Service
-
+        [HttpGet]
         public ActionResult MilitaryService()
         {
-            var model = new MilitaryServiceModel();
+            var model = EmploymentBl.GetMilitaryServiceModel();
             return View(model);
         }
 
@@ -133,7 +146,7 @@ namespace WebMvc.Controllers
         }
 
         // Experience
-
+        [HttpGet]
         public ActionResult Experience()
         {
             var model = new ExperienceModel();
@@ -152,7 +165,7 @@ namespace WebMvc.Controllers
         }
 
         // Contacts
-
+        [HttpGet]
         public ActionResult Contacts()
         {
             var model = new ContactsModel();
@@ -171,7 +184,7 @@ namespace WebMvc.Controllers
         }
 
         // Background Check
-
+        [HttpGet]
         public ActionResult BackgroundCheck()
         {
             var model = new BackgroundCheckModel();
@@ -189,8 +202,8 @@ namespace WebMvc.Controllers
             // return View(model);
         }
 
-        // Training
-
+        // Onsite Training
+        [HttpGet]
         public ActionResult OnsiteTraining()
         {
             var model = new OnsiteTrainingModel();
@@ -209,7 +222,7 @@ namespace WebMvc.Controllers
         }
 
         // Application Letter
-
+        [HttpGet]
         public ActionResult ApplicationLetter()
         {
             var model = new ApplicationLetterModel();
@@ -223,7 +236,7 @@ namespace WebMvc.Controllers
         }
 
         // Filled out by managers
-
+        [HttpGet]
         public ActionResult Managers()
         {
             var model = new ManagersModel();
@@ -237,7 +250,7 @@ namespace WebMvc.Controllers
         }
 
         // Filled out by personnel managers
-
+        [HttpGet]
         public ActionResult PersonnelManagers()
         {
             var model = new PersonnelManagersModel();
@@ -251,7 +264,7 @@ namespace WebMvc.Controllers
         }
 
         // Employment roster
-
+        [HttpGet]
         public ActionResult Roster()
         {
             var model = new RosterModel();
@@ -265,7 +278,7 @@ namespace WebMvc.Controllers
         }
 
         // Custom report
-
+        [HttpGet]
         public ActionResult CustomReport()
         {
             var model = new CustomReportModel();
@@ -279,7 +292,7 @@ namespace WebMvc.Controllers
         }
 
         // Signers
-
+        [HttpGet]
         public ActionResult Signers()
         {
             var model = new SignersModel();

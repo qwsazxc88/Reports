@@ -1,5 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Образование";
 }
 
@@ -258,12 +259,14 @@
             </fieldset>
         </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
+        setActiveMenuItem("empEducation");
         $("#add-higher-education-diploma-button").click(function () {
             $("#cmd").val("add-higher-education-diploma");
         });

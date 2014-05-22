@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web.Mvc;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
@@ -16,11 +18,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime MilitaryCardDate { get; set; }
 
-        // категория запаса
+        [Display(Name = "Категория запаса")]
+        public int ReserveCategory { get; set; }
+        public IEnumerable<SelectListItem> ReserveCategoryItems { get; set; }
 
-        // Воинское звание
+        [Display(Name = "Воинское звание")]
+        public int Rank { get; set; }
+        public IEnumerable<SelectListItem> RankItems { get; set; }
 
         // Состав (профиль)
+        [Display(Name = "Состав (профиль)")]
+        public int SpecialityCategory { get; set; }
+        public IEnumerable<SelectListItem> SpecialityCategoryItems { get; set; }
 
         [Display(Name = "Полное кодовое обозначение ВУС"),
             StringLength(6, ErrorMessage = "Не более 6 знаков.")]

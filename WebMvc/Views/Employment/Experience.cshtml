@@ -1,11 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Трудовая деятельность";
 }
 
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Опыт работы</legend>
         <table class="grid">
             <thead>
                 <tr>
@@ -49,6 +52,7 @@
                     }                
             </tbody>
         </table>
+        </fieldset>
 
         <fieldset style="border: 1px solid lightgray">
             <legend>Сведения о трудовой книжке</legend>
@@ -118,6 +122,13 @@
             </table>
         </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empExperience");
+    });
+</script>

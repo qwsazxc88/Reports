@@ -1,11 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.OnsiteTrainingModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Обучение";
 }
 
 @using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Обучение</legend>
         <table>
             <tr>
                 <td>
@@ -64,7 +67,15 @@
                 </td>
             </tr>
         </table>
+        </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empOnsiteTraining");
+    });
+</script>

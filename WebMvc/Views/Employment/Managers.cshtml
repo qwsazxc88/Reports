@@ -1,13 +1,26 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.ManagersModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Руководители";
 }
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    <fieldset style="border: 1px solid lightgray">
+    <legend>Руководители</legend>
     <div class="doc-wrap">
         @Html.EditorForModel()
         <br />
         <button type="submit">Сохранить</button>
     </div>
+    </fieldset>
+    
+    <button type="submit">Записать черновик</button>
+    <button type="submit">Сохранить</button>
 }
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empManagers");
+    });
+</script>

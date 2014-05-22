@@ -89,9 +89,11 @@
                      {<text>class="mainMenuItem"</text>}
                      id="mainTemplate">
                         @Html.ActionLink("Шаблоны", "Index", "Template")
-                </div> 
+                </div>
+                <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
-                </div> 
+                </div>               
+                
                 @if (  (dto.UserRole & UserRole.Manager) > 0
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0

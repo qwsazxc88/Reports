@@ -112,12 +112,14 @@
     <Compile Include="UI\Bl\IAutoComplete.cs" />
     <Compile Include="UI\Bl\IBaseBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
+    <Compile Include="UI\Bl\IEmploymentBl.cs" />
     <Compile Include="UI\Bl\Impl\AdminBl.cs" />
     <Compile Include="UI\Bl\Impl\AppointmentBl.cs" />
     <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
     <Compile Include="UI\Bl\Impl\BaseBl.cs" />
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
+    <Compile Include="UI\Bl\Impl\EmploymentBl.cs" />
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />

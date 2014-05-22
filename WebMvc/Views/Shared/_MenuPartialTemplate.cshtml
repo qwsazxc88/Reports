@@ -63,6 +63,8 @@
                 }
                 <div id="liTemplate" class="mainOn"><span>Шаблоны</span>
                 </div>  
+                <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
+                </div>
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
                  @if (  (dto.UserRole & UserRole.Manager) > 0

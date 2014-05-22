@@ -10,11 +10,11 @@ namespace Reports.Core.Dto.Employment2
     {
         public string Name { get; set; }
 
-        // Дирекция
+        public string Directorate { get; set; }
 
         public string WorkCity { get; set; }
 
-        // Структурное подразделение
+        public string Department { get; set; }
 
         public string Position { get; set; }
 

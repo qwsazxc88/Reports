@@ -1,5 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Общая информация";
 }
 @{Html.EnableClientValidation();}
@@ -37,6 +38,9 @@
                 <td>
                     @Html.TextBoxFor(m => m.Patronymic)
                     @Html.ValidationMessageFor(m => m.Patronymic)
+                    <br />
+                    @Html.CheckBoxFor(m => m.IsPatronymicAbsent)
+                    @Html.LabelFor(m => m.IsPatronymicAbsent)
                 </td>
             </tr>
             <tr>
@@ -108,7 +112,7 @@
                     @Html.LabelFor(m => m.Citizenship)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.Citizenship)
+                    @Html.DropDownListFor(m => m.Citizenship, Model.CitizenshipItems)
                     @Html.ValidationMessageFor(m => m.Citizenship)
                 </td>
             </tr>
@@ -117,7 +121,7 @@
                     @Html.LabelFor(m => m.InsuredPersonType)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.InsuredPersonType)
+                    @Html.DropDownListFor(m => m.InsuredPersonType, Model.InsuredPersonTypeItems)
                     @Html.ValidationMessageFor(m => m.InsuredPersonType)
                 </td>
             </tr>
@@ -262,11 +266,11 @@
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.IsResident)
+                    @Html.LabelFor(m => m.Status)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.IsResident)
-                    @Html.ValidationMessageFor(m => m.IsResident)
+                    @Html.DropDownListFor(m => m.Status, Model.StatusItems)
+                    @Html.ValidationMessageFor(m => m.Status)
                 </td>
             </tr>
             <tr>
@@ -281,6 +285,7 @@
         </table>
         </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
 
     </div>
@@ -288,9 +293,22 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        setActiveMenuItem("empGeneralInfo");
+
         $("#DateOfBirth").datepicker();
+        
         $("#add-name-change-button").click(function () {
             $("#cmd").val("add-name-change");
+        });
+
+        // Переключение флажка отсутствия отчества
+        $("#IsPatronymicAbsent").click(function () {
+            if ($(this).attr("checked") === true) {
+                $("#Patronymic").attr("disabled", "disabled");
+            }
+            else {
+                $("#Patronymic").removeAttr("disabled");
+            }
         });
     });
 </script>

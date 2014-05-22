@@ -1,11 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.BackgroundCheckModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Служба безопасности";
 }
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Служба безопасности</legend>
         <table>
             <tr>
                 <td style="width: 500px;">
@@ -222,13 +225,16 @@
                 </td>
             </tr>
         </table>
+        </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
+        setActiveMenuItem("empBackgroundCheck");
         $("#add-reference-button").click(function () {
             $("#cmd").val("add-reference");
         });

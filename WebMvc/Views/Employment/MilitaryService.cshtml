@@ -1,11 +1,14 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.MilitaryServiceModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Воинский учет";
 }
 
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Воинский учет</legend>
         <table>
             <tr>
                 <td style="width: 300px;">
@@ -13,6 +16,49 @@
                 </td>
                 <td>
                      @Html.EditorFor(m => m.IsLiableForMilitaryService)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.MilitaryCardNumber)
+                </td>
+                <td>
+                     @Html.EditorFor(m => m.MilitaryCardNumber)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.MilitaryCardDate)
+                </td>
+                <td>
+                     @Html.EditorFor(m => m.MilitaryCardDate)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ReserveCategory)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.ReserveCategory, Model.ReserveCategoryItems)
+                    @Html.ValidationMessageFor(m => m.ReserveCategory)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Rank)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.Rank, Model.RankItems)
+                    @Html.ValidationMessageFor(m => m.Rank)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.SpecialityCategory)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.SpecialityCategory, Model.SpecialityCategoryItems)
+                    @Html.ValidationMessageFor(m => m.SpecialityCategory)
                 </td>
             </tr>
             <tr>
@@ -48,7 +94,15 @@
                 </td>
             </tr>
         </table>
+        </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
 }
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empMilitaryService");
+    });
+</script>

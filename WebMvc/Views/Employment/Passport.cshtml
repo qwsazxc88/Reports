@@ -1,5 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.PassportModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Паспортные данные";
 }
 
@@ -9,6 +10,15 @@
         <fieldset style="border: 1px solid lightgray">
         <legend>Паспорт РФ</legend>
         <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DocumentType)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
+                    @Html.ValidationMessageFor(m => m.DocumentType)
+                </td>
+            </tr>
             <tr>
                 <td>
                     @Html.LabelFor(m => m.InternalPassportSeries)
@@ -180,6 +190,7 @@
         </table>
         </fieldset>
 
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
 
     </div>
@@ -187,6 +198,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
+        setActiveMenuItem("empPassport");
         $('.datetime').datepicker({
             changeYear: true,
             yearRange: "-50:+0"

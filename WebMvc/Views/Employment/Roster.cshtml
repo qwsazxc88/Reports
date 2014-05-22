@@ -1,33 +1,113 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.RosterModel
 @{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Реестр по приему";
 }
 
+<fieldset style="border: 1px solid lightgray">
+<legend>Реестр по приему</legend>
+
 <table class="grid">
+
+<tr>
+        
+    <th>
+        №<br />п/п
+    </th>
+        
+    <th>
+        ФИО
+    </th>
+
+    <th>
+        Дирекция
+    </th>
+
+    <th>
+        Город<br />места<br />работы
+    </th>
+
+    <th>
+        Структурное<br />подразделение
+    </th>
+
+    <th>
+        Должность
+    </th>        
+        
+    <th>
+        Дата<br />приема
+    </th>
+        
+    <th>
+        Номер<br />приказа
+    </th>
+        
+    <th>
+        Дата<br />приказа
+    </th>
+
+    <th>
+        Номер<br />трудового<br />договора
+    </th>
+
+    @* Вид работы (осн./совм.) *@
+    @* Характер работы (пост./врем.) *@
+
+    <th>
+        Исп.<br />срок
+    </th>
+
+    <th>
+        График<br />работы
+    </th>
+
+    <th>
+        Дата<br />рождения
+    </th>
+
+    <th>
+        Инвалидность
+    </th>
+
+    <th>
+        Грейд
+    </th>
+
+    <th>
+        Текущее<br />состояние
+    </th>
+
+</tr>
 
 @foreach (var candidate in Model.Roster)
 {
   
     <tr>
         
-        @* № по порядку *@
+        <td>
+            @* № по порядку *@
+        </td>
         
         <td>
             @candidate.Name
         </td>
 
-        @* Дирекция *@
+        <td>
+            @candidate.Directorate
+        </td>
 
         <td>
             @candidate.WorkCity
         </td>
 
-        @* Структурное подразделение *@
+        <td>
+            @candidate.Department
+        </td>
 
         <td>
             @candidate.Position
-        </td>
-        
+        </td>        
         
         <td>
             @candidate.EmploymentDate
@@ -45,10 +125,6 @@
             @candidate.ContractNumber
         </td>
 
-        <td>
-            @candidate.ContractDate
-        </td>
-
         @* Вид работы (осн./совм.) *@
         @* Характер работы (пост./врем.) *@
 
@@ -58,10 +134,6 @@
 
         <td>
             @candidate.Timetable
-        </td>
-
-        <td>
-            @candidate.DateOfBirth
         </td>
 
         <td>
@@ -84,3 +156,11 @@
 }
 
 </table>
+
+</fieldset>
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empRoster");
+    });
+</script>
