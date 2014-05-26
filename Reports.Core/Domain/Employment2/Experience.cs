@@ -13,15 +13,14 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual IList<ExperienceItem> ExperienceItems { get; set; }
-        // public virtual int ExperienceYears { get; set; } | Canceled
-        // public virtual int ExperienceMonths { get; set; } | Canceled
-        public virtual string WorkBookSeries { get; set; }
-        public virtual string WorkBookNumber { get; set; }
-        public virtual DateTime? WorkBookDateOfIssue { get; set; }
-        public virtual string WorkBookSupplementSeries { get; set; }
-        public virtual string WorkBookSupplementNumber { get; set; }
-        public virtual DateTime? WorkBookSupplementDateOfIssue { get; set; }
+        public virtual string WorkBookSeries { get; set; } //ok
+        public virtual string WorkBookNumber { get; set; } //ok
+        public virtual DateTime? WorkBookDateOfIssue { get; set; } //ok
+        public virtual string WorkBookSupplementSeries { get; set; } //ok
+        public virtual string WorkBookSupplementNumber { get; set; } //ok
+        public virtual DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
         // Скан трудовой книжки
+        // Скан вкладыша в трудовую книжку
         #endregion
 
         #region Constructors

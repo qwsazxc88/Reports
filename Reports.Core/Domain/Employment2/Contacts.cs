@@ -9,18 +9,18 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual string ZipCode { get; set; }
-        public virtual string Region { get; set; }
-        public virtual string District { get; set; }
-        public virtual string City { get; set; }
-        public virtual string Street { get; set; }
-        public virtual string StreetNumber { get; set; }
-        public virtual string Building { get; set; }
-        public virtual string Appartment { get; set; }
-        public virtual string WorkPhone { get; set; }
-        public virtual string HomePhone { get; set; }
-        public virtual string Mobile { get; set; }
-        public virtual string Email { get; set; }
+        public virtual string ZipCode { get; set; } //ok
+        public virtual string Region { get; set; } //ok
+        public virtual string District { get; set; } //ok
+        public virtual string City { get; set; } //ok
+        public virtual string Street { get; set; } //ok
+        public virtual string StreetNumber { get; set; } //ok
+        public virtual string Building { get; set; } //ok
+        public virtual string Appartment { get; set; } //ok
+        public virtual string WorkPhone { get; set; } //ok
+        public virtual string HomePhone { get; set; } //ok
+        public virtual string Mobile { get; set; } //ok
+        public virtual string Email { get; set; } //ok
         #endregion
 
         #region Constructors

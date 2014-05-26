@@ -16,7 +16,7 @@
     <property name="WorkPhone" length="10" not-null="false"/>
     <property name="HomePhone" length="10" not-null="false"/>
     <property name="Mobile" length="10" not-null="false"/>
-    <property name="Email" length="10" not-null="false"/>
+    <property name="Email" length="50" not-null="false"/>
     
   </class>
 </hibernate-mapping>

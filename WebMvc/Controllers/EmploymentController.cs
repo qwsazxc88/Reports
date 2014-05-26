@@ -28,7 +28,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return RedirectToActionPermanent("GeneralInfo");
         }
 
         // General Info

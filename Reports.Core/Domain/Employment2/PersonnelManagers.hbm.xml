@@ -6,29 +6,28 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <property name="EmploymentOrderDate" not-null="false"/>
-    <property name="EmploymentOrderNumber" length="10" not-null="false"/>
-    <property name="EmploymentDate" not-null="false"/>
-    <property name="ContractDate" not-null="false"/>
-    <property name="ContractNumber" length="10" not-null="false"/>
+    <property name="EmploymentOrderDate" not-null="true"/>
+    <property name="EmploymentOrderNumber" length="20" not-null="true"/>
+    <property name="EmploymentDate" not-null="true"/>
+    <property name="ContractDate" not-null="true"/>
+    <property name="ContractNumber" length="20" not-null="true"/>
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="TravelRelatedAddition" precision="19" scale="2" not-null="false"/>
     <property name="CompetenceAddition" precision="19" scale="2" not-null="false"/>
     <property name="FrontOfficeExperienceAddition" precision="19" scale="2" not-null="false"/>
-    <property name="Grade" not-null="false"/>
-    <property name="InsurableExperienceYears" not-null="false"/>
-    <property name="InsurableExperienceMonths" not-null="false"/>
-    <property name="InsurableExperienceDays" not-null="false"/>
-    <property name="NorthExperienceYears" not-null="false"/>
-    <property name="NorthExperienceMonths" not-null="false"/>
-    <property name="NorthExperienceDays" not-null="false"/>
+    <!--property name="Grade" not-null="false"/-->
+    <property name="OverallExperienceYears" not-null="true"/>
+    <property name="OverallExperienceMonths" not-null="true"/>
+    <property name="OverallExperienceDays" not-null="true"/>
+    <property name="InsurableExperienceYears" not-null="true"/>
+    <property name="InsurableExperienceMonths" not-null="true"/>
+    <property name="InsurableExperienceDays" not-null="true"/>
     <!-- Ознакомлен с регламентными документами -->
-    <property name="PersonalAccount" length="30" not-null="false"/>
-    <!-- // Заявление на вычет -->
-    <property name="PreviousIncome" precision="19" scale="2" not-null="false"/>
-    <property name="IsNonResident" not-null="false"/>
+    <property name="PersonalAccount" length="50" not-null="true"/>
+    <property name="PersonalAccountContractor" length="50" not-null="true"/>
+    <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     
   </class>
 </hibernate-mapping>

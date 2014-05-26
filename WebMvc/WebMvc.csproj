@@ -661,7 +661,6 @@
     <None Include="Content\files\Памятка - командировки.doc" />
     <Content Include="Views\Appointment\AppointmentReportEdit.cshtml" />
     <Content Include="Views\Appointment\PrintLoginForm.cshtml" />
-    <Content Include="Views\Employment\Index.cshtml" />
     <Content Include="Views\Employment\GeneralInfo.cshtml" />
     <Content Include="Views\Employment\Passport.cshtml" />
     <Content Include="Views\Employment\Education.cshtml" />

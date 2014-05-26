@@ -11,14 +11,15 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual OnsiteTrainingType Type { get; set; } // OK-
-        public virtual string Description { get; set; } // OK
-        public virtual DateTime? BeginningDate { get; set; } // OK
-        public virtual DateTime? EndDate { get; set; } // OK
-        public virtual bool? IsComplete { get; set; } // OK
-        public virtual string ReasonsForIncompleteTraining { get; set; } // OK
-        public virtual string Results { get; set; } // OK
-        // ?
+        public virtual string Type { get; set; } // ok
+        public virtual string Description { get; set; } //ok
+        public virtual DateTime BeginningDate { get; set; } //ok
+        public virtual DateTime EndDate { get; set; } //ok
+        public virtual bool IsComplete { get; set; } //ok
+        public virtual string ReasonsForIncompleteTraining { get; set; } //ok
+        public virtual string Results { get; set; } //ok
+        public virtual bool IsConfirmed { get; set; } //ok
+        public virtual string Comments { get; set; } //ok
         #endregion
 
         #region Constructors

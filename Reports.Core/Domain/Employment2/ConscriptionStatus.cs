@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class MilitaryReserveCategory : AbstractEntityWithVersion
+    public class ConscriptionStatus : AbstractEntityWithVersion
     {
         #region Constants
         #endregion

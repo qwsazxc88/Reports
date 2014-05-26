@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class OnsiteTrainingType : AbstractEntityWithVersion
+    public class MilitaryPersonnelCategory : AbstractEntityWithVersion
     {
         #region Constants
         #endregion

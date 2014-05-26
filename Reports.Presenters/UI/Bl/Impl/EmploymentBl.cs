@@ -216,16 +216,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         }
         protected void LoadDictionaries(MilitaryServiceModel model)
-        {
-            model.ReserveCategoryItems = new SelectList(new List<SelectListItem>
-                {
-                    new SelectListItem {Text = "1", Value = "1"},
-                    new SelectListItem {Text = "2", Value = "2"}
-                },
-                "Value", "Text"
-            );
+        {            
             model.RankItems = new SelectList(new List<SelectListItem>
                 {
+                    new SelectListItem {Text = "Подлежит призыву", Value = "0"},
                     new SelectListItem {Text = "Рядовой", Value = "1"},
                     new SelectListItem {Text = "Матрос", Value = "2"},
                     new SelectListItem {Text = "Ефрейтор", Value = "3"},
@@ -265,14 +259,35 @@ namespace Reports.Presenters.UI.Bl.Impl
                 },
                 "Value", "Text"
             );
-            model.SpecialityCategoryItems = new SelectList(new List<SelectListItem>
+            model.RegistrationExpirationItems = new SelectList(new List<SelectListItem>
                 {
-                    new SelectListItem {Text = "Солдаты и матросы", Value = "1"},
-                    new SelectListItem {Text = "Сержанты и старшины", Value = "2"},
-                    new SelectListItem {Text = "Прапорщики и мичманы", Value = "3"},
-                    new SelectListItem {Text = "Младшие офицеры", Value = "4"},
-                    new SelectListItem {Text = "Старшие офицеры", Value = "5"},
-                    new SelectListItem {Text = "Высшие офицеры", Value = "6"}
+                    new SelectListItem {Text = "0", Value = "-"},
+                    new SelectListItem {Text = "1", Value = "Снят с воинского учета по возрасту"},
+                    new SelectListItem {Text = "2", Value = "Снят с воинского учета по состоянию здоровья"}
+                },
+                "Value", "Text"
+            );
+            model.PersonnelCategoryItems = new SelectList(new List<SelectListItem>
+                {
+                    new SelectListItem {Text = "1", Value = "Руководители"},
+                    new SelectListItem {Text = "2", Value = "Специальности"},
+                    new SelectListItem {Text = "3", Value = "Другие служащие"},
+                    new SelectListItem {Text = "4", Value = "Рабочие"}
+                },
+                "Value", "Text"
+            );
+            model.PersonnelTypeItems = new SelectList(new List<SelectListItem>
+                {
+                    new SelectListItem {Text = "1", Value = "Офицеры"},
+                    new SelectListItem {Text = "2", Value = "Прочие (прапорщики, солдаты, мичманы, сержанты, матросы...)"}
+                },
+                "Value", "Text"
+            );
+            model.ConscriptionStatusItems = new SelectList(new List<SelectListItem>
+                {
+                    new SelectListItem {Text = "1", Value = "Не подлежит"},
+                    new SelectListItem {Text = "2", Value = "Подлежит"},
+                    new SelectListItem {Text = "3", Value = "Ограниченно годен"}
                 },
                 "Value", "Text"
             );

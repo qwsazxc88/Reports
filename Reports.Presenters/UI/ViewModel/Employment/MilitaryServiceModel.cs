@@ -8,43 +8,61 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     public class MilitaryServiceModel
     {
         [Display(Name = "Военнообязанный")]
-        public bool IsLiableForMilitaryService { get; set; }
+        public bool IsLiableForMilitaryService { get; set; } //ok
 
         [Display(Name = "Номер военного билета"),
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
-        public string MilitaryCardNumber { get; set; }
+        public string MilitaryCardNumber { get; set; } //ok
 
         [Display(Name = "Дата"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime MilitaryCardDate { get; set; }
+        public DateTime? MilitaryCardDate { get; set; } //ok
 
         [Display(Name = "Категория запаса")]
-        public int ReserveCategory { get; set; }
-        public IEnumerable<SelectListItem> ReserveCategoryItems { get; set; }
+        public int ReserveCategory { get; set; } //ok
+        public int? ReserveCategoryItems { get; set; }
 
         [Display(Name = "Воинское звание")]
-        public int Rank { get; set; }
+        public int Rank { get; set; } //ok
         public IEnumerable<SelectListItem> RankItems { get; set; }
 
-        // Состав (профиль)
         [Display(Name = "Состав (профиль)")]
-        public int SpecialityCategory { get; set; }
-        public IEnumerable<SelectListItem> SpecialityCategoryItems { get; set; }
+        public string SpecialityCategory { get; set; } //ok
 
         [Display(Name = "Полное кодовое обозначение ВУС"),
-            StringLength(6, ErrorMessage = "Не более 6 знаков.")]
-        public string MilitarySpecialityCode { get; set; }
+            StringLength(7, ErrorMessage = "Не более 7 знаков.")]
+        public string MilitarySpecialityCode { get; set; } //ok
 
         [Display(Name = "Категория годности к военной службе"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string CombatFitness { get; set; }
+            StringLength(1, ErrorMessage = "Требуется 1 знак.")]
+        public string CombatFitness { get; set; } //ok
 
         [Display(Name = "Наименование ВК по месту жительства"),
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]
-        public string Commissariat { get; set; }
+        public string Commissariat { get; set; } //ok
 
-        // Состоит на воинском учете?
+        [Display(Name = "Состоит на воинском учете"),
+            StringLength(250, ErrorMessage = "Не более 100 знаков.")]
+        public string MilitaryServiceRegistrationInfo { get; set; } //ok
 
+        [Display(Name = "Отметка о снятии с ВУ")]
+        public int RegistrationExpiration { get; set; } //ok
+        public IEnumerable<SelectListItem> RegistrationExpirationItems { get; set; }
+
+        [Display(Name = "Категория персонала")]
+        public int PersonnelCategory { get; set; } //ok
+        public IEnumerable<SelectListItem> PersonnelCategoryItems { get; set; }
+
+        [Display(Name = "Тип")]
+        public int PersonnelType { get; set; } //ok
+        public IEnumerable<SelectListItem> PersonnelTypeItems { get; set; }
+
+        [Display(Name = "Предписание")]
+        public bool IsAssigned { get; set; } //ok
+
+        [Display(Name = "Призыв на военную службу")]
+        public int ConscriptionStatus { get; set; } //ok
+        public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
 
     }
 }

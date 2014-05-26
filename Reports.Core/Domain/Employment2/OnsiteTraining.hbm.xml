@@ -6,13 +6,15 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="Type" class="OnsiteTrainingType" column="OnsiteTrainingTypeId" foreign-key="FK_OnsiteTraining_OnsiteTrainingType" index="OnsiteTraining_OnsiteTrainingType"  not-null="false"/>
-    <property name="Description" length="250" not-null="false"/>
-    <property name="BeginningDate" not-null="false"/>
-    <property name="EndDate" length="250" not-null="false"/>
-    <property name="IsComplete" not-null="false"/>
-    <property name="ReasonsForIncompleteTraining" length="250" not-null="false"/>
-    <property name="Results" length="250" not-null="false"/>
+    <property name="Type" length="200" not-null="true"/>
+    <property name="Description" length="200" not-null="true"/>
+    <property name="BeginningDate" not-null="true"/>
+    <property name="EndDate" not-null="true"/>
+    <property name="IsComplete" not-null="true"/>
+    <property name="ReasonsForIncompleteTraining" length="200" not-null="false"/>
+    <property name="Results" length="200" not-null="false"/>
+    <property name="IsConfirmed" not-null="true"/>
+    <property name="Comments" length="200" not-null="false"/>
     
   </class>
 </hibernate-mapping>

@@ -9,7 +9,7 @@
     <input type="hidden" id="cmd" name="cmd" />
     
     <div class="doc-wrap">
-        @Html.LabelFor(m => m.MaritalStatus) @Html.EditorFor(m => m.MaritalStatus)
+        @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
         <br /><br />
         <table class="grid centered">
         <thead>
@@ -135,7 +135,7 @@
             }
         </tbody>
         </table>
-        <button type="submit" id="add-child-button">Добавить ребенка</button>
+        <button type="submit" id="add-child-button">Добавить запись о ребенке</button>
         <br /><br />
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
@@ -145,7 +145,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empFamily");
-        $("#MaritalStatus").click(function () {
+        $("#IsMarried").click(function () {
             if ($(this).attr("checked") === false) {
                 $("#spouse-row").hide();
                 $("#spouse-row input, #spouse-row textarea").val("");

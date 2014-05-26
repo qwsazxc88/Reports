@@ -11,10 +11,10 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual IList<HigherEducationDiploma> HigherEducationDiplomas { get; set; } // OK
-        public virtual IList<PostGraduateEducationDiploma> PostGraduateEducationDiplomas { get; set; } // OK
-        public virtual IList<Certification> Certifications { get; set; } // OK
-        public virtual IList<Training> Training { get; set; } // OK
+        public virtual IList<HigherEducationDiploma> HigherEducationDiplomas { get; set; } //ok
+        public virtual IList<PostGraduateEducationDiploma> PostGraduateEducationDiplomas { get; set; } //ok
+        public virtual IList<Certification> Certifications { get; set; } //ok
+        public virtual IList<Training> Training { get; set; } //ok
         #endregion
 
         #region Constructors

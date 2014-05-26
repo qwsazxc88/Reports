@@ -27,57 +27,68 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
         public string ContractNumber { get; set; }
 
-        [Display(Name = "Северная надбавка"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков.")]
-        public string NorthernAreaAddition { get; set; }
+        [Display(Name = "Северная надбавка")]
+        public decimal? NorthernAreaAddition { get; set; }
 
-        [Display(Name = "Районный коэффициент"),
-            StringLength(10, ErrorMessage = "Не более 10 знаков.")]
-        public string AreaMultiplier { get; set; }
+        [Display(Name = "Районный коэффициент")]
+        public decimal? AreaMultiplier { get; set; }
 
-        [Display(Name = "Территориальная надбавка"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков.")]
-        public string AreaAddition { get; set; }
+        [Display(Name = "Территориальная надбавка")]
+        public decimal? AreaAddition { get; set; }
+
+        [Display(Name = "Надбавка за разъездной характер работы")]
+        public decimal? TravelRelatedAddition { get; set; }
+
+        [Display(Name = "Надбавка за квалификацию")]
+        public decimal? CompetenceAddition { get; set; }
+
+        [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса")]
+        public decimal? FrontOfficeExperienceAddition { get; set; }
 
         // Грейд
 
         [Display(Name = "лет"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string InsurableExperienceYears { get; set; }
+        public int OverallExperienceYears { get; set; }
 
         [Display(Name = "месяцев"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string InsurableExperienceMonths { get; set; }
+        public int OverallExperienceMonths { get; set; }
 
         [Display(Name = "дней"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string InsurableExperienceDays { get; set; }
+        public int OverallExperienceDays { get; set; }
 
         [Display(Name = "лет"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string NorthExperienceYears { get; set; }
+        public int InsurableExperienceYears { get; set; }
 
         [Display(Name = "месяцев"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string NorthExperienceMonths { get; set; }
+        public int InsurableExperienceMonths { get; set; }
 
         [Display(Name = "дней"),
             StringLength(2, ErrorMessage = "Не более 2 знаков.")]
-        public string NorthExperienceDays { get; set; }
+        public int InsurableExperienceDays { get; set; }        
 
         // Ознакомлен с регламентными документами
 
         [Display(Name = "Лицевой счет"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков.")]
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string PersonalAccount { get; set; }
 
+        [Display(Name = "Контрагент лицевого счета"),
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+        public string PersonalAccountContractor { get; set; }
+        
+        // Признаки ЦФО 1
+        // Признаки ЦФО 2
         // Заявление на вычет
+        // Скан заявления на вычет
+        // Группа доступа
 
-        [Display(Name = "Доход с предыдущего места работы"),
-            StringLength(20, ErrorMessage = "Не более 20 знаков.")]
-        public string PreviousIncome { get; set; }
-
-        [Display(Name = "Статус нерезидента")]
-        public bool IsNonResident { get; set; }
+        [Display(Name = "Оформлен прием. Кадровик"),
+            StringLength(50, ErrorMessage = "Не более 100 знаков.")]
+        public string ApprovedByPersonnelManager { get; set; }
     }
 }

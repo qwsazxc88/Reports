@@ -11,25 +11,25 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual DocumentType DocumentType { get; set; } // OK
-        public virtual string InternalPassportSeries { get; set; } // OK
-        public virtual string InternalPassportNumber { get; set; } // OK
-        public virtual DateTime? InternalPassportDateOfIssue { get; set; } // OK
-        public virtual string InternalPassportIssuedBy { get; set; } // OK
-        public virtual string InternalPassportSubdivisionCode { get; set; } // OK
-        public virtual DateTime? RegistrationDate { get; set; } // OK
-        public virtual string ZipCode { get; set; } // OK
-        public virtual string Region { get; set; } // OK
-        public virtual string District { get; set; } // OK
-        public virtual string City { get; set; } // OK
-        public virtual string Street { get; set; } // OK
-        public virtual string StreetNumber { get; set; } // OK
-        public virtual string Building { get; set; } // OK
-        public virtual string Appartment { get; set; } // OK
-        public virtual string InternationalPassportSeries { get; set; } // OK
-        public virtual string InternationalPassportNumber { get; set; } // OK
-        public virtual DateTime? InternationalPassportDateOfIssue { get; set; } // OK
-        public virtual string InternationalPassportIssuedBy { get; set; } // OK
+        public virtual DocumentType DocumentType { get; set; } //ok
+        public virtual string InternalPassportSeries { get; set; } //ok
+        public virtual string InternalPassportNumber { get; set; } //ok
+        public virtual DateTime InternalPassportDateOfIssue { get; set; } //ok
+        public virtual string InternalPassportIssuedBy { get; set; } //ok
+        public virtual string InternalPassportSubdivisionCode { get; set; } //ok
+        public virtual DateTime RegistrationDate { get; set; } //ok
+        public virtual string ZipCode { get; set; } //
+        public virtual string Region { get; set; } //
+        public virtual string District { get; set; } //
+        public virtual string City { get; set; } //
+        public virtual string Street { get; set; } //
+        public virtual string StreetNumber { get; set; } //
+        public virtual string Building { get; set; } //
+        public virtual string Appartment { get; set; } //
+        public virtual string InternationalPassportSeries { get; set; } //
+        public virtual string InternationalPassportNumber { get; set; } //
+        public virtual DateTime? InternationalPassportDateOfIssue { get; set; } //
+        public virtual string InternationalPassportIssuedBy { get; set; } //
         // Скан паспорта
         #endregion
 

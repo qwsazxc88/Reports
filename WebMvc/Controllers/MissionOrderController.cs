@@ -26,7 +26,6 @@ namespace WebMvc.Controllers
     public class MissionOrderController : BaseController
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
-        public const int MaxCommentLength = 256;
 
         public const string StrOtherOrdersExists =
             "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";

@@ -7,38 +7,45 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ManagersModel
     {
-        [Display(Name = "Испытательный срок"),
-            StringLength(20, ErrorMessage = "Не более 200 знаков.")]
-        public string ProbationaryPeriod { get; set; }
+        // TODO EMPL Position
+        // TODO EMPL Directorate
+        // TODO EMPL Department
+        // TODO EMPL EmploymentConditions
+        // TODO EMPL Schedule
 
+        [Display(Name = "Испытательный срок"),
+            StringLength(50, ErrorMessage = "Не более 200 знаков.")]
+        public string ProbationaryPeriod { get; set; } //ok
+
+        /*
         [Display(Name = "Оклад"),
             StringLength(20, ErrorMessage = "Не более 200 знаков.")]
-        public string Salary { get; set; }
+        public string Salary { get; set; }*/
 
         [Display(Name = "Место работы (нас. пункт)"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string WorkCity { get; set; }
+        public string WorkCity { get; set; } //ok
 
         [Display(Name = "Персональная надбавка"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string PersonalAddition { get; set; }
+        public decimal? PersonalAddition { get; set; } //ok
 
         [Display(Name = "Должностная надбавка"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string PositionAddition { get; set; }
+        public decimal? PositionAddition { get; set; } //ok
 
         [Display(Name = "Фронт/Бэк")]
-        public bool IsFront { get; set; }
+        public bool IsFront { get; set; } //ok
 
         [Display(Name = "Размер премии"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string Bonus { get; set; }
+        public decimal? Bonus { get; set; } //ok
 
         [Display(Name = "Материальная ответственность")]
-        public bool IsLiable { get; set; }
+        public bool IsLiable { get; set; } //ok
 
         [Display(Name = "Номер заявки в службе подбора персонала"),
-            StringLength(10, ErrorMessage = "Не более 10 знаков.")]
-        public string RequestNumber { get; set; }
+            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
+        public string RequestNumber { get; set; } //ok
     }
 }

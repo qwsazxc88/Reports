@@ -6,8 +6,8 @@
     </id>
     <version name="Version" column= "Version"/>
     
-    <property name="LastName" length="50" not-null="false"/>
-    <property name="FirstName" length="50" not-null="false"/>
+    <property name="LastName" length="50" not-null="true"/>
+    <property name="FirstName" length="50" not-null="true"/>
     <property name="Patronymic" length="50" not-null="false"/>
     <bag name="NameChanges" lazy="true" cascade="all-delete-orphan">
       <key column="GeneralInfoId" foreign-key="FK_NameChange_GeneralInfo"/>
@@ -16,10 +16,10 @@
     <property name="IsMale" not-null="false"/>
     <many-to-one name="Citizenship" class="Country" column="CitizenshipId" foreign-key="FK_GeneralInfo_Citizenship" index="GeneralInfo_Citizenship"  not-null="false"/>
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_GeneralInfo_InsuredPersonType" index="GeneralInfo_InsuredPersonType"  not-null="false"/>
-    <property name="DateOfBirth" not-null="false"/>
+    <property name="DateOfBirth" not-null="true"/>
     <property name="RegionOfBirth" length="50" not-null="false"/>
     <property name="DistrictOfBirth" length="50" not-null="false"/>
-    <property name="CityOfBirth" length="50" not-null="false"/>
+    <property name="CityOfBirth" length="50" not-null="true"/>
     <bag name="ForeignLanguages" lazy="true" cascade="all-delete-orphan">
       <key column="GeneralInfoId" foreign-key="FK_ForeignLanguage_GeneralInfo"/>
       <one-to-many class="ForeignLanguage"/>
@@ -31,7 +31,7 @@
       <one-to-many class="Disability"/>
     </bag>
     <many-to-one name="Status" class="TaxpayerStatus" column="TaxpayerStatusId" foreign-key="FK_GeneralInfo_TaxpayerStatus" index="GeneralInfo_TaxpayerStatus"  not-null="false"/>
-    <property name="AgreedToPersonalDataProcessing" not-null="false"/>
+    <property name="AgreedToPersonalDataProcessing" not-null="true"/>
     
   </class>
 </hibernate-mapping>

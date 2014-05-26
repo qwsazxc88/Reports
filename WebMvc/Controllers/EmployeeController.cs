@@ -14,7 +14,6 @@ namespace WebMvc.Controllers
     public class EmployeeController : BaseController
     {
         public const int MaxFileSize = 2*1024*1024;
-        public const int MaxCommentLength = 256;
         protected IEmployeeBl employeeBl;
         public IEmployeeBl EmployeeBl
         {

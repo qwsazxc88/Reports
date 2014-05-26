@@ -47,7 +47,7 @@
                     @Html.LabelFor(m => m.IsComplete)
                 </td>
                 <td>
-                     @Html.TextBoxFor(m => m.IsComplete)
+                     @Html.EditorFor(m => m.IsComplete)
                 </td>
             </tr>
             <tr>
@@ -64,6 +64,22 @@
                 </td>
                 <td>
                      @Html.TextBoxFor(m => m.Results)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsConfirmed)
+                </td>
+                <td>
+                     @Html.EditorFor(m => m.IsConfirmed)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Comments)
+                </td>
+                <td>
+                     @Html.TextAreaFor(m => m.Comments)
                 </td>
             </tr>
         </table>

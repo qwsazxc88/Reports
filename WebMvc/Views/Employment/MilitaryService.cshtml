@@ -39,7 +39,7 @@
                     @Html.LabelFor(m => m.ReserveCategory)
                 </td>
                 <td>
-                    @Html.DropDownListFor(m => m.ReserveCategory, Model.ReserveCategoryItems)
+                    @Html.EditorFor(m => m.ReserveCategory)
                     @Html.ValidationMessageFor(m => m.ReserveCategory)
                 </td>
             </tr>
@@ -57,28 +57,12 @@
                     @Html.LabelFor(m => m.SpecialityCategory)
                 </td>
                 <td>
-                    @Html.DropDownListFor(m => m.SpecialityCategory, Model.SpecialityCategoryItems)
+                    @Html.EditorFor(m => m.SpecialityCategory)
                     @Html.ValidationMessageFor(m => m.SpecialityCategory)
                 </td>
             </tr>
             <tr>
                 <td>
-                    @Html.LabelFor(m => m.Commissariat)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Commissariat)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.CombatFitness)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.CombatFitness)
-                </td>
-            </tr>
-            <tr>
-                <td>
                     @Html.LabelFor(m => m.CombatFitness)
                 </td>
                 <td>
@@ -91,9 +75,82 @@
                 </td>
                 <td>
                     @Html.EditorFor(m => m.Commissariat)
+                </td>
+            </tr>            
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.CombatFitness)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.CombatFitness)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Commissariat)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Commissariat)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.MilitaryServiceRegistrationInfo)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.RegistrationExpiration)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
+                    @Html.ValidationMessageFor(m => m.RegistrationExpiration)
                 </td>
             </tr>
         </table>
+        <fieldset style="border: 1px solid lightgray">
+        <legend>Для форм Ф-6 и Ф-18</legend>        
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PersonnelCategory)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.PersonnelCategory, Model.PersonnelCategoryItems)
+                    @Html.ValidationMessageFor(m => m.PersonnelCategory)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.PersonnelType)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.PersonnelType, Model.PersonnelTypeItems)
+                    @Html.ValidationMessageFor(m => m.PersonnelType)
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 300px;">
+                    @Html.LabelFor(m => m.IsLiableForMilitaryService)
+                </td>
+                <td>
+                     @Html.EditorFor(m => m.IsLiableForMilitaryService)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ConscriptionStatus)
+                </td>
+                <td>
+                    @Html.DropDownListFor(m => m.ConscriptionStatus, Model.ConscriptionStatusItems)
+                    @Html.ValidationMessageFor(m => m.ConscriptionStatus)
+                </td>
+            </tr>
+        </table>
+        </fieldset>
         </fieldset>
 
         <button type="submit">Записать черновик</button>

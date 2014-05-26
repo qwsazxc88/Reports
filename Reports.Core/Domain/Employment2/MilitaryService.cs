@@ -11,20 +11,21 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual bool? IsLiableForMilitaryService { get; set; } // OK
-        public virtual string MilitaryCardNumber { get; set; } // OK
-        public virtual DateTime? MilitaryCardDate { get; set; } // OK
-        public virtual MilitaryReserveCategory ReserveCategory { get; set; } // OK
-        public virtual MilitaryRank Rank { get; set; } // OK
-        public virtual MilitarySpecialityCategory SpecialityCategory { get; set; } // Состав (профиль) | SpecialityCategory
-        public virtual string MilitarySpecialityCode { get; set; } // OK
-        public virtual string CombatFitness { get; set; } // ?
-        public virtual string Commissariat { get; set; } // OK
-        // Состоит на воинском учете? | MilitaryServiceRegistration
-        // Категория персонала | MilitaryPersonnelCategory
-        // Тип | MilitaryPersonnelType
-        // Мобилизационное предписание | ?
-        // Призыв на военную службу | ?
+        public virtual bool IsLiableForMilitaryService { get; set; } //ok
+        public virtual string MilitaryCardNumber { get; set; } //ok
+        public virtual DateTime? MilitaryCardDate { get; set; } //ok
+        public virtual int? ReserveCategory { get; set; } //ok
+        public virtual MilitaryRank Rank { get; set; } //ok
+        public virtual string SpecialityCategory { get; set; } //ok - Состав (профиль)
+        public virtual string MilitarySpecialityCode { get; set; } //ok
+        public virtual string CombatFitness { get; set; } //ok
+        public virtual string Commissariat { get; set; } //ok
+        public virtual string MilitaryServiceRegistrationInfo { get; set; } //ok
+        public virtual MilitaryServiceRegistrationExpiration RegistrationExpiration { get; set; } //ok
+        public virtual MilitaryPersonnelCategory PersonnelCategory { get; set; } //ok
+        public virtual MilitaryPersonnelType PersonnelType { get; set; } //ok
+        public virtual bool IsAssigned { get; set; } //ok
+        public virtual ConscriptionStatus ConscriptionStatus { get; set; } //ok
         // Скан военного билета
         // Скан мобилизационного талона
         #endregion

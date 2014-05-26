@@ -8,16 +8,16 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     public class EducationModel
     {
         [Display(Name = "Сведения об образовании (высшее, неполное высшее)")]
-        public IList<HigherEducationDiplomaDto> HigherEducationDiplomas { get; set; }
+        public IList<HigherEducationDiplomaDto> HigherEducationDiplomas { get; set; } //ok
 
         [Display(Name = "Послевузовское образование")]
-        public IList<PostGraduateEducationDiplomaDto> PostGraduateEducationDiplomas { get; set; }
+        public IList<PostGraduateEducationDiplomaDto> PostGraduateEducationDiplomas { get; set; } //ok
 
         [Display(Name = "Аттестация")]
-        public IList<CertificationDto> Certifications { get; set; }
+        public IList<CertificationDto> Certifications { get; set; } //ok
 
         [Display(Name = "Повышение квалификации")]
-        public IList<TrainingDto> Training { get; set; }
+        public IList<TrainingDto> Training { get; set; } //ok
 
         public EducationModel()
         {

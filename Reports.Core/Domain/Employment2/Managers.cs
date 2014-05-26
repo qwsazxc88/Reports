@@ -9,21 +9,22 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual Position Position { get; set; } // OK
-        public virtual Department Directorate { get; set; } // OK?
-        public virtual Department Department { get; set; } // OK
-        public virtual string EmploymentConditions { get; set; } // OK
+        public virtual Position Position { get; set; } //ok
+        public virtual Department Directorate { get; set; } //ok
+        public virtual Department Department { get; set; } //ok
+        public virtual string EmploymentConditions { get; set; } //ok
         public virtual string Schedule { get; set; } // OK?
-        public virtual string ProbationaryPeriod { get; set; } // OK?
-        public virtual decimal? SalaryBasis { get; set; }
-        public virtual string WorkCity { get; set; } // OK
-        public virtual decimal? PersonalAddition { get; set; } // OK
-        public virtual decimal? PositionAddition { get; set; } // OK
-        public virtual bool? IsFront { get; set; } // OK
-        public virtual decimal? Bonus { get; set; } // OK
-        public virtual bool? IsLiable { get; set; } // OK
-        public virtual string RequestNumber { get; set; } // OK
-        // ? public virtual IList<EploymentApproval> EmploymentApprovals ?
+        public virtual string ProbationaryPeriod { get; set; } //ok
+        // TODO: EMPL несколько окладов и ставка
+        // public virtual decimal SalaryBasis { get; set; }
+        public virtual string WorkCity { get; set; } //ok
+        public virtual decimal? PersonalAddition { get; set; } //ok
+        public virtual decimal? PositionAddition { get; set; } //ok
+        public virtual bool IsFront { get; set; } //ok
+        public virtual decimal? Bonus { get; set; } //ok
+        public virtual bool IsLiable { get; set; } //ok
+        public virtual string RequestNumber { get; set; } //ok
+        // TODO: EMPL public virtual IList<EploymentApproval> EmploymentApprovals ?
         #endregion
 
         #region Constructors

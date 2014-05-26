@@ -11,29 +11,33 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
-        public virtual DateTime? EmploymentOrderDate { get; set; } // OK
-        public virtual string EmploymentOrderNumber { get; set; } // OK
-        public virtual DateTime? EmploymentDate { get; set; } // OK
-        public virtual DateTime? ContractDate { get; set; } // OK
-        public virtual string ContractNumber { get; set; } // OK
-        public virtual decimal? NorthernAreaAddition { get; set; } // OK
-        public virtual decimal? AreaMultiplier { get; set; } // OK
-        public virtual decimal? AreaAddition { get; set; } // OK
-        public virtual decimal? TravelRelatedAddition { get; set; } // OK
-        public virtual decimal? CompetenceAddition { get; set; } // OK
+        public virtual DateTime EmploymentOrderDate { get; set; } //ok
+        public virtual string EmploymentOrderNumber { get; set; } //ok
+        public virtual DateTime EmploymentDate { get; set; } //ok
+        public virtual DateTime ContractDate { get; set; } //ok
+        public virtual string ContractNumber { get; set; } //ok
+        public virtual decimal? NorthernAreaAddition { get; set; } //ok
+        public virtual decimal? AreaMultiplier { get; set; } //ok
+        public virtual decimal? AreaAddition { get; set; } //ok
+        public virtual decimal? TravelRelatedAddition { get; set; } //ok
+        public virtual decimal? CompetenceAddition { get; set; } //ok
         public virtual decimal? FrontOfficeExperienceAddition { get; set; }
-        public virtual int? Grade { get; set; }// Грейд (is it necessary?)
-        public virtual int? InsurableExperienceYears { get; set; }
-        public virtual int? InsurableExperienceMonths { get; set; }
-        public virtual int? InsurableExperienceDays { get; set; }
-        public virtual int? NorthExperienceYears { get; set; }
-        public virtual int? NorthExperienceMonths { get; set; }
-        public virtual int? NorthExperienceDays { get; set; }
-        // Ознакомлен с регламентными документами
-        public virtual string PersonalAccount { get; set; }
-        // Заявление на вычет
-        public virtual decimal? PreviousIncome { get; set; }
-        public virtual bool? IsNonResident { get; set; }
+        // public virtual int? Grade { get; set; }// Грейд (is it necessary?)
+        public virtual int OverallExperienceYears { get; set; } //ok
+        public virtual int OverallExperienceMonths { get; set; } //ok
+        public virtual int OverallExperienceDays { get; set; } //ok
+        public virtual int InsurableExperienceYears { get; set; } //ok
+        public virtual int InsurableExperienceMonths { get; set; } //ok
+        public virtual int InsurableExperienceDays { get; set; } //ok
+        // TODO: EMPL Ознакомлен с регламентными документами
+        public virtual string PersonalAccount { get; set; } //ok
+        public virtual string PersonalAccountContractor { get; set; } //ok
+        // TODO: EMPL Признаки ЦФО 1
+        // TODO: EMPL Признаки ЦФО 2
+        // TODO: EMPL Заявление на вычет
+        // TODO: EMPL Скан заявления на вычет
+        // TODO: EMPL Группа доступа
+        public virtual User ApprovedByPersonnelManager { get; set; } //ok
         #endregion
 
         #region Constructors

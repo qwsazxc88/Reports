@@ -6,7 +6,7 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Core.Domain
 {
-    public class Candidate : AbstractEntityWithVersion
+    public class EmploymentCandidate : AbstractEntityWithVersion
     {
         public virtual User User { get; set; }
         public virtual GeneralInfo GeneralInfo { get; set; }

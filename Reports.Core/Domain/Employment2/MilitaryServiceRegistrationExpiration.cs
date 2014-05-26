@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class FinancialLiability : AbstractEntityWithVersion
+    public class MilitaryServiceRegistrationExpiration : AbstractEntityWithVersion
     {
         #region Constants
         #endregion
