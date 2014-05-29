@@ -12,6 +12,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual IList<ExperienceItem> ExperienceItems { get; set; }
         public virtual string WorkBookSeries { get; set; } //ok
         public virtual string WorkBookNumber { get; set; } //ok

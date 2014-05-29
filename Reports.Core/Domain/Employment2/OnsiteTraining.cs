@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual string Type { get; set; } // ok
         public virtual string Description { get; set; } //ok
         public virtual DateTime BeginningDate { get; set; } //ok

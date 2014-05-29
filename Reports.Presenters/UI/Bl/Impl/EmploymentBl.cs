@@ -1,19 +1,76 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Collections.Generic;
+using Reports.Core;
+using Reports.Core.Dao;
+using Reports.Core.Domain;
 using Reports.Presenters.UI.ViewModel.Employment2;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class EmploymentBl : BaseBl, IEmploymentBl
     {
+        #region Dependencies
+
+        protected IEmploymentCandidateDao employmentCandidateDao;
+        public IEmploymentCandidateDao EmploymentCandidateDao
+        {
+            get { return Validate.Dependency(employmentCandidateDao); }
+            set { employmentCandidateDao = value; }
+        }
+
+        protected IEmploymentGeneralInfoDao employmentGeneralInfoDao;
+        public IEmploymentGeneralInfoDao EmploymentGeneralInfoDao
+        {
+            get { return Validate.Dependency(employmentGeneralInfoDao); }
+            set { employmentGeneralInfoDao = value; }
+        }
+
+        #endregion
+
         #region Get Model
 
-        public GeneralInfoModel GetGeneralInfoModel()
+        public GeneralInfoModel GetGeneralInfoModel(int? userId)
         {
             // TODO: EMPL доработать реализацию
-            GeneralInfoModel model = new GeneralInfoModel();
+            //UserRole role = AuthenticationService.CurrentUser.UserRole;
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            GeneralInfoModel model = null;
+            GeneralInfo entity = null;
+            int? id = EmploymentGeneralInfoDao.GetDocumentId(userId.Value) ?? 0;
+            if (id.HasValue)
+            {
+                entity = EmploymentGeneralInfoDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.AgreedToPersonalDataProcessing = entity.AgreedToPersonalDataProcessing;
+                model.Citizenship = entity.Citizenship.Id;
+                model.CityOfBirth = entity.CityOfBirth;
+                model.DateOfBirth = entity.DateOfBirth;
+                // Disabilities
+                model.DistrictOfBirth = entity.DistrictOfBirth;
+                model.FirstName = entity.FirstName;
+                // Foreign languages
+                model.INN = entity.INN;
+                model.InsuredPersonType = entity.InsuredPersonType.Id;
+                model.IsMale = entity.IsMale;
+                model.IsPatronymicAbsent = entity.Patronymic.Length > 0;
+                model.LastName = entity.LastName;
+                // Name changes
+                model.Patronymic = entity.Patronymic;
+                model.RegionOfBirth = entity.RegionOfBirth;
+                model.SNILS = entity.SNILS;
+                model.Status = entity.Status.Id;
+                model.UserId = entity.Candidate.User.Id;
+                model.Version = entity.Version;
+            }
+            else
+            {
+                model = new GeneralInfoModel() { UserId = userId.Value };
+            }
             LoadDictionaries(model);
+            // TODO: EMPL загрузка данных из БД и наполнение модели
             return model;
         }
 
@@ -164,6 +221,30 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
+        #region Save Model
+
+        public bool SaveGeneralInfoModel(GeneralInfoModel model, out string error)
+        {
+            error = string.Empty;
+            User creator = null;
+            try
+            {
+                creator = UserDao.Load(model.UserId);
+            }
+            catch (Exception exc)
+            {
+
+            }
+            finally
+            {
+
+            }
+
+            return false;
+        }
+
+        #endregion
+
         #region LoadDictionaries
 
         protected void LoadDictionaries(GeneralInfoModel model)
@@ -171,8 +252,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CitizenshipItems = new SelectList(new List<SelectListItem>
                 {
                     new SelectListItem {Text = "Россия", Value = "1"},
-                    new SelectListItem {Text = "Украина", Value = "2"},
-                    new SelectListItem {Text = "Китай", Value = "3"}
+                    new SelectListItem {Text = "Белоруссия", Value = "2"},
+                    new SelectListItem {Text = "Украина", Value = "3"},
+                    new SelectListItem {Text = "Казахстан", Value = "4"},
+                    new SelectListItem {Text = "Китай", Value = "5"}
                 },
                 "Value", "Text"
             );
@@ -261,33 +344,33 @@ namespace Reports.Presenters.UI.Bl.Impl
             );
             model.RegistrationExpirationItems = new SelectList(new List<SelectListItem>
                 {
-                    new SelectListItem {Text = "0", Value = "-"},
-                    new SelectListItem {Text = "1", Value = "Снят с воинского учета по возрасту"},
-                    new SelectListItem {Text = "2", Value = "Снят с воинского учета по состоянию здоровья"}
+                    new SelectListItem {Text = "-", Value = "0"},
+                    new SelectListItem {Text = "Снят с воинского учета по возрасту", Value = "1"},
+                    new SelectListItem {Text = "Снят с воинского учета по состоянию здоровья", Value = "2"}
                 },
                 "Value", "Text"
             );
             model.PersonnelCategoryItems = new SelectList(new List<SelectListItem>
                 {
-                    new SelectListItem {Text = "1", Value = "Руководители"},
-                    new SelectListItem {Text = "2", Value = "Специальности"},
-                    new SelectListItem {Text = "3", Value = "Другие служащие"},
-                    new SelectListItem {Text = "4", Value = "Рабочие"}
+                    new SelectListItem {Text = "Руководители", Value = "1"},
+                    new SelectListItem {Text = "Специальности", Value = "2"},
+                    new SelectListItem {Text = "Другие служащие", Value = "3"},
+                    new SelectListItem {Text = "Рабочие", Value = "4"}
                 },
                 "Value", "Text"
             );
             model.PersonnelTypeItems = new SelectList(new List<SelectListItem>
                 {
-                    new SelectListItem {Text = "1", Value = "Офицеры"},
-                    new SelectListItem {Text = "2", Value = "Прочие (прапорщики, солдаты, мичманы, сержанты, матросы...)"}
+                    new SelectListItem {Text = "Офицеры", Value = "1"},
+                    new SelectListItem {Text = "Прочие (прапорщики, солдаты, мичманы, сержанты, матросы...)", Value = "2"}
                 },
                 "Value", "Text"
             );
             model.ConscriptionStatusItems = new SelectList(new List<SelectListItem>
                 {
-                    new SelectListItem {Text = "1", Value = "Не подлежит"},
-                    new SelectListItem {Text = "2", Value = "Подлежит"},
-                    new SelectListItem {Text = "3", Value = "Ограниченно годен"}
+                    new SelectListItem {Text = "Не подлежит", Value = "1"},
+                    new SelectListItem {Text = "Подлежит", Value = "2"},
+                    new SelectListItem {Text = "Ограниченно годен", Value = "3"}
                 },
                 "Value", "Text"
             );

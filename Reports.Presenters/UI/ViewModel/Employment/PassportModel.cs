@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class PassportModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Вид документа"),
             Required(ErrorMessage = "Обязательное поле")]
         public int DocumentType { get; set;}
@@ -92,5 +95,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Кем выдан"),
             StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string InternationalPassportIssuedBy { get; set; }
+
+        public PassportModel()
+        {
+            this.Version = 0;
+        }
     }
 }

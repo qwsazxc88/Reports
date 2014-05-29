@@ -6,17 +6,44 @@
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <fieldset style="border: 1px solid lightgray">
-    <legend>Руководители</legend>
     <div class="doc-wrap">
-        @Html.EditorForModel()
-        <br />
+        <fieldset class="bordered">
+        <legend>Руководители</legend>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
+                @Html.EditorFor(m => m.ProbationaryPeriod)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
+                @Html.EditorFor(m => m.WorkCity)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.PersonalAddition)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAddition)<br />
+                @Html.EditorFor(m => m.PersonalAddition)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
+                @Html.EditorFor(m => m.PositionAddition)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsFront)&nbsp;@Html.EditorFor(m => m.IsFront)                
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.Bonus)&nbsp;@Html.ValidationMessageFor(m => m.Bonus)<br />
+                @Html.EditorFor(m => m.Bonus)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsLiable)&nbsp;@Html.EditorFor(m => m.IsLiable)                
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
+                @Html.EditorFor(m => m.RequestNumber)
+            </div>
+        </fieldset>
+    
+        <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
-    </fieldset>
-    
-    <button type="submit">Записать черновик</button>
-    <button type="submit">Сохранить</button>
 }
 
 <script>

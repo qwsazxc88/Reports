@@ -414,6 +414,13 @@ namespace Reports.Core
                ImplementedBy(typeof(AppointmentEducationTypeDao)).
                LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IEmploymentCandidateDao)).
+                ImplementedBy(typeof(EmploymentCandidateDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentGeneralInfoDao)).
+                ImplementedBy(typeof(EmploymentGeneralInfoDao)).
+                LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

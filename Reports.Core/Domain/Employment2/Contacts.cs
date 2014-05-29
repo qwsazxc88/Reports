@@ -9,6 +9,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual string ZipCode { get; set; } //ok
         public virtual string Region { get; set; } //ok
         public virtual string District { get; set; } //ok

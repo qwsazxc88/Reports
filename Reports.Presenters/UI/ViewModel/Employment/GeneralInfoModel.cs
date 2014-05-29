@@ -8,6 +8,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class GeneralInfoModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
@@ -83,6 +86,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public GeneralInfoModel()
         {
+            this.Version = 0;
             this.NameChanges = new List<NameChangeDto>();            
             this.ForeignLanguages = new List<ForeignLanguageDto>();
             this.Disabilities = new List<DisabilityDto>();            

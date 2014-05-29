@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual FamilyMember Spouse { get; set; } // OK-
         public virtual FamilyMember Father { get; set; } // OK-
         public virtual FamilyMember Mother { get; set; } // OK-

@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class EducationModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Сведения об образовании (высшее, неполное высшее)")]
         public IList<HigherEducationDiplomaDto> HigherEducationDiplomas { get; set; } //ok
 
@@ -21,6 +24,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public EducationModel()
         {
+            this.Version = 0;
             this.HigherEducationDiplomas = new List<HigherEducationDiplomaDto>();
             this.PostGraduateEducationDiplomas = new List<PostGraduateEducationDiplomaDto>();
             this.Certifications = new List<CertificationDto>();

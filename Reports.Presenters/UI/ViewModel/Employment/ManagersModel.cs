@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ManagersModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         // TODO EMPL Position
         // TODO EMPL Directorate
         // TODO EMPL Department
@@ -47,5 +50,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Номер заявки в службе подбора персонала"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string RequestNumber { get; set; } //ok
+
+        public ManagersModel()
+        {
+            this.Version = 0;
+        }
     }
 }

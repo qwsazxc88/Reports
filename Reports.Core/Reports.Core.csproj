@@ -236,6 +236,7 @@
     <Compile Include="Dao\Impl\WorkingDaysConstantDao.cs" />
     <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentGeneralInfoDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -271,6 +272,7 @@
     <Compile Include="Dao\IWorkingDaysConstantDao.cs" />
     <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDao.cs" />
+    <Compile Include="Dao\IEmploymentGeneralInfoDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />

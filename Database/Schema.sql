@@ -1,6 +1,9 @@
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Certification_Education]') AND parent_object_id = OBJECT_ID('Certification'))
 alter table Certification  drop constraint FK_Certification_Education
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Candidate]') AND parent_object_id = OBJECT_ID('Family'))
+alter table Family  drop constraint FK_Family_Candidate
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Spouse]') AND parent_object_id = OBJECT_ID('Family'))
 alter table Family  drop constraint FK_Family_Spouse
 
@@ -97,6 +100,9 @@ alter table Sicklist  drop constraint FK_Sicklist_ApprovedByPersonnelManagerUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_Candidate]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
+alter table PersonnelManagers  drop constraint FK_PersonnelManagers_Candidate
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_ApprovedByPersonnelManagerUser]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
 alter table PersonnelManagers  drop constraint FK_PersonnelManagers_ApprovedByPersonnelManagerUser
 
@@ -105,6 +111,9 @@ alter table AcceptRequestDate  drop constraint FK_AcceptRequestDate_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentSubType_EmployeeDocumentType]') AND parent_object_id = OBJECT_ID('EmployeeDocumentSubType'))
 alter table EmployeeDocumentSubType  drop constraint FK_DocumentSubType_EmployeeDocumentType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Experience_Candidate]') AND parent_object_id = OBJECT_ID('Experience'))
+alter table Experience  drop constraint FK_Experience_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AccountingTransaction_MissionReportCost]') AND parent_object_id = OBJECT_ID('AccountingTransaction'))
 alter table AccountingTransaction  drop constraint FK_AccountingTransaction_MissionReportCost
@@ -132,6 +141,9 @@ alter table ChildVacationComment  drop constraint FK_ChildVacationComment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ChildVacationComment_ChildVacation]') AND parent_object_id = OBJECT_ID('ChildVacationComment'))
 alter table ChildVacationComment  drop constraint FK_ChildVacationComment_ChildVacation
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Contacts_Candidate]') AND parent_object_id = OBJECT_ID('Contacts'))
+alter table Contacts  drop constraint FK_Contacts_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Deduction_DeductionType]') AND parent_object_id = OBJECT_ID('Deduction'))
 alter table Deduction  drop constraint FK_Deduction_DeductionType
@@ -177,6 +189,9 @@ alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionCo
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrectionComment_TimesheetCorrection]') AND parent_object_id = OBJECT_ID('TimesheetCorrectionComment'))
 alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionComment_TimesheetCorrection
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_Candidate]') AND parent_object_id = OBJECT_ID('MilitaryService'))
+alter table MilitaryService  drop constraint FK_MilitaryService_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_Rank]') AND parent_object_id = OBJECT_ID('MilitaryService'))
 alter table MilitaryService  drop constraint FK_MilitaryService_Rank
@@ -250,6 +265,9 @@ alter table MissionComment  drop constraint FK_MissionComment_Mission
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HigherEducationDiploma_Education]') AND parent_object_id = OBJECT_ID('HigherEducationDiploma'))
 alter table HigherEducationDiploma  drop constraint FK_HigherEducationDiploma_Education
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_OnsiteTraining_Candidate]') AND parent_object_id = OBJECT_ID('OnsiteTraining'))
+alter table OnsiteTraining  drop constraint FK_OnsiteTraining_Candidate
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrder_MissionType]') AND parent_object_id = OBJECT_ID('MissionOrder'))
 alter table MissionOrder  drop constraint FK_MissionOrder_MissionType
 
@@ -285,6 +303,9 @@ alter table EmploymentComment  drop constraint FK_EmploymentComment_Employment
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Disability_GeneralInfo]') AND parent_object_id = OBJECT_ID('Disability'))
 alter table Disability  drop constraint FK_Disability_GeneralInfo
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Education_Candidate]') AND parent_object_id = OBJECT_ID('Education'))
+alter table Education  drop constraint FK_Education_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionPurchaseBookDocument_Contractor]') AND parent_object_id = OBJECT_ID('MissionPurchaseBookDocument'))
 alter table MissionPurchaseBookDocument  drop constraint FK_MissionPurchaseBookDocument_Contractor
@@ -412,6 +433,9 @@ alter table FamilyMember  drop constraint FK_Children_Family
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ExperienceItem_Experience]') AND parent_object_id = OBJECT_ID('ExperienceItem'))
 alter table ExperienceItem  drop constraint FK_ExperienceItem_Experience
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_Candidate]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
+alter table GeneralInfo  drop constraint FK_GeneralInfo_Candidate
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_Citizenship]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
 alter table GeneralInfo  drop constraint FK_GeneralInfo_Citizenship
 
@@ -526,6 +550,9 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Candidate]') AND parent_object_id = OBJECT_ID('Managers'))
+alter table Managers  drop constraint FK_Managers_Candidate
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Position]') AND parent_object_id = OBJECT_ID('Managers'))
 alter table Managers  drop constraint FK_Managers_Position
 
@@ -534,6 +561,9 @@ alter table Managers  drop constraint FK_Managers_Directorate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Department]') AND parent_object_id = OBJECT_ID('Managers'))
 alter table Managers  drop constraint FK_Managers_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Passport_Candidate]') AND parent_object_id = OBJECT_ID('Passport'))
+alter table Passport  drop constraint FK_Passport_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Passport_DocumentType]') AND parent_object_id = OBJECT_ID('Passport'))
 alter table Passport  drop constraint FK_Passport_DocumentType
@@ -561,6 +591,9 @@ alter table MissionAirTicketTypeGradeValue  drop constraint FK_MissionAirTicketT
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ATTACHMENT_USER_ROLE]') AND parent_object_id = OBJECT_ID('RequestAttachment'))
 alter table RequestAttachment  drop constraint FK_ATTACHMENT_USER_ROLE
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_BackgroundCheck_Candidate]') AND parent_object_id = OBJECT_ID('BackgroundCheck'))
+alter table BackgroundCheck  drop constraint FK_BackgroundCheck_Candidate
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager23ToDepartment3_User]') AND parent_object_id = OBJECT_ID('AppointmentManager23ToDepartment3'))
 alter table AppointmentManager23ToDepartment3  drop constraint FK_AppointmentManager23ToDepartment3_User
@@ -780,6 +813,7 @@ create table Certification (
 create table Family (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   SpouseId INT null,
   FatherId INT null,
   MotherId INT null,
@@ -1021,6 +1055,7 @@ create table SicklistPaymentPercent (
 create table PersonnelManagers (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   EmploymentOrderDate DATETIME not null,
   EmploymentOrderNumber NVARCHAR(20) not null,
   EmploymentDate DATETIME not null,
@@ -1093,6 +1128,7 @@ create table EmployeeDocumentSubType (
 create table Experience (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   WorkBookSeries NVARCHAR(20) null,
   WorkBookNumber NVARCHAR(20) null,
   WorkBookDateOfIssue DATETIME null,
@@ -1147,6 +1183,7 @@ create table MilitaryPersonnelType (
 create table Contacts (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   ZipCode NVARCHAR(6) null,
   Region NVARCHAR(50) null,
   District NVARCHAR(50) null,
@@ -1289,6 +1326,7 @@ create table FamilyRelationship (
 create table MilitaryService (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   IsLiableForMilitaryService BIT not null,
   MilitaryCardNumber NVARCHAR(20) null,
   MilitaryCardDate DATETIME null,
@@ -1415,6 +1453,7 @@ create table HigherEducationDiploma (
 create table OnsiteTraining (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   Type NVARCHAR(200) not null,
   Description NVARCHAR(200) not null,
   BeginningDate DATETIME not null,
@@ -1531,6 +1570,7 @@ create table Disability (
 create table Education (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   constraint PK_Education  primary key (Id)
 )
 create table MissionPurchaseBookDocument (
@@ -1793,6 +1833,7 @@ create table ExperienceItem (
 create table GeneralInfo (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   LastName NVARCHAR(50) not null,
   FirstName NVARCHAR(50) not null,
   Patronymic NVARCHAR(50) null,
@@ -2042,6 +2083,7 @@ create table UserLogin (
 create table Managers (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   PositionId INT null,
   DirectorateId INT null,
   DepartmentId INT null,
@@ -2060,6 +2102,7 @@ create table Managers (
 create table Passport (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   DocumentTypeId INT not null,
   InternalPassportSeries NVARCHAR(4) not null,
   InternalPassportNumber NVARCHAR(6) not null,
@@ -2197,6 +2240,7 @@ create table MilitaryPersonnelCategory (
 create table BackgroundCheck (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  CandidateId INT not null,
   AverageSalary DECIMAL(19, 2) null,
   Liabilities NVARCHAR(250) null,
   PreviousDismissalReason NVARCHAR(250) null,
@@ -2282,9 +2326,11 @@ create table EmploymentCandidate (
   constraint PK_EmploymentCandidate  primary key (Id)
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
+create index Family_Candidate on Family (CandidateId)
 create index Family_Spouse on Family (SpouseId)
 create index Family_Father on Family (FatherId)
 create index Family_Mother on Family (MotherId)
+alter table Family add constraint FK_Family_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table Family add constraint FK_Family_Spouse foreign key (SpouseId) references FamilyMember
 alter table Family add constraint FK_Family_Father foreign key (FatherId) references FamilyMember
 alter table Family add constraint FK_Family_Mother foreign key (MotherId) references FamilyMember
@@ -2346,12 +2392,16 @@ alter table Sicklist add constraint FK_Sicklist_CreatorUser foreign key (Creator
 alter table Sicklist add constraint FK_Sicklist_ApprovedByManagerUser foreign key (ApprovedByManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index PersonnelManagers_Candidate on PersonnelManagers (CandidateId)
 create index IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id on PersonnelManagers (ApprovedByPersonnelManagerId)
+alter table PersonnelManagers add constraint FK_PersonnelManagers_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table PersonnelManagers add constraint FK_PersonnelManagers_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)
 alter table AcceptRequestDate add constraint FK_AcceptRequestDate_User foreign key (UserId) references [Users]
 create index IX_DocumentSubType_EmployeeDocumentType_Id on EmployeeDocumentSubType (TypeId)
 alter table EmployeeDocumentSubType add constraint FK_DocumentSubType_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
+create index Experience_Candidate on Experience (CandidateId)
+alter table Experience add constraint FK_Experience_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index AccountingTransaction_MissionReportCost on AccountingTransaction (CostId)
 create index AccountingTransaction_DebitAccount on AccountingTransaction (DebitAccountId)
 create index AccountingTransaction_CreditAccount on AccountingTransaction (CreditAccountId)
@@ -2370,6 +2420,8 @@ create index IX_ChildVacationComment_User_Id on ChildVacationComment (UserId)
 create index IX_ChildVacationComment_ChildVacation_Id on ChildVacationComment (ChildVacationId)
 alter table ChildVacationComment add constraint FK_ChildVacationComment_User foreign key (UserId) references [Users]
 alter table ChildVacationComment add constraint FK_ChildVacationComment_ChildVacation foreign key (ChildVacationId) references ChildVacation
+create index Contacts_Candidate on Contacts (CandidateId)
+alter table Contacts add constraint FK_Contacts_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index Deduction_DeductionType on Deduction (TypeId)
 create index Deduction_DeductionKind on Deduction (KindId)
 create index IX_Deduction_User_Id on Deduction (UserId)
@@ -2398,11 +2450,13 @@ create index IX_TimesheetCorrectionComment_User_Id on TimesheetCorrectionComment
 create index IX_TimesheetCorrectionComment_TimesheetCorrection_Id on TimesheetCorrectionComment (TimesheetCorrectionId)
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_User foreign key (UserId) references [Users]
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_TimesheetCorrection foreign key (TimesheetCorrectionId) references TimesheetCorrection
+create index MilitaryService_Candidate on MilitaryService (CandidateId)
 create index MilitaryService_Rank on MilitaryService (RankId)
 create index MilitaryService_RegistrationExpiration on MilitaryService (RegistrationExpirationId)
 create index MilitaryService_PersonnelCategory on MilitaryService (PersonnelCategoryId)
 create index MilitaryService_PersonnelType on MilitaryService (PersonnelTypeId)
 create index MilitaryService_ConscriptionStatus on MilitaryService (ConscriptionStatusId)
+alter table MilitaryService add constraint FK_MilitaryService_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table MilitaryService add constraint FK_MilitaryService_Rank foreign key (RankId) references MilitaryRank
 alter table MilitaryService add constraint FK_MilitaryService_RegistrationExpiration foreign key (RegistrationExpirationId) references MilitaryServiceRegistrationExpiration
 alter table MilitaryService add constraint FK_MilitaryService_PersonnelCategory foreign key (PersonnelCategoryId) references MilitaryPersonnelCategory
@@ -2445,6 +2499,8 @@ create index IX_MissionComment_Mission_Id on MissionComment (MissionId)
 alter table MissionComment add constraint FK_MissionComment_User foreign key (UserId) references [Users]
 alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
 alter table HigherEducationDiploma add constraint FK_HigherEducationDiploma_Education foreign key (EducationId) references Education
+create index OnsiteTraining_Candidate on OnsiteTraining (CandidateId)
+alter table OnsiteTraining add constraint FK_OnsiteTraining_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index MissionOrder_MissionType on MissionOrder (TypeId)
 create index MissionOrder_MissionGoal on MissionOrder (MissionGoalId)
 create index IX_MissionOrder_Secretary_Id on MissionOrder (SecretaryId)
@@ -2468,6 +2524,8 @@ create index IX_EmploymentComment_Employment_Id on EmploymentComment (Employment
 alter table EmploymentComment add constraint FK_EmploymentComment_User foreign key (UserId) references [Users]
 alter table EmploymentComment add constraint FK_EmploymentComment_Employment foreign key (EmploymentId) references Employment
 alter table Disability add constraint FK_Disability_GeneralInfo foreign key (GeneralInfoId) references GeneralInfo
+create index Education_Candidate on Education (CandidateId)
+alter table Education add constraint FK_Education_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index MissionPurchaseBookDocument_Contractor on MissionPurchaseBookDocument (ContractorId)
 create index IX_MissionPurchaseBookDocument_EditorUser on MissionPurchaseBookDocument (EditorId)
 alter table MissionPurchaseBookDocument add constraint FK_MissionPurchaseBookDocument_Contractor foreign key (ContractorId) references Contractor
@@ -2547,9 +2605,11 @@ create index FamilyMember_Relationship on FamilyMember (RelationshipId)
 alter table FamilyMember add constraint FK_FamilyMember_Relationship foreign key (RelationshipId) references FamilyRelationship
 alter table FamilyMember add constraint FK_Children_Family foreign key (FamilyId) references Family
 alter table ExperienceItem add constraint FK_ExperienceItem_Experience foreign key (ExperienceId) references Experience
+create index GeneralInfo_Candidate on GeneralInfo (CandidateId)
 create index GeneralInfo_Citizenship on GeneralInfo (CitizenshipId)
 create index GeneralInfo_InsuredPersonType on GeneralInfo (InsuredPersonTypeId)
 create index GeneralInfo_TaxpayerStatus on GeneralInfo (TaxpayerStatusId)
+alter table GeneralInfo add constraint FK_GeneralInfo_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table GeneralInfo add constraint FK_GeneralInfo_Citizenship foreign key (CitizenshipId) references Country
 alter table GeneralInfo add constraint FK_GeneralInfo_InsuredPersonType foreign key (InsuredPersonTypeId) references InsuredPersonType
 alter table GeneralInfo add constraint FK_GeneralInfo_TaxpayerStatus foreign key (TaxpayerStatusId) references TaxpayerStatus
@@ -2620,13 +2680,17 @@ alter table Vacation add constraint FK_Vacation_TimesheetStatus foreign key (Tim
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index Managers_Candidate on Managers (CandidateId)
 create index Managers_Position on Managers (PositionId)
 create index Managers_Directorate on Managers (DirectorateId)
 create index Managers_Department on Managers (DepartmentId)
+alter table Managers add constraint FK_Managers_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table Managers add constraint FK_Managers_Position foreign key (PositionId) references Position
 alter table Managers add constraint FK_Managers_Directorate foreign key (DirectorateId) references Department
 alter table Managers add constraint FK_Managers_Department foreign key (DepartmentId) references Department
+create index Passport_Candidate on Passport (CandidateId)
 create index Passport_DocumentType on Passport (DocumentTypeId)
+alter table Passport add constraint FK_Passport_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table Passport add constraint FK_Passport_DocumentType foreign key (DocumentTypeId) references DocumentType
 alter table Training add constraint FK_Training_Education foreign key (EducationId) references Education
 create index IX_AppointmentManager2ParentToManager2Child_Parent on AppointmentManager2ParentToManager2Child (ParentId)
@@ -2643,6 +2707,8 @@ alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTyp
 alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTypeGradeValue_Grade foreign key (GradeId) references MissionGraid
 create index IX_ATTACHMENT_USER_ROLE_ID on RequestAttachment (CreatorRoleId)
 alter table RequestAttachment add constraint FK_ATTACHMENT_USER_ROLE foreign key (CreatorRoleId) references Role
+create index BackgroundCheck_Candidate on BackgroundCheck (CandidateId)
+alter table BackgroundCheck add constraint FK_BackgroundCheck_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index IX_AppointmentManager23ToDepartment3_User on AppointmentManager23ToDepartment3 (ManagerId)
 create index IX_AppointmentManager23ToDepartment3_Department on AppointmentManager23ToDepartment3 (DepartmentId)
 alter table AppointmentManager23ToDepartment3 add constraint FK_AppointmentManager23ToDepartment3_User foreign key (ManagerId) references [Users]

@@ -9,8 +9,8 @@
     <input type="hidden" id="cmd" name="cmd" />
     
     <div class="doc-wrap">
-        <fieldset style="border: 1px solid lightgray">
-            <legend>Сведения об образовании (высшее, неполное высшее)</legend>
+        <fieldset class="bordered">
+        <legend>Сведения об образовании (высшее, неполное высшее)</legend>
             <div id="higher-education-diplomas-container">
                 @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
                 {
@@ -93,8 +93,8 @@
             <button type="submit" id="add-higher-education-diploma-button">Добавить новую запись</button>
         </fieldset>
     
-        <fieldset style="border: 1px solid lightgray">
-            <legend>Послевузовское образование</legend>
+        <fieldset class="bordered">
+        <legend>Послевузовское образование</legend>
             <div id="postgraduate-education-diplomas-container">
                 @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
                 {
@@ -153,10 +153,10 @@
             <button type="submit" id="add-postgraduate-education-diploma-button">Добавить новую запись</button>
         </fieldset>
     
-        <fieldset style="border: 1px solid lightgray">
-            <legend>Сведения о дополнительном образовании</legend>
-            <fieldset style="border: 1px solid lightgray">
-                <legend>Аттестация</legend>
+        <fieldset class="bordered">
+        <legend>Сведения о дополнительном образовании</legend>
+            <fieldset class="bordered nomargin">
+            <legend class="level2">Аттестация</legend>
                 <div id="certifications-container">
                     @for (var i = 0; i < Model.Certifications.Count; i++)
                     {
@@ -198,8 +198,8 @@
                 </div>
                 <button type="submit" id="add-certification-button">Добавить новую запись</button>
             </fieldset>
-            <fieldset style="border: 1px solid lightgray">
-                <legend>Повышение квалификации</legend>
+            <fieldset class="bordered nomargin">
+            <legend class="level2">Повышение квалификации</legend>
                 <div id="training-container">
                     @for (var i = 0; i < Model.Training.Count; i++)
                     {

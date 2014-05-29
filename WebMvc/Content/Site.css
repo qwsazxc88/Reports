@@ -193,10 +193,26 @@ fieldset
     margin:0 0 1.5em 0;
 }
 
+fieldset.bordered
+{
+    border: 1px solid lightgray;    
+    padding: 5px;
+}
+
+fieldset.nomargin
+{
+    margin: 0;
+}
+
 legend 
 {
     font-size:1.2em;
     font-weight: bold;
+}
+
+legend.level2
+{
+    font-size:1.1em;
 }
 
 textarea 
@@ -281,6 +297,12 @@ table.centered td
 #menucontainer
 {
     margin-top:40px;
+}
+
+div.formfield
+{
+    float:left;
+    padding: 5px;
 }
 
 div#title

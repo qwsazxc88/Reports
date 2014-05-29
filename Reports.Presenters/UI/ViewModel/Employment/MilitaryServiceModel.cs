@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class MilitaryServiceModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Военнообязанный")]
         public bool IsLiableForMilitaryService { get; set; } //ok
 
@@ -19,8 +22,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? MilitaryCardDate { get; set; } //ok
 
         [Display(Name = "Категория запаса")]
-        public int ReserveCategory { get; set; } //ok
-        public int? ReserveCategoryItems { get; set; }
+        public string ReserveCategory { get; set; } //ok
 
         [Display(Name = "Воинское звание")]
         public int Rank { get; set; } //ok
@@ -63,6 +65,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Призыв на военную службу")]
         public int ConscriptionStatus { get; set; } //ok
         public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
+
+        public MilitaryServiceModel()
+        {
+            this.Version = 0;
+        }
 
     }
 }

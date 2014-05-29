@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual DocumentType DocumentType { get; set; } //ok
         public virtual string InternalPassportSeries { get; set; } //ok
         public virtual string InternalPassportNumber { get; set; } //ok

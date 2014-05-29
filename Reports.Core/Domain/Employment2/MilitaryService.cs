@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual bool IsLiableForMilitaryService { get; set; } //ok
         public virtual string MilitaryCardNumber { get; set; } //ok
         public virtual DateTime? MilitaryCardDate { get; set; } //ok

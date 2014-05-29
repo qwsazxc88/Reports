@@ -5,6 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Family_Candidate" index="Family_Candidate" not-null="true"/>
     <many-to-one name="Spouse" class="FamilyMember" column="SpouseId" foreign-key="FK_Family_Spouse" index="Family_Spouse"  not-null="false"/>
     <many-to-one name="Father" class="FamilyMember" column="FatherId" foreign-key="FK_Family_Father" index="Family_Father"  not-null="false"/>
     <many-to-one name="Mother" class="FamilyMember" column="MotherId" foreign-key="FK_Family_Mother" index="Family_Mother"  not-null="false"/>

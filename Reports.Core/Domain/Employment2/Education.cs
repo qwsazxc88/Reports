@@ -11,6 +11,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual IList<HigherEducationDiploma> HigherEducationDiplomas { get; set; } //ok
         public virtual IList<PostGraduateEducationDiploma> PostGraduateEducationDiplomas { get; set; } //ok
         public virtual IList<Certification> Certifications { get; set; } //ok

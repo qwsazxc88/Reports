@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class PersonnelManagersModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Дата приказа о приеме"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EmploymentOrderDate { get; set; }
@@ -90,5 +93,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]
         public string ApprovedByPersonnelManager { get; set; }
+
+        public PersonnelManagersModel()
+        {
+            this.Version = 0;
+        }
     }
 }

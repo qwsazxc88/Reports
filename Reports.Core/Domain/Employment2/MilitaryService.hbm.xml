@@ -5,6 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_MilitaryService_Candidate" index="MilitaryService_Candidate" not-null="true"/>
     <property name="IsLiableForMilitaryService" not-null="true"/>
     <property name="MilitaryCardNumber" length="20" not-null="false"/>
     <property name="MilitaryCardDate" not-null="false"/>

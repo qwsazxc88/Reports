@@ -5,7 +5,8 @@
       <generator class="native" />
     </id>
     <version name="Version" column= "Version"/>
-    
+
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_GeneralInfo_Candidate" index="GeneralInfo_Candidate" not-null="true"/>
     <property name="LastName" length="50" not-null="true"/>
     <property name="FirstName" length="50" not-null="true"/>
     <property name="Patronymic" length="50" not-null="false"/>

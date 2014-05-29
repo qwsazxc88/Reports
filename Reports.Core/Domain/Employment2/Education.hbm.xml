@@ -5,6 +5,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Education_Candidate" index="Education_Candidate" not-null="true"/>
     <bag name="HigherEducationDiplomas" lazy="true" cascade="all-delete-orphan">
       <key column="EducationId" foreign-key="FK_HigherEducationDiploma_Education"/>
       <one-to-many class="HigherEducationDiploma"/>

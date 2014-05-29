@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class FamilyModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Состояние в браке")]
         public bool IsMarried { get; set; } //ok?
 
@@ -28,6 +31,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public FamilyModel()
         {
+            this.Version = 0;
             this.Children = new List<FamilyMemberDto>();
         }
     }

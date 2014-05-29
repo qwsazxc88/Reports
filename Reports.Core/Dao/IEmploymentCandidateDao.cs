@@ -7,6 +7,6 @@ namespace Reports.Core.Dao
 {
     public interface IEmploymentCandidateDao
     {
-        
+
     }
 }

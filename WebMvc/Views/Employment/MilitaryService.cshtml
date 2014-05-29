@@ -7,150 +7,69 @@
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
-        <fieldset style="border: 1px solid lightgray">
+        <fieldset class="bordered">
         <legend>Воинский учет</legend>
-        <table>
-            <tr>
-                <td style="width: 300px;">
-                    @Html.LabelFor(m => m.IsLiableForMilitaryService)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.IsLiableForMilitaryService)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.MilitaryCardNumber)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.MilitaryCardNumber)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.MilitaryCardDate)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.MilitaryCardDate)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.ReserveCategory)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.ReserveCategory)
-                    @Html.ValidationMessageFor(m => m.ReserveCategory)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Rank)
-                </td>
-                <td>
-                    @Html.DropDownListFor(m => m.Rank, Model.RankItems)
-                    @Html.ValidationMessageFor(m => m.Rank)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.SpecialityCategory)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.SpecialityCategory)
-                    @Html.ValidationMessageFor(m => m.SpecialityCategory)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.CombatFitness)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.CombatFitness)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Commissariat)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Commissariat)
-                </td>
-            </tr>            
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.CombatFitness)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.CombatFitness)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Commissariat)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Commissariat)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.MilitaryServiceRegistrationInfo)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.RegistrationExpiration)
-                </td>
-                <td>
-                    @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
-                    @Html.ValidationMessageFor(m => m.RegistrationExpiration)
-                </td>
-            </tr>
-        </table>
-        <fieldset style="border: 1px solid lightgray">
-        <legend>Для форм Ф-6 и Ф-18</legend>        
-        <table>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.PersonnelCategory)
-                </td>
-                <td>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsLiableForMilitaryService)&nbsp;@Html.EditorFor(m => m.IsLiableForMilitaryService)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.MilitaryCardNumber)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardNumber)<br />
+                @Html.EditorFor(m => m.MilitaryCardNumber)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.MilitaryCardDate)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardDate)<br />
+                @Html.EditorFor(m => m.MilitaryCardDate)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.ReserveCategory)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategory)<br />
+                @Html.EditorFor(m => m.ReserveCategory)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.Rank)&nbsp;@Html.ValidationMessageFor(m => m.Rank)<br />
+                @Html.DropDownListFor(m => m.Rank, Model.RankItems)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.SpecialityCategory)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategory)<br />
+                @Html.EditorFor(m => m.SpecialityCategory)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.MilitarySpecialityCode)&nbsp;@Html.ValidationMessageFor(m => m.MilitarySpecialityCode)<br />
+                @Html.EditorFor(m => m.MilitarySpecialityCode)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.CombatFitness)&nbsp;@Html.ValidationMessageFor(m => m.CombatFitness)<br />
+                @Html.EditorFor(m => m.CombatFitness)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.Commissariat)&nbsp;@Html.ValidationMessageFor(m => m.Commissariat)<br />
+                @Html.EditorFor(m => m.Commissariat)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryServiceRegistrationInfo)<br />
+                @Html.EditorFor(m => m.MilitaryServiceRegistrationInfo)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.RegistrationExpiration)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationExpiration)<br />
+                @Html.DropDownListFor(m => m.RegistrationExpiration, Model.RegistrationExpirationItems)
+            </div>
+            <fieldset class="bordered nomargin">
+            <legend class="level2">Для форм Ф-6 и Ф-18</legend>
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.PersonnelCategory)&nbsp;@Html.ValidationMessageFor(m => m.PersonnelCategory)<br />
                     @Html.DropDownListFor(m => m.PersonnelCategory, Model.PersonnelCategoryItems)
-                    @Html.ValidationMessageFor(m => m.PersonnelCategory)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.PersonnelType)
-                </td>
-                <td>
+                </div>
+                <div class="formfield">
+                    @Html.LabelFor(m => m.PersonnelType)&nbsp;@Html.ValidationMessageFor(m => m.PersonnelType)<br />
                     @Html.DropDownListFor(m => m.PersonnelType, Model.PersonnelTypeItems)
-                    @Html.ValidationMessageFor(m => m.PersonnelType)
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 300px;">
-                    @Html.LabelFor(m => m.IsLiableForMilitaryService)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.IsLiableForMilitaryService)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.ConscriptionStatus)
-                </td>
-                <td>
+                </div>
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.IsAssigned)&nbsp;@Html.EditorFor(m => m.IsAssigned)
+                </div>
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.ConscriptionStatus)&nbsp;@Html.ValidationMessageFor(m => m.ConscriptionStatus)<br />
                     @Html.DropDownListFor(m => m.ConscriptionStatus, Model.ConscriptionStatusItems)
-                    @Html.ValidationMessageFor(m => m.ConscriptionStatus)
-                </td>
-            </tr>
-        </table>
-        </fieldset>
+                </div>
+            </fieldset>
         </fieldset>
 
         <button type="submit">Записать черновик</button>

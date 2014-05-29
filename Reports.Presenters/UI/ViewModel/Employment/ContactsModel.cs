@@ -5,6 +5,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ContactsModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Почтовый индекс"),
             StringLength(6, ErrorMessage = "Требуется 6 знаков.")]
         public string ZipCode { get; set; } //ok
@@ -43,5 +46,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DataType(DataType.EmailAddress),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string Email { get; set; } //ok
+
+        public ContactsModel()
+        {
+            this.Version = 0;
+        }
     }
 }

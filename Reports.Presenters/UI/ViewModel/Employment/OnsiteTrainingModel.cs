@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class OnsiteTrainingModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Вид обучения"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public string Type { get; set; } //ok
@@ -40,5 +43,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Комментарии"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public string Comments { get; set; } //ok
+
+        public OnsiteTrainingModel()
+        {
+            this.Version = 0;
+        }
     }
 }

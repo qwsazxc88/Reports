@@ -5,7 +5,7 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IEmploymentBl : IBaseBl
     {
-        GeneralInfoModel GetGeneralInfoModel();
+        GeneralInfoModel GetGeneralInfoModel(int? userId);
         PassportModel GetPassportModel();
         EducationModel GetEducationModel();
         FamilyModel GetFamilyModel();

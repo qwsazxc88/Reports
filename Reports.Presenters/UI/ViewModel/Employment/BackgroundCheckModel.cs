@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class BackgroundCheckModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Размер Вашей среднемесячной заработной платы по последнему месту работы")]
         public decimal? AverageSalary { get; set; } //ok
 
@@ -72,6 +75,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public BackgroundCheckModel()
         {
+            this.Version = 0;
             this.References = new List<ReferenceDto>();
         }
     }

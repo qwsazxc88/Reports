@@ -12,6 +12,7 @@ namespace Reports.Core.Domain
         #endregion
 
         #region Properties
+        public virtual EmploymentCandidate Candidate { get; set; }
         public virtual decimal? AverageSalary { get; set; } //ok
         public virtual string Liabilities { get; set; } //ok
         public virtual string PreviousDismissalReason { get; set; } //ok

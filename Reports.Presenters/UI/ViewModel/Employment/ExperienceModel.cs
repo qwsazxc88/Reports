@@ -7,6 +7,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class ExperienceModel
     {
+        public int Version { get; set; }
+        public int UserId { get; set; }
+
         [Display(Name = "Трудовая деятельность")]
         public IList<ExperienceItemDto> ExperienceItems { get; set; } // TODO: EMPL Кнопка добавления записей
 
@@ -36,6 +39,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public ExperienceModel()
         {
+            this.Version = 0;
             this.ExperienceItems = new List<ExperienceItemDto>();
         }
     }

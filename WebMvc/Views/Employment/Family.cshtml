@@ -9,9 +9,12 @@
     <input type="hidden" id="cmd" name="cmd" />
     
     <div class="doc-wrap">
-        @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
-        <br /><br />
-        <table class="grid centered">
+        <fieldset class="bordered">
+        <legend>Состав семьи</legend>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
+            </div>            
+        <table class="grid centered clear">
         <thead>
             <tr>
                 <th>
@@ -135,8 +138,9 @@
             }
         </tbody>
         </table>
+        <br />
         <button type="submit" id="add-child-button">Добавить запись о ребенке</button>
-        <br /><br />
+        </fieldset>
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

@@ -26,16 +26,16 @@ namespace WebMvc.Controllers
         //
         // GET: /Employment/
         [HttpGet]
-        public ActionResult Index()
+        public ActionResult Index(int? userId)
         {
             return RedirectToActionPermanent("GeneralInfo");
         }
 
         // General Info
         [HttpGet]
-        public ActionResult GeneralInfo()
+        public ActionResult GeneralInfo(int? userId)
         {
-            var model = EmploymentBl.GetGeneralInfoModel();
+            var model = EmploymentBl.GetGeneralInfoModel(userId);
             return View(model);
         }
 
@@ -55,7 +55,7 @@ namespace WebMvc.Controllers
 
         // Passport
         [HttpGet]
-        public ActionResult Passport()
+        public ActionResult Passport(int? userId)
         {
             var model = EmploymentBl.GetPassportModel();
             return View(model);
@@ -74,7 +74,7 @@ namespace WebMvc.Controllers
 
         // Education
         [HttpGet]
-        public ActionResult Education()
+        public ActionResult Education(int? userId)
         {
             var model = new EducationModel();
             return View(model);
@@ -106,7 +106,7 @@ namespace WebMvc.Controllers
 
         // Family
         [HttpGet]
-        public ActionResult Family()
+        public ActionResult Family(int? userId)
         {
             var model = new FamilyModel();
             return View(model);
@@ -128,7 +128,7 @@ namespace WebMvc.Controllers
 
         // Military Service
         [HttpGet]
-        public ActionResult MilitaryService()
+        public ActionResult MilitaryService(int? userId)
         {
             var model = EmploymentBl.GetMilitaryServiceModel();
             return View(model);
@@ -147,7 +147,7 @@ namespace WebMvc.Controllers
 
         // Experience
         [HttpGet]
-        public ActionResult Experience()
+        public ActionResult Experience(int? userId)
         {
             var model = new ExperienceModel();
             return View(model);
@@ -166,7 +166,7 @@ namespace WebMvc.Controllers
 
         // Contacts
         [HttpGet]
-        public ActionResult Contacts()
+        public ActionResult Contacts(int? userId)
         {
             var model = new ContactsModel();
             return View(model);
@@ -185,7 +185,7 @@ namespace WebMvc.Controllers
 
         // Background Check
         [HttpGet]
-        public ActionResult BackgroundCheck()
+        public ActionResult BackgroundCheck(int? userId)
         {
             var model = new BackgroundCheckModel();
             return View(model);
@@ -204,7 +204,7 @@ namespace WebMvc.Controllers
 
         // Onsite Training
         [HttpGet]
-        public ActionResult OnsiteTraining()
+        public ActionResult OnsiteTraining(int? userId)
         {
             var model = new OnsiteTrainingModel();
             return View(model);
@@ -223,7 +223,7 @@ namespace WebMvc.Controllers
 
         // Application Letter
         [HttpGet]
-        public ActionResult ApplicationLetter()
+        public ActionResult ApplicationLetter(int? userId)
         {
             var model = new ApplicationLetterModel();
             return View(model);
@@ -237,7 +237,7 @@ namespace WebMvc.Controllers
 
         // Filled out by managers
         [HttpGet]
-        public ActionResult Managers()
+        public ActionResult Managers(int? userId)
         {
             var model = new ManagersModel();
             return View(model);
@@ -251,7 +251,7 @@ namespace WebMvc.Controllers
 
         // Filled out by personnel managers
         [HttpGet]
-        public ActionResult PersonnelManagers()
+        public ActionResult PersonnelManagers(int? userId)
         {
             var model = new PersonnelManagersModel();
             return View(model);
@@ -304,5 +304,87 @@ namespace WebMvc.Controllers
         {
             return View(model);
         }
+
+        #region Model Validation
+
+        protected bool ValidateModel(GeneralInfoModel model)
+        {
+            
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(PassportModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(EducationModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(FamilyModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(MilitaryServiceModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(ExperienceModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(ContactsModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(BackgroundCheckModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(OnsiteTrainingModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(ManagersModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(PersonnelManagersModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(RosterModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        protected bool ValidateModel(SignersModel model)
+        {
+
+            return ModelState.IsValid;
+        }
+
+        #endregion
     }
 }

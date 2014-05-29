@@ -6,6 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
+    <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_BackgroundCheck_Candidate" index="BackgroundCheck_Candidate" not-null="true"/>
     <property name="AverageSalary" precision="19" scale="2" not-null="false"/>
     <property name="Liabilities" length="250" not-null="false"/>
     <property name="PreviousDismissalReason" length="250" not-null="false"/>

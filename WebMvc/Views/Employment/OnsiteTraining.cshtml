@@ -7,7 +7,7 @@
 @using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
-        <fieldset style="border: 1px solid lightgray">
+        <fieldset class="bordered">
         <legend>Обучение</legend>
         <table>
             <tr>
@@ -31,7 +31,7 @@
                     @Html.LabelFor(m => m.BeginningDate)
                 </td>
                 <td>
-                     @Html.TextBoxFor(m => m.BeginningDate)
+                     @Html.EditorFor(m => m.BeginningDate)
                 </td>
             </tr>
             <tr>
@@ -39,7 +39,7 @@
                     @Html.LabelFor(m => m.EndDate)
                 </td>
                 <td>
-                     @Html.TextBoxFor(m => m.EndDate)
+                     @Html.EditorFor(m => m.EndDate)
                 </td>
             </tr>
             <tr>
