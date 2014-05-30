@@ -5,7 +5,7 @@
 
 @using (Html.BeginForm("ApplicationLetter", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <fieldset style="border: 1px solid lightgray">
+    <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>    
     <div style="padding: 5px; width: 760px; background-color: Silver;">
         <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
@@ -25,7 +25,7 @@
     </div>
     </fieldset>
     
-    <div class="doc-wrap">
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

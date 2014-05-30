@@ -6,115 +6,115 @@
 
 @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-            <legend>Фактическое место жительства</legend>
-            <table>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.ZipCode)
-                    </td>
-                    <td>
-                         @Html.TextBoxFor(m => m.ZipCode)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Region)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.Region)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.District)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.District)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.City)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.City)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Street)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.Street)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.StreetNumber)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.StreetNumber)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Building)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.Building)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Appartment)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.Appartment)
-                    </td>
-                </tr>
-            </table>
-        </fieldset>
-        
-        <fieldset class="bordered">
-            <legend>Контактные номера</legend>
-            <table>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.WorkPhone)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.WorkPhone)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.HomePhone)
-                    </td>
-                    <td>
-                        @Html.TextBoxFor(m => m.HomePhone)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Mobile)
-                    </td>
-                    <td>
-                        @Html.EditorFor(m => m.Mobile)
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        @Html.LabelFor(m => m.Email)
-                    </td>
-                    <td>
-                        @Html.EditorFor(m => m.Email)
-                    </td>
-                </tr>
-            </table>
-        </fieldset>
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Фактическое место жительства</legend>
+        <table class="clear">
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ZipCode)
+                </td>
+                <td>
+                        @Html.TextBoxFor(m => m.ZipCode)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Region)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Region)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.District)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.District)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.City)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.City)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Street)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Street)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.StreetNumber)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.StreetNumber)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Building)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Building)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Appartment)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.Appartment)
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <br />
+    <fieldset class="bordered doc-wrap panel">
+        <legend>Контактные номера</legend>
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkPhone)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.WorkPhone)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.HomePhone)
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.HomePhone)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Mobile)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mobile)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Email)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Email)
+                </td>
+            </tr>
+        </table>
+    </fieldset>
 
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

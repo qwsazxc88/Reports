@@ -6,98 +6,98 @@
 
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Паспорт РФ</legend>
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Паспорт РФ</legend>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.DocumentType)&nbsp;@Html.ValidationMessageFor(m => m.DocumentType)<br />
+            @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
+            @Html.TextBoxFor(m => m.InternalPassportSeries)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
+            @Html.TextBoxFor(m => m.InternalPassportNumber)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.InternalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportDateOfIssue)<br />
+            @Html.EditorFor(m => m.InternalPassportDateOfIssue)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.InternalPassportIssuedBy)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportIssuedBy)<br />
+            @Html.TextBoxFor(m => m.InternalPassportIssuedBy)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.InternalPassportSubdivisionCode)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSubdivisionCode)<br />
+            @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode)
+        </div>
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Регистрация</legend>
             <div class="formfield clear">
-                @Html.LabelFor(m => m.DocumentType)&nbsp;@Html.ValidationMessageFor(m => m.DocumentType)<br />
-                @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
+                @Html.LabelFor(m => m.RegistrationDate)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationDate)<br />
+                @Html.EditorFor(m => m.RegistrationDate)
             </div>
             <div class="formfield clear">
-                @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-                @Html.TextBoxFor(m => m.InternalPassportSeries)
+                @Html.LabelFor(m => m.ZipCode)&nbsp;@Html.ValidationMessageFor(m => m.ZipCode)<br />
+                @Html.TextBoxFor(m => m.ZipCode)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.Region)&nbsp;@Html.ValidationMessageFor(m => m.Region)<br />
+                @Html.TextBoxFor(m => m.Region)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
-                @Html.TextBoxFor(m => m.InternalPassportNumber)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.InternalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportDateOfIssue)<br />
-                @Html.EditorFor(m => m.InternalPassportDateOfIssue)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.InternalPassportIssuedBy)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportIssuedBy)<br />
-                @Html.TextBoxFor(m => m.InternalPassportIssuedBy)
+                @Html.LabelFor(m => m.District)&nbsp;@Html.ValidationMessageFor(m => m.District)<br />
+                @Html.TextBoxFor(m => m.District)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.InternalPassportSubdivisionCode)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSubdivisionCode)<br />
-                @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode)
+                @Html.LabelFor(m => m.City)&nbsp;@Html.ValidationMessageFor(m => m.City)<br />
+                @Html.TextBoxFor(m => m.City)
             </div>
-            <fieldset class="bordered nomargin">
-            <legend class="level2">Регистрация</legend>
-                <div class="formfield clear">
-                    @Html.LabelFor(m => m.RegistrationDate)&nbsp;@Html.ValidationMessageFor(m => m.RegistrationDate)<br />
-                    @Html.EditorFor(m => m.RegistrationDate)
-                </div>
-                <div class="formfield clear">
-                    @Html.LabelFor(m => m.ZipCode)&nbsp;@Html.ValidationMessageFor(m => m.ZipCode)<br />
-                    @Html.TextBoxFor(m => m.ZipCode)
-                </div>
-                <div class="formfield clear">
-                    @Html.LabelFor(m => m.Region)&nbsp;@Html.ValidationMessageFor(m => m.Region)<br />
-                    @Html.TextBoxFor(m => m.Region)
-                </div>
-                <div class="formfield">
-                    @Html.LabelFor(m => m.District)&nbsp;@Html.ValidationMessageFor(m => m.District)<br />
-                    @Html.TextBoxFor(m => m.District)
-                </div>
-                <div class="formfield">
-                    @Html.LabelFor(m => m.City)&nbsp;@Html.ValidationMessageFor(m => m.City)<br />
-                    @Html.TextBoxFor(m => m.City)
-                </div>
-                <div class="formfield clear">
-                    @Html.LabelFor(m => m.Street)&nbsp;@Html.ValidationMessageFor(m => m.Street)<br />
-                    @Html.TextBoxFor(m => m.Street)
-                </div>
-                <div class="formfield">
-                    @Html.LabelFor(m => m.StreetNumber)&nbsp;@Html.ValidationMessageFor(m => m.StreetNumber)<br />
-                    @Html.TextBoxFor(m => m.StreetNumber)
-                </div>
-                <div class="formfield">
-                    @Html.LabelFor(m => m.Building)&nbsp;@Html.ValidationMessageFor(m => m.Building)<br />
-                    @Html.TextBoxFor(m => m.Building)
-                </div>
-                <div class="formfield">
-                    @Html.LabelFor(m => m.Appartment)&nbsp;@Html.ValidationMessageFor(m => m.Appartment)<br />
-                    @Html.TextBoxFor(m => m.Appartment)
-                </div>
-            </fieldset>
-        </fieldset>
-
-        <fieldset class="bordered">
-        <legend>Заграничный паспорт</legend>
             <div class="formfield clear">
-                @Html.LabelFor(m => m.InternationalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportSeries)<br />
-                @Html.TextBoxFor(m => m.InternationalPassportSeries)
+                @Html.LabelFor(m => m.Street)&nbsp;@Html.ValidationMessageFor(m => m.Street)<br />
+                @Html.TextBoxFor(m => m.Street)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.InternationalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportNumber)<br />
-                @Html.TextBoxFor(m => m.InternationalPassportNumber)
+                @Html.LabelFor(m => m.StreetNumber)&nbsp;@Html.ValidationMessageFor(m => m.StreetNumber)<br />
+                @Html.TextBoxFor(m => m.StreetNumber)
             </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.InternationalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportDateOfIssue)<br />
-                @Html.EditorFor(m => m.InternationalPassportDateOfIssue)
+            <div class="formfield">
+                @Html.LabelFor(m => m.Building)&nbsp;@Html.ValidationMessageFor(m => m.Building)<br />
+                @Html.TextBoxFor(m => m.Building)
             </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.InternationalPassportIssuedBy)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportIssuedBy)<br />
-                @Html.TextBoxFor(m => m.InternationalPassportIssuedBy)
+            <div class="formfield">
+                @Html.LabelFor(m => m.Appartment)&nbsp;@Html.ValidationMessageFor(m => m.Appartment)<br />
+                @Html.TextBoxFor(m => m.Appartment)
             </div>
         </fieldset>
+    </fieldset>
+    <br />
+    <fieldset class="bordered doc-wrap clear panel">
+    <legend>Заграничный паспорт</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.InternationalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportSeries)<br />
+            @Html.TextBoxFor(m => m.InternationalPassportSeries)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.InternationalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportNumber)<br />
+            @Html.TextBoxFor(m => m.InternationalPassportNumber)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.InternationalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportDateOfIssue)<br />
+            @Html.EditorFor(m => m.InternationalPassportDateOfIssue)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.InternationalPassportIssuedBy)&nbsp;@Html.ValidationMessageFor(m => m.InternationalPassportIssuedBy)<br />
+            @Html.TextBoxFor(m => m.InternationalPassportIssuedBy)
+        </div>
+    </fieldset>
 
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
-
     </div>
+
 }
 
 <script type="text/javascript">

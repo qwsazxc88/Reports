@@ -289,6 +289,39 @@ table.centered td
     clear: both;
 }
 
+.clearleft
+{
+    clear: left;
+}
+
+.clearright
+{
+    clear: right;
+}
+
+.floatleft
+{
+    float: left;
+}
+
+.panel
+{
+    display: inline-block;
+}
+
+.buttonpanel
+{
+    display: inline-block;
+    margin: 15px;    
+}
+.buttonpanel > *
+{
+    display: block;
+    width: 90%;
+    margin: 0 auto;
+    margin-bottom: 5px;
+}
+
 .error
 {
     color:Red;

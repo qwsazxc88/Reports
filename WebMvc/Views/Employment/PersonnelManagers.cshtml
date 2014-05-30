@@ -6,96 +6,106 @@
 
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Кадры</legend>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.EmploymentOrderDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderDate)<br />
-                @Html.EditorFor(m => m.EmploymentOrderDate)
+    <fieldset class="bordered doc-wrap panel floatleft">
+    <legend>Кадры</legend>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.EmploymentOrderDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderDate)<br />
+            @Html.EditorFor(m => m.EmploymentOrderDate)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.EmploymentOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderNumber)<br />
+            @Html.EditorFor(m => m.EmploymentOrderNumber)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.EmploymentDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentDate)<br />
+            @Html.EditorFor(m => m.EmploymentDate)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.ContractDate)&nbsp;@Html.ValidationMessageFor(m => m.ContractDate)<br />
+            @Html.EditorFor(m => m.ContractDate)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.ContractNumber)&nbsp;@Html.ValidationMessageFor(m => m.ContractNumber)<br />
+            @Html.EditorFor(m => m.ContractNumber)
+        </div>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
+            @Html.EditorFor(m => m.NorthernAreaAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
+            @Html.EditorFor(m => m.AreaMultiplier)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
+            @Html.EditorFor(m => m.AreaAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
+            @Html.EditorFor(m => m.TravelRelatedAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
+            @Html.EditorFor(m => m.CompetenceAddition)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
+            @Html.EditorFor(m => m.FrontOfficeExperienceAddition)
+        </div>
+        <br />
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Общий стаж</legend>
+            <div class="formfield clearleft">
+                @Html.ValidationMessageFor(m => m.OverallExperienceYears)<br />
+                @Html.EditorFor(m => m.OverallExperienceYears)&nbsp;@Html.LabelFor(m => m.OverallExperienceYears)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.EmploymentOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderNumber)<br />
-                @Html.EditorFor(m => m.EmploymentOrderNumber)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.EmploymentDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentDate)<br />
-                @Html.EditorFor(m => m.EmploymentDate)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.ContractDate)&nbsp;@Html.ValidationMessageFor(m => m.ContractDate)<br />
-                @Html.EditorFor(m => m.ContractDate)
+                @Html.ValidationMessageFor(m => m.OverallExperienceMonths)<br />
+                @Html.EditorFor(m => m.OverallExperienceMonths)&nbsp;@Html.LabelFor(m => m.OverallExperienceMonths)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.ContractNumber)&nbsp;@Html.ValidationMessageFor(m => m.ContractNumber)<br />
-                @Html.EditorFor(m => m.ContractNumber)
+                @Html.ValidationMessageFor(m => m.OverallExperienceDays)<br />
+                @Html.EditorFor(m => m.OverallExperienceDays)&nbsp;@Html.LabelFor(m => m.OverallExperienceDays)
             </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
-                @Html.EditorFor(m => m.NorthernAreaAddition)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
-                @Html.EditorFor(m => m.AreaMultiplier)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
-                @Html.EditorFor(m => m.AreaAddition)
+        </fieldset>
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Страховой стаж</legend>
+            <div class="formfield clearleft">
+                @Html.ValidationMessageFor(m => m.InsurableExperienceYears)<br />
+                @Html.EditorFor(m => m.InsurableExperienceYears)&nbsp;@Html.LabelFor(m => m.InsurableExperienceYears)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
-                @Html.EditorFor(m => m.TravelRelatedAddition)
+                @Html.ValidationMessageFor(m => m.InsurableExperienceMonths)<br />
+                @Html.EditorFor(m => m.InsurableExperienceMonths)&nbsp;@Html.LabelFor(m => m.InsurableExperienceMonths)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
-                @Html.EditorFor(m => m.CompetenceAddition)
+                @Html.ValidationMessageFor(m => m.InsurableExperienceDays)<br />
+                @Html.EditorFor(m => m.InsurableExperienceDays)&nbsp;@Html.LabelFor(m => m.InsurableExperienceDays)
             </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
-                @Html.EditorFor(m => m.FrontOfficeExperienceAddition)
-            </div>
-            <fieldset class="bordered clear">
-            <legend class="level2">Общий стаж</legend>
-                <div class="formfield clear">
-                    @Html.ValidationMessageFor(m => m.OverallExperienceYears)<br />
-                    @Html.EditorFor(m => m.OverallExperienceYears)&nbsp;@Html.LabelFor(m => m.OverallExperienceYears)
-                </div>
-                <div class="formfield">
-                    @Html.ValidationMessageFor(m => m.OverallExperienceMonths)<br />
-                    @Html.EditorFor(m => m.OverallExperienceMonths)&nbsp;@Html.LabelFor(m => m.OverallExperienceMonths)
-                </div>
-                <div class="formfield">
-                    @Html.ValidationMessageFor(m => m.OverallExperienceDays)<br />
-                    @Html.EditorFor(m => m.OverallExperienceDays)&nbsp;@Html.LabelFor(m => m.OverallExperienceDays)
-                </div>
-            </fieldset>
-            <fieldset class="bordered clear">
-            <legend class="level2">Страховой стаж</legend>
-                <div class="formfield clear">
-                    @Html.ValidationMessageFor(m => m.InsurableExperienceYears)<br />
-                    @Html.EditorFor(m => m.InsurableExperienceYears)&nbsp;@Html.LabelFor(m => m.InsurableExperienceYears)
-                </div>
-                <div class="formfield">
-                    @Html.ValidationMessageFor(m => m.InsurableExperienceMonths)<br />
-                    @Html.EditorFor(m => m.InsurableExperienceMonths)&nbsp;@Html.LabelFor(m => m.InsurableExperienceMonths)
-                </div>
-                <div class="formfield">
-                    @Html.ValidationMessageFor(m => m.InsurableExperienceDays)<br />
-                    @Html.EditorFor(m => m.InsurableExperienceDays)&nbsp;@Html.LabelFor(m => m.InsurableExperienceDays)
-                </div>
-            </fieldset>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />
-                @Html.EditorFor(m => m.PersonalAccount)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.PersonalAccountContractor)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccountContractor)<br />
-                @Html.EditorFor(m => m.PersonalAccountContractor)
-            </div>
-            <div class="formfield clear">
-                <button type="submit">Отправить на согласование</button>                
-            </div>            
-        </fieldset>        
-    </div>    
+        </fieldset>
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />
+            @Html.EditorFor(m => m.PersonalAccount)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PersonalAccountContractor)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccountContractor)<br />
+            @Html.EditorFor(m => m.PersonalAccountContractor)
+        </div>
+        <div class="formfield clearleft">
+            <button type="submit">Отправить на согласование</button>                
+        </div>            
+    </fieldset>
+
+    <div class="buttonpanel">
+        <button type="submit">Печать<br />трудового договора</button>
+        <button type="submit">Печать<br />приказа о приеме</button>
+        <button type="submit">Печать<br />Т2</button>
+        <button type="submit">Печать<br />договораМат. ответственность</button>
+        <button type="submit">Печать<br />ДС Персональные данные</button>
+        <button type="submit">Печать<br />Обязательство конфиденциальность</button>
+        <button type="submit">Печать<br />реестра личного дела</button>
+    </div>
+ 
 }
 
 <script>

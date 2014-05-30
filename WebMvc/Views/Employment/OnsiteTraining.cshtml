@@ -6,85 +6,85 @@
 
 @using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Обучение</legend>
-        <table>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Type)
-                </td>
-                <td>
-                     @Html.TextBoxFor(m => m.Type)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Description)
-                </td>
-                <td>
-                     @Html.TextBoxFor(m => m.Description)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.BeginningDate)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.BeginningDate)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.EndDate)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.EndDate)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.IsComplete)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.IsComplete)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.ReasonsForIncompleteTraining)
-                </td>
-                <td>
-                     @Html.TextBoxFor(m => m.ReasonsForIncompleteTraining)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Results)
-                </td>
-                <td>
-                     @Html.TextBoxFor(m => m.Results)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.IsConfirmed)
-                </td>
-                <td>
-                     @Html.EditorFor(m => m.IsConfirmed)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Comments)
-                </td>
-                <td>
-                     @Html.TextAreaFor(m => m.Comments)
-                </td>
-            </tr>
-        </table>
-        </fieldset>
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Обучение</legend>
+    <table>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Type)
+            </td>
+            <td>
+                    @Html.TextBoxFor(m => m.Type)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Description)
+            </td>
+            <td>
+                    @Html.TextBoxFor(m => m.Description)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.BeginningDate)
+            </td>
+            <td>
+                    @Html.EditorFor(m => m.BeginningDate)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.EndDate)
+            </td>
+            <td>
+                    @Html.EditorFor(m => m.EndDate)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.IsComplete)
+            </td>
+            <td>
+                    @Html.EditorFor(m => m.IsComplete)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ReasonsForIncompleteTraining)
+            </td>
+            <td>
+                    @Html.TextBoxFor(m => m.ReasonsForIncompleteTraining)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Results)
+            </td>
+            <td>
+                    @Html.TextBoxFor(m => m.Results)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.IsConfirmed)
+            </td>
+            <td>
+                    @Html.EditorFor(m => m.IsConfirmed)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Comments)
+            </td>
+            <td>
+                    @Html.TextAreaFor(m => m.Comments)
+            </td>
+        </tr>
+    </table>
+    </fieldset>
 
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

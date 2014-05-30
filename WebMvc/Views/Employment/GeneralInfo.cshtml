@@ -9,8 +9,7 @@
 {
     <input type="hidden" id="cmd" name="cmd" />
     
-    <div class="doc-wrap">
-        <fieldset class="bordered">
+        <fieldset class="bordered doc-wrap panel">
         <legend>Общая информация</legend>
             <div class="formfield clear">
                 @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
@@ -202,11 +201,11 @@
             </div>
 
         </fieldset>
-
-        <button type="submit">Записать черновик</button>
-        <button type="submit">Сохранить</button>
-
-    </div>
+    
+        <div class="clear">
+            <button type="submit">Записать черновик</button>
+            <button type="submit">Сохранить</button>
+        </div>
 }
 
 <script type="text/javascript">

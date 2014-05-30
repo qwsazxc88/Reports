@@ -6,17 +6,15 @@
 
 @using (Html.BeginForm("Signers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <fieldset style="border: 1px solid lightgray">
+    <fieldset class="bordered doc-wrap panel">
     <legend>Справочник подписантов</legend>
-
-    <div class="doc-wrap">
         @Html.EditorForModel()
-        <br />
+    </fieldset>
+    
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
-
-    </fieldset>
 }
 
 <script>

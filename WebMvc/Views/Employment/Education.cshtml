@@ -8,257 +8,257 @@
 {
     <input type="hidden" id="cmd" name="cmd" />
     
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Сведения об образовании (высшее, неполное высшее)</legend>
-            <div id="higher-education-diplomas-container">
-                @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Сведения об образовании (высшее, неполное высшее)</legend>
+        <div id="higher-education-diplomas-container">
+            @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
+            {
+                <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].IssuedBy)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].IssuedBy)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Series)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Series)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Number)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Number)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].GraduationYear)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].GraduationYear)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Qualification)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Qualification)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Speciality)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Speciality)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Profession)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Profession)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Department)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Department)
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+        <button type="submit" id="add-higher-education-diploma-button">Добавить новую запись</button>
+    </fieldset>
+    <br />
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Послевузовское образование</legend>
+        <div id="postgraduate-education-diplomas-container">
+            @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
+            {
+                <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Series)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Series)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Number)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Number)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
+                        </td>
+                        <td>
+                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
+                        </td>
+                    </tr>      
+                </table>
+            }
+        </div>
+        <button type="submit" id="add-postgraduate-education-diploma-button">Добавить новую запись</button>
+    </fieldset>
+    <br />
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Сведения о дополнительном образовании</legend>
+        <fieldset class="bordered nomargin">
+        <legend class="level2">Аттестация</legend>
+            <div id="certifications-container">
+                @for (var i = 0; i < Model.Certifications.Count; i++)
                 {
                     <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].IssuedBy)
+                                @Html.LabelFor(m => m.Certifications[i].CertificationDate)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].IssuedBy)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Series)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Series)
+                                @Html.EditorFor(m => m.Certifications[i].CertificationDate)
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Number)
+                                @Html.LabelFor(m => m.Certifications[i].CertificateNumber)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Number)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
+                                @Html.EditorFor(m => m.Certifications[i].CertificateNumber)
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].GraduationYear)
+                                @Html.LabelFor(m => m.Certifications[i].CertificateDateOfIssue)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].GraduationYear)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Qualification)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Qualification)
+                                @Html.EditorFor(m => m.Certifications[i].CertificateDateOfIssue)
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Speciality)
+                                @Html.LabelFor(m => m.Certifications[i].Order)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Speciality)
+                                @Html.EditorFor(m => m.Certifications[i].Order)
+                            </td>
+                        </tr>     
+                    </table>
+                }
+            </div>
+            <button type="submit" id="add-certification-button">Добавить новую запись</button>
+        </fieldset>
+        <fieldset class="bordered nomargin">
+        <legend class="level2">Повышение квалификации</legend>
+            <div id="training-container">
+                @for (var i = 0; i < Model.Training.Count; i++)
+                {
+                    <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Training[i].CertificateIssuedBy)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.Training[i].CertificateIssuedBy)
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Profession)
+                                @Html.LabelFor(m => m.Training[i].Series)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Profession)
+                                @Html.EditorFor(m => m.Training[i].Series)
                             </td>
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.HigherEducationDiplomas[i].Department)
+                                @Html.LabelFor(m => m.Training[i].Number)
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.HigherEducationDiplomas[i].Department)
+                                @Html.EditorFor(m => m.Training[i].Number)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Training[i].BeginningDate)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.Training[i].BeginningDate)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Training[i].EndDate)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.Training[i].EndDate)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Training[i].Speciality)
+                            </td>
+                            <td>
+                                @Html.EditorFor(m => m.Training[i].Speciality)
                             </td>
                         </tr>
                     </table>
                 }
             </div>
-            <button type="submit" id="add-higher-education-diploma-button">Добавить новую запись</button>
+            <button type="submit" id="add-training-button">Добавить новую запись</button>
         </fieldset>
-    
-        <fieldset class="bordered">
-        <legend>Послевузовское образование</legend>
-            <div id="postgraduate-education-diplomas-container">
-                @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
-                {
-                    <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Series)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Series)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Number)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Number)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
-                            </td>
-                        </tr>      
-                    </table>
-                }
-            </div>
-            <button type="submit" id="add-postgraduate-education-diploma-button">Добавить новую запись</button>
-        </fieldset>
-    
-        <fieldset class="bordered">
-        <legend>Сведения о дополнительном образовании</legend>
-            <fieldset class="bordered nomargin">
-            <legend class="level2">Аттестация</legend>
-                <div id="certifications-container">
-                    @for (var i = 0; i < Model.Certifications.Count; i++)
-                    {
-                        <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Certifications[i].CertificationDate)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Certifications[i].CertificationDate)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Certifications[i].CertificateNumber)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Certifications[i].CertificateNumber)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Certifications[i].CertificateDateOfIssue)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Certifications[i].CertificateDateOfIssue)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Certifications[i].Order)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Certifications[i].Order)
-                                </td>
-                            </tr>     
-                        </table>
-                    }
-                </div>
-                <button type="submit" id="add-certification-button">Добавить новую запись</button>
-            </fieldset>
-            <fieldset class="bordered nomargin">
-            <legend class="level2">Повышение квалификации</legend>
-                <div id="training-container">
-                    @for (var i = 0; i < Model.Training.Count; i++)
-                    {
-                        <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].CertificateIssuedBy)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].CertificateIssuedBy)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].Series)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].Series)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].Number)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].Number)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].BeginningDate)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].BeginningDate)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].EndDate)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].EndDate)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.Training[i].Speciality)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.Training[i].Speciality)
-                                </td>
-                            </tr>
-                        </table>
-                    }
-                </div>
-                <button type="submit" id="add-training-button">Добавить новую запись</button>
-            </fieldset>
-        </fieldset>
+    </fieldset>
 
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

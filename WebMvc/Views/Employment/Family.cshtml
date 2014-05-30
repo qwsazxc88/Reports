@@ -8,139 +8,140 @@
 {
     <input type="hidden" id="cmd" name="cmd" />
     
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Состав семьи</legend>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
-            </div>            
-        <table class="grid centered clear">
-        <thead>
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Состав семьи</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
+        </div>            
+    <table class="grid centered clear">
+    <thead>
+        <tr>
+            <th>
+                Степень родства
+            </th>
+            <th>
+                ФИО
+            </th>
+            <th>
+                Паспортные данные
+            </th>
+            <th>
+                Дата рождения
+            </th>
+            <th>
+                Место рождения
+            </th>
+            <th>
+                Место работы, должность,<br />(рабочий, мобильный телефон)
+            </th>
+            <th>
+                Адрес места жительства,<br />(домашний, мобильный телефон)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr id="spouse-row" style="display: none;">
+            <td>
+                @Html.LabelFor(m => m.Spouse)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Spouse.Name)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Spouse.PassportData)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Spouse.DateOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Spouse.PlaceOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Spouse.WorksAt)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Spouse.Contacts)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Father)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Father.Name)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Father.PassportData)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Father.DateOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Father.PlaceOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Father.WorksAt)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Father.Contacts)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Mother)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Mother.Name)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Mother.PassportData)
+            </td>
+            <td>
+                @Html.EditorFor(m => m.Mother.DateOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Mother.PlaceOfBirth)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Mother.WorksAt)
+            </td>
+            <td>
+                @Html.TextAreaFor(m => m.Mother.Contacts)
+            </td>
+        </tr>
+        @for (var i = 0; i < Model.Children.Count; i++)
+        {
             <tr>
-                <th>
-                    Степень родства
-                </th>
-                <th>
-                    ФИО
-                </th>
-                <th>
-                    Паспортные данные
-                </th>
-                <th>
-                    Дата рождения
-                </th>
-                <th>
-                    Место рождения
-                </th>
-                <th>
-                    Место работы, должность,<br />(рабочий, мобильный телефон)
-                </th>
-                <th>
-                    Адрес места жительства,<br />(домашний, мобильный телефон)
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr id="spouse-row" style="display: none;">
                 <td>
-                    @Html.LabelFor(m => m.Spouse)
+                    Ребенок
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Spouse.Name)
+                    @Html.EditorFor(m => m.Children[i].Name)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.PassportData)
+                    @Html.TextAreaFor(m => m.Children[i].PassportData)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Spouse.DateOfBirth)
+                    @Html.EditorFor(m => m.Children[i].DateOfBirth)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.PlaceOfBirth)
+                    @Html.TextAreaFor(m => m.Children[i].PlaceOfBirth)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.WorksAt)
+                    @Html.TextAreaFor(m => m.Children[i].WorksAt)
                 </td>
                 <td>
-                    @Html.TextAreaFor(m => m.Spouse.Contacts)
+                    @Html.TextAreaFor(m => m.Children[i].Contacts)
                 </td>
             </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Father)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Father.Name)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Father.PassportData)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Father.DateOfBirth)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Father.PlaceOfBirth)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Father.WorksAt)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Father.Contacts)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.Mother)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Mother.Name)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Mother.PassportData)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.Mother.DateOfBirth)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Mother.PlaceOfBirth)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Mother.WorksAt)
-                </td>
-                <td>
-                    @Html.TextAreaFor(m => m.Mother.Contacts)
-                </td>
-            </tr>
-            @for (var i = 0; i < Model.Children.Count; i++)
-            {
-                <tr>
-                    <td>
-                        Ребенок
-                    </td>
-                    <td>
-                        @Html.EditorFor(m => m.Children[i].Name)
-                    </td>
-                    <td>
-                        @Html.TextAreaFor(m => m.Children[i].PassportData)
-                    </td>
-                    <td>
-                        @Html.EditorFor(m => m.Children[i].DateOfBirth)
-                    </td>
-                    <td>
-                        @Html.TextAreaFor(m => m.Children[i].PlaceOfBirth)
-                    </td>
-                    <td>
-                        @Html.TextAreaFor(m => m.Children[i].WorksAt)
-                    </td>
-                    <td>
-                        @Html.TextAreaFor(m => m.Children[i].Contacts)
-                    </td>
-                </tr>
-            }
-        </tbody>
-        </table>
-        <br />
-        <button type="submit" id="add-child-button">Добавить запись о ребенке</button>
-        </fieldset>
+        }
+    </tbody>
+    </table>
+    <br />
+    <button type="submit" id="add-child-button">Добавить запись о ребенке</button>
+    </fieldset>
+    
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>

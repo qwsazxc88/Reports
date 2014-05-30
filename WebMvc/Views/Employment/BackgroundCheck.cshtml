@@ -6,140 +6,143 @@
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <div class="doc-wrap">
-        <fieldset class="bordered">
-        <legend>Служба безопасности</legend>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.AverageSalary)&nbsp;@Html.ValidationMessageFor(m => m.AverageSalary)<br />
-                @Html.EditorFor(m => m.AverageSalary)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.Liabilities)&nbsp;@Html.ValidationMessageFor(m => m.Liabilities)<br />
-                @Html.EditorFor(m => m.Liabilities)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.PreviousDismissalReason)&nbsp;@Html.ValidationMessageFor(m => m.PreviousDismissalReason)<br />
-                @Html.EditorFor(m => m.PreviousDismissalReason)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.PreviousSuperior)&nbsp;@Html.ValidationMessageFor(m => m.PreviousSuperior)<br />
-                @Html.EditorFor(m => m.PreviousSuperior)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.PositionSought)&nbsp;@Html.ValidationMessageFor(m => m.PositionSought)<br />
-                @Html.EditorFor(m => m.PositionSought)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.MilitaryOperationsExperience)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryOperationsExperience)<br />
-                @Html.EditorFor(m => m.MilitaryOperationsExperience)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.HasDriversLicense)&nbsp;@Html.EditorFor(m => m.HasDriversLicense)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.DriversLicenseNumber)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseNumber)<br />
-                @Html.EditorFor(m => m.DriversLicenseNumber)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.DriversLicenseDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseDateOfIssue)<br />
-                @Html.EditorFor(m => m.DriversLicenseDateOfIssue)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.DriversLicenseCategories)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseCategories)<br />
-                @Html.EditorFor(m => m.DriversLicenseCategories)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.DrivingExperience)&nbsp;@Html.ValidationMessageFor(m => m.DrivingExperience)<br />
-                @Html.EditorFor(m => m.DrivingExperience)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.HasAutomobile)&nbsp;@Html.EditorFor(m => m.HasAutomobile)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.AutomobileMake)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileMake)<br />
-                @Html.EditorFor(m => m.AutomobileMake)
-            </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.AutomobileLicensePlateNumber)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileLicensePlateNumber)<br />
-                @Html.EditorFor(m => m.AutomobileLicensePlateNumber)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.IsReadyForBusinessTrips)&nbsp;@Html.EditorFor(m => m.IsReadyForBusinessTrips)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.Sports)&nbsp;@Html.ValidationMessageFor(m => m.Sports)<br />
-                @Html.EditorFor(m => m.Sports)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.Hobbies)&nbsp;@Html.ValidationMessageFor(m => m.Hobbies)<br />
-                @Html.EditorFor(m => m.Hobbies)
-            </div>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.ImportantEvents)&nbsp;@Html.ValidationMessageFor(m => m.ImportantEvents)<br />
-                @Html.EditorFor(m => m.ImportantEvents)
-            </div>
-            <fieldset class="bordered nomargin clear">
-            <legend class="level2">@Html.LabelFor(m => m.References)</legend>
-                @for (var i = 0; i < Model.References.Count; i++)
-                {
-                    <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].LastName):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].LastName)
-                            </td>                                
-                        </tr>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].FirstName):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].FirstName)
-                            </td>                                
-                        </tr>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].Patronymic):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].Patronymic)
-                            </td>                                
-                        </tr>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].WorksAt):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].WorksAt)
-                            </td>                                
-                        </tr>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].Position):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].Position)
-                            </td>                                
-                        </tr>
-                        <tr>                                
-                            <td>
-                                @Html.LabelFor(m => m.References[i].Phone):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(m => m.References[i].Phone)
-                            </td>                                
-                        </tr>
-                    </table>
-                }
-                <button type="submit" id="add-reference-button">Добавить рекомендацию</button>
-            </fieldset>
-            <div class="formfield clear">
-                @Html.LabelFor(m => m.ChronicalDiseases)&nbsp;@Html.ValidationMessageFor(m => m.ChronicalDiseases)<br />
-                @Html.EditorFor(m => m.ChronicalDiseases)
-            </div>
+    <div style="float:left">
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Служба безопасности</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.AverageSalary)&nbsp;@Html.ValidationMessageFor(m => m.AverageSalary)<br />
+            @Html.EditorFor(m => m.AverageSalary)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Liabilities)&nbsp;@Html.ValidationMessageFor(m => m.Liabilities)<br />
+            @Html.EditorFor(m => m.Liabilities)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PreviousDismissalReason)&nbsp;@Html.ValidationMessageFor(m => m.PreviousDismissalReason)<br />
+            @Html.EditorFor(m => m.PreviousDismissalReason)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PreviousSuperior)&nbsp;@Html.ValidationMessageFor(m => m.PreviousSuperior)<br />
+            @Html.EditorFor(m => m.PreviousSuperior)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionSought)&nbsp;@Html.ValidationMessageFor(m => m.PositionSought)<br />
+            @Html.EditorFor(m => m.PositionSought)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.MilitaryOperationsExperience)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryOperationsExperience)<br />
+            @Html.EditorFor(m => m.MilitaryOperationsExperience)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.HasDriversLicense)&nbsp;@Html.EditorFor(m => m.HasDriversLicense)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DriversLicenseNumber)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseNumber)<br />
+            @Html.EditorFor(m => m.DriversLicenseNumber)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DriversLicenseDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseDateOfIssue)<br />
+            @Html.EditorFor(m => m.DriversLicenseDateOfIssue)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DriversLicenseCategories)&nbsp;@Html.ValidationMessageFor(m => m.DriversLicenseCategories)<br />
+            @Html.EditorFor(m => m.DriversLicenseCategories)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DrivingExperience)&nbsp;@Html.ValidationMessageFor(m => m.DrivingExperience)<br />
+            @Html.EditorFor(m => m.DrivingExperience)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.HasAutomobile)&nbsp;@Html.EditorFor(m => m.HasAutomobile)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.AutomobileMake)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileMake)<br />
+            @Html.EditorFor(m => m.AutomobileMake)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AutomobileLicensePlateNumber)&nbsp;@Html.ValidationMessageFor(m => m.AutomobileLicensePlateNumber)<br />
+            @Html.EditorFor(m => m.AutomobileLicensePlateNumber)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsReadyForBusinessTrips)&nbsp;@Html.EditorFor(m => m.IsReadyForBusinessTrips)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Sports)&nbsp;@Html.ValidationMessageFor(m => m.Sports)<br />
+            @Html.EditorFor(m => m.Sports)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Hobbies)&nbsp;@Html.ValidationMessageFor(m => m.Hobbies)<br />
+            @Html.EditorFor(m => m.Hobbies)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ImportantEvents)&nbsp;@Html.ValidationMessageFor(m => m.ImportantEvents)<br />
+            @Html.EditorFor(m => m.ImportantEvents)
+        </div>
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.References)</legend>
+            @for (var i = 0; i < Model.References.Count; i++)
+            {
+                <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].LastName):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].LastName)
+                        </td>                                
+                    </tr>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].FirstName):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].FirstName)
+                        </td>                                
+                    </tr>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].Patronymic):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].Patronymic)
+                        </td>                                
+                    </tr>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].WorksAt):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].WorksAt)
+                        </td>                                
+                    </tr>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].Position):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].Position)
+                        </td>                                
+                    </tr>
+                    <tr>                                
+                        <td>
+                            @Html.LabelFor(m => m.References[i].Phone):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(m => m.References[i].Phone)
+                        </td>                                
+                    </tr>
+                </table>
+            }
+            <button type="submit" id="add-reference-button">Добавить рекомендацию</button>
         </fieldset>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ChronicalDiseases)&nbsp;@Html.ValidationMessageFor(m => m.ChronicalDiseases)<br />
+            @Html.EditorFor(m => m.ChronicalDiseases)
+        </div>
+    </fieldset>
+    </div>
+    
+    <div class="clear">
         <button type="submit">Записать черновик</button>
         <button type="submit">Сохранить</button>
     </div>
