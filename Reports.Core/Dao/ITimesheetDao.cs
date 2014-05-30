@@ -20,7 +20,7 @@ namespace Reports.Core.Dao
         //                              int userId, UserRole userRole);
         IList<DayRequestsDto> GetRequestsForMonth(int month, int year, int managerId, UserRole managerRole,
             IList<DayRequestsDto> dtoList, IList<IdNameDtoWithDates> users, IList<WorkingCalendar> workDays,
-            IList<TerraGraphicDbDto> tgList);
+            IList<TerraGraphicDbDto> tgList,bool setEmptyDays);
 
         IList<DayRequestsDto> GetRequestsForYear(DateTime beginDate, DateTime year, int managerId,
                                                         UserRole managerRole,

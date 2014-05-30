@@ -44,23 +44,32 @@ namespace Reports.Core.Dao.Impl
                                 ,Day
                                 ,Hours
                                 ,PointId
+                                ,FactHours
+                                ,FactPointId
                                 ,IsCreditAvailable
-                                ,ShortName as PointName
-                                ,Name as PointTitle
+                                ,case when tp.Id is not null then tp.ShortName else N'Вых' end  as PointName
+                                ,case when tp.Id is not null then tp.Name else N'Выходной' end  as PointTitle
+                                ,case when tpf.Id is not null then tpf.ShortName else N'Вых' end  as FactPointName
+                                ,case when tpf.Id is not null then tpf.Name else N'Выходной' end  as FactPointTitle
                                 from dbo.TerraGraphic tg
-                                inner join dbo.TerraPoint tp on tp.Id = tg.PointId
-                          where 
+                                left join dbo.TerraPoint tp on tp.Id = tg.PointId
+                                left join dbo.TerraPoint tpf on tpf.Id = tg.FactPointId
+                              where 
                           tg.Day between :beginDate and :endDate
                           and tg.UserId in (:userList)";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
               AddScalar("Id", NHibernateUtil.Int32).
               AddScalar("UserId", NHibernateUtil.Int32).
               AddScalar("Day", NHibernateUtil.DateTime).
-              AddScalar("Hours", NHibernateUtil.Int32).
+              AddScalar("Hours", NHibernateUtil.Decimal).
               AddScalar("PointId", NHibernateUtil.Int32).
+              AddScalar("FactHours", NHibernateUtil.Decimal).
+              AddScalar("FactPointId", NHibernateUtil.Int32).
               AddScalar("IsCreditAvailable", NHibernateUtil.Boolean).
               AddScalar("PointName", NHibernateUtil.String).
               AddScalar("PointTitle", NHibernateUtil.String).
+              AddScalar("FactPointName", NHibernateUtil.String).
+              AddScalar("FactPointTitle", NHibernateUtil.String).
               SetDateTime("beginDate", beginDate).
               SetDateTime("endDate", endDate).
               SetParameterList("userList", userIds);

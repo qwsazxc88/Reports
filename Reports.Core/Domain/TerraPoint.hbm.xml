@@ -13,6 +13,7 @@
 		<property name="Path" length="128" not-null="false"/>
 		<property name="ItemLevel" not-null="false"/>
 		<property name="EndDate" not-null="false"/>
+	    <property name="IsHoliday" not-null="true"/>
 	  <!--constrained="true"-->
 		<one-to-one name="TerraPointToUser" foreign-key="none" constrained="true" class="TerraPointToUser"/>
   </class>

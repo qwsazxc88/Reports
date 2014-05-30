@@ -30,7 +30,7 @@ namespace Reports.Core.Dto
     {
         public DateTime? DateAccept { get; set; }
         public DateTime? DateRelease { get; set; }
-        public List<int> userStats { get; set; }
+        public List<decimal> userStats { get; set; }
         public List<int> userStatsDays { get; set; }
     }
     

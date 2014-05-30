@@ -79,7 +79,13 @@ namespace WebMvc.Controllers
                 DateTime tpDay;
                 if(!DateTime.TryParse(day,CultureInfo.GetCultureInfo("ru-RU"),DateTimeStyles.None,out tpDay))
                     throw new ArgumentException(string.Format("Неправильная дата {0}",day));
-                TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel{Id = id,Day = day,UserId = userId};
+                TerraGraphicsEditPointModel model = new TerraGraphicsEditPointModel
+                                                        {
+                                                            Id = id,
+                                                            Day = day,
+                                                            UserId = userId,
+                                                            tpDay = tpDay,
+                                                        };
                 RequestBl.SetEditPointDialogModel(model);
                 return PartialView(model);
             }
@@ -137,7 +143,8 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Manager)]
-        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits)
+        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits,
+            int factPointId, string factHours)
         {
             TerraPointSaveModel model = new TerraPointSaveModel
                                             {
@@ -147,11 +154,22 @@ namespace WebMvc.Controllers
                                                 Hours = hours,
                                                 PointId = pointId,
                                                 UserId = userId,
+                                                FactHours = factHours,
+                                                FactPointId = factPointId,
                                             };
+            
             try
             {
                 if (ValidateSaveTpModel(model))
+                {
+                    if(model.TpDay.Date > DateTime.Today)
+                    {
+                        model.FactPointId = model.PointId;
+                        model.FactHours = model.Hours;
+                        model.TpFactHours = model.TpHours;
+                    }
                     RequestBl.SaveTerraPoint(model);
+                }
             }
             catch (Exception ex)
             {
@@ -172,21 +190,47 @@ namespace WebMvc.Controllers
                 model.Error = "Неправильная дата";
             }
             model.TpDay = tpDay;
-            if (string.IsNullOrEmpty(model.Hours))
+            if (string.IsNullOrEmpty(model.Hours) && (tpDay.Date > DateTime.Today))
             {
                 //ModelState.AddModelError("Hours", "Необходимо указать поле 'План'");
-                model.Error = "Необходимо указать поле 'План'";
+                model.Error = "Необходимо указать плановые часы";
+                return false;
             }
-            else
+            if (string.IsNullOrEmpty(model.FactHours) && (tpDay.Date < DateTime.Today))
             {
-                int hours;
-                if (!int.TryParse(model.Hours, out hours) || hours < 0 || hours > 24)
+                //ModelState.AddModelError("Hours", "Необходимо указать поле 'План'");
+                model.Error = "Необходимо указать фактические часы";
+                return false;
+            }
+            if (string.IsNullOrEmpty(model.FactHours) && string.IsNullOrEmpty(model.Hours) 
+                && (tpDay.Date == DateTime.Today))
+            {
+                //ModelState.AddModelError("Hours", "Необходимо указать поле 'План'");
+                model.Error = "Необходимо указать плановые или фактические часы";
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(model.Hours))
+            {
+                decimal hours;
+                if (!decimal.TryParse(model.Hours, out hours) || hours < 0 || hours > 24)
                 {
                     //ModelState.AddModelError("Hours", "Поле 'План' должно быть целым числом от 0 до 24");
-                    model.Error = "Поле 'План' должно быть целым числом от 0 до 24";
+                    model.Error = "Плановые часы должны быть числом от 0 до 24";
                 }
                 else
                     model.TpHours = hours;
+            }
+            if (!string.IsNullOrEmpty(model.FactHours))
+            {
+                decimal hours;
+                if (!decimal.TryParse(model.FactHours, out hours) || hours < 0 || hours > 24)
+                {
+                    //ModelState.AddModelError("Hours", "Поле 'План' должно быть целым числом от 0 до 24");
+                    model.Error = "Фактические часы быть числом от 0 до 24";
+                }
+                else
+                    model.TpFactHours = hours;
             }
             return string.IsNullOrEmpty(model.Error);
         }

@@ -704,9 +704,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(model.Month, model.Year);
-            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
+            //IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds, model.Month, model.Year);
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
-                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,tgList);
+                (model.Month, model.Year, user.Id, user.UserRole,dayDtoList,uDtoList,workDays,
+                /*tgList*/new List<TerraGraphicDbDto>(), true);
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -824,7 +825,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //        StatCode = "Б",
                     //    });
                     int sumDays = 0;
-                    int sum = 0;
+                    decimal sum = 0;
                     string graphic = null;
                     for (int i = 0; i < 5; i++)
                     {
@@ -1112,10 +1113,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             List<int> usIds = uDtoList.Select(x => x.Id).ToList();
             IList<WorkingCalendar> workDays = WorkingCalendarDao.GetEntitiesBetweenDates(beginDate, endDate);
-            IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds,beginDate,endDate);
+            //IList<TerraGraphicDbDto> tgList = TerraGraphicDao.LoadDtoForIdsList(usIds,beginDate,endDate);
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForYear
-                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays,tgList);
+                (beginDate, endDate, user.Id, user.UserRole, dayDtoList, uDtoList, workDays,/*tgList*/new List<TerraGraphicDbDto>());
             Log.Debug("After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -1206,7 +1207,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //        StatCode = "Б",
                     //    });
                     int sumDays = 0;
-                    int sum = 0;
+                    decimal sum = 0;
                     string graphic = null;
                     for (int i = 0; i < 5; i++)
                     {
@@ -1517,7 +1518,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             IList<DayRequestsDto> dtos = TimesheetDao.GetRequestsForMonth
                 (model.Month, model.Year, user.Id, user.UserRole, dayDtoList, uDtoList, workDays
-                ,new List<TerraGraphicDbDto>());
+                ,new List<TerraGraphicDbDto>(),false);
             Log.Debug("SetGraphicsInfo:After GetRequestsForMonth");
             List<int> allUserIds = new List<int>();
             allUserIds = dtos.Aggregate(allUserIds,
@@ -1553,16 +1554,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 foreach (var dayRequestsDto in dtos)
                 {
                     List<RequestDto> userList = dayRequestsDto.Requests.Where(x => x.UserId == userId).ToList();
-                    int? hours = new int?();  
+                    decimal? hours = new decimal?();  
                     TerraGraphicDbDto graphicEntity = tgList.Where(x => x.UserId == userId && x.Day == dayRequestsDto.Day).FirstOrDefault();
-                    if (graphicEntity == null)
+                    if(graphicEntity != null)
+                        hours = graphicEntity.Hours;
+
+                    /*string status = userList.Aggregate(string.Empty,
+                                                    (curr, requestDto) => curr + requestDto.TimesheetCode + "/");*/
+                    /*if (graphicEntity == null)
                     {
                         RequestDto rDto = userList.Where(x => x.TimesheetHours.HasValue).FirstOrDefault();
                         if (rDto != null)
                             hours = rDto.TimesheetHours.Value;
                     }
                     else
-                        hours = graphicEntity.Hours;
+                        hours = graphicEntity.Hours;*/
                     RequestDto employmentDay = userList.Where(x => x.IsEmploymentDay).FirstOrDefault();
                     if (employmentDay != null && employmentDay.BeginDate > beginUserDate)
                         beginUserDate = employmentDay.BeginDate;
@@ -1588,6 +1594,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                         : graphicEntity.PointName),
                                             TerraPointTitle = graphicEntity == null ? string.Empty:graphicEntity.PointTitle,
                                             IsEditable = user.UserRole == UserRole.Manager,
+
+                                            FactHours = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? null : graphicEntity.FactHours,
+                                            FactPointTitle = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty : graphicEntity.FactPointTitle,
+                                            FactPointName = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty
+                                                                : (string.IsNullOrEmpty(graphicEntity.FactPointName)
+                                                                       ? "!"
+                                                                       : graphicEntity.FactPointName),
+                                            //TabelStatus = status.Substring(0, status.Length - 1),
                     });
                 }
                 userDayList.Insert(0,new TerraGraphicDayDto
@@ -1597,9 +1611,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     isHoliday = false,
                     StatCode = string.Empty,
                     IsCredits = "Кредиты",
-                    TerraPointName = "Точка",
+                    TerraPointName = "Точка план",
+                    FactPointName = "Точка факт",
+                    //TabelStatus = "Табель",
                 });
-                int? planHours = userDayList.Sum(x => x.Hours);
+                decimal? planHours = userDayList.Sum(x => x.Hours);
+                decimal? factHours = userDayList.Sum(x => x.FactHours);
                 int? workdaysSum = workDays.Where(x => x.Date >= beginUserDate && x.Date <= endUserDate).Sum(x => x.IsWorkingHours);
                 userDayList.Add(new TerraGraphicDayDto
                 {
@@ -1616,6 +1633,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     isHoliday = false,
                     Hours = planHours,
                     StatCode = "План",
+                    FactHours = factHours,
                 });
                 User usr = users.Where(x => x.Id == userId).FirstOrDefault();
                 if (usr == null)
