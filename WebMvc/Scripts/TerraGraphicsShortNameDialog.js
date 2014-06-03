@@ -140,7 +140,10 @@ function ValidateEditPoint() {
 }
 function SaveEditPoint() {
     clearTerraEditErrors();
-    var url = actionEditPointSaveUrl + '?pointId=' + $('#EpLevel3ID').val() + "&id=" + $('#Id').val() + "&userId=" + $('#UserId').val() + "&day=" + $('#Day').val()
+    var pointId = 0;
+    if ($('#EpLevel3ID').val() != null)
+        pointId = $('#EpLevel3ID').val();
+    var url = actionEditPointSaveUrl + '?pointId=' + pointId + "&id=" + $('#Id').val() + "&userId=" + $('#UserId').val() + "&day=" + $('#Day').val()
                 + "&hours=" + $('#Hours').val() + "&credits=" + $('#Credit').val() + '&factPointId=' + $('#FactEpLevel3ID').val()
                 + "&factHours=" + $('#FactHours').val();
     $.getJSON(url,

@@ -47,10 +47,10 @@ namespace Reports.Core.Dao.Impl
                                 ,FactHours
                                 ,FactPointId
                                 ,IsCreditAvailable
-                                ,case when tp.Id is not null then tp.ShortName else N'Вых' end  as PointName
-                                ,case when tp.Id is not null then tp.Name else N'Выходной' end  as PointTitle
-                                ,case when tpf.Id is not null then tpf.ShortName else N'Вых' end  as FactPointName
-                                ,case when tpf.Id is not null then tpf.Name else N'Выходной' end  as FactPointTitle
+                                ,case when tp.Id is not null then tp.ShortName else N'' end  as PointName
+                                ,case when tp.Id is not null then tp.Name else N'' end  as PointTitle
+                                ,case when tpf.Id is not null then tpf.ShortName else N'' end  as FactPointName
+                                ,case when tpf.Id is not null then tpf.Name else N'' end  as FactPointTitle
                                 from dbo.TerraGraphic tg
                                 left join dbo.TerraPoint tp on tp.Id = tg.PointId
                                 left join dbo.TerraPoint tpf on tpf.Id = tg.FactPointId

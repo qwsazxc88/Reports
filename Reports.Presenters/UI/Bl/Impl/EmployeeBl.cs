@@ -1587,8 +1587,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             Hours = hours,
                                             Id = graphicEntity == null ? 0 : graphicEntity.Id,
                                             IsCredits = isCredit.HasValue?isCredit.Value?"Да":"Нет":string.Empty,
-                                            TerraPointId = graphicEntity == null ? 0 : graphicEntity.PointId,
-                                            TerraPointName = graphicEntity == null ? string.Empty
+                                            TerraPointId = graphicEntity == null || !graphicEntity.PointId.HasValue ? 0 : graphicEntity.PointId,
+                                            TerraPointName = graphicEntity == null || !graphicEntity.PointId.HasValue ? string.Empty
                                                                  : (string.IsNullOrEmpty(graphicEntity.PointName)
                                                                         ? "!"
                                                                         : graphicEntity.PointName),
@@ -1596,8 +1596,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             IsEditable = user.UserRole == UserRole.Manager,
 
                                             FactHours = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? null : graphicEntity.FactHours,
-                                            FactPointTitle = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty : graphicEntity.FactPointTitle,
-                                            FactPointName = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null ? string.Empty
+                                            FactPointTitle = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null || !graphicEntity.FactPointId.HasValue ? string.Empty : graphicEntity.FactPointTitle,
+                                            FactPointName = dayRequestsDto.Day.Date > DateTime.Today || graphicEntity == null || !graphicEntity.FactPointId.HasValue ? string.Empty
                                                                 : (string.IsNullOrEmpty(graphicEntity.FactPointName)
                                                                        ? "!"
                                                                        : graphicEntity.FactPointName),

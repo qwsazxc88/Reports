@@ -7072,6 +7072,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (!tg.PointId.HasValue)
                 {
                     model.EpLevel1ID = 0;
+                    model.EpLevel1 = new List<IdNameDto>();
                     model.EpLevel2 = new List<IdNameDto>();
                     model.EpLevel3 = new List<IdNameDto>(); 
                 }
