@@ -5,11 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class MilitaryServiceModel
+    public class MilitaryServiceModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Военнообязанный")]
         public bool IsLiableForMilitaryService { get; set; } //ok
 

@@ -5,15 +5,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class PassportModel
+    public class PassportModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
-        [Display(Name = "Вид документа"),
-            Required(ErrorMessage = "Обязательное поле")]
-        public int DocumentType { get; set;}
-        public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
+        //[Display(Name = "Вид документа"),
+        //    Required(ErrorMessage = "Обязательное поле")]
+        //public int DocumentType { get; set;}
+        //public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
         [Display(Name = "Серия", Prompt = "4 цифры"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
@@ -76,7 +73,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Квартира"),
             StringLength(5, ErrorMessage = "Не более 5 знаков.")]
-        public string Appartment { get; set; }
+        public string Apartment { get; set; }
 
         // International Passport
 

@@ -31,7 +31,7 @@
       <key column="GeneralInfoId" foreign-key="FK_Disability_GeneralInfo"/>
       <one-to-many class="Disability"/>
     </bag>
-    <many-to-one name="Status" class="TaxpayerStatus" column="TaxpayerStatusId" foreign-key="FK_GeneralInfo_TaxpayerStatus" index="GeneralInfo_TaxpayerStatus"  not-null="false"/>
+    <property name="Status" not-null="true"/>
     <property name="AgreedToPersonalDataProcessing" not-null="true"/>
     
   </class>

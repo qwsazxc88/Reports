@@ -5,11 +5,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class EducationModel
+    public class EducationModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Сведения об образовании (высшее, неполное высшее)")]
         public IList<HigherEducationDiplomaDto> HigherEducationDiplomas { get; set; } //ok
 

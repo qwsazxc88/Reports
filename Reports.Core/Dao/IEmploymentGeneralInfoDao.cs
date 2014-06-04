@@ -7,6 +7,6 @@ namespace Reports.Core.Dao
 {
     public interface IEmploymentGeneralInfoDao : IDao<GeneralInfo>
     {
-        int? GetDocumentId(int userId);
+
     }
 }

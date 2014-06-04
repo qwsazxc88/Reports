@@ -26,7 +26,7 @@ namespace Reports.Core.Domain
         public virtual string Street { get; set; } //
         public virtual string StreetNumber { get; set; } //
         public virtual string Building { get; set; } //
-        public virtual string Appartment { get; set; } //
+        public virtual string Apartment { get; set; } //
         public virtual string InternationalPassportSeries { get; set; } //
         public virtual string InternationalPassportNumber { get; set; } //
         public virtual DateTime? InternationalPassportDateOfIssue { get; set; } //

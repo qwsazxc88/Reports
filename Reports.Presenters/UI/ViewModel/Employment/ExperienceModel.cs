@@ -5,11 +5,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class ExperienceModel
+    public class ExperienceModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Трудовая деятельность")]
         public IList<ExperienceItemDto> ExperienceItems { get; set; } // TODO: EMPL Кнопка добавления записей
 

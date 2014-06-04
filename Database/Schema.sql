@@ -346,6 +346,42 @@ alter table DocumentComment  drop constraint FK_DocumentComment_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_DocumentComment_Document]') AND parent_object_id = OBJECT_ID('DocumentComment'))
 alter table DocumentComment  drop constraint FK_DocumentComment_Document
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_User]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_GeneralInfo]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_GeneralInfo
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Passport]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Passport
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Education]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Education
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Family]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Family
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_MilitaryService]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_MilitaryService
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Experience]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Experience
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Contacts]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Contacts
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_BackgroundCheck]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_BackgroundCheck
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_OnsiteTraining]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_OnsiteTraining
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Managers]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_Managers
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_PersonnelManagers]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_PersonnelManagers
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionDailyAllowanceGradeValue_DailyAllowance]') AND parent_object_id = OBJECT_ID('MissionDailyAllowanceGradeValue'))
 alter table MissionDailyAllowanceGradeValue  drop constraint FK_MissionDailyAllowanceGradeValue_DailyAllowance
 
@@ -441,9 +477,6 @@ alter table GeneralInfo  drop constraint FK_GeneralInfo_Citizenship
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_InsuredPersonType]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
 alter table GeneralInfo  drop constraint FK_GeneralInfo_InsuredPersonType
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_TaxpayerStatus]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
-alter table GeneralInfo  drop constraint FK_GeneralInfo_TaxpayerStatus
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentComment_User]') AND parent_object_id = OBJECT_ID('AppointmentComment'))
 alter table AppointmentComment  drop constraint FK_AppointmentComment_User
@@ -625,42 +658,6 @@ alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
 alter table Document  drop constraint FK_Document_User
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_User]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_User
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_GeneralInfo]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_GeneralInfo
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Passport]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Passport
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Education]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Education
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Family]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Family
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_MilitaryService]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_MilitaryService
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Experience]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Experience
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Contacts]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Contacts
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_BackgroundCheck]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_BackgroundCheck
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_OnsiteTraining]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_OnsiteTraining
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_Managers]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_Managers
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_PersonnelManagers]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
-alter table EmploymentCandidate  drop constraint FK_Candidate_PersonnelManagers
-
 if exists (select * from dbo.sysobjects where id = object_id(N'Certification') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Certification
 if exists (select * from dbo.sysobjects where id = object_id(N'Family') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Family
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentType
@@ -695,7 +692,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'MissionOrderComme
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryPersonnelType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryPersonnelType
 if exists (select * from dbo.sysobjects where id = object_id(N'Contacts') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contacts
-if exists (select * from dbo.sysobjects where id = object_id(N'TaxpayerStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TaxpayerStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'InsuredPersonType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table InsuredPersonType
 if exists (select * from dbo.sysobjects where id = object_id(N'Contractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contractor
 if exists (select * from dbo.sysobjects where id = object_id(N'Deduction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Deduction
@@ -734,6 +730,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'WorkingGraphicTyp
 if exists (select * from dbo.sysobjects where id = object_id(N'InspectorToUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table InspectorToUser
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ConscriptionStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ConscriptionStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentCandidate') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentCandidate
 if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryRank') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryRank
 if exists (select * from dbo.sysobjects where id = object_id(N'Country') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Country
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionDailyAllowanceGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionDailyAllowanceGradeValue
@@ -798,7 +795,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManage
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
-if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentCandidate') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentCandidate
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -893,6 +889,7 @@ create table TerraPoint (
   Path NVARCHAR(128) null,
   ItemLevel INT null,
   EndDate DATETIME null,
+  IsHoliday BIT not null,
   constraint PK_TerraPoint  primary key (Id)
 )
 create table WorkingDaysConstant (
@@ -1191,19 +1188,12 @@ create table Contacts (
   Street NVARCHAR(50) null,
   StreetNumber NVARCHAR(10) null,
   Building NVARCHAR(10) null,
-  Appartment NVARCHAR(10) null,
+  Apartment NVARCHAR(10) null,
   WorkPhone NVARCHAR(10) null,
   HomePhone NVARCHAR(10) null,
   Mobile NVARCHAR(10) null,
   Email NVARCHAR(50) null,
   constraint PK_Contacts  primary key (Id)
-)
-create table TaxpayerStatus (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_TaxpayerStatus  primary key (Id)
 )
 create table InsuredPersonType (
  Id INT IDENTITY NOT NULL,
@@ -1530,8 +1520,10 @@ create table TerraGraphic (
  Id INT IDENTITY NOT NULL,
   UserId INT not null,
   Day DATETIME not null,
-  Hours INT not null,
-  PointId INT not null,
+  Hours DECIMAL(19,5) null,
+  PointId INT null,
+  FactHours DECIMAL(19,5) null,
+  FactPointId INT null,
   IsCreditAvailable BIT null,
   constraint PK_TerraGraphic  primary key (Id)
 )
@@ -1638,6 +1630,23 @@ create table ConscriptionStatus (
   Code NVARCHAR(10) null,
   Name NVARCHAR(128) null,
   constraint PK_ConscriptionStatus  primary key (Id)
+)
+create table EmploymentCandidate (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT null,
+  GeneralInfoId INT null,
+  PassportId INT null,
+  EducationId INT null,
+  FamilyId INT null,
+  MilitaryServiceId INT null,
+  ExperienceId INT null,
+  ContactsId INT null,
+  BackgroundCheckId INT null,
+  OnsiteTrainingId INT null,
+  ManagersId INT null,
+  PersonnelManagersId INT null,
+  constraint PK_EmploymentCandidate  primary key (Id)
 )
 create table MilitaryRank (
  Id INT IDENTITY NOT NULL,
@@ -1846,7 +1855,7 @@ create table GeneralInfo (
   CityOfBirth NVARCHAR(50) not null,
   INN NVARCHAR(12) null,
   SNILS NVARCHAR(14) null,
-  TaxpayerStatusId INT null,
+  Status INT not null,
   AgreedToPersonalDataProcessing BIT not null,
   constraint PK_GeneralInfo  primary key (Id)
 )
@@ -2117,7 +2126,7 @@ create table Passport (
   Street NVARCHAR(50) null,
   StreetNumber NVARCHAR(6) null,
   Building NVARCHAR(3) null,
-  Appartment NVARCHAR(5) null,
+  Apartment NVARCHAR(5) null,
   InternationalPassportSeries NVARCHAR(10) null,
   InternationalPassportNumber NVARCHAR(10) null,
   InternationalPassportDateOfIssue DATETIME null,
@@ -2307,23 +2316,6 @@ create table Document (
   OutsourcingManagerDateAccept DATETIME null,
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
-)
-create table EmploymentCandidate (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  UserId INT null,
-  GeneralInfoId INT null,
-  PassportId INT null,
-  EducationId INT null,
-  FamilyId INT null,
-  MilitaryServiceId INT null,
-  ExperienceId INT null,
-  ContactsId INT null,
-  BackgroundCheckId INT null,
-  OnsiteTrainingId INT null,
-  ManagersId INT null,
-  PersonnelManagersId INT null,
-  constraint PK_EmploymentCandidate  primary key (Id)
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
@@ -2551,6 +2543,30 @@ create index IX_DocumentComment_User_Id on DocumentComment (UserId)
 create index IX_DocumentComment_Document_Id on DocumentComment (DocumentId)
 alter table DocumentComment add constraint FK_DocumentComment_User foreign key (UserId) references [Users]
 alter table DocumentComment add constraint FK_DocumentComment_Document foreign key (DocumentId) references Document
+create index Candidate_User on EmploymentCandidate (UserId)
+create index Candidate_GeneralInfo on EmploymentCandidate (GeneralInfoId)
+create index Candidate_Passport on EmploymentCandidate (PassportId)
+create index Candidate_Education on EmploymentCandidate (EducationId)
+create index Candidate_Family on EmploymentCandidate (FamilyId)
+create index Candidate_MilitaryService on EmploymentCandidate (MilitaryServiceId)
+create index Candidate_Experience on EmploymentCandidate (ExperienceId)
+create index Candidate_Contacts on EmploymentCandidate (ContactsId)
+create index Candidate_BackgroundCheck on EmploymentCandidate (BackgroundCheckId)
+create index Candidate_OnsiteTraining on EmploymentCandidate (OnsiteTrainingId)
+create index Candidate_Managers on EmploymentCandidate (ManagersId)
+create index Candidate_PersonnelManagers on EmploymentCandidate (PersonnelManagersId)
+alter table EmploymentCandidate add constraint FK_Candidate_User foreign key (UserId) references [Users]
+alter table EmploymentCandidate add constraint FK_Candidate_GeneralInfo foreign key (GeneralInfoId) references GeneralInfo
+alter table EmploymentCandidate add constraint FK_Candidate_Passport foreign key (PassportId) references Passport
+alter table EmploymentCandidate add constraint FK_Candidate_Education foreign key (EducationId) references Education
+alter table EmploymentCandidate add constraint FK_Candidate_Family foreign key (FamilyId) references Family
+alter table EmploymentCandidate add constraint FK_Candidate_MilitaryService foreign key (MilitaryServiceId) references MilitaryService
+alter table EmploymentCandidate add constraint FK_Candidate_Experience foreign key (ExperienceId) references Experience
+alter table EmploymentCandidate add constraint FK_Candidate_Contacts foreign key (ContactsId) references Contacts
+alter table EmploymentCandidate add constraint FK_Candidate_BackgroundCheck foreign key (BackgroundCheckId) references BackgroundCheck
+alter table EmploymentCandidate add constraint FK_Candidate_OnsiteTraining foreign key (OnsiteTrainingId) references OnsiteTraining
+alter table EmploymentCandidate add constraint FK_Candidate_Managers foreign key (ManagersId) references Managers
+alter table EmploymentCandidate add constraint FK_Candidate_PersonnelManagers foreign key (PersonnelManagersId) references PersonnelManagers
 create index IX_MissionDailyAllowanceGradeValue_DailyAllowance_Id on MissionDailyAllowanceGradeValue (DailyAllowanceId)
 create index IX_MissionDailyAllowanceGradeValue_Grade_Id on MissionDailyAllowanceGradeValue (GradeId)
 alter table MissionDailyAllowanceGradeValue add constraint FK_MissionDailyAllowanceGradeValue_DailyAllowance foreign key (DailyAllowanceId) references MissionDailyAllowance
@@ -2608,11 +2624,9 @@ alter table ExperienceItem add constraint FK_ExperienceItem_Experience foreign k
 create index GeneralInfo_Candidate on GeneralInfo (CandidateId)
 create index GeneralInfo_Citizenship on GeneralInfo (CitizenshipId)
 create index GeneralInfo_InsuredPersonType on GeneralInfo (InsuredPersonTypeId)
-create index GeneralInfo_TaxpayerStatus on GeneralInfo (TaxpayerStatusId)
 alter table GeneralInfo add constraint FK_GeneralInfo_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table GeneralInfo add constraint FK_GeneralInfo_Citizenship foreign key (CitizenshipId) references Country
 alter table GeneralInfo add constraint FK_GeneralInfo_InsuredPersonType foreign key (InsuredPersonTypeId) references InsuredPersonType
-alter table GeneralInfo add constraint FK_GeneralInfo_TaxpayerStatus foreign key (TaxpayerStatusId) references TaxpayerStatus
 create index IX_AppointmentComment_User on AppointmentComment (UserId)
 create index IX_AppointmentComment_Appointment on AppointmentComment (AppointmentId)
 alter table AppointmentComment add constraint FK_AppointmentComment_User foreign key (UserId) references [Users]
@@ -2729,30 +2743,6 @@ create index IX_Document_User_Id on Document (UserId)
 alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
 alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
-create index Candidate_User on EmploymentCandidate (UserId)
-create index Candidate_GeneralInfo on EmploymentCandidate (GeneralInfoId)
-create index Candidate_Passport on EmploymentCandidate (PassportId)
-create index Candidate_Education on EmploymentCandidate (EducationId)
-create index Candidate_Family on EmploymentCandidate (FamilyId)
-create index Candidate_MilitaryService on EmploymentCandidate (MilitaryServiceId)
-create index Candidate_Experience on EmploymentCandidate (ExperienceId)
-create index Candidate_Contacts on EmploymentCandidate (ContactsId)
-create index Candidate_BackgroundCheck on EmploymentCandidate (BackgroundCheckId)
-create index Candidate_OnsiteTraining on EmploymentCandidate (OnsiteTrainingId)
-create index Candidate_Managers on EmploymentCandidate (ManagersId)
-create index Candidate_PersonnelManagers on EmploymentCandidate (PersonnelManagersId)
-alter table EmploymentCandidate add constraint FK_Candidate_User foreign key (UserId) references [Users]
-alter table EmploymentCandidate add constraint FK_Candidate_GeneralInfo foreign key (GeneralInfoId) references GeneralInfo
-alter table EmploymentCandidate add constraint FK_Candidate_Passport foreign key (PassportId) references Passport
-alter table EmploymentCandidate add constraint FK_Candidate_Education foreign key (EducationId) references Education
-alter table EmploymentCandidate add constraint FK_Candidate_Family foreign key (FamilyId) references Family
-alter table EmploymentCandidate add constraint FK_Candidate_MilitaryService foreign key (MilitaryServiceId) references MilitaryService
-alter table EmploymentCandidate add constraint FK_Candidate_Experience foreign key (ExperienceId) references Experience
-alter table EmploymentCandidate add constraint FK_Candidate_Contacts foreign key (ContactsId) references Contacts
-alter table EmploymentCandidate add constraint FK_Candidate_BackgroundCheck foreign key (BackgroundCheckId) references BackgroundCheck
-alter table EmploymentCandidate add constraint FK_Candidate_OnsiteTraining foreign key (OnsiteTrainingId) references OnsiteTraining
-alter table EmploymentCandidate add constraint FK_Candidate_Managers foreign key (ManagersId) references Managers
-alter table EmploymentCandidate add constraint FK_Candidate_PersonnelManagers foreign key (PersonnelManagersId) references PersonnelManagers
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 

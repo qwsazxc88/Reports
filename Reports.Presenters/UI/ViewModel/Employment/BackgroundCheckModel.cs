@@ -5,11 +5,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class BackgroundCheckModel
+    public class BackgroundCheckModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Размер Вашей среднемесячной заработной платы по последнему месту работы")]
         public decimal? AverageSalary { get; set; } //ok
 

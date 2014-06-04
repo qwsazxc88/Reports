@@ -6,12 +6,14 @@
 
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Паспорт РФ</legend>
-        <div class="formfield clearleft">
+        @*<div class="formfield clearleft">
             @Html.LabelFor(m => m.DocumentType)&nbsp;@Html.ValidationMessageFor(m => m.DocumentType)<br />
             @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
-        </div>
+        </div>*@
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
             @Html.TextBoxFor(m => m.InternalPassportSeries)
@@ -67,8 +69,8 @@
                 @Html.TextBoxFor(m => m.Building)
             </div>
             <div class="formfield">
-                @Html.LabelFor(m => m.Appartment)&nbsp;@Html.ValidationMessageFor(m => m.Appartment)<br />
-                @Html.TextBoxFor(m => m.Appartment)
+                @Html.LabelFor(m => m.Apartment)&nbsp;@Html.ValidationMessageFor(m => m.Apartment)<br />
+                @Html.TextBoxFor(m => m.Apartment)
             </div>
         </fieldset>
     </fieldset>

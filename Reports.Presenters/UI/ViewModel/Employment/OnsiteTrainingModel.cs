@@ -5,11 +5,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class OnsiteTrainingModel
+    public class OnsiteTrainingModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Вид обучения"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public string Type { get; set; } //ok

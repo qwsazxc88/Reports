@@ -13,7 +13,7 @@
     <property name="Street" length="50" not-null="false"/>
     <property name="StreetNumber" length="10" not-null="false"/>
     <property name="Building" length="10" not-null="false"/>
-    <property name="Appartment" length="10" not-null="false"/>
+    <property name="Apartment" length="10" not-null="false"/>
     <property name="WorkPhone" length="10" not-null="false"/>
     <property name="HomePhone" length="10" not-null="false"/>
     <property name="Mobile" length="10" not-null="false"/>

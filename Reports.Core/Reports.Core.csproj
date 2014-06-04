@@ -236,7 +236,20 @@
     <Compile Include="Dao\Impl\WorkingDaysConstantDao.cs" />
     <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentCommonDao.cs" />
+    <Compile Include="Dao\Impl\MilitaryRankDao.cs" />
+    <Compile Include="Dao\Impl\CountryDao.cs" />
     <Compile Include="Dao\Impl\EmploymentGeneralInfoDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentPassportDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentEducationDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentFamilyDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentMilitaryServiceDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentExperienceDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentContactsDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentBackgroundCheckDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentOnsiteTrainingDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentManagersDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -272,7 +285,20 @@
     <Compile Include="Dao\IWorkingDaysConstantDao.cs" />
     <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDao.cs" />
+    <Compile Include="Dao\IEmploymentCommonDao.cs" />
+    <Compile Include="Dao\IMilitaryRankDao.cs" />
+    <Compile Include="Dao\ICountryDao.cs" />
     <Compile Include="Dao\IEmploymentGeneralInfoDao.cs" />
+    <Compile Include="Dao\IEmploymentPassportDao.cs" />
+    <Compile Include="Dao\IEmploymentEducationDao.cs" />
+    <Compile Include="Dao\IEmploymentFamilyDao.cs" />
+    <Compile Include="Dao\IEmploymentMilitaryServiceDao.cs" />
+    <Compile Include="Dao\IEmploymentExperienceDao.cs" />
+    <Compile Include="Dao\IEmploymentContactsDao.cs" />
+    <Compile Include="Dao\IEmploymentBackgroundCheckDao.cs" />
+    <Compile Include="Dao\IEmploymentOnsiteTrainingDao.cs" />
+    <Compile Include="Dao\IEmploymentManagersDao.cs" />
+    <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -418,7 +444,6 @@
     <Compile Include="Domain\MissionOrderRoleRecord.cs" />
     <Compile Include="Domain\Employment2\Country.cs" />
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
-    <Compile Include="Domain\Employment2\TaxpayerStatus.cs" />
     <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
@@ -841,9 +866,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\InsuredPersonType.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\TaxpayerStatus.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\DocumentType.hbm.xml" />

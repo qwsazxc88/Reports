@@ -17,7 +17,7 @@ namespace Reports.Core.Domain
         public virtual string Street { get; set; } //ok
         public virtual string StreetNumber { get; set; } //ok
         public virtual string Building { get; set; } //ok
-        public virtual string Appartment { get; set; } //ok
+        public virtual string Apartment { get; set; } //ok
         public virtual string WorkPhone { get; set; } //ok
         public virtual string HomePhone { get; set; } //ok
         public virtual string Mobile { get; set; } //ok

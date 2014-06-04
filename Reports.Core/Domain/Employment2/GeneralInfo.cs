@@ -28,7 +28,7 @@ namespace Reports.Core.Domain
         public virtual string INN { get; set; } //ok
         public virtual string SNILS { get; set; } //ok
         public virtual IList<Disability> Disabilities { get; set; } //ok
-        public virtual TaxpayerStatus Status { get; set; } // - статус налогоплательщика по НДФЛ
+        public virtual int Status { get; set; } // - статус налогоплательщика по НДФЛ
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
         // Фото
         #endregion

@@ -6,11 +6,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class GeneralInfoModel
+    public class GeneralInfoModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
@@ -30,22 +27,22 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Если изменяли ФИО, укажите их, а также когда меняли, где и по какой причине")]
         public IList<NameChangeDto> NameChanges { get; set; } //ok
-
+        
         [Display(Name = "Пол")]
         public bool IsMale { get; set; } //ok
-        
+        /*
         [Display(Name = "Гражданство"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public int Citizenship { get; set; } //ok
         public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
-
+        
         [Display(Name = "Вид застрахованного лица"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public int InsuredPersonType { get; set; } //ok
         public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
-
+        */
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
@@ -61,7 +58,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
         public string CityOfBirth { get; set; } //ok
-
+        
         [Display(Name = "Знание иностранных языков")]
         public IList<ForeignLanguageDto> ForeignLanguages { get; set; } //TODO: EMPL кнопка добавления
 
@@ -76,14 +73,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Инвалидность")]
         public IList<DisabilityDto> Disabilities { get; set; } //ok
-
+        /*
         [Display(Name = "Статус")]
         public int Status { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
-
+        */
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
-
+        
         public GeneralInfoModel()
         {
             this.Version = 0;

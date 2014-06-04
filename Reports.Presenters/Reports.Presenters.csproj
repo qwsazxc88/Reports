@@ -183,6 +183,7 @@
     <Compile Include="UI\ViewModel\Employment\RosterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\OnsiteTrainingModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\AbstractEmploymentModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />

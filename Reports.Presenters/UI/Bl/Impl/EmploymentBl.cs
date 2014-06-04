@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
+using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel.Employment2;
+
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
@@ -19,11 +22,95 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { employmentCandidateDao = value; }
         }
 
+        protected IEmploymentCommonDao employmentCommonDao;
+        public IEmploymentCommonDao EmploymentCommonDao
+        {
+            get { return Validate.Dependency(employmentCommonDao); }
+            set { employmentCommonDao = value; }
+        }
+
         protected IEmploymentGeneralInfoDao employmentGeneralInfoDao;
         public IEmploymentGeneralInfoDao EmploymentGeneralInfoDao
         {
             get { return Validate.Dependency(employmentGeneralInfoDao); }
             set { employmentGeneralInfoDao = value; }
+        }
+
+        protected IEmploymentPassportDao employmentPassportDao;
+        public IEmploymentPassportDao EmploymentPassportDao
+        {
+            get { return Validate.Dependency(employmentPassportDao); }
+            set { employmentPassportDao = value; }
+        }
+
+        protected IEmploymentEducationDao employmentEducationDao;
+        public IEmploymentEducationDao EmploymentEducationDao
+        {
+            get { return Validate.Dependency(employmentEducationDao); }
+            set { employmentEducationDao = value; }
+        }
+
+        protected IEmploymentFamilyDao employmentFamilyDao;
+        public IEmploymentFamilyDao EmploymentFamilyDao
+        {
+            get { return Validate.Dependency(employmentFamilyDao); }
+            set { employmentFamilyDao = value; }
+        }
+
+        protected IEmploymentMilitaryServiceDao employmentMilitaryServiceDao;
+        public IEmploymentMilitaryServiceDao EmploymentMilitaryServiceDao
+        {
+            get { return Validate.Dependency(employmentMilitaryServiceDao); }
+            set { employmentMilitaryServiceDao = value; }
+        }
+
+        protected IEmploymentExperienceDao employmentExperienceDao;
+        public IEmploymentExperienceDao EmploymentExperienceDao
+        {
+            get { return Validate.Dependency(employmentExperienceDao); }
+            set { employmentExperienceDao = value; }
+        }
+
+        protected IEmploymentContactsDao employmentContactsDao;
+        public IEmploymentContactsDao EmploymentContactsDao
+        {
+            get { return Validate.Dependency(employmentContactsDao); }
+            set { employmentContactsDao = value; }
+        }
+
+        protected IEmploymentBackgroundCheckDao employmentBackgroundCheckDao;
+        public IEmploymentBackgroundCheckDao EmploymentBackgroundCheckDao
+        {
+            get { return Validate.Dependency(employmentBackgroundCheckDao); }
+            set { employmentBackgroundCheckDao = value; }
+        }
+
+        protected IEmploymentOnsiteTrainingDao employmentOnsiteTrainingDao;
+        public IEmploymentOnsiteTrainingDao EmploymentOnsiteTrainingDao
+        {
+            get { return Validate.Dependency(employmentOnsiteTrainingDao); }
+            set { employmentOnsiteTrainingDao = value; }
+        }
+
+        protected IEmploymentManagersDao employmentManagersDao;
+        public IEmploymentManagersDao EmploymentManagersDao
+        {
+            get { return Validate.Dependency(employmentManagersDao); }
+            set { employmentManagersDao = value; }
+        }
+
+        protected IEmploymentPersonnelManagersDao employmentPersonnelManagersDao;
+        public IEmploymentPersonnelManagersDao EmploymentPersonnelManagersDao
+        {
+            get { return Validate.Dependency(employmentPersonnelManagersDao); }
+            set { employmentPersonnelManagersDao = value; }
+        }
+
+        protected ICountryDao countryDao;
+        public ICountryDao CountryDao
+        {
+            get { return Validate.Dependency(countryDao); }
+            set { countryDao = value; }
         }
 
         #endregion
@@ -35,9 +122,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             // TODO: EMPL доработать реализацию
             //UserRole role = AuthenticationService.CurrentUser.UserRole;
             userId = userId ?? AuthenticationService.CurrentUser.Id;
-            GeneralInfoModel model = null;
+            GeneralInfoModel model = new GeneralInfoModel();
             GeneralInfo entity = null;
-            int? id = EmploymentGeneralInfoDao.GetDocumentId(userId.Value) ?? 0;
+            int? id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(userId.Value);
             if (id.HasValue)
             {
                 entity = EmploymentGeneralInfoDao.Get(id.Value);
@@ -45,7 +132,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.AgreedToPersonalDataProcessing = entity.AgreedToPersonalDataProcessing;
-                model.Citizenship = entity.Citizenship.Id;
+                //model.Citizenship = entity.Citizenship.Id;
                 model.CityOfBirth = entity.CityOfBirth;
                 model.DateOfBirth = entity.DateOfBirth;
                 // Disabilities
@@ -53,7 +140,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.FirstName = entity.FirstName;
                 // Foreign languages
                 model.INN = entity.INN;
-                model.InsuredPersonType = entity.InsuredPersonType.Id;
+                //model.InsuredPersonType = entity.InsuredPersonType.Id;
                 model.IsMale = entity.IsMale;
                 model.IsPatronymicAbsent = entity.Patronymic.Length > 0;
                 model.LastName = entity.LastName;
@@ -61,40 +148,61 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Patronymic = entity.Patronymic;
                 model.RegionOfBirth = entity.RegionOfBirth;
                 model.SNILS = entity.SNILS;
-                model.Status = entity.Status.Id;
+                //model.Status = entity.Status;
                 model.UserId = entity.Candidate.User.Id;
                 model.Version = entity.Version;
             }
             else
             {
-                model = new GeneralInfoModel() { UserId = userId.Value };
+                model = new GeneralInfoModel { UserId = userId.Value };
             }
             LoadDictionaries(model);
             // TODO: EMPL загрузка данных из БД и наполнение модели
             return model;
         }
 
-        public PassportModel GetPassportModel()
+        public PassportModel GetPassportModel(int? userId)
         {
             // TODO: EMPL доработать реализацию
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
             PassportModel model = new PassportModel();
+            Passport entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Passport>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentPassportDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.Apartment = entity.Apartment;
+                model.Building = entity.Building;
+                model.City = entity.City;
+                model.District = entity.District;
+                model.InternalPassportDateOfIssue = entity.InternalPassportDateOfIssue;
+                model.InternalPassportIssuedBy = entity.InternalPassportIssuedBy;
+                //////////
+            }
+            else
+            {
+                model = new PassportModel { UserId = userId.Value };
+            }
             LoadDictionaries(model);
             return model;
         }
 
-        public EducationModel GetEducationModel()
+        public EducationModel GetEducationModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new EducationModel();
         }
 
-        public FamilyModel GetFamilyModel()
+        public FamilyModel GetFamilyModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new FamilyModel();
         }
 
-        public MilitaryServiceModel GetMilitaryServiceModel()
+        public MilitaryServiceModel GetMilitaryServiceModel(int? userId)
         {
             // TODO: EMPL доработать реализацию
             MilitaryServiceModel model = new MilitaryServiceModel();
@@ -102,37 +210,37 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
-        public ExperienceModel GetExperienceModel()
+        public ExperienceModel GetExperienceModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new ExperienceModel();
         }
 
-        public ContactsModel GetContactsModel()
+        public ContactsModel GetContactsModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new ContactsModel();
         }
 
-        public BackgroundCheckModel GetBackgroundCheckModel()
+        public BackgroundCheckModel GetBackgroundCheckModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new BackgroundCheckModel();
         }
 
-        public OnsiteTrainingModel GetOnsiteTrainingModel()
+        public OnsiteTrainingModel GetOnsiteTrainingModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new OnsiteTrainingModel();
         }
 
-        public ManagersModel GetManagersModel()
+        public ManagersModel GetManagersModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new ManagersModel();
         }
 
-        public PersonnelManagersModel GetPersonnelManagersModel()
+        public PersonnelManagersModel GetPersonnelManagersModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
             return new PersonnelManagersModel();
@@ -223,13 +331,22 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Save Model
 
-        public bool SaveGeneralInfoModel(GeneralInfoModel model, out string error)
+        public bool SaveModel<TVM, TE>(TVM model, out string error)
+            where TVM: AbstractEmploymentModel
+            where TE: new()
         {
             error = string.Empty;
-            User creator = null;
+            User user = null;
+            IUser current = AuthenticationService.CurrentUser;
+            TE entity = new TE(); ;
             try
             {
-                creator = UserDao.Load(model.UserId);
+                user = UserDao.Load(model.UserId);
+                if (model.UserId == AuthenticationService.CurrentUser.Id)
+                {
+                    SetEntity<TVM, TE>(entity, model);
+                    EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
+                }
             }
             catch (Exception exc)
             {
@@ -249,18 +366,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void LoadDictionaries(GeneralInfoModel model)
         {
-            model.CitizenshipItems = new SelectList(new List<SelectListItem>
-                {
-                    new SelectListItem {Text = "Россия", Value = "1"},
-                    new SelectListItem {Text = "Белоруссия", Value = "2"},
-                    new SelectListItem {Text = "Украина", Value = "3"},
-                    new SelectListItem {Text = "Казахстан", Value = "4"},
-                    new SelectListItem {Text = "Китай", Value = "5"}
-                },
-                "Value", "Text"
-            );
-
-            model.InsuredPersonTypeItems = new SelectList(new List<SelectListItem>
+            // Страны/Гражданства
+            //model.CitizenshipItems = CountryDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() }).OrderBy(x => x.Value);
+            
+            /*model.InsuredPersonTypeItems = new SelectList(new List<SelectListItem>
                 {
                     new SelectListItem {Text = "Тип1", Value = "1"},
                     new SelectListItem {Text = "Тип2", Value = "2"},
@@ -268,18 +377,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 },
                 "Value", "Text"
             );
-
+            
             model.StatusItems = new SelectList(new List<SelectListItem>
                 {
                     new SelectListItem {Text = "Резидент", Value = "1"},
                     new SelectListItem {Text = "Нерезидент", Value = "2"}
                 },
                 "Value", "Text"
-            );
+            );*/
         }
         protected void LoadDictionaries(PassportModel model)
         {
-            model.DocumentTypeItems = new SelectList(new List<SelectListItem>
+            /*model.DocumentTypeItems = new SelectList(new List<SelectListItem>
                 {
                     new SelectListItem {Text = "Паспорт РФ", Value = "1"},
                     new SelectListItem {Text = "Военный билет", Value = "2"},
@@ -288,7 +397,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     new SelectListItem {Text = "Справка", Value = "5"}
                 },
                 "Value", "Text"
-            );
+            );*/
         }
         protected void LoadDictionaries(EducationModel model)
         {
@@ -406,6 +515,73 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadDictionaries(SignersModel model)
         {
 
+        }
+
+        #endregion
+
+        #region SetEntity
+
+        protected void SetEntity<TVM, TE>(TE entity, TVM viewModel)
+        {
+            switch (entity.GetType().Name)
+            {
+                case "GeneralInfo":
+                    SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel);
+                    break;
+                case "Passport":
+                    SetPassportEntity(entity as Passport, viewModel as PassportModel);
+                    break;
+                default:
+                    break;
+            }            
+        }
+
+        protected void SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel)
+        {
+            //entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            // entity.Citizenship = 
+            entity.CityOfBirth = viewModel.CityOfBirth;
+            entity.DateOfBirth = viewModel.DateOfBirth;
+            // entity.Disabilities = 
+            entity.DistrictOfBirth = viewModel.DistrictOfBirth;
+            entity.FirstName = viewModel.FirstName;
+            // entity.ForeignLanguages = 
+
+            entity.INN = viewModel.INN;
+            // entity.InsuredPersonType = 
+            entity.IsMale = viewModel.IsMale;
+            entity.LastName = viewModel.LastName;
+            // entity.NameChanges = 
+            entity.Patronymic = viewModel.Patronymic;
+            entity.RegionOfBirth = viewModel.RegionOfBirth;
+            entity.SNILS = viewModel.SNILS;
+            //entity.Status = viewModel.Status;
+            // entity.Version = 
+        }
+
+        protected void SetPassportEntity(Passport entity, PassportModel viewModel)
+        {
+            entity.Apartment = viewModel.Apartment;
+            entity.Building = viewModel.Building;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.City = viewModel.City;
+            entity.District = viewModel.District;
+            //entity.DocumentType
+            entity.InternalPassportDateOfIssue = viewModel.InternalPassportDateOfIssue;
+            entity.InternalPassportIssuedBy = viewModel.InternalPassportIssuedBy;
+            entity.InternalPassportNumber = viewModel.InternalPassportNumber;
+            entity.InternalPassportSeries = viewModel.InternalPassportSeries;
+            entity.InternalPassportSubdivisionCode = viewModel.InternalPassportSubdivisionCode;
+            entity.InternationalPassportDateOfIssue = viewModel.InternationalPassportDateOfIssue;
+            entity.InternationalPassportIssuedBy = viewModel.InternationalPassportIssuedBy;
+            entity.InternationalPassportNumber = viewModel.InternationalPassportNumber;
+            entity.InternationalPassportSeries = viewModel.InternationalPassportSeries;
+            entity.Region = viewModel.Region;
+            entity.RegistrationDate = viewModel.RegistrationDate;
+            entity.Street = viewModel.Street;
+            entity.StreetNumber = viewModel.StreetNumber;
+            entity.ZipCode = viewModel.ZipCode;
         }
 
         #endregion

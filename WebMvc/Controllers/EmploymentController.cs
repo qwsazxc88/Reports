@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Dto.Employment2;
 using Reports.Core;
+using Reports.Core.Domain;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 
@@ -42,12 +43,15 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GeneralInfo(GeneralInfoModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 case "add-name-change":
                     model.NameChanges.Add(new NameChangeDto());
                     break;
                 default:
+                    EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
                     return RedirectToActionPermanent("Passport");
             }
             return View(model);
@@ -57,16 +61,19 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Passport(int? userId)
         {
-            var model = EmploymentBl.GetPassportModel();
+            var model = EmploymentBl.GetPassportModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Passport(PassportModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<PassportModel, Passport>(model, out error);
                     return RedirectToActionPermanent("Education");
             }
             // return View(model);
@@ -130,7 +137,7 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult MilitaryService(int? userId)
         {
-            var model = EmploymentBl.GetMilitaryServiceModel();
+            var model = EmploymentBl.GetMilitaryServiceModel(userId);
             return View(model);
         }
 

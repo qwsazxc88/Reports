@@ -417,8 +417,47 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentCandidateDao)).
                 ImplementedBy(typeof(EmploymentCandidateDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentCommonDao)).
+                ImplementedBy(typeof(EmploymentCommonDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(IEmploymentGeneralInfoDao)).
                 ImplementedBy(typeof(EmploymentGeneralInfoDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentPassportDao)).
+                ImplementedBy(typeof(EmploymentPassportDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentEducationDao)).
+                ImplementedBy(typeof(EmploymentEducationDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentFamilyDao)).
+                ImplementedBy(typeof(EmploymentFamilyDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentMilitaryServiceDao)).
+                ImplementedBy(typeof(EmploymentMilitaryServiceDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentExperienceDao)).
+                ImplementedBy(typeof(EmploymentExperienceDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentContactsDao)).
+                ImplementedBy(typeof(EmploymentContactsDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentBackgroundCheckDao)).
+                ImplementedBy(typeof(EmploymentBackgroundCheckDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentOnsiteTrainingDao)).
+                ImplementedBy(typeof(EmploymentOnsiteTrainingDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentManagersDao)).
+                ImplementedBy(typeof(EmploymentManagersDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IEmploymentPersonnelManagersDao)).
+                ImplementedBy(typeof(EmploymentPersonnelManagersDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(ICountryDao)).
+                ImplementedBy(typeof(CountryDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IMilitaryRankDao)).
+                ImplementedBy(typeof(MilitaryRankDao)).
                 LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))

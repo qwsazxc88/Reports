@@ -5,11 +5,8 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class ManagersModel
+    public class ManagersModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         // TODO EMPL Position
         // TODO EMPL Directorate
         // TODO EMPL Department

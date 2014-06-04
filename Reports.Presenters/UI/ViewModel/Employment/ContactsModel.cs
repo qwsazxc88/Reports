@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class ContactsModel
+    public class ContactsModel : AbstractEmploymentModel
     {
-        public int Version { get; set; }
-        public int UserId { get; set; }
-
         [Display(Name = "Почтовый индекс"),
             StringLength(6, ErrorMessage = "Требуется 6 знаков.")]
         public string ZipCode { get; set; } //ok
@@ -31,7 +28,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Building { get; set; } //ok
         [Display(Name = "Квартира"),
             StringLength(10, ErrorMessage = "Не более 10 знаков.")]
-        public string Appartment { get; set; } //ok
+        public string Apartment { get; set; } //ok
         [Display(Name = "Телефон рабочий"),
             StringLength(10, ErrorMessage = "Должно быть 10 знаков.")]
         public string WorkPhone { get; set; } //ok
