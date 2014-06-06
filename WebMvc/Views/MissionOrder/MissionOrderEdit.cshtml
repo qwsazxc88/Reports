@@ -251,7 +251,7 @@
                 <input type="hidden" id="IsChiefApproveNeedHidden" name="IsChiefApproveNeedHidden" value="@Model.IsChiefApproveNeedHidden" />
             </td>
         </tr>
-         <tr>
+        @*<tr>
             <td colspan="2">
                     Расходы утверждены функциональным руководителем
                     @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
@@ -274,7 +274,7 @@
                     }
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
             </td>
-        </tr>
+        </tr>*@
         <tr>
             <td colspan="2" style="font-weight:bold">Секретариат</td>
         </tr>
