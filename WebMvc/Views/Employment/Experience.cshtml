@@ -4,8 +4,10 @@
     ViewBag.Title = "Прием - Трудовая деятельность";
 }
 
-@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Опыт работы</legend>
     <table class="grid">
@@ -34,7 +36,7 @@
                     <tr>
                         <td>
                             @Html.EditorFor(m => m.ExperienceItems[i].BeginningDate)
-                        </td>  
+                        </td>
                         <td>
                             @Html.EditorFor(m => m.ExperienceItems[i].EndDate)
                         </td>

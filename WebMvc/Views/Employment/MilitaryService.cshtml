@@ -6,6 +6,8 @@
 
 @using (Html.BeginForm("MilitaryService", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Воинский учет</legend>
         <div class="formfield clear">
@@ -80,5 +82,10 @@
 <script>
     $(document).ready(function () {
         setActiveMenuItem("empMilitaryService");
+
+        $('#MilitaryCardDate').datepicker({
+            changeYear: true,
+            yearRange: "-50:+0"
+        });
     });
 </script>

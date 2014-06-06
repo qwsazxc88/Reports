@@ -5,6 +5,8 @@
 
 @using (Html.BeginForm("ApplicationLetter", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @*Html.HiddenFor(m => m.UserId)*@
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>    
     <div style="padding: 5px; width: 760px; background-color: Silver;">

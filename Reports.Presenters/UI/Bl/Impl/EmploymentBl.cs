@@ -180,7 +180,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.District = entity.District;
                 model.InternalPassportDateOfIssue = entity.InternalPassportDateOfIssue;
                 model.InternalPassportIssuedBy = entity.InternalPassportIssuedBy;
-                //////////
+                model.InternalPassportNumber = entity.InternalPassportNumber;
+                model.InternalPassportSeries = entity.InternalPassportSeries;
+                model.InternalPassportSubdivisionCode = entity.InternalPassportSubdivisionCode;
+                //model.InternationalPassportDateOfIssue = entity.InternationalPassportDateOfIssue;
+                model.InternationalPassportIssuedBy = entity.InternationalPassportIssuedBy;
+                model.InternationalPassportNumber = entity.InternationalPassportNumber;
+                model.InternationalPassportSeries = entity.InternationalPassportSeries;
+                model.Region = entity.Region;
+                model.RegistrationDate = entity.RegistrationDate;
+                model.Street = entity.Street;
+                model.StreetNumber = entity.StreetNumber;
+                model.UserId = entity.Candidate.User.Id;
+                model.ZipCode = entity.ZipCode;
             }
             else
             {
@@ -193,19 +205,91 @@ namespace Reports.Presenters.UI.Bl.Impl
         public EducationModel GetEducationModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new EducationModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            EducationModel model = new EducationModel();
+            Education entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Education>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentEducationDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                //model.Certifications
+                //model.HigherEducationDiplomas
+                //model.PostGraduateEducationDiplomas
+                //model.Training
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new EducationModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public FamilyModel GetFamilyModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new FamilyModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            FamilyModel model = new FamilyModel();
+            Family entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Family>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentFamilyDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                //model.Certifications
+                //model.HigherEducationDiplomas
+                //model.PostGraduateEducationDiplomas
+                //model.Training
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new FamilyModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public MilitaryServiceModel GetMilitaryServiceModel(int? userId)
         {
             // TODO: EMPL доработать реализацию
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
             MilitaryServiceModel model = new MilitaryServiceModel();
+            MilitaryService entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<MilitaryService>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentMilitaryServiceDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.CombatFitness = entity.CombatFitness;
+                model.Commissariat = entity.Commissariat;
+                //model.ConscriptionStatus
+                model.IsAssigned = entity.IsAssigned;
+                model.IsLiableForMilitaryService = entity.IsLiableForMilitaryService;
+                model.MilitaryCardDate = entity.MilitaryCardDate;
+                model.MilitaryCardNumber = entity.MilitaryCardNumber;
+                model.MilitaryServiceRegistrationInfo = entity.MilitaryServiceRegistrationInfo;
+                model.MilitarySpecialityCode = entity.MilitarySpecialityCode;
+                //model.PersonnelCategory = entity.PersonnelCategory;
+                //model.PersonnelType
+                //model.Rank
+                //model.RegistrationExpiration = entity.RegistrationExpiration;
+                //model.ReserveCategory = entity.ReserveCategory;
+                model.SpecialityCategory = entity.SpecialityCategory;
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new MilitaryServiceModel { UserId = userId.Value };
+            }
             LoadDictionaries(model);
             return model;
         }
@@ -213,37 +297,216 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ExperienceModel GetExperienceModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new ExperienceModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            ExperienceModel model = new ExperienceModel();
+            Experience entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Experience>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentExperienceDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.UserId = entity.Candidate.User.Id;
+                model.WorkBookDateOfIssue = entity.WorkBookDateOfIssue;
+                model.WorkBookNumber = entity.WorkBookNumber;
+                model.WorkBookSeries = entity.WorkBookSeries;
+                model.WorkBookSupplementDateOfIssue = entity.WorkBookSupplementDateOfIssue;
+                model.WorkBookSupplementNumber = entity.WorkBookSupplementNumber;
+                model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
+            }
+            else
+            {
+                model = new ExperienceModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public ContactsModel GetContactsModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new ContactsModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            ContactsModel model = new ContactsModel();
+            Contacts entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Contacts>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentContactsDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.Apartment = entity.Apartment;
+                model.Building = entity.Building;
+                model.City = entity.City;
+                model.District = entity.District;
+                model.Email = entity.Email;
+                model.HomePhone = entity.HomePhone;
+                model.Mobile = entity.Mobile;
+                model.Region = entity.Region;
+                model.Street = entity.Street;
+                model.StreetNumber = entity.StreetNumber;
+                model.UserId = entity.Candidate.User.Id;
+                model.WorkPhone = entity.WorkPhone;
+                model.ZipCode = entity.ZipCode;
+            }
+            else
+            {
+                model = new ContactsModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public BackgroundCheckModel GetBackgroundCheckModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new BackgroundCheckModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            BackgroundCheckModel model = new BackgroundCheckModel();
+            BackgroundCheck entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentBackgroundCheckDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.AutomobileLicensePlateNumber = entity.AutomobileLicensePlateNumber;
+                model.AutomobileMake = entity.AutomobileMake;
+                model.AverageSalary = entity.AverageSalary;
+                model.ChronicalDiseases = entity.ChronicalDiseases;
+                //model.DriversLicenseCategories = entity.DriversLicenseCategories;
+                //model.DriversLicenseDateOfIssue = entity.DriversLicenseDateOfIssue;
+                model.DriversLicenseNumber = entity.DriversLicenseNumber;
+                model.DrivingExperience = entity.DrivingExperience;
+                model.HasAutomobile = entity.AutomobileMake.Length > 0;
+                model.HasDriversLicense = entity.DriversLicenseDateOfIssue.HasValue;
+                model.Hobbies = entity.Hobbies;
+                model.ImportantEvents = entity.ImportantEvents;
+                model.IsReadyForBusinessTrips = entity.IsReadyForBusinessTrips;
+                model.Liabilities = entity.Liabilities;
+                model.MilitaryOperationsExperience = entity.MilitaryOperationsExperience;
+                model.PositionSought = entity.PositionSought;
+                model.PreviousDismissalReason = entity.PreviousDismissalReason;
+                model.PreviousSuperior = entity.PreviousSuperior;
+                //model.References
+                model.Sports = entity.Sports;
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new BackgroundCheckModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public OnsiteTrainingModel GetOnsiteTrainingModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new OnsiteTrainingModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            OnsiteTrainingModel model = new OnsiteTrainingModel();
+            OnsiteTraining entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<OnsiteTraining>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentOnsiteTrainingDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.BeginningDate = entity.BeginningDate;
+                model.Comments = entity.Comments;
+                model.Description = entity.Description;
+                model.EndDate = entity.EndDate;
+                model.IsComplete = entity.IsComplete;
+                model.IsConfirmed = entity.IsConfirmed;
+                model.ReasonsForIncompleteTraining = entity.ReasonsForIncompleteTraining;
+                model.Results = entity.Results;
+                model.Type = entity.Type;
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new OnsiteTrainingModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public ManagersModel GetManagersModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new ManagersModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            ManagersModel model = new ManagersModel();
+            Managers entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Managers>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentManagersDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                model.Bonus = entity.Bonus;
+                // Department, Directorate, etc ???
+                model.IsFront = entity.IsFront;
+                model.IsLiable = entity.IsLiable;
+                model.PersonalAddition = entity.PersonalAddition;
+                model.PositionAddition = entity.PositionAddition;
+                model.ProbationaryPeriod = entity.ProbationaryPeriod;
+                model.RequestNumber = entity.RequestNumber;
+                model.UserId = entity.Candidate.User.Id;
+                model.WorkCity = entity.WorkCity;
+
+            }
+            else
+            {
+                model = new ManagersModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public PersonnelManagersModel GetPersonnelManagersModel(int? userId)
         {
             // TODO: EMPL заменить реализацией
-            return new PersonnelManagersModel();
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            PersonnelManagersModel model = new PersonnelManagersModel();
+            PersonnelManagers entity = null;
+            int? id = EmploymentCommonDao.GetDocumentId<Managers>(userId.Value);
+            if (id.HasValue)
+            {
+                entity = EmploymentPersonnelManagersDao.Get(id.Value);
+            }
+            if (entity != null)
+            {
+                //model.ApprovedByPersonnelManager = entity.ApprovedByPersonnelManager;
+                model.AreaAddition = entity.AreaAddition;
+                model.AreaMultiplier = entity.AreaMultiplier;
+                model.CompetenceAddition = entity.CompetenceAddition;
+                model.ContractDate = entity.ContractDate;
+                model.ContractNumber = entity.ContractNumber;
+                model.EmploymentDate = entity.EmploymentDate;
+                model.EmploymentOrderDate = entity.EmploymentOrderDate;
+                model.EmploymentOrderNumber = entity.EmploymentOrderNumber;
+                model.FrontOfficeExperienceAddition = entity.FrontOfficeExperienceAddition;
+                model.InsurableExperienceDays = entity.InsurableExperienceDays;
+                model.InsurableExperienceMonths = entity.InsurableExperienceMonths;
+                model.InsurableExperienceYears = entity.InsurableExperienceYears;
+                model.NorthernAreaAddition = entity.InsurableExperienceYears;
+                model.OverallExperienceDays = entity.OverallExperienceDays;
+                model.OverallExperienceMonths = entity.OverallExperienceMonths;
+                model.OverallExperienceYears = entity.OverallExperienceYears;
+                model.PersonalAccount = entity.PersonalAccount;
+                model.PersonalAccountContractor = entity.PersonalAccountContractor;
+                model.TravelRelatedAddition = entity.TravelRelatedAddition;
+                model.UserId = entity.Candidate.User.Id;
+            }
+            else
+            {
+                model = new PersonnelManagersModel { UserId = userId.Value };
+            }
+            LoadDictionaries(model);
+            return model;
         }
 
         public RosterModel GetRosterModel()
@@ -531,6 +794,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "Passport":
                     SetPassportEntity(entity as Passport, viewModel as PassportModel);
                     break;
+                case "Education":
+                    SetEducationEntity(entity as Education, viewModel as EducationModel);
+                    break;
+                case "Family":
+                    SetFamilyEntity(entity as Family, viewModel as FamilyModel);
+                    break;
+                case "MilitaryService":
+                    SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel);
+                    break;
+                case "Experience":
+                    SetExperienceEntity(entity as Experience, viewModel as ExperienceModel);
+                    break;
+                case "Contacts":
+                    SetContactsEntity(entity as Contacts, viewModel as ContactsModel);
+                    break;
+                case "BackgroundCheck":
+                    SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel);
+                    break;
+                case "OnsiteTraining":
+                    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
+                    break;
+                case "Managers":
+                    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
+                    break;
+                case "PersonnelManagers":
+                    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
+                    break;
                 default:
                     break;
             }            
@@ -582,6 +872,154 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.ZipCode = viewModel.ZipCode;
+        }
+
+        protected void SetEducationEntity(Education entity, EducationModel viewModel)
+        {
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            //entity.Certifications
+            //entity.HigherEducationDiplomas
+            //entity.PostGraduateEducationDiplomas
+            //entity.Training
+        }
+
+        protected void SetFamilyEntity(Family entity, FamilyModel viewModel)
+        {
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            //entity.Children
+            entity.Cohabitants = viewModel.Cohabitants;
+            //entity.Father
+            //entity.Mother
+            //entity.Spouse
+        }
+
+        protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
+        {
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.CombatFitness = viewModel.CombatFitness;
+            entity.Commissariat = viewModel.Commissariat;
+            //entity.ConscriptionStatus = viewModel.ConscriptionStatus;
+            entity.IsAssigned = viewModel.IsAssigned;
+            entity.IsLiableForMilitaryService = viewModel.IsLiableForMilitaryService;
+            entity.MilitaryCardDate = viewModel.MilitaryCardDate;
+            entity.MilitaryCardNumber = viewModel.MilitaryCardNumber;
+            entity.MilitaryServiceRegistrationInfo = viewModel.MilitaryServiceRegistrationInfo;
+            entity.MilitarySpecialityCode = viewModel.MilitarySpecialityCode;
+            //entity.PersonnelCategory
+            //entity.PersonnelType
+            //entity.Rank
+            //entity.RegistrationExpiration
+            //entity.ReserveCategory = viewModel.ReserveCategory;
+            entity.SpecialityCategory = viewModel.SpecialityCategory;
+        }
+
+        protected void SetExperienceEntity(Experience entity, ExperienceModel viewModel)
+        {
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            //entity.ExperienceItems
+            entity.WorkBookDateOfIssue = viewModel.WorkBookDateOfIssue;
+            entity.WorkBookNumber = viewModel.WorkBookNumber;
+            entity.WorkBookSeries = viewModel.WorkBookSeries;            
+            entity.WorkBookSupplementDateOfIssue = viewModel.WorkBookSupplementDateOfIssue;
+            entity.WorkBookSupplementNumber = viewModel.WorkBookSupplementNumber;
+            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries;
+        }
+
+        protected void SetContactsEntity(Contacts entity, ContactsModel viewModel)
+        {
+            entity.Apartment = viewModel.Apartment;
+            entity.Building = viewModel.Building;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.City = viewModel.City;
+            entity.District = viewModel.District;
+            entity.Email = viewModel.Email;
+            entity.HomePhone = viewModel.HomePhone;
+            entity.Mobile = viewModel.Mobile;
+            entity.Region = viewModel.Region;
+            entity.Street = viewModel.Street;
+            entity.StreetNumber = viewModel.StreetNumber;
+            entity.WorkPhone = viewModel.WorkPhone;
+            entity.ZipCode = viewModel.ZipCode;
+        }
+
+        protected void SetBackgroundCheckEntity(BackgroundCheck entity, BackgroundCheckModel viewModel)
+        {
+            entity.AutomobileLicensePlateNumber = viewModel.AutomobileLicensePlateNumber;
+            entity.AutomobileMake = viewModel.AutomobileMake;
+            entity.AverageSalary = viewModel.AverageSalary;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.ChronicalDiseases = viewModel.ChronicalDiseases;
+            //entity.DriversLicenseCategories = viewModel.DriversLicenseCategories;
+            entity.DriversLicenseDateOfIssue = viewModel.DriversLicenseDateOfIssue;
+            entity.DriversLicenseNumber = viewModel.DriversLicenseNumber;
+            entity.DrivingExperience = viewModel.DrivingExperience;
+            entity.Hobbies = viewModel.Hobbies;
+            entity.ImportantEvents = viewModel.ImportantEvents;
+            entity.IsReadyForBusinessTrips = viewModel.IsReadyForBusinessTrips;
+            entity.Liabilities = viewModel.Liabilities;
+            entity.MilitaryOperationsExperience = viewModel.MilitaryOperationsExperience;
+            entity.PositionSought = viewModel.PositionSought;
+            entity.PreviousDismissalReason = viewModel.PreviousDismissalReason;
+            entity.PreviousSuperior = viewModel.PreviousSuperior;
+            //entity.References = 
+            entity.Sports = viewModel.Sports;
+        }
+
+        protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)
+        {
+            entity.BeginningDate = viewModel.BeginningDate;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Comments = viewModel.Comments;
+            entity.Description = viewModel.Description;
+            entity.EndDate = viewModel.EndDate;
+            entity.IsComplete = viewModel.IsComplete;
+            entity.IsConfirmed = viewModel.IsConfirmed;
+            entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
+            entity.Results = viewModel.Results;
+            entity.Type = viewModel.Type;
+        }
+
+        protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
+        {
+            entity.Bonus = viewModel.Bonus;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            //entity.Department = 
+            //entity.Directorate = 
+            //entity.EmploymentConditions = 
+            entity.IsFront = viewModel.IsFront;
+            entity.IsLiable = viewModel.IsLiable;
+            entity.PersonalAddition = viewModel.PersonalAddition; 
+            //entity.Position
+            entity.PositionAddition = viewModel.PositionAddition;
+            entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
+            entity.RequestNumber = viewModel.RequestNumber;
+            //entity.Schedule = 
+            entity.WorkCity = viewModel.WorkCity;
+        }
+
+        protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
+        {
+            //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
+            entity.AreaAddition = viewModel.AreaAddition;
+            entity.AreaMultiplier = viewModel.AreaMultiplier;
+            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.CompetenceAddition = viewModel.CompetenceAddition;
+            entity.ContractDate = viewModel.ContractDate;
+            entity.ContractNumber = viewModel.ContractNumber;
+            entity.EmploymentDate = viewModel.EmploymentDate;
+            entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+            entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+            entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+            entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
+            entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
+            entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+            entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
+            entity.OverallExperienceDays = viewModel.OverallExperienceDays;
+            entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
+            entity.OverallExperienceYears = viewModel.OverallExperienceYears;
+            entity.PersonalAccount = viewModel.PersonalAccount;
+            entity.PersonalAccountContractor = viewModel.PersonalAccountContractor;
+            entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
         }
 
         #endregion

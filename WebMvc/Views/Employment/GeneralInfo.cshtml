@@ -214,7 +214,10 @@
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
 
-        $("#DateOfBirth").datepicker();
+        $('#DateOfBirth').datepicker({
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
         
         $("#add-name-change-button").click(function () {
             $("#cmd").val("add-name-change");

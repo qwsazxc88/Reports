@@ -83,13 +83,15 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Education(int? userId)
         {
-            var model = new EducationModel();
+            var model = EmploymentBl.GetEducationModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Education(EducationModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 case "add-higher-education-diploma":
@@ -105,6 +107,7 @@ namespace WebMvc.Controllers
                     model.Training.Add(new TrainingDto());
                     break;
                 default:
+                    EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
                     return RedirectToActionPermanent("Family");
             }
 
@@ -115,19 +118,22 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Family(int? userId)
         {
-            var model = new FamilyModel();
+            var model = EmploymentBl.GetFamilyModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Family(FamilyModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 case "add-child":
                     model.Children.Add(new FamilyMemberDto());
                     break;
                 default:
+                    EmploymentBl.SaveModel<FamilyModel, Family>(model, out error);
                     return RedirectToActionPermanent("MilitaryService");
             }
             return View(model);
@@ -144,9 +150,12 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult MilitaryService(MilitaryServiceModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<MilitaryServiceModel, MilitaryService>(model, out error);
                     return RedirectToActionPermanent("Experience");
             }
             // return View(model);
@@ -156,16 +165,19 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Experience(int? userId)
         {
-            var model = new ExperienceModel();
+            var model = EmploymentBl.GetExperienceModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Experience(ExperienceModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<ExperienceModel, Experience>(model, out error);
                     return RedirectToActionPermanent("Contacts");
             }
             // return View(model);
@@ -175,16 +187,19 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Contacts(int? userId)
         {
-            var model = new ContactsModel();
+            var model = EmploymentBl.GetContactsModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Contacts(ContactsModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<ContactsModel, Contacts>(model, out error);
                     return RedirectToActionPermanent("BackgroundCheck");
             }
             // return View(model);
@@ -194,16 +209,19 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult BackgroundCheck(int? userId)
         {
-            var model = new BackgroundCheckModel();
+            var model = EmploymentBl.GetBackgroundCheckModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<BackgroundCheckModel, BackgroundCheck>(model, out error);
                     return RedirectToActionPermanent("OnsiteTraining");
             }
             // return View(model);
@@ -213,16 +231,19 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult OnsiteTraining(int? userId)
         {
-            var model = new OnsiteTrainingModel();
+            var model = EmploymentBl.GetOnsiteTrainingModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult OnsiteTraining(OnsiteTrainingModel model, string cmd = "")
         {
+            string error = String.Empty;
+
             switch (cmd)
             {
                 default:
+                    EmploymentBl.SaveModel<OnsiteTrainingModel, OnsiteTraining>(model, out error);
                     return RedirectToActionPermanent("ApplicationLetter");
             }
             // return View(model);
@@ -239,6 +260,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult ApplicationLetter(ApplicationLetterModel model, string cmd = "")
         {
+            // EmploymentBl.SaveModel<ApplicationLetterModel, ApplicationLetter>(model, out error);
             return View(model);
         }
 
@@ -246,13 +268,16 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Managers(int? userId)
         {
-            var model = new ManagersModel();
+            var model = EmploymentBl.GetManagersModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult Managers(ManagersModel model, string cmd = "")
         {
+            string error = String.Empty;
+
+            EmploymentBl.SaveModel<ManagersModel, Managers>(model, out error);
             return View(model);
         }
 
@@ -260,13 +285,16 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult PersonnelManagers(int? userId)
         {
-            var model = new PersonnelManagersModel();
+            var model = EmploymentBl.GetPersonnelManagersModel(userId);
             return View(model);
         }
 
         [HttpPost]
         public ActionResult PersonnelManagers(PersonnelManagersModel model, string cmd = "")
         {
+            string error = String.Empty;
+
+            EmploymentBl.SaveModel<PersonnelManagersModel, PersonnelManagers>(model, out error);
             return View(model);
         }
 

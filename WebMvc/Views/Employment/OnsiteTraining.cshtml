@@ -4,8 +4,10 @@
     ViewBag.Title = "Прием - Обучение";
 }
 
-@using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("OnsiteTraining", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Обучение</legend>
     <table>

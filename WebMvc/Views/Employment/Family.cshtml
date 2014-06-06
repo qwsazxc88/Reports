@@ -7,6 +7,7 @@
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="hidden" id="cmd" name="cmd" />
+    @Html.HiddenFor(m => m.UserId)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Состав семьи</legend>

@@ -6,6 +6,8 @@
 
 @using (Html.BeginForm("BackgroundCheck", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <div style="float:left">
     <fieldset class="bordered doc-wrap panel">
     <legend>Служба безопасности</legend>
@@ -151,6 +153,12 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");
+
+        $('#DriversLicenseDateOfIssue').datepicker({
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
+
         $("#add-reference-button").click(function () {
             $("#cmd").val("add-reference");
         });

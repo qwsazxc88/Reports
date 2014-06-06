@@ -6,6 +6,8 @@
 
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel floatleft">
     <legend>Кадры</legend>
         <div class="formfield clearleft">
@@ -111,5 +113,10 @@
 <script>
     $(document).ready(function () {
         setActiveMenuItem("empPersonnelManagers");
+
+        $('#EmploymentOrderDate, #EmploymentDate, #ContractDate').datepicker({
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
     });
 </script>
