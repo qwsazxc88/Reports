@@ -413,6 +413,10 @@ namespace Reports.Core
             Register(Component.For(typeof(IAppointmentEducationTypeDao)).
                ImplementedBy(typeof(AppointmentEducationTypeDao)).
                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAppointmentReportCommentDao)).
+              ImplementedBy(typeof(AppointmentReportCommentDao)).
+              LifeStyle.Is(type));
+
 
             Register(Component.For(typeof(IEmploymentCandidateDao)).
                 ImplementedBy(typeof(EmploymentCandidateDao)).

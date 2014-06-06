@@ -21,6 +21,7 @@
 	<property name="TempPassword" length="32" not-null="false"/>
 	<property name="RejectReason" length="128" not-null="false"/>
 	<property name="IsEducationExists" not-null="false"/>
+  <property name="IsColloquyPassed" not-null="false"/>
 	<property name="DateAccept" not-null="false"/>
 	  
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_AppointmentReport_CreatorUser" index="IX_AppointmentReport_CreatorUser_Id"  not-null="true"/>
@@ -31,5 +32,10 @@
 	<property name="DeleteDate" not-null="false"/>
 	<many-to-one name="DeleteUser" class="User" column="DeleteUserId" foreign-key="FK_AppointmentReport_DeleteUser" index="IX_AppointmentReport_DeleteUser"  not-null="false"/>
 	<property name="SendTo1C" not-null="false"/>
+
+    <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="AppointmentReportId" foreign-key="FK_AppointmentReportComment_AppointmentReport"/>
+      <one-to-many class="AppointmentReportComment"/>
+    </bag>
 	</class>
 </hibernate-mapping>

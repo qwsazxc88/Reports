@@ -194,6 +194,7 @@ namespace WebMvc.Controllers
             switch (typeId)
             {
                 case (int)RequestTypeEnum.Appointment:
+                case (int)RequestTypeEnum.AppointmentReport:
                     model = AppointmentBl.GetCommentsModel(id, (RequestTypeEnum)typeId);
                     break;
                 default:
@@ -244,7 +245,10 @@ namespace WebMvc.Controllers
                     switch (typeId)
                     {
                         case (int)RequestTypeEnum.Appointment:
-                            saveResult = AppointmentBl.SaveComment(model);
+                            saveResult = AppointmentBl.SaveComment(model, RequestTypeEnum.Appointment);
+                            break;
+                        case (int)RequestTypeEnum.AppointmentReport:
+                            saveResult = AppointmentBl.SaveComment(model, RequestTypeEnum.AppointmentReport);
                             break;
                         default:
                             throw new ArgumentException(string.Format(StrInvalidCommentType, typeId));
