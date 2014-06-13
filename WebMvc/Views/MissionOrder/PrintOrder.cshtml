@@ -10,11 +10,10 @@
 <BODY><TBODY>
 <TABLE style="HEIGHT: 322px; WIDTH: 971px">
 <TBODY>
-<TR height=30>
-<TH>
-<P align=left>ПРИКАЗ № К-@Model.DocumentNumber</P></TH>
-<TH>
-<P align=left>о направлении сотрудника&nbsp;в командировку</P></TH></TR>
+    <TR height=30>
+        <TH><P align=left>ПРИКАЗ № К-@Model.DocumentNumber</P></TH>
+        <TH><P align=left>о направлении сотрудника&nbsp;в командировку</P></TH>
+     </TR>
 <TR>
 <TD height=30>Дата составления</TD>
 <TH style="text-align:left">@Model.DateCreated</TH></TR>
@@ -33,15 +32,19 @@
 <TR>
 <TD height=30 style="width:135px">Структурное подразделение</TD>
 <TH style="text-align:left">@Model.Department</TH></TR>
-<TR>
-<TD height=30>Должность</TD>
-<TH style="text-align:left">@Model.Position</TH></TR>
-<TR>
-<TD height=30>Руководитель</TD>
-<TH style="text-align:left">@Model.ManagerName</TH></TR>
-<TR>
-<TD height=30>Кадровик</TD>
-<TH style="text-align:left">@Model.PersonnelName</TH></TR></TR></TBODY></TABLE></TBODY></TABLE>
+    <TR>
+        <TD height=30>Должность</TD>
+        <TH style="text-align:left">@Model.Position</TH>
+    </TR>
+   @* <TR>
+        <TD height=30>Руководитель</TD>
+        <TH style="text-align:left">@Model.ManagerName</TH>
+    </TR>
+    <TR>
+        <TD height=30>Кадровик</TD>
+        <TH style="text-align:left">@Model.PersonnelName</TH>
+    </TR>*@
+    </TBODY></TABLE></TBODY></TABLE>
 <P>
 <HR>
 <SUP><I>А. Заполняется до отъезда в командировку&nbsp;&nbsp; 
