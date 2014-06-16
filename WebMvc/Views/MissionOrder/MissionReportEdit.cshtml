@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
     ViewBag.Title = "Редактирование авансового отчета";
 }
-@using (Html.BeginForm())
+@using (Html.BeginForm("MissionReportEdit", "MissionOrder", FormMethod.Post, new { onkeydown = "return event.keyCode!=13" }))
 {
     <div class="doc-wrap">
     <table style="width:100%">
@@ -132,7 +132,7 @@
             </td>
         </tr>
         <tr>
-            <td>ФИО,e-mail бухгалтера</td>
+            <td>ФИО бухгалтера</td>
             <td>@Model.AccountantFio</td>
         </tr>
         <tr>
@@ -190,7 +190,11 @@
                                     </td>
                                     <td>{{Name}}</td>
                                     <td>{{GradeSum}}</td>
-                                    <td>{{UserSum}}</td>
+                                    <td>
+                                        {{^IsHidden}}
+                                        {{UserSum}}
+                                        {{/IsHidden}}
+                                    </td>
                                     <td>{{PurchaseBookSum}}</td>
                                     <td>{{AccountantSum}}</td>
                                     <td>
@@ -424,7 +428,7 @@
             {
                 var costId = findMinId(targets.List);
                 var newObj = { Number:null,CostTypeId:costTypeId,Name:costType,/*Count:count,*/GradeSum:null,UserSum:userSum,
-                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,IsDeleteAvailable:true,
+                PurchaseBookSum:null,AccountantSum:null,CostId:costId,IsEditable:true,IsHidden:false,IsDeleteAvailable:true,
                 IsTransactionAvailable:false,TransactionDto:null,SortOrder:getSortOrder(costTypeId)};
                 if(!AddToTemplate(targets,newObj))
                 {

@@ -8955,6 +8955,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 CostId = 0,
                 Name = @"""-"" Долг за сотрудником/""+"" Долг за организацией",
                 UserSum = accSum - pbSum - entity.UserSumReceived,
+                IsHidden = !entity.AccountantDateAccept.HasValue
             });
             int i = 1;
             foreach (CostDto dto in list.Where(x=> x.CostId != 0))
@@ -8985,7 +8986,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
-                model.AccountantFio = entity.AcceptAccountant.FullName + ", " + entity.AcceptAccountant.Email;
+                model.AccountantFio = entity.AcceptAccountant.FullName;// +", " + entity.AcceptAccountant.Email;
             
             switch (currentUserRole)
             {
@@ -9317,6 +9318,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //}
                 /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;*/
+            }
+            if (!model.IsManagerReject && model.IsManagerApproved && !entity.ManagerDateAccept.HasValue)
+            {
+                Log.ErrorFormat(@"Logic error: model.IsManagerApproved is set but entity.ManagerDateAccept is not set for 
+                        mission report {0}, currentUserId {1} ",entity.Id,current.Id);
             }
                if (current.UserRole == UserRole.Accountant && entity.ManagerDateAccept.HasValue)
                 {

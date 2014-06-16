@@ -128,8 +128,10 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             //
-            whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+           
+            //whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            //whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+           
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
@@ -202,6 +204,8 @@ namespace Reports.Core.Dao.Impl
                     }
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     sqlQueryPart = String.Format(" (u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    sqlQueryPart += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    sqlQueryPart += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
                     return sqlQueryPart;
 //                case UserRole.Director:
 //                    //User currUser = UserDao.Load(userId);

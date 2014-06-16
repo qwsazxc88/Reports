@@ -12,6 +12,7 @@
         public decimal? AccountantSum { get; set; }
         public int CostId { get; set; }
         public bool IsEditable { get; set; }
+        public bool IsHidden { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsTransactionAvailable { get; set; }
         public TransactionDto[] Trans { get; set; }
