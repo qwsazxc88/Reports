@@ -3263,10 +3263,29 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            if(hasError)
+            if (hasError)
                 model.Documents = new List<SicklistDto>();
             else
+            {
+                if (model.Documents != null && model.IsOriginalReceivedModified)
+                {
+                    model.IsOriginalReceivedModified = false;
+                    List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                }
+                
                 SetDocumentsToModel(model, user);
+            }
+        }
+        protected void ApplyReceivedOriginals(SicklistListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Sicklist entity in entities)
+            {
+                // TODO SL: реализовать сохранение состояния свойства
+                entity.IsOriginalReceived = true;
+                SicklistDao.SaveAndFlush(entity);
+            }
         }
         protected void SetDictionariesToModel(SicklistListModel model, User user)
         {

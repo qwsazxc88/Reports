@@ -207,7 +207,8 @@ namespace Reports.Core.Dao.Impl
                                           then 'Черновик сотрудника'    
                                     else ''
                                 end as RequestStatus,
-                                u.ExperienceIn1C as UserExperienceIn1C
+                                u.ExperienceIn1C as UserExperienceIn1C,
+                                v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";

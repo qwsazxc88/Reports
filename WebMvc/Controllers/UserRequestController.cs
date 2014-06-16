@@ -761,16 +761,18 @@ namespace WebMvc.Controllers
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
-         {
+         {                    
              SicklistListModel model = RequestBl.GetSicklistListModel();
              return View(model);
          }
          [HttpPost]
          public ActionResult SicklistList(SicklistListModel model)
-         {
+         {             
              RequestBl.SetSicklistListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
+
          [HttpGet]
          public ActionResult SicklistEdit(int id, int userId)
          {

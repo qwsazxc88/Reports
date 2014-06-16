@@ -1,3 +1,21 @@
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_Appointment]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_Appointment
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_AppointmentEducationType]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_AppointmentEducationType
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_CreatorUser]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_StaffUser]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_StaffUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_AcceptManager]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_AcceptManager
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_DeleteUser]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
+alter table AppointmentReport  drop constraint FK_AppointmentReport_DeleteUser
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionResidenceGradeValue_Residence]') AND parent_object_id = OBJECT_ID('MissionResidenceGradeValue'))
 alter table MissionResidenceGradeValue  drop constraint FK_MissionResidenceGradeValue_Residence
 
@@ -111,6 +129,27 @@ alter table Deduction  drop constraint FK_Deduction_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Deduction_EditorUser]') AND parent_object_id = OBJECT_ID('Deduction'))
 alter table Deduction  drop constraint FK_Deduction_EditorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_Department]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_Department
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_AppointmentReason]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_AppointmentReason
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_CreatorUser]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_CreatorUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_AcceptManager]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_AcceptManager
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_AcceptChief]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_AcceptChief
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_StaffUser]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_StaffUser
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Appointment_DeleteUser]') AND parent_object_id = OBJECT_ID('Appointment'))
+alter table Appointment  drop constraint FK_Appointment_DeleteUser
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_TimesheetCorrectionComment_User]') AND parent_object_id = OBJECT_ID('TimesheetCorrectionComment'))
 alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionComment_User
@@ -286,6 +325,12 @@ alter table UserToPersonnel  drop constraint FK_UserToPersonnel_Personnel
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserToPersonnel_User]') AND parent_object_id = OBJECT_ID('UserToPersonnel'))
 alter table UserToPersonnel  drop constraint FK_UserToPersonnel_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager2ToManager3_Manager2]') AND parent_object_id = OBJECT_ID('AppointmentManager2ToManager3'))
+alter table AppointmentManager2ToManager3  drop constraint FK_AppointmentManager2ToManager3_Manager2
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager2ToManager3_Manager3]') AND parent_object_id = OBJECT_ID('AppointmentManager2ToManager3'))
+alter table AppointmentManager2ToManager3  drop constraint FK_AppointmentManager2ToManager3_Manager3
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionTrainTicketTypeGradeValue_TrainTicketType]') AND parent_object_id = OBJECT_ID('MissionTrainTicketTypeGradeValue'))
 alter table MissionTrainTicketTypeGradeValue  drop constraint FK_MissionTrainTicketTypeGradeValue_TrainTicketType
 
@@ -315,6 +360,12 @@ alter table Absence  drop constraint FK_Absence_CreatorUser
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Absence'))
 alter table Absence  drop constraint FK_Absence_TimesheetStatus
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentComment_User]') AND parent_object_id = OBJECT_ID('AppointmentComment'))
+alter table AppointmentComment  drop constraint FK_AppointmentComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentComment_Appointment]') AND parent_object_id = OBJECT_ID('AppointmentComment'))
+alter table AppointmentComment  drop constraint FK_AppointmentComment_Appointment
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrderRoleRecord_User]') AND parent_object_id = OBJECT_ID('[MissionOrderRoleRecord]'))
 alter table [MissionOrderRoleRecord]  drop constraint FK_MissionOrderRoleRecord_User
@@ -385,6 +436,12 @@ alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApp
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ApprovedBy]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
 alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ApprovedBy
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentCreateManager2ToDepartment2_User]') AND parent_object_id = OBJECT_ID('AppointmentCreateManager2ToDepartment2'))
+alter table AppointmentCreateManager2ToDepartment2  drop constraint FK_AppointmentCreateManager2ToDepartment2_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentCreateManager2ToDepartment2_Department]') AND parent_object_id = OBJECT_ID('AppointmentCreateManager2ToDepartment2'))
+alter table AppointmentCreateManager2ToDepartment2  drop constraint FK_AppointmentCreateManager2ToDepartment2_Department
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_VacationType]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_VacationType
 
@@ -403,6 +460,12 @@ alter table Timesheet  drop constraint FK_Timesheet_User
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_UserLogin_User]') AND parent_object_id = OBJECT_ID('UserLogin'))
 alter table UserLogin  drop constraint FK_UserLogin_User
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager2ParentToManager2Child_Parent]') AND parent_object_id = OBJECT_ID('AppointmentManager2ParentToManager2Child'))
+alter table AppointmentManager2ParentToManager2Child  drop constraint FK_AppointmentManager2ParentToManager2Child_Parent
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager2ParentToManager2Child_Child]') AND parent_object_id = OBJECT_ID('AppointmentManager2ParentToManager2Child'))
+alter table AppointmentManager2ParentToManager2Child  drop constraint FK_AppointmentManager2ParentToManager2Child_Child
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionReportCost_MissionReport]') AND parent_object_id = OBJECT_ID('MissionReportCost'))
 alter table MissionReportCost  drop constraint FK_MissionReportCost_MissionReport
 
@@ -417,6 +480,12 @@ alter table MissionAirTicketTypeGradeValue  drop constraint FK_MissionAirTicketT
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ATTACHMENT_USER_ROLE]') AND parent_object_id = OBJECT_ID('RequestAttachment'))
 alter table RequestAttachment  drop constraint FK_ATTACHMENT_USER_ROLE
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager23ToDepartment3_User]') AND parent_object_id = OBJECT_ID('AppointmentManager23ToDepartment3'))
+alter table AppointmentManager23ToDepartment3  drop constraint FK_AppointmentManager23ToDepartment3_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager23ToDepartment3_Department]') AND parent_object_id = OBJECT_ID('AppointmentManager23ToDepartment3'))
+alter table AppointmentManager23ToDepartment3  drop constraint FK_AppointmentManager23ToDepartment3_Department
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HolidayWork_HolidayWorkType]') AND parent_object_id = OBJECT_ID('HolidayWork'))
 alter table HolidayWork  drop constraint FK_HolidayWork_HolidayWorkType
@@ -442,6 +511,8 @@ alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
 alter table Document  drop constraint FK_Document_User
 
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentEducationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentEducationType
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentReport') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentReport
 if exists (select * from dbo.sysobjects where id = object_id(N'Account') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Account
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionResidenceGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionResidenceGradeValue
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionTrainTicketType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionTrainTicketType
@@ -469,6 +540,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'MissionOrderComme
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'Contractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contractor
 if exists (select * from dbo.sysobjects where id = object_id(N'Deduction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Deduction
+if exists (select * from dbo.sysobjects where id = object_id(N'Appointment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Appointment
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReportCostType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReportCostType
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentRestrictType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentRestrictType
@@ -500,6 +572,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistComment')
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceType
 if exists (select * from dbo.sysobjects where id = object_id(N'[Users]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [Users]
 if exists (select * from dbo.sysobjects where id = object_id(N'UserToPersonnel') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserToPersonnel
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManager2ToManager3') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentManager2ToManager3
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionTrainTicketTypeGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionTrainTicketTypeGradeValue
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionCountry') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionCountry
 if exists (select * from dbo.sysobjects where id = object_id(N'WorkingGraphicTypeToUser') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingGraphicTypeToUser
@@ -507,6 +580,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkCommen
 if exists (select * from dbo.sysobjects where id = object_id(N'Absence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Absence
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationType
 if exists (select * from dbo.sysobjects where id = object_id(N'ExportImportAction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ExportImportAction
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'[MissionOrderRoleRecord]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [MissionOrderRoleRecord]
 if exists (select * from dbo.sysobjects where id = object_id(N'[ClearanceChecklistRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ClearanceChecklistRole]
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacation
@@ -520,13 +594,16 @@ if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklis
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionGraid') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionGraid
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionResidence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionResidence
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentCreateManager2ToDepartment2') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentCreateManager2ToDepartment2
 if exists (select * from dbo.sysobjects where id = object_id(N'WorkingCalendar') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingCalendar
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentReason') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentReason
 if exists (select * from dbo.sysobjects where id = object_id(N'[MissionOrderRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [MissionOrderRole]
 if exists (select * from dbo.sysobjects where id = object_id(N'Organization') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Organization
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManager2ParentToManager2Child') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentManager2ParentToManager2Child
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReportCost') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReportCost
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionAirTicketTypeGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionAirTicketTypeGradeValue
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionAirTicketType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionAirTicketType
@@ -535,10 +612,45 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistBabyMindi
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestAttachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestAttachment
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManager23ToDepartment3') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentManager23ToDepartment3
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
 
+create table AppointmentEducationType (
+ Id INT IDENTITY NOT NULL,
+  Code NVARCHAR(16) null,
+  Name NVARCHAR(128) not null,
+  constraint PK_AppointmentEducationType  primary key (Id)
+)
+create table AppointmentReport (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  EditDate DATETIME not null,
+  Number INT not null,
+  AppointmentId INT not null,
+  Name NVARCHAR(64) not null,
+  Phone NVARCHAR(32) not null,
+  Email NVARCHAR(32) not null,
+  ColloquyDate DATETIME null,
+  TypeId INT not null,
+  EducationTime NVARCHAR(32) null,
+  TempLogin NVARCHAR(32) null,
+  TempPassword NVARCHAR(32) null,
+  RejectReason NVARCHAR(128) null,
+  IsEducationExists BIT null,
+  DateAccept DATETIME null,
+  CreatorId INT not null,
+  StaffDateAccept DATETIME null,
+  AcceptStaffId INT null,
+  ManagerDateAccept DATETIME null,
+  AcceptManagerId INT null,
+  DeleteDate DATETIME null,
+  DeleteUserId INT null,
+  SendTo1C DATETIME null,
+  constraint PK_AppointmentReport  primary key (Id)
+)
 create table Account (
  Id INT IDENTITY NOT NULL,
   Code NVARCHAR(16) null,
@@ -686,6 +798,7 @@ create table Sicklist (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   IsContinued BIT not null,
+  IsOriginalReceived BIT not null,
   TimesheetStatusId INT null,
   constraint PK_Sicklist  primary key (Id)
 )
@@ -838,6 +951,42 @@ create table Deduction (
   DeleteAfterSendTo1C BIT not null,
   EmailSendToUserDate DATETIME null,
   constraint PK_Deduction  primary key (Id)
+)
+create table Appointment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  CreateDate DATETIME not null,
+  EditDate DATETIME not null,
+  Number INT not null,
+  DepartmentId INT not null,
+  City NVARCHAR(64) not null,
+  PositionName NVARCHAR(64) not null,
+  VacationCount INT not null,
+  ReasonId INT not null,
+  ReasonBeginDate DATETIME null,
+  ReasonPosition NVARCHAR(64) null,
+  Schedule NVARCHAR(64) not null,
+  Salary DECIMAL(19,5) not null,
+  Bonus DECIMAL(19,5) not null,
+  Type BIT not null,
+  Compensation NVARCHAR(128) not null,
+  EducationRequirements NVARCHAR(64) not null,
+  ExperienceRequirements NVARCHAR(32) not null,
+  OtherRequirements NVARCHAR(128) null,
+  Responsibility NVARCHAR(128) not null,
+  DesirableBeginDate DATETIME null,
+  IsVacationExists BIT not null,
+  CreatorId INT not null,
+  ManagerDateAccept DATETIME null,
+  AcceptManagerId INT null,
+  ChiefDateAccept DATETIME null,
+  AcceptChiefId INT null,
+  StaffDateAccept DATETIME null,
+  AcceptStaffId INT null,
+  DeleteDate DATETIME null,
+  DeleteUserId INT null,
+  SendTo1C DATETIME null,
+  constraint PK_Appointment  primary key (Id)
 )
 create table MissionReportCostType (
  Id INT IDENTITY NOT NULL,
@@ -1179,6 +1328,12 @@ create table UserToPersonnel (
  UserId INT not null,
   PersonnelId INT not null
 )
+create table AppointmentManager2ToManager3 (
+ Id INT IDENTITY NOT NULL,
+  Manager2Id INT not null,
+  Manager3Id INT not null,
+  constraint PK_AppointmentManager2ToManager3  primary key (Id)
+)
 create table MissionTrainTicketTypeGradeValue (
  Id INT IDENTITY NOT NULL,
   TrainTicketTypeId INT not null,
@@ -1242,6 +1397,15 @@ create table ExportImportAction (
   Date DATETIME not null,
   Month DATETIME null,
   constraint PK_ExportImportAction  primary key (Id)
+)
+create table AppointmentComment (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  UserId INT not null,
+  AppointmentId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_AppointmentComment  primary key (Id)
 )
 create table [MissionOrderRoleRecord] (
  Id INT IDENTITY NOT NULL,
@@ -1382,6 +1546,12 @@ create table Role (
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
 )
+create table AppointmentCreateManager2ToDepartment2 (
+ Id INT IDENTITY NOT NULL,
+  ManagerId INT not null,
+  DepartmentId INT not null,
+  constraint PK_AppointmentCreateManager2ToDepartment2  primary key (Id)
+)
 create table WorkingCalendar (
  Id INT IDENTITY NOT NULL,
   Date DATETIME null,
@@ -1433,6 +1603,12 @@ create table UserLogin (
   RoleId INT null,
   constraint PK_UserLogin  primary key (Id)
 )
+create table AppointmentReason (
+ Id INT IDENTITY NOT NULL,
+  Code NVARCHAR(16) null,
+  Name NVARCHAR(128) not null,
+  constraint PK_AppointmentReason  primary key (Id)
+)
 create table [MissionOrderRole] (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1447,6 +1623,12 @@ create table Organization (
   Code NVARCHAR(10) null,
   Name NVARCHAR(256) null,
   constraint PK_Organization  primary key (Id)
+)
+create table AppointmentManager2ParentToManager2Child (
+ Id INT IDENTITY NOT NULL,
+  ParentId INT not null,
+  ChildId INT not null,
+  constraint PK_AppointmentManager2ParentToManager2Child  primary key (Id)
 )
 create table MissionReportCost (
  Id INT IDENTITY NOT NULL,
@@ -1515,6 +1697,12 @@ create table EmployeeDocumentType (
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
 )
+create table AppointmentManager23ToDepartment3 (
+ Id INT IDENTITY NOT NULL,
+  ManagerId INT not null,
+  DepartmentId INT not null,
+  constraint PK_AppointmentManager23ToDepartment3  primary key (Id)
+)
 create table HolidayWork (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1557,6 +1745,18 @@ create table Document (
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
 )
+create index AppointmentReport_Appointment on AppointmentReport (AppointmentId)
+create index AppointmentReport_AppointmentEducationType on AppointmentReport (TypeId)
+create index IX_AppointmentReport_CreatorUser_Id on AppointmentReport (CreatorId)
+create index IX_AppointmentReport_StaffUser on AppointmentReport (AcceptStaffId)
+create index IX_AppointmentReport_AcceptManager on AppointmentReport (AcceptManagerId)
+create index IX_AppointmentReport_DeleteUser on AppointmentReport (DeleteUserId)
+alter table AppointmentReport add constraint FK_AppointmentReport_Appointment foreign key (AppointmentId) references Appointment
+alter table AppointmentReport add constraint FK_AppointmentReport_AppointmentEducationType foreign key (TypeId) references AppointmentEducationType
+alter table AppointmentReport add constraint FK_AppointmentReport_CreatorUser foreign key (CreatorId) references [Users]
+alter table AppointmentReport add constraint FK_AppointmentReport_StaffUser foreign key (AcceptStaffId) references [Users]
+alter table AppointmentReport add constraint FK_AppointmentReport_AcceptManager foreign key (AcceptManagerId) references [Users]
+alter table AppointmentReport add constraint FK_AppointmentReport_DeleteUser foreign key (DeleteUserId) references [Users]
 create index IX_MissionResidenceGradeValue_Residence_Id on MissionResidenceGradeValue (ResidenceId)
 create index IX_MissionResidenceGradeValue_Grade_Id on MissionResidenceGradeValue (GradeId)
 alter table MissionResidenceGradeValue add constraint FK_MissionResidenceGradeValue_Residence foreign key (ResidenceId) references MissionResidence
@@ -1633,6 +1833,20 @@ alter table Deduction add constraint FK_Deduction_DeductionType foreign key (Typ
 alter table Deduction add constraint FK_Deduction_DeductionKind foreign key (KindId) references DeductionKind
 alter table Deduction add constraint FK_Deduction_User foreign key (UserId) references [Users]
 alter table Deduction add constraint FK_Deduction_EditorUser foreign key (CreatorId) references [Users]
+create index Appointment_Department on Appointment (DepartmentId)
+create index Appointment_AppointmentReason on Appointment (ReasonId)
+create index IX_Appointment_CreatorUser_Id on Appointment (CreatorId)
+create index IX_Appointment_AcceptManager on Appointment (AcceptManagerId)
+create index IX_Appointment_AcceptChief on Appointment (AcceptChiefId)
+create index IX_Appointment_StaffUser on Appointment (AcceptStaffId)
+create index IX_Appointment_DeleteUser on Appointment (DeleteUserId)
+alter table Appointment add constraint FK_Appointment_Department foreign key (DepartmentId) references Department
+alter table Appointment add constraint FK_Appointment_AppointmentReason foreign key (ReasonId) references AppointmentReason
+alter table Appointment add constraint FK_Appointment_CreatorUser foreign key (CreatorId) references [Users]
+alter table Appointment add constraint FK_Appointment_AcceptManager foreign key (AcceptManagerId) references [Users]
+alter table Appointment add constraint FK_Appointment_AcceptChief foreign key (AcceptChiefId) references [Users]
+alter table Appointment add constraint FK_Appointment_StaffUser foreign key (AcceptStaffId) references [Users]
+alter table Appointment add constraint FK_Appointment_DeleteUser foreign key (DeleteUserId) references [Users]
 create index IX_TimesheetCorrectionComment_User_Id on TimesheetCorrectionComment (UserId)
 create index IX_TimesheetCorrectionComment_TimesheetCorrection_Id on TimesheetCorrectionComment (TimesheetCorrectionId)
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_User foreign key (UserId) references [Users]
@@ -1746,6 +1960,10 @@ alter table [Users] add constraint FK_User_Position foreign key (PositionId) ref
 alter table [Users] add constraint FK_User_Department foreign key (DepartmentId) references Department
 alter table UserToPersonnel add constraint FK_UserToPersonnel_Personnel foreign key (PersonnelId) references [Users]
 alter table UserToPersonnel add constraint FK_UserToPersonnel_User foreign key (UserId) references [Users]
+create index IX_AppointmentManager2ToManager3_Manager2 on AppointmentManager2ToManager3 (Manager2Id)
+create index IX_AppointmentManager2ToManager3_Manager3 on AppointmentManager2ToManager3 (Manager3Id)
+alter table AppointmentManager2ToManager3 add constraint FK_AppointmentManager2ToManager3_Manager2 foreign key (Manager2Id) references [Users]
+alter table AppointmentManager2ToManager3 add constraint FK_AppointmentManager2ToManager3_Manager3 foreign key (Manager3Id) references [Users]
 create index IX_MissionTrainTicketTypeGradeValue_TrainTicketType_Id on MissionTrainTicketTypeGradeValue (TrainTicketTypeId)
 create index IX_MissionTrainTicketTypeGradeValue_Grade_Id on MissionTrainTicketTypeGradeValue (GradeId)
 alter table MissionTrainTicketTypeGradeValue add constraint FK_MissionTrainTicketTypeGradeValue_TrainTicketType foreign key (TrainTicketTypeId) references MissionTrainTicketType
@@ -1766,6 +1984,10 @@ alter table Absence add constraint FK_Absence_AbsenceType foreign key (TypeId) r
 alter table Absence add constraint FK_Absence_User foreign key (UserId) references [Users]
 alter table Absence add constraint FK_Absence_CreatorUser foreign key (CreatorId) references [Users]
 alter table Absence add constraint FK_Absence_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_AppointmentComment_User on AppointmentComment (UserId)
+create index IX_AppointmentComment_Appointment on AppointmentComment (AppointmentId)
+alter table AppointmentComment add constraint FK_AppointmentComment_User foreign key (UserId) references [Users]
+alter table AppointmentComment add constraint FK_AppointmentComment_Appointment foreign key (AppointmentId) references Appointment
 create index IX_MissionOrderRoleRecord_User_Id on [MissionOrderRoleRecord] (UserId)
 create index IX_MissionOrderRoleRecord_MissionOrderRole_Id on [MissionOrderRoleRecord] (RoleId)
 create index IX_MissionOrderRoleRecord_TargetUser_Id on [MissionOrderRoleRecord] (TargetUserId)
@@ -1812,6 +2034,10 @@ create index IX_ClearanceChecklistApproval_ApprovedBy_Id on ClearanceChecklistAp
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_Dismissal foreign key (DismissalId) references Dismissal
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklistRole foreign key (RoleId) references [ClearanceChecklistRole]
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ApprovedBy foreign key (ApprovedById) references [Users]
+create index IX_AppointmentCreateManager2ToDepartment2_User on AppointmentCreateManager2ToDepartment2 (ManagerId)
+create index IX_AppointmentCreateManager2ToDepartment2_Department on AppointmentCreateManager2ToDepartment2 (DepartmentId)
+alter table AppointmentCreateManager2ToDepartment2 add constraint FK_AppointmentCreateManager2ToDepartment2_User foreign key (ManagerId) references [Users]
+alter table AppointmentCreateManager2ToDepartment2 add constraint FK_AppointmentCreateManager2ToDepartment2_Department foreign key (DepartmentId) references Department
 create index Vacation_VacationType on Vacation (TypeId)
 create index IX_Vacation_User_Id on Vacation (UserId)
 create index IX_Vacation_CreatorUser_Id on Vacation (CreatorId)
@@ -1823,6 +2049,10 @@ alter table Vacation add constraint FK_Vacation_TimesheetStatus foreign key (Tim
 create index IX_Timesheet_User_Id on Timesheet (UserId)
 alter table Timesheet add constraint FK_Timesheet_User foreign key (UserId) references [Users]
 alter table UserLogin add constraint FK_UserLogin_User foreign key (UserId) references [Users]
+create index IX_AppointmentManager2ParentToManager2Child_Parent on AppointmentManager2ParentToManager2Child (ParentId)
+create index IX_AppointmentManager2ParentToManager2Child_Child on AppointmentManager2ParentToManager2Child (ChildId)
+alter table AppointmentManager2ParentToManager2Child add constraint FK_AppointmentManager2ParentToManager2Child_Parent foreign key (ParentId) references [Users]
+alter table AppointmentManager2ParentToManager2Child add constraint FK_AppointmentManager2ParentToManager2Child_Child foreign key (ChildId) references [Users]
 create index MissionReportCost_MissionReport on MissionReportCost (ReportId)
 create index MissionReportCost_MissionReportCostType on MissionReportCost (TypeId)
 alter table MissionReportCost add constraint FK_MissionReportCost_MissionReport foreign key (ReportId) references MissionReport
@@ -1833,6 +2063,10 @@ alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTyp
 alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTypeGradeValue_Grade foreign key (GradeId) references MissionGraid
 create index IX_ATTACHMENT_USER_ROLE_ID on RequestAttachment (CreatorRoleId)
 alter table RequestAttachment add constraint FK_ATTACHMENT_USER_ROLE foreign key (CreatorRoleId) references Role
+create index IX_AppointmentManager23ToDepartment3_User on AppointmentManager23ToDepartment3 (ManagerId)
+create index IX_AppointmentManager23ToDepartment3_Department on AppointmentManager23ToDepartment3 (DepartmentId)
+alter table AppointmentManager23ToDepartment3 add constraint FK_AppointmentManager23ToDepartment3_User foreign key (ManagerId) references [Users]
+alter table AppointmentManager23ToDepartment3 add constraint FK_AppointmentManager23ToDepartment3_Department foreign key (DepartmentId) references Department
 create index HolidayWork_HolidayWorkType on HolidayWork (TypeId)
 create index IX_HolidayWork_User_Id on HolidayWork (UserId)
 create index IX_HolidayWork_CreatorUser_Id on HolidayWork (CreatorId)

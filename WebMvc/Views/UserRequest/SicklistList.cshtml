@@ -140,6 +140,10 @@
                         }
                     }                                                                                               
                     </td>
+                    <td style = "text-align:right">
+                        <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                        <button type="submit" id="SaveOriginalReceived">Записать</button>
+                    </td>
                 </tr>
               </table>  
            </div>
@@ -178,10 +182,15 @@
                     <th>
                         Стаж<br />в 1С
                     </th>
+                    <th>
+                        Оригинал<br />получен<br />
+                        <input type="checkbox" id="setAll" onclick="setSelection();" />
+                    </th>
                  @*   <th>
                         Дата окончания
                     </th>*@
                 </tr>
+                @Model
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
                     var i = 1;
@@ -199,13 +208,18 @@
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
                             <td style="text-align:center;">@(doc.UserExperienceIn1C == true ? "+" : String.Empty)</td>
+                            <td style="text-align: center">
+                                @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
+                                <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                            </td>
                             @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
                         i++;
-                    }
+                    }                    
                 }
             </table>
+            <input type="hidden" name="anticache" value=@DateTime.Now />
         </td>
     </tr>
 </table> 
@@ -213,13 +227,27 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
     $(document).ready(function () {
         $("#BeginDate").datepicker();
         $("#EndDate").datepicker();
         $(".hasDatepicker").width("75px");
          setSortFields();
          setActiveMenuItem("userSicklist");
+
+         $("#SaveOriginalReceived").click(function(){
+            $("#IsOriginalReceivedModified").val("true");
+         });
     });
+
+    function setSelection()
+    {
+        if($("#setAll").is(':checked'))
+            $(".selcheck").attr('checked','checked');
+        else
+            $(".selcheck").removeAttr('checked');
+    }
+
     function resetFilter() {
         $("#BeginDate").val('');
         $("#EndDate").val('');
