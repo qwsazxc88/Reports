@@ -184,13 +184,13 @@
                     </th>
                     <th>
                         Оригинал<br />получен<br />
-                        <input type="checkbox" id="setAll" onclick="setSelection();" />
+                        <input type="checkbox" id="setAll" />
                     </th>
                  @*   <th>
                         Дата окончания
                     </th>*@
                 </tr>
-                @Model
+
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
                     var i = 1;
@@ -238,15 +238,18 @@
          $("#SaveOriginalReceived").click(function(){
             $("#IsOriginalReceivedModified").val("true");
          });
-    });
 
-    function setSelection()
-    {
-        if($("#setAll").is(':checked'))
-            $(".selcheck").attr('checked','checked');
-        else
-            $(".selcheck").removeAttr('checked');
-    }
+         $("#setAll").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheck").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheck").removeAttr('checked');
+            }
+         });
+    });
 
     function resetFilter() {
         $("#BeginDate").val('');
