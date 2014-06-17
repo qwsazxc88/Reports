@@ -10002,18 +10002,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
                 model.RecordUserId = selectedUserId;
-            List<IdNameDto> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(selectedUserId).ToList();
+            List<MissionReport> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(selectedUserId).ToList();
             if(reports.Count == 0)
             {
                 model.Reports = new List<IdNameDto>();
                 model.CostTypes = new List<IdNameDto>();
                 return;
             }
-            model.Reports = reports;
+            model.Reports = GetComboList(reports);
             int selectedReportId = reports[0].Id;
             if (model.RecordId != 0)
             {
-                IdNameDto selectedReport = reports.Where(x => x.Id == model.ReportId).FirstOrDefault();
+                MissionReport selectedReport = reports.Where(x => x.Id == model.ReportId).FirstOrDefault();
                 if (selectedReport != null)
                     selectedReportId = selectedReport.Id;
             }
@@ -10034,6 +10034,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestNumber = GetRequestNumber(selectedReportId, model.CostTypeId);
             }
             return;
+        }
+        protected static List<IdNameDto> GetComboList(List<MissionReport> reports)
+        {
+            List<IdNameDto> result = new List<IdNameDto>();
+            foreach (MissionReport report in reports)
+            {
+                string name = "AO" + report.Number;
+                name += " " + report.MissionOrder.BeginDate.ToShortDateString() + " - " +
+                        report.MissionOrder.EndDate.ToShortDateString();
+                if (report.MissionOrder.Targets.Count() > 0)
+                    name += " " + report.MissionOrder.Targets.First().City;
+                result.Add(new IdNameDto{Id = report.Id,Name = name});
+            }
+            return result;
         }
         protected string GetRequestNumber(int reportId, int costTypeId)
         {
@@ -10074,8 +10088,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public PbRecordCostTypesDto GetReportsForPbUserId(int userId)
         {
             PbRecordCostTypesDto model = new PbRecordCostTypesDto { Error = string.Empty };
-            List<IdNameDto> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(userId).ToList();
-            model.Children = reports;
+            List<MissionReport> reports = MissionReportDao.GetReportsWithPurchaseBookReportCosts(userId);
+            model.Children = GetComboList(reports);
             return model;
         }
 

@@ -2,6 +2,7 @@
 update [dbo].[MissionReportCostType] set Name = N'Проживание (руб.)' where Id = 2
 update [dbo].[MissionReportCostType] set Name = N'Проезд билеты' where Id = 5
 update [dbo].[MissionReportCostType] set Name = N'Прочие билеты' where Id = 8
+update [dbo].[MissionReportCostType] set SortOrder = 20+SortOrder where Id in (6,7)
 
 -- «Такси», «Аэроэкспресс», «Паром», «Пароход», «Вертолет», «Посадочный талон», «Путевой лист», «ПТС», 
 -- «Оплата стоянки», «Гостиница», «Аренда квартиры», «Упаковка багажа», «Провоз багажа», «Суточные»,  «Прочие расходы».
@@ -19,6 +20,6 @@ insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (18,
 insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (19,N'',N'Аренда квартиры',19)
 insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (20,N'',N'Упаковка багажа',20)
 insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (21,N'',N'Провоз багажа',21)
-insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (22,N'',N'Суточные',22)
-insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (23,N'',N'Прочие расходы',23)
+--insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (22,N'',N'Суточные',22)
+insert into [dbo].[MissionReportCostType] (Id,Code, Name, SortOrder) values (22,N'',N'Прочие расходы',22)
 set identity_insert [dbo].[MissionReportCostType] OFF

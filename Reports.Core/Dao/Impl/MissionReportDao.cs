@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -449,9 +451,14 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Number", NHibernateUtil.Int32);
         }
 
-        public virtual IList<IdNameDto> GetReportsWithPurchaseBookReportCosts(int userId)
+        public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)
         {
-            string sqlQuery = string.Format(@" select distinct mr.Id,N'АО'+cast(mr.Number as nvarchar(10)) as Name 
+            return (from report in Session.Query<MissionReport>()
+                     join cost in Session.Query<MissionReportCost>() on report.Id equals cost.Report.Id
+                     where cost.IsCostFromPurchaseBook && report.User.Id == userId 
+                            && !report.AccountantDateAccept.HasValue
+                     select report).ToList();
+            /*string sqlQuery = string.Format(@" select distinct mr.Id,N'АО'+cast(mr.Number as nvarchar(10)) as Name 
                                         from dbo.MissionReport mr
                                         inner join [dbo].[MissionReportCost] mrc on  mr.Id = mrc.ReportId
                                         where mrc.IsCostFromPurchaseBook = 1 and mr.UserId = {0}
@@ -460,7 +467,7 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();*/
         }
     }
 }
