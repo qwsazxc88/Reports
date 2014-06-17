@@ -1248,6 +1248,7 @@ namespace WebMvc.Controllers
          public ActionResult ChildVacationList(ChildVacationListModel model)
          {
              RequestBl.SetChildVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
          protected bool ValidateModel(ChildVacationListModel model)

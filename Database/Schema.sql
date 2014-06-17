@@ -1446,6 +1446,7 @@ create table ChildVacation (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   ExportFrom1C BIT null,
+  IsOriginalReceived BIT not null,
   TimesheetStatusId INT null,
   constraint PK_ChildVacation  primary key (Id)
 )

@@ -4988,8 +4988,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (hasError)
                 model.Documents = new List<VacationDto>();
             else
+            {
+                if (model.Documents != null && model.IsOriginalReceivedModified)
+                {
+                    model.IsOriginalReceivedModified = false;
+                    List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                }
+
                 SetDocumentsToModel(model, user);
+            }
         }
+
+        protected void ApplyReceivedOriginals(ChildVacationListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<ChildVacation> entities = ChildVacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (ChildVacation entity in entities)
+            {
+                // TODO SL: реализовать сохранение состояния свойства
+                entity.IsOriginalReceived = true;
+                ChildVacationDao.SaveAndFlush(entity);
+            }
+        }
+
         public void SetDocumentsToModel(ChildVacationListModel model, User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
