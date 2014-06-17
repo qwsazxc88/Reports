@@ -1093,6 +1093,7 @@ namespace WebMvc.Controllers
          public ActionResult VacationList(VacationListModel model)
          {
              RequestBl.SetVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 

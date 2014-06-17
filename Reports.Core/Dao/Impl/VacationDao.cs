@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -121,15 +122,17 @@ namespace Reports.Core.Dao.Impl
                 int sortedBy,
                 bool? sortDescending)
         {
-//            string sqlQuery =
+            #region Deleted
+            //            string sqlQuery =
 //                string.Format(@"select v.Id as Id,
 //                         u.Id as UserId,
 //                         N'Отпуск '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
 //                         v.[CreateDate] as Date    
 //            from [dbo].[Vacation] v
-//            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+            //            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
+            #endregion
 
-            string sqlQuery = string.Format(sqlSelectForList,
+            string sqlQuery = string.Format(sqlSelectForListVacation,
                                 DeleteRequestText,
                                 "dbo.VacationType",
                                 "v.[CreateDate]",
@@ -142,6 +145,7 @@ namespace Reports.Core.Dao.Impl
                 positionId, vacationTypeId,
                 requestStatusId, beginDate, endDate, userName,
                 sqlQuery,sortedBy,sortDescending);
+            #region Deleted
             //inner join [dbo].[UserToDepartment] ud on u.Id = ud.UserId";
             //string whereString = GetWhereForUserRole(role,userId);
 
@@ -238,6 +242,32 @@ namespace Reports.Core.Dao.Impl
             //if (departmentId != 0)
             //    query.SetInt32("departmentId", departmentId);
             //return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
+            #endregion
+        }
+
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
+        }
+
+        public IList<Vacation> LoadForIdsList(List<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<Vacation>();
+            ICriteria criteria = Session.CreateCriteria(typeof(Vacation));
+            criteria.Add(Restrictions.In("Id", ids));
+            return criteria.List<Vacation>();
         }
     }
 }

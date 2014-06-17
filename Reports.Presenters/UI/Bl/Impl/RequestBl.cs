@@ -4356,11 +4356,32 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
-            if(hasError)
+            if (hasError)
                 model.Documents = new List<VacationDto>();
             else
-                SetDocumentsToModel(model,user);
+            {
+                if (model.Documents != null && model.IsOriginalReceivedModified)
+                {
+                    model.IsOriginalReceivedModified = false;
+                    List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                }
+
+                SetDocumentsToModel(model, user);
+            }
         }
+
+        protected void ApplyReceivedOriginals(VacationListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Vacation> entities = VacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Vacation entity in entities)
+            {
+                // TODO SL: реализовать сохранение состояния свойства
+                entity.IsOriginalReceived = true;
+                VacationDao.SaveAndFlush(entity);
+            }
+        }
+
         public void SetDocumentsToModel(VacationListModel model,User user)
         {
             UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);

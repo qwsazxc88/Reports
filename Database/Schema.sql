@@ -1583,6 +1583,7 @@ create table Vacation (
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
+  IsOriginalReceived BIT not null,
   TimesheetStatusId INT null,
   constraint PK_Vacation  primary key (Id)
 )

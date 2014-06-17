@@ -21,6 +21,7 @@ namespace Reports.Core.Domain
         //public virtual string Comment { get; set; }
         
         public virtual VacationType Type { get; set; }
+        public virtual bool IsOriginalReceived { get; set; }
         //public virtual RequestStatus Status { get; set; }
 
         //public virtual RequestStatusEnum StatusId {

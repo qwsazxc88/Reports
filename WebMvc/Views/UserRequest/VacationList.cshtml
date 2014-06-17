@@ -126,6 +126,10 @@
                                 }
                             }                                                                                          
                             </td>
+                            <td style = "text-align:right">
+                                <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                                <button type="submit" id="SaveOriginalReceived">Записать</button>
+                            </td>
                         </tr>
               </table>  
            </div>                        
@@ -161,6 +165,10 @@
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
+                    <th>
+                        Оригинал<br />приказа<br />и заявления<br />получен<br />
+                        <input type="checkbox" id="setAll" />
+                    </th>
                     @*<th>
                         Дата окончания
                     </th>*@
@@ -181,11 +189,16 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
+                            <td style="text-align: center">
+                                @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
+                                <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                            </td>
                         </tr>
                         i++;
                     }
                 }
             </table>
+            <input type="hidden" name="anticache" value=@DateTime.Now />
         </td>
     </tr>
 </table> 
@@ -199,6 +212,21 @@
         $(".hasDatepicker").width("75px");
          setSortFields();
          setActiveMenuItem("userVacation");
+
+         $("#SaveOriginalReceived").click(function(){
+            $("#IsOriginalReceivedModified").val("true");
+         });
+
+         $("#setAll").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheck").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheck").removeAttr('checked');
+            }
+         });
     });
     function resetFilter() {
         $("#BeginDate").val('');
