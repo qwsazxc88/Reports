@@ -162,7 +162,10 @@
                         else
                             $("#NdsTr").hide();
                         if($("#RecordId").val() != 0)
+                        {
                             validateSums();
+                            $("#Sum").val(FormatFloat(GetFloat($("#Sum"))));
+                        }
                      }
                  }
              }
@@ -302,17 +305,20 @@
             if(!result)
             {
                 $("#SumNds").val('');
+                $("#Sum").val('');
                 return false;
             }    
             sum = GetFloat($("#AllSum"));
             if($("#IsWithNds").is(":checked"))
             {
                var nds = sum*0.1525;
+               nds = nds.toFixed(2);
                $("#SumNds").val(FormatFloat(nds));
-               $("#Sum").val(sum - nds);
+               var sum1 = sum - nds;
+               $("#Sum").val(FormatFloat(sum1.toFixed(2)));
             }
             else
-                $("#Sum").val(sum);
+                $("#Sum").val(FormatFloat(sum));
         }
         function validateAllSum()
         {
@@ -336,12 +342,16 @@
             if(!result)
             {
                 //$("#SumNds").val('');
+                $("#Sum").val('');
                 return false;
             }    
             sum = GetFloat($("#SumNds"));
             var allSum = GetFloat($("#AllSum"));
             if(sum != undefined && allSum != undefined)
-                $("#Sum").val(allSum - sum);
+            {
+                var sum1 = allSum - sum;
+                $("#Sum").val(FormatFloat(sum1.toFixed(2)));
+            }
             else
                 $("#Sum").val('');
         }
@@ -368,8 +378,10 @@
                 if(allSum != undefined)
                 {
                    var nds = allSum*0.1525;
+                   nds = nds.toFixed(2);
                    $("#SumNds").val(FormatFloat(nds));
-                   $("#Sum").val(allSum - nds);
+                   var sum = allSum - nds;
+                   $("#Sum").val(FormatFloat(sum.toFixed(2)));
                 }
                 else
                 {
@@ -382,7 +394,7 @@
                 $("#NdsTr").hide();
                 $("#SumNds").val('');
                 if(allSum != undefined)
-                    $("#Sum").val(allSum);
+                    $("#Sum").val(FormatFloat(allSum));
                 else
                     $("#Sum").val('');
              }

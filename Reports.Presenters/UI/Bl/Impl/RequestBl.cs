@@ -9938,7 +9938,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                         Records = records,
                                                         AllSum = records.Sum(x => x.AllSum),
                                                         Sum = records.Sum(x => x.Sum),
-                                                        SumNds = records.Sum(x => x.SumNds)
+                                                        SumNds = records.Sum(x => x.SumNds.HasValue ? x.SumNds.Value:0)
                                                     };
             return model;
         }
