@@ -8,7 +8,7 @@
         public int ReportId { get; set; }
         public int CostTypeId { get; set; }
         public decimal Sum { get; set; }
-        public decimal SumNds { get; set; }
+        public decimal? SumNds { get; set; }
         public decimal AllSum { get; set; }
         public string RequestNumber { get; set; }
     }

@@ -9978,6 +9978,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestNumber = entity.RequestNumber;
                 model.Sum = entity.Sum;
                 model.SumNds = entity.SumNds;
+                model.IsWithNds = entity.SumNds.HasValue && (entity.SumNds.Value != 0);
                 model.RecordUserId = entity.User.Id;
             }
             LoadDictionaries(model);
