@@ -52,5 +52,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string UserName { get; set; }
 
         public bool IsOriginalReceivedModified { get; set; }
+        public bool IsOriginalReceivedEditable { get; set; }
     }
 }

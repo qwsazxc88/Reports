@@ -5015,12 +5015,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 RequestStatuses = GetRequestStatuses(),
                 Positions = GetPositions(user)
             };
+            SetFlagsState(user, model);
             SetInitialDates(model);
             return model;
         }
         public void SetChildVacationListModel(ChildVacationListModel model, bool hasError)
         {
-            User user = UserDao.Load(model.UserId);
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             //model.Departments = GetDepartments(user);
             model.RequestStatuses = GetRequestStatuses();
             model.Positions = GetPositions(user);
@@ -5029,7 +5030,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Documents = new List<VacationDto>();
             else
             {
-                if (model.Documents != null && model.IsOriginalReceivedModified)
+                if (model.Documents != null && model.IsOriginalReceivedModified && ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager))
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
@@ -5038,6 +5039,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 SetDocumentsToModel(model, user);
             }
+            SetFlagsState(user, model);
         }
 
         protected void ApplyReceivedOriginals(ChildVacationListModel model, List<int> idsToApplyReceivedOriginals)
@@ -5048,6 +5050,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 ChildVacationDao.SaveAndFlush(entity);
+            }
+        }
+
+        protected void SetFlagsState(User user, ChildVacationListModel model)
+        {
+            if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            {
+                model.IsOriginalReceivedEditable = true;
             }
         }
 
