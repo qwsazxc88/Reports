@@ -1,0 +1,1 @@
+﻿alter table  [dbo].[MissionReport] add IsDocumentsSaveToArchive bit not null default 0

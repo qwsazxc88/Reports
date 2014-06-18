@@ -37,6 +37,9 @@ namespace Reports.Core.Domain
         public virtual decimal UserSumReceived { get; set; }
         public virtual decimal AccountantAllSum { get; set; }
         public virtual decimal PurchaseBookAllSum { get; set; }
+
+
+        public virtual bool IsDocumentsSaveToArchive { get; set; }
         //public virtual decimal? UserSumCash { get; set; }
         //public virtual decimal? UserSumNotCash { get; set; }
 
@@ -64,7 +67,7 @@ namespace Reports.Core.Domain
         public virtual User AcceptAccountant { get; set; }
         public virtual DateTime? SendTo1C { get; set; }
         public virtual DateTime? DeleteDate { get; set; }
-        //public virtual bool DeleteAfterSendTo1C { get; set; }
+       
 
         public virtual MissionOrder MissionOrder { get; set; }
 

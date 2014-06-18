@@ -49,6 +49,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAccountantEditable { get; set; }
         public bool IsDeleted { get; set; }
 
+        public bool IsDocumentsSaveToArchiveAvailable { get; set; }
+        public bool IsPrintArchivistAddressAvailable { get; set; }
+
         public bool ReloadPage { get; set; }
 
         public RequestCommentsModel CommentsModel { get; set; }

@@ -8998,6 +8998,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsEditable = true;
                             model.IsUserApprovedAvailable = true;
                         }
+                        if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                        {
+                            model.IsPrintArchivistAddressAvailable = true;
+                            if(!entity.IsDocumentsSaveToArchive)
+                                model.IsDocumentsSaveToArchiveAvailable = true;
+                        }
                     //}
                     break;
                 case UserRole.Manager:
@@ -9087,6 +9093,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsAccountantApproved = state;
             model.IsManagerRejectAvailable = state;
             model.IsAccountantRejectAvailable = state;
+            model.IsDocumentsSaveToArchiveAvailable = state;
+            model.IsPrintArchivistAddressAvailable = state;
         }
         protected void SetHiddenFields(MissionReportEditModel model)
         {
@@ -10166,5 +10174,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return documentVersion;
         }
         #endregion
+
+         public void SaveDocumentsToArchive(DeletePbRecordModel model)
+         {
+             MissionReport report = MissionReportDao.Load(model.Id);
+             if(report == null)
+                 throw new ArgumentException(string.Format("Не найден авансовый отчет (id {0}).", model.Id));
+             report.IsDocumentsSaveToArchive = true;
+             MissionReportDao.SaveAndFlush(report);
+         }
     }
 }

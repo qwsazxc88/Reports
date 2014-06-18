@@ -138,18 +138,17 @@
         <tr>
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-               <input type="submit" value="Сохранить" onclick="return ValidateForm();" 
-                        @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-               @if (Model.Id > 0)
-               {
-                    <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
-                   @* <input type="button" value="Печать командировочного удостоверения" onclick="window.location.href='@Url.Action("GetDocumentPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
-                    <input type="button" value="Печать путевого листа" onclick="window.location.href='@Url.Action("GetPathListPrintForm", "MissionOrder", new { id = Model.Id })';"/>   *@
-               }
-               @*<div style="text-align: right;"><input type="submit" value="Отклонить" onclick="return Delete();" 
-                        @if (!Model.IsDeleteAvailable)
-                        {<text>style="display:none"</text>}/>
-                </div>*@
+            <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+            @if (Model.Id > 0)
+            {
+                <input type="button" value="Печать авансового отчета" onclick="window.location.href='@Url.Action("GetReportPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
+            }
+            <input type="hidden" id="IsDocumentsSaveToArchiveAvailable" name="IsDocumentsSaveToArchiveAvailable" value="@Model.IsDocumentsSaveToArchiveAvailable" />
+            <input type="button" id="IsDocumentsSaveToArchiveBtn" value="Оригиналы переданы в архив" onclick="return DocumentsSaveToArchive();" @if (!Model.IsDocumentsSaveToArchiveAvailable)
+                                                                                                               {<text>style="display:none"</text>}/>
+            <input type="hidden" id="IsPrintArchivistAddressAvailable" name="IsPrintArchivistAddressAvailable" value="@Model.IsPrintArchivistAddressAvailable" />
+            <input type="button" value="Адрес архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
+                                                                                                               {<text>style="display:none"</text>}/>
             </td>
         </tr>
     </table>
@@ -779,6 +778,40 @@
             return obj;
         }
 
+
+        function DocumentsSaveToArchive()
+        {
+            var id = $("#Id").val();
+            var url="@Url.Action("SaveDocumentsToArchive", "MissionOrder")";
+            var jqxhr = $.ajax({
+                type: "POST",
+                datatype: "json",
+                url: url,
+                data: {
+                    'Id': id
+                },
+                success:function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                alert("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(result.Error != '')
+                                            {
+                                                alert("Ошибка:"+result.Error);
+                                               
+                                            }
+                                            else
+                                            {
+                                                 $("#IsDocumentsSaveToArchiveBtn").hide();
+                                                 $("#IsDocumentsSaveToArchiveAvailable").val('False');
+                                            }    
+                                  }});
+        }
  
       
     </script>
