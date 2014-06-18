@@ -408,6 +408,7 @@ namespace WebMvc.Controllers
          public ActionResult DismissalList(DismissalListModel model)
          {
              RequestBl.SetDismissalListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 

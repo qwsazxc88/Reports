@@ -1739,8 +1739,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(hasError)
                 model.Documents = new List<VacationDto>();
             else
+            {
+                if (model.Documents != null && model.IsOriginalReceivedModified)
+                {
+                    model.IsOriginalReceivedModified = false;
+                    List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                    ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                }
+
                 SetDocumentsToModel(model, user);
+            }
         }
+
+        protected void ApplyReceivedOriginals(DismissalListModel model, List<int> idsToApplyReceivedOriginals)
+        {
+            List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
+            foreach (Dismissal entity in entities)
+            {
+                // TODO SL: реализовать сохранение состояния свойства
+                entity.IsOriginalReceived = true;
+                DismissalDao.SaveAndFlush(entity);
+            }
+        }
+
         public void SetDocumentsToModel(DismissalListModel model, User user)
         {
 
@@ -3208,9 +3229,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UserId = AuthenticationService.CurrentUser.Id,
                 DepartmentName = dep.Name,
                 DepartmentId = dep.Id,
-                DepartmentReadOnly = dep.IsReadOnly,
+                DepartmentReadOnly = dep.IsReadOnly
                 //Department = GetDepartmentDto(user),
             };
+            SetFlagsState(user, model);
             SetDictionariesToModel(model,user);
             SetInitialDates(model);
             return model;
@@ -3261,19 +3283,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void SetSicklistListModel(SicklistListModel model,bool hasError)
         {
-            User user = UserDao.Load(model.UserId);
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             SetDictionariesToModel(model, user);
             if (hasError)
                 model.Documents = new List<SicklistDto>();
             else
             {
-                if (model.Documents != null && model.IsOriginalReceivedModified)
+                if (model.Documents != null && model.IsOriginalReceivedModified && ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager))
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
                 }
-                
+                SetFlagsState(user, model);
                 SetDocumentsToModel(model, user);
             }
         }
@@ -3313,6 +3335,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SortBy,
                 model.SortDescending);
         }
+
+        protected void SetFlagsState(User user, SicklistListModel model)
+        {
+            if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            {
+                model.IsOriginalReceivedEditable = true;
+            }
+        }
+
         public SicklistEditModel GetSicklistEditModel(int id, int userId)
         {
             SicklistEditModel model = new SicklistEditModel { Id = id, UserId = userId };

@@ -299,6 +299,40 @@ namespace Reports.Core.Dao.Impl
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
+        protected const string sqlSelectForListDismissal =
+                                @"select v.Id as Id,
+                                u.Id as UserId,
+                                '{3}' as Name,
+                                {2} as Date,  
+                                {5} as BeginDate,  
+                                {6} as EndDate,  
+                                v.Number as Number,
+                                u.Name as UserName,
+                                t.Name as RequestType,
+                                case when v.DeleteDate is not null then '{0}'
+                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
+                                     when v.PersonnelManagerDateAccept is not null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Согласовано кадровиком'
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is not null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено кадровику'    
+                                    when  -- v.PersonnelManagerDateAccept is null and 
+                                          v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is not null 
+                                          then 'Отправлено руководителю'    
+                                    when  v.PersonnelManagerDateAccept is null 
+                                          and v.ManagerDateAccept is null 
+                                          and v.UserDateAccept is null 
+                                          then 'Черновик сотрудника'    
+                                    else ''
+                                end as RequestStatus,
+                                v.IsOriginalReceived as IsOriginalReceived
+                                from {4} v
+                                left join {1} t on v.TypeId = t.Id
+                                inner join [dbo].[Users] u on u.Id = v.UserId";
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
         }

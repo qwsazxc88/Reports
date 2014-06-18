@@ -126,6 +126,10 @@
                                 }
                             }
                             </td>
+                            <td style = "text-align:right">
+                                <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                                <button type="submit" id="SaveFlags">Записать</button>
+                            </td>
                         </tr>
              </table>
             </div>                           
@@ -159,6 +163,10 @@
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
+                    <th>
+                        Оригиналы<br />документов<br />получены<br />
+                        <input type="checkbox" id="setAll1" />
+                    </th>
                    @* <th>
                         Дата окончания
                     </th>*@
@@ -179,6 +187,10 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                            <td style="text-align: center">
+                                @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })
+                                <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                            </td>
                             @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                             </tr>
@@ -186,6 +198,7 @@
                     }
                 }
             </table>
+            <input type="hidden" name="anticache" value=@DateTime.Now />
         </td>
     </tr>
 </table> 
@@ -199,6 +212,21 @@
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("userDismissal");
+
+        $("#SaveFlags").click(function(){
+            $("#IsOriginalReceivedModified").val("true");
+         });
+
+         $("#setAll1").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheck1").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheck1").removeAttr('checked');
+            }
+         });
     });
     function resetFilter() {
         $("#BeginDate").val('');
