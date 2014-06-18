@@ -130,6 +130,7 @@
                                 @if (Model.IsOriginalReceivedEditable)
                                 {
                                     <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                                    <input type="hidden" id="IsPersonnelFileSentToArchiveModified" name="isPersonnelFileSentToArchiveModified" value="false" />
                                     <button type="submit" id="SaveFlags">Записать</button>
                                 }
                             </td>
@@ -173,6 +174,13 @@
                             <input type="checkbox" id="setAll1" />
                         </th>
                     }
+                    @if (Model.IsPersonnelFileSentToArchiveEditable)
+                    {
+                        <th>
+                            Личное дело<br />передано<br />в архив<br />
+                            <input type="checkbox" id="setAll2" />
+                        </th>
+                    }
                    @* <th>
                         Дата окончания
                     </th>*@
@@ -183,7 +191,10 @@
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
-                            <td>@i</td>
+                            <td>
+                                @i
+                                <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                            </td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("DismissalEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
@@ -192,18 +203,23 @@
                              <td>@doc.Number</td>
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
-                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>                            
                             @if (Model.IsOriginalReceivedEditable)
                             {
                                 <td style="text-align: center">
-                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })
-                                    <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })                                    
+                                </td>
+                            }
+                            @if (Model.IsPersonnelFileSentToArchiveEditable)
+                            {
+                                <td style="text-align: center">
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2" })
                                 </td>
                             }
                             @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
-                        i++;
+                            i++;
                     }
                 }
             </table>
@@ -224,6 +240,7 @@
 
         $("#SaveFlags").click(function(){
             $("#IsOriginalReceivedModified").val("true");
+            $("#IsPersonnelFileSentToArchiveModified").val("true");
          });
 
          $("#setAll1").click(function(){
@@ -234,6 +251,17 @@
             else
             {
                 $(".selcheck1").removeAttr('checked');
+            }
+         });
+
+         $("#setAll2").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheck2").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheck2").removeAttr('checked');
             }
          });
     });

@@ -176,7 +176,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
-                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("IsPersonnelFileSentToArchive", NHibernateUtil.Boolean);
         }
 
         public IList<Dismissal> LoadForIdsList(List<int> ids)

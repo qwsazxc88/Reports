@@ -49,6 +49,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsOriginalReceivedModified { get; set; }
         public bool IsOriginalReceivedEditable { get; set; }
+        public bool IsPersonnelFileSentToArchiveModified { get; set; }
+        public bool IsPersonnelFileSentToArchiveEditable { get; set; }
     }
 
     

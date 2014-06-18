@@ -711,6 +711,8 @@ create table Dismissal (
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
+  IsOriginalReceived BIT not null,
+  IsPersonnelFileSentToArchive BIT not null,
   TimesheetStatusId INT null,
   RegistryNumber INT null,
   PersonalIncomeTax DECIMAL(19, 2) null,

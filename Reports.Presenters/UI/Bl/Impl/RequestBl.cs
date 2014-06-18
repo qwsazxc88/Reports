@@ -1741,11 +1741,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Documents = new List<VacationDto>();
             else
             {
-                if (model.Documents != null && model.IsOriginalReceivedModified && ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager))
+                if (model.Documents != null && ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager))
                 {
-                    model.IsOriginalReceivedModified = false;
-                    List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
-                    ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                    if (model.IsOriginalReceivedModified)
+                    {
+                        model.IsOriginalReceivedModified = false;
+                        List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
+                        ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
+                    }
+                    if (model.IsPersonnelFileSentToArchiveModified)
+                    {
+                        model.IsPersonnelFileSentToArchiveModified = false;
+                        List<int> idsToApplyPersonnelFileSentToArchive = model.Documents.Where(x => x.IsPersonnelFileSentToArchive).Select(x => x.Id).ToList();
+                        ApplyPersonnelFileSentToArchive(model, idsToApplyPersonnelFileSentToArchive);
+                    }
                 }
                 SetDocumentsToModel(model, user);
             }
@@ -1763,11 +1772,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        protected void ApplyPersonnelFileSentToArchive(DismissalListModel model, List<int> idsToApplyPersonnelFileSentToArchive)
+        {
+            List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyPersonnelFileSentToArchive).ToList();
+            foreach (Dismissal entity in entities)
+            {
+                // TODO SL: реализовать сохранение состояния свойства
+                entity.IsPersonnelFileSentToArchive = true;
+                DismissalDao.SaveAndFlush(entity);
+            }
+        }
+
         protected void SetFlagsState(User user, DismissalListModel model)
         {
             if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 model.IsOriginalReceivedEditable = true;
+                model.IsPersonnelFileSentToArchiveEditable = true;
             }
         }
 

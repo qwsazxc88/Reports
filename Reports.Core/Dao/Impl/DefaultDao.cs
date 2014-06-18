@@ -329,7 +329,8 @@ namespace Reports.Core.Dao.Impl
                                           then 'Черновик сотрудника'    
                                     else ''
                                 end as RequestStatus,
-                                v.IsOriginalReceived as IsOriginalReceived
+                                v.IsOriginalReceived as IsOriginalReceived,
+                                v.IsPersonnelFileSentToArchive as IsPersonnelFileSentToArchive
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
