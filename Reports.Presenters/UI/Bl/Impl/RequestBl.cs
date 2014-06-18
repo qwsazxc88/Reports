@@ -1729,26 +1729,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //Department = GetDepartmentDto(user),
             };
             SetDictionariesToModel(model, user);
+            SetFlagsState(user, model);
             SetInitialDates(model);
             return model;
         }
         public void SetDismissalListModel(DismissalListModel model, bool hasError)
         {
-            User user = UserDao.Load(model.UserId);
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             SetDictionariesToModel(model, user);
             if(hasError)
                 model.Documents = new List<VacationDto>();
             else
             {
-                if (model.Documents != null && model.IsOriginalReceivedModified)
+                if (model.Documents != null && model.IsOriginalReceivedModified && ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager))
                 {
                     model.IsOriginalReceivedModified = false;
                     List<int> idsToApplyReceivedOriginals = model.Documents.Where(x => x.IsOriginalReceived).Select(x => x.Id).ToList();
                     ApplyReceivedOriginals(model, idsToApplyReceivedOriginals);
                 }
-
                 SetDocumentsToModel(model, user);
             }
+            SetFlagsState(user, model);
         }
 
         protected void ApplyReceivedOriginals(DismissalListModel model, List<int> idsToApplyReceivedOriginals)
@@ -1759,6 +1760,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 DismissalDao.SaveAndFlush(entity);
+            }
+        }
+
+        protected void SetFlagsState(User user, DismissalListModel model)
+        {
+            if ((user.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            {
+                model.IsOriginalReceivedEditable = true;
             }
         }
 
