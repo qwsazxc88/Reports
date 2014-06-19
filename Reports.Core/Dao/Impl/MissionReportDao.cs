@@ -66,7 +66,8 @@ namespace Reports.Core.Dao.Impl
                                 end as State,
                                 uBuh.Name as AccountantName,
                                 case when [IsDocumentsSaveToArchive] = 1 then N'Да' else N'Нет' end as IsDocumentsSaveToArchive,
-                                case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
+                                ArchiveDate,
+                                -- case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
                                 ArchiveNumber
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
@@ -379,7 +380,7 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by IsDocumentsSaveToArchive";
                     break;
                 case 14:
-                    orderBy = @" order by IsDocumentsSendToArchivist";
+                    orderBy = @" order by ArchiveDate";
                     break;
                 case 15:
                     orderBy = @" order by ArchiveNumber";
@@ -439,7 +440,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("AccountantName", NHibernateUtil.String).
                 AddScalar("IsDocumentsSaveToArchive", NHibernateUtil.String).
-                AddScalar("IsDocumentsSendToArchivist", NHibernateUtil.String).
+                AddScalar("ArchiveDate", NHibernateUtil.DateTime).
                 AddScalar("ArchiveNumber", NHibernateUtil.String).
                 //AddScalar("BeginDate", NHibernateUtil.DateTime).
                 //AddScalar("EndDate", NHibernateUtil.DateTime).

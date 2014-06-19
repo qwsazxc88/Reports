@@ -152,7 +152,7 @@
                         <div id="sort13"  style="min-width:120px"><a href="#"  onclick = "SortChanged(13);">Оригиналы <br/>переданы в архив</a></div>
                     </th>
                      <th>
-                        <div id="sort14"  style="min-width:120px"><a href="#"  onclick = "SortChanged(14);">Оригиналы <br/>получены архивариусом </a></div>
+                        <div id="sort14"  style="min-width:120px"><a href="#"  onclick = "SortChanged(14);">Оригиналы <br/>получены  <br/>архивариусом </a></div>
                     </th>
                     <th>
                         <div id="sort15"  style="min-width:120px"><a href="#"  onclick = "SortChanged(15);">№ коробки <br/>(полки, места)</a></div>
@@ -192,7 +192,7 @@
                             <td>@doc.State</td>
                             <td>@doc.AccountantName</td>
                             <td>@doc.IsDocumentsSaveToArchive</td>
-                            <td>@doc.IsDocumentsSendToArchivist</td>
+                            <td>@BaseBl.FormatDate(doc.ArchiveDate)</td>
                             <td>@doc.ArchiveNumber</td>
                            @* <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>*@
                            @* @if (Model.IsApproveAvailable)
