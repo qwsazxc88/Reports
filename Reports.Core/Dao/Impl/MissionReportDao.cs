@@ -240,6 +240,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 case UserRole.Findep:
+                case UserRole.Archivist:
                     //sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
                 default:

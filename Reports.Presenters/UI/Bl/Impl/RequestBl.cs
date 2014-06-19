@@ -8872,6 +8872,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
+            model.ArchiveDate = FormatDate(entity.ArchiveDate);
+            model.ArchiveNumber = entity.ArchiveNumber;
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
@@ -8987,6 +8989,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDeleted = entity.DeleteDate.HasValue;
             if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
                 model.AccountantFio = entity.AcceptAccountant.FullName;// +", " + entity.AcceptAccountant.Email;
+            if (entity.Archivist != null)
+                model.ArchivistFio = entity.Archivist.FullName;
             
             switch (currentUserRole)
             {
@@ -9051,6 +9055,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.Archivist:
+                     if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
+                         model.IsArchivistEditable = true;
+                    break;
                     //case UserRole.OutsourcingManager:
                     //    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                     //        model.IsDeleteAvailable = true;
@@ -9077,7 +9085,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
                 || model.IsManagerApproveAvailable 
-                || model.IsAccountantEditable || model.IsAccountantApproveAvailable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
+                || model.IsAccountantEditable 
+                || model.IsAccountantApproveAvailable
+                || model.IsArchivistEditable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
 
         }
         protected void SetFlagsState(MissionReportEditModel model, bool state)
@@ -9095,6 +9105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsAccountantRejectAvailable = state;
             model.IsDocumentsSaveToArchiveAvailable = state;
             model.IsPrintArchivistAddressAvailable = state;
+            model.IsArchivistEditable = state;
         }
         protected void SetHiddenFields(MissionReportEditModel model)
         {
@@ -9138,6 +9149,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //case UserRole.Secretary:
                 //    return true;
                 case UserRole.Accountant:
+                case UserRole.Archivist:
                     return true;
                 case UserRole.Findep:
                     if (isSave)
@@ -9255,6 +9267,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsAccountantEditable)
             {
                 SaveMissionCostsTransactions(entity, model);
+            }
+
+            if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
+            {
+                entity.ArchiveDate = DateTime.Parse(model.ArchiveDate);
+                entity.ArchiveNumber = model.ArchiveNumber;
+                entity.Archivist = UserDao.Load(current.Id);
             }
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue

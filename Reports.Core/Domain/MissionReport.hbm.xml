@@ -55,6 +55,11 @@
 	<property name="DeleteDate" not-null="false"/>
   <property name="IsDocumentsSaveToArchive" not-null="true"/>
 	<!--<property name="DeleteAfterSendTo1C" not-null="true"/>-->
+    
+  <property name="ArchiveDate" not-null="false"/>
+  <property name="ArchiveNumber" length="128" not-null="false"/>
+  <many-to-one name="Archivist" class="User" column="Archivist" foreign-key="FK_MissionReport_Archivist" index="IX_MissionReport_Archivist"  not-null="false"/>
+   
 
 	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
 	  

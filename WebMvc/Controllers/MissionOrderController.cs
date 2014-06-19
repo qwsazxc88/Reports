@@ -56,6 +56,8 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+            UserRole.Director | UserRole.Secretary | UserRole.Findep )]
         public ActionResult Index()
         {
             var model = RequestBl.GetMissionOrderListModel();
@@ -108,7 +110,6 @@ namespace WebMvc.Controllers
                 }
             }
         }
-
         protected bool ValidateModel(MissionOrderListModel model)
         {
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
@@ -138,6 +139,8 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+           UserRole.Director | UserRole.Secretary | UserRole.Findep)]
         public ActionResult MissionOrderEdit(int id,int? userId)
         {
             MissionOrderEditModel model = RequestBl.GetMissionOrderEditModel(id,userId);
@@ -501,7 +504,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
         [HttpGet]
         public ActionResult MissionReportEdit(int id/*, int? userId*/)
         {
@@ -1328,6 +1331,7 @@ namespace WebMvc.Controllers
 
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Employee)]
         public ContentResult SaveDocumentsToArchive(DeletePbRecordModel model)
         {
             PbRecordSaveDialogErrorModel result = new PbRecordSaveDialogErrorModel { Error = string.Empty };

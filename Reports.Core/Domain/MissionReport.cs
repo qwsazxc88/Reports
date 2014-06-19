@@ -67,7 +67,10 @@ namespace Reports.Core.Domain
         public virtual User AcceptAccountant { get; set; }
         public virtual DateTime? SendTo1C { get; set; }
         public virtual DateTime? DeleteDate { get; set; }
-       
+
+        public virtual DateTime? ArchiveDate { get; set; }
+        public virtual string ArchiveNumber { get; set; }
+        public virtual User Archivist { get; set; }
 
         public virtual MissionOrder MissionOrder { get; set; }
 

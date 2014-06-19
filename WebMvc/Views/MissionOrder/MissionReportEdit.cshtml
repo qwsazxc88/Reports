@@ -136,6 +136,35 @@
             <td>@Model.AccountantFio</td>
         </tr>
         <tr>
+            <td>
+                <input type="hidden" id="IsArchivistEditable" name="IsArchivistEditable" value="@Model.IsArchivistEditable" />
+                @Html.LabelFor(m => m.ArchiveDate):
+            </td>
+            <td>
+                @if (Model.IsArchivistEditable)
+                {
+                    @Html.EditorFor(model => model.ArchiveDate)
+                }
+                else
+                {
+                    @Html.DisplayFor(model => model.ArchiveDate)
+                    @Html.HiddenFor(model => model.ArchiveDate)
+                } 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ArchiveNumber):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.ArchiveNumber, Model.IsArchivistEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
+            </td>
+        </tr>
+        <tr>
+            <td> @Html.LabelFor(m => m.ArchivistFio)</td>
+            <td>@Model.ArchivistFio</td>
+        </tr>
+        <tr>
             <td colspan="2">
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
@@ -237,6 +266,8 @@
         var  actionEditCostDialogUrl = "@Url.Action("EditCostDialog", "MissionOrder")";
         var  actionEditTranDialogUrl = "@Url.Action("EditTranDialog", "MissionOrder")";
         $(document).ready(function () {
+            $("#ArchiveDate").datepicker();
+            $(".hasDatepicker").width("75px");
             /*$("#BeginDate").datepicker();
             $("#EndDate").datepicker();
             $(".hasDatepicker").width("75px");
@@ -256,6 +287,27 @@
             {
                 addControlError($("#Hotels"),'Обязательное поле');
                 return false;
+            }
+            if($("#IsArchivistEditable").val() == 'True')
+            {
+                var result = true;
+                //clearControlErrors($("#ArchiveNumber"));
+                //clearControlErrors($("#ArchiveDate"));
+                if(!IsFieldNotEmpty($("#ArchiveNumber")))
+                    result = false;
+                if(!IsFieldNotEmpty($("#ArchiveDate")))
+                    result = false;
+                else
+                {
+                    try {
+                        beginDate = $.datepicker.parseDate("dd.mm.yy", $('#ArchiveDate').val());
+                    }
+                    catch (error) {
+                        addControlError($("#ArchiveDate"), "Неверная дата");
+                        result = false;
+                    }
+                }
+                return result;
             }
             return true;
         }
