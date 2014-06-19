@@ -42,24 +42,6 @@ namespace Reports.Core.Dao.Impl
                                 v.UserAllSum as UserSum,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
-                                -- case when (v.UserAllSum - v.AllSum 
-                                --    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                --    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                --    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end) > 0
-                                --    then v.UserAllSum - v.AllSum 
-                                --    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                --    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                --    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
-                                --    else null end
-                                -- case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
-                                -- case when ((NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
-                                --         (NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
-                                --           and v.DeleteDate is null and v.SendTo1C is null
-                                --           and 
-                                --           ( (IsResidencePaid = 1 and ResidenceRequestNumber is null) or
-                                --             (IsAirTicketsPaid = 1 and AirTicketsRequestNumber is null) or
-                                --             (IsTrainTicketsPaid = 1 and TrainTicketsRequestNumber is null))
-                                --    then N'Заказ' else N'' end  as NeedSecretary,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
                                      when v.[AccountantDateAccept] is not null 
@@ -82,9 +64,10 @@ namespace Reports.Core.Dao.Impl
                                           then N'Черновик сотрудника'    
                                     else N''
                                 end as State,
-                                uBuh.Name as AccountantName
-                                -- v.BeginDate as BeginDate,  
-                                -- v.EndDate as EndDate
+                                uBuh.Name as AccountantName,
+                                case when [IsDocumentsSaveToArchive] = 1 then N'Да' else N'Нет' end as IsDocumentsSaveToArchive,
+                                case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
+                                ArchiveNumber
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
@@ -392,6 +375,15 @@ namespace Reports.Core.Dao.Impl
                 case 12:
                     orderBy = @" order by AccountantName";
                     break;
+                case 13:
+                    orderBy = @" order by IsDocumentsSaveToArchive";
+                    break;
+                case 14:
+                    orderBy = @" order by IsDocumentsSendToArchivist";
+                    break;
+                case 15:
+                    orderBy = @" order by ArchiveNumber";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -446,6 +438,9 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("NeedSecretary", NHibernateUtil.String).
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("AccountantName", NHibernateUtil.String).
+                AddScalar("IsDocumentsSaveToArchive", NHibernateUtil.String).
+                AddScalar("IsDocumentsSendToArchivist", NHibernateUtil.String).
+                AddScalar("ArchiveNumber", NHibernateUtil.String).
                 //AddScalar("BeginDate", NHibernateUtil.DateTime).
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).

@@ -148,6 +148,15 @@
                      <th>
                         <div id="sort12"  style="min-width:120px"><a href="#"  onclick = "SortChanged(12);">ФИО <br/>бухгалтера</a></div>
                     </th>
+                    <th>
+                        <div id="sort13"  style="min-width:120px"><a href="#"  onclick = "SortChanged(13);">Оригиналы <br/>переданы в архив</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:120px"><a href="#"  onclick = "SortChanged(14);">Оригиналы <br/>получены архивариусом </a></div>
+                    </th>
+                    <th>
+                        <div id="sort15"  style="min-width:120px"><a href="#"  onclick = "SortChanged(15);">№ коробки <br/>(полки, места)</a></div>
+                    </th>
                   @*   @if (Model.IsApproveAvailable)
                      {
                         <th>
@@ -182,6 +191,9 @@
                             <td>@doc.NeedSecretary</td>*@
                             <td>@doc.State</td>
                             <td>@doc.AccountantName</td>
+                            <td>@doc.IsDocumentsSaveToArchive</td>
+                            <td>@doc.IsDocumentsSendToArchivist</td>
+                            <td>@doc.ArchiveNumber</td>
                            @* <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>*@
                            @* @if (Model.IsApproveAvailable)
                             {
