@@ -21,8 +21,8 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | 
-        UserRole.Director | UserRole.Secretary | UserRole.Findep)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
     public class MissionOrderController : BaseController
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
@@ -438,7 +438,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
         public ActionResult MissionReportsList()
         {
             var model = RequestBl.GetMissionReportsListModel();

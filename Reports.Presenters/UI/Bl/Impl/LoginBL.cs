@@ -192,6 +192,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.Findep);
             if ((user.UserRole & UserRole.StaffManager) > 0 && !roles.Contains(UserRole.StaffManager))
                 roles.Add(UserRole.StaffManager);
+            if ((user.UserRole & UserRole.Archivist) > 0 && !roles.Contains(UserRole.Archivist))
+                roles.Add(UserRole.Archivist);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
