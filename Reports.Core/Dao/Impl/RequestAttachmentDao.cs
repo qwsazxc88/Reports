@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Transform;
 using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Core.Services;
 
@@ -44,6 +46,21 @@ namespace Reports.Core.Dao.Impl
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
             query.SetInt32("entityId", entityId);
             return query.ExecuteUpdate();
+        }
+        public IList<IdEntityIdDto> LoadAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type)
+        {
+
+            if (entityIds.Count == 0)
+                return new List<IdEntityIdDto>();
+
+            const string sqlQuery = @"select Id,RequestId as EntityId from [dbo].[RequestAttachment] where 
+                              [RequestType] = :typeId and RequestId in (:entitiesList)";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+              AddScalar("Id", NHibernateUtil.Int32).
+              AddScalar("EntityId", NHibernateUtil.Int32).
+              SetInt32("typeId", (int)type).
+              SetParameterList("entitiesList", entityIds);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdEntityIdDto))).List<IdEntityIdDto>();
         }
         #endregion
     }

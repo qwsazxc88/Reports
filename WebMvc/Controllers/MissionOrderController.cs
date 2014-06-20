@@ -535,7 +535,7 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
                 return View(model);
             return RedirectToAction("MissionReportsList");
         }
@@ -1383,6 +1383,69 @@ namespace WebMvc.Controllers
         {
             PrintArchivistAddressFormModel model = RequestBl.GetPrintArchivistAddressFormModel(id);
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult AddCostAttachmentDialog(int id)
+        {
+            try
+            {
+                CostAddAttachmentModel model = new CostAddAttachmentModel
+                {
+                    CostId = id,
+                };
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("CostAttachmentDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        [HttpPost]
+        public ContentResult SaveCostAttachment(int id,string qqFile)
+        {
+            bool saveResult;
+            string error;
+            int resultId = 0;
+            try
+            {
+                var length = Request.ContentLength;
+                var bytes = new byte[length];
+                Request.InputStream.Read(bytes, 0, length);
+
+                saveResult = true;
+                if (length > MaxFileSize)
+                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                else
+                {
+                    var model = new SaveAttacmentModel
+                                    {
+                                        EntityId = id,
+                                        EntityTypeId = RequestAttachmentTypeEnum.MissionReportCost,
+                                        Description = string.Empty,
+                                        FileDto = new UploadFileDto
+                                        {
+                                            Context = bytes,
+                                            FileName = qqFile,
+                                            //ContextType = Request.Content,
+                                        }
+                                    };
+                    saveResult = RequestBl.SaveAttachment(model);
+                    error = model.Error;
+                    resultId = model.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveCostAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult,Id = resultId });
+            return Content(jsonString);
         }
     }
 }

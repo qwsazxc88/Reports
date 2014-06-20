@@ -44,6 +44,7 @@
         ChildVacation = 5,
         MissionReport = 6,
         AppointmentReport = 7,
+        MissionReportCost = 8,
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

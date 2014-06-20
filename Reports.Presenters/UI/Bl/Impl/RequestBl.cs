@@ -5745,6 +5745,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                                            };
             RequestAttachmentDao.SaveAndFlush(attach);
+            model.Id = attach.Id;
             return true;
         }
         public bool DeleteAttachment(DeleteAttacmentModel model)
@@ -8884,20 +8885,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadTransactions(MissionReportEditModel model,MissionReportCost cost,CostDto dto)
         {
             List<TransactionDto> trans = new List<TransactionDto>();
-            foreach (AccountingTransaction tran in cost.AccountingTransactions)
+            if (cost.AccountingTransactions != null)
             {
-                trans.Add(new TransactionDto
-                              {
-                                  TranId = tran.Id,
-                                  Credit = tran.CreditAccount.Number,
-                                  CreditId = tran.CreditAccount.Id,
-                                  Debit = tran.DebitAccount.Number,
-                                  DebitId = tran.DebitAccount.Id,
-                                  Sum = tran.Sum,
-                                  IsEditable = model.IsAccountantEditable,
-                              });
+                foreach (AccountingTransaction tran in cost.AccountingTransactions)
+                {
+                    trans.Add(new TransactionDto
+                                  {
+                                      TranId = tran.Id,
+                                      Credit = tran.CreditAccount.Number,
+                                      CreditId = tran.CreditAccount.Id,
+                                      Debit = tran.DebitAccount.Number,
+                                      DebitId = tran.DebitAccount.Id,
+                                      Sum = tran.Sum,
+                                      IsEditable = model.IsAccountantEditable,
+                                  });
+                }
+                dto.Trans = trans.ToArray();
             }
-            dto.Trans = trans.ToArray();
+            else
+                dto.Trans = new List<TransactionDto>().ToArray();
             dto.IsTransactionAvailable = model.IsAccountantEditable 
                 && ((cost.BookOfPurchaseSum.HasValue && cost.BookOfPurchaseSum.Value > 0) || !cost.IsCostFromPurchaseBook );
         }
@@ -8911,8 +8917,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             decimal gradeSum = 0;
             if (entity.Costs != null)
             {
+                List<IdEntityIdDto> attachments = RequestAttachmentDao.LoadAttachmentsForEntitiesIdsList(entity.Costs.ToList().ConvertAll(x => x.Id),
+                                                                       RequestAttachmentTypeEnum.MissionReportCost).ToList();
                 foreach (MissionReportCost cost in entity.Costs.OrderBy(x => x.Type.SortOrder).ThenBy(x => x.Id))
                 {
+                    IdEntityIdDto attachment = attachments.Where(x => x.EntityId == cost.Id).FirstOrDefault(); 
                     CostDto dto = new CostDto {
                         AccountantSum = cost.AccountantSum,
                         CostId = cost.Id,
@@ -8925,6 +8934,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,SortOrder = cost.Type.SortOrder
                         ,IsEditable = model.IsEditable && !cost.IsCostFromOrder
                         ,IsDeleteAvailable = model.IsEditable && !cost.IsCostFromOrder
+                        ,ScanId = attachment == null? 0 :attachment.Id
+                        ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook
+                        ,DeleteScanAvailable = model.IsEditable && attachment != null 
                     };
                     LoadTransactions(model,cost,dto);
                     list.Add(dto);
@@ -9263,6 +9275,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity.Hotels = model.Hotels;
                 SaveMissionCosts(entity, model);
+                LoadCosts(model, entity);
             }
             if (model.IsAccountantEditable)
             {

@@ -27,6 +27,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Description { get; set; }
         public string Error { get; set; }
         public UploadFileDto FileDto { get; set; }
+        public int Id { get; set; }
     }
     public class DeleteAttacmentModel
     {
