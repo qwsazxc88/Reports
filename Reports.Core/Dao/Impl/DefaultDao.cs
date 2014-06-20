@@ -565,6 +565,9 @@ namespace Reports.Core.Dao.Impl
                 case 8:
                     sqlQuery += @" order by EndDate";
                     break;
+                case 10:
+                    sqlQuery += @" order by IsOriginalReceived";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
