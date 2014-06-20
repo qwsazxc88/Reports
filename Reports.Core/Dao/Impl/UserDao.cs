@@ -1010,6 +1010,16 @@ namespace Reports.Core.Dao.Impl
 		//    return null;
 		//}
 
-
+        public virtual IList<IdNameAddressDto> GetArchivistAddresses()
+        {
+            const string sqlQuery = @" select top 50 Id,Name,Name as Address
+                    from [dbo].[Users]
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Address", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameAddressDto))).List<IdNameAddressDto>();
+        }
     }
 }

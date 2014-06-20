@@ -1,0 +1,33 @@
+﻿@model Reports.Presenters.UI.ViewModel.PrintArchivistAddressModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "archivistAddressDialogTable" style="width:100%;">
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.ArchivistId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.ArchivistId, new SelectList(Model.Archivists, "ID", "Name")) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Address):
+                    </td>
+                    <td>
+                        @Html.TextBoxFor(model => model.Address, new { @readonly = "readonly" }) 
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @*    @Html.ValidationSummary(false)*@
+                          <div id="PrintDlgError" style="color:Red;display:none;"/>
+                         <input type="hidden" id="AddressList" name="AddressList" value="@Model.AddressList" />
+                     </td>
+                </tr>
+    </table>
+</body>
+</html>

@@ -179,5 +179,6 @@ namespace Reports.Presenters.UI.Bl
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
+        void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
     }
 }

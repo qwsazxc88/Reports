@@ -265,6 +265,7 @@
      <script type="text/javascript">
         var  actionEditCostDialogUrl = "@Url.Action("EditCostDialog", "MissionOrder")";
         var  actionEditTranDialogUrl = "@Url.Action("EditTranDialog", "MissionOrder")";
+        var  actionPrintArchivistAddressDialogUrl = "@Url.Action("PrintArchivistAddressDialog", "MissionOrder")";
         $(document).ready(function () {
             $("#ArchiveDate").datepicker();
             $(".hasDatepicker").width("75px");
@@ -431,6 +432,7 @@
         function disableSaveButton() {
             $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
         }
+        
         function validateCost()
         {
             clearDlgErrors($("#costDialogTable"));
@@ -865,7 +867,56 @@
                                   }});
         }
  
-      
+     function PrintArchivistAddress()
+     {
+            var elem = document.createElement('div');
+            elem.id = "archivistAddressDialog";
+            var newDiv = $(elem);
+            var title = "Печать адреса архивариуса";
+            $(newDiv).text('Подождите, идет загрузка данных ...');
+            $(newDiv).load(actionPrintArchivistAddressDialogUrl + "? #archivistAddressDialogTable"
+             , function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#PrintDlgError').val() != '')
+                         disablePrintButton();
+                 }
+             }
+            );
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 680,
+                height: 220,
+                // fix IE6  
+                bgiframe: true,
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Печать": function () {
+//                        if(!validateTran())
+//                            return;
+//                        if(!addTranToTemplate())
+//                             return;
+//                        $(this).dialog("close");
+                        //setTargetBtnState();
+                    },
+                    "Отмена": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+     } 
+     function disablePrintButton() {
+            $(".ui-dialog-buttonpane button:contains('Печать')").button("disable");
+        }
     </script>
     <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>
 }

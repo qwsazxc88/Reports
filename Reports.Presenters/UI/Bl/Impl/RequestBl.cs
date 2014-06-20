@@ -10202,5 +10202,19 @@ namespace Reports.Presenters.UI.Bl.Impl
              report.IsDocumentsSaveToArchive = true;
              MissionReportDao.SaveAndFlush(report);
          }
+
+         public void SetPrintArchivistAddressModel(PrintArchivistAddressModel model)
+         {
+             //model.CostTypes = GetCostTypes(false);
+             //model.Archivists = new List<IdNameDto>();
+             List<IdNameAddressDto> archivists = UserDao.GetArchivistAddresses().ToList();
+             if(archivists.Count == 0)
+             {
+                 model.Archivists = new List<IdNameDto>();
+                 model.Error = "Не найдено архивариусов в базе данных";
+                 return;
+             }
+             model.Archivists = archivists.ConvertAll(x => (IdNameDto) x);
+         }
     }
 }

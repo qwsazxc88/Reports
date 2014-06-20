@@ -1354,5 +1354,23 @@ namespace WebMvc.Controllers
             string jsonString = jsonSerializer.Serialize(result);
             return Content(jsonString);
         }
+
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ActionResult PrintArchivistAddressDialog()
+        {
+            try
+            {
+                PrintArchivistAddressModel model = new PrintArchivistAddressModel();
+                RequestBl.SetPrintArchivistAddressModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("PrintArchivistAddressDialogError", new DialogErrorModel { Error = error });
+            }
+        }
     }
 }
