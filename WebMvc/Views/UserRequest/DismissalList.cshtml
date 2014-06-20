@@ -170,14 +170,14 @@
                     @if (Model.IsOriginalReceivedEditable)
                     {
                         <th>
-                            Оригиналы<br />документов<br />получены<br />
+                            <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
                             <input type="checkbox" id="setAll1" />
                         </th>
                     }
                     @if (Model.IsPersonnelFileSentToArchiveEditable)
                     {
                         <th>
-                            Личное дело<br />передано<br />в архив<br />
+                            <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
                             <input type="checkbox" id="setAll2" />
                         </th>
                     }

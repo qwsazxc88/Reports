@@ -568,6 +568,9 @@ namespace Reports.Core.Dao.Impl
                 case 10:
                     sqlQuery += @" order by IsOriginalReceived";
                     break;
+                case 11:
+                    sqlQuery += @" order by IsPersonnelFileSentToArchive";
+                    break;
             }
             if (sortDescending.Value)
                 sqlQuery += " DESC ";
