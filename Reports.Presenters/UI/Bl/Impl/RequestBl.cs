@@ -3625,6 +3625,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dtos.Insert(0, new IdNameDto(0, string.Empty));
             return dtos;
         }
+
         protected void SetFlagsState(int id, User user, Sicklist entity, SicklistEditModel model)
         {
             SetFlagsState(model, false);
@@ -3676,6 +3677,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.DeleteDate.HasValue && !entity.DeleteAfterSendTo1C)
                 model.IsApprovedByPersonnelManager = false;
 
+            bool isSuperPersonnelManager = superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value;
+
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -3711,15 +3714,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.PersonnelManager:
                     // Разрешить согласование для кадровиков банка и расчетчиков аутсорсинга
+                    // Если нет согласования кадровиком
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
                         {
                             // Расчетчики аутсорсинга
-                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
+                            if (isSuperPersonnelManager)
                             {
                                 // могут согласовать, если стаж есть в 1С или добавлен кадровиком банка
-                                if (user.ExperienceIn1C == true || model.ExperienceYears.Length > 0 || model.ExperienceMonthes.Length > 0)
+                                if (user.ExperienceIn1C == true)
                                 {
                                     if (entity.ManagerDateAccept.HasValue)
                                     {
@@ -3729,12 +3733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     {
                                         model.IsApprovedForAllEnable = true;
                                     }                                    
-                                }
-                                // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
-                                if (entity.UserDateAccept != null && entity.SendTo1C == null)
-                                {
-                                    model.IsErrorNotificationAvailable = true;
-                                }
+                                }                                
                             }
                             // Кадровики банка могут согласовать,
                             else
@@ -3744,6 +3743,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     model.IsApprovedEnable = true;
                                 }
+                            }
+
+                            // и кадровики, и расчетчики могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                            if (entity.UserDateAccept != null && entity.SendTo1C == null)
+                            {
+                                model.IsErrorNotificationAvailable = true;
                             }
                         }
 
@@ -3756,7 +3761,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsTimesheetStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
                             // Разрешение редактирования стажа только для кадровиков банка
-                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id != superPersonnelId.Value)
+                            if (!isSuperPersonnelManager)
                             {
                                 model.IsExperienceEditable = true;
                             }
@@ -3764,7 +3769,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     // Разрешить удаление, если согласовано всеми и выгружено в 1С
-                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue && isSuperPersonnelManager)
                         model.IsDeleteAvailable = true;
                     break;
                     /*
@@ -3781,6 +3786,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     || model.IsPersonnelFieldsEditable  /*|| model.IsApprovedEnable*/
                                     || model.IsDatesEditable;
         }
+
         /// <summary>
         /// Set all model flags to the same state
         /// </summary>

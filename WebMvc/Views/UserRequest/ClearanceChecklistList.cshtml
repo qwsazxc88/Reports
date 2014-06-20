@@ -88,6 +88,7 @@
 
                 <table class="grid" style="width:100%">
                     <tr>
+                        <th>№<br />п/п</th>
                         <th>
                             <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
                         </th>
@@ -115,9 +116,11 @@
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
+                        var i = 1;
                         foreach (var doc in Model.Documents)
                         {
                             <tr>
+                                <td>@i</td>
                                 <td style="text-align:left">
                                     <a class="ui-notify-close" href='@Url.Action("ClearanceChecklistEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                                 </td>
@@ -130,7 +133,8 @@
                                 <td>@doc.OKTMO</td>
                                 @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                                 <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
-                        </tr>
+                            </tr>
+                            i++;
                         }
                     }
                 </table>
