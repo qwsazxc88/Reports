@@ -199,10 +199,14 @@
                                    <td>№ пп</td>
                                    <td style='width:400px'>Наименование расходов</td>
                                    <td>Норма по грейду</td>
-                                   <td>Оплачено фактически сотрудником (сумма, руб)</td>
-                                   <td>Оплачено организацией за сотрудника</td>
+                                   <td>Оплачено фактически <br/>сотрудником (сумма, руб)</td>
+                                   <td>Оплачено организацией <br/>за сотрудника</td>
                                    <td>Принято к учету</td>
                                    <td style='width:57px'></td>
+                                    {{^IsTransactionsHidden}}
+                                   <td>Дебет бух. Счета</td>
+                                   <td>Кредит бух. Счета</td>
+                                   {{/IsTransactionsHidden}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -233,12 +237,25 @@
                                             <input type="button" value="Добавить проводку" name="AddTranBtn" id="AddTranBtn" onclick="addTran({{CostId}});" 
                                         {{/IsTransactionAvailable}}
                                     </td>
+                                    {{^IsTransactionsHidden}}
+                                    <td></td>
+                                    <td></td>
+                                    {{/IsTransactionsHidden}}
                                 </tr>
                                  {{^IsTransactionsHidden}}
                                 {{#Trans}}
                                 <tr>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{Sum}}</td>
+                                    <td>
+                                        {{#IsEditable}}
+                                           <a href="#" onclick = "deleteTran({{CostId}},{{TranId}});return false;">Удалить</a>
+                                        {{/IsEditable}}
+                                    </td>
                                     <td>
                                         {{#IsEditable}}
                                             <a href="#" onclick = "editTran({{CostId}},{{TranId}});return false;">{{Debit}}</a>
@@ -248,13 +265,6 @@
                                         {{/IsEditable}}
                                     </td>
                                     <td>{{Credit}}</td>
-                                    <td></td>
-                                    <td>{{Sum}}</td>
-                                    <td>
-                                        {{#IsEditable}}
-                                           <a href="#" onclick = "deleteTran({{CostId}},{{TranId}});return false;">Удалить</a>
-                                        {{/IsEditable}}
-                                    </td>
                                 </tr>
                                 {{/Trans}}
                                 {{/IsTransactionsHidden}}
