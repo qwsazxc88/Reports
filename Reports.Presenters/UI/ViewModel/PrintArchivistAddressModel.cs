@@ -16,4 +16,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string AddressList { get; set; }
         public string Error { get; set; }
     }
+    public class PrintArchivistAddressFormModel
+    {
+        public string Address { get; set; }
+    }
 }

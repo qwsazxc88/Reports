@@ -180,5 +180,6 @@ namespace Reports.Presenters.UI.Bl
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
+        PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id);
     }
 }

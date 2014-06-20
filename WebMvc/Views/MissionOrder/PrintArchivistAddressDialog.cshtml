@@ -10,7 +10,7 @@
                         @Html.LabelFor(m => m.ArchivistId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.ArchivistId, new SelectList(Model.Archivists, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.ArchivistId, new SelectList(Model.Archivists, "ID", "Name"), new { onchange = "archivistChange();" }) 
                     </td>
                 </tr>
                 <tr>
@@ -18,7 +18,7 @@
                         @Html.LabelFor(m => m.Address):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.Address, new { @readonly = "readonly" }) 
+                        @Html.TextBoxFor(model => model.Address, new { @readonly = "readonly",style="width:500px" }) 
                     </td>
                 </tr>
                 <tr>
@@ -26,6 +26,7 @@
                     @*    @Html.ValidationSummary(false)*@
                           <div id="PrintDlgError" style="color:Red;display:none;"/>
                          <input type="hidden" id="AddressList" name="AddressList" value="@Model.AddressList" />
+                         <input type="hidden" id="Error" name="Error" value="@Model.Error" />
                      </td>
                 </tr>
     </table>

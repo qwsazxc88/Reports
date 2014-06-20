@@ -10215,6 +10215,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                  return;
              }
              model.Archivists = archivists.ConvertAll(x => (IdNameDto) x);
+             model.ArchivistId = archivists.First().Id;
+             model.Address = archivists.First().Address;
+             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+             model.AddressList = jsonSerializer.Serialize(archivists.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToArray());
+         }
+         public PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id)
+         {
+             User user = UserDao.Load(id);
+             if(user == null)
+                 throw new ArgumentException(string.Format("Не могу найти архивариуса (id={0}) в базе данных",id));
+             return new PrintArchivistAddressFormModel {Address = user.FullName};
          }
     }
 }

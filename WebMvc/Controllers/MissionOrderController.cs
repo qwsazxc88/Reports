@@ -1372,5 +1372,17 @@ namespace WebMvc.Controllers
                 return PartialView("PrintArchivistAddressDialogError", new DialogErrorModel { Error = error });
             }
         }
+        [HttpGet]
+        public ActionResult GetPrintArchivistAddress(int Id)
+        {
+            //string args = string.Format(@"{0}",Id);
+            return GetPrintForm(Id, "PrintArchivistAddress");
+        }
+        [HttpGet]
+        public ActionResult PrintArchivistAddress(int id)
+        {
+            PrintArchivistAddressFormModel model = RequestBl.GetPrintArchivistAddressFormModel(id);
+            return View(model);
+        }
     }
 }
