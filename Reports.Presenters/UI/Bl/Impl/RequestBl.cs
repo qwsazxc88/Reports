@@ -5748,6 +5748,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = attach.Id;
             return true;
         }
+        public bool SaveUniqueAttachment(SaveAttacmentModel model)
+        {
+            List<RequestAttachment> existing =
+                RequestAttachmentDao.FindManyByRequestIdAndTypeId(model.EntityId, model.EntityTypeId).ToList();
+            foreach (RequestAttachment attachment in existing)
+                RequestAttachmentDao.Delete(attachment);
+            
+            RequestAttachment attach = new RequestAttachment
+            {
+                ContextType = GetFileContext(model.FileDto.FileName),
+                DateCreated = DateTime.Now,
+                Description = model.Description,
+                FileName = model.FileDto.FileName,
+                RequestId = model.EntityId,
+                RequestType = (int)model.EntityTypeId,
+                UncompressContext = model.FileDto.Context,
+                CreatorRole = RoleDao.Load((int)CurrentUser.UserRole)
+
+            };
+            RequestAttachmentDao.SaveAndFlush(attach);
+            model.Id = attach.Id;
+            return true;
+        }
         public bool DeleteAttachment(DeleteAttacmentModel model)
         {
             RequestAttachmentDao.Delete(model.Id);

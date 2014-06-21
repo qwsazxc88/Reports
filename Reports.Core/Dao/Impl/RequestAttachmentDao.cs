@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -66,12 +68,19 @@ namespace Reports.Core.Dao.Impl
         {
             if (entityIds.Count == 0)
                 return 0;
-            const string sqlQuery = @"delete from [dbo].[RequestAttachment] where 
+            List<RequestAttachment> entities = (from attach in Session.Query<RequestAttachment>()
+                    where entityIds.Contains(attach.RequestId) && attach.RequestType == (int)type
+                    select attach).ToList();
+            foreach (RequestAttachment entity in entities)
+                Delete(entity);
+            Session.Flush();
+            return entities.Count;
+            /*const string sqlQuery = @"delete from [dbo].[RequestAttachment] where 
                               [RequestType] = :typeId and RequestId in (:entitiesList)";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                             SetInt32("typeId", (int)type).
                             SetParameterList("entitiesList", entityIds);
-            return query.ExecuteUpdate();
+            return query.ExecuteUpdate();*/
         }
         #endregion
     }

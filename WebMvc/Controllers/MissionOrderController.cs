@@ -1432,7 +1432,7 @@ namespace WebMvc.Controllers
                                             //ContextType = Request.Content,
                                         }
                                     };
-                    saveResult = RequestBl.SaveAttachment(model);
+                    saveResult = RequestBl.SaveUniqueAttachment(model);
                     error = model.Error;
                     resultId = model.Id;
                 }
