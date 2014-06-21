@@ -8887,23 +8887,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<TransactionDto> trans = new List<TransactionDto>();
             if (cost.AccountingTransactions != null)
             {
-                foreach (AccountingTransaction tran in cost.AccountingTransactions)
-                {
-                    trans.Add(new TransactionDto
-                                  {
-                                      TranId = tran.Id,
-                                      Credit = tran.CreditAccount.Number,
-                                      CreditId = tran.CreditAccount.Id,
-                                      Debit = tran.DebitAccount.Number,
-                                      DebitId = tran.DebitAccount.Id,
-                                      Sum = tran.Sum,
-                                      IsEditable = model.IsAccountantEditable,
-                                  });
-                }
-                dto.Trans = trans.ToArray();
+                trans.AddRange(cost.AccountingTransactions.Select(tran => new TransactionDto
+                        {
+                            TranId = tran.Id, 
+                            Credit = tran.CreditAccount.Number, 
+                            CreditId = tran.CreditAccount.Id, 
+                            Debit = tran.DebitAccount.Number, 
+                            DebitId = tran.DebitAccount.Id, 
+                            Sum = tran.Sum, 
+                            IsEditable = model.IsAccountantEditable,
+                        }));
             }
-            else
-                dto.Trans = new List<TransactionDto>().ToArray();
+            dto.Trans = trans.ToArray();
             dto.IsTransactionAvailable = model.IsAccountantEditable 
                 && ((cost.BookOfPurchaseSum.HasValue && cost.BookOfPurchaseSum.Value > 0) || !cost.IsCostFromPurchaseBook );
         }
@@ -9477,6 +9472,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.Costs == null)
                 entity.Costs = new List<MissionReportCost>();
             List<MissionReportCost> removed = entity.Costs.Where(x => !costDtos.Any(y => y.CostId == x.Id)).ToList();
+            RequestAttachmentDao.DeleteAttachmentsForEntitiesIdsList(removed.ConvertAll(x => x.Id),
+                                                                     RequestAttachmentTypeEnum.MissionReportCost);
             foreach (MissionReportCost cost in removed)
                 entity.Costs.Remove(cost);
             foreach (CostDto dto in costDtos)

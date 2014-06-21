@@ -12,5 +12,6 @@ namespace Reports.Core.Dao
         int GetAttachmentsCount(int entityId);
         int DeleteForEntityId(int entityId);
         IList<IdEntityIdDto> LoadAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
+        int DeleteAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
     }
 }

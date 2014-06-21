@@ -62,6 +62,17 @@ namespace Reports.Core.Dao.Impl
               SetParameterList("entitiesList", entityIds);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdEntityIdDto))).List<IdEntityIdDto>();
         }
+        public int DeleteAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type)
+        {
+            if (entityIds.Count == 0)
+                return 0;
+            const string sqlQuery = @"delete from [dbo].[RequestAttachment] where 
+                              [RequestType] = :typeId and RequestId in (:entitiesList)";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                            SetInt32("typeId", (int)type).
+                            SetParameterList("entitiesList", entityIds);
+            return query.ExecuteUpdate();
+        }
         #endregion
     }
 }
