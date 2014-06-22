@@ -523,7 +523,7 @@ namespace WebMvc.Controllers
             //}
 
             string error;
-            if (!RequestBl.SaveMissionReportEditModel(model, out error))
+            if (!RequestBl.SaveMissionReportEditModel(model, out error) || !string.IsNullOrEmpty(error))
             {
                 if (model.ReloadPage)
                 {

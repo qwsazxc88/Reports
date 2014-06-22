@@ -8956,6 +8956,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook
                         ,DeleteScanAvailable = model.IsEditable && attachment != null 
                     };
+                    if (!cost.IsCostFromPurchaseBook && attachment == null && model.IsEditable)
+                        model.IsAttachmentsInvalid = true;
                     LoadTransactions(model,cost,dto);
                     list.Add(dto);
                 }
@@ -9204,70 +9206,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                //if (model.Id != 0)
-                //{
                 MissionReport missionReport = MissionReportDao.Load(model.Id);
-
                 model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", missionReport.Number);
                 model.DocumentNumber =  missionReport.Number.ToString();
                 model.DateCreated = missionReport.CreateDate.ToShortDateString();
-                //}
                 if (!CheckUserMrRights(user, current, model.Id, missionReport, true))
                 {
                     error = "Редактирование отчета запрещено";
                     return false;
                 }
-               
-                //if (model.Id == 0)
-                //{
-                //    missionReport = new MissionOrder
-                //    {
-                //        CreateDate = DateTime.Now,
-                //        Creator = UserDao.Load(current.Id),
-                //        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.MissionOrder),
-                //        User = user,
-                //        EditDate = DateTime.Now,
-                //    };
-                //    ChangeEntityProperties(current, missionReport, model, user);
-                //    MissionOrderDao.SaveAndFlush(missionReport);
-                //    model.Id = missionReport.Id;
-                //}
-                //else
-                //{
-                    if (missionReport.Version != model.Version)
-                    {
-                        error = "Отчет был изменен другим пользователем.";
-                        model.ReloadPage = true;
-                        return false;
-                    }
-                    //if (model.IsDelete)
-                    //{
-                    //    if (current.UserRole == UserRole.OutsourcingManager)
-                    //        missionReport.DeleteAfterSendTo1C = true;
-                    //    missionReport.DeleteDate = DateTime.Now;
-                    //    //missionOrder.CreateDate = DateTime.Now;
-                    //    MissionOrderDao.SaveAndFlush(missionReport);
-                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
-                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
-                    //    model.IsDelete = false;
-                    //}
-                    //else
-                    //{
-                        ChangeEntityProperties(current, missionReport, model, user);
-                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
-                        //string country = GetStringForList(cityList);
-                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
-                        //string org = GetStringForList(orgList);
-                        MissionReportDao.SaveAndFlush(missionReport);
-                        if (missionReport.Version != model.Version)
-                        {
-                            missionReport.EditDate = DateTime.Now;
-                            MissionReportDao.SaveAndFlush(missionReport);
-                        }
-                    //}
-                    //if (missionReport.DeleteDate.HasValue)
-                    //    model.IsDeleted = true;
-                //}
+                if (missionReport.Version != model.Version)
+                {
+                    error = "Отчет был изменен другим пользователем.";
+                    model.ReloadPage = true;
+                    return false;
+                }
+                ChangeEntityProperties(current, missionReport, model, user,out error);
+                MissionReportDao.SaveAndFlush(missionReport);
+                if (missionReport.Version != model.Version)
+                {
+                    missionReport.EditDate = DateTime.Now;
+                    MissionReportDao.SaveAndFlush(missionReport);
+                }
                 model.Version = missionReport.Version;
                 SetFlagsState(missionReport.Id, user, missionReport, model);
                 return true;
@@ -9286,8 +9246,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
-        protected void ChangeEntityProperties(IUser current, MissionReport entity, MissionReportEditModel model, User user)
+        protected void ChangeEntityProperties(IUser current, MissionReport entity,
+            MissionReportEditModel model, User user, out string error)
         {
+            error = string.Empty;
             //bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
             if (model.IsEditable)
             {
@@ -9299,7 +9261,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SaveMissionCostsTransactions(entity, model);
             }
-
             if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
             {
                 entity.ArchiveDate = DateTime.Parse(model.ArchiveDate);
@@ -9310,150 +9271,54 @@ namespace Reports.Presenters.UI.Bl.Impl
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
             {
-                entity.UserDateAccept = DateTime.Now;
-                entity.AcceptUser = UserDao.Load(current.Id);
-                SetMissionCostsEditable(model,false);
-
-                //SendEmailForMissionReport(CurrentUser, entity, UserRole.Manager);
-                //if (isDirectorManager)
-                //{
-                //    entity.NeedToAcceptByChiefAsManager = true;
-                //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
-                //}
-                //else
-                //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
+                if (model.IsAttachmentsInvalid)
+                    error = string.Format(@"Ордер сохранен успешно, но не может быть согласован - не ко всем статьям расходов прикреплены документы.");
+                else
+                {
+                    entity.UserDateAccept = DateTime.Now;
+                    entity.AcceptUser = UserDao.Load(current.Id);
+                    SetMissionCostsEditable(model, false);
+                }
             }
             bool canEdit;
             if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
                 && !entity.ManagerDateAccept.HasValue
                 && entity.UserDateAccept.HasValue)
             {
-                //if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
-                //{
-                //    entity.UserDateAccept = DateTime.Now;
-                //    entity.AcceptUser = UserDao.Load(current.Id);
-                //}
-                //if (!entity.ManagerDateAccept.HasValue)
-                //{
-                //    if (model.IsManagerApproved)
-                //    {
-                        //if (model.IsManagerApproved.Value)
-                        //{
-                            if(model.IsManagerReject)
-                            {
-                                entity.UserDateAccept = null;
-                                entity.AcceptUser = null;
-                                model.IsManagerApproved = false;
-                                entity.AcceptManager = UserDao.Load(current.Id);
-                            }
-                            else if (model.IsManagerApproved)
-                            {
-                                entity.ManagerDateAccept = DateTime.Now;
-                                entity.AcceptManager = UserDao.Load(current.Id);
-                            }
-
-                /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
-                                entity.UserDateAccept = DateTime.Now;*/
-                            //SendEmailForMissionReportConfirm(CurrentUser, entity);
-                            //if (!entity.NeedToAcceptByChief)
-                            //{
-                            //    CreateMission(entity);
-                            //    SendEmailForMissionOrderConfirm(CurrentUser, entity);
-                            //}
-                            //else
-                            //    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
-                        //}
-                        //else
-                        //{
-                        //    model.IsManagerApproved = null;
-                        //    if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
-                        //    {
-                        //        entity.UserDateAccept = null;
-                        //        SendEmailForMissionOrderReject(CurrentUser, entity);
-                        //    }
-                        //}
-                //    }
-                //}
-                /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;*/
+                if(model.IsManagerReject)
+                {
+                    entity.UserDateAccept = null;
+                    entity.AcceptUser = null;
+                    model.IsManagerApproved = false;
+                    entity.AcceptManager = UserDao.Load(current.Id);
+                }
+                else if (model.IsManagerApproved)
+                {
+                    entity.ManagerDateAccept = DateTime.Now;
+                    entity.AcceptManager = UserDao.Load(current.Id);
+                }
             }
             if (!model.IsManagerReject && model.IsManagerApproved && !entity.ManagerDateAccept.HasValue)
             {
                 Log.ErrorFormat(@"Logic error: model.IsManagerApproved is set but entity.ManagerDateAccept is not set for 
                         mission report {0}, currentUserId {1} ",entity.Id,current.Id);
             }
-               if (current.UserRole == UserRole.Accountant && entity.ManagerDateAccept.HasValue)
+            if (current.UserRole == UserRole.Accountant && entity.ManagerDateAccept.HasValue)
+            {
+                if(!entity.AccountantDateAccept.HasValue && model.IsAccountantApproved)
                 {
-                   if(!entity.AccountantDateAccept.HasValue && model.IsAccountantApproved)
-                   {
-                       entity.AccountantDateAccept = DateTime.Now;
-                       entity.AcceptAccountant = UserDao.Load(current.Id);
-                       SetMissionTransactionEditable(model, false);
-                   }
-                   else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
-                   {
-                       entity.AccountantDateAccept = null;
-                       entity.AcceptAccountant = UserDao.Load(current.Id);
-                       SetMissionTransactionEditable(model, true);
-                       model.IsAccountantReject = false;
-                   }
+                    entity.AccountantDateAccept = DateTime.Now;
+                    entity.AcceptAccountant = UserDao.Load(current.Id);
+                    SetMissionTransactionEditable(model, false);
                 }
-              //if(current.UserRole == UserRole.Director)
-            //{
-            //    if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
-            //    {
-            //        if (model.IsManagerApproved.HasValue)
-            //        {
-            //            if (model.IsManagerApproved.Value)
-            //            {
-            //                User currentUser = UserDao.Load(current.Id);
-            //                entity.ManagerDateAccept = DateTime.Now;
-            //                entity.AcceptManager = currentUser;
-            //                if (entity.NeedToAcceptByChief)
-            //                {
-            //                    entity.ChiefDateAccept = DateTime.Now;
-            //                    entity.AcceptChief = currentUser;
-            //                }
-            //                CreateMission(entity);
-            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
-            //            }
-            //            else
-            //            {
-            //                entity.UserDateAccept = null;
-            //                model.IsManagerApproved = null;
-            //                SendEmailForMissionOrderReject(CurrentUser, entity);
-            //            }
-            //        }
-            //    }
-            //    if(entity.NeedToAcceptByChief)
-            //    {
-            //        if (model.IsChiefApproved.HasValue)
-            //        {
-            //            if(model.IsChiefApproved.Value)
-            //            {
-            //                User currentUser = UserDao.Load(current.Id);
-            //                entity.ChiefDateAccept = DateTime.Now;
-            //                entity.AcceptChief = currentUser;
-            //                if(isDirectorManager && !entity.ManagerDateAccept.HasValue)
-            //                {
-            //                    entity.ManagerDateAccept = DateTime.Now;
-            //                    entity.AcceptManager = currentUser;
-            //                }
-            //                CreateMission(entity);
-            //                SendEmailForMissionOrderConfirm(CurrentUser, entity);
-            //            }
-            //            else
-            //            {
-            //                entity.UserDateAccept = null;
-            //                model.IsUserApproved = false;
-            //                entity.ManagerDateAccept = null;
-            //                model.IsManagerApproved = null;
-            //                SendEmailForMissionOrderReject(CurrentUser, entity);
-            //            }
-            //        }  
-            //    }
-            //}
-            
+                else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
+                {
+                    entity.AccountantDateAccept = null;
+                    entity.AcceptAccountant = UserDao.Load(current.Id);
+                    SetMissionTransactionEditable(model, true);
+                    model.IsAccountantReject = false;
+                }
+            }
         }
         protected void SetMissionCostsEditable(MissionReportEditModel model,bool isEditable)
         {
@@ -9464,6 +9329,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 dto.IsEditable = isEditable;
                 dto.IsDeleteAvailable = isEditable;
+                dto.DeleteScanAvailable = isEditable;
+                dto.AddScanAvailable = isEditable;
             }
             JsonCostsList res = new JsonCostsList { List = list.List.ToArray(), IsTransactionsHidden = list.IsTransactionsHidden };
             model.Costs = jsonSerializer.Serialize(res);
@@ -9600,8 +9467,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 typeList.Insert(0, new IdNameDto(0, string.Empty));
             return typeList;
         }
-
-         public void SetMissionReportEditTranModel(MissionReportEditTranModel model)
+        public void SetMissionReportEditTranModel(MissionReportEditTranModel model)
          {
              List<Account> list = AccountDao.LoadAll().ToList();
              model.DebitAccounts =
@@ -9609,8 +9475,6 @@ namespace Reports.Presenters.UI.Bl.Impl
              model.CreditAccounts =
                  list.Where(x => !x.IsDebitAccount).OrderBy(x => x.Number).ToList().ConvertAll(x => new IdNameDto(x.Id, x.Number));
          }
-
-
         public RequestAttachmentsModel GetMrAttachmentsModel(int id, RequestAttachmentTypeEnum typeId)
         {
             bool isAddAvailable = false;
@@ -9647,8 +9511,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
             return model;
         }
-
-
         public PrintMissionReportViewModel GetPrintMissionReportModel(int id)
         {
             PrintMissionReportViewModel model = new PrintMissionReportViewModel();
@@ -9737,7 +9599,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Costs = costs;
             return model;
         }
-
         #endregion
         
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()

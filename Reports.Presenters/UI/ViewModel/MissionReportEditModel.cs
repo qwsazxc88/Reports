@@ -24,6 +24,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsUserApproved { get; set; }
         public bool IsUserApprovedAvailable { get; set; }
         public bool IsUserApprovedHidden { get; set; }
+        public bool IsAttachmentsInvalid { get; set; }
 
         [Display(Name = "Задание сотрудника выполнено, производственные расходы согласованы")]
         public bool IsManagerApproved { get; set; }
