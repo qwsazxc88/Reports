@@ -4900,6 +4900,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetFlagsState(int id,User user,Vacation vacation,VacationEditModel model)
         {
             SetFlagsState(model,false);
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             if(id == 0)
             {
@@ -4971,6 +4972,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsApprovedEnable = true;
                             model.IsApprovedForAllEnable = true;
+
+                            // расчетчики
+                            if (superPersonnelId.HasValue && AuthenticationService.CurrentUser.Id == superPersonnelId.Value)
+                            {
+                                // могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
+                                if (vacation.UserDateAccept != null && vacation.SendTo1C == null)
+                                {
+                                    model.IsErrorNotificationAvailable = true;
+                                }
+                            }
                         }
                         if (!vacation.SendTo1C.HasValue)
                         {
@@ -5027,6 +5038,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             return VacationDao.GetRequestCountsForUserAndDates(beginDate, endDate
                                                                , userId, vacationId,isChildVacantion);
         }
+
+        public bool ResetVacationApprovals(int id, out string error)
+        {
+            error = String.Empty;
+
+            Vacation vacation = VacationDao.Load(id);
+
+            if (vacation != null && SendEmailForVacationError(vacation) && vacationDao.ResetApprovals(id))
+            {
+                return true;
+            }
+            else
+            {
+                error = "Error updating comment";
+                return false;
+            }
+        }
+
         #endregion
 
         #region Child Vacation 

@@ -1143,6 +1143,21 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+
+         [HttpPost]
+         public JsonResult VacationSendErrorNotification(int id)
+         {
+             string error = "";
+             if (RequestBl.ResetVacationApprovals(id, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }
+         }
+
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
              UserRole role = AuthenticationService.CurrentUser.UserRole;

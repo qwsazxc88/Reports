@@ -269,5 +269,23 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<Vacation>();
         }
+
+        public bool ResetApprovals(int id)
+        {
+            var vacation = Session.Get<Vacation>(id);
+            if (vacation != null)
+            {
+                var transaction = Session.BeginTransaction();
+                vacation.ManagerDateAccept = null;
+                vacation.UserDateAccept = null;
+                Session.Update(vacation);
+                transaction.Commit();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

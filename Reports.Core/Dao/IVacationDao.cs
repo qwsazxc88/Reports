@@ -15,5 +15,6 @@ namespace Reports.Core.Dao
         int GetRequestCountsForUserAndDates(DateTime beginDate,
                                             DateTime endDate, int userId, int vacationId,bool isChildVacantion);
         IList<Vacation> LoadForIdsList(List<int> ids);
+        bool ResetApprovals(int id);
     }
 }

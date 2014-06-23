@@ -20,6 +20,7 @@ namespace Reports.Presenters.UI.Bl
         VacationEditModel GetVacationEditModel(int id, int userId);
         bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error);
         void ReloadDictionariesToModel(VacationEditModel model);
+        bool ResetVacationApprovals(int id, out string error);
 
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
                                     DateTime endDate, int userId, int vacationId, bool isChildVacantion);
