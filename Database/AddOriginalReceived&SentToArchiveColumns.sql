@@ -1,0 +1,5 @@
+ALTER TABLE Sicklist ADD IsOriginalReceived BIT NOT NULL DEFAULT 0
+ALTER TABLE Vacation ADD IsOriginalReceived BIT NOT NULL DEFAULT 0
+ALTER TABLE ChildVacation ADD IsOriginalReceived BIT NOT NULL DEFAULT 0
+ALTER TABLE Dismissal ADD IsOriginalReceived BIT NOT NULL DEFAULT 0
+ALTER TABLE Dismissal ADD IsPersonnelFileSentToArchive BIT NOT NULL DEFAULT 0
