@@ -5,6 +5,9 @@ using System.Text;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
+using NHibernate;
+using NHibernate.Criterion;
+using NHibernate.Transform;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -40,6 +43,31 @@ namespace Reports.Core.Dao.Impl
                 positionId, vacationTypeId,
                 requestStatusId, beginDate, endDate,userName, 
                 sqlQuery, sortedBy, sortDescending);
+        }
+
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
+        }
+
+        public IList<ChildVacation> LoadForIdsList(List<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<ChildVacation>();
+            ICriteria criteria = Session.CreateCriteria(typeof(ChildVacation));
+            criteria.Add(Restrictions.In("Id", ids));
+            return criteria.List<ChildVacation>();
         }
     }
 }

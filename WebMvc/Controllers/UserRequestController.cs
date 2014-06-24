@@ -408,6 +408,7 @@ namespace WebMvc.Controllers
          public ActionResult DismissalList(DismissalListModel model)
          {
              RequestBl.SetDismissalListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 
@@ -761,16 +762,18 @@ namespace WebMvc.Controllers
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
-         {
+         {                    
              SicklistListModel model = RequestBl.GetSicklistListModel();
              return View(model);
          }
          [HttpPost]
          public ActionResult SicklistList(SicklistListModel model)
-         {
+         {             
              RequestBl.SetSicklistListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
+
          [HttpGet]
          public ActionResult SicklistEdit(int id, int userId)
          {
@@ -1091,6 +1094,7 @@ namespace WebMvc.Controllers
          public ActionResult VacationList(VacationListModel model)
          {
              RequestBl.SetVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 
@@ -1139,6 +1143,21 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+
+         [HttpPost]
+         public JsonResult VacationSendErrorNotification(int id)
+         {
+             string error = "";
+             if (RequestBl.ResetVacationApprovals(id, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }
+         }
+
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
              UserRole role = AuthenticationService.CurrentUser.UserRole;
@@ -1245,6 +1264,7 @@ namespace WebMvc.Controllers
          public ActionResult ChildVacationList(ChildVacationListModel model)
          {
              RequestBl.SetChildVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
          protected bool ValidateModel(ChildVacationListModel model)

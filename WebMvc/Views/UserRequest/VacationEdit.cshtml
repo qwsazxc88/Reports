@@ -155,7 +155,11 @@
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                        {<text>style="display:none"</text>}/>               
+                                                                        {<text>style="display:none"</text>}/>
+                        @if (Model.IsErrorNotificationAvailable)
+                        {
+                            <a class="send-error-notification-link" href="">Отправить сообщение сотруднику</a>
+                        }
             </td>
     </tr>
     <tr>
@@ -225,6 +229,19 @@
             $("#EndDate").datepicker();
             $(".hasDatepicker").width("75px");
             setActiveMenuItem("userVacation");
+
+            $(".send-error-notification-link").click(function (event) {
+                event.preventDefault();
+                $.post("/UserRequest/VacationSendErrorNotification",
+                {
+                    id: $("#Id").val()
+                },
+                function (data) {
+                    if (data.ok) {
+                        location.reload(true);
+                    }
+                });
+            });
         });    
     function ValidateForm()
     {
