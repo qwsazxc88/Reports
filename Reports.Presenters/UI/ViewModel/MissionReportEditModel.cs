@@ -13,6 +13,8 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
 
         public string DocumentTitle { get; set; }
+        [Display(Name = "Даты командировки из приказа")]
+        public string OrderDates { get; set; }
         public string Costs { get; set; }
 
         [Display(Name = "Справочно.Проживал в гостинице")]

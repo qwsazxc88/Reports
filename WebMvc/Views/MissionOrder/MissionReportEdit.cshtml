@@ -31,6 +31,15 @@
             </tr>
         }
         <tr>
+            <td style="width:18%">
+                @Html.LabelFor(m => m.OrderDates):
+            </td>
+             <td>
+                @Model.OrderDates
+                <input type="hidden" id="OrderDates" name="OrderDates" value="@Model.OrderDates" />
+            </td>
+        </tr>
+        <tr>
             <td colspan="2">
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />

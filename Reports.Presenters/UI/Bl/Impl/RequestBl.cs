@@ -8893,6 +8893,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = entity.Id;
             model.Version = entity.Version;
             model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
+            model.OrderDates = entity.MissionOrder.BeginDate.ToShortDateString() + " - " +
+                               entity.MissionOrder.EndDate.ToShortDateString();
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
