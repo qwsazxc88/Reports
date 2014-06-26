@@ -5204,6 +5204,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.ChildVacation);
+            SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.ChildVacationOrderScan);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.ChildVacation);
             //model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             //model.VacationTypes = GetVacationTypes(false);
@@ -5321,6 +5322,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    if (model.IsPostedTo1C)
+                    {
+                        model.IsConfirmationAllowed = true;
+                    }
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -5408,7 +5413,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        public bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error)
+        public bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -5446,6 +5451,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.AttachmentId = attachmentId.Value;
                         model.Attachment = fileName;
                     }
+                    // ---------------------------------------
+                    int? orderScanAttachmentId = SaveAttachment(childVacation.Id, model.OrderScanAttachmentId, orderScanFileDto, RequestAttachmentTypeEnum.ChildVacationOrderScan, out fileName);
+                    if (orderScanAttachmentId.HasValue)
+                    {
+                        model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                        model.OrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
                     if (childVacation.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -5458,6 +5471,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             childVacation.DeleteAfterSendTo1C = true;
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
+                        // ----------------------------
+                        if (model.OrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
+                        // ----------------------------
                         childVacation.DeleteDate = DateTime.Now;
                         childVacation.CreateDate = DateTime.Now;
                         ChildVacationDao.SaveAndFlush(childVacation);
@@ -5466,6 +5483,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDelete = false;
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        model.OrderScanAttachmentId = 0;
+                        model.OrderScanAttachment = string.Empty;
                     }
                     else
                     {

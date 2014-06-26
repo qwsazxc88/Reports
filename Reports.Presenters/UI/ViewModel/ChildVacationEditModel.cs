@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class ChildVacationEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntityBeginDate, IContainId
+    public class ChildVacationEditModel : UserInfoModel, ICheckBoxes, IAttachment, IOrderScanAttachment, ICheckForEntityBeginDate, IContainId
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -88,10 +88,16 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsPostedTo1CHidden { get; set; }
         public bool IsPostedTo1CEnable { get; set; }
 
+        // Прикрепление скана подтверждающего документа
+        public bool IsConfirmationAllowed { get; set; }
+
         [Display(Name = "Скан документа")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
 
+        [Display(Name = "Скан подписанного приказа")]
+        public string OrderScanAttachment { get; set; }
+        public int OrderScanAttachmentId { get; set; }
 
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }

@@ -110,7 +110,7 @@ namespace Reports.Presenters.UI.Bl
         void SetChildVacationListModel(ChildVacationListModel model, bool hasError);
         ChildVacationEditModel GetChildVacationEditModel(int id, int userId);
         void ReloadDictionariesToModel(ChildVacationEditModel model);
-        bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error);
+        bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
 
         DeductionListModel GetDeductionListModel();
         void SetDeductionListModel(DeductionListModel model, bool hasError);
