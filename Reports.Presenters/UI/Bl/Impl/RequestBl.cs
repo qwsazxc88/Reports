@@ -1836,6 +1836,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id,RequestAttachmentTypeEnum.Dismissal);
+            SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.DismissalOrderScan);
             Dismissal dismissal = null;
             if (id == 0)
             {
@@ -1953,7 +1954,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
-                case UserRole.PersonnelManager:      
+                case UserRole.PersonnelManager:
+                    if (model.IsPostedTo1C)
+                    {
+                        model.IsConfirmationAllowed = true;
+                    }
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -2013,7 +2018,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
-        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error)
+        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -2052,6 +2057,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.Attachment = fileName;
                     }
 
+                    // ---------------------------------------
+                    int? orderScanAttachmentId = SaveAttachment(dismissal.Id, model.OrderScanAttachmentId, orderScanFileDto, RequestAttachmentTypeEnum.DismissalOrderScan, out fileName);
+                    if (orderScanAttachmentId.HasValue)
+                    {
+                        model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                        model.OrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+
                     if (dismissal.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -2062,8 +2076,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
+                        // ----------------------------
+                        if (model.OrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
+                        // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        model.OrderScanAttachmentId = 0;
+                        model.OrderScanAttachment = string.Empty;
                         if (current.UserRole == UserRole.OutsourcingManager)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
@@ -3452,6 +3472,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             model.AttachmentId = attach.Id;
             model.Attachment = attach.FileName;
+        }
+        protected void SetOrderScanAttachmentToModel(IOrderScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.OrderScanAttachmentId = attach.Id;
+            model.OrderScanAttachment = attach.FileName;
         }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
         {

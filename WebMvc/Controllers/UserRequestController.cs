@@ -425,6 +425,7 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -433,7 +434,7 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, fileDto, orderScanFileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
