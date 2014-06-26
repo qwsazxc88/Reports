@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Iesi.Collections.Generic;
-using Reports.Core.Domain;
-using Reports.Core.Enum;
 
 namespace Reports.Core.Domain
 {
@@ -14,10 +11,11 @@ namespace Reports.Core.Domain
         #region Fields
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime EditDate { get; set; }
-        public virtual DateTime BeginDate { get; set; }
-        public virtual DateTime EndDate { get; set; }
+        public virtual DateTime? BeginDate { get; set; }
+        public virtual DateTime? EndDate { get; set; }
         
         public virtual int Number { get; set; }
+        public virtual bool IsAdditional { get; set; }
        
         
         public virtual MissionType Type { get; set; }

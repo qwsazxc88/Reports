@@ -6,10 +6,10 @@
     <version name="Version" column= "Version"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
-    <property name="BeginDate" not-null="true"/>
-    <property name="EndDate" not-null="true"/>
+    <property name="BeginDate" not-null="false"/>
+    <property name="EndDate" not-null="false"/>
     <property name="Number"  not-null="true"/>
-
+    <property name="IsAdditional"  not-null="false"/>
 	  
 	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
 	<property name="Kind"  not-null="true"/>

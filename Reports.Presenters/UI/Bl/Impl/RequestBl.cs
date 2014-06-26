@@ -7485,14 +7485,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             if(id != 0)
             {
-                LoadGraids(model, user.Grade.Value, entity,entity.CreateDate);
+                LoadGraids(model, user.Grade.Value, entity, entity.CreateDate);
                 model.AllSum = FormatSum(entity.AllSum);
                 model.AllSumAir = FormatSum(entity.SumAir);
                 model.AllSumDaily = FormatSum(entity.SumDaily);
                 model.AllSumResidence = FormatSum(entity.SumResidence);
                 model.AllSumTrain = FormatSum(entity.SumTrain);
-                model.BeginMissionDate = entity.BeginDate.ToShortDateString();
-                model.EndMissionDate = entity.EndDate.ToShortDateString();
+                model.BeginMissionDate = FormatDate(entity.BeginDate);//entity.BeginDate.ToShortDateString();
+                model.EndMissionDate = FormatDate(entity.EndDate);//entity.EndDate.ToShortDateString();
                 model.GoalId = entity.Goal.Id;
                 model.Id = entity.Id;
                 model.TypeId = entity.Type.Id;
@@ -7916,8 +7916,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
         {
-            return (entity.EndDate.Subtract(entity.BeginDate).Days > 7) ||
-                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate, entity.EndDate) > 0);
+            if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
+                return false;
+            return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
+                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);
         }
         protected string GetStringForList(List<string> list)
         {
@@ -8023,13 +8025,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             GetStringForList(cityList); 
             Mission mission = new Mission
                                   {
-                                      BeginDate = entity.BeginDate,
+                                      BeginDate = entity.BeginDate.Value,
                                       Country = country,
                                       CreateDate = DateTime.Now,
                                       Creator = entity.Creator,
                                       //todo ???
-                                      DaysCount = entity.EndDate.Subtract(entity.BeginDate).Days + 1,
-                                      EndDate = entity.EndDate,
+                                      DaysCount = entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days + 1,
+                                      EndDate = entity.EndDate.Value,
                                       FinancesSource = entity.User.Organization == null? string.Empty:entity.User.Organization.Name,
                                       Goal = entity.Goal.Name,
                                       ManagerDateAccept = DateTime.Now,
@@ -8893,8 +8895,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Id = entity.Id;
             model.Version = entity.Version;
             model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", entity.Number);
-            model.OrderDates = entity.MissionOrder.BeginDate.ToShortDateString() + " - " +
-                               entity.MissionOrder.EndDate.ToShortDateString();
+            model.OrderDates = FormatDate(entity.MissionOrder.BeginDate) + " - " +
+                               FormatDate(entity.MissionOrder.EndDate);
+                //entity.MissionOrder.BeginDate.ToShortDateString() + " - " + entity.MissionOrder.EndDate.ToShortDateString();
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
@@ -9965,8 +9968,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             foreach (MissionReport report in reports)
             {
                 string name = "AO" + report.Number;
-                name += " " + report.MissionOrder.BeginDate.ToShortDateString() + " - " +
-                        report.MissionOrder.EndDate.ToShortDateString();
+                name += " " + FormatDate(report.MissionOrder.BeginDate) + " - " +
+                        FormatDate(report.MissionOrder.EndDate);
+                /*report.MissionOrder.BeginDate.ToShortDateString() + " - " +
+                        report.MissionOrder.EndDate.ToShortDateString()*/;
                 if (report.MissionOrder.Targets.Count() > 0)
                     name += " " + report.MissionOrder.Targets.First().City;
                 result.Add(new IdNameDto{Id = report.Id,Name = name});

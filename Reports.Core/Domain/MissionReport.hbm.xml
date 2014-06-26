@@ -62,7 +62,7 @@
    
 
 	<many-to-one name="MissionOrder" class="MissionOrder" column="MissionOrderId" foreign-key="FK_MissionReport_MissionOrder" index="IX_MissionReport_MissionOrder"  not-null="false"/>
-	  
+  <many-to-one name="AdditionalMissionOrder" class="MissionOrder" column="AdditionalMissionOrderId" foreign-key="FK_MissionReport_AdditionalMissionOrder" index="IX_MissionReport_AdditionalMissionOrder"  not-null="false"/>  
 	  
 	  <bag name="Costs" lazy="true" inverse="true" cascade="all-delete-orphan">
 		  <key column="ReportId" foreign-key="FK_MissionReportCost_MissionReport"/>
