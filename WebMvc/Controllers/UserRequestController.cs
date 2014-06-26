@@ -1120,6 +1120,7 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -1129,7 +1130,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveVacationEditModel(model, fileDto, out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, orderScanFileDto, out error))
              {
                  
                  if (model.ReloadPage)

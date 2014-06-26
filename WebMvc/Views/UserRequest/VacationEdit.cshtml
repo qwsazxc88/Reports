@@ -210,6 +210,46 @@
                 }
             </td>
     </tr>
+
+    <tr>
+             <td colspan="2" style="height:15px">
+                <hr />
+             </td>
+    </tr>
+
+    @* Ссылка для открытия скана подписанного приказа *@
+
+    <tr>
+        <td colspan="2">@Html.LabelFor(model => model.OrderScanAttachment):
+            @if (!string.IsNullOrEmpty(Model.OrderScanAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.OrderScanAttachment</a>
+                <input type="hidden" id="OrderScanAttachment" name="OrderScanAttachment" value="@Model.OrderScanAttachment" />
+                <input type="hidden" id="OrderScanAttachmentId" name="OrderScanAttachmentId" value="@Model.OrderScanAttachmentId" />
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+    </tr>
+
+    @* Прикрепление скана подписанного приказа *@
+
+    @if (Model.IsConfirmationAllowed)
+    {
+        <tr>    
+            <td colspan="2">Прикрепить скан подписанного приказа
+                <input id="OrderScanFileContext" type="file" name="orderScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>                
+            </td>
+        </tr>
+        <tr>    
+            <td colspan="2">
+                <input type="submit" value="Сохранить" onclick="return ValidateForm();" />
+            </td>
+        </tr>
+    }
+
     </table>
     </div>
     

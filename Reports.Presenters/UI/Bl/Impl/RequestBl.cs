@@ -4596,6 +4596,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.Vacation);
+            SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.VacationOrderScan);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
@@ -4629,7 +4630,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user,vacation, model);
             return model;
         }
-        public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error)
+        public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -4711,6 +4712,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.AttachmentId = attachmentId.Value;
                         model.Attachment = fileName;
                     }
+                    // ---------------------------------------
+                    int? orderScanAttachmentId = SaveAttachment(vacation.Id, model.OrderScanAttachmentId, orderScanFileDto, RequestAttachmentTypeEnum.VacationOrderScan, out fileName);
+                    if (orderScanAttachmentId.HasValue)
+                    {
+                        model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                        model.OrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
                     if (vacation.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -4721,8 +4730,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
+                        // ----------------------------
+                        if (model.OrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
+                        // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
+                        model.OrderScanAttachmentId = 0;
+                        model.OrderScanAttachment = string.Empty;
                         if (current.UserRole == UserRole.OutsourcingManager)
                             vacation.DeleteAfterSendTo1C = true;
                         vacation.CreateDate = DateTime.Now;
@@ -5002,6 +5017,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    if (model.IsPostedTo1C)
+                    {
+                        model.IsConfirmationAllowed = true;
+                    }
                     if (!vacation.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
