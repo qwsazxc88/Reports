@@ -2572,6 +2572,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (!CheckUserRights(user, current,id,false))
                 throw new ArgumentException("Доступ запрещен.");
             SetUserInfoModel(user, model);
+            SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.MissionOrderScan);
             Mission mission = null;
             if (id == 0)
             {
@@ -2678,6 +2679,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    if (model.IsPostedTo1C)
+                    {
+                        model.IsConfirmationAllowed = true;
+                    }
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         //model.IsApprovedByPersonnelManagerEnable = true;
@@ -2758,7 +2763,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TimesheetStatusIdHidden = model.TimesheetStatusId;
             model.DaysCountHidden = model.DaysCount;
         }
-        public bool SaveMissionEditModel(MissionEditModel model,out string error)
+        public bool SaveMissionEditModel(MissionEditModel model, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -2788,6 +2793,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     mission = MissionDao.Load(model.Id);
+                    string fileName;
+                    // ---------------------------------------
+                    int? orderScanAttachmentId = SaveAttachment(mission.Id, model.OrderScanAttachmentId, orderScanFileDto, RequestAttachmentTypeEnum.MissionOrderScan, out fileName);
+                    if (orderScanAttachmentId.HasValue)
+                    {
+                        model.OrderScanAttachmentId = orderScanAttachmentId.Value;
+                        model.OrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
                     if (mission.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -2798,10 +2812,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (current.UserRole == UserRole.OutsourcingManager)
                             mission.DeleteAfterSendTo1C = true;
+                        // ----------------------------
+                        if (model.OrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
+                        // ----------------------------
                         mission.DeleteDate = DateTime.Now;
                         mission.CreateDate = DateTime.Now;
                         MissionDao.SaveAndFlush(mission);
                         model.IsDelete = false;
+                        model.OrderScanAttachmentId = 0;
+                        model.OrderScanAttachment = string.Empty;
                         SendEmailForUserRequest(mission.User, current, mission.Creator, true, mission.Id,
                             mission.Number, RequestTypeEnum.Mission, false);
                     }

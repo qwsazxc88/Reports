@@ -55,7 +55,7 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionListModel(MissionListModel model, bool hasError);
         MissionEditModel GetMissionEditModel(int id, int userId);
         void ReloadDictionariesToModel(MissionEditModel model);
-        bool SaveMissionEditModel(MissionEditModel model, out string error);
+        bool SaveMissionEditModel(MissionEditModel model, UploadFileDto orderScanFileDto, out string error);
 
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
