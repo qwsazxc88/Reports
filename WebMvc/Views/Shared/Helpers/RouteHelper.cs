@@ -17,7 +17,7 @@ namespace WebMvc.Views.Shared.Helpers
             int i = 0;
             foreach (var item in routeValueDictionary)
             {
-                if (string.Empty == item.Value)
+                if (string.Empty == item.Value as string)
                 {
                     i++;
                     urlData.Add(item.Key, string.Format(ReplaceFormatString, i));

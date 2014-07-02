@@ -17,6 +17,19 @@ namespace Reports.Presenters.UI.ViewModel
         public int VacationTypeIdHidden { get; set; }
         public IList<IdNameDto> VacationTypes;
         public bool IsVacationTypeEditable { get; set; }
+
+        [Display(Name = "Вид дополнительного отпуска")]
+        public int AdditionalVacationTypeId { get; set; }
+        public int AdditionalVacationTypeIdHidden { get; set; }
+        public IList<IdNameDto> AdditionalVacationTypes;
+        public bool IsAdditionalVacationTypeEditable { get; set; }
+
+        [Display(Name = "Остаток дней основного отпуска")]
+        public decimal? PrincipalVacationDaysLeft { get; set; }
+        [Display(Name = "Остаток дней дополнительного отпуска")]
+        public decimal? AdditionalVacationDaysLeft { get; set; }
+        public bool IsDaysLeftEditable { get; set; }
+
         [Display(Name = "Дата начала отпуска")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}",ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_BeginDate_Required",
@@ -24,15 +37,25 @@ namespace Reports.Presenters.UI.ViewModel
         [LocalizationDisplayName("VacationEditModel_BeginDate_Required", typeof(Resources))]
         //[DataType("DateTimeDto")]
         public DateTime? BeginDate { get; set; }
+
         [Display(Name = "Дата окончания отпуска")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Required(ErrorMessageResourceName = "VacationEditModel_EndDate_Required",
         ErrorMessageResourceType = typeof(Resources))]
         [LocalizationDisplayName("VacationEditModel_EndDate_Required", typeof(Resources))]
         public DateTime? EndDate { get; set; }
+
+        [Display(Name = "Дата начала дополнительного отпуска")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? AdditionalVacationBeginDate { get; set; }
+
         [Display(Name = "Длительность отпуска (календарных дней)")]
         public int? DaysCount { get; set; }
         public int? DaysCountHidden { get; set; }
+
+        [Display(Name = "Длительность дополнительного отпуска (календарных дней)")]
+        public int? AdditionalVacationDaysCount { get; set; }
+        public int? AdditionalVacationDaysCountHidden { get; set; }
 
         [Display(Name = "Заполнение табеля")]
         public int TimesheetStatusId { get; set; }

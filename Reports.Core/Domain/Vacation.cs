@@ -15,14 +15,20 @@ namespace Reports.Core.Domain
         public virtual DateTime CreateDate { get; set; }
         public virtual DateTime BeginDate { get; set; }
         public virtual DateTime EndDate { get; set; }
+        public virtual DateTime? AdditionalVacationBeginDate { get; set; }
         public virtual int DaysCount { get; set; }
+        public virtual int AdditionalVacationDaysCount { get; set; }
 
         public virtual int Number { get; set; }
         //public virtual string Comment { get; set; }
         
         public virtual VacationType Type { get; set; }
+        public virtual AdditionalVacationType AdditionalVacationType { get; set; }
         public virtual bool IsOriginalReceived { get; set; }
         //public virtual RequestStatus Status { get; set; }
+
+        public virtual decimal? PrincipalVacationDaysLeft { get; set; }
+        public virtual decimal? AdditionalVacationDaysLeft { get; set; }
 
         //public virtual RequestStatusEnum StatusId {
         //    get { return (RequestStatusEnum)Status.Id; }

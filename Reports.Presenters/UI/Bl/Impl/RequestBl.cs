@@ -32,6 +32,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region DAOs
         
         protected IVacationTypeDao vacationTypeDao;
+        protected IAdditionalVacationTypeDao additionalVacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
         protected IPositionDao positionDao;
         protected IVacationDao vacationDao;
@@ -98,6 +99,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(vacationTypeDao); }
             set { vacationTypeDao = value; }
+        }
+        public IAdditionalVacationTypeDao AdditionalVacationTypeDao
+        {
+            get { return Validate.Dependency(additionalVacationTypeDao); }
+            set { additionalVacationTypeDao = value; }
         }
         public IRequestStatusDao RequestStatusDao
         {
@@ -4568,6 +4574,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 vacationTypeList.Insert(0,new IdNameDto(0,SelectAll));
             return vacationTypeList;
         }
+
+        public List<IdNameDto> GetAdditionalVacationTypes()
+        {
+            List<IdNameDto> additionalVacationTypeList = AdditionalVacationTypeDao.LoadAllSorted().ToList()
+                .ConvertAll(x => new IdNameDto(x.Id, x.Name));
+            return additionalVacationTypeList;
+        }
+
         public List<IdNameDto> GetRequestStatuses()
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
@@ -4620,6 +4634,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
+            model.AdditionalVacationTypes = GetAdditionalVacationTypes();
             Vacation vacation = null; 
             if(id == 0)
             {
@@ -4635,15 +4650,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = vacation.Version;
                 model.VacationTypeId = vacation.Type.Id;
                 model.VacationTypeIdHidden = model.VacationTypeId;
+                model.AdditionalVacationTypeId = vacation.AdditionalVacationType != null ? vacation.AdditionalVacationType.Id : 0;
                 model.BeginDate = vacation.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = vacation.EndDate;
+                model.AdditionalVacationBeginDate = vacation.AdditionalVacationBeginDate;
                 model.TimesheetStatusId = vacation.TimesheetStatus == null ? 0 : vacation.TimesheetStatus.Id;
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId; 
                 model.DaysCount = vacation.DaysCount;
+                model.AdditionalVacationDaysCount = vacation.AdditionalVacationDaysCount;
                 model.DaysCountHidden = model.DaysCount;
                 model.CreatorLogin = vacation.Creator.Name;
                 model.DocumentNumber = vacation.Number.ToString();
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
+                model.PrincipalVacationDaysLeft = vacation.PrincipalVacationDaysLeft ?? 0;
+                model.AdditionalVacationDaysLeft = vacation.AdditionalVacationDaysLeft ?? 0;
                 if (vacation.DeleteDate.HasValue)
                     model.IsDeleted = true;
             }
@@ -4671,13 +4691,16 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper disable PossibleInvalidOperationException
                                                 BeginDate = model.BeginDate.Value,
                                                 EndDate = model.EndDate.Value,
+                                                AdditionalVacationBeginDate = model.AdditionalVacationBeginDate,
 // ReSharper restore PossibleInvalidOperationException
                                                 CreateDate = DateTime.Now,
                                                 Creator = UserDao.Load(current.Id),
-                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
+                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1,
+                                                AdditionalVacationDaysCount = model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1,
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
+                                                AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? additionalVacationTypeDao.Load(model.AdditionalVacationTypeId) : null,
                                                 User = user,
                                                 //UserFullNameForPrint = user.FullName, 
                                              };
@@ -4797,6 +4820,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && !vacation.PersonnelManagerDateAccept.HasValue)
                         {
                             vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                            vacation.PrincipalVacationDaysLeft = model.PrincipalVacationDaysLeft;
+                            vacation.AdditionalVacationDaysLeft = model.AdditionalVacationDaysLeft;
                             if (model.IsApproved)
                             {
                                 vacation.PersonnelManagerDateAccept = DateTime.Now;
@@ -4812,9 +4837,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 // ReSharper disable PossibleInvalidOperationException
                             vacation.BeginDate = model.BeginDate.Value;
                             vacation.EndDate = model.EndDate.Value;
+                            vacation.AdditionalVacationBeginDate = model.AdditionalVacationBeginDate;
 // ReSharper restore PossibleInvalidOperationException
                             vacation.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1;
                             vacation.Type = VacationTypeDao.Load(model.VacationTypeId);
+                            vacation.AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? AdditionalVacationTypeDao.Load(model.AdditionalVacationTypeId) : null;
+                            vacation.AdditionalVacationDaysCount = model.AdditionalVacationBeginDate.HasValue ? model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1 : 0;
                         }
                         //vacation.UserFullNameForPrint = user.FullName;
                         VacationDao.SaveAndFlush(vacation);
@@ -4831,6 +4859,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = vacation.Number.ToString();
                 model.Version = vacation.Version;
                 model.DaysCount = vacation.DaysCount;
+                model.AdditionalVacationDaysCount = vacation.AdditionalVacationDaysCount;
+                model.PrincipalVacationDaysLeft = vacation.PrincipalVacationDaysLeft;
+                model.AdditionalVacationDaysLeft = vacation.AdditionalVacationDaysLeft;
                 model.CreatorLogin = vacation.Creator.Name;
                 model.DateCreated = vacation.CreateDate.ToShortDateString();
                 SetFlagsState(vacation.Id,user,vacation,model);
@@ -4850,6 +4881,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TimesheetStatuses = GetTimesheetStatusesForVacation();
                 model.VacationTypes = GetVacationTypes(false);
                 model.VacationTypeIdHidden = model.VacationTypeId;
+                model.AdditionalVacationTypes = GetAdditionalVacationTypes();
                 model.TimesheetStatusIdHidden = model.TimesheetStatusId;
                 model.DaysCountHidden = model.DaysCount;
             }
@@ -5012,7 +5044,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             RequestPrintForm form = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Vacation);
             model.IsPrintAvailable = form != null;
-
+            
             switch(currentUserRole)
             {
                 case UserRole.Employee:
@@ -5020,8 +5052,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (model.AttachmentId > 0)
                             model.IsApprovedEnable = true;
-                        if(!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                        if (!vacation.ManagerDateAccept.HasValue && !vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
+                        {
                             model.IsVacationTypeEditable = true;
+                            if (IsAdditionalVacationTypeNecessary(model))
+                            {
+                                model.IsAdditionalVacationTypeEditable = true;
+                            }
+                        }
                     }
                     break;
                 case UserRole.Manager:
@@ -5030,10 +5068,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.AttachmentId > 0)
                             model.IsApprovedEnable = true;
                        if (!vacation.PersonnelManagerDateAccept.HasValue && !vacation.SendTo1C.HasValue)
-                        {
+                       {
                             model.IsVacationTypeEditable = true;
-                            //model.IsTimesheetStatusEditable = true;
-                        }
+                            //model.IsTimesheetStatusEditable = true;                            
+                            if (IsAdditionalVacationTypeNecessary(model))
+                            {
+                                model.IsAdditionalVacationTypeEditable = true;
+                            }
+                       }
                     }
                     break;
                 case UserRole.PersonnelManager:
@@ -5041,7 +5083,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         model.IsConfirmationAllowed = true;
                     }
-                    if (!vacation.PersonnelManagerDateAccept.HasValue)
+                    if (!vacation.PersonnelManagerDateAccept.HasValue && (!superPersonnelId.HasValue || AuthenticationService.CurrentUser.Id != superPersonnelId.Value))
                     {
                         if (model.AttachmentId > 0)
                         {
@@ -5063,6 +5105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsVacationTypeEditable = true;
                             model.IsTimesheetStatusEditable = true;
                         }
+                        model.IsDaysLeftEditable = true;
                     }
                     else if (!vacation.SendTo1C.HasValue && 
                              !vacation.DeleteDate.HasValue)
@@ -5097,6 +5140,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.UserName = user.FullName;
             model.UserNumber = user.Code;
             model.UserEmail = user.Email;
+        }
+        protected bool IsAdditionalVacationTypeNecessary(VacationEditModel model)
+        {
+            IdNameDto currentVacationType = GetVacationTypes(false).Where(t => t.Id == model.VacationTypeId).FirstOrDefault();
+            return currentVacationType != null && currentVacationType.Name.IndexOf("учебный") == -1;
         }
         protected List<IdNameDto> GetTimesheetStatusesForVacation()
         {

@@ -6,6 +6,5 @@ namespace Reports.Core.Dto
     {
         // Налучие у владельца больничного листа заведенного стажа в ЗУП
         public bool? UserExperienceIn1C { get; set; }
-        public bool IsOriginalReceived { get; set; }
     }
 }

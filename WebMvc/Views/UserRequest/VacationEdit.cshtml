@@ -25,10 +25,12 @@
             <td colspan="2" style="color:Red;">Заявка отклонена</td>
         </tr>
     }
+    
+    @* Вид отпуска *@
     <tr>
         <td>
             <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-             <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+            <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
             <input type="hidden" id="Version" name="Version" value="@Model.Version" />
             <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
             <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
@@ -44,6 +46,8 @@
             @Html.DropDownListFor(model => model.VacationTypeId, new SelectList(Model.VacationTypes, "ID", "Name"), Model.IsVacationTypeEditable ? null : (object)new { disabled = "disabled" }) 
         </td>
     </tr>
+
+    @* Дата начала отпуска *@
     <tr>
         <td style="width:300px">
             @Html.LabelFor(m => m.BeginDate):
@@ -60,6 +64,8 @@
             } 
         </td>
      </tr>
+
+     @* Дата окончания отпуска *@
      <tr>
         <td>
             @Html.LabelFor(m => m.EndDate):
@@ -76,6 +82,8 @@
             } 
          </td>
     </tr>
+
+    @* Длительность отпуска *@
     <tr>
         <td>
             @Html.LabelFor(m => m.DaysCount):
@@ -84,6 +92,51 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
+
+    <tr>
+        <td colspan="2">
+            В т.ч. дополнительный отпуск:
+        </td>
+    </tr>
+
+    @* Вид доп. отпуска *@
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AdditionalVacationTypeId):
+        </td>
+        <td>
+            @Html.DropDownListFor(model => model.AdditionalVacationTypeId, new SelectList(Model.AdditionalVacationTypes, "ID", "Name"), Model.IsAdditionalVacationTypeEditable ? null : (object)new { disabled = "disabled" })
+        </td>
+    </tr>
+
+    @* Дата начала доп. отпуска *@
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AdditionalVacationBeginDate):
+        </td>
+        <td>
+            @if (Model.IsVacationTypeEditable)
+            {
+                @Html.EditorFor(model => model.AdditionalVacationBeginDate) 
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.AdditionalVacationBeginDate)
+                @Html.HiddenFor(model => model.AdditionalVacationBeginDate)
+            }
+        </td>
+     </tr>
+
+     @* Длительность доп. отпуска *@
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AdditionalVacationDaysCount)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.AdditionalVacationDaysCount)
+        </td>
+    </tr>
+
     <tr>
         <td>
             @Html.LabelFor(m => m.TimesheetStatusId):
@@ -127,12 +180,49 @@
         <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
     </tr>
 
+    <tr>
+        <td colspan="2">
+            На дату окончания отпуска:
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.PrincipalVacationDaysLeft)
+        </td>
+        <td>
+            @if (Model.IsDaysLeftEditable)
+            {
+                @Html.EditorFor(m => m.PrincipalVacationDaysLeft)
+            }
+            else
+            {
+                @Html.DisplayFor(m => m.PrincipalVacationDaysLeft)
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.AdditionalVacationDaysLeft)
+        </td>
+        <td>
+            @if (Model.IsDaysLeftEditable)
+            {
+                @Html.EditorFor(m => m.AdditionalVacationDaysLeft)
+            }
+            else
+            {
+                @Html.DisplayFor(m => m.AdditionalVacationDaysLeft)
+            }
+        </td>
+    </tr>
+
      <tr>
         <td colspan="2">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                              {<text>style="display:none"</text>}/>
             <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                                                     {<text>style="display:none"</text>}/>
             </div>
             <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 1 })';" 
                                                                 @if (!Model.IsPrintAvailable)
@@ -151,11 +241,11 @@
                         <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
                         <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
                         <input type="submit" value="Отправить на согласование" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
-                                                                        {<text>style="display:none"</text>}/>     
+                                                                                                                              {<text>style="display:none"</text>}/>     
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                        {<text>style="display:none"</text>}/>
+                                                                                                                  {<text>style="display:none"</text>}/>
                         @if (Model.IsErrorNotificationAvailable)
                         {
                             <a class="send-error-notification-link" href="">Отправить сообщение сотруднику</a>
@@ -166,7 +256,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
                 @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser)
+                                                                                                           {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByUser)
                 @if (!Model.IsApprovedByUserEnable)
                 {
@@ -178,7 +269,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
                 @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager)
+                                                                                                                 {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByManager)
                 @if (!Model.IsApprovedByManagerEnable)
                 {
@@ -190,7 +282,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
                 @*@Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager)
+                                                                                                                                   {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
                 @if (!Model.IsApprovedByPersonnelManagerEnable)
                 {
@@ -202,7 +295,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsPostedTo1CEnable" name="IsPostedTo1CEnable" value="@Model.IsPostedTo1CEnable" />
                 @*@Html.CheckBox("IsPostedTo1C", Model.IsPostedTo1C, Model.IsPostedTo1CEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C)
+                                                                                                   {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsPostedTo1C)
                 @if (!Model.IsPostedTo1CEnable)
                 {
@@ -218,7 +312,6 @@
     </tr>
 
     @* Ссылка для открытия скана подписанного приказа *@
-
     <tr>
         <td colspan="2">@Html.LabelFor(model => model.OrderScanAttachment):
             @if (!string.IsNullOrEmpty(Model.OrderScanAttachment))
@@ -235,7 +328,6 @@
     </tr>
 
     @* Прикрепление скана подписанного приказа *@
-
     @if (Model.IsConfirmationAllowed)
     {
         <tr>    
@@ -264,9 +356,24 @@
     </table>
     </div>
     <script type="text/javascript">
+        var restrictDatesInDatepicker = function (targetInput, beginDateInput, endDateInput) {
+            var pattern = /(\d{2})\.(\d{2})\.(\d{4})/;
+            var substitutionPattern = "$3-$2-$1";
+            try {
+                var beginDate = beginDateInput.val().replace(pattern, substitutionPattern);
+                var endDate = endDateInput.val().replace(pattern, substitutionPattern);
+                targetInput.datepicker("option", { minDate: new Date(beginDate), maxDate: new Date(endDate) });
+            }
+            catch (e) {
+                targetInput.datepicker("option", { minDate: null, maxDate: null });
+            }
+        }
+
         $(document).ready(function () {
             $("#BeginDate").datepicker();
             $("#EndDate").datepicker();
+            $("#AdditionalVacationBeginDate").datepicker();
+            restrictDatesInDatepicker($("#AdditionalVacationBeginDate"), $("#BeginDate"), $("#EndDate"));
             $(".hasDatepicker").width("75px");
             setActiveMenuItem("userVacation");
 
@@ -281,6 +388,25 @@
                         location.reload(true);
                     }
                 });
+            });
+
+            $("#AdditionalVacationBeginDate, #BeginDate, #EndDate").keydown(function (e) {
+                e.preventDefault();
+            });
+
+            // Деактивация выбора типа доп. отпуска при выборе учебных отпусков в качестве основного типа
+            $("#VacationTypeId").change(function () {
+                if ($("#VacationTypeId :selected").html().indexOf("учебный") === -1) {
+                    $("#AdditionalVacationTypeId").removeAttr("disabled");
+                }
+                else {
+                    $("#AdditionalVacationTypeId").attr("disabled", "disabled");
+                }
+            });
+
+            // Ограничение дат доп. отпуска
+            $("#BeginDate, #EndDate").change(function () {
+                restrictDatesInDatepicker($("#AdditionalVacationBeginDate"), $("#BeginDate"), $("#EndDate"));
             });
         });    
     function ValidateForm()

@@ -168,6 +168,10 @@ namespace Reports.Core
                   ImplementedBy(typeof(VacationTypeDao)).
                   LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IAdditionalVacationTypeDao)).
+                  ImplementedBy(typeof(AdditionalVacationTypeDao)).
+                  LifeStyle.Is(type));
+
             Register(Component.For(typeof(IRequestStatusDao)).
                   ImplementedBy(typeof(RequestStatusDao)).
                   LifeStyle.Is(type));
