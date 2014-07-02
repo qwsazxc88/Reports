@@ -18,8 +18,9 @@ namespace Reports.Presenters.UI.Bl
         void SetAllRequestListModel(AllRequestListModel model, bool hasError);
 
         VacationEditModel GetVacationEditModel(int id, int userId);
-        bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, out string error);
+        bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
         void ReloadDictionariesToModel(VacationEditModel model);
+        bool ResetVacationApprovals(int id, out string error);
 
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
                                     DateTime endDate, int userId, int vacationId, bool isChildVacantion);
@@ -54,12 +55,12 @@ namespace Reports.Presenters.UI.Bl
         void SetMissionListModel(MissionListModel model, bool hasError);
         MissionEditModel GetMissionEditModel(int id, int userId);
         void ReloadDictionariesToModel(MissionEditModel model);
-        bool SaveMissionEditModel(MissionEditModel model, out string error);
+        bool SaveMissionEditModel(MissionEditModel model, UploadFileDto orderScanFileDto, out string error);
 
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
-        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, out string error);
+        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
                 
         ClearanceChecklistListModel GetClearanceChecklistListModel();
@@ -109,7 +110,7 @@ namespace Reports.Presenters.UI.Bl
         void SetChildVacationListModel(ChildVacationListModel model, bool hasError);
         ChildVacationEditModel GetChildVacationEditModel(int id, int userId);
         void ReloadDictionariesToModel(ChildVacationEditModel model);
-        bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, out string error);
+        bool SaveChildVacationEditModel(ChildVacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
 
         DeductionListModel GetDeductionListModel();
         void SetDeductionListModel(DeductionListModel model, bool hasError);

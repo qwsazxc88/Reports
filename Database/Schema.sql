@@ -568,6 +568,9 @@ alter table AppointmentCreateManager2ToDepartment2  drop constraint FK_Appointme
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_VacationType]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_VacationType
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_AdditionalVacationType]') AND parent_object_id = OBJECT_ID('Vacation'))
+alter table Vacation  drop constraint FK_Vacation_AdditionalVacationType
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Vacation_User]') AND parent_object_id = OBJECT_ID('Vacation'))
 alter table Vacation  drop constraint FK_Vacation_User
 
@@ -774,6 +777,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrecti
 if exists (select * from dbo.sysobjects where id = object_id(N'Vacation') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Vacation
 if exists (select * from dbo.sysobjects where id = object_id(N'Timesheet') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Timesheet
 if exists (select * from dbo.sysobjects where id = object_id(N'UserLogin') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table UserLogin
+if exists (select * from dbo.sysobjects where id = object_id(N'AdditionalVacationType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AdditionalVacationType
 if exists (select * from dbo.sysobjects where id = object_id(N'Managers') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Managers
 if exists (select * from dbo.sysobjects where id = object_id(N'Passport') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Passport
 if exists (select * from dbo.sysobjects where id = object_id(N'Training') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Training
@@ -918,6 +922,8 @@ create table Dismissal (
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
+  IsOriginalReceived BIT not null,
+  IsPersonnelFileSentToArchive BIT not null,
   TimesheetStatusId INT null,
   RegistryNumber INT null,
   PersonalIncomeTax DECIMAL(19, 2) null,
@@ -1005,6 +1011,7 @@ create table Sicklist (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   IsContinued BIT not null,
+  IsOriginalReceived BIT not null,
   TimesheetStatusId INT null,
   constraint PK_Sicklist  primary key (Id)
 )
@@ -1907,6 +1914,7 @@ create table ChildVacation (
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
   ExportFrom1C BIT null,
+  IsOriginalReceived BIT not null,
   TimesheetStatusId INT null,
   constraint PK_ChildVacation  primary key (Id)
 )
@@ -2058,9 +2066,12 @@ create table Vacation (
   CreateDate DATETIME not null,
   BeginDate DATETIME not null,
   EndDate DATETIME not null,
+  AdditionalVacationBeginDate DATETIME null,
   DaysCount INT not null,
+  AdditionalVacationDaysCount INT not null,
   Number INT not null,
   TypeId INT not null,
+  AdditionalVacationTypeId INT null,
   UserId INT not null,
   CreatorId INT not null,
   UserDateAccept DATETIME null,
@@ -2069,6 +2080,9 @@ create table Vacation (
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
   DeleteAfterSendTo1C BIT not null,
+  IsOriginalReceived BIT not null,
+  PrincipalVacationDaysLeft DECIMAL(19, 2) null,
+  AdditionalVacationDaysLeft DECIMAL(19, 2) null,
   TimesheetStatusId INT null,
   constraint PK_Vacation  primary key (Id)
 )
@@ -2088,6 +2102,13 @@ create table UserLogin (
   Date DATETIME not null,
   RoleId INT null,
   constraint PK_UserLogin  primary key (Id)
+)
+create table AdditionalVacationType (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(16) not null,
+  Name NVARCHAR(128) not null,
+  constraint PK_AdditionalVacationType  primary key (Id)
 )
 create table Managers (
  Id INT IDENTITY NOT NULL,
@@ -2684,10 +2705,12 @@ create index IX_AppointmentCreateManager2ToDepartment2_Department on Appointment
 alter table AppointmentCreateManager2ToDepartment2 add constraint FK_AppointmentCreateManager2ToDepartment2_User foreign key (ManagerId) references [Users]
 alter table AppointmentCreateManager2ToDepartment2 add constraint FK_AppointmentCreateManager2ToDepartment2_Department foreign key (DepartmentId) references Department
 create index Vacation_VacationType on Vacation (TypeId)
+create index Vacation_AdditionalVacationType on Vacation (AdditionalVacationTypeId)
 create index IX_Vacation_User_Id on Vacation (UserId)
 create index IX_Vacation_CreatorUser_Id on Vacation (CreatorId)
 create index Vacation_TimesheetStatus on Vacation (TimesheetStatusId)
 alter table Vacation add constraint FK_Vacation_VacationType foreign key (TypeId) references VacationType
+alter table Vacation add constraint FK_Vacation_AdditionalVacationType foreign key (AdditionalVacationTypeId) references AdditionalVacationType
 alter table Vacation add constraint FK_Vacation_User foreign key (UserId) references [Users]
 alter table Vacation add constraint FK_Vacation_CreatorUser foreign key (CreatorId) references [Users]
 alter table Vacation add constraint FK_Vacation_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus

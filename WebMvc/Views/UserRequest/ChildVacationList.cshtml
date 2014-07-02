@@ -126,6 +126,13 @@
                                 }
                             }                                                                                          
                             </td>
+                            <td style = "text-align:right">
+                                @if (Model.IsOriginalReceivedEditable)
+                                {
+                                    <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                                    <button type="submit" id="SaveOriginalReceived">Записать</button>
+                                }
+                            </td>
                         </tr>
               </table>  
            </div>                        
@@ -137,9 +144,10 @@
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%">
                 <tr>
+                    <th>№<br />п/п</th>
                     @*<th>Название документа</th>
                     <th>Дата</th>*@
-                     <th>
+                    <th>
                         <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
                     </th>
                     <th>
@@ -158,17 +166,26 @@
                         <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
                     </th>
                     <th>
-                        Период
+                        <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
+                    @if (Model.IsOriginalReceivedEditable)
+                    {
+                        <th>
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Оригинал<br />приказа<br />и заявления<br />получен</a></div><br />
+                            <input type="checkbox" id="setAll" />
+                        </th>
+                    }
                     @*<th>
                         Дата окончания
                     </th>*@
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
+                    var i = 1;
                     foreach (var doc in Model.Documents)
                     {
                         <tr>
+                            <td>@i</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("ChildVacationEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
                             </td>
@@ -178,10 +195,19 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
+                            @if (Model.IsOriginalReceivedEditable)
+                            {
+                                <td style="text-align: center">
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck" })
+                                    <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                                </td>
+                            }
                         </tr>
+                        i++;
                     }
                 }
             </table>
+            <input type="hidden" name="anticache" value=@DateTime.Now />
         </td>
     </tr>
 </table> 
@@ -195,6 +221,21 @@
         $(".hasDatepicker").width("75px");
          setSortFields();
          setActiveMenuItem("userChildVacation");
+
+         $("#SaveOriginalReceived").click(function(){
+            $("#IsOriginalReceivedModified").val("true");
+         });
+
+         $("#setAll").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheck").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheck").removeAttr('checked');
+            }
+         });
     });
     function resetFilter() {
         $("#BeginDate").val('');

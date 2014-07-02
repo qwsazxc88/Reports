@@ -47,6 +47,8 @@ namespace Reports.Core.Domain
 
         public virtual bool? ExportFrom1C { get; set; }
 
+        public virtual bool IsOriginalReceived { get; set; }
+
         public virtual IList<ChildVacationComment> Comments { get; set; }
 
         //public virtual string ManagerFullNameForPrint { get; set; }

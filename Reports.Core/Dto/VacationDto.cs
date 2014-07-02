@@ -15,6 +15,8 @@ namespace Reports.Core.Dto
         public string UserName { get; set; }
         public string RequestType { get; set; }
         public string RequestStatus { get; set; }
+        public bool IsOriginalReceived { get; set; }
+        public bool IsPersonnelFileSentToArchive { get; set; }
     }
     public class AllRequestDto : VacationDto
     {

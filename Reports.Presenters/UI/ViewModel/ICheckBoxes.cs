@@ -29,6 +29,11 @@ namespace Reports.Presenters.UI.ViewModel
         string Attachment { get; set; }
         int AttachmentId { get; set; }
     }
+    public interface IOrderScanAttachment
+    {
+        string OrderScanAttachment { get; set; }
+        int OrderScanAttachmentId { get; set; }
+    }
     public interface ICheckForEntity
     {
         bool IsDeleteAvailable { get; set; }

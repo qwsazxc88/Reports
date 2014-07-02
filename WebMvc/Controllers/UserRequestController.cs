@@ -408,6 +408,7 @@ namespace WebMvc.Controllers
          public ActionResult DismissalList(DismissalListModel model)
          {
              RequestBl.SetDismissalListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 
@@ -424,6 +425,7 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -432,7 +434,7 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, fileDto, orderScanFileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -636,6 +638,7 @@ namespace WebMvc.Controllers
          {
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateMissionEditModel(model))
              {
                  model.IsApproved = false;
@@ -644,7 +647,7 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveMissionEditModel(model, out error))
+             if (!RequestBl.SaveMissionEditModel(model, orderScanFileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -761,16 +764,18 @@ namespace WebMvc.Controllers
          #region Sicklist
          [HttpGet]
          public ActionResult SicklistList()
-         {
+         {                    
              SicklistListModel model = RequestBl.GetSicklistListModel();
              return View(model);
          }
          [HttpPost]
          public ActionResult SicklistList(SicklistListModel model)
-         {
+         {             
              RequestBl.SetSicklistListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
+
          [HttpGet]
          public ActionResult SicklistEdit(int id, int userId)
          {
@@ -1091,6 +1096,7 @@ namespace WebMvc.Controllers
          public ActionResult VacationList(VacationListModel model)
          {
              RequestBl.SetVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
 
@@ -1115,6 +1121,7 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -1124,7 +1131,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveVacationEditModel(model, fileDto, out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, orderScanFileDto, out error))
              {
                  
                  if (model.ReloadPage)
@@ -1139,6 +1146,21 @@ namespace WebMvc.Controllers
              }
              return View(model);
          }
+
+         [HttpPost]
+         public JsonResult VacationSendErrorNotification(int id)
+         {
+             string error = "";
+             if (RequestBl.ResetVacationApprovals(id, out error))
+             {
+                 return Json(new { ok = true });
+             }
+             else
+             {
+                 return Json(new { ok = false, error = error });
+             }
+         }
+
          protected bool ValidateVacationEditModel(VacationEditModel model, UploadFileDto fileDto)
          {
              UserRole role = AuthenticationService.CurrentUser.UserRole;
@@ -1245,6 +1267,7 @@ namespace WebMvc.Controllers
          public ActionResult ChildVacationList(ChildVacationListModel model)
          {
              RequestBl.SetChildVacationListModel(model, !ValidateModel(model));
+             ModelState.Clear();
              return View(model);
          }
          protected bool ValidateModel(ChildVacationListModel model)
@@ -1269,6 +1292,7 @@ namespace WebMvc.Controllers
              CorrectCheckboxes(model);
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
+             UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              if (!ValidateChildVacationEditModel(model, fileDto))
              {
                  model.IsApproved = false;
@@ -1278,7 +1302,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveChildVacationEditModel(model, fileDto, out error))
+             if (!RequestBl.SaveChildVacationEditModel(model, fileDto, orderScanFileDto, out error))
              {
 
                  if (model.ReloadPage)

@@ -200,6 +200,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             return SendEmail(dto);
         }
 
+        protected bool SendEmailForVacationError(Vacation entity)
+        {
+            string subject = @"Ошибки в заявке";
+            string to = entity.User.Email;
+            string body = string.Format(@"Ваша заявка №{0} от {1} (отпуск) содержит ошибки. Описание ошибок приведено в комментариях к заявке.<br/>
+                                          Это письмо сформировано автоматически, ответы на него обрабатываться не будут.<br/>
+                                          <a href=""https://ruscount.com:8002"">Кадровый портал</a>",
+                                          entity.Number, entity.CreateDate.ToShortDateString());
+            EmailDto dto = GetEmailDto(null, to, subject, body);
+            dto.From = "noreply@ruscount.ru";
+
+            return SendEmail(dto);
+        }
+
         protected EmailDto SendEmailForUserRequest(User user,IUser current,
             User creator,bool isDeleted,
             int requestId,int requestNumber,

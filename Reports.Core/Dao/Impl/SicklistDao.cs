@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -103,7 +104,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
-                AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean);                
+                AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean).
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
         }
 
         public bool ResetApprovals(int id)
@@ -122,6 +124,15 @@ namespace Reports.Core.Dao.Impl
             {
                 return false;
             }
+        }
+
+        public IList<Sicklist> LoadForIdsList(List<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<Sicklist>();
+            ICriteria criteria = Session.CreateCriteria(typeof(Sicklist));
+            criteria.Add(Restrictions.In("Id", ids));
+            return criteria.List<Sicklist>();
         }
     }
 }
