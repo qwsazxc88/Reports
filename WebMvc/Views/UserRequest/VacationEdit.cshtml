@@ -126,11 +126,12 @@
         <td>
             @if (Model.IsVacationTypeEditable)
             {
-                @Html.EditorFor(model => model.AdditionalVacationBeginDate) 
+                @Html.EditorFor(model => model.AdditionalVacationBeginDate)
+                <button id="resetAdditionalVacationBeginDate">Сбросить</button>
             }
             else
             {
-                @Html.DisplayFor(model => model.AdditionalVacationBeginDate)
+                @Html.DisplayFor(model => model.AdditionalVacationBeginDate)                
                 @Html.HiddenFor(model => model.AdditionalVacationBeginDate)
             }
         </td>
@@ -410,6 +411,11 @@
                 e.preventDefault();
             });
 
+            $("#resetAdditionalVacationBeginDate").click(function (e) {
+                e.preventDefault();
+                $("#AdditionalVacationBeginDate").val("");
+            });
+
             // Деактивация выбора типа доп. отпуска при выборе учебных отпусков в качестве основного типа
             $("#VacationTypeId").change(function () {
                 if ($("#VacationTypeId :selected").html().indexOf("учебный") === -1) {
@@ -426,7 +432,7 @@
             });
             /*
             $("#IsAdditionalVacationPresent").change(function () {
-                $(".additional-vacation").toggle(this.checked);
+            $(".additional-vacation").toggle(this.checked);
             });*/
         });    
     function ValidateForm()
