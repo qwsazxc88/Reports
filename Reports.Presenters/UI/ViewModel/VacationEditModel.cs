@@ -17,7 +17,10 @@ namespace Reports.Presenters.UI.ViewModel
         public int VacationTypeIdHidden { get; set; }
         public IList<IdNameDto> VacationTypes;
         public bool IsVacationTypeEditable { get; set; }
-
+        /*
+        [Display(Name = "Включить дополнительный отпуск")]
+        public bool IsAdditionalVacationPresent { get; set; }
+        */
         [Display(Name = "Вид дополнительного отпуска")]
         public int AdditionalVacationTypeId { get; set; }
         public int AdditionalVacationTypeIdHidden { get; set; }
