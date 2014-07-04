@@ -3858,9 +3858,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             // Расчетчики аутсорсинга
                             if (isSuperPersonnelManager)
                             {
-                                // могут согласовать, если стаж есть в 1С или добавлен кадровиком банка
-                                if (user.ExperienceIn1C == true)
-                                {
+                                // могут согласовать в любом случае
+                                //if (user.ExperienceIn1C == true)
+                                //{
                                     if (entity.ManagerDateAccept.HasValue)
                                     {
                                         model.IsApprovedEnable = true;
@@ -3868,8 +3868,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     else
                                     {
                                         model.IsApprovedForAllEnable = true;
-                                    }                                    
-                                }                                
+                                    }
+                                //}
                             }
                             // Кадровики банка могут согласовать,
                             else
