@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -26,6 +27,7 @@ namespace Reports.Core.Domain
         public virtual string TempPassword { get; set; }
         public virtual string RejectReason { get; set; }
         public virtual bool? IsEducationExists { get; set; }
+        public virtual bool? IsColloquyPassed { get; set; }
         public virtual DateTime? DateAccept { get; set; }
 
 
@@ -37,6 +39,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? DeleteDate { get; set; }
         public virtual User DeleteUser { get; set; }
         public virtual DateTime? SendTo1C { get; set; }
+
+        public virtual IList<AppointmentReportComment> Comments { get; set; }
         #endregion
 
         #region Properties

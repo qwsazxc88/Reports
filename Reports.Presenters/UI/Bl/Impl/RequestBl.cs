@@ -4650,7 +4650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = vacation.Version;
                 model.VacationTypeId = vacation.Type.Id;
                 model.VacationTypeIdHidden = model.VacationTypeId;
-                model.AdditionalVacationTypeId = vacation.AdditionalVacationType != null ? vacation.AdditionalVacationType.Id : 0;
+                model.AdditionalVacationTypeId = vacation.AdditionalVacationType != null ? vacation.AdditionalVacationType.Id : model.AdditionalVacationTypes[0].Id;
                 model.BeginDate = vacation.BeginDate;//new DateTimeDto(vacation.BeginDate);//
                 model.EndDate = vacation.EndDate;
                 model.AdditionalVacationBeginDate = vacation.AdditionalVacationBeginDate;
@@ -4696,11 +4696,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                 CreateDate = DateTime.Now,
                                                 Creator = UserDao.Load(current.Id),
                                                 DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1,
-                                                AdditionalVacationDaysCount = model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1,
+                                                AdditionalVacationDaysCount = model.AdditionalVacationBeginDate.HasValue ? model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1 : 0,
                                                 Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
                                                 //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
                                                 Type = VacationTypeDao.Load(model.VacationTypeId),
-                                                AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? additionalVacationTypeDao.Load(model.AdditionalVacationTypeId) : null,
+                                                AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? additionalVacationTypeDao.Get(model.AdditionalVacationTypeId) : null,
                                                 User = user,
                                                 //UserFullNameForPrint = user.FullName, 
                                              };

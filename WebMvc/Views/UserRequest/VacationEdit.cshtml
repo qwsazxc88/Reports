@@ -92,15 +92,24 @@
             @Html.DisplayFor(model => model.DaysCount)  
          </td>
     </tr>
-
+    @*
     <tr>
+        <td>
+            @Html.LabelFor(m => m.IsAdditionalVacationPresent):
+        </td>
+        <td>
+            @Html.CheckBoxFor(model => model.IsAdditionalVacationPresent)
+        </td>
+    </tr>
+    *@
+    <tr class="additional-vacation">
         <td colspan="2">
             В т.ч. дополнительный отпуск:
         </td>
     </tr>
 
     @* Вид доп. отпуска *@
-    <tr>
+    <tr class="additional-vacation">
         <td>
             @Html.LabelFor(m => m.AdditionalVacationTypeId):
         </td>
@@ -110,25 +119,26 @@
     </tr>
 
     @* Дата начала доп. отпуска *@
-    <tr>
+    <tr class="additional-vacation">
         <td>
             @Html.LabelFor(m => m.AdditionalVacationBeginDate):
         </td>
         <td>
             @if (Model.IsVacationTypeEditable)
             {
-                @Html.EditorFor(model => model.AdditionalVacationBeginDate) 
+                @Html.EditorFor(model => model.AdditionalVacationBeginDate)
+                <button id="resetAdditionalVacationBeginDate">Сбросить</button>
             }
             else
             {
-                @Html.DisplayFor(model => model.AdditionalVacationBeginDate)
+                @Html.DisplayFor(model => model.AdditionalVacationBeginDate)                
                 @Html.HiddenFor(model => model.AdditionalVacationBeginDate)
             }
         </td>
      </tr>
 
      @* Длительность доп. отпуска *@
-    <tr>
+    <tr class="additional-vacation">
         <td>
             @Html.LabelFor(m => m.AdditionalVacationDaysCount)
         </td>
@@ -376,6 +386,13 @@
             restrictDatesInDatepicker($("#AdditionalVacationBeginDate"), $("#BeginDate"), $("#EndDate"));
             $(".hasDatepicker").width("75px");
             setActiveMenuItem("userVacation");
+            if ($("#VacationTypeId :selected").html().indexOf("учебный") === -1) {
+                $("#AdditionalVacationTypeId").removeAttr("disabled");
+            }
+            else {
+                $("#AdditionalVacationTypeId").attr("disabled", "disabled");
+            }
+            //$(".additional-vacation").toggle(document.getElementById("IsAdditionalVacationPresent").checked);
 
             $(".send-error-notification-link").click(function (event) {
                 event.preventDefault();
@@ -394,6 +411,11 @@
                 e.preventDefault();
             });
 
+            $("#resetAdditionalVacationBeginDate").click(function (e) {
+                e.preventDefault();
+                $("#AdditionalVacationBeginDate").val("");
+            });
+
             // Деактивация выбора типа доп. отпуска при выборе учебных отпусков в качестве основного типа
             $("#VacationTypeId").change(function () {
                 if ($("#VacationTypeId :selected").html().indexOf("учебный") === -1) {
@@ -408,6 +430,10 @@
             $("#BeginDate, #EndDate").change(function () {
                 restrictDatesInDatepicker($("#AdditionalVacationBeginDate"), $("#BeginDate"), $("#EndDate"));
             });
+            /*
+            $("#IsAdditionalVacationPresent").change(function () {
+            $(".additional-vacation").toggle(this.checked);
+            });*/
         });    
     function ValidateForm()
     {

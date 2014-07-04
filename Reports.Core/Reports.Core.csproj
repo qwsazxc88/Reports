@@ -92,6 +92,7 @@
     <Compile Include="Dao\IAppointmentCommentDao.cs" />
     <Compile Include="Dao\IAppointmentEducationTypeDao.cs" />
     <Compile Include="Dao\IAppointmentReasonDao.cs" />
+    <Compile Include="Dao\IAppointmentReportCommentDao.cs" />
     <Compile Include="Dao\IAppointmentReportDao.cs" />
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Dao\Impl\AppointmentCommentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentEducationTypeDao.cs" />
+    <Compile Include="Dao\Impl\AppointmentReportCommentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReportDao.cs" />
     <Compile Include="Dao\Impl\AttachmentDao.cs" />
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
@@ -320,6 +322,7 @@
     <Compile Include="Domain\AppointmentManager2ToManager3.cs" />
     <Compile Include="Domain\AppointmentReason.cs" />
     <Compile Include="Domain\AppointmentReport.cs" />
+    <Compile Include="Domain\AppointmentReportComment.cs" />
     <Compile Include="Domain\Attachment.cs" />
     <Compile Include="Domain\ChiefToUser.cs" />
     <Compile Include="Domain\ChildVacation.cs" />
@@ -970,6 +973,9 @@
     <EmbeddedResource Include="Domain\AdditionalVacationType.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AppointmentReportComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
