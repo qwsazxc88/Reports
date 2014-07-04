@@ -55,6 +55,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDocumentsSaveToArchiveAvailable { get; set; }
         public bool IsPrintArchivistAddressAvailable { get; set; }
 
+        public bool IsCreateAdditionalOrderAvailable { get; set; }
+
+
         [Display(Name = "Дата отправки в архив")]
         public string ArchiveDate { get; set; }
         [Display(Name = "Номер коробки (полки, места) в архиве")]

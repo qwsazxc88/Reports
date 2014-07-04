@@ -613,6 +613,21 @@ namespace WebMvc.Controllers
             }*/
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee)]
+        public ActionResult CreateAdditionalOrder(int id)
+        {
+            int additionalOrderId = RequestBl.CreateAdditionalOrder(id);
+            return RedirectToAction("AdditionalMissionOrderEdit", additionalOrderId);
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Findep)]
+        public ActionResult AdditionalMissionOrderEdit(int id)
+        {
+            AdditionalMissionOrderEditModel model = RequestBl.GetAdditionalMissionOrderEditModel(id);
+            return View(model);
+        }
 
         [HttpGet]
         public ActionResult GetReportPrintForm(int id)

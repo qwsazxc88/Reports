@@ -683,6 +683,7 @@
     <Content Include="Views\MissionOrder\PrintArchivistAddress.cshtml" />
     <Content Include="Views\MissionOrder\AddCostAttachmentDialog.cshtml" />
     <Content Include="Views\MissionOrder\CostAttachmentDialogError.cshtml" />
+    <Content Include="Views\MissionOrder\AdditionalMissionOrderEdit.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

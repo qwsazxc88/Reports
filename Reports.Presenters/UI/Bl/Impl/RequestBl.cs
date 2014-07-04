@@ -8776,7 +8776,162 @@ namespace Reports.Presenters.UI.Bl.Impl
             return table;
         }
         #endregion
+        #region Additional Mission Order
+        public int CreateAdditionalOrder(int missionReportId)
+        {
+            MissionReport  report = MissionReportDao.Load(missionReportId);
+            if(report == null)
+                throw new ValidationException(string.Format("Не найден авансовый отчет (id {0}) в базе данных", missionReportId));
+            MissionOrder order = report.MissionOrder;
+            MissionOrder additionalOrder = new MissionOrder
+                                               {
+                                                   CreateDate = DateTime.Now,
+                                                   Creator = order.User,
+                                                   Comments = new List<MissionOrderComment>(),
+                                                   EditDate = DateTime.Now,
+                                                   Goal = order.Goal,
+                                                   IsAdditional = true,
+                                                   Kind = order.Kind,
+                                                   Mission = order.Mission,
+                                                   Number = order.Number,
+                                                   Targets = new List<MissionTarget>(),
+                                                   User = order.User,
+                                                   Type = order.Type,
+                                                   NeedToAcceptByChief = order.NeedToAcceptByChief,
+                                                   NeedToAcceptByChiefAsManager = order.NeedToAcceptByChiefAsManager,
+                                                   MainOrder = order
+                                               };
+            MissionOrderDao.SaveAndFlush(additionalOrder);
+            return additionalOrder.Id;
+        }
+        public AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id)
+        {
+            MissionOrder entity = MissionOrderDao.Load(id);
+            if (entity == null)
+                throw new ValidationException(string.Format("Не найдено изменение приказа на командировку (id {0}) в базе данных", id));
+            User user = entity.User;
+            IUser current = AuthenticationService.CurrentUser;
+            //if (!CheckUserAmoRights(user, current, id, entity, false))
+            //    throw new ArgumentException("Доступ запрещен.");
 
+            
+            AdditionalMissionOrderEditModel model = new AdditionalMissionOrderEditModel
+                                                        {
+                                                            Id = entity.Id,
+                                                            UserId = entity.User.Id,
+                                                            BeginMissionDate = FormatDate(entity.BeginDate),
+                                                            DateCreated = FormatDate(entity.CreateDate),
+                                                            EndMissionDate = FormatDate(entity.EndDate),
+                                                            Goal = entity.Goal.Name,
+                                                            Kind = entity.Kind == 1 ? "Внутренняя": "Внешняя",
+                                                            Type = entity.Type.Name,
+                                                            TypeId = entity.Type.Id,
+                                                            Version = entity.Version
+                                                        };
+            if (!entity.User.Grade.HasValue)
+                throw new ValidationException(string.Format("Не указан грейд для пользователя {0} в базе данных", user.Id));
+            MissionGraid graid = MissionGraidDao.Load(entity.User.Grade.Value);
+            if (graid == null)
+                throw new ValidationException(string.Format("Не найден грайд (id = {0}) в базе данных", entity.User.Grade.Value));
+            model.Grade = graid.Name;
+            if (entity.DeleteDate.HasValue)
+                model.IsDeleted = true;
+            model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+            model.DocumentNumber = entity.Number+"-изм";
+
+            MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
+            {
+                AirTicketTypeId = x.AirTicketType == null ? 0 : x.AirTicketType.Id,
+                AirTicketTypeName = x.AirTicketType == null ? string.Empty : x.AirTicketType.Name,
+                AllDaysCount = x.DaysCount.ToString(),
+                City = x.City,
+                Country = x.Country.Name,
+                CountryId = x.Country.Id,
+                DailyAllowanceId = x.DailyAllowance == null ? 0 : x.DailyAllowance.Id,
+                DailyAllowanceName = x.DailyAllowance == null ? string.Empty : x.DailyAllowance.Name,
+                DateFrom = x.BeginDate.ToShortDateString(),
+                DateTo = x.EndDate.ToShortDateString(),
+                Organization = x.Organization,
+                ResidenceId = x.Residence == null ? 0 : x.Residence.Id,
+                ResidenceName = x.Residence == null ? string.Empty : x.Residence.Name,
+                TargetDaysCount = x.RealDaysCount.ToString(),
+                TargetId = x.Id,
+                TrainTicketTypeId = x.TrainTicketType == null ? 0 : x.TrainTicketType.Id,
+                TrainTicketTypeName = x.TrainTicketType == null ? string.Empty : x.TrainTicketType.Name,
+            }).ToArray();
+            JsonList list = new JsonList { List = targets };
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            model.Targets = jsonSerializer.Serialize(list);
+            SetUserInfoModel(user, model);
+            return model;
+        }
+        protected bool IsAdditionalMissionOrderLong(MissionOrder entity)
+        {
+            /*if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
+                return false;
+            return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
+                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);*/
+            if (IsMissionOrderLong(entity.MainOrder))
+                return true;
+            if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
+                return false;
+            DateTime minDate = entity.MainOrder.BeginDate.Value < entity.BeginDate.Value
+                                   ? entity.MainOrder.BeginDate.Value
+                                   : entity.BeginDate.Value;
+            DateTime maxDate = entity.MainOrder.EndDate.Value > entity.EndDate.Value
+                                   ? entity.MainOrder.EndDate.Value
+                                   : entity.EndDate.Value;
+            return (maxDate.Subtract(minDate).Days > 7) ||
+                  (WorkingCalendarDao.GetNotWorkingCountBetweenDates(minDate, maxDate) > 0);
+
+        }
+        public bool CheckUserAmoRights(User user, IUser current, int entityId, MissionOrder entity, bool isSave)
+        {
+            switch (current.UserRole)
+            {
+                case UserRole.Employee:
+                    if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserAmoRights user.Id {0} current.Id {1}", user.Id, current.Id);
+                        return false;
+                    }
+                    return true;
+                case UserRole.Manager:
+                    //bool canEdit;
+                    //bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
+                    //if (isManager)
+                    //{
+                    //    if (isSave)
+                    //        return canEdit ;
+                    //    return true;
+                    //}
+                    if (entity.MainOrder.AcceptManager.Id == current.Id)
+                        return true;
+                    Log.ErrorFormat("CheckUserAmoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
+                    return false;
+                case UserRole.OutsourcingManager:
+                //case UserRole.Secretary:
+                    return true;
+                case UserRole.Accountant:
+                case UserRole.Findep:
+                    if (isSave)
+                        return false;
+                    return true;
+                case UserRole.Director:
+                    //if (entityId > 0)
+                    //{
+                    //    if (entity.NeedToAcceptByChief)
+                    //        return true;
+                    //    return IsDirectorManagerForEmployee(user, current);
+                    //}
+                    if (entity.MainOrder.AcceptChief.Id == current.Id)
+                        return true;
+                    Log.ErrorFormat("CheckUserAmoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
+                    return false;
+            }
+            return false;
+        }
+        #endregion
         #region Mission Report
         public MissionReportsListModel GetMissionReportsListModel()
         {
@@ -9036,8 +9191,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //{
                         if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
                         {
-                            model.IsEditable = true;
-                            model.IsUserApprovedAvailable = true;
+                            if(entity.AdditionalMissionOrder == null)
+                            {
+                                model.IsCreateAdditionalOrderAvailable = true;
+                                model.IsEditable = true;
+                                model.IsUserApprovedAvailable = true;
+                            }
+                            else if(IsAdditionalMissionOrderConfirmByUserOrExpired(entity.AdditionalMissionOrder))
+                            {
+                                model.IsEditable = true;
+                                model.IsUserApprovedAvailable = true;
+                            }
                         }
                         if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue)
                         {
@@ -9066,8 +9230,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                         && entity.UserDateAccept.HasValue && isUserManager && canEdit)
                     {
-                        model.IsManagerApproveAvailable = true;
-                        model.IsManagerRejectAvailable = true;
+                        if (entity.AdditionalMissionOrder == null || 
+                            IsAdditionalMissionOrderConfirmRejectOrExpired(entity.AdditionalMissionOrder))
+                        {
+                            model.IsManagerApproveAvailable = true;
+                            model.IsManagerRejectAvailable = true;
+                        }
                     }
 
                     //}
@@ -9076,19 +9244,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue 
                         && !entity.SendTo1C.HasValue)
                     {
-                        if (!entity.AccountantDateAccept.HasValue)
+                        if (entity.AdditionalMissionOrder == null ||
+                            IsAdditionalMissionOrderConfirmRejectOrExpired(entity.AdditionalMissionOrder))
                         {
-                            model.IsAccountantEditable = true;
-                            model.IsAccountantApproveAvailable = true;
-                            if (model.IsAccountantApproveAvailable &&
-                                entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
-                                (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
-                                model.IsAccountantApproveAvailable = false;
-                            
-                        }
-                        else
-                        {
-                            model.IsAccountantRejectAvailable = true;
+                            if (!entity.AccountantDateAccept.HasValue)
+                            {
+                                model.IsAccountantEditable = true;
+                                model.IsAccountantApproveAvailable = true;
+                                if (model.IsAccountantApproveAvailable &&
+                                    entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
+                                                          (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
+                                    model.IsAccountantApproveAvailable = false;
+
+                            }
+                            else
+                            {
+                                model.IsAccountantRejectAvailable = true;
+                            }
                         }
                     }
                     break;
@@ -9096,36 +9268,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                      if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
                          model.IsArchivistEditable = true;
                     break;
-                    //case UserRole.OutsourcingManager:
-                    //    if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
-                    //        model.IsDeleteAvailable = true;
-                    //    break;
-                    //case UserRole.Secretary:
-                    //    if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue &&
-                    //        ((entity.NeedToAcceptByChief && entity.ChiefDateAccept.HasValue) ||
-                    //         (!entity.NeedToAcceptByChief && entity.ManagerDateAccept.HasValue)) &&
-                    //        (entity.IsAirTicketsPaid || entity.IsResidencePaid || entity.IsTrainTicketsPaid))
-                    //        model.IsSecritaryEditable = true;
-                    //    break;
-                    //case UserRole.Director:
-                    //    if (IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
-                    //    {
-                    //        if (!entity.ManagerDateAccept.HasValue &&
-                    //            !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
-                    //            model.IsManagerApprovedAvailable = true;
-                    //    }
-                    //    if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
-                    //        && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
-                    //        && entity.UserDateAccept.HasValue)
-                    //        model.IsChiefApproveAvailable = true;
-                    //    break;
             }
             model.IsSaveAvailable = model.IsEditable || model.IsUserApprovedAvailable
                 || model.IsManagerApproveAvailable 
                 || model.IsAccountantEditable 
                 || model.IsAccountantApproveAvailable
-                || model.IsArchivistEditable; //|| model.IsChiefApproveAvailable || model.IsSecritaryEditable;
+                || model.IsArchivistEditable; 
 
+        }
+        protected bool IsAdditionalMissionOrderConfirmByUserOrExpired(MissionOrder entity)
+        {
+            return (entity.UserDateAccept.HasValue) ||
+                   (DateTime.Today > entity.CreateDate.AddMonths(1));
+        }
+        protected bool IsAdditionalMissionOrderConfirmRejectOrExpired(MissionOrder entity)
+        {
+            return (entity.NeedToAcceptByChief && entity.ChiefDateAccept.HasValue) ||
+                   (!entity.NeedToAcceptByChief && entity.ManagerDateAccept.HasValue) ||
+                   entity.DeleteDate.HasValue ||
+                   (DateTime.Today > entity.CreateDate.AddMonths(1));
         }
         protected void SetFlagsState(MissionReportEditModel model, bool state)
         {
@@ -9143,6 +9304,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsDocumentsSaveToArchiveAvailable = state;
             model.IsPrintArchivistAddressAvailable = state;
             model.IsArchivistEditable = state;
+            model.IsCreateAdditionalOrderAvailable = state;
         }
         protected void SetHiddenFields(MissionReportEditModel model)
         {

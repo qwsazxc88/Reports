@@ -41,6 +41,16 @@
         </tr>
         <tr>
             <td colspan="2">
+                <input type="hidden" id="IsCreateAdditionalOrderAvailable" name="IsCreateAdditionalOrderAvailable" value="@Model.IsCreateAdditionalOrderAvailable" />
+                @if (Model.IsCreateAdditionalOrderAvailable)
+                {
+                    <input type="button" value="Создать изменение приказа на командировки" onclick="window.location.href='@Url.Action("CreateAdditionalOrder", "MissionOrder", new { id = Model.Id })';"/> 
+                    <text><br/>Изменение приказа на командировки создается при несовпадении фактических дат командировки с датами из приказа</text>
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />

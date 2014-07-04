@@ -54,7 +54,7 @@
 	<property name="DeleteAfterSendTo1C" not-null="true"/>
 
 	<many-to-one name="Mission" class="Mission" column="MissionId" foreign-key="FK_MissionOrder_Mission" index="IX_MissionOrder_Mission"  not-null="false"/>
-	  
+  <many-to-one name="MainOrder" class="MissionOrder" column="MainOrderId" foreign-key="FK_MissionOrder_MainMissionOrder" index="IX_MissionOrder_MainMissionOrder"  not-null="false"/>
 	  
 	  <bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
 		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>

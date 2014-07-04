@@ -182,5 +182,8 @@ namespace Reports.Presenters.UI.Bl
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
         PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id);
         bool SaveUniqueAttachment(SaveAttacmentModel model);
+
+        int CreateAdditionalOrder(int missionReportId);
+        AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id);
     }
 }

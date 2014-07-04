@@ -65,6 +65,7 @@ namespace Reports.Core.Domain
         public virtual bool DeleteAfterSendTo1C { get; set; }
 
         public virtual Mission Mission { get; set; }
+        public virtual MissionOrder MainOrder { get; set; }
 
         public virtual IList<MissionTarget> Targets { get; set; }
 

@@ -7,3 +7,9 @@ end
 alter table MissionOrder add  IsAdditional BIT not null default(0)
 alter table MissionOrder alter column  BeginDate DATETIME null
 alter table MissionOrder alter column  EndDate DATETIME null
+if not exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrder_MainMissionOrder]') AND parent_object_id = OBJECT_ID('MissionOrder'))
+begin
+alter table MissionOrder add MainOrderId INT null
+create index IX_MissionOrder_MainMissionOrder on MissionOrder (MainOrderId)
+alter table MissionOrder add constraint FK_MissionOrder_MainMissionOrder foreign key (MainOrderId) references MissionOrder
+end 
