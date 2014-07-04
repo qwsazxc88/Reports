@@ -26,6 +26,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Должность")]
         public string Position { get; set; }
 
+        [Display(Name = "Специалист по подбору персонала")]
+        public string StaffName { get; set; }
+
         //[Display(Name = "Руководитель")]
         //public string ManagerName { get; set; }
 

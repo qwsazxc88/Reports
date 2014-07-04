@@ -28,7 +28,7 @@
             </tr>
             }
              <tr>
-                <td style="width:250px">
+                <td style="width:280px">
                     @Html.LabelFor(m => m.DepartmentName):
                 </td>
                 <td>
@@ -94,22 +94,6 @@
                 </td>
                 <td>
                     @Html.TextBoxFor(model => model.Email, Model.IsEditable ? (object)new { maxlength = 30 } : (object)new { @readonly = "read-only" }) 
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.ColloquyDate):
-                </td>
-                <td>
-                    @if (Model.IsEditable || Model.IsColloquyDateEditable)
-                    {
-                        @Html.EditorFor(model => model.ColloquyDate)
-                    }
-                    else
-                    {
-                        @Html.DisplayFor(model => model.ColloquyDate)
-                        @Html.HiddenFor(model => model.ColloquyDate)
-                    } 
                 </td>
             </tr>
              <tr>
@@ -180,6 +164,7 @@
                 <input type="hidden" id="IsManagerEditable" name="IsManagerEditable" value="@Model.IsManagerEditable" />
                 <input type="hidden" id="IsColloquyDateEditable" name="IsColloquyDateEditable" value="@Model.IsColloquyDateEditable" />
                 <input type="hidden" id="DateCreated" name="DateCreated" value="@Model.DateCreated" />
+                <input type="hidden" id="IsStaffSetDateAcceptAvailable" name="IsStaffSetDateAcceptAvailable" value="@Model.IsStaffSetDateAcceptAvailable" />
                     @Html.LabelFor(m => m.IsManagerApproved):
                 </td>
                 <td>
@@ -195,10 +180,35 @@
             </tr>
             <tr>
                 <td>
+                    @Html.LabelFor(m => m.ColloquyDate):
+                </td>
+                <td>
+                    @if (Model.IsColloquyDateEditable)
+                    {
+                        @Html.EditorFor(model => model.ColloquyDate)
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.ColloquyDate)
+                        @Html.HiddenFor(model => model.ColloquyDate)
+                    } 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.IsColloquyPassed):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.IsColloquyPassed, new SelectList(Model.IsColloquyPassedValues, "ID", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="IsColloquyPassedHidden" name="IsColloquyPassedHidden" value="@Model.IsColloquyPassedHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
                     @Html.LabelFor(m => m.RejectReason):
                 </td>
                 <td>
-                    @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerEditable ? (object)new { maxlength = 100, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                    @Html.TextBoxFor(model => model.RejectReason, Model.IsManagerRejectAvailable ? (object)new { maxlength = 100, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
               <tr>
@@ -206,7 +216,7 @@
                     @Html.LabelFor(m => m.IsEducationExists):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsManagerEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.IsEducationExists, new SelectList(Model.IsEducationExistsValues, "ID", "Name"), Model.IsManagerEditable || Model.IsStaffSetDateAcceptAvailable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="IsEducationExistsHidden" name="IsEducationExistsHidden" value="@Model.IsEducationExistsHidden" />
                 </td>
             </tr>
@@ -215,7 +225,7 @@
                     @Html.LabelFor(m => m.DateAccept)
                 </td>
                 <td>
-                    @if (Model.IsManagerEditable)
+                    @if (Model.IsManagerEditable || Model.IsStaffSetDateAcceptAvailable)
                     {
                         @Html.EditorFor(model => model.DateAccept)
                     }
@@ -244,6 +254,16 @@
 
                 </td>
               </tr>
+        </table>
+    </div>
+     <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
         </table>
     </div>
 }
@@ -289,7 +309,7 @@
     function ValidateForm()
     {
         var result = true;
-        if($("#IsEditable").val())
+        if($("#IsEditable").val() == 'True')
         {
             if(!IsFieldNotEmpty($("#Name")))
                 result = false;
@@ -303,33 +323,75 @@
                 result = false;
             }
             clearControlErrors($("#EducationTime"));
-            if($("#TypeId").val() == 1)
+            /*if($("#TypeId").val() == 1)
             {
                 if(!IsFieldNotEmpty($("#EducationTime")))
                     result = false;
-            }
-            if(!IsFieldNotEmpty($("#ColloquyDate")))
-                result = false;
+            }*/
+            /*if(!IsFieldNotEmpty($("#ColloquyDate")))
+                result = false;*/
         }
-        if($("#IsColloquyDateEditable").val())
+        clearControlErrors($("#IsManagerApproved"));
+        clearControlErrors($("#ColloquyDate"));
+        if($("#IsColloquyDateEditable").val() == 'True')
         {
-             if(!IsFieldNotEmpty($("#ColloquyDate")))
+             if(isCheckboxChecked($("#IsManagerApproved")))
+             {
+                if(!IsFieldNotEmpty($("#ColloquyDate"))) 
+                    result = false;
+             }
+             if(($("#ColloquyDate").val() != '') && !isCheckboxChecked($("#IsManagerApproved")))
+             {
+                 addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Дата собеседования"');
+                 result = false;
+             }
+        }
+
+      
+        clearControlErrors($("#RejectReason"));
+        if(($("#IsManagerRejectAvailable").val() == 'True') && $("#RejectReason").val())
+        {
+            addControlError($("#RejectReason"),'Поле используется только при отклонении отчета.Для отклонения отчета используйте кнопку <Отклонить отчет>');
                 result = false;
         }
         clearControlErrors($("#IsEducationExists"));
-        clearControlErrors($("#RejectReason"));
-        if($("#IsManagerEditable").val())
+        clearControlErrors($("#IsColloquyPassed"));
+        if($("#IsStaffSetDateAcceptAvailable").val() == 'True')
         {
             if(($("#DateAccept").val()) && ($("#IsEducationExists").val() == -1))
             {
-                 addControlError($("#IsEducationExists"),'Нужно указать прошел ли кандидат обучение');
+                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение');
                  result = false;
             }
-            if($("#RejectReason").val())
+        }
+        if($("#IsManagerEditable").val() == 'True')
+        {
+//            if(($("#IsEducationExists").val() != -1) && ($("#IsColloquyPassed").val() == -1))
+//            {
+//                  addControlError($("#IsColloquyPassed"),'Нужно указать, пройдено ли собеседование');
+//                  result = false;
+//            }
+            if(($("#DateAccept").val() || ($("#IsEducationExists").val() != -1)) && ($("#IsColloquyPassed").val() == -1))
             {
-                addControlError($("#RejectReason"),'Поле используется только при отклонении отчета.Для отклонения отчета используйте кнопку <Отклонить отчет>');
+                  addControlError($("#IsColloquyPassed"),'Нужно указать, пройдено ли собеседование');
+                  result = false;
+            }
+            if(($("#IsEducationExists").val() != -1) && ($("#IsColloquyPassed").val() == 0))
+            {
+                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - непустой выбор в поле "Обучение пройдено/не пройдено" невозможен.');
+                  result = false;
+            }
+            if($("#DateAccept").val() && ($("#IsColloquyPassed").val() == 0))
+            {
+                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - установка даты приема на работу невозможна.');
+                  result = false;
+            }
+            if(($("#DateAccept").val()) && ($("#IsEducationExists").val() == -1))
+            {
+                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение');
                  result = false;
             }
+            
         }
         return result;
     }
@@ -343,8 +405,10 @@
         }
         return true;
     }
-    
-
+    function isCheckboxChecked(control)
+    {
+        return control.is(':checked');
+    }
     function isEmailAddress(str) {
         var pattern =/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         return pattern.test(str);  // returns a boolean
