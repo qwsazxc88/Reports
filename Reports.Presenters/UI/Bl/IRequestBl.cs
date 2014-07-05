@@ -185,5 +185,6 @@ namespace Reports.Presenters.UI.Bl
 
         int CreateAdditionalOrder(int missionReportId);
         AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id);
+        bool SaveAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model, out string error);
     }
 }
