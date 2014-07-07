@@ -912,15 +912,14 @@
                  if (status == "error") {
                      var msg = "Произошла ошибка: ";
                      $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                     disablePrintButton();
                  } else if (status == "success") {
-                     if ($('#PrintDlgError').val() != '')
+                     //$('#PrintDlgError').val($('#Error').val());
+                     if ($('#PrintDlgErrorTr').val() != undefined)
+                     {
+                        //$('#PrintDlgError').show();
                          disablePrintButton();
-                 }
-                 else if($('#Error').val() != '')
-                 {
-                    disablePrintButton();
-                    $('#PrintDlgError').val($('#Error').val());
-                    $('#PrintDlgError').show();
+                     }
                  }
              }
             );
@@ -937,6 +936,14 @@
                 close: function (event, ui) {
                     $(this).dialog("destroy").remove();
                 },
+                /* open: function (event, ui) {
+                     $('#PrintDlgError').val($('#Error').val());
+                     if ($('#PrintDlgError').val() != '')
+                     {
+                        $('#PrintDlgError').show();
+                         disablePrintButton();
+                     }
+                },*/
                 buttons:
                 {
                     "Печать": function () {

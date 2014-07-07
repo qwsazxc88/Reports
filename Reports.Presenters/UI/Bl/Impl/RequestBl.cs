@@ -10106,9 +10106,10 @@ namespace Reports.Presenters.UI.Bl.Impl
              List<IdNameAddressDto> archivists = UserDao.GetArchivistAddresses().ToList();
              if(archivists.Count == 0)
              {
-                 model.Archivists = new List<IdNameDto>();
-                 model.Error = "Не найдено архивариусов в базе данных";
-                 return;
+                 /*model.Archivists = new List<IdNameDto>();
+                 model.Error = "Не найдено архивариусов с почтовыми адресами в базе данных";
+                 return;*/
+                 throw new ValidationException("Не найдено архивариусов с почтовыми адресами в базе данных");
              }
              model.Archivists = archivists.ConvertAll(x => (IdNameDto) x);
              model.ArchivistId = archivists.First().Id;
@@ -10121,7 +10122,7 @@ namespace Reports.Presenters.UI.Bl.Impl
              User user = UserDao.Load(id);
              if(user == null)
                  throw new ArgumentException(string.Format("Не могу найти архивариуса (id={0}) в базе данных",id));
-             return new PrintArchivistAddressFormModel {Address = user.FullName};
+             return new PrintArchivistAddressFormModel {Address = user.Address};
          }
     }
 }
