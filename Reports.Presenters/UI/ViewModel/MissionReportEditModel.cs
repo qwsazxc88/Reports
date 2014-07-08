@@ -13,6 +13,8 @@ namespace Reports.Presenters.UI.ViewModel
         #endregion
 
         public string DocumentTitle { get; set; }
+        [Display(Name = "Даты командировки из приказа")]
+        public string OrderDates { get; set; }
         public string Costs { get; set; }
 
         [Display(Name = "Справочно.Проживал в гостинице")]
@@ -24,6 +26,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsUserApproved { get; set; }
         public bool IsUserApprovedAvailable { get; set; }
         public bool IsUserApprovedHidden { get; set; }
+        public bool IsAttachmentsInvalid { get; set; }
 
         [Display(Name = "Задание сотрудника выполнено, производственные расходы согласованы")]
         public bool IsManagerApproved { get; set; }
@@ -48,6 +51,17 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool IsAccountantEditable { get; set; }
         public bool IsDeleted { get; set; }
+
+        public bool IsDocumentsSaveToArchiveAvailable { get; set; }
+        public bool IsPrintArchivistAddressAvailable { get; set; }
+
+        [Display(Name = "Дата отправки в архив")]
+        public string ArchiveDate { get; set; }
+        [Display(Name = "Номер коробки (полки, места) в архиве")]
+        public string ArchiveNumber { get; set; }
+        [Display(Name = "ФИО архивариуса")]
+        public string ArchivistFio { get; set; }
+        public bool IsArchivistEditable { get; set; }
 
         public bool ReloadPage { get; set; }
 

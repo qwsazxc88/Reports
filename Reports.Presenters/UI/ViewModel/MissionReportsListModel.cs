@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool DepartmentReadOnly { get; set; }
 
 
-        [Display(Name = "Статус приказа")]
+        [Display(Name = "Статус отчета")]
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
 

@@ -47,5 +47,8 @@ namespace Reports.Core.Dto
         public Decimal? GradeIncrease { get; set; }
         public string State { get; set; }
         public string AccountantName { get; set; }
+        public string IsDocumentsSaveToArchive { get; set; }
+        public DateTime? ArchiveDate { get; set; }
+        public string ArchiveNumber { get; set; }
     }
 }

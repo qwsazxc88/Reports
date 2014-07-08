@@ -15,7 +15,7 @@ namespace Reports.Core.Domain
         public virtual MissionReportCostType MissionReportCostType { get; set; }
         public virtual MissionReportCost MissionReportCost { get; set; }
         public virtual decimal Sum { get; set; }
-        public virtual decimal SumNds { get; set; }
+        public virtual decimal? SumNds { get; set; }
         public virtual decimal AllSum { get; set; }
         public virtual string RequestNumber { get; set; }
         public virtual User User { get; set; }

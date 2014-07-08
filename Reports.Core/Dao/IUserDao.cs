@@ -64,6 +64,7 @@ namespace Reports.Core.Dao
         IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath);
 
         IList<IdNameDto> GetUsersWithPurchaseBookReportCosts();
+        IList<IdNameAddressDto> GetArchivistAddresses();
     }
 }
 

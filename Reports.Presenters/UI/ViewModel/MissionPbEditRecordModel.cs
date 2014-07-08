@@ -32,6 +32,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Сумма всего")]
         public decimal? AllSum { get; set; }
 
+        //[Display(Name = "в т.ч. НДС")]
+        public bool IsWithNds { get; set; }
+
         [Display(Name = "Номер заявки в ЭССЗ")]
         public string RequestNumber { get; set; }
     }

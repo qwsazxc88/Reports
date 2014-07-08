@@ -15,4 +15,9 @@ namespace Reports.Presenters.UI.ViewModel
         public string Error { get; set; }
         public bool IsDescriptionDisabled { get; set; }
     }
+    public class CostAddAttachmentModel
+    {
+        public int CostId { get; set; }
+        public string Error { get; set; }
+    }
 }

@@ -11,7 +11,7 @@
 	<many-to-one name="MissionReportCostType" class="MissionReportCostType" column="MissionReportCostTypeId" foreign-key="FK_MissionPurchaseBookRecord_MissionReportCostType" index="MissionPurchaseBookRecord_MissionReportCostType"  not-null="true"/>
 	<many-to-one name="MissionReportCost" class="MissionReportCost" column="MissionReportCostId" foreign-key="FK_MissionPurchaseBookRecord_MissionReportCost" index="MissionPurchaseBookRecord_MissionReportCost"  not-null="true"/>
 	<property name="Sum"  not-null="true"/>
-	<property name="SumNds"  not-null="true"/>
+	<property name="SumNds"  not-null="false"/>
 	<property name="AllSum"  not-null="true"/>
 	<property name="RequestNumber" length="16" not-null="true"/>
 	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_MissionPurchaseBookRecord_User" index="IX_MissionPurchaseBookRecord_User"  not-null="true"/>

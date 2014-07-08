@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -40,24 +42,6 @@ namespace Reports.Core.Dao.Impl
                                 v.UserAllSum as UserSum,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
-                                -- case when (v.UserAllSum - v.AllSum 
-                                --    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                --    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                --    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end) > 0
-                                --    then v.UserAllSum - v.AllSum 
-                                --    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                --    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                --    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
-                                --    else null end
-                                -- case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
-                                -- case when ((NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
-                                --         (NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
-                                --           and v.DeleteDate is null and v.SendTo1C is null
-                                --           and 
-                                --           ( (IsResidencePaid = 1 and ResidenceRequestNumber is null) or
-                                --             (IsAirTicketsPaid = 1 and AirTicketsRequestNumber is null) or
-                                --             (IsTrainTicketsPaid = 1 and TrainTicketsRequestNumber is null))
-                                --    then N'Заказ' else N'' end  as NeedSecretary,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
                                      when v.[AccountantDateAccept] is not null 
@@ -80,9 +64,11 @@ namespace Reports.Core.Dao.Impl
                                           then N'Черновик сотрудника'    
                                     else N''
                                 end as State,
-                                uBuh.Name as AccountantName
-                                -- v.BeginDate as BeginDate,  
-                                -- v.EndDate as EndDate
+                                uBuh.Name as AccountantName,
+                                case when [IsDocumentsSaveToArchive] = 1 then N'Да' else N'Нет' end as IsDocumentsSaveToArchive,
+                                ArchiveDate,
+                                -- case when [Archivist] is not null then N'Да' else N'Нет' end as IsDocumentsSendToArchivist,
+                                ArchiveNumber
                                 from dbo.MissionReport v
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
@@ -128,8 +114,10 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             //
-            whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+           
+            //whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            //whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+           
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
@@ -202,6 +190,8 @@ namespace Reports.Core.Dao.Impl
                     }
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     sqlQueryPart = String.Format(" (u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    sqlQueryPart += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    sqlQueryPart += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
                     return sqlQueryPart;
 //                case UserRole.Director:
 //                    //User currUser = UserDao.Load(userId);
@@ -234,6 +224,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.OutsourcingManager:
                 //case UserRole.Secretary:
                 case UserRole.Findep:
+                case UserRole.Archivist:
                     //sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
                 default:
@@ -385,6 +376,15 @@ namespace Reports.Core.Dao.Impl
                 case 12:
                     orderBy = @" order by AccountantName";
                     break;
+                case 13:
+                    orderBy = @" order by IsDocumentsSaveToArchive";
+                    break;
+                case 14:
+                    orderBy = @" order by ArchiveDate";
+                    break;
+                case 15:
+                    orderBy = @" order by ArchiveNumber";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -439,15 +439,23 @@ namespace Reports.Core.Dao.Impl
                 //AddScalar("NeedSecretary", NHibernateUtil.String).
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("AccountantName", NHibernateUtil.String).
+                AddScalar("IsDocumentsSaveToArchive", NHibernateUtil.String).
+                AddScalar("ArchiveDate", NHibernateUtil.DateTime).
+                AddScalar("ArchiveNumber", NHibernateUtil.String).
                 //AddScalar("BeginDate", NHibernateUtil.DateTime).
                 //AddScalar("EndDate", NHibernateUtil.DateTime).
                 //AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32);
         }
 
-        public virtual IList<IdNameDto> GetReportsWithPurchaseBookReportCosts(int userId)
+        public virtual List<MissionReport> GetReportsWithPurchaseBookReportCosts(int userId)
         {
-            string sqlQuery = string.Format(@" select distinct mr.Id,N'АО'+cast(mr.Number as nvarchar(10)) as Name 
+            return (from report in Session.Query<MissionReport>()
+                     join cost in Session.Query<MissionReportCost>() on report.Id equals cost.Report.Id
+                     where cost.IsCostFromPurchaseBook && report.User.Id == userId 
+                            && !report.AccountantDateAccept.HasValue
+                     select report).ToList();
+            /*string sqlQuery = string.Format(@" select distinct mr.Id,N'АО'+cast(mr.Number as nvarchar(10)) as Name 
                                         from dbo.MissionReport mr
                                         inner join [dbo].[MissionReportCost] mrc on  mr.Id = mrc.ReportId
                                         where mrc.IsCostFromPurchaseBook = 1 and mr.UserId = {0}
@@ -456,7 +464,7 @@ namespace Reports.Core.Dao.Impl
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();*/
         }
     }
 }

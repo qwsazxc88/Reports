@@ -157,8 +157,15 @@
                          disableSaveButton();
                      else
                      {
+                        if($("#IsWithNds").is(":checked"))
+                            $("#NdsTr").show();
+                        else
+                            $("#NdsTr").hide();
                         if($("#RecordId").val() != 0)
+                        {
                             validateSums();
+                            $("#Sum").val(FormatFloat(GetFloat($("#Sum"))));
+                        }
                      }
                  }
              }
@@ -290,36 +297,148 @@
                 res = false;
             return res;
         }
-        function validateSum()
+        function changeSum()
         {
+            var sum;
             clearDlgErrors($("#recordDialogTable"));
-            validateSums();
+            var result = validateAllSum();
+            if(!result)
+            {
+                $("#SumNds").val('');
+                $("#Sum").val('');
+                return false;
+            }    
+            sum = GetFloat($("#AllSum"));
+            if($("#IsWithNds").is(":checked"))
+            {
+               var nds = sum*0.1525;
+               nds = nds.toFixed(2);
+               $("#SumNds").val(FormatFloat(nds));
+               var sum1 = sum - nds;
+               $("#Sum").val(FormatFloat(sum1.toFixed(2)));
+            }
+            else
+                $("#Sum").val(FormatFloat(sum));
         }
-        function validateSums()
+        function validateAllSum()
         {
             var result = true;
-            var sum = undefined;
-            var sumNds = undefined;
-            if(!validateFieldIsNotEmptyAddError($("#Sum")))
+            var sum;
+            if(!validateFieldIsNotEmptyAddError($("#AllSum")))
                 result =  false;
             else
             { 
-                sum = ValidateSumC($("#Sum")); 
+                sum = ValidateSumC($("#AllSum")); 
                 if(sum == undefined)
                     result = false;
             }
+            return result;
+        }
+        function changeSumNds()
+        {
+            var sum;
+            clearDlgErrors($("#recordDialogTable"));
+            var result = validateSumNds();
+            if(!result)
+            {
+                //$("#SumNds").val('');
+                $("#Sum").val('');
+                return false;
+            }    
+            sum = GetFloat($("#SumNds"));
+            var allSum = GetFloat($("#AllSum"));
+            if(sum != undefined && allSum != undefined)
+            {
+                var sum1 = allSum - sum;
+                $("#Sum").val(FormatFloat(sum1.toFixed(2)));
+            }
+            else
+                $("#Sum").val('');
+        }
+        function validateSumNds()
+        {
+            var result = true;
+            var sum;
             if(!validateFieldIsNotEmptyAddError($("#SumNds")))
                 result =  false;
             else
-            {
-                sumNds = ValidateSumNotNegative($("#SumNds"));
-                if(sumNds == undefined)
+            { 
+                sum = ValidateSumC($("#SumNds")); 
+                if(sum == undefined)
                     result = false;
             }
-            if(sum != undefined && sumNds != undefined)
-                $("#AllSum").val(FormatFloat(sum+sumNds));
-            else
-                $("#AllSum").val('');
+            return result;
+        }
+        function isNdsChange()
+        {
+             var allSum = GetFloat($("#AllSum"));
+             if($("#IsWithNds").is(":checked"))
+             {
+                $("#NdsTr").show();
+                if(allSum != undefined)
+                {
+                   var nds = allSum*0.1525;
+                   nds = nds.toFixed(2);
+                   $("#SumNds").val(FormatFloat(nds));
+                   var sum = allSum - nds;
+                   $("#Sum").val(FormatFloat(sum.toFixed(2)));
+                }
+                else
+                {
+                   $("#SumNds").val('');
+                   $("#Sum").val('');
+                }
+             }
+             else
+             {
+                $("#NdsTr").hide();
+                $("#SumNds").val('');
+                if(allSum != undefined)
+                    $("#Sum").val(FormatFloat(allSum));
+                else
+                    $("#Sum").val('');
+             }
+
+        }
+        function validateSums()
+        {
+             var result = true;
+             var result1 = true;
+             clearDlgErrors($("#recordDialogTable"));
+             result = validateAllSum();
+             if($("#IsWithNds").is(":checked"))
+                result1 =  validateSumNds();
+             if(!result || !result1)
+                return false;
+              if($("#Sum").val() == '')
+              {
+                addDlgError($("#Sum"),'Невозможно вычислить сумму расходов.Проверьте поля <Сумма всего>/<НДС>');
+                return false;
+              }
+              return true;
+//            var result = true;
+//            var sum = undefined;
+//            var sumNds = undefined;
+//            if(!validateFieldIsNotEmptyAddError($("#Sum")))
+//                result =  false;
+//            else
+//            { 
+//                sum = ValidateSumC($("#Sum")); 
+//                if(sum == undefined)
+//                    result = false;
+//            }
+//            if(!validateFieldIsNotEmptyAddError($("#SumNds")))
+//                result =  false;
+//            else
+//            {
+//                sumNds = ValidateSumNotNegative($("#SumNds"));
+//                if(sumNds == undefined)
+//                    result = false;
+//            }
+//            if(sum != undefined && sumNds != undefined)
+//                $("#AllSum").val(FormatFloat(sum+sumNds));
+//            else
+//                $("#AllSum").val('');
             //result =  false;
             return result;
         }

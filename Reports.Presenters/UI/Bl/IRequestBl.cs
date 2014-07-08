@@ -178,5 +178,10 @@ namespace Reports.Presenters.UI.Bl
                                                                       bool? sortDescending,bool showDepts);
 
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
+
+        void SaveDocumentsToArchive(DeletePbRecordModel model);
+        void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
+        PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id);
+        bool SaveUniqueAttachment(SaveAttacmentModel model);
     }
 }

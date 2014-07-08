@@ -165,6 +165,7 @@ namespace Reports.Core.Domain
         public virtual Department Department { get; set; }
 
         public virtual string Cnilc { get; set; }
+        public virtual string Address { get; set; }
 
         public virtual string LoginAd { get; set; }
         public virtual decimal? Rate { get; set; }

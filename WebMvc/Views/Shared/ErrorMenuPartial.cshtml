@@ -8,7 +8,9 @@
         @*<input type="hidden" id="menuId" name="menuId" value="@Model.menuId" />*@
             <div class="menu-wrap">
              <div class="menu"> 
-                @if ((dto.UserRole & UserRole.Accountant) == 0)
+                 @if (((dto.UserRole & UserRole.Accountant) == 0) ||
+                     ((dto.UserRole & UserRole.Archivist) == 0)
+                    )
                 {  
                     <div class="mainMenuItem" id="mainTimesheet">
                         @if ((dto.UserRole & UserRole.Admin) > 0)
@@ -51,9 +53,17 @@
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.Secretary) > 0
                      || (dto.UserRole & UserRole.Findep) > 0
+                     || (dto.UserRole & UserRole.Archivist) > 0
                      )
                 {
-                    <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
+                    if ((dto.UserRole & UserRole.Archivist) > 0)
+                    {
+                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "MissionReportsList", "MissionOrder")</div>
+                    }
+                    else
+                    {
+                        <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
+                    }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Manager) > 0
@@ -66,16 +76,16 @@
                 </div> 
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
-                 @if (  (dto.UserRole & UserRole.Manager) > 0
+                 @if ((dto.UserRole & UserRole.Manager) > 0
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                      || (dto.UserRole & UserRole.StaffManager) > 0
                      //|| (dto.UserRole & UserRole.PersonnelManager) > 0
                       )
-                {
+                 {
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
                     </div> 
-                }
+                 }
              </div>
             </div>
 }

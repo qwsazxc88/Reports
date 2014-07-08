@@ -7,11 +7,11 @@
     <table border="0" cellpadding="0" cellspacing="0" id = "recordDialogTable" style="width:100%;">
 
                 <tr>
-                    <td>
+                    <td style="width:170px">
                         @Html.LabelFor(m => m.RecordUserId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.RecordUserId, new SelectList(Model.Users, "ID", "Name"), Model.RecordId > 0 ? (object)new { disabled = "disabled" } : (object)new { onchange = "RecordUserIdChange();" }) 
+                        @Html.DropDownListFor(model => model.RecordUserId, new SelectList(Model.Users, "ID", "Name"), Model.RecordId > 0 ? (object)new { disabled = "disabled", style="width:900px" } : (object)new { onchange = "RecordUserIdChange();" , style="width:900px" }) 
                     </td>
                 </tr>
                 <tr>
@@ -35,15 +35,15 @@
                         @Html.LabelFor(m => m.Sum):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.Sum, new { @class = "fixedSize", onchange = "validateSum();" }) 
+                        @Html.TextBoxFor(model => model.Sum, new { disabled = "disabled", @class = "fixedSize" }) 
                     </td>
                 </tr>
-                <tr>
+                <tr id="NdsTr">
                     <td>
                         @Html.LabelFor(m => m.SumNds):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize", onchange = "validateSum();" }) 
+                        @Html.TextBoxFor(model => model.SumNds, new { @class = "fixedSize", onchange = "changeSumNds();" }) 
                     </td>
                 </tr>
                   <tr>
@@ -51,7 +51,8 @@
                         @Html.LabelFor(m => m.AllSum):
                     </td>
                     <td>
-                        @Html.TextBoxFor(model => model.AllSum, new { disabled = "disabled", @class = "fixedSize" }) 
+                        @Html.TextBoxFor(model => model.AllSum, new { @class = "fixedSize", onchange = "changeSum();" }) &nbsp; 
+                        в т.ч. НДС @Html.CheckBox("IsWithNds", Model.IsWithNds, new { onchange = "isNdsChange();" }) 
                     </td>
                 </tr>
                  <tr>
