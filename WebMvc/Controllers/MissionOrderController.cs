@@ -329,10 +329,15 @@ namespace WebMvc.Controllers
         {
             return GetPrintForm(id, "PrintPathList");
         }
-       
 
         [HttpGet]
-        public ActionResult GetPrintForm(int id,string actionName)
+        public ActionResult GetPrintForm(int id, string actionName)
+        {
+            return GetPrintForm(id, actionName, false);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintForm(int id, string actionName, bool isLandscape)
         {
             string filePath = null;
             try
@@ -351,7 +356,12 @@ namespace WebMvc.Controllers
                 var authCookie = Request.Cookies[cookieName];
                 if (authCookie == null || authCookie.Value == null)
                     throw new ArgumentException("Ошибка авторизации.");
-                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                if(isLandscape)
+                    argumrnts.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
+                    GetConverterCommandParam(id, actionName)
+                    , cookieName, authCookie.Value);
+                else
+                    argumrnts.AppendFormat("{0} --cookie {1} {2}",
                     GetConverterCommandParam(id,actionName)
                     , cookieName, authCookie.Value);
                 argumrnts.AppendFormat(" \"{0}\"", filePath);
@@ -361,9 +371,10 @@ namespace WebMvc.Controllers
                     {
                         FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
                         Arguments = argumrnts.ToString(),
-                        UseShellExecute = true
+                        UseShellExecute = true,
                     },
-                    EnableRaisingEvents = true
+                    EnableRaisingEvents = true,
+                    
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
@@ -1376,7 +1387,7 @@ namespace WebMvc.Controllers
         public ActionResult GetPrintArchivistAddress(int Id)
         {
             //string args = string.Format(@"{0}",Id);
-            return GetPrintForm(Id, "PrintArchivistAddress");
+            return GetPrintForm(Id, "PrintArchivistAddress",true);
         }
         [HttpGet]
         public ActionResult PrintArchivistAddress(int id)
