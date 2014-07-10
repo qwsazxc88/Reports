@@ -10427,7 +10427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
              model.ArchivistId = archivists.First().Id;
              model.Address = archivists.First().Address;
              JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-             model.AddressList = jsonSerializer.Serialize(archivists.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).ToArray());
+             model.AddressList = jsonSerializer.Serialize(archivists.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Address }).ToArray());
          }
          public PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id)
          {

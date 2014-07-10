@@ -1014,7 +1014,8 @@ namespace Reports.Core.Dao.Impl
         {
             const string sqlQuery = @" select Id,Name,Address
                     from [dbo].[Users]
-                    where Address is not null
+                    where Address is not null and Address != N''
+                        and (RoleId & 8192) > 0
                     order by Name";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
