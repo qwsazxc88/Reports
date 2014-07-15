@@ -4951,6 +4951,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
+            model.AdditionalVacationTypes = GetAdditionalVacationTypes();
             if (model.Id == 0)
             {
                 model.CreatorLogin = current.Name;
