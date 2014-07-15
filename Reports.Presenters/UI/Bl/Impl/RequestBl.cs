@@ -5049,6 +5049,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch(currentUserRole)
             {
                 case UserRole.Employee:
+                    if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
+                    {
+                        model.IsConfirmationAllowed = true;
+                    }
                     if (!vacation.UserDateAccept.HasValue && !vacation.DeleteDate.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -5079,11 +5083,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }
                     }
                     break;
-                case UserRole.PersonnelManager:
-                    if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
-                    {
-                        model.IsConfirmationAllowed = true;
-                    }
+                case UserRole.PersonnelManager:                    
                     if (!vacation.PersonnelManagerDateAccept.HasValue && (!superPersonnelId.HasValue || AuthenticationService.CurrentUser.Id != superPersonnelId.Value))
                     {
                         if (model.AttachmentId > 0)
