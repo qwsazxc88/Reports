@@ -631,10 +631,21 @@ namespace WebMvc.Controllers
             return GetPrintForm(id, "PrintReport");
         }
         [HttpGet]
+        public ActionResult GetReportListPrintForm(int id, int reportId)
+        {
+            return GetPrintForm(string.Format("id={0}&reportId={1}",id,reportId), "PrintReportList");
+        }
+        [HttpGet]
         public ActionResult PrintReport(int id)
         {
             PrintMissionReportViewModel model = RequestBl.GetPrintMissionReportModel(id);
 
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult PrintReportList(int id, int reportId)
+        {
+            PrintMissionReportListViewModel model = RequestBl.GetPrintMissionReportListModel(id,reportId);
             return View(model);
         }
         [HttpGet]

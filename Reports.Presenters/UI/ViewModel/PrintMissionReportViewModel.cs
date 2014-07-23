@@ -34,5 +34,11 @@ namespace Reports.Presenters.UI.ViewModel
         public string Debet { get; set; }
         public string Credit { get; set; }
     }
+    public class PrintMissionReportListViewModel
+    {
+        public string To { get; set; }
+        public string Address { get; set; }
+        public List<string> Costs { get; set; }
+    }
    
 }
