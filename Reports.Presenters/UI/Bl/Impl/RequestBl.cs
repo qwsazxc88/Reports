@@ -10435,7 +10435,27 @@ namespace Reports.Presenters.UI.Bl.Impl
              User user = UserDao.Load(id);
              if(user == null)
                  throw new ArgumentException(string.Format("Не могу найти архивариуса (id={0}) в базе данных",id));
-             return new PrintArchivistAddressFormModel {Address = user.Address};
+
+             return new PrintArchivistAddressFormModel
+                        {
+                            Address = user.Address,
+                            To = user.FullName,
+                            From = CurrentUser.Name,
+                            Index = GetIndex(user.Address),
+                        };
+         }
+         protected string GetIndex(string address)
+         {
+             if (string.IsNullOrEmpty(address))
+                 return null;
+             string[] parts = address.Split(',');
+             if (parts.Length < 2)
+                 return null;
+             string index = parts[0].Trim();
+             Regex r = new Regex(@"^\d{6}$");
+             if (r.IsMatch(index))
+                 return index;
+             return null;
          }
     }
 }
