@@ -18,29 +18,29 @@ namespace Reports.Core.Dto.Employment2
 
         public string Position { get; set; }
 
-        public DateTime EmploymentDate { get; set; }
+        public DateTime? EmploymentDate { get; set; }
 
         public string EmploymentOrderNumber { get; set; }
 
-        public DateTime EmploymentOrderDate { get; set; }
+        public DateTime? EmploymentOrderDate { get; set; }
 
         public string ContractNumber { get; set; }
 
-        public DateTime ContractDate { get; set; }
+        public DateTime? ContractDate { get; set; }
 
-        public bool IsFulltime { get; set; }
+        //public bool IsFulltime { get; set; }
 
-        public bool IsTemporary { get; set; }
+        //public bool IsTemporary { get; set; }
 
         public string ProbationaryPeriod { get; set; }
 
-        public string Timetable { get; set; }
+        public string Schedule { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         public string Disabilities { get; set; }
 
-        public string Grade { get; set; }
+        public int? Grade { get; set; }
 
         public string Status { get; set; }
 

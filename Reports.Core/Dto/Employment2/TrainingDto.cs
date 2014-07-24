@@ -26,12 +26,12 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Начало обучения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime BeginningDate { get; set; }
+        public DateTime? BeginningDate { get; set; }
 
         [Display(Name = "Конец обучения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [Display(Name = "Специальность/квалификация"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),

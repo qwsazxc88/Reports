@@ -17,11 +17,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Дата начала обучения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime BeginningDate { get; set; } //ok
+        public DateTime? BeginningDate { get; set; } //ok
 
         [Display(Name = "Дата окончания обучения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime EndDate { get; set; } //ok
+        public DateTime? EndDate { get; set; } //ok
 
         [Display(Name = "Обучение пройдено/не пройдено")]
         public bool IsComplete { get; set; } // возможно, заменить отображение выпадающим списком

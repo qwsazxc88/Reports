@@ -10,6 +10,7 @@
     <property name="LastName" length="50" not-null="true"/>
     <property name="FirstName" length="50" not-null="true"/>
     <property name="Patronymic" length="50" not-null="false"/>
+    <property name="IsPatronymicAbsent" not-null="true"/>
     <bag name="NameChanges" lazy="true" cascade="all-delete-orphan">
       <key column="GeneralInfoId" foreign-key="FK_NameChange_GeneralInfo"/>
       <one-to-many class="NameChange"/>
@@ -27,10 +28,13 @@
     </bag>
     <property name="INN" length="12" not-null="false"/>
     <property name="SNILS" length="14" not-null="false"/>
-    <bag name="Disabilities" lazy="true" cascade="all-delete-orphan">
-      <key column="GeneralInfoId" foreign-key="FK_Disability_GeneralInfo"/>
-      <one-to-many class="Disability"/>
-    </bag>
+    
+    <property name="DisabilityCertificateSeries" length="50" not-null="false"/>
+    <property name="DisabilityCertificateNumber" length="50" not-null="false"/>
+    <property name="DisabilityCertificateDateOfIssue" not-null="false"/>
+    <property name="DisabilityDegree" length="5" not-null="false"/>
+    <property name="DisabilityCertificateExpirationDate" not-null="false"/>
+    
     <property name="Status" not-null="true"/>
     <property name="AgreedToPersonalDataProcessing" not-null="true"/>
     

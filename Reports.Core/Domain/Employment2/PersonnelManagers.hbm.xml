@@ -7,10 +7,10 @@
     <version name="Version" column= "Version"/>
 
     <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_PersonnelManagers_Candidate" index="PersonnelManagers_Candidate" not-null="true"/>
-    <property name="EmploymentOrderDate" not-null="true"/>
+    <property name="EmploymentOrderDate" not-null="false"/>
     <property name="EmploymentOrderNumber" length="20" not-null="true"/>
-    <property name="EmploymentDate" not-null="true"/>
-    <property name="ContractDate" not-null="true"/>
+    <property name="EmploymentDate" not-null="false"/>
+    <property name="ContractDate" not-null="false"/>
     <property name="ContractNumber" length="20" not-null="true"/>
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>

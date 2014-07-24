@@ -10,4 +10,12 @@ namespace Reports.Core.Dao.Impl
         {
         }
     }
+
+    public class InsuredPersonTypeDao : DefaultDao<InsuredPersonType>, IInsuredPersonTypeDao
+    {
+        public InsuredPersonTypeDao(ISessionManager sessionManager)
+            : base(sessionManager)
+        {
+        }
+    }
 }

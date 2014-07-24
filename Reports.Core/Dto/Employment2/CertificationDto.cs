@@ -11,7 +11,7 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Дата аттестации"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime CertificationDate { get; set; }
+        public DateTime? CertificationDate { get; set; }
 
         [Display(Name = "Номер документа"),
             StringLength(20, ErrorMessage = "Не более 20 знаков."),
@@ -26,14 +26,14 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Основание"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
-        public string Order { get; set; }
+        public string InitiatingOrder { get; set; }
 
         public CertificationDto()
         {
             this.CertificationDate = new DateTime();
-            this.CertificateNumber = "234234324AA";
+            this.CertificateNumber = string.Empty;
             this.CertificateDateOfIssue = new DateTime();
-            this.Order = "Приказ №56 от 29.02.2012";
+            this.InitiatingOrder = string.Empty;
         }
     }
 }

@@ -28,6 +28,10 @@
       <one-to-many class="Reference"/>
     </bag>
     <property name="ChronicalDiseases" length="250" not-null="false"/>
+    <property name="Penalties" length="250" not-null="false"/>
+    <property name="PsychiatricAndAddictionTreatment" length="250" not-null="false"/>
+    <property name="Smoking" length="250" not-null="false"/>
+    <property name="Drinking" length="250" not-null="false"/>
     
   </class>
 </hibernate-mapping>

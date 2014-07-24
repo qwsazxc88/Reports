@@ -16,7 +16,7 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.EmploymentOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentOrderNumber)<br />
-            @Html.EditorFor(m => m.EmploymentOrderNumber)
+            @Html.TextBoxFor(m => m.EmploymentOrderNumber, new { @class = "halfwidth" })
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.EmploymentDate)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentDate)<br />
@@ -28,31 +28,35 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.ContractNumber)&nbsp;@Html.ValidationMessageFor(m => m.ContractNumber)<br />
-            @Html.EditorFor(m => m.ContractNumber)
+            @Html.TextBoxFor(m => m.ContractNumber, new { @class = "halfwidth" })
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
-            @Html.EditorFor(m => m.NorthernAreaAddition)
+            @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AreaMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.AreaMultiplier)<br />
-            @Html.EditorFor(m => m.AreaMultiplier)
+            @Html.TextBoxFor(m => m.AreaMultiplier, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.AreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.AreaAddition)<br />
-            @Html.EditorFor(m => m.AreaAddition)
+            @Html.TextBoxFor(m => m.AreaAddition, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.TravelRelatedAddition)&nbsp;@Html.ValidationMessageFor(m => m.TravelRelatedAddition)<br />
-            @Html.EditorFor(m => m.TravelRelatedAddition)
+            @Html.TextBoxFor(m => m.TravelRelatedAddition, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.CompetenceAddition)&nbsp;@Html.ValidationMessageFor(m => m.CompetenceAddition)<br />
-            @Html.EditorFor(m => m.CompetenceAddition)
+            @Html.TextBoxFor(m => m.CompetenceAddition, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.FrontOfficeExperienceAddition)&nbsp;@Html.ValidationMessageFor(m => m.FrontOfficeExperienceAddition)<br />
-            @Html.EditorFor(m => m.FrontOfficeExperienceAddition)
+            @Html.TextBoxFor(m => m.FrontOfficeExperienceAddition, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Grade)&nbsp;@Html.ValidationMessageFor(m => m.Grade)<br />
+            @Html.TextBoxFor(m => m.Grade, new { @class = "halfwidth" })
         </div>
         <br />
         <fieldset class="bordered nomargin clear">
@@ -71,8 +75,8 @@
             </div>
         </fieldset>
         <fieldset class="bordered nomargin clear">
-        <legend class="level2">Страховой стаж</legend>
-            <div class="formfield clearleft">
+        <legend class="level2">Страховой стаж (по состоянию на дату приема)</legend>
+            <div class="formfield clearleft">                
                 @Html.ValidationMessageFor(m => m.InsurableExperienceYears)<br />
                 @Html.EditorFor(m => m.InsurableExperienceYears)&nbsp;@Html.LabelFor(m => m.InsurableExperienceYears)
             </div>
@@ -110,13 +114,11 @@
  
 }
 
-<script>
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empPersonnelManagers");
-
-        $('#EmploymentOrderDate, #EmploymentDate, #ContractDate').datepicker({
-            changeYear: true,
-            yearRange: "-100:+0"
-        });
+        attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
     });
 </script>

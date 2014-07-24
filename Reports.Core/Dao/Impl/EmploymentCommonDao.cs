@@ -25,6 +25,7 @@ namespace Reports.Core.Dao.Impl
         public T GetEntityById<T>(int id)
         {
             var entity = Session.Get<T>(id);
+
             return entity;
         }
 
@@ -38,33 +39,13 @@ namespace Reports.Core.Dao.Impl
         }
 
         // Запись обновленных полей документа в БД
-        public bool SaveOrUpdateDocument<T>(T modifiedEntity, int userId)
+        public bool SaveOrUpdateDocument<T>(T entity)
         {
-            int id = GetDocumentId<T>(userId);
-            
-                var entity = GetEntityById<T>(id);
-                if (entity != null)
-                {
-                    UpdateEntity<T>(entity, modifiedEntity);
-                }
                 var transaction = Session.BeginTransaction();
-                Session.SaveOrUpdate(entity == null ? modifiedEntity : entity);
+                Session.SaveOrUpdate(entity);
                 transaction.Commit();
-                return true;                
-            
-         
+                return true;
         }
 
-        // Запись обновленных полей в доменную сущность
-        protected void UpdateEntity<T>(T entity, T modifiedEntity)
-        {
-            foreach (var prop in modifiedEntity.GetType().GetProperties())
-            {
-                if (prop.GetValue(modifiedEntity, null) != null && prop.Name != "Id")
-                {
-                    prop.SetValue(entity, prop.GetValue(modifiedEntity, null), null);
-                }
-            }
-        }
     }
 }

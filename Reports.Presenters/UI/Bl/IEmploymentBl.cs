@@ -5,19 +5,33 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IEmploymentBl : IBaseBl
     {
-        GeneralInfoModel GetGeneralInfoModel(int? userId);
-        PassportModel GetPassportModel(int? userId);
-        EducationModel GetEducationModel(int? userId);
-        FamilyModel GetFamilyModel(int? userId);
-        MilitaryServiceModel GetMilitaryServiceModel(int? userId);
-        ExperienceModel GetExperienceModel(int? userId);
-        ContactsModel GetContactsModel(int? userId);
-        BackgroundCheckModel GetBackgroundCheckModel(int? userId);
-        OnsiteTrainingModel GetOnsiteTrainingModel(int? userId);
-        ManagersModel GetManagersModel(int? userId);
-        PersonnelManagersModel GetPersonnelManagersModel(int? userId);
+        GeneralInfoModel GetGeneralInfoModel(int? userId = null);
+        PassportModel GetPassportModel(int? userId = null);
+        EducationModel GetEducationModel(int? userId = null);
+        FamilyModel GetFamilyModel(int? userId = null);
+        MilitaryServiceModel GetMilitaryServiceModel(int? userId = null);
+        ExperienceModel GetExperienceModel(int? userId = null);
+        ContactsModel GetContactsModel(int? userId = null);
+        BackgroundCheckModel GetBackgroundCheckModel(int? userId = null);
+        OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null);
+        ManagersModel GetManagersModel(int? userId = null);
+        PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
         RosterModel GetRosterModel();
         SignersModel GetSignersModel();
+
+        void LoadDictionaries(GeneralInfoModel model);
+        void LoadDictionaries(PassportModel model);
+        void LoadDictionaries(EducationModel model);
+        void LoadDictionaries(FamilyModel model);
+        void LoadDictionaries(MilitaryServiceModel model);
+        void LoadDictionaries(ExperienceModel model);
+        void LoadDictionaries(ContactsModel model);
+        void LoadDictionaries(BackgroundCheckModel model);
+        void LoadDictionaries(OnsiteTrainingModel model);
+        void LoadDictionaries(ManagersModel model);
+        void LoadDictionaries(PersonnelManagersModel model);
+        void LoadDictionaries(RosterModel model);
+        void LoadDictionaries(SignersModel model);
 
         void SetGeneralInfoModel(GeneralInfoModel model, bool hasError);
         void SetPassportModel(PassportModel model, bool hasError);        

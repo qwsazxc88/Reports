@@ -4,15 +4,6 @@ alter table Certification  drop constraint FK_Certification_Education
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Candidate]') AND parent_object_id = OBJECT_ID('Family'))
 alter table Family  drop constraint FK_Family_Candidate
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Spouse]') AND parent_object_id = OBJECT_ID('Family'))
-alter table Family  drop constraint FK_Family_Spouse
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Father]') AND parent_object_id = OBJECT_ID('Family'))
-alter table Family  drop constraint FK_Family_Father
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Family_Mother]') AND parent_object_id = OBJECT_ID('Family'))
-alter table Family  drop constraint FK_Family_Mother
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReport_Appointment]') AND parent_object_id = OBJECT_ID('AppointmentReport'))
 alter table AppointmentReport  drop constraint FK_AppointmentReport_Appointment
 
@@ -193,21 +184,6 @@ alter table TimesheetCorrectionComment  drop constraint FK_TimesheetCorrectionCo
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_Candidate]') AND parent_object_id = OBJECT_ID('MilitaryService'))
 alter table MilitaryService  drop constraint FK_MilitaryService_Candidate
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_Rank]') AND parent_object_id = OBJECT_ID('MilitaryService'))
-alter table MilitaryService  drop constraint FK_MilitaryService_Rank
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_RegistrationExpiration]') AND parent_object_id = OBJECT_ID('MilitaryService'))
-alter table MilitaryService  drop constraint FK_MilitaryService_RegistrationExpiration
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_PersonnelCategory]') AND parent_object_id = OBJECT_ID('MilitaryService'))
-alter table MilitaryService  drop constraint FK_MilitaryService_PersonnelCategory
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_PersonnelType]') AND parent_object_id = OBJECT_ID('MilitaryService'))
-alter table MilitaryService  drop constraint FK_MilitaryService_PersonnelType
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MilitaryService_ConscriptionStatus]') AND parent_object_id = OBJECT_ID('MilitaryService'))
-alter table MilitaryService  drop constraint FK_MilitaryService_ConscriptionStatus
-
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionPurchaseBookRecord_MissionPurchaseBookDocument]') AND parent_object_id = OBJECT_ID('MissionPurchaseBookRecord'))
 alter table MissionPurchaseBookRecord  drop constraint FK_MissionPurchaseBookRecord_MissionPurchaseBookDocument
 
@@ -300,9 +276,6 @@ alter table EmploymentComment  drop constraint FK_EmploymentComment_User
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_EmploymentComment_Employment]') AND parent_object_id = OBJECT_ID('EmploymentComment'))
 alter table EmploymentComment  drop constraint FK_EmploymentComment_Employment
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Disability_GeneralInfo]') AND parent_object_id = OBJECT_ID('Disability'))
-alter table Disability  drop constraint FK_Disability_GeneralInfo
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Education_Candidate]') AND parent_object_id = OBJECT_ID('Education'))
 alter table Education  drop constraint FK_Education_Candidate
@@ -460,11 +433,8 @@ alter table Absence  drop constraint FK_Absence_CreatorUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Absence_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Absence'))
 alter table Absence  drop constraint FK_Absence_TimesheetStatus
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_FamilyMember_Relationship]') AND parent_object_id = OBJECT_ID('FamilyMember'))
-alter table FamilyMember  drop constraint FK_FamilyMember_Relationship
-
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Children_Family]') AND parent_object_id = OBJECT_ID('FamilyMember'))
-alter table FamilyMember  drop constraint FK_Children_Family
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_FamilyMember_Family]') AND parent_object_id = OBJECT_ID('FamilyMember'))
+alter table FamilyMember  drop constraint FK_FamilyMember_Family
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ExperienceItem_Experience]') AND parent_object_id = OBJECT_ID('ExperienceItem'))
 alter table ExperienceItem  drop constraint FK_ExperienceItem_Experience
@@ -558,6 +528,12 @@ alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApp
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ClearanceChecklistApproval_ApprovedBy]') AND parent_object_id = OBJECT_ID('ClearanceChecklistApproval'))
 alter table ClearanceChecklistApproval  drop constraint FK_ClearanceChecklistApproval_ApprovedBy
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReportComment_User]') AND parent_object_id = OBJECT_ID('AppointmentReportComment'))
+alter table AppointmentReportComment  drop constraint FK_AppointmentReportComment_User
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentReportComment_AppointmentReport]') AND parent_object_id = OBJECT_ID('AppointmentReportComment'))
+alter table AppointmentReportComment  drop constraint FK_AppointmentReportComment_AppointmentReport
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentCreateManager2ToDepartment2_User]') AND parent_object_id = OBJECT_ID('AppointmentCreateManager2ToDepartment2'))
 alter table AppointmentCreateManager2ToDepartment2  drop constraint FK_AppointmentCreateManager2ToDepartment2_User
@@ -704,7 +680,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Appointment') and
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReportCostType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReportCostType
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionComment
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentRestrictType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentRestrictType
-if exists (select * from dbo.sysobjects where id = object_id(N'FamilyRelationship') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table FamilyRelationship
 if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryService') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryService
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionPurchaseBookRecord') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionPurchaseBookRecord
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReport') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReport
@@ -724,7 +699,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'TerraGraphic') an
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWorkType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWorkType
 if exists (select * from dbo.sysobjects where id = object_id(N'DBVersion') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DBVersion
-if exists (select * from dbo.sysobjects where id = object_id(N'Disability') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Disability
 if exists (select * from dbo.sysobjects where id = object_id(N'Education') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Education
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionPurchaseBookDocument') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionPurchaseBookDocument
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionTarget') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionTarget
@@ -734,7 +708,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'InspectorToUser')
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ConscriptionStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ConscriptionStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentCandidate') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmploymentCandidate
-if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryRank') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryRank
 if exists (select * from dbo.sysobjects where id = object_id(N'Country') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Country
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionDailyAllowanceGradeValue') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionDailyAllowanceGradeValue
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrection') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrection
@@ -770,7 +743,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'ClearanceChecklis
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionGraid') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionGraid
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionResidence') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionResidence
 if exists (select * from dbo.sysobjects where id = object_id(N'Role') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Role
-if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryServiceRegistrationExpiration') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryServiceRegistrationExpiration
+if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentReportComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentReportComment
 if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentCreateManager2ToDepartment2') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentCreateManager2ToDepartment2
 if exists (select * from dbo.sysobjects where id = object_id(N'WorkingCalendar') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table WorkingCalendar
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetCorrectionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetCorrectionType
@@ -814,9 +787,6 @@ create table Family (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
   CandidateId INT not null,
-  SpouseId INT null,
-  FatherId INT null,
-  MotherId INT null,
   Cohabitants NVARCHAR(250) null,
   constraint PK_Family  primary key (Id)
 )
@@ -850,6 +820,7 @@ create table AppointmentReport (
   TempPassword NVARCHAR(32) null,
   RejectReason NVARCHAR(128) null,
   IsEducationExists BIT null,
+  IsColloquyPassed BIT null,
   DateAccept DATETIME null,
   CreatorId INT not null,
   StaffDateAccept DATETIME null,
@@ -1060,10 +1031,10 @@ create table PersonnelManagers (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
   CandidateId INT not null,
-  EmploymentOrderDate DATETIME not null,
+  EmploymentOrderDate DATETIME null,
   EmploymentOrderNumber NVARCHAR(20) not null,
-  EmploymentDate DATETIME not null,
-  ContractDate DATETIME not null,
+  EmploymentDate DATETIME null,
+  ContractDate DATETIME null,
   ContractNumber NVARCHAR(20) not null,
   NorthernAreaAddition DECIMAL(19, 2) null,
   AreaMultiplier DECIMAL(19, 2) null,
@@ -1251,6 +1222,12 @@ create table Reference (
 create table PostGraduateEducationDiploma (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
+  IssuedBy NVARCHAR(150) null,
+  Series NVARCHAR(10) null,
+  Number NVARCHAR(10) null,
+  AdmissionYear NVARCHAR(4) null,
+  GraduationYear NVARCHAR(4) null,
+  Speciality NVARCHAR(50) null,
   EducationId INT null,
   constraint PK_PostGraduateEducationDiploma  primary key (Id)
 )
@@ -1313,13 +1290,6 @@ create table SicklistPaymentRestrictType (
   Name NVARCHAR(128) null,
   constraint PK_SicklistPaymentRestrictType  primary key (Id)
 )
-create table FamilyRelationship (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_FamilyRelationship  primary key (Id)
-)
 create table MilitaryService (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1327,14 +1297,18 @@ create table MilitaryService (
   IsLiableForMilitaryService BIT not null,
   MilitaryCardNumber NVARCHAR(20) null,
   MilitaryCardDate DATETIME null,
-  ReserveCategory INT null,
+  ReserveCategory NVARCHAR(20) null,
   RankId INT null,
   SpecialityCategory NVARCHAR(50) null,
   MilitarySpecialityCode NVARCHAR(7) null,
-  CombatFitness NVARCHAR(1) null,
+  CombatFitness NVARCHAR(20) null,
   Commissariat NVARCHAR(100) null,
   MilitaryServiceRegistrationInfo NVARCHAR(250) null,
+  CommonMilitaryServiceRegistrationInfo NVARCHAR(250) null,
+  SpecialMilitaryServiceRegistrationInfo NVARCHAR(250) null,
   RegistrationExpirationId INT null,
+  IsReserved BIT not null,
+  MobilizationTicketNumber NVARCHAR(20) null,
   PersonnelCategoryId INT null,
   PersonnelTypeId INT null,
   IsAssigned BIT not null,
@@ -1453,8 +1427,8 @@ create table OnsiteTraining (
   CandidateId INT not null,
   Type NVARCHAR(200) not null,
   Description NVARCHAR(200) not null,
-  BeginningDate DATETIME not null,
-  EndDate DATETIME not null,
+  BeginningDate DATETIME null,
+  EndDate DATETIME null,
   IsComplete BIT not null,
   ReasonsForIncompleteTraining NVARCHAR(200) null,
   Results NVARCHAR(200) null,
@@ -1555,17 +1529,6 @@ create table DBVersion (
   Version NVARCHAR(20) not null,
   constraint PK_DBVersion  primary key (Id)
 )
-create table Disability (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  CertificateSeries NVARCHAR(10) null,
-  CertificateNumber NVARCHAR(10) null,
-  CertificateDateOfIssue DATETIME null,
-  DisabilityDegree NVARCHAR(2) null,
-  CertificateExpirationDate DATETIME null,
-  GeneralInfoId INT null,
-  constraint PK_Disability  primary key (Id)
-)
 create table Education (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1654,13 +1617,6 @@ create table EmploymentCandidate (
   ManagersId INT null,
   PersonnelManagersId INT null,
   constraint PK_EmploymentCandidate  primary key (Id)
-)
-create table MilitaryRank (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_MilitaryRank  primary key (Id)
 )
 create table Country (
  Id INT IDENTITY NOT NULL,
@@ -1853,6 +1809,7 @@ create table GeneralInfo (
   LastName NVARCHAR(50) not null,
   FirstName NVARCHAR(50) not null,
   Patronymic NVARCHAR(50) null,
+  IsPatronymicAbsent BIT not null,
   IsMale BIT null,
   CitizenshipId INT null,
   InsuredPersonTypeId INT null,
@@ -1862,6 +1819,11 @@ create table GeneralInfo (
   CityOfBirth NVARCHAR(50) not null,
   INN NVARCHAR(12) null,
   SNILS NVARCHAR(14) null,
+  DisabilityCertificateSeries NVARCHAR(50) null,
+  DisabilityCertificateNumber NVARCHAR(50) null,
+  DisabilityCertificateDateOfIssue DATETIME null,
+  DisabilityDegree NVARCHAR(5) null,
+  DisabilityCertificateExpirationDate DATETIME null,
   Status INT not null,
   AgreedToPersonalDataProcessing BIT not null,
   constraint PK_GeneralInfo  primary key (Id)
@@ -2033,12 +1995,14 @@ create table Role (
   Name NVARCHAR(100) not null,
   constraint PK_Role  primary key (Id)
 )
-create table MilitaryServiceRegistrationExpiration (
+create table AppointmentReportComment (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_MilitaryServiceRegistrationExpiration  primary key (Id)
+  UserId INT not null,
+  AppointmentReportId INT not null,
+  DateCreated DATETIME not null,
+  Comment NVARCHAR(256) not null,
+  constraint PK_AppointmentReportComment  primary key (Id)
 )
 create table AppointmentCreateManager2ToDepartment2 (
  Id INT IDENTITY NOT NULL,
@@ -2120,6 +2084,9 @@ create table Managers (
   EmploymentConditions NVARCHAR(100) null,
   Schedule NVARCHAR(50) null,
   ProbationaryPeriod NVARCHAR(50) null,
+  DailySalaryBasis DECIMAL(19, 2) null,
+  HourlySalaryBasis DECIMAL(19, 2) null,
+  SalaryMultiplier DECIMAL(3, 2) null,
   WorkCity NVARCHAR(50) null,
   PersonalAddition DECIMAL(19, 2) null,
   PositionAddition DECIMAL(19, 2) null,
@@ -2136,10 +2103,10 @@ create table Passport (
   DocumentTypeId INT not null,
   InternalPassportSeries NVARCHAR(4) not null,
   InternalPassportNumber NVARCHAR(6) not null,
-  InternalPassportDateOfIssue DATETIME not null,
+  InternalPassportDateOfIssue DATETIME null,
   InternalPassportIssuedBy NVARCHAR(150) not null,
   InternalPassportSubdivisionCode NVARCHAR(7) not null,
-  RegistrationDate DATETIME not null,
+  RegistrationDate DATETIME null,
   ZipCode NVARCHAR(6) not null,
   Region NVARCHAR(50) null,
   District NVARCHAR(50) null,
@@ -2279,7 +2246,7 @@ create table BackgroundCheck (
   MilitaryOperationsExperience NVARCHAR(50) null,
   DriversLicenseNumber NVARCHAR(12) null,
   DriversLicenseDateOfIssue DATETIME null,
-  DriversLicenseCategories INT null,
+  DriversLicenseCategories NVARCHAR(255) null,
   DrivingExperience INT null,
   AutomobileMake NVARCHAR(50) null,
   AutomobileLicensePlateNumber NVARCHAR(15) null,
@@ -2288,6 +2255,10 @@ create table BackgroundCheck (
   Hobbies NVARCHAR(250) null,
   ImportantEvents NVARCHAR(250) null,
   ChronicalDiseases NVARCHAR(250) null,
+  Penalties NVARCHAR(250) null,
+  PsychiatricAndAddictionTreatment NVARCHAR(250) null,
+  Smoking NVARCHAR(250) null,
+  Drinking NVARCHAR(250) null,
   constraint PK_BackgroundCheck  primary key (Id)
 )
 create table AppointmentManager23ToDepartment3 (
@@ -2340,13 +2311,7 @@ create table Document (
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
-create index Family_Spouse on Family (SpouseId)
-create index Family_Father on Family (FatherId)
-create index Family_Mother on Family (MotherId)
 alter table Family add constraint FK_Family_Candidate foreign key (CandidateId) references EmploymentCandidate
-alter table Family add constraint FK_Family_Spouse foreign key (SpouseId) references FamilyMember
-alter table Family add constraint FK_Family_Father foreign key (FatherId) references FamilyMember
-alter table Family add constraint FK_Family_Mother foreign key (MotherId) references FamilyMember
 create index AppointmentReport_Appointment on AppointmentReport (AppointmentId)
 create index AppointmentReport_AppointmentEducationType on AppointmentReport (TypeId)
 create index IX_AppointmentReport_CreatorUser_Id on AppointmentReport (CreatorId)
@@ -2464,17 +2429,7 @@ create index IX_TimesheetCorrectionComment_TimesheetCorrection_Id on TimesheetCo
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_User foreign key (UserId) references [Users]
 alter table TimesheetCorrectionComment add constraint FK_TimesheetCorrectionComment_TimesheetCorrection foreign key (TimesheetCorrectionId) references TimesheetCorrection
 create index MilitaryService_Candidate on MilitaryService (CandidateId)
-create index MilitaryService_Rank on MilitaryService (RankId)
-create index MilitaryService_RegistrationExpiration on MilitaryService (RegistrationExpirationId)
-create index MilitaryService_PersonnelCategory on MilitaryService (PersonnelCategoryId)
-create index MilitaryService_PersonnelType on MilitaryService (PersonnelTypeId)
-create index MilitaryService_ConscriptionStatus on MilitaryService (ConscriptionStatusId)
 alter table MilitaryService add constraint FK_MilitaryService_Candidate foreign key (CandidateId) references EmploymentCandidate
-alter table MilitaryService add constraint FK_MilitaryService_Rank foreign key (RankId) references MilitaryRank
-alter table MilitaryService add constraint FK_MilitaryService_RegistrationExpiration foreign key (RegistrationExpirationId) references MilitaryServiceRegistrationExpiration
-alter table MilitaryService add constraint FK_MilitaryService_PersonnelCategory foreign key (PersonnelCategoryId) references MilitaryPersonnelCategory
-alter table MilitaryService add constraint FK_MilitaryService_PersonnelType foreign key (PersonnelTypeId) references MilitaryPersonnelType
-alter table MilitaryService add constraint FK_MilitaryService_ConscriptionStatus foreign key (ConscriptionStatusId) references ConscriptionStatus
 create index MissionPurchaseBookRecord_MissionPurchaseBookDocument on MissionPurchaseBookRecord (MissionPurchaseBookDocumentId)
 create index MissionPurchaseBookRecord_MissionOrder on MissionPurchaseBookRecord (MissionOrderId)
 create index MissionPurchaseBookRecord_MissionReportCostType on MissionPurchaseBookRecord (MissionReportCostTypeId)
@@ -2536,7 +2491,6 @@ create index IX_EmploymentComment_User_Id on EmploymentComment (UserId)
 create index IX_EmploymentComment_Employment_Id on EmploymentComment (EmploymentId)
 alter table EmploymentComment add constraint FK_EmploymentComment_User foreign key (UserId) references [Users]
 alter table EmploymentComment add constraint FK_EmploymentComment_Employment foreign key (EmploymentId) references Employment
-alter table Disability add constraint FK_Disability_GeneralInfo foreign key (GeneralInfoId) references GeneralInfo
 create index Education_Candidate on Education (CandidateId)
 alter table Education add constraint FK_Education_Candidate foreign key (CandidateId) references EmploymentCandidate
 create index MissionPurchaseBookDocument_Contractor on MissionPurchaseBookDocument (ContractorId)
@@ -2638,9 +2592,7 @@ alter table Absence add constraint FK_Absence_AbsenceType foreign key (TypeId) r
 alter table Absence add constraint FK_Absence_User foreign key (UserId) references [Users]
 alter table Absence add constraint FK_Absence_CreatorUser foreign key (CreatorId) references [Users]
 alter table Absence add constraint FK_Absence_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
-create index FamilyMember_Relationship on FamilyMember (RelationshipId)
-alter table FamilyMember add constraint FK_FamilyMember_Relationship foreign key (RelationshipId) references FamilyRelationship
-alter table FamilyMember add constraint FK_Children_Family foreign key (FamilyId) references Family
+alter table FamilyMember add constraint FK_FamilyMember_Family foreign key (FamilyId) references Family
 alter table ExperienceItem add constraint FK_ExperienceItem_Experience foreign key (ExperienceId) references Experience
 create index GeneralInfo_Candidate on GeneralInfo (CandidateId)
 create index GeneralInfo_Citizenship on GeneralInfo (CitizenshipId)
@@ -2700,6 +2652,10 @@ create index IX_ClearanceChecklistApproval_ApprovedBy_Id on ClearanceChecklistAp
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_Dismissal foreign key (DismissalId) references Dismissal
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ClearanceChecklistRole foreign key (RoleId) references [ClearanceChecklistRole]
 alter table ClearanceChecklistApproval add constraint FK_ClearanceChecklistApproval_ApprovedBy foreign key (ApprovedById) references [Users]
+create index IX_AppointmentReportComment_User on AppointmentReportComment (UserId)
+create index IX_AppointmentReportComment_AppointmentReport on AppointmentReportComment (AppointmentReportId)
+alter table AppointmentReportComment add constraint FK_AppointmentReportComment_User foreign key (UserId) references [Users]
+alter table AppointmentReportComment add constraint FK_AppointmentReportComment_AppointmentReport foreign key (AppointmentReportId) references AppointmentReport
 create index IX_AppointmentCreateManager2ToDepartment2_User on AppointmentCreateManager2ToDepartment2 (ManagerId)
 create index IX_AppointmentCreateManager2ToDepartment2_Department on AppointmentCreateManager2ToDepartment2 (DepartmentId)
 alter table AppointmentCreateManager2ToDepartment2 add constraint FK_AppointmentCreateManager2ToDepartment2_User foreign key (ManagerId) references [Users]

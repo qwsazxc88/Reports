@@ -12,10 +12,7 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual EmploymentCandidate Candidate { get; set; }
-        public virtual FamilyMember Spouse { get; set; } // OK-
-        public virtual FamilyMember Father { get; set; } // OK-
-        public virtual FamilyMember Mother { get; set; } // OK-
-        public virtual IList<FamilyMember> Children { get; set; } // OK-
+        public virtual IList<FamilyMember> FamilyMembers { get; set; } // OK-
         public virtual string Cohabitants { get; set; } // OK
         // Скан свидетельства о браке
         #endregion

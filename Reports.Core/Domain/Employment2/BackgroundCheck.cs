@@ -21,7 +21,7 @@ namespace Reports.Core.Domain
         public virtual string MilitaryOperationsExperience { get; set; } //ok
         public virtual string DriversLicenseNumber { get; set; } //ok
         public virtual DateTime? DriversLicenseDateOfIssue { get; set; } //ok
-        public virtual int? DriversLicenseCategories { get; set; } //ok - битовое поле
+        public virtual string DriversLicenseCategories { get; set; } //ok - битовое поле
         public virtual int? DrivingExperience { get; set; } //ok
         public virtual string AutomobileMake { get; set; } //ok
         public virtual string AutomobileLicensePlateNumber { get; set; } //ok
@@ -31,6 +31,10 @@ namespace Reports.Core.Domain
         public virtual string ImportantEvents { get; set; } //ok
         public virtual IList<Reference> References { get; set; } //ok
         public virtual string ChronicalDiseases { get; set; } //ok
+        public virtual string Penalties { get; set; } //ok
+        public virtual string PsychiatricAndAddictionTreatment { get; set; }
+        public virtual string Smoking { get; set; }
+        public virtual string Drinking { get; set; }
         #endregion
 
         #region Constructors

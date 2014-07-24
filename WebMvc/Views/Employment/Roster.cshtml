@@ -80,13 +80,15 @@
 
 </tr>
 
+@{ int i = 1; }
+
 @foreach (var candidate in Model.Roster)
 {
   
     <tr>
         
         <td>
-            @* № по порядку *@
+            @i@{i++;}
         </td>
         
         <td>
@@ -110,7 +112,7 @@
         </td>        
         
         <td>
-            @candidate.EmploymentDate
+            @(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
         </td>
         
         <td>
@@ -118,7 +120,7 @@
         </td>
         
         <td>
-            @candidate.EmploymentOrderDate
+            @(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
         </td>
 
         <td>
@@ -133,11 +135,11 @@
         </td>
 
         <td>
-            @candidate.Timetable
+            @candidate.Schedule
         </td>
 
         <td>
-            @candidate.DateOfBirth
+            @(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
         </td>
 
         <td>

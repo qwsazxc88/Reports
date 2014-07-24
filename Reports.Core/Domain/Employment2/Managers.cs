@@ -16,6 +16,9 @@ namespace Reports.Core.Domain
         public virtual string EmploymentConditions { get; set; } //ok
         public virtual string Schedule { get; set; } // OK?
         public virtual string ProbationaryPeriod { get; set; } //ok
+        public virtual decimal? DailySalaryBasis { get; set; }
+        public virtual decimal? HourlySalaryBasis { get; set; }
+        public virtual decimal? SalaryMultiplier { get; set; }
         // TODO: EMPL несколько окладов и ставка
         // public virtual decimal SalaryBasis { get; set; }
         public virtual string WorkCity { get; set; } //ok

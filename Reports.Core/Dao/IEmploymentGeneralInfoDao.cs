@@ -9,4 +9,9 @@ namespace Reports.Core.Dao
     {
 
     }
+
+    public interface IInsuredPersonTypeDao : IDao<InsuredPersonType>
+    {
+
+    }
 }

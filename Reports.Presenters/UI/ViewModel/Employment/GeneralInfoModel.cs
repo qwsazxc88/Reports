@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -30,22 +31,19 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Пол")]
         public bool IsMale { get; set; } //ok
-        /*
-        [Display(Name = "Гражданство"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
-        public int Citizenship { get; set; } //ok
-        public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
+        
+        [Display(Name = "Гражданство")]
+        public int CitizenshipId { get; set; } //ok
+        public IEnumerable<IdNameDto> CitizenshipItems { get; set; }
         
         [Display(Name = "Вид застрахованного лица"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]
-        public int InsuredPersonType { get; set; } //ok
-        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
-        */
+        public int InsuredPersonTypeId { get; set; } //ok
+        public IEnumerable<IdNameDto> InsuredPersonTypeItems { get; set; }
+        
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "Обязательное поле"),]
         public DateTime DateOfBirth { get; set; } //ok
 
         [Display(Name = "Область"),
@@ -71,13 +69,31 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "Обязательное поле")]
         public string SNILS { get; set; } //ok
 
-        [Display(Name = "Инвалидность")]
-        public IList<DisabilityDto> Disabilities { get; set; } //ok
-        /*
+        // Инвалидность
+
+        [Display(Name = "Серия справки")]
+        public string DisabilityCertificateSeries { get; set; }
+
+        [Display(Name = "Номер справки")]
+        public string DisabilityCertificateNumber { get; set; }
+
+        [Display(Name = "Дата выдачи"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DisabilityCertificateDateOfIssue { get; set; }
+
+        [Display(Name = "Группа инвалидности")]
+        public string DisabilityDegree { get; set; }
+
+        [Display(Name = "Срок действия справки"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DisabilityCertificateExpirationDate { get; set; }
+
+        // ------------
+        
         [Display(Name = "Статус")]
-        public int Status { get; set; }
-        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
-        */
+        public int StatusId { get; set; }
+        public IEnumerable<IdNameDto> StatusItems { get; set; } //ok
+        
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
         
@@ -85,8 +101,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         {
             this.Version = 0;
             this.NameChanges = new List<NameChangeDto>();            
-            this.ForeignLanguages = new List<ForeignLanguageDto>();
-            this.Disabilities = new List<DisabilityDto>();            
+            this.ForeignLanguages = new List<ForeignLanguageDto>();        
         }
     }
 }

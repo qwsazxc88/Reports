@@ -12,10 +12,10 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual EmploymentCandidate Candidate { get; set; }
-        public virtual DateTime EmploymentOrderDate { get; set; } //ok
+        public virtual DateTime? EmploymentOrderDate { get; set; } //ok
         public virtual string EmploymentOrderNumber { get; set; } //ok
-        public virtual DateTime EmploymentDate { get; set; } //ok
-        public virtual DateTime ContractDate { get; set; } //ok
+        public virtual DateTime? EmploymentDate { get; set; } //ok
+        public virtual DateTime? ContractDate { get; set; } //ok
         public virtual string ContractNumber { get; set; } //ok
         public virtual decimal? NorthernAreaAddition { get; set; } //ok
         public virtual decimal? AreaMultiplier { get; set; } //ok
@@ -23,7 +23,6 @@ namespace Reports.Core.Domain
         public virtual decimal? TravelRelatedAddition { get; set; } //ok
         public virtual decimal? CompetenceAddition { get; set; } //ok
         public virtual decimal? FrontOfficeExperienceAddition { get; set; }
-        // public virtual int? Grade { get; set; }// Грейд (is it necessary?)
         public virtual int OverallExperienceYears { get; set; } //ok
         public virtual int OverallExperienceMonths { get; set; } //ok
         public virtual int OverallExperienceDays { get; set; } //ok

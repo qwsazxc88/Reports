@@ -9,8 +9,8 @@
     <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_OnsiteTraining_Candidate" index="OnsiteTraining_Candidate" not-null="true"/>
     <property name="Type" length="200" not-null="true"/>
     <property name="Description" length="200" not-null="true"/>
-    <property name="BeginningDate" not-null="true"/>
-    <property name="EndDate" not-null="true"/>
+    <property name="BeginningDate" not-null="false"/>
+    <property name="EndDate" not-null="false"/>
     <property name="IsComplete" not-null="true"/>
     <property name="ReasonsForIncompleteTraining" length="200" not-null="false"/>
     <property name="Results" length="200" not-null="false"/>

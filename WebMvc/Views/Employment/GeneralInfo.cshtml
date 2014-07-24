@@ -6,8 +6,7 @@
 @{Html.EnableClientValidation();}
 @{Html.EnableUnobtrusiveJavaScript();}
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
-{
-    <input type="hidden" id="cmd" name="cmd" />
+{    
     @Html.HiddenFor(m => m.Version)
     @Html.HiddenFor(m => m.UserId)
     
@@ -23,69 +22,71 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.Patronymic)&nbsp;@Html.ValidationMessageFor(m => m.Patronymic)<br />
-            @Html.TextBoxFor(m => m.Patronymic)
+            @Html.TextBoxFor(m => m.Patronymic)&nbsp;@Html.CheckBoxFor(m => m.IsPatronymicAbsent)@Html.LabelFor(m => m.IsPatronymicAbsent)
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.NameChanges)<br />
-            <fieldset class="bordered nomargin">
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.NameChanges)</legend>
+            @if (Model.NameChanges.Count > 0)
+            {
                 <div id="name-changes-container">
-                    @for (var i = 0; i < Model.NameChanges.Count; i++)
-                    {
-                        // Изменения ФИО                        
-                        <table class="grid" data-id=@i>
+                    <table class="grid">
+                    
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.NameChanges[0].PreviousName)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.NameChanges[0].Date)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.NameChanges[0].Place)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.NameChanges[0].Reason)
+                            </th>
+                        </tr>
+                    
+                        @for (var i = 0; i < Model.NameChanges.Count; i++)
+                        {
                             <tr>
                                 <td>
-                                    @Html.LabelFor(m => m.NameChanges[i].PreviousName):
+                                    @Model.NameChanges[i].PreviousName
                                 </td>
                                 <td>
-                                    @Html.TextBoxFor(m => m.NameChanges[i].PreviousName)
+                                    @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : @String.Empty)
                                 </td>
+                                <td>
+                                    @Model.NameChanges[i].Place
+                                </td>
+                                <td>
+                                    @Model.NameChanges[i].Reason
+                                </td>
+                                @*<td id="delete-name-change">
+                                    <a href="" data-index=@i>Удалить</a>
+                                </td>*@
                             </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.NameChanges[i].Date):
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.NameChanges[i].Date)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.NameChanges[i].Place):
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.NameChanges[i].Place)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    @Html.LabelFor(m => m.NameChanges[i].Reason):
-                                </td>
-                                <td>
-                                    @Html.EditorFor(m => m.NameChanges[i].Reason)
-                                </td>
-                            </tr>                       
-                        </table>
-                    }
+                        }                    
+
+                    </table>
                 </div>
-                <button type="submit" id="add-name-change-button">Добавить новую запись</button>
-            </fieldset>
+            }
+            <a href="" id="add-name-change">Добавить новую запись</a>
+        </fieldset>
+
+        <div class="formfield clear" id="gender">
+
+            @Html.RadioButtonFor(m => m.IsMale, true, new { @id = "IsMaleTrue" })<label for="IsMaleTrue">М</label>
+            @Html.RadioButtonFor(m => m.IsMale, false, new { @id = "IsMaleFalse" })<label for="IsMaleFalse">Ж</label>
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.IsMale)&nbsp;@Html.ValidationMessageFor(m => m.IsMale)<br />
-            @Html.DropDownList("IsMale", new List<SelectListItem>
-                { new SelectListItem {Value = "true", Text = "М"},
-                    new SelectListItem {Value = "false", Text = "Ж"}
-                })
-        </div>
-        @*<div class="formfield">
-            @Html.LabelFor(m => m.Citizenship)&nbsp;@Html.ValidationMessageFor(m => m.Citizenship)<br />
-            @Html.DropDownListFor(m => m.Citizenship, Model.CitizenshipItems)
+            @Html.LabelFor(m => m.CitizenshipId)&nbsp;@Html.ValidationMessageFor(m => m.CitizenshipId)<br />
+            @Html.DropDownListFor(m => m.CitizenshipId, new SelectList(Model.CitizenshipItems, "Id", "Name"))
         </div>
         <div class="formfield">
-            @Html.LabelFor(m => m.InsuredPersonType)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonType)<br />
-            @Html.DropDownListFor(m => m.InsuredPersonType, Model.InsuredPersonTypeItems)
-        </div>*@
+            @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
+            @Html.DropDownListFor(m => m.InsuredPersonTypeId, new SelectList(Model.InsuredPersonTypeItems, "Id", "Name"))
+        </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
             @Html.EditorFor(m => m.DateOfBirth)
@@ -103,100 +104,81 @@
                 </div>
             </fieldset>
         </div>            
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.ForeignLanguages)<br />
-            <fieldset class="bordered nomargin">
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.ForeignLanguages)</legend>
+            @if (Model.ForeignLanguages.Count > 0)
+            {
                 <div id="foreign-languages-container">
                     <table class="grid">
-                        <thead>
+                    
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.ForeignLanguages[0].LanguageName)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.ForeignLanguages[0].Level)
+                            </th>
+                        </tr>
+                    
+                        @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
+                        {
                             <tr>
-                                <th>
-                                    Язык
-                                </th>
-                                <th>
-                                    Степень знания
-                                </th>
+                                <td>
+                                    @Model.ForeignLanguages[i].LanguageName
+                                </td>
+                                <td>
+                                    @Model.ForeignLanguages[i].Level
+                                </td>
+                                @*<td id="delete-foreign-language">
+                                    <a href="" data-index=@i>Удалить</a>
+                                </td>*@
                             </tr>
-                        </thead>
-                        <tbody>
-                            @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
-                            {                            
-                                <tr>                                
-                                    <td>
-                                        @Html.EditorFor(m => m.ForeignLanguages[i].LanguageName)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(m => m.ForeignLanguages[i].Level)
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>                            
+                        }                    
+
                     </table>
                 </div>
-            </fieldset>
-        </div>
+            }
+            <a href="" id="add-foreign-language">Добавить новую запись</a>
+        </fieldset>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.INN)&nbsp;@Html.ValidationMessageFor(m => m.INN)<br />
-            @Html.EditorFor(m => m.INN)
+            @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.EditorFor(m => m.SNILS)
+            @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
         </div>
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Инвалидность</legend>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DisabilityCertificateSeries)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateSeries)<br />
+                @Html.TextBoxFor(m => m.DisabilityCertificateSeries)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.DisabilityCertificateNumber)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateNumber)<br />
+                @Html.TextBoxFor(m => m.DisabilityCertificateNumber)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.DisabilityCertificateDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateDateOfIssue)<br />
+                @Html.EditorFor(m => m.DisabilityCertificateDateOfIssue)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.DisabilityDegree)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityDegree)<br />
+                @Html.TextBoxFor(m => m.DisabilityDegree)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />
+                @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
+            </div>
+        </fieldset>
+
         <div class="formfield clear">
-            @Html.LabelFor(m => m.Disabilities)<br />
-            <fieldset class="bordered nomargin">
-                <div id="disabilities-container">
-                    <table class="grid">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Серия справки
-                                </th>
-                                <th>
-                                    Номер справки
-                                </th>
-                                <th>
-                                    Дата выдачи
-                                </th>
-                                <th>
-                                    Группа инвалидности
-                                </th>
-                                <th>
-                                    Срок действия справки
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (var i = 0; i < Model.Disabilities.Count; i++)
-                            {                            
-                                <tr>                                
-                                    <td>
-                                        @Html.EditorFor(m => m.Disabilities[i].CertificateSeries)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(m => m.Disabilities[i].CertificateNumber)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(m => m.Disabilities[i].DateOfIssue)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(m => m.Disabilities[i].DisabilityDegree)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(m => m.Disabilities[i].CerificateExpirationDate)
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>                            
-                    </table>
-                </div>
-            </fieldset>
+            @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
+            @Html.DropDownListFor(m => m.StatusId, new SelectList(Model.StatusItems, "Id", "Name"))
         </div>
-        @*<div class="formfield clear">
-            @Html.LabelFor(m => m.Status)&nbsp;@Html.ValidationMessageFor(m => m.Status)<br />
-            @Html.DropDownListFor(m => m.Status, Model.StatusItems)
-        </div>*@
         <div class="formfield clear">
             @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)&nbsp;@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
             @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
@@ -210,27 +192,106 @@
     </div>
 }
 
+@* --- *@
+
+<div id="add-name-change-dialog" title="Добавление изменения ФИО">
+    @using (Html.BeginForm("GeneralInfoAddNameChange", "Employment", FormMethod.Post))
+    {
+        <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Date" style="display:block;">Дата изменения</label><input type="text" name="Date" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Place" style="display:block;">Место</label><input type="text" name="Place" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Reason" style="display:block;">Причина</label><input type="text" name="Reason" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+ 
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+<div id="add-foreign-language-dialog" title="Добавление иностранного языка">
+    @using (Html.BeginForm("GeneralInfoAddForeignLanguage", "Employment", FormMethod.Post))
+    {
+        <label for="LanguageName" style="display:block;">Язык</label><input type="text" name="LanguageName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Level" style="display:block;">Степень знания</label><input type="text" name="Level" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+ 
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+@* --- *@
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
+        attachDatepickerToInputs($('#DateOfBirth, #DisabilityCertificateDateOfIssue'), "-80:+0", true);
+        attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+        $('#gender').buttonset();
 
-        $('#DateOfBirth').datepicker({
-            changeYear: true,
-            yearRange: "-100:+0"
-        });
-        
-        $("#add-name-change-button").click(function () {
-            $("#cmd").val("add-name-change");
+        var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-name-change-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
         });
 
-        // Переключение флажка отсутствия отчества
-        $("#IsPatronymicAbsent").click(function () {
-            if ($(this).attr("checked") === true) {
-                $("#Patronymic").attr("disabled", "disabled");
-            }
-            else {
-                $("#Patronymic").removeAttr("disabled");
+        var $addForeignLanguageDialog = $('#add-foreign-language-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-foreign-language-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
             }
         });
+
+        $("#add-name-change").click(function (e) {
+            $addNameChangeDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        $("#add-foreign-language").click(function (e) {
+            $addForeignLanguageDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        handleCheckboxState($("#IsPatronymicAbsent"),
+            {
+                $target: $("#Patronymic"),
+                act: function () {
+                    this.$target.val("");
+                    this.$target.attr("disabled", "disabled");
+                }
+            },
+            {
+                $target: $("#Patronymic"),
+                act: function () {
+                    this.$target.removeAttr("disabled");
+                }
+            },
+            true
+        );
     });
 </script>

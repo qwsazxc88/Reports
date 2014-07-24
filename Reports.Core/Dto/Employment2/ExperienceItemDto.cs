@@ -11,12 +11,12 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Начало работы"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime BeginningDate { get; set; }
+        public DateTime? BeginningDate { get; set; }
 
         [Display(Name = "Окончание работы"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [Display(Name = "Организация"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),

@@ -15,7 +15,7 @@ namespace Reports.Core.Dto.Employment2
         [Display(Name = "Дата изменения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
         [Display(Name = "Место"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             Required(ErrorMessage = "Обязательное поле")]

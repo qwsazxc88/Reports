@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         public virtual string LastName { get; set; } //ok
         public virtual string FirstName { get; set; } //ok
         public virtual string Patronymic { get; set; } //ok
+        public virtual bool IsPatronymicAbsent { get; set; }
         public virtual IList<NameChange> NameChanges { get; set; } //ok
         public virtual bool IsMale { get; set; } //ok
         public virtual Country Citizenship { get; set; } //ok
@@ -27,7 +28,13 @@ namespace Reports.Core.Domain
         public virtual IList<ForeignLanguage> ForeignLanguages { get; set; } //ok
         public virtual string INN { get; set; } //ok
         public virtual string SNILS { get; set; } //ok
-        public virtual IList<Disability> Disabilities { get; set; } //ok
+
+        public virtual string DisabilityCertificateSeries { get; set; }
+        public virtual string DisabilityCertificateNumber { get; set; }
+        public virtual DateTime? DisabilityCertificateDateOfIssue { get; set; }
+        public virtual string DisabilityDegree { get; set; }
+        public virtual DateTime? DisabilityCertificateExpirationDate { get; set; }
+
         public virtual int Status { get; set; } // - статус налогоплательщика по НДФЛ
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
         // Фото

@@ -34,9 +34,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime DriversLicenseDateOfIssue { get; set; } //ok
+        public DateTime? DriversLicenseDateOfIssue { get; set; } //ok
 
-        [Display(Name = "Категории")]
+        [Display(Name = "Категории"),
+            RegularExpression(@"^((M|[A-D]|BE|CE|DE|Tm|Tb|A1|B1|C1|D1|C1E|D1E)(,| |(, )|$))*$",
+                ErrorMessage = "Требуется список категорий, разделенных запятыми или пробелами")]
         public string DriversLicenseCategories { get; set; } // TODO: multiselect dropdown
 
         [Display(Name = "Водительский стаж")]
@@ -69,6 +71,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Наличие хронических заболеваний (по желанию, если есть, то перечислите)")]
         public string ChronicalDiseases { get; set; } //ok
+
+        [Display(Name = "Привлекались ли Вы к уголовной, административной или иной ответственности, когда, за что, мера наказания")]
+        public string Penalties { get; set; } //ok
+
+        [Display(Name = "Состоите ли Вы на психиатрическом или наркологическом учете (если да, то где)")]
+        public string PsychiatricAndAddictionTreatment { get; set; }
+
+        [Display(Name = "Ваше отношение к табакокурению")]
+        public string Smoking { get; set; }
+
+        [Display(Name = "Ваше отношение к алкоголю")]
+        public string Drinking { get; set; }
 
         public BackgroundCheckModel()
         {

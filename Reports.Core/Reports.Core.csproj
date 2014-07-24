@@ -239,7 +239,6 @@
     <Compile Include="Dao\Impl\WorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCandidateDao.cs" />
     <Compile Include="Dao\Impl\EmploymentCommonDao.cs" />
-    <Compile Include="Dao\Impl\MilitaryRankDao.cs" />
     <Compile Include="Dao\Impl\CountryDao.cs" />
     <Compile Include="Dao\Impl\EmploymentGeneralInfoDao.cs" />
     <Compile Include="Dao\Impl\EmploymentPassportDao.cs" />
@@ -289,7 +288,6 @@
     <Compile Include="Dao\IWorkingGraphicTypeDao.cs" />
     <Compile Include="Dao\IEmploymentCandidateDao.cs" />
     <Compile Include="Dao\IEmploymentCommonDao.cs" />
-    <Compile Include="Dao\IMilitaryRankDao.cs" />
     <Compile Include="Dao\ICountryDao.cs" />
     <Compile Include="Dao\IEmploymentGeneralInfoDao.cs" />
     <Compile Include="Dao\IEmploymentPassportDao.cs" />
@@ -342,7 +340,6 @@
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
-    <Compile Include="Domain\Employment2\MilitaryRank.cs" />
     <Compile Include="Domain\Employment2\MilitarySpecialityCategory.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
@@ -355,8 +352,6 @@
     <Compile Include="Domain\Employment2\OnsiteTraining.cs" />
     <Compile Include="Domain\Employment2\Managers.cs" />
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
-    <Compile Include="Domain\Employment2\FamilyRelationship.cs" />
-    <Compile Include="Domain\Employment2\MilitaryServiceRegistrationExpiration.cs" />
     <Compile Include="Domain\Employment2\MilitaryPersonnelCategory.cs" />
     <Compile Include="Domain\Employment2\MilitaryPersonnelType.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
@@ -364,7 +359,6 @@
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
-    <Compile Include="Domain\Employment2\Disability.cs" />
     <Compile Include="Domain\Employment2\FamilyMember.cs" />
     <Compile Include="Domain\Employment2\ForeignLanguage.cs" />
     <Compile Include="Domain\Employment2\NameChange.cs" />
@@ -464,17 +458,16 @@
     <Compile Include="Dto\DocumentAndAttachmentDto.cs" />
     <Compile Include="Dto\DocumentDto.cs" />
     <Compile Include="Dto\EmailDto.cs" />
-    <Compile Include="Dto\Employment\NameChangeDto.cs" />
-    <Compile Include="Dto\Employment\HigherEducationDiplomaDto.cs" />
-    <Compile Include="Dto\Employment\PostGraduateEducationDiplomaDto.cs" />
-    <Compile Include="Dto\Employment\CertificationDto.cs" />
-    <Compile Include="Dto\Employment\TrainingDto.cs" />
-    <Compile Include="Dto\Employment\FamilyMemberDto.cs" />
-    <Compile Include="Dto\Employment\ExperienceItemDto.cs" />
-    <Compile Include="Dto\Employment\CandidateDto.cs" />
-    <Compile Include="Dto\Employment\ReferenceDto.cs" />
-    <Compile Include="Dto\Employment\DisabilityDto.cs" />
-    <Compile Include="Dto\Employment\ForeignLanguageDto.cs" />
+    <Compile Include="Dto\Employment2\NameChangeDto.cs" />
+    <Compile Include="Dto\Employment2\HigherEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment2\PostGraduateEducationDiplomaDto.cs" />
+    <Compile Include="Dto\Employment2\CertificationDto.cs" />
+    <Compile Include="Dto\Employment2\TrainingDto.cs" />
+    <Compile Include="Dto\Employment2\FamilyMemberDto.cs" />
+    <Compile Include="Dto\Employment2\ExperienceItemDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateDto.cs" />
+    <Compile Include="Dto\Employment2\ReferenceDto.cs" />
+    <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />
@@ -500,6 +493,7 @@
     <Compile Include="Dto\WorkingGraphicTypeDto.cs" />
     <Compile Include="Dto\SicklistDto.cs" />
     <Compile Include="Enum\ExportImportType.cs" />
+    <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
@@ -877,9 +871,6 @@
     <EmbeddedResource Include="Domain\DocumentType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\MilitaryRank.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\MilitarySpecialityCategory.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -893,7 +884,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Passport.hbm.xml" />
@@ -914,7 +907,9 @@
     <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\OnsiteTraining.hbm.xml">
@@ -929,9 +924,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Certification.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Disability.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\ExperienceItem.hbm.xml" />
@@ -953,12 +945,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\FamilyRelationship.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\MilitaryServiceRegistrationExpiration.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\MilitaryPersonnelCategory.hbm.xml" />

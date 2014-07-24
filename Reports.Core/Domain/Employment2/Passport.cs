@@ -15,10 +15,10 @@ namespace Reports.Core.Domain
         public virtual DocumentType DocumentType { get; set; } //ok
         public virtual string InternalPassportSeries { get; set; } //ok
         public virtual string InternalPassportNumber { get; set; } //ok
-        public virtual DateTime InternalPassportDateOfIssue { get; set; } //ok
+        public virtual DateTime? InternalPassportDateOfIssue { get; set; } //ok
         public virtual string InternalPassportIssuedBy { get; set; } //ok
         public virtual string InternalPassportSubdivisionCode { get; set; } //ok
-        public virtual DateTime RegistrationDate { get; set; } //ok
+        public virtual DateTime? RegistrationDate { get; set; } //ok
         public virtual string ZipCode { get; set; } //
         public virtual string Region { get; set; } //
         public virtual string District { get; set; } //

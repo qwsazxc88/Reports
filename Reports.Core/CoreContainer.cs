@@ -421,7 +421,6 @@ namespace Reports.Core
               ImplementedBy(typeof(AppointmentReportCommentDao)).
               LifeStyle.Is(type));
 
-
             Register(Component.For(typeof(IEmploymentCandidateDao)).
                 ImplementedBy(typeof(EmploymentCandidateDao)).
                 LifeStyle.Is(type));
@@ -431,8 +430,14 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentGeneralInfoDao)).
                 ImplementedBy(typeof(EmploymentGeneralInfoDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IInsuredPersonTypeDao)).
+                ImplementedBy(typeof(InsuredPersonTypeDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(IEmploymentPassportDao)).
                 ImplementedBy(typeof(EmploymentPassportDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IDocumentTypeDao)).
+                ImplementedBy(typeof(DocumentTypeDao)).
                 LifeStyle.Is(type));
             Register(Component.For(typeof(IEmploymentEducationDao)).
                 ImplementedBy(typeof(EmploymentEducationDao)).
@@ -463,9 +468,6 @@ namespace Reports.Core
                 LifeStyle.Is(type));
             Register(Component.For(typeof(ICountryDao)).
                 ImplementedBy(typeof(CountryDao)).
-                LifeStyle.Is(type));
-            Register(Component.For(typeof(IMilitaryRankDao)).
-                ImplementedBy(typeof(MilitaryRankDao)).
                 LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))

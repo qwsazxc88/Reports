@@ -3,7 +3,7 @@ using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
 {
-    public class EmploymentCandidateDao : DefaultDao<EmploymentAddition>, IEmploymentCandidateDao
+    public class EmploymentCandidateDao : DefaultDao<EmploymentCandidate>, IEmploymentCandidateDao
     {
         public EmploymentCandidateDao(ISessionManager sessionManager)
             : base(sessionManager)

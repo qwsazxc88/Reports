@@ -9,17 +9,21 @@
     <property name="IsLiableForMilitaryService" not-null="true"/>
     <property name="MilitaryCardNumber" length="20" not-null="false"/>
     <property name="MilitaryCardDate" not-null="false"/>
-    <property name="ReserveCategory" not-null="false"/>
-    <many-to-one name="Rank" class="MilitaryRank" column="RankId" foreign-key="FK_MilitaryService_Rank" index="MilitaryService_Rank"  not-null="false"/>
+    <property name="ReserveCategory" length="20" not-null="false"/>
+    <property name="Rank" column="RankId" not-null="false"/>
     <property name="SpecialityCategory" length="50" not-null="false"/>
     <property name="MilitarySpecialityCode" length="7" not-null="false"/>
-    <property name="CombatFitness" length="1" not-null="false"/>
+    <property name="CombatFitness" length="20" not-null="false"/>
     <property name="Commissariat" length="100" not-null="false"/>
     <property name="MilitaryServiceRegistrationInfo" length="250" not-null="false"/>
-    <many-to-one name="RegistrationExpiration" class="MilitaryServiceRegistrationExpiration" column="RegistrationExpirationId" foreign-key="FK_MilitaryService_RegistrationExpiration" index="MilitaryService_RegistrationExpiration"  not-null="false"/>
-    <many-to-one name="PersonnelCategory" class="MilitaryPersonnelCategory" column="PersonnelCategoryId" foreign-key="FK_MilitaryService_PersonnelCategory" index="MilitaryService_PersonnelCategory"  not-null="false"/>
-    <many-to-one name="PersonnelType" class="MilitaryPersonnelType" column="PersonnelTypeId" foreign-key="FK_MilitaryService_PersonnelType" index="MilitaryService_PersonnelType"  not-null="false"/>
+    <property name="CommonMilitaryServiceRegistrationInfo" length="250" not-null="false"/>
+    <property name="SpecialMilitaryServiceRegistrationInfo" length="250" not-null="false"/>
+    <property name="RegistrationExpiration" column="RegistrationExpirationId" not-null="false"/>
+    <property name="IsReserved" not-null="true"/>
+    <property name="MobilizationTicketNumber" length="20" not-null="false"/>
+    <property name="PersonnelCategory" column="PersonnelCategoryId" not-null="false"/>
+    <property name="PersonnelType" column="PersonnelTypeId" not-null="false"/>
     <property name="IsAssigned" not-null="true"/>
-    <many-to-one name="ConscriptionStatus" class="ConscriptionStatus" column="ConscriptionStatusId" foreign-key="FK_MilitaryService_ConscriptionStatus" index="MilitaryService_ConscriptionStatus"  not-null="false"/>
+    <property name="ConscriptionStatus" column="ConscriptionStatusId" not-null="false"/>
   </class>
 </hibernate-mapping>

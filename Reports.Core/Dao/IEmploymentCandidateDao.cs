@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Core.Dao
 {
-    public interface IEmploymentCandidateDao
+    public interface IEmploymentCandidateDao : IDao<EmploymentCandidate>
     {
 
     }

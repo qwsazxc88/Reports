@@ -10,17 +10,17 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Паспорт РФ</legend>
-        @*<div class="formfield clearleft">
-            @Html.LabelFor(m => m.DocumentType)&nbsp;@Html.ValidationMessageFor(m => m.DocumentType)<br />
-            @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
-        </div>*@
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
+            @Html.DropDownListFor(m => m.DocumentTypeId, new SelectList(Model.DocumentTypeItems, "Id", "Name"))
+        </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSeries)
+            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
-            @Html.TextBoxFor(m => m.InternalPassportNumber)
+            @Html.TextBoxFor(m => m.InternalPassportNumber, new { pattern = @"^\d{6}$", title = "6 цифр (######)" })
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportDateOfIssue)<br />
@@ -32,7 +32,7 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportSubdivisionCode)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSubdivisionCode)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode)
+            @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode, new { pattern = @"^\d{3}-\d{3}$", title = "###-###" })
         </div>
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Регистрация</legend>
@@ -42,7 +42,7 @@
             </div>
             <div class="formfield clear">
                 @Html.LabelFor(m => m.ZipCode)&nbsp;@Html.ValidationMessageFor(m => m.ZipCode)<br />
-                @Html.TextBoxFor(m => m.ZipCode)
+                @Html.TextBoxFor(m => m.ZipCode, new { pattern = @"^\d{6}$", title = "6 цифр (######)" })
             </div>
             <div class="formfield clear">
                 @Html.LabelFor(m => m.Region)&nbsp;@Html.ValidationMessageFor(m => m.Region)<br />
@@ -102,12 +102,11 @@
 
 }
 
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
-        $('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue').datepicker({
-            changeYear: true,
-            yearRange: "-50:+0"
-        });
+        attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
     });
 </script>

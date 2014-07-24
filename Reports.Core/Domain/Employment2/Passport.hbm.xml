@@ -10,10 +10,10 @@
     <many-to-one name="DocumentType" class="DocumentType" column="DocumentTypeId" foreign-key="FK_Passport_DocumentType" index="Passport_DocumentType"  not-null="true"/>
     <property name="InternalPassportSeries" length="4" not-null="true"/>
     <property name="InternalPassportNumber" length="6" not-null="true"/>
-    <property name="InternalPassportDateOfIssue" not-null="true"/>
+    <property name="InternalPassportDateOfIssue" not-null="false"/>
     <property name="InternalPassportIssuedBy" length="150" not-null="true"/>
     <property name="InternalPassportSubdivisionCode" length="7" not-null="true"/>
-    <property name="RegistrationDate" not-null="true"/>
+    <property name="RegistrationDate" not-null="false"/>
     <property name="ZipCode" length="6" not-null="true"/>
     <property name="Region" length="50" not-null="false"/>
     <property name="District" length="50" not-null="false"/>

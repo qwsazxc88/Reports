@@ -180,6 +180,7 @@
     <Content Include="Scripts\mustache.js" />
     <Content Include="Scripts\TableSort.js" />
     <Content Include="Scripts\TerraGraphicsShortNameDialog.js" />
+    <Content Include="Scripts\UIHelpers.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
