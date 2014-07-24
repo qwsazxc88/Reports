@@ -29,16 +29,16 @@ namespace Reports.Core.Domain
         public virtual bool IsLiable { get; set; } //ok
         public virtual string RequestNumber { get; set; } //ok
 
-        public bool? ManagerApprovalStatus { get; set; }
-        public User ApprovingManager { get; set; }
-        public string ManagerRejectionReason { get; set; }
+        public virtual bool? ManagerApprovalStatus { get; set; }
+        public virtual User ApprovingManager { get; set; }
+        public virtual string ManagerRejectionReason { get; set; }
 
-        public bool? HigherManagerApprovalStatus { get; set; }
-        public User ApprovingHigherManager { get; set; }
-        public string HigherManagerRejectionReason { get; set; }
+        public virtual bool? HigherManagerApprovalStatus { get; set; }
+        public virtual User ApprovingHigherManager { get; set; }
+        public virtual string HigherManagerRejectionReason { get; set; }
 
-        public User RejectingChief { get; set; }
-        public string ChiefRejectionReason { get; set; }
+        public virtual User RejectingChief { get; set; }
+        public virtual string ChiefRejectionReason { get; set; }
 
         #endregion
 
