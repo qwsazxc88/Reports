@@ -18,7 +18,7 @@
     <property name="IsMale" not-null="false"/>
     <many-to-one name="Citizenship" class="Country" column="CitizenshipId" foreign-key="FK_GeneralInfo_Citizenship" index="GeneralInfo_Citizenship"  not-null="false"/>
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_GeneralInfo_InsuredPersonType" index="GeneralInfo_InsuredPersonType"  not-null="false"/>
-    <property name="DateOfBirth" not-null="true"/>
+    <property name="DateOfBirth" not-null="false"/>
     <property name="RegionOfBirth" length="50" not-null="false"/>
     <property name="DistrictOfBirth" length="50" not-null="false"/>
     <property name="CityOfBirth" length="50" not-null="true"/>

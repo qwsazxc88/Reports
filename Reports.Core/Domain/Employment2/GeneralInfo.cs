@@ -21,7 +21,7 @@ namespace Reports.Core.Domain
         public virtual bool IsMale { get; set; } //ok
         public virtual Country Citizenship { get; set; } //ok
         public virtual InsuredPersonType InsuredPersonType { get; set; } //ok
-        public virtual DateTime DateOfBirth { get; set; } //ok
+        public virtual DateTime? DateOfBirth { get; set; } //ok
         public virtual string RegionOfBirth { get; set; } //ok
         public virtual string DistrictOfBirth { get; set; } //ok
         public virtual string CityOfBirth { get; set; } //ok

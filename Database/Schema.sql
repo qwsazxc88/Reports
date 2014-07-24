@@ -1828,7 +1828,7 @@ create table GeneralInfo (
   IsMale BIT null,
   CitizenshipId INT null,
   InsuredPersonTypeId INT null,
-  DateOfBirth DATETIME not null,
+  DateOfBirth DATETIME null,
   RegionOfBirth NVARCHAR(50) null,
   DistrictOfBirth NVARCHAR(50) null,
   CityOfBirth NVARCHAR(50) not null,
