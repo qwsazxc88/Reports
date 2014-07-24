@@ -244,6 +244,9 @@ alter table HigherEducationDiploma  drop constraint FK_HigherEducationDiploma_Ed
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_OnsiteTraining_Candidate]') AND parent_object_id = OBJECT_ID('OnsiteTraining'))
 alter table OnsiteTraining  drop constraint FK_OnsiteTraining_Candidate
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_OnsiteTraining_Approver]') AND parent_object_id = OBJECT_ID('OnsiteTraining'))
+alter table OnsiteTraining  drop constraint FK_OnsiteTraining_Approver
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionOrder_MissionType]') AND parent_object_id = OBJECT_ID('MissionOrder'))
 alter table MissionOrder  drop constraint FK_MissionOrder_MissionType
 
@@ -574,6 +577,15 @@ alter table Managers  drop constraint FK_Managers_Directorate
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Department]') AND parent_object_id = OBJECT_ID('Managers'))
 alter table Managers  drop constraint FK_Managers_Department
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_ApprovingManager]') AND parent_object_id = OBJECT_ID('Managers'))
+alter table Managers  drop constraint FK_Managers_ApprovingManager
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_ApprovingHigherManager]') AND parent_object_id = OBJECT_ID('Managers'))
+alter table Managers  drop constraint FK_Managers_ApprovingHigherManager
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_RejectingChief]') AND parent_object_id = OBJECT_ID('Managers'))
+alter table Managers  drop constraint FK_Managers_RejectingChief
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Passport_Candidate]') AND parent_object_id = OBJECT_ID('Passport'))
 alter table Passport  drop constraint FK_Passport_Candidate
 
@@ -606,6 +618,9 @@ alter table RequestAttachment  drop constraint FK_ATTACHMENT_USER_ROLE
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_BackgroundCheck_Candidate]') AND parent_object_id = OBJECT_ID('BackgroundCheck'))
 alter table BackgroundCheck  drop constraint FK_BackgroundCheck_Candidate
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_BackgroundCheck_Approver]') AND parent_object_id = OBJECT_ID('BackgroundCheck'))
+alter table BackgroundCheck  drop constraint FK_BackgroundCheck_Approver
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentManager23ToDepartment3_User]') AND parent_object_id = OBJECT_ID('AppointmentManager23ToDepartment3'))
 alter table AppointmentManager23ToDepartment3  drop constraint FK_AppointmentManager23ToDepartment3_User
@@ -1429,11 +1444,11 @@ create table OnsiteTraining (
   Description NVARCHAR(200) not null,
   BeginningDate DATETIME null,
   EndDate DATETIME null,
-  IsComplete BIT not null,
+  IsComplete BIT null,
   ReasonsForIncompleteTraining NVARCHAR(200) null,
   Results NVARCHAR(200) null,
-  IsConfirmed BIT not null,
   Comments NVARCHAR(200) null,
+  ApproverId INT null,
   constraint PK_OnsiteTraining  primary key (Id)
 )
 create table MilitarySpecialityCategory (
@@ -2094,6 +2109,14 @@ create table Managers (
   Bonus DECIMAL(19, 2) null,
   IsLiable BIT not null,
   RequestNumber NVARCHAR(50) null,
+  ManagerApprovalStatus BIT null,
+  ApprovingManagerId INT null,
+  ManagerRejectionReason NVARCHAR(50) null,
+  HigherManagerApprovalStatus BIT null,
+  ApprovingHigherManagerId INT null,
+  HigherManagerRejectionReason NVARCHAR(50) null,
+  RejectingChiefId INT null,
+  ChiefRejectionReason NVARCHAR(50) null,
   constraint PK_Managers  primary key (Id)
 )
 create table Passport (
@@ -2259,6 +2282,8 @@ create table BackgroundCheck (
   PsychiatricAndAddictionTreatment NVARCHAR(250) null,
   Smoking NVARCHAR(250) null,
   Drinking NVARCHAR(250) null,
+  ApprovalStatus BIT null,
+  ApproverId INT null,
   constraint PK_BackgroundCheck  primary key (Id)
 )
 create table AppointmentManager23ToDepartment3 (
@@ -2468,7 +2493,9 @@ alter table MissionComment add constraint FK_MissionComment_User foreign key (Us
 alter table MissionComment add constraint FK_MissionComment_Mission foreign key (MissionId) references Mission
 alter table HigherEducationDiploma add constraint FK_HigherEducationDiploma_Education foreign key (EducationId) references Education
 create index OnsiteTraining_Candidate on OnsiteTraining (CandidateId)
+create index OnsiteTraining_Approver on OnsiteTraining (ApproverId)
 alter table OnsiteTraining add constraint FK_OnsiteTraining_Candidate foreign key (CandidateId) references EmploymentCandidate
+alter table OnsiteTraining add constraint FK_OnsiteTraining_Approver foreign key (ApproverId) references [Users]
 create index MissionOrder_MissionType on MissionOrder (TypeId)
 create index MissionOrder_MissionGoal on MissionOrder (MissionGoalId)
 create index IX_MissionOrder_Secretary_Id on MissionOrder (SecretaryId)
@@ -2677,10 +2704,16 @@ create index Managers_Candidate on Managers (CandidateId)
 create index Managers_Position on Managers (PositionId)
 create index Managers_Directorate on Managers (DirectorateId)
 create index Managers_Department on Managers (DepartmentId)
+create index Managers_ApprovingManager on Managers (ApprovingManagerId)
+create index Managers_ApprovingHigherManager on Managers (ApprovingHigherManagerId)
+create index Managers_RejectingChief on Managers (RejectingChiefId)
 alter table Managers add constraint FK_Managers_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table Managers add constraint FK_Managers_Position foreign key (PositionId) references Position
 alter table Managers add constraint FK_Managers_Directorate foreign key (DirectorateId) references Department
 alter table Managers add constraint FK_Managers_Department foreign key (DepartmentId) references Department
+alter table Managers add constraint FK_Managers_ApprovingManager foreign key (ApprovingManagerId) references [Users]
+alter table Managers add constraint FK_Managers_ApprovingHigherManager foreign key (ApprovingHigherManagerId) references [Users]
+alter table Managers add constraint FK_Managers_RejectingChief foreign key (RejectingChiefId) references [Users]
 create index Passport_Candidate on Passport (CandidateId)
 create index Passport_DocumentType on Passport (DocumentTypeId)
 alter table Passport add constraint FK_Passport_Candidate foreign key (CandidateId) references EmploymentCandidate
@@ -2701,7 +2734,9 @@ alter table MissionAirTicketTypeGradeValue add constraint FK_MissionAirTicketTyp
 create index IX_ATTACHMENT_USER_ROLE_ID on RequestAttachment (CreatorRoleId)
 alter table RequestAttachment add constraint FK_ATTACHMENT_USER_ROLE foreign key (CreatorRoleId) references Role
 create index BackgroundCheck_Candidate on BackgroundCheck (CandidateId)
+create index BackgroundCheck_Approver on BackgroundCheck (ApproverId)
 alter table BackgroundCheck add constraint FK_BackgroundCheck_Candidate foreign key (CandidateId) references EmploymentCandidate
+alter table BackgroundCheck add constraint FK_BackgroundCheck_Approver foreign key (ApproverId) references [Users]
 create index IX_AppointmentManager23ToDepartment3_User on AppointmentManager23ToDepartment3 (ManagerId)
 create index IX_AppointmentManager23ToDepartment3_Department on AppointmentManager23ToDepartment3 (DepartmentId)
 alter table AppointmentManager23ToDepartment3 add constraint FK_AppointmentManager23ToDepartment3_User foreign key (ManagerId) references [Users]

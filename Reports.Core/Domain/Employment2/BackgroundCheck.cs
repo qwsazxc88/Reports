@@ -35,6 +35,10 @@ namespace Reports.Core.Domain
         public virtual string PsychiatricAndAddictionTreatment { get; set; }
         public virtual string Smoking { get; set; }
         public virtual string Drinking { get; set; }
+
+        public virtual bool? ApprovalStatus { get; set; }
+        public virtual User Approver { get; set; }
+
         #endregion
 
         #region Constructors

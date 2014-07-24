@@ -34,6 +34,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
 
+        public bool IsEditable { get; set; }
+
         public ExperienceModel()
         {
             this.Version = 0;

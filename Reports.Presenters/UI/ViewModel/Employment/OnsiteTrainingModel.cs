@@ -23,8 +23,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; } //ok
 
-        [Display(Name = "Обучение пройдено/не пройдено")]
-        public bool IsComplete { get; set; } // возможно, заменить отображение выпадающим списком
+        [Display(Name = "Обучение пройдено")]
+        public bool? IsComplete { get; set; } // возможно, заменить отображение выпадающим списком
 
         [Display(Name = "Причины, по которым обучение не пройдено"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
@@ -33,13 +33,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Результаты обучения"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public string Results { get; set; } //ok
-
-        [Display(Name = "Обучение пройдено/не пройдено - отметка тренера")]
-        public bool IsConfirmed { get; set; } // добавить submit
-
+        
         [Display(Name = "Комментарии"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public string Comments { get; set; } //ok
+
+        public string ApproverName { get; set; }
+
+        public bool IsEditable { get; set; }
 
         public OnsiteTrainingModel()
         {

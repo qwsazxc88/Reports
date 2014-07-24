@@ -559,7 +559,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Description = entity.Description;
                 model.EndDate = entity.EndDate;
                 model.IsComplete = entity.IsComplete;
-                model.IsConfirmed = entity.IsConfirmed;
                 model.ReasonsForIncompleteTraining = entity.ReasonsForIncompleteTraining;
                 model.Results = entity.Results;
                 model.Type = entity.Type;
@@ -1334,7 +1333,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Description = viewModel.Description;
             entity.EndDate = viewModel.EndDate;
             entity.IsComplete = viewModel.IsComplete;
-            entity.IsConfirmed = viewModel.IsConfirmed;
             entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
             entity.Results = viewModel.Results;
             entity.Type = viewModel.Type;

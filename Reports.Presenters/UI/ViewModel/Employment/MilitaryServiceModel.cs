@@ -79,6 +79,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int? ConscriptionStatus { get; set; } //ok
         public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
 
+        public bool IsEditable { get; set; }
+
         public MilitaryServiceModel()
         {
             this.Version = 0;

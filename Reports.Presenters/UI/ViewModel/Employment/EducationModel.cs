@@ -19,6 +19,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Повышение квалификации")]
         public IList<TrainingDto> Training { get; set; } //ok
 
+        public bool IsEditable { get; set; }
+
         public EducationModel()
         {
             this.Version = 0;
