@@ -901,7 +901,9 @@
     <EmbeddedResource Include="Domain\Employment2\MilitaryService.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
@@ -917,7 +919,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml" />
+    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\PersonnelManagers.hbm.xml" />
