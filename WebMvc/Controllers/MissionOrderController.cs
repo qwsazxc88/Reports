@@ -21,8 +21,8 @@ using System.Web.Routing;
 
 namespace WebMvc.Controllers
 {
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | 
-        UserRole.Director | UserRole.Secretary | UserRole.Findep)]
+    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
     public class MissionOrderController : BaseController
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
@@ -56,6 +56,8 @@ namespace WebMvc.Controllers
             }
         }
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+            UserRole.Director | UserRole.Secretary | UserRole.Findep )]
         public ActionResult Index()
         {
             var model = RequestBl.GetMissionOrderListModel();
@@ -108,7 +110,6 @@ namespace WebMvc.Controllers
                 }
             }
         }
-
         protected bool ValidateModel(MissionOrderListModel model)
         {
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
@@ -138,6 +139,8 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+           UserRole.Director | UserRole.Secretary | UserRole.Findep)]
         public ActionResult MissionOrderEdit(int id,int? userId)
         {
             MissionOrderEditModel model = RequestBl.GetMissionOrderEditModel(id,userId);
@@ -326,10 +329,15 @@ namespace WebMvc.Controllers
         {
             return GetPrintForm(id, "PrintPathList");
         }
-       
 
         [HttpGet]
-        public ActionResult GetPrintForm(int id,string actionName)
+        public ActionResult GetPrintForm(int id, string actionName)
+        {
+            return GetPrintForm(id, actionName, false);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintForm(int id, string actionName, bool isLandscape)
         {
             string filePath = null;
             try
@@ -348,7 +356,12 @@ namespace WebMvc.Controllers
                 var authCookie = Request.Cookies[cookieName];
                 if (authCookie == null || authCookie.Value == null)
                     throw new ArgumentException("Ошибка авторизации.");
-                argumrnts.AppendFormat("{0} --cookie {1} {2}",
+                if(isLandscape)
+                    argumrnts.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
+                    GetConverterCommandParam(id, actionName)
+                    , cookieName, authCookie.Value);
+                else
+                    argumrnts.AppendFormat("{0} --cookie {1} {2}",
                     GetConverterCommandParam(id,actionName)
                     , cookieName, authCookie.Value);
                 argumrnts.AppendFormat(" \"{0}\"", filePath);
@@ -358,9 +371,10 @@ namespace WebMvc.Controllers
                     {
                         FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
                         Arguments = argumrnts.ToString(),
-                        UseShellExecute = true
+                        UseShellExecute = true,
                     },
-                    EnableRaisingEvents = true
+                    EnableRaisingEvents = true,
+                    
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
@@ -438,7 +452,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
         public ActionResult MissionReportsList()
         {
             var model = RequestBl.GetMissionReportsListModel();
@@ -501,7 +515,7 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep)]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager | UserRole.Findep | UserRole.Archivist)]
         [HttpGet]
         public ActionResult MissionReportEdit(int id/*, int? userId*/)
         {
@@ -520,7 +534,7 @@ namespace WebMvc.Controllers
             //}
 
             string error;
-            if (!RequestBl.SaveMissionReportEditModel(model, out error))
+            if (!RequestBl.SaveMissionReportEditModel(model, out error) || !string.IsNullOrEmpty(error))
             {
                 if (model.ReloadPage)
                 {
@@ -532,7 +546,7 @@ namespace WebMvc.Controllers
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
             }
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(error) || AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
                 return View(model);
             return RedirectToAction("MissionReportsList");
         }
@@ -1323,6 +1337,125 @@ namespace WebMvc.Controllers
             }
             var jsonSerializer = new JavaScriptSerializer();
             string jsonString = jsonSerializer.Serialize(result);
+            return Content(jsonString);
+        }
+
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Employee)]
+        public ContentResult SaveDocumentsToArchive(DeletePbRecordModel model)
+        {
+            PbRecordSaveDialogErrorModel result = new PbRecordSaveDialogErrorModel { Error = string.Empty };
+            try
+            {
+                //result = new DialogErrorModel{Error = "Тестовая ошибка"};
+                RequestBl.SaveDocumentsToArchive(model);
+                //result.DocumentVersion = docVersion;
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveDocumentsToArchive:", ex);
+                string error = ex.GetBaseException().Message;
+                result = new PbRecordSaveDialogErrorModel
+                {
+                    Error = string.Format("Ошибка: {0}", error)
+                };
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(result);
+            return Content(jsonString);
+        }
+
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ActionResult PrintArchivistAddressDialog()
+        {
+            try
+            {
+                PrintArchivistAddressModel model = new PrintArchivistAddressModel();
+                RequestBl.SetPrintArchivistAddressModel(model);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("PrintArchivistAddressDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        [HttpGet]
+        public ActionResult GetPrintArchivistAddress(int Id)
+        {
+            //string args = string.Format(@"{0}",Id);
+            return GetPrintForm(Id, "PrintArchivistAddress",true);
+        }
+        [HttpGet]
+        public ActionResult PrintArchivistAddress(int id)
+        {
+            PrintArchivistAddressFormModel model = RequestBl.GetPrintArchivistAddressFormModel(id);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult AddCostAttachmentDialog(int id)
+        {
+            try
+            {
+                CostAddAttachmentModel model = new CostAddAttachmentModel
+                {
+                    CostId = id,
+                };
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("CostAttachmentDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        [HttpPost]
+        public ContentResult SaveCostAttachment(int id,string qqFile)
+        {
+            bool saveResult;
+            string error;
+            int resultId = 0;
+            try
+            {
+                var length = Request.ContentLength;
+                var bytes = new byte[length];
+                Request.InputStream.Read(bytes, 0, length);
+
+                saveResult = true;
+                if (length > MaxFileSize)
+                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                else
+                {
+                    var model = new SaveAttacmentModel
+                                    {
+                                        EntityId = id,
+                                        EntityTypeId = RequestAttachmentTypeEnum.MissionReportCost,
+                                        Description = string.Empty,
+                                        FileDto = new UploadFileDto
+                                        {
+                                            Context = bytes,
+                                            FileName = qqFile,
+                                            //ContextType = Request.Content,
+                                        }
+                                    };
+                    saveResult = RequestBl.SaveUniqueAttachment(model);
+                    error = model.Error;
+                    resultId = model.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveCostAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult,Id = resultId });
             return Content(jsonString);
         }
     }

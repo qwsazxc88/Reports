@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Reports.Core.Domain;
+using Reports.Core.Dto;
 using Reports.Core.Enum;
 
 namespace Reports.Core.Dao
@@ -10,5 +11,7 @@ namespace Reports.Core.Dao
         IList<RequestAttachment> FindManyByRequestIdAndTypeId(int id, RequestAttachmentTypeEnum type);
         int GetAttachmentsCount(int entityId);
         int DeleteForEntityId(int entityId);
+        IList<IdEntityIdDto> LoadAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
+        int DeleteAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
     }
 }

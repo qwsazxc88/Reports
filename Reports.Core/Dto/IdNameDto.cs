@@ -33,5 +33,9 @@ namespace Reports.Core.Dto
         public List<decimal> userStats { get; set; }
         public List<int> userStatsDays { get; set; }
     }
+    public class IdNameAddressDto : IdNameDto
+    {
+        public string Address { get; set; }
+    }
     
 }

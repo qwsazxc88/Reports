@@ -12,12 +12,16 @@
         public decimal? AccountantSum { get; set; }
         public int CostId { get; set; }
         public bool IsEditable { get; set; }
+        public bool IsHidden { get; set; }
         public bool IsDeleteAvailable { get; set; }
         public bool IsTransactionAvailable { get; set; }
         public TransactionDto[] Trans { get; set; }
         //public JsonTransList Trans { get; set; }
 
         public int SortOrder { get; set; }
+        public int ScanId { get; set; }
+        public bool AddScanAvailable { get; set; }
+        public bool DeleteScanAvailable { get; set; }
     }
 
     public class TransactionDto
@@ -35,6 +39,11 @@
     {
         public CostDto[] List { get; set; }
         public bool IsTransactionsHidden { get; set; }
+    }
+    public class IdEntityIdDto
+    {
+        public int Id { get; set; }
+        public int EntityId { get; set; }
     }
 
     //public class JsonTransList

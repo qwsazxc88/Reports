@@ -21,6 +21,7 @@ namespace Reports.Core
         Secretary = 1024,
         Findep = 2048,
         StaffManager = 4096,
+        Archivist = 8192,
     }
     public class ReportRoleConstants
     {
@@ -36,6 +37,7 @@ namespace Reports.Core
         public const string Secretary = "1024";
         public const string Findep = "2048";
         public const string StaffManager = "4096";
+        public const string Archivist = "8192";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -58,6 +60,7 @@ namespace Reports.Core
                              {UserRole.Secretary, Secretary},
                              {UserRole.Findep, Findep},
                              {UserRole.StaffManager, StaffManager},
+                             {UserRole.Archivist, Archivist},
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}

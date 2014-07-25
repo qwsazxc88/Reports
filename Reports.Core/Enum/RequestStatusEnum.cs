@@ -43,14 +43,14 @@
         ChildVacation = 5,
         MissionReport = 6,
         AppointmentReport = 7,
-        //Mission = 8,
+        MissionReportCost = 8,
 
         // Order Scans
 
         DismissalOrderScan = 103,
         VacationOrderScan = 104,
         ChildVacationOrderScan = 105,
-        MissionOrderScan = 108
+        MissionOrderScan = 118
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

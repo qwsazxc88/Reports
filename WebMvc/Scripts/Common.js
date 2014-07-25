@@ -163,5 +163,12 @@ function ValidateInt(control) {
     }
     return result;
 }
-
+function IsFieldNotEmpty(control) {
+    clearControlErrors(control);
+    if (control.val() == '') {
+        addControlError(control, 'Обязательное поле');
+        return false;
+    }
+    return true;
+}
   

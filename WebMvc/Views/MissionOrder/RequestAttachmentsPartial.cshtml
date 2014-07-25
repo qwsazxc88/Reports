@@ -10,9 +10,9 @@
                 <input type="button" value="Прикрепить скан служебной записки к Авансовому отчету" @if (!Model.IsAddAvailable)
                                                              { <text>style = "display:none"</text>;
                                                              } id="AddAttachment" onclick="OnAddAttachment('Служебная записка к Авансовому отчету');"/>
-                <input type="button" value="Прикрепить файл" @if (!Model.IsAddAvailable)
+               @* <input type="button" value="Прикрепить файл" @if (!Model.IsAddAvailable)
                                                              { <text>style = "display:none"</text>;
-                                                             } id="AddAttachment" onclick="OnAddAttachment('');"/>
+                                                             } id="AddAttachment" onclick="OnAddAttachment('');"/>*@
             </td>
         </tr>
          @*<tr>

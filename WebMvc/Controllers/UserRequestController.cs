@@ -17,8 +17,8 @@ namespace WebMvc.Controllers
 {
     [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | 
-        UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager | 
-        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep)]
+        UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
     public class UserRequestController : BaseController
     {
         

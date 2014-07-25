@@ -1,0 +1,1 @@
+﻿alter table [dbo].[MissionPurchaseBookRecord] alter column [SumNds] decimal(19,5) null
