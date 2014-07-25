@@ -974,7 +974,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel)
         {
             entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.GeneralInfo = entity;
             entity.Citizenship = CountryDao.Load(viewModel.CitizenshipId);
             entity.CityOfBirth = viewModel.CityOfBirth;
@@ -1035,7 +1035,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Passport = entity;
             entity.City = viewModel.City;
             entity.District = viewModel.District;
@@ -1058,7 +1058,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetEducationEntity(Education entity, EducationModel viewModel)
         {
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Education = entity;
 
             if (entity.Certifications == null)
@@ -1137,7 +1137,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetFamilyEntity(Family entity, FamilyModel viewModel)
         {
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Family = entity;
             
             entity.Cohabitants = viewModel.Cohabitants;
@@ -1207,7 +1207,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
         {
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.MilitaryService = entity;
             entity.CombatFitness = viewModel.CombatFitness;
             entity.Commissariat = viewModel.Commissariat;
@@ -1231,8 +1231,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         protected void SetExperienceEntity(Experience entity, ExperienceModel viewModel)
-        {            
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+        {
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Experience = entity;
 
             if (entity.ExperienceItems == null)
@@ -1263,7 +1263,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Contacts = entity;
             entity.City = viewModel.City;
             entity.District = viewModel.District;
@@ -1282,7 +1282,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.AutomobileLicensePlateNumber = viewModel.AutomobileLicensePlateNumber;
             entity.AutomobileMake = viewModel.AutomobileMake;
             entity.AverageSalary = viewModel.AverageSalary;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.BackgroundCheck = entity;
             entity.ChronicalDiseases = viewModel.ChronicalDiseases;
             entity.Drinking = viewModel.Drinking;
@@ -1327,7 +1327,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)
         {
             entity.BeginningDate = viewModel.BeginningDate;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.OnsiteTraining = entity;
             entity.Comments = viewModel.Comments;
             entity.Description = viewModel.Description;
@@ -1341,7 +1341,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
         {
             entity.Bonus = viewModel.Bonus;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
             entity.DailySalaryBasis = viewModel.DailySalaryBasis;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
@@ -1365,7 +1365,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
             entity.AreaAddition = viewModel.AreaAddition;
             entity.AreaMultiplier = viewModel.AreaMultiplier;
-            entity.Candidate = EmploymentCommonDao.GetCandidateByUserId(viewModel.UserId);
+            entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.PersonnelManagers = entity;
             entity.Candidate.User.Grade = viewModel.Grade;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
@@ -1385,6 +1385,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PersonalAccount = viewModel.PersonalAccount;
             entity.PersonalAccountContractor = viewModel.PersonalAccountContractor;
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+        }
+
+        protected EmploymentCandidate GetCandidate(int userId)
+        {
+            EmploymentCandidate candidate = EmploymentCommonDao.GetCandidateByUserId(userId);
+            if (candidate == null)
+            {
+                EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(new EmploymentCandidate { User = UserDao.Get(userId) });
+                candidate = EmploymentCommonDao.GetCandidateByUserId(userId);
+            }
+            return candidate;
         }
 
         #endregion
