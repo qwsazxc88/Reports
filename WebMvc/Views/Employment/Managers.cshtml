@@ -12,15 +12,15 @@
     <legend>Руководители</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
-            @Html.DropDownListFor(m => m.PositionId, new SelectList(Model.PositionItems, "Id", "Name"))
+            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.DirectorateId)&nbsp;@Html.ValidationMessageFor(m => m.DirectorateId)<br />
-            @Html.DropDownListFor(m => m.DirectorateId, new SelectList(Model.DirectorateItems, "Id", "Name"))
+            @Html.DropDownListFor(m => m.DirectorateId, Model.DirectorateItems)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.DepartmentId)&nbsp;@Html.ValidationMessageFor(m => m.DepartmentId)<br />
-            @Html.DropDownListFor(m => m.DepartmentId, new SelectList(Model.DepartmentItems, "Id", "Name"))
+            @Html.DropDownListFor(m => m.DepartmentId, Model.DepartmentItems)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />

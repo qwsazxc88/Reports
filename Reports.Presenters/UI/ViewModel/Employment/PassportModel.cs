@@ -11,7 +11,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Вид документа"),
             Required(ErrorMessage = "Обязательное поле")]
         public int DocumentTypeId { get; set;}
-        public IEnumerable<IdNameDto> DocumentTypeItems { get; set; }
+        public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
         [Display(Name = "Серия", Prompt = "4 цифры"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),

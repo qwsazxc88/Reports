@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
@@ -11,16 +12,16 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Должность"),
             Required(ErrorMessage = "Обязательное поле")]
         public int PositionId { get; set; }
-        public IEnumerable<IdNameDto> PositionItems { get; set; }
+        public IEnumerable<SelectListItem> PositionItems { get; set; }
 
         [Display(Name = "Дирекция"),
             Required(ErrorMessage = "Обязательное поле")]
         public int DirectorateId { get; set; }
-        public IEnumerable<IdNameDto> DirectorateItems { get; set; }
+        public IEnumerable<SelectListItem> DirectorateItems { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public int DepartmentId { get; set; }
-        public IEnumerable<IdNameDto> DepartmentItems { get; set; }
+        public IEnumerable<SelectListItem> DepartmentItems { get; set; }
 
         [Display(Name = "Условия приема на работу"),
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]

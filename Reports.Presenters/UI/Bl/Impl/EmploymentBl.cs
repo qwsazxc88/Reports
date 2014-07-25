@@ -646,6 +646,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // TODO: EMPL заменить реализацией
             RosterModel model = new RosterModel();
             IList<EmploymentCandidate> candidates = EmploymentCandidateDao.LoadAll();
+            SelectListItem tempItem = null;
             model.Roster = candidates.ToList<EmploymentCandidate>().ConvertAll<CandidateDto>(x => new CandidateDto
             {
                 ContractDate = x.PersonnelManagers != null ? x.PersonnelManagers.ContractDate : null,
@@ -667,7 +668,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Name = x.GeneralInfo != null ? x.GeneralInfo.LastName + " " + x.GeneralInfo.FirstName + " " + x.GeneralInfo.Patronymic : String.Empty,
                 Position = x.Managers != null ? x.Managers.Position.Name : String.Empty,
                 ProbationaryPeriod = x.Managers != null ? x.Managers.ProbationaryPeriod : String.Empty,
-                //Status = Get,
+                Status = x.GeneralInfo != null ?
+                    ((tempItem = GetStatuses().Where(statusItem => statusItem.Value == x.GeneralInfo.Status.ToString()).FirstOrDefault()) != null ? tempItem.Text : string.Empty)
+                    : string.Empty,
                 Schedule = x.Managers != null ? x.Managers.Schedule : String.Empty,
                 WorkCity = x.Managers != null ? x.Managers.WorkCity : String.Empty
             });
@@ -798,18 +801,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public void LoadDictionaries(GeneralInfoModel model)
         {
-            // Страны/Гражданства
-            model.CitizenshipItems = CountryDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(x => x.Id);
-            model.InsuredPersonTypeItems = InsuredPersonTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(item => item.Id);
-            model.StatusItems = new List<IdNameDto>
-            {
-                new IdNameDto {Id = 1, Name = "Резидент"},
-                new IdNameDto {Id = 2, Name = "Нерезидент"}
-            };
+            model.CitizenshipItems = GetCountries();
+            model.InsuredPersonTypeItems = GetInsuredPersonTypes();
+            model.StatusItems = GetStatuses();
         }
         public void LoadDictionaries(PassportModel model)
         {
-            model.DocumentTypeItems = DocumentTypeDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(x => x.Id);
+            model.DocumentTypeItems = GetDocumentTypes();
         }
         public void LoadDictionaries(EducationModel model)
         {
@@ -821,8 +819,74 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(MilitaryServiceModel model)
         {
-#region Ranks
-            model.RankItems = new List<SelectListItem>
+            model.RankItems = GetRanks();
+            model.RegistrationExpirationItems = GetRegistrationExpirations();
+            model.PersonnelCategoryItems = GetPersonnelCategories();
+            model.PersonnelTypeItems = GetPersonnelTypes();
+            model.ConscriptionStatusItems = GetConscriptionStatuses();
+        }
+        public void LoadDictionaries(ExperienceModel model)
+        {
+
+        }
+        public void LoadDictionaries(ContactsModel model)
+        {
+
+        }
+        public void LoadDictionaries(BackgroundCheckModel model)
+        {
+
+        }
+        public void LoadDictionaries(OnsiteTrainingModel model)
+        {
+
+        }
+        public void LoadDictionaries(ManagersModel model)
+        {
+            model.PositionItems = GetPositions();
+            model.DirectorateItems = GetDirectorates();
+            model.DepartmentItems = GetDepartments();
+        }
+        public void LoadDictionaries(PersonnelManagersModel model)
+        {
+
+        }
+        public void LoadDictionaries(RosterModel model)
+        {
+
+        }
+        public void LoadDictionaries(SignersModel model)
+        {
+
+        }
+
+        public IEnumerable<SelectListItem> GetCountries()
+        {
+            return CountryDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetInsuredPersonTypes()
+        {
+            return InsuredPersonTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetStatuses()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Резидент", Value = "1"},
+                new SelectListItem {Text = "Нерезидент", Value = "2"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetDocumentTypes()
+        {
+            return DocumentTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetRanks()
+        {
+            return new List<SelectListItem>
             {
                 new SelectListItem {Text = "Подлежит призыву", Value = "0"},
                 new SelectListItem {Text = "Рядовой", Value = "1"},
@@ -862,14 +926,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Адмирал флота", Value = "35"},
                 new SelectListItem {Text = "Маршал РФ", Value = "36"}
             };
-#endregion
-            model.RegistrationExpirationItems = new List<SelectListItem>
+        }
+
+        public IEnumerable<SelectListItem> GetRegistrationExpirations()
+        {
+            return new List<SelectListItem>
             {
                 new SelectListItem {Text = "-", Value = "0"},
                 new SelectListItem {Text = "Снят с воинского учета по возрасту", Value = "1"},
                 new SelectListItem {Text = "Снят с воинского учета по состоянию здоровья", Value = "2"}
             };
-            model.PersonnelCategoryItems = new List<SelectListItem>
+        }
+
+        public IEnumerable<SelectListItem> GetPersonnelCategories()
+        {
+            return new List<SelectListItem>
             {
                 new SelectListItem {Text = "", Value = "0"},
                 new SelectListItem {Text = "Руководители", Value = "1"},
@@ -877,53 +948,43 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Другие служащие", Value = "3"},
                 new SelectListItem {Text = "Рабочие", Value = "4"}
             };
-            model.PersonnelTypeItems = new List<SelectListItem>
+        }
+
+        public IEnumerable<SelectListItem> GetPersonnelTypes()
+        {
+            return new List<SelectListItem>
             {
                 new SelectListItem {Text = "", Value = "0"},
                 new SelectListItem {Text = "Офицеры", Value = "1"},
                 new SelectListItem {Text = "Прочие (прапорщики, солдаты, мичманы, сержанты, матросы...)", Value = "2"}
             };
-            model.ConscriptionStatusItems = new List<SelectListItem>
+        }
+
+        public IEnumerable<SelectListItem> GetConscriptionStatuses()
+        {
+            return new List<SelectListItem>
             {
                 new SelectListItem {Text = "Не подлежит", Value = "1"},
                 new SelectListItem {Text = "Подлежит", Value = "2"},
                 new SelectListItem {Text = "Ограниченно годен", Value = "3"}
             };
         }
-        public void LoadDictionaries(ExperienceModel model)
-        {
 
-        }
-        public void LoadDictionaries(ContactsModel model)
+        public IEnumerable<SelectListItem> GetPositions()
         {
+            return PositionDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
 
-        }
-        public void LoadDictionaries(BackgroundCheckModel model)
+        public IEnumerable<SelectListItem> GetDirectorates()
         {
+            return DepartmentDao.LoadAllSorted().Where(item => item.ItemLevel == 3).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
 
-        }
-        public void LoadDictionaries(OnsiteTrainingModel model)
+        public IEnumerable<SelectListItem> GetDepartments()
         {
+            return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
 
-        }
-        public void LoadDictionaries(ManagersModel model)
-        {
-            model.PositionItems = PositionDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(x => x.Id);
-            model.DirectorateItems = DepartmentDao.LoadAllSorted().Where(item => item.ItemLevel == 3).ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(x => x.Id);
-            model.DepartmentItems = DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).OrderBy(x => x.Id);
-        }
-        public void LoadDictionaries(PersonnelManagersModel model)
-        {
-
-        }
-        public void LoadDictionaries(RosterModel model)
-        {
-
-        }
-        public void LoadDictionaries(SignersModel model)
-        {
-
-        }
 
         #endregion
 

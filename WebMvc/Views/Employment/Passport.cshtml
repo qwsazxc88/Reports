@@ -12,7 +12,7 @@
     <legend>Паспорт РФ</legend>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
-            @Html.DropDownListFor(m => m.DocumentTypeId, new SelectList(Model.DocumentTypeItems, "Id", "Name"))
+            @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />

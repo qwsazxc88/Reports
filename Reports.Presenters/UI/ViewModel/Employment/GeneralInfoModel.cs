@@ -34,12 +34,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Гражданство")]
         public int CitizenshipId { get; set; } //ok
-        public IEnumerable<IdNameDto> CitizenshipItems { get; set; }
+        public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
         
         [Display(Name = "Вид застрахованного лица"),
             Required(ErrorMessage = "Обязательное поле")]
         public int InsuredPersonTypeId { get; set; } //ok
-        public IEnumerable<IdNameDto> InsuredPersonTypeItems { get; set; }
+        public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
@@ -92,7 +92,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Статус")]
         public int StatusId { get; set; }
-        public IEnumerable<IdNameDto> StatusItems { get; set; } //ok
+        public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
         
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok

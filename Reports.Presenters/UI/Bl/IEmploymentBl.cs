@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
 using Reports.Presenters.UI.ViewModel.Employment2;
 
 namespace Reports.Presenters.UI.Bl
@@ -32,6 +34,19 @@ namespace Reports.Presenters.UI.Bl
         void LoadDictionaries(PersonnelManagersModel model);
         void LoadDictionaries(RosterModel model);
         void LoadDictionaries(SignersModel model);
+
+        IEnumerable<SelectListItem> GetCountries();
+        IEnumerable<SelectListItem> GetInsuredPersonTypes();
+        IEnumerable<SelectListItem> GetStatuses();
+        IEnumerable<SelectListItem> GetDocumentTypes();
+        IEnumerable<SelectListItem> GetRanks();
+        IEnumerable<SelectListItem> GetRegistrationExpirations();
+        IEnumerable<SelectListItem> GetPersonnelCategories();
+        IEnumerable<SelectListItem> GetPersonnelTypes();
+        IEnumerable<SelectListItem> GetConscriptionStatuses();
+        IEnumerable<SelectListItem> GetPositions();
+        IEnumerable<SelectListItem> GetDirectorates();
+        IEnumerable<SelectListItem> GetDepartments();
 
         void SetGeneralInfoModel(GeneralInfoModel model, bool hasError);
         void SetPassportModel(PassportModel model, bool hasError);        
