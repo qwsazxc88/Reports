@@ -867,7 +867,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public IEnumerable<SelectListItem> GetInsuredPersonTypes()
         {
-            return InsuredPersonTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+            return InsuredPersonTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
         }
 
         public IEnumerable<SelectListItem> GetStatuses()
