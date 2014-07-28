@@ -196,6 +196,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.Archivist);
             if ((user.UserRole & UserRole.Candidate) > 0 && !roles.Contains(UserRole.Candidate))
                 roles.Add(UserRole.Candidate);
+            if ((user.UserRole & UserRole.Security) > 0 && !roles.Contains(UserRole.Security))
+                roles.Add(UserRole.Security);
+            if ((user.UserRole & UserRole.Trainer) > 0 && !roles.Contains(UserRole.Trainer))
+                roles.Add(UserRole.Trainer);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
