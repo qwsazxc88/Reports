@@ -40,10 +40,10 @@
                         {
                             <tr>
                                 <td>
-                                    @Model.ExperienceItems[i].BeginningDate
+                                    @(Model.ExperienceItems[i].BeginningDate.HasValue ? @Model.ExperienceItems[i].BeginningDate.Value.ToShortDateString() : string.Empty)
                                 </td>
                                 <td>
-                                    @Model.ExperienceItems[i].EndDate
+                                    @(Model.ExperienceItems[i].EndDate.HasValue ? @Model.ExperienceItems[i].EndDate.Value.ToShortDateString() : string.Empty)
                                 </td>
                                 <td>
                                     @Model.ExperienceItems[i].Company
@@ -143,8 +143,8 @@
 <div id="add-experience-item-dialog" title="Добавление сведений о трудовой деятельности">
     @using (Html.BeginForm("ExperienceAddExperienceItem", "Employment", FormMethod.Post))
     {
-        <label for="BeginningDate" style="display:block;">Начало работы</label><input type="text" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="EndDate" style="display:block;">Окончание работы</label><input type="text" name="EndDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="BeginningDate" style="display:block;">Начало работы</label><input type="text" id="BeginningDate" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="EndDate" style="display:block;">Окончание работы</label><input type="text" id="EndDate" name="EndDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Company" style="display:block;">Организация</label><input type="text" name="Company" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Position" style="display:block;">Должность</label><input type="text" name="Position" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label><input type="text" name="CompanyContacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
@@ -161,7 +161,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
-        attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue'), "-60:+0", true);
+        attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
 
         var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
         {
