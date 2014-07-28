@@ -9,6 +9,7 @@ using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
@@ -34,6 +35,7 @@ namespace WebMvc.Controllers
 
         // General Info
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult GeneralInfo(int? userId)
         {
             var model = EmploymentBl.GetGeneralInfoModel(userId);
@@ -41,6 +43,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
@@ -58,6 +61,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult GeneralInfoAddNameChange(NameChangeDto itemToAdd)
         {
             string error = String.Empty;
@@ -70,6 +74,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd)
         {
             string error = String.Empty;
@@ -83,6 +88,7 @@ namespace WebMvc.Controllers
 
         // Passport
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Passport(int? userId)
         {
             var model = EmploymentBl.GetPassportModel(userId);
@@ -90,6 +96,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Passport(PassportModel model)
         {
             string error = String.Empty;
@@ -108,6 +115,7 @@ namespace WebMvc.Controllers
 
         // Education
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Education(int? userId)
         {
             var model = EmploymentBl.GetEducationModel(userId);
@@ -115,6 +123,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Education(EducationModel model)
         {
             string error = String.Empty;
@@ -132,6 +141,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult EducationAddCertification(CertificationDto itemToAdd)
         {
             string error = String.Empty;
@@ -144,6 +154,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult EducationAddHigherEducationDiploma(HigherEducationDiplomaDto itemToAdd)
         {
             string error = String.Empty;
@@ -156,6 +167,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult EducationAddPostGraduateEducationDiploma(PostGraduateEducationDiplomaDto itemToAdd)
         {
             string error = String.Empty;
@@ -168,6 +180,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult EducationAddTraining(TrainingDto itemToAdd)
         {
             string error = String.Empty;
@@ -181,6 +194,7 @@ namespace WebMvc.Controllers
 
         // Family
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Family(int? userId)
         {
             var model = EmploymentBl.GetFamilyModel(userId);
@@ -188,6 +202,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Family(FamilyModel model)
         {
             string error = String.Empty;
@@ -205,6 +220,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult FamilyAddChild (FamilyMemberDto itemToAdd)
         {
             string error = String.Empty;
@@ -225,6 +241,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult MilitaryService(MilitaryServiceModel model)
         {
             string error = String.Empty;
@@ -243,6 +260,7 @@ namespace WebMvc.Controllers
 
         // Experience
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Experience(int? userId)
         {
             var model = EmploymentBl.GetExperienceModel(userId);
@@ -250,6 +268,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Experience(ExperienceModel model)
         {
             string error = String.Empty;
@@ -267,6 +286,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult ExperienceAddExperienceItem(ExperienceItemDto itemToAdd)
         {
             string error = String.Empty;
@@ -280,6 +300,7 @@ namespace WebMvc.Controllers
 
         // Contacts
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Contacts(int? userId)
         {
             var model = EmploymentBl.GetContactsModel(userId);
@@ -287,6 +308,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Contacts(ContactsModel model)
         {
             string error = String.Empty;
@@ -305,6 +327,7 @@ namespace WebMvc.Controllers
 
         // Background Check
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult BackgroundCheck(int? userId)
         {
             var model = EmploymentBl.GetBackgroundCheckModel(userId);
@@ -312,6 +335,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, string cmd = "")
         {
             string error = String.Empty;
@@ -325,6 +349,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult BackgroundCheckAddReference(ReferenceDto itemToAdd)
         {
             string error = String.Empty;
@@ -338,6 +363,7 @@ namespace WebMvc.Controllers
 
         // Onsite Training
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult OnsiteTraining(int? userId)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(userId);
@@ -345,6 +371,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Trainer)]
         public ActionResult OnsiteTraining(OnsiteTrainingModel model)
         {
             string error = String.Empty;
@@ -359,6 +386,7 @@ namespace WebMvc.Controllers
 
         // Application Letter
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult ApplicationLetter(int? userId)
         {
             var model = new ApplicationLetterModel();
@@ -366,6 +394,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult ApplicationLetter(ApplicationLetterModel model, string cmd = "")
         {
             // EmploymentBl.SaveModel<ApplicationLetterModel, ApplicationLetter>(model, out error);
@@ -374,6 +403,7 @@ namespace WebMvc.Controllers
 
         // Filled out by managers
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Managers(int? userId)
         {
             var model = EmploymentBl.GetManagersModel(userId);
@@ -381,6 +411,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Manager)]
         public ActionResult Managers(ManagersModel model)
         {
             string error = String.Empty;
@@ -395,6 +426,7 @@ namespace WebMvc.Controllers
 
         // Filled out by personnel managers
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult PersonnelManagers(int? userId)
         {
             var model = EmploymentBl.GetPersonnelManagersModel(userId);
@@ -402,6 +434,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult PersonnelManagers(PersonnelManagersModel model)
         {
             string error = String.Empty;
@@ -416,6 +449,7 @@ namespace WebMvc.Controllers
 
         // Employment roster
         [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Roster()
         {
             var model = EmploymentBl.GetRosterModel();
@@ -423,6 +457,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Roster(RosterModel model)
         {
             model = EmploymentBl.GetRosterModel();
@@ -430,6 +465,7 @@ namespace WebMvc.Controllers
         }
 
         // Custom report
+        /*
         [HttpGet]
         public ActionResult CustomReport()
         {
@@ -442,6 +478,7 @@ namespace WebMvc.Controllers
         {
             return View(model);
         }
+        */
 
         // Signers
         [HttpGet]
@@ -452,6 +489,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
+        [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Signers(SignersModel model)
         {
             return View(model);
