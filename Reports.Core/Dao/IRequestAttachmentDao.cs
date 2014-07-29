@@ -9,9 +9,13 @@ namespace Reports.Core.Dao
     {
         RequestAttachment FindByRequestIdAndTypeId(int id, RequestAttachmentTypeEnum type);
         IList<RequestAttachment> FindManyByRequestIdAndTypeId(int id, RequestAttachmentTypeEnum type);
-        int GetAttachmentsCount(int entityId);
-        int DeleteForEntityId(int entityId);
+        //int GetAttachmentsCount(int entityId);
+        int DeleteForEntityId(int entityId,RequestAttachmentTypeEnum type);
         IList<IdEntityIdDto> LoadAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
         int DeleteAttachmentsForEntitiesIdsList(List<int> entityIds, RequestAttachmentTypeEnum type);
+        IList<IdContextDto> FindOld(int beforeId);
+        int UpdateAttachement(int id, byte[] context);
+        List<RequestAttachment> FindOldEntities(int beforeId);
+        void Evict(RequestAttachment entity);
     }
 }

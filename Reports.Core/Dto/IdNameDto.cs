@@ -37,5 +37,10 @@ namespace Reports.Core.Dto
     {
         public string Address { get; set; }
     }
+    public class IdContextDto
+    {
+        public int Id { get; set; }
+        public byte[] Context { get; set; }
+    }
     
 }

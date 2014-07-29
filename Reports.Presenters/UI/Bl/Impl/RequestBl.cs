@@ -997,7 +997,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsDelete)
                     {
                         employment.DeleteDate = DateTime.Now;
-                        RequestAttachmentDao.DeleteForEntityId(model.Id);
+                        RequestAttachmentDao.DeleteForEntityId(model.Id, RequestAttachmentTypeEnum.Employment);
                         EmploymentDao.SaveAndFlush(employment);
                         model.IsDelete = false;
 

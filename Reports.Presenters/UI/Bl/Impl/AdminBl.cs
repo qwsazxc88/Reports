@@ -72,6 +72,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { informationDao = value; }
         }
 
+        protected IRequestAttachmentDao requestAttachmentDao;
+        public IRequestAttachmentDao RequestAttachmentDao
+        {
+            get { return Validate.Dependency(requestAttachmentDao); }
+            set { requestAttachmentDao = value; }
+        }
         #endregion
 
         #region UserList
@@ -1134,5 +1140,46 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
+        public bool ConvertAttachments(DeleteAttacmentModel model)
+        {
+            
+            Log.Debug("Begin convert attachments");
+            int beforeId = Int32.MaxValue;
+            bool hasError = false;
+            //int i = 0;
+            while (true)
+            {
+                List<RequestAttachment> list = RequestAttachmentDao.FindOldEntities(beforeId);//RequestAttachmentDao.FindOld(beforeId).ToList();)
+                if (list.Count() == 0)
+                    break;
+                Log.DebugFormat("After FindOld beforeId {0}", beforeId);
+                //RequestAttachmentDao.BeginTran();
+                foreach (RequestAttachment entity in list)
+                {
+                    try
+                    {
+                        //RequestAttachmentDao.UpdateAttachement(entity.Id,entity.Context);
+                        RequestAttachmentDao.SaveAndFlush(entity);
+                        RequestAttachmentDao.Evict(entity);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(string.Format("Исключение при конвертации аттачмента {0}", entity.Id), ex);
+                        hasError = true;
+                    }
+                }
+                RequestAttachmentDao.CommitTran();
+                RequestAttachmentDao.BeginTran();
+                beforeId = list.Last().Id;
+                //i++;
+                //if(i > 2)
+                //    break;
+            }
+            if (hasError)
+                model.Error = "Были ошибки при конвертации.Подробности - в лог файле.";
+            Log.Debug("End convert attachments");
+            return true;
+        }
     }
 }
