@@ -32,6 +32,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? InternationalPassportDateOfIssue { get; set; } //
         public virtual string InternationalPassportIssuedBy { get; set; } //
         // Скан паспорта
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

@@ -190,6 +190,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SNILS = entity.SNILS;
                 model.StatusId = entity.Status;
                 model.Version = entity.Version;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -227,6 +229,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Street = entity.Street;
                 model.StreetNumber = entity.StreetNumber;
                 model.ZipCode = entity.ZipCode;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -293,6 +297,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -380,6 +386,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsMarried = true;
                 }
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -417,6 +425,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReserveCategory = entity.ReserveCategory;
                 model.SpecialityCategory = entity.SpecialityCategory;
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -452,6 +462,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementDateOfIssue = entity.WorkBookSupplementDateOfIssue;
                 model.WorkBookSupplementNumber = entity.WorkBookSupplementNumber;
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -482,6 +494,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StreetNumber = entity.StreetNumber;
                 model.WorkPhone = entity.WorkPhone;
                 model.ZipCode = entity.ZipCode;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -536,6 +550,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.Smoking = entity.Smoking;
                 model.Sports = entity.Sports;
+                model.IsDraft = false;
+                model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
             return model;
@@ -1067,6 +1083,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.INN = viewModel.INN;
             entity.InsuredPersonType = InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId);
+            entity.IsFinal = !viewModel.IsDraft;
             entity.IsMale = viewModel.IsMale;
             entity.IsPatronymicAbsent = viewModel.IsPatronymicAbsent;
             entity.LastName = viewModel.LastName;
@@ -1110,6 +1127,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InternationalPassportIssuedBy = viewModel.InternationalPassportIssuedBy;
             entity.InternationalPassportNumber = viewModel.InternationalPassportNumber;
             entity.InternationalPassportSeries = viewModel.InternationalPassportSeries;
+            entity.IsFinal = !viewModel.IsDraft;
             entity.Region = viewModel.Region;
             entity.RegistrationDate = viewModel.RegistrationDate;
             entity.Street = viewModel.Street;
@@ -1194,6 +1212,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Speciality = viewModel.Training[lastIndex].Speciality
                 });
             }
+
+            entity.IsFinal = !viewModel.IsDraft;
         }
 
         protected void SetFamilyEntity(Family entity, FamilyModel viewModel)
@@ -1264,6 +1284,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     WorksAt = viewModel.Children[lastIndex].WorksAt
                 });
             }
+
+            entity.IsFinal = !viewModel.IsDraft;
         }
 
         protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
@@ -1275,6 +1297,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.CommonMilitaryServiceRegistrationInfo = viewModel.CommonMilitaryServiceRegistrationInfo;
             entity.ConscriptionStatus = viewModel.ConscriptionStatus;
             entity.IsAssigned = viewModel.IsAssigned;
+            entity.IsFinal = !viewModel.IsDraft;
             entity.IsLiableForMilitaryService = viewModel.IsLiableForMilitaryService;
             entity.IsReserved = viewModel.IsReserved;
             entity.MilitaryCardDate = viewModel.MilitaryCardDate;
@@ -1312,6 +1335,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Position = viewModel.ExperienceItems[lastIndex].Position
                 });
             }
+            entity.IsFinal = !viewModel.IsDraft;
             entity.WorkBookDateOfIssue = viewModel.WorkBookDateOfIssue;
             entity.WorkBookNumber = viewModel.WorkBookNumber;
             entity.WorkBookSeries = viewModel.WorkBookSeries;            
@@ -1330,6 +1354,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.District = viewModel.District;
             entity.Email = viewModel.Email;
             entity.HomePhone = viewModel.HomePhone;
+            entity.IsFinal = !viewModel.IsDraft;
             entity.Mobile = viewModel.Mobile;
             entity.Region = viewModel.Region;
             entity.Street = viewModel.Street;
@@ -1353,6 +1378,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DrivingExperience = viewModel.DrivingExperience;
             entity.Hobbies = viewModel.Hobbies;
             entity.ImportantEvents = viewModel.ImportantEvents;
+            entity.IsFinal = !viewModel.IsDraft;
             entity.IsReadyForBusinessTrips = viewModel.IsReadyForBusinessTrips;
             entity.Liabilities = viewModel.Liabilities;
             entity.MilitaryOperationsExperience = viewModel.MilitaryOperationsExperience;

@@ -340,7 +340,6 @@
     <Compile Include="Domain\EmployeeDocumentSubType.cs" />
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
-    <Compile Include="Domain\Employment2\MilitarySpecialityCategory.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
     <Compile Include="Domain\Employment2\Education.cs" />
@@ -352,8 +351,6 @@
     <Compile Include="Domain\Employment2\OnsiteTraining.cs" />
     <Compile Include="Domain\Employment2\Managers.cs" />
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
-    <Compile Include="Domain\Employment2\MilitaryPersonnelCategory.cs" />
-    <Compile Include="Domain\Employment2\MilitaryPersonnelType.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
@@ -871,9 +868,6 @@
     <EmbeddedResource Include="Domain\DocumentType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\MilitarySpecialityCategory.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Training.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -949,12 +943,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\MilitaryPersonnelCategory.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\MilitaryPersonnelType.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\ConscriptionStatus.hbm.xml" />

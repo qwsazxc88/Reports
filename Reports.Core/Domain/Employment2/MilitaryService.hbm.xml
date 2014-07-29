@@ -25,5 +25,8 @@
     <property name="PersonnelType" column="PersonnelTypeId" not-null="false"/>
     <property name="IsAssigned" not-null="true"/>
     <property name="ConscriptionStatus" column="ConscriptionStatusId" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
+    
   </class>
 </hibernate-mapping>

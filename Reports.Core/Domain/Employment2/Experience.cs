@@ -22,6 +22,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
         // Скан трудовой книжки
         // Скан вкладыша в трудовую книжку
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

@@ -37,6 +37,8 @@
     
     <property name="Status" not-null="true"/>
     <property name="AgreedToPersonalDataProcessing" not-null="true"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

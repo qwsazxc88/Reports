@@ -39,6 +39,7 @@ namespace Reports.Core.Domain
         public virtual bool? ApprovalStatus { get; set; }
         public virtual User Approver { get; set; }
 
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

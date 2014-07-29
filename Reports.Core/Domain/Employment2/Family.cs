@@ -15,6 +15,8 @@ namespace Reports.Core.Domain
         public virtual IList<FamilyMember> FamilyMembers { get; set; } // OK-
         public virtual string Cohabitants { get; set; } // OK
         // Скан свидетельства о браке
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

@@ -16,6 +16,8 @@ namespace Reports.Core.Domain
         public virtual IList<PostGraduateEducationDiploma> PostGraduateEducationDiplomas { get; set; } //ok
         public virtual IList<Certification> Certifications { get; set; } //ok
         public virtual IList<Training> Training { get; set; } //ok
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

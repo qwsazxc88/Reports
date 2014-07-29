@@ -37,6 +37,8 @@ namespace Reports.Core.Domain
 
         public virtual int Status { get; set; } // - статус налогоплательщика по НДФЛ
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
+
+        public virtual bool IsFinal { get; set; }
         // Фото
         #endregion
 

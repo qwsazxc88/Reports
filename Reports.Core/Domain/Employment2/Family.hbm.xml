@@ -11,5 +11,8 @@
       <one-to-many class="FamilyMember"/>
     </bag>
     <property name="Cohabitants" length="250" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
+    
   </class>
 </hibernate-mapping>

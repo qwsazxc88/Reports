@@ -26,6 +26,8 @@
     <property name="InternationalPassportNumber" length="10" not-null="false"/>
     <property name="InternationalPassportDateOfIssue" not-null="false"/>
     <property name="InternationalPassportIssuedBy" length="150" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

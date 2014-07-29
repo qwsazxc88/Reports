@@ -13,6 +13,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Черновик")]
         public bool IsDraft { get; set; }
 
-        public bool IsEditable { get; set; }
+        public bool IsFinal { get; set; }
     }
 }

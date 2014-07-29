@@ -217,6 +217,9 @@ alter table MissionReport  drop constraint FK_MissionReport_AcceptManager
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionReport_AcceptAccountant]') AND parent_object_id = OBJECT_ID('MissionReport'))
 alter table MissionReport  drop constraint FK_MissionReport_AcceptAccountant
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionReport_Archivist]') AND parent_object_id = OBJECT_ID('MissionReport'))
+alter table MissionReport  drop constraint FK_MissionReport_Archivist
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionReport_MissionOrder]') AND parent_object_id = OBJECT_ID('MissionReport'))
 alter table MissionReport  drop constraint FK_MissionReport_MissionOrder
 
@@ -684,7 +687,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AccountingTransac
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionReportComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionReportComment
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionOrderComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionOrderComment
 if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ChildVacationComment
-if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryPersonnelType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryPersonnelType
 if exists (select * from dbo.sysobjects where id = object_id(N'Contacts') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contacts
 if exists (select * from dbo.sysobjects where id = object_id(N'InsuredPersonType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table InsuredPersonType
 if exists (select * from dbo.sysobjects where id = object_id(N'Contractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contractor
@@ -707,7 +709,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistType') an
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestStatus
 if exists (select * from dbo.sysobjects where id = object_id(N'HigherEducationDiploma') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HigherEducationDiploma
 if exists (select * from dbo.sysobjects where id = object_id(N'OnsiteTraining') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table OnsiteTraining
-if exists (select * from dbo.sysobjects where id = object_id(N'MilitarySpecialityCategory') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitarySpecialityCategory
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionOrder') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionOrder
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionDailyAllowance') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionDailyAllowance
 if exists (select * from dbo.sysobjects where id = object_id(N'TerraGraphic') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TerraGraphic
@@ -781,7 +782,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'SicklistBabyMindi
 if exists (select * from dbo.sysobjects where id = object_id(N'DismissalType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DismissalType
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestAttachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestAttachment
 if exists (select * from dbo.sysobjects where id = object_id(N'EmployeeDocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table EmployeeDocumentType
-if exists (select * from dbo.sysobjects where id = object_id(N'MilitaryPersonnelCategory') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MilitaryPersonnelCategory
 if exists (select * from dbo.sysobjects where id = object_id(N'BackgroundCheck') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table BackgroundCheck
 if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManager23ToDepartment3') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AppointmentManager23ToDepartment3
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
@@ -803,6 +803,7 @@ create table Family (
   Version INT not null,
   CandidateId INT not null,
   Cohabitants NVARCHAR(250) null,
+  IsFinal BIT not null,
   constraint PK_Family  primary key (Id)
 )
 create table DocumentType (
@@ -1125,6 +1126,7 @@ create table Experience (
   WorkBookSupplementSeries NVARCHAR(20) null,
   WorkBookSupplementNumber NVARCHAR(20) null,
   WorkBookSupplementDateOfIssue DATETIME null,
+  IsFinal BIT not null,
   constraint PK_Experience  primary key (Id)
 )
 create table AccountingTransaction (
@@ -1163,13 +1165,6 @@ create table ChildVacationComment (
   Comment NVARCHAR(256) not null,
   constraint PK_ChildVacationComment  primary key (Id)
 )
-create table MilitaryPersonnelType (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_MilitaryPersonnelType  primary key (Id)
-)
 create table Contacts (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -1186,6 +1181,7 @@ create table Contacts (
   HomePhone NVARCHAR(10) null,
   Mobile NVARCHAR(10) null,
   Email NVARCHAR(50) null,
+  IsFinal BIT not null,
   constraint PK_Contacts  primary key (Id)
 )
 create table InsuredPersonType (
@@ -1328,6 +1324,7 @@ create table MilitaryService (
   PersonnelTypeId INT null,
   IsAssigned BIT not null,
   ConscriptionStatusId INT null,
+  IsFinal BIT not null,
   constraint PK_MilitaryService  primary key (Id)
 )
 create table MissionPurchaseBookRecord (
@@ -1339,7 +1336,7 @@ create table MissionPurchaseBookRecord (
   MissionReportCostTypeId INT not null,
   MissionReportCostId INT not null,
   Sum DECIMAL(19,5) not null,
-  SumNds DECIMAL(19,5) not null,
+  SumNds DECIMAL(19,5) null,
   AllSum DECIMAL(19,5) not null,
   RequestNumber NVARCHAR(16) not null,
   UserId INT not null,
@@ -1368,6 +1365,10 @@ create table MissionReport (
   AcceptAccountant INT null,
   SendTo1C DATETIME null,
   DeleteDate DATETIME null,
+  IsDocumentsSaveToArchive BIT not null,
+  ArchiveDate DATETIME null,
+  ArchiveNumber NVARCHAR(128) null,
+  Archivist INT null,
   MissionOrderId INT null,
   constraint PK_MissionReport  primary key (Id)
 )
@@ -1450,13 +1451,6 @@ create table OnsiteTraining (
   Comments NVARCHAR(200) null,
   ApproverId INT null,
   constraint PK_OnsiteTraining  primary key (Id)
-)
-create table MilitarySpecialityCategory (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_MilitarySpecialityCategory  primary key (Id)
 )
 create table MissionOrder (
  Id INT IDENTITY NOT NULL,
@@ -1548,6 +1542,7 @@ create table Education (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
   CandidateId INT not null,
+  IsFinal BIT not null,
   constraint PK_Education  primary key (Id)
 )
 create table MissionPurchaseBookDocument (
@@ -1705,6 +1700,7 @@ create table [Users] (
   DateRelease DATETIME null,
   Comment NVARCHAR(512) null,
   Cnilc NVARCHAR(512) null,
+  Address NVARCHAR(256) null,
   RoleId INT not null,
   LoginAd NVARCHAR(32) null,
   Rate DECIMAL(19,5) null,
@@ -1841,6 +1837,7 @@ create table GeneralInfo (
   DisabilityCertificateExpirationDate DATETIME null,
   Status INT not null,
   AgreedToPersonalDataProcessing BIT not null,
+  IsFinal BIT not null,
   constraint PK_GeneralInfo  primary key (Id)
 )
 create table AppointmentComment (
@@ -2142,6 +2139,7 @@ create table Passport (
   InternationalPassportNumber NVARCHAR(10) null,
   InternationalPassportDateOfIssue DATETIME null,
   InternationalPassportIssuedBy NVARCHAR(150) null,
+  IsFinal BIT not null,
   constraint PK_Passport  primary key (Id)
 )
 create table Training (
@@ -2250,13 +2248,6 @@ create table EmployeeDocumentType (
   Name NVARCHAR(100) not null,
   constraint PK_EmployeeDocumentType  primary key (Id)
 )
-create table MilitaryPersonnelCategory (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_MilitaryPersonnelCategory  primary key (Id)
-)
 create table BackgroundCheck (
  Id INT IDENTITY NOT NULL,
   Version INT not null,
@@ -2284,6 +2275,7 @@ create table BackgroundCheck (
   Drinking NVARCHAR(250) null,
   ApprovalStatus BIT null,
   ApproverId INT null,
+  IsFinal BIT not null,
   constraint PK_BackgroundCheck  primary key (Id)
 )
 create table AppointmentManager23ToDepartment3 (
@@ -2472,12 +2464,14 @@ create index IX_MissionReport_CreatorUser_Id on MissionReport (CreatorId)
 create index IX_MissionReport_AcceptUser on MissionReport (AcceptUserId)
 create index IX_MissionReport_AcceptManager on MissionReport (AcceptManagerId)
 create index IX_MissionReport_AcceptAccountant on MissionReport (AcceptAccountant)
+create index IX_MissionReport_Archivist on MissionReport (Archivist)
 create index IX_MissionReport_MissionOrder on MissionReport (MissionOrderId)
 alter table MissionReport add constraint FK_MissionReport_User foreign key (UserId) references [Users]
 alter table MissionReport add constraint FK_MissionReport_CreatorUser foreign key (CreatorId) references [Users]
 alter table MissionReport add constraint FK_MissionReport_AcceptUser foreign key (AcceptUserId) references [Users]
 alter table MissionReport add constraint FK_MissionReport_AcceptManager foreign key (AcceptManagerId) references [Users]
 alter table MissionReport add constraint FK_MissionReport_AcceptAccountant foreign key (AcceptAccountant) references [Users]
+alter table MissionReport add constraint FK_MissionReport_Archivist foreign key (Archivist) references [Users]
 alter table MissionReport add constraint FK_MissionReport_MissionOrder foreign key (MissionOrderId) references MissionOrder
 create index IX_ChiefToUser_Chief_Id on ChiefToUser (ChiefId)
 create index IX_ChiefToUser_User_Id on ChiefToUser (UserId)

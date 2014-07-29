@@ -33,6 +33,8 @@ namespace Reports.Core.Domain
         public virtual int? ConscriptionStatus { get; set; } //ok
         // Скан военного билета
         // Скан мобилизационного талона
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors
