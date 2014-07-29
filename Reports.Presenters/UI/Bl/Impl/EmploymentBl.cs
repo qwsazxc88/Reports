@@ -190,7 +190,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SNILS = entity.SNILS;
                 model.StatusId = entity.Status;
                 model.Version = entity.Version;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -229,7 +229,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Street = entity.Street;
                 model.StreetNumber = entity.StreetNumber;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -297,7 +297,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Speciality = item.Speciality
                     });
                 }
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -386,7 +386,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.IsMarried = true;
                 }
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -425,7 +425,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReserveCategory = entity.ReserveCategory;
                 model.SpecialityCategory = entity.SpecialityCategory;
                 model.SpecialMilitaryServiceRegistrationInfo = entity.SpecialMilitaryServiceRegistrationInfo;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -462,7 +462,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.WorkBookSupplementDateOfIssue = entity.WorkBookSupplementDateOfIssue;
                 model.WorkBookSupplementNumber = entity.WorkBookSupplementNumber;
                 model.WorkBookSupplementSeries = entity.WorkBookSupplementSeries;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -494,7 +494,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.StreetNumber = entity.StreetNumber;
                 model.WorkPhone = entity.WorkPhone;
                 model.ZipCode = entity.ZipCode;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);
@@ -550,7 +550,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.Smoking = entity.Smoking;
                 model.Sports = entity.Sports;
-                model.IsDraft = false;
+                model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
             }
             LoadDictionaries(model);

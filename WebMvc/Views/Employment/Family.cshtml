@@ -4,6 +4,8 @@
     ViewBag.Title = "Прием - Состав семьи";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <input type="hidden" id="cmd" name="cmd" />
@@ -14,131 +16,131 @@
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
         </div>            
-    <table class="grid centered clear">
-    <thead>
-        <tr>
-            <th>
-                Степень родства
-            </th>
-            <th>
-                ФИО
-            </th>
-            <th>
-                Паспортные данные
-            </th>
-            <th>
-                Дата рождения
-            </th>
-            <th>
-                Место рождения
-            </th>
-            <th>
-                Место работы, должность,<br />(рабочий, мобильный телефон)
-            </th>
-            <th>
-                Адрес места жительства,<br />(домашний, мобильный телефон)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr id="spouse-row" style="display: none; vertical-align:top;">
-            <td style="">
-                @Html.LabelFor(m => m.Spouse)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Spouse.Name)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Spouse.PassportData)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Spouse.DateOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Spouse.PlaceOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Spouse.WorksAt)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Spouse.Contacts)
-            </td>
-        </tr>
-        <tr style="vertical-align:top;">
-            <td>
-                @Html.LabelFor(m => m.Father)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Father.Name)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Father.PassportData)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Father.DateOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Father.PlaceOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Father.WorksAt)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Father.Contacts)
-            </td>
-        </tr>
-        <tr style="vertical-align:top;">
-            <td>
-                @Html.LabelFor(m => m.Mother)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Mother.Name)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Mother.PassportData)
-            </td>
-            <td>
-                @Html.EditorFor(m => m.Mother.DateOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Mother.PlaceOfBirth)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Mother.WorksAt)
-            </td>
-            <td>
-                @Html.TextAreaFor(m => m.Mother.Contacts)
-            </td>
-        </tr>
-
-        @for (var i = 0; i < Model.Children.Count; i++)
-        {
+        <table class="grid centered clear">
+        <thead>
             <tr>
-                <td>
-                    Ребенок
+                <th>
+                    Степень родства
+                </th>
+                <th>
+                    ФИО
+                </th>
+                <th>
+                    Паспортные данные
+                </th>
+                <th>
+                    Дата рождения
+                </th>
+                <th>
+                    Место рождения
+                </th>
+                <th>
+                    Место работы, должность,<br />(рабочий, мобильный телефон)
+                </th>
+                <th>
+                    Адрес места жительства,<br />(домашний, мобильный телефон)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="spouse-row" style="display: none; vertical-align:top;">
+                <td style="">
+                    @Html.LabelFor(m => m.Spouse)
                 </td>
                 <td>
-                    @Model.Children[i].Name
+                    @Html.EditorFor(m => m.Spouse.Name)
                 </td>
                 <td>
-                    @Model.Children[i].PassportData
+                    @Html.TextAreaFor(m => m.Spouse.PassportData)
                 </td>
                 <td>
-                    @(@Model.Children[i].DateOfBirth.HasValue ? @Model.Children[i].DateOfBirth.Value.ToShortDateString() : @String.Empty)
+                    @Html.EditorFor(m => m.Spouse.DateOfBirth)
                 </td>
                 <td>
-                    @Model.Children[i].PlaceOfBirth
+                    @Html.TextAreaFor(m => m.Spouse.PlaceOfBirth)
                 </td>
                 <td>
-                    @Model.Children[i].WorksAt
+                    @Html.TextAreaFor(m => m.Spouse.WorksAt)
                 </td>
                 <td>
-                    @Model.Children[i].Contacts
+                    @Html.TextAreaFor(m => m.Spouse.Contacts)
                 </td>
             </tr>
-        }
-    </tbody>
-    </table>
+            <tr style="vertical-align:top;">
+                <td>
+                    @Html.LabelFor(m => m.Father)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.Name)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Father.PassportData)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Father.DateOfBirth)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Father.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Father.WorksAt)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Father.Contacts)
+                </td>
+            </tr>
+            <tr style="vertical-align:top;">
+                <td>
+                    @Html.LabelFor(m => m.Mother)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.Name)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Mother.PassportData)
+                </td>
+                <td>
+                    @Html.EditorFor(m => m.Mother.DateOfBirth)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Mother.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Mother.WorksAt)
+                </td>
+                <td>
+                    @Html.TextAreaFor(m => m.Mother.Contacts)
+                </td>
+            </tr>
+
+            @for (var i = 0; i < Model.Children.Count; i++)
+            {
+                <tr>
+                    <td>
+                        Ребенок
+                    </td>
+                    <td>
+                        @Model.Children[i].Name
+                    </td>
+                    <td>
+                        @Model.Children[i].PassportData
+                    </td>
+                    <td>
+                        @(@Model.Children[i].DateOfBirth.HasValue ? @Model.Children[i].DateOfBirth.Value.ToShortDateString() : @String.Empty)
+                    </td>
+                    <td>
+                        @Model.Children[i].PlaceOfBirth
+                    </td>
+                    <td>
+                        @Model.Children[i].WorksAt
+                    </td>
+                    <td>
+                        @Model.Children[i].Contacts
+                    </td>
+                </tr>
+            }
+        </tbody>
+        </table>
     <a href="" id="add-child">Добавить запись о ребенке</a>
     </fieldset>
     
@@ -152,11 +154,11 @@
     @using (Html.BeginForm("FamilyAddChild", "Employment", FormMethod.Post))
     {
         <label for="Name" style="display:block;">ФИО</label><input type="text" name="Name" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="PassportData" style="display:block;">Паспортные данные</label><input type="text" name="PassportData" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="PassportData" style="display:block;">Паспортные данные</label><textarea rows="2" cols="30" name="PassportData" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
         <label for="DateOfBirth" style="display:block;">Дата рождения</label><input type="text" id="DateOfBirth" name="DateOfBirth" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="PlaceOfBirth" style="display:block;">Место рождения</label><input type="text" name="PlaceOfBirth" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="WorksAt" style="display:block;">Место работы, должность,<br />(рабочий, мобильный телефон)</label><input type="text" name="WorksAt" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="Contacts" style="display:block;">Адрес места жительства,<br />(домашний, мобильный телефон)</label><input type="text" name="Contacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="PlaceOfBirth" style="display:block;">Место рождения</label><textarea rows="2" cols="30" name="PlaceOfBirth" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
+        <label for="WorksAt" style="display:block;">Место работы, должность,<br />(рабочий, мобильный телефон)</label><textarea rows="2" cols="30" name="WorksAt" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
+        <label for="Contacts" style="display:block;">Адрес места жительства,<br />(домашний, мобильный телефон)</label><textarea rows="2" cols="30" name="Contacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
  
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />

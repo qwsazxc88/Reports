@@ -714,3 +714,12 @@ div.letter>p.content
 {
     text-indent: 5ex;
 }
+
+span.fakeFormField
+{
+    display: inline-block;
+    border:2px inset #eee;
+    background-color: #eee;
+    padding: 1px;
+    min-width: 1em;
+}

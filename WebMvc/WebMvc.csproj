@@ -684,6 +684,10 @@
     <Content Include="Views\MissionOrder\PrintArchivistAddress.cshtml" />
     <Content Include="Views\MissionOrder\AddCostAttachmentDialog.cshtml" />
     <Content Include="Views\MissionOrder\CostAttachmentDialogError.cshtml" />
+    <Content Include="Views\Employment\GeneralInfoReadOnly.cshtml" />
+    <Content Include="Views\Employment\PassportReadOnly.cshtml" />
+    <Content Include="Views\Employment\EducationReadOnly.cshtml" />
+    <Content Include="Views\Employment\FamilyReadOnly.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

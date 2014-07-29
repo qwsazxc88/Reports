@@ -1,0 +1,93 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.MilitaryServiceModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Воинский учет";
+}
+
+<span style="color:red;">@ViewBag.Error</span>
+
+<fieldset class="bordered doc-wrap panel"><legend>Воинский учет</legend>
+    <div class="formfield clear"><script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+        @Html.LabelFor(m => m.IsLiableForMilitaryService)&nbsp;@Html.DisplayFor(m => m.IsLiableForMilitaryService)
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.MilitaryCardNumber)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryCardNumber)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.MilitaryCardDate)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryCardDate)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.ReserveCategory)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.ReserveCategory)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.Rank)<br />
+        <span class="fakeFormField">@Model.RankItems.Where(x => x.Value == Model.Rank.ToString()).FirstOrDefault().Text&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.SpecialityCategory)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.SpecialityCategory)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.MilitarySpecialityCode)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MilitarySpecialityCode)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.CombatFitness)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.CombatFitness)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.Commissariat)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.Commissariat)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.MilitaryServiceRegistrationInfo)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryServiceRegistrationInfo)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.CommonMilitaryServiceRegistrationInfo)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.CommonMilitaryServiceRegistrationInfo)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.SpecialMilitaryServiceRegistrationInfo)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.SpecialMilitaryServiceRegistrationInfo)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.RegistrationExpiration)<br />
+        <span class="fakeFormField">@Model.RegistrationExpirationItems.Where(x => x.Value == Model.RegistrationExpiration.ToString()).FirstOrDefault().Text&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        <br />
+        @Html.LabelFor(m => m.IsReserved)&nbsp;@Html.DisplayFor(m => m.IsReserved)
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.MobilizationTicketNumber)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.MobilizationTicketNumber)&nbsp;</span>
+    </div>
+    <fieldset class="bordered nomargin">
+    <legend class="level2">Для форм Ф-6 и Ф-18</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonnelCategory)<br />
+            <span class="fakeFormField">@Model.PersonnelCategoryItems.Where(x => x.Value == Model.PersonnelCategory.ToString()).FirstOrDefault().Text&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PersonnelType)<br />
+            <span class="fakeFormField">@Model.PersonnelTypeItems.Where(x => x.Value == Model.PersonnelType.ToString()).FirstOrDefault().Text&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsAssigned)&nbsp;@Html.DisplayFor(m => m.IsAssigned)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ConscriptionStatus)<br />
+            <span class="fakeFormField">@Model.ConscriptionStatusItems.Where(x => x.Value == Model.ConscriptionStatus.ToString()).FirstOrDefault().Text&nbsp;</span>
+        </div>
+    </fieldset>
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empMilitaryService");
+    });
+</script>

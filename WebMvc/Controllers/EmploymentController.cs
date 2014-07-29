@@ -39,7 +39,7 @@ namespace WebMvc.Controllers
         public ActionResult GeneralInfo(int? userId)
         {
             var model = EmploymentBl.GetGeneralInfoModel(userId);
-            return View(model);
+            return model.IsFinal? View("GeneralInfoReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -51,13 +51,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
-                return RedirectToActionPermanent("Passport");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetGeneralInfoModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetGeneralInfoModel();
+            return model.IsFinal ? View("GeneralInfoReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -69,8 +66,10 @@ namespace WebMvc.Controllers
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.NameChanges.Add(itemToAdd);
             EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
 
-            return RedirectToActionPermanent("GeneralInfo");
+            model = EmploymentBl.GetGeneralInfoModel();
+            return View("GeneralInfo", model);
         }
 
         [HttpPost]
@@ -82,8 +81,10 @@ namespace WebMvc.Controllers
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.ForeignLanguages.Add(itemToAdd);
             EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
 
-            return RedirectToActionPermanent("GeneralInfo");
+            model = EmploymentBl.GetGeneralInfoModel();
+            return View("GeneralInfo", model);
         }
 
         // Passport
@@ -92,7 +93,7 @@ namespace WebMvc.Controllers
         public ActionResult Passport(int? userId)
         {
             var model = EmploymentBl.GetPassportModel(userId);
-            return View(model);
+            return model.IsFinal ? View("PassportReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -104,13 +105,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<PassportModel, Passport>(model, out error);
-                return RedirectToActionPermanent("Education");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetPassportModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetPassportModel();
+            return model.IsFinal ? View("PassportReadOnly", model) : View(model);
         }
 
         // Education
@@ -119,7 +117,7 @@ namespace WebMvc.Controllers
         public ActionResult Education(int? userId)
         {
             var model = EmploymentBl.GetEducationModel(userId);
-            return View(model);
+            return model.IsFinal ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -131,13 +129,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
-                return RedirectToActionPermanent("Family");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetEducationModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetEducationModel();
+            return model.IsFinal ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -150,7 +145,8 @@ namespace WebMvc.Controllers
             model.Certifications.Add(itemToAdd);
             EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
 
-            return RedirectToActionPermanent("Education");
+            model = EmploymentBl.GetEducationModel();
+            return View("Education", model);
         }
 
         [HttpPost]
@@ -163,7 +159,8 @@ namespace WebMvc.Controllers
             model.HigherEducationDiplomas.Add(itemToAdd);
             EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
 
-            return RedirectToActionPermanent("Education");
+            model = EmploymentBl.GetEducationModel();
+            return View("Education", model);
         }
 
         [HttpPost]
@@ -176,7 +173,8 @@ namespace WebMvc.Controllers
             model.PostGraduateEducationDiplomas.Add(itemToAdd);
             EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
 
-            return RedirectToActionPermanent("Education");
+            model = EmploymentBl.GetEducationModel();
+            return View("Education", model);
         }
 
         [HttpPost]
@@ -189,7 +187,8 @@ namespace WebMvc.Controllers
             model.Training.Add(itemToAdd);
             EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
 
-            return RedirectToActionPermanent("Education");
+            model = EmploymentBl.GetEducationModel();
+            return View("Education", model);
         }
 
         // Family
@@ -198,7 +197,7 @@ namespace WebMvc.Controllers
         public ActionResult Family(int? userId)
         {
             var model = EmploymentBl.GetFamilyModel(userId);
-            return View(model);
+            return model.IsFinal ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -210,13 +209,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<FamilyModel, Family>(model, out error);
-                return RedirectToActionPermanent("MilitaryService");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetFamilyModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetFamilyModel();
+            return model.IsFinal ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -229,7 +225,8 @@ namespace WebMvc.Controllers
             model.Children.Add(itemToAdd);
             EmploymentBl.SaveModel<FamilyModel, Family>(model, out error);
 
-            return RedirectToActionPermanent("Family");
+            model = EmploymentBl.GetFamilyModel();
+            return View("Family", model);
         }
 
         // Military Service

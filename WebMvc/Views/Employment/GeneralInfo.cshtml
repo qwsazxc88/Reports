@@ -3,8 +3,9 @@
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Общая информация";
 }
-@{Html.EnableClientValidation();}
-@{Html.EnableUnobtrusiveJavaScript();}
+
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {    
     @Html.HiddenFor(m => m.Version)
@@ -198,7 +199,7 @@
     @using (Html.BeginForm("GeneralInfoAddNameChange", "Employment", FormMethod.Post))
     {
         <label for="PreviousName" style="display:block;">Предыдущие ФИО</label><input type="text" name="PreviousName" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="Date" style="display:block;">Дата изменения</label><input type="text" name="Date" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Date" style="display:block;">Дата изменения</label><input type="text" id="DateOfNameChange" name="Date" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Place" style="display:block;">Место</label><input type="text" name="Place" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="Reason" style="display:block;">Причина</label><input type="text" name="Reason" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
  
@@ -225,7 +226,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
-        attachDatepickerToInputs($('#DateOfBirth, #DisabilityCertificateDateOfIssue'), "-80:+0", true);
+        attachDatepickerToInputs($('#DateOfBirth, #DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-80:+0", true);
         attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
         $('#gender').buttonset();
 
