@@ -7661,7 +7661,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!entity.NeedToAcceptByChief)
                         {
                             CreateMission(entity);
-                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                         }
                         MissionOrderDao.SaveAndFlush(entity);
                     }
@@ -7704,7 +7704,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptChief = current; 
                     }
                     CreateMission(entity);
-                    SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                    SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                     MissionOrderDao.SaveAndFlush(entity);
                     isAccept = true;
                 }
@@ -7715,7 +7715,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.EditDate = DateTime.Now;
                         entity.AcceptChief = UserDao.Load(CurrentUser.Id);
                         CreateMission(entity);
-                        SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                        SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                         MissionOrderDao.SaveAndFlush(entity);
                         isAccept = true;
                 }
@@ -7782,6 +7782,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity = MissionOrderDao.Load(id);
                 if (entity == null)
                     throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных", id));
+                 if(entity.IsAdditional)
+                     throw new ValidationException("Редактирование изменения приказа на командировку невозможно через форму приказа.");
             }
             MissionOrderEditModel model = new MissionOrderEditModel
                     {
@@ -7798,6 +7800,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
             if(id != 0)
             {
+               
                 LoadGraids(model, user.Grade.Value, entity, entity.CreateDate);
                 model.AllSum = FormatSum(entity.AllSum);
                 model.AllSumAir = FormatSum(entity.SumAir);
@@ -8048,10 +8051,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isDirectorManager)
                 {
                     entity.NeedToAcceptByChiefAsManager = true;
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director,false);
                 }
                 else
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,false);
             }
             bool canEdit = false;
             if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
@@ -8074,10 +8077,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!entity.NeedToAcceptByChief)
                             {
                                 CreateMission(entity);
-                                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                                SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                             }
                             else
-                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director,false);
                         }
                         else
                         {
@@ -8085,7 +8088,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
                             {
                                 entity.UserDateAccept = null;
-                                SendEmailForMissionOrderReject(CurrentUser, entity);
+                                SendEmailForMissionOrderReject(CurrentUser, entity, false);
                             }
                         }
                     }
@@ -8110,13 +8113,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.AcceptChief = currentUser;
                             }
                             CreateMission(entity);
-                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                         }
                         else
                         {
                             entity.UserDateAccept = null;
                             model.IsManagerApproved = null;
-                            SendEmailForMissionOrderReject(CurrentUser, entity);
+                            SendEmailForMissionOrderReject(CurrentUser, entity, false);
                         }
                     }
                 }
@@ -8135,7 +8138,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.AcceptManager = currentUser;
                             }
                             CreateMission(entity);
-                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity, false);
                         }
                         else
                         {
@@ -8143,20 +8146,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsUserApproved = false;
                             entity.ManagerDateAccept = null;
                             model.IsManagerApproved = null;
-                            SendEmailForMissionOrderReject(CurrentUser, entity);
+                            SendEmailForMissionOrderReject(CurrentUser, entity, false);
                         }
                     }  
                 }
             }
             
         }
-        protected EmailDto SendEmailForMissionOrder(IUser current, MissionOrder entity, UserRole receiverRole)
+        protected EmailDto SendEmailForMissionOrder(IUser current, MissionOrder entity, UserRole receiverRole,bool isAdditional)
         {
             //User currentUser = UserDao.Load(current.Id);
             //if (currentUser == null)
             //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
+           
             string to = string.Empty;
             string to1 = string.Empty;
+            if (isAdditional)
+            {
+                switch (receiverRole)
+                {
+                    case UserRole.Manager:
+                        to = entity.MainOrder.AcceptManager.Email+";";
+                        break;
+                    case UserRole.Director:
+                        to = entity.MainOrder.AcceptChief.Email + ";";
+                        break;
+                }
+                return SendEmailForMissionOrderNeedToApprove(to, entity, isAdditional);
+            }
             IList<IdNameDto> managers;
             IList<IdNameDto> managers1;
             switch(receiverRole)
@@ -8225,7 +8242,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
             }
-            return SendEmailForMissionOrderNeedToApprove(to, entity);
+            return SendEmailForMissionOrderNeedToApprove(to, entity, isAdditional);
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
         {
@@ -9124,6 +9141,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionOrder entity = MissionOrderDao.Load(id);
             if (entity == null)
                 throw new ValidationException(string.Format("Не найдено изменение приказа на командировку (id {0}) в базе данных", id));
+            if(entity.MainOrder == null)
+                throw new ValidationException(string.Format("В изменении приказа на командировку (id {0}) не указан приказ", id));
             User user = entity.User;
             //IUser current = AuthenticationService.CurrentUser;
             //if (!CheckUserAmoRights(user, current, id, entity, false))
@@ -9505,7 +9524,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
             }
-            bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id);
+            bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id)
+                && current.UserRole == UserRole.Director;
             //if (model.IsSecritaryEditable)
             //{
             //    if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
@@ -9533,14 +9553,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isDirectorManager)
                 {
                     entity.NeedToAcceptByChiefAsManager = true;
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director,true);
                 }
                 else
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
             }
-            bool canEdit = false;
-            if (current.UserRole == UserRole.Manager 
-                && entity.MainOrder.AcceptManager.Id == current.Id
+            //bool canEdit = false;
+            if (current.UserRole == UserRole.Manager && entity.MainOrder.AcceptManager.Id == current.Id
                 /*IsUserManagerForEmployee(user, current, out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit)*/)
             {
                 /*if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
@@ -9561,10 +9580,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (!entity.NeedToAcceptByChief)
                             {
                                 //CreateMission(entity);
-                                SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                                SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                             }
                             else
-                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director);
+                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
                         }
                         else
                         {
@@ -9572,7 +9591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if ((entity.Creator.RoleId & (int)UserRole.Manager) == 0)
                             {
                                 entity.UserDateAccept = null;
-                                SendEmailForMissionOrderReject(CurrentUser, entity);
+                                SendEmailForMissionOrderReject(CurrentUser, entity, true);
                             }
                         }
                     }
@@ -9596,14 +9615,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.ChiefDateAccept = DateTime.Now;
                                 entity.AcceptChief = currentUser;
                             }
-                            CreateMission(entity);
-                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            //CreateMission(entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                         }
                         else
                         {
                             entity.UserDateAccept = null;
                             model.IsManagerApproved = null;
-                            SendEmailForMissionOrderReject(CurrentUser, entity);
+                            SendEmailForMissionOrderReject(CurrentUser, entity, true);
                         }
                     }
                 }
@@ -9621,8 +9640,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.ManagerDateAccept = DateTime.Now;
                                 entity.AcceptManager = currentUser;
                             }
-                            CreateMission(entity);
-                            SendEmailForMissionOrderConfirm(CurrentUser, entity);
+                            //CreateMission(entity);
+                            SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                         }
                         else
                         {
@@ -9630,7 +9649,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsUserApproved = false;
                             entity.ManagerDateAccept = null;
                             model.IsManagerApproved = null;
-                            SendEmailForMissionOrderReject(CurrentUser, entity);
+                            SendEmailForMissionOrderReject(CurrentUser, entity, true);
                         }
                     }
                 }

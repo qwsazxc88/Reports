@@ -32,6 +32,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderId", NHibernateUtil.Int32).
+                AddScalar("AdditionalOrderNumber", NHibernateUtil.String).
+                AddScalar("AdditionalOrderEditDate", NHibernateUtil.DateTime).
                 AddScalar("MissionType", NHibernateUtil.String).
                 AddScalar("MissionKind", NHibernateUtil.String).
                 AddScalar("Target", NHibernateUtil.String).
@@ -44,6 +47,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("BeginDate", NHibernateUtil.DateTime).
                 AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderState", NHibernateUtil.String).
+                AddScalar("AdditionalOrderBeginDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderEndDate", NHibernateUtil.DateTime).
                 AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("AirTicketType", NHibernateUtil.String).
@@ -56,6 +62,9 @@ namespace Reports.Core.Dao.Impl
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
                                 EditDate as EditDate,
+                                ao.Id as AdditionalOrderId,
+                                cast(ao.Number as nvarchar(10))+N'-изм' as AdditionalOrderNumber,
+                                ao.EditDate as AdditionalOrderEditDate,
                                 t.Name as MissionType,  
                                 case when v.Kind = 1 then  N' Внутренняя'
                                      when v.Kind = 2 then  N' Внешняя'
@@ -108,6 +117,30 @@ namespace Reports.Core.Dao.Impl
                                 end as State,
                                 v.BeginDate as BeginDate,  
                                 v.EndDate as EndDate,
+                                case when ao.DeleteDate is not null then N'Отклонен'
+                                     when ao.SendTo1C is not null then N'Выгружен в 1с' 
+                                     when ao.ChiefDateAccept is not null 
+                                          -- and v.ManagerDateAccept is not null 
+                                          -- and v.UserDateAccept is not null 
+                                          then N'Согласован'
+                                    when  NeedToAcceptByChief = 0
+                                          and ao.ManagerDateAccept is not null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Согласован'    
+                                    when  ao.ChiefDateAccept is null 
+                                          and NeedToAcceptByChief = 1
+                                          and ao.ManagerDateAccept is not null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Отправлен члену правления'    
+                                    when  ao.ManagerDateAccept is null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Отправлен руководителю'    
+                                    when  ao.UserDateAccept is null 
+                                          then N'Черновик сотрудника'    
+                                    else N''
+                                end as AdditionalOrderState,
+                                ao.BeginDate as AdditionalOrderBeginDate,  
+                                ao.EndDate as AdditionalOrderEndDate,
                                 case when v.AirTicketType = 1 then N'Бизнес'
                                      when v.AirTicketType = 2 then N'Эконом'
                                      else N'' end as AirTicketType,
@@ -117,6 +150,7 @@ namespace Reports.Core.Dao.Impl
                                 {0}  
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
+                                left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
@@ -136,6 +170,9 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForMoList;
             string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
+            if (whereString.Length > 0)
+                whereString += @" and ";
+            whereString += @" v.IsAdditional = 0 ";
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
