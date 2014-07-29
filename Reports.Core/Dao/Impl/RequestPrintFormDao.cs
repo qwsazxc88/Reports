@@ -22,6 +22,8 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.Eq("RequestId", requestId))
                     .Add(Restrictions.Eq("RequestTypeId",(int)typeId));
             RequestPrintForm entity = (RequestPrintForm)criteria.UniqueResult();
+            if (entity == null)
+                return entity;
             if (entity.Context == null)
             {
                 string rootPath = GetRootPath();
