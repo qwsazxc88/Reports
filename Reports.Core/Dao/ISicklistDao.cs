@@ -22,5 +22,6 @@ namespace Reports.Core.Dao
             bool? sortDescending
             );
         bool ResetApprovals(int id);
+        IList<Sicklist> LoadForIdsList(List<int> ids);
     }
 }

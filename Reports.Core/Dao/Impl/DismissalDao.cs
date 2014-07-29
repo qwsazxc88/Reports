@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -31,7 +32,7 @@ namespace Reports.Core.Dao.Impl
             )
         {
             string sqlQuery =
-                string.Format(sqlSelectForList, 
+                string.Format(sqlSelectForListDismissal, 
                                 DeleteRequestText,
                                 "dbo.DismissalType",
                                 "v.[CreateDate]",
@@ -160,6 +161,32 @@ namespace Reports.Core.Dao.Impl
             ISQLQuery query = Session.CreateSQLQuery(sqlQuery);
             query.SetInt32("userId", userId);
             return query.List<DateTime?>().FirstOrDefault();
+        }
+
+        public override IQuery CreateQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Date", NHibernateUtil.DateTime).
+                AddScalar("BeginDate", NHibernateUtil.DateTime).
+                AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("RequestType", NHibernateUtil.String).
+                AddScalar("RequestStatus", NHibernateUtil.String).
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("IsPersonnelFileSentToArchive", NHibernateUtil.Boolean);
+        }
+
+        public IList<Dismissal> LoadForIdsList(List<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<Dismissal>();
+            ICriteria criteria = Session.CreateCriteria(typeof(Dismissal));
+            criteria.Add(Restrictions.In("Id", ids));
+            return criteria.List<Dismissal>();
         }
     }
     

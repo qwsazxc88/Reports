@@ -22,6 +22,8 @@ namespace WebMvc
 
     public class MvcApplication : HttpApplication
     {
+        public static readonly Version Version = Assembly.GetExecutingAssembly().GetName().Version;
+
         public const string AuthorizedErrorPageUrl = "~/ErrorPage.aspx";
         public const string UnauthorizedErrorPageUrl = "~/UnautorizedErrorPage.aspx";
 

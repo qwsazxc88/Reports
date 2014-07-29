@@ -1012,8 +1012,10 @@ namespace Reports.Core.Dao.Impl
 
         public virtual IList<IdNameAddressDto> GetArchivistAddresses()
         {
-            const string sqlQuery = @" select top 50 Id,Name,Name as Address
+            const string sqlQuery = @" select Id,Name,Address
                     from [dbo].[Users]
+                    where Address is not null and Address != N''
+                        and (RoleId & 8192) > 0
                     order by Name";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).

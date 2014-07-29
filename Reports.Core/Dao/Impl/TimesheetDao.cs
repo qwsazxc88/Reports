@@ -216,7 +216,7 @@ namespace Reports.Core.Dao.Impl
                          v.{0} as EndDate,
                          v.TimesheetStatusId  as TimesheetStatusId,
                          ts.[ShortName] as TimesheetCode,
-                         v.Hours as TimesheetHours,
+                         cast(v.Hours as decimal) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName", type == RequestTypeEnum.HolidayWork ? "WorkDate" : "EventDate");
             switch (type)
@@ -270,7 +270,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
@@ -339,7 +339,7 @@ namespace Reports.Core.Dao.Impl
                          u.DateRelease as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
+                         cast(isnull(wc.[IsWorkingHours],0) as decimal) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName,
                          1 as IsDismissalDay
@@ -370,7 +370,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                AddScalar("IsDismissalDay", NHibernateUtil.Boolean).
@@ -389,7 +389,7 @@ namespace Reports.Core.Dao.Impl
                          v.EndDate as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
+                         cast(isnull(wc.[IsWorkingHours],0) as decimal) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName
                          from dbo.Dismissal v
@@ -423,7 +423,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
@@ -473,7 +473,7 @@ namespace Reports.Core.Dao.Impl
                          u.DateAccept as EndDate,
                          1  as TimesheetStatusId,
                          N'Я' as TimesheetCode,
-                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
+                         cast(isnull(wc.[IsWorkingHours],0) as decimal) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName,
                          1 as IsEmploymentDay
@@ -488,7 +488,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                AddScalar("IsEmploymentDay", NHibernateUtil.Boolean).
@@ -506,7 +506,7 @@ namespace Reports.Core.Dao.Impl
                          v.BeginDate as EndDate,
                          v.TimesheetStatusId  as TimesheetStatusId,
                          ts.[ShortName] as TimesheetCode,
-                         isnull(wc.[IsWorkingHours],0) as TimesheetHours,
+                         cast(isnull(wc.[IsWorkingHours],0) as decimal) as TimesheetHours,
                          u.Id as UserId,
                          u.Name as UserName,
                          1 as IsEmploymentDay,
@@ -542,7 +542,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).
@@ -618,7 +618,7 @@ namespace Reports.Core.Dao.Impl
                AddScalar("EndDate", NHibernateUtil.DateTime).
                AddScalar("TimesheetStatusId", NHibernateUtil.Int32).
                AddScalar("TimesheetCode", NHibernateUtil.String).
-               AddScalar("TimesheetHours", NHibernateUtil.Int32).
+               AddScalar("TimesheetHours", NHibernateUtil.Decimal).
                AddScalar("UserId", NHibernateUtil.Int32).
                AddScalar("UserName", NHibernateUtil.String).
                SetDateTime("beginDate", beginDate).

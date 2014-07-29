@@ -195,7 +195,7 @@
             <input type="button" id="IsDocumentsSaveToArchiveBtn" value="Оригиналы переданы в архив" onclick="return DocumentsSaveToArchive();" @if (!Model.IsDocumentsSaveToArchiveAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
             <input type="hidden" id="IsPrintArchivistAddressAvailable" name="IsPrintArchivistAddressAvailable" value="@Model.IsPrintArchivistAddressAvailable" />
-            <input type="button" value="Адрес архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
+            <input type="button" value="Документы для архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
             </td>
         </tr>
@@ -922,15 +922,14 @@
                  if (status == "error") {
                      var msg = "Произошла ошибка: ";
                      $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                     disablePrintButton();
                  } else if (status == "success") {
-                     if ($('#PrintDlgError').val() != '')
+                     //$('#PrintDlgError').val($('#Error').val());
+                     if ($('#PrintDlgErrorTr').val() != undefined)
+                     {
+                        //$('#PrintDlgError').show();
                          disablePrintButton();
-                 }
-                 else if($('#Error').val() != '')
-                 {
-                    disablePrintButton();
-                    $('#PrintDlgError').val($('#Error').val());
-                    $('#PrintDlgError').show();
+                     }
                  }
              }
             );
@@ -947,11 +946,25 @@
                 close: function (event, ui) {
                     $(this).dialog("destroy").remove();
                 },
+                /* open: function (event, ui) {
+                     $('#PrintDlgError').val($('#Error').val());
+                     if ($('#PrintDlgError').val() != '')
+                     {
+                        $('#PrintDlgError').show();
+                         disablePrintButton();
+                     }
+                },*/
                 buttons:
                 {
-                    "Печать": function () {
+                    "Печать конверта": function () {
                      var id = $('#ArchivistId').val();
                      window.location.href='@Url.Action("GetPrintArchivistAddress", "MissionOrder")'+'?id='+id;
+
+                    },
+                    "Печать описи": function () {
+                     var id = $('#ArchivistId').val();
+                     var reportId = $('#Id').val();
+                     window.location.href='@Url.Action("GetReportListPrintForm", "MissionOrder")'+'?id='+id+"&reportId="+reportId;
 
                     },
                     "Отмена": function () {
@@ -961,7 +974,8 @@
             });
      } 
      function disablePrintButton() {
-            $(".ui-dialog-buttonpane button:contains('Печать')").button("disable");
+            $(".ui-dialog-buttonpane button:contains('Печать конверта')").button("disable");
+            $(".ui-dialog-buttonpane button:contains('Печать описи')").button("disable");
      }
      function archivistChange()
      {

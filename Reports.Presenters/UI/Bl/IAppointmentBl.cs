@@ -12,7 +12,7 @@ namespace Reports.Presenters.UI.Bl
         AppointmentEditModel GetAppointmentEditModel(int id);
 
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
-        bool SaveComment(SaveCommentModel model);
+        bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
         void ReloadDictionaries(AppointmentEditModel model);
         bool CheckDepartment(int departmentId, out int level);

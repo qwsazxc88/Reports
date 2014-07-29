@@ -22,5 +22,6 @@ namespace Reports.Core.Dao
             );
 
         DateTime? GetDismissalDateForUser(int userId);
+        IList<Dismissal> LoadForIdsList(List<int> ids);
     }
 }

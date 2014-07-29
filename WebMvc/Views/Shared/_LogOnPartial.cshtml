@@ -1,4 +1,5 @@
 ﻿@using Reports.Presenters.Services.Impl
+<div style="position:absolute; font-size:small;"><text>v.</text>@WebMvc.MvcApplication.Version</div>
 @if(Request.IsAuthenticated) 
 {
     <text><b>@Context.User.Identity.Name</b>

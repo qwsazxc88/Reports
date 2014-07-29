@@ -31,8 +31,7 @@
         //Vacation = 1,
         //Absence = 2,
         Sicklist = 1,
-        //HolidayWork = 4,
-        //Mission = 5,
+        //HolidayWork = 4,        
         //Dismissal = 6,
         //TimesheetCorrection = 7,
         Employment = 2,
@@ -45,6 +44,13 @@
         MissionReport = 6,
         AppointmentReport = 7,
         MissionReportCost = 8,
+
+        // Order Scans
+
+        DismissalOrderScan = 103,
+        VacationOrderScan = 104,
+        ChildVacationOrderScan = 105,
+        MissionOrderScan = 118
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

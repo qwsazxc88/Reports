@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class DismissalEditModel : UserInfoModel, ICheckBoxes, IAttachment, ICheckForEntityEndDate, IContainId
+    public class DismissalEditModel : UserInfoModel, ICheckBoxes, IAttachment, IOrderScanAttachment, ICheckForEntityEndDate, IContainId
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -61,6 +61,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsPostedTo1CHidden { get; set; }
         public bool IsPostedTo1CEnable { get; set; }
 
+        // Прикрепление скана подтверждающего документа
+        public bool IsConfirmationAllowed { get; set; }
+
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
 
@@ -68,6 +71,9 @@ namespace Reports.Presenters.UI.ViewModel
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
 
+        [Display(Name = "Скан подписанного приказа")]
+        public string OrderScanAttachment { get; set; }
+        public int OrderScanAttachmentId { get; set; }
 
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }

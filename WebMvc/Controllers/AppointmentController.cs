@@ -308,8 +308,11 @@ namespace WebMvc.Controllers
             }
             if (!model.IsManagerEditable)
             {
-                model.IsEducationExists = model.IsEducationExistsHidden;
+                if(!model.IsStaffSetDateAcceptAvailable)
+                    model.IsEducationExists = model.IsEducationExistsHidden;
+                model.IsColloquyPassed = model.IsColloquyPassedHidden;
             }
+            
         }
 
         #region FileContext

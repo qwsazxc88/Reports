@@ -11,13 +11,16 @@
     <property name="CreateDate" not-null="true"/>
     <property name="BeginDate" not-null="true"/>
     <property name="EndDate" not-null="true"/>
+    <property name="AdditionalVacationBeginDate" not-null="false"/>
     <property name="DaysCount"  not-null="true"/>
-    
+    <property name="AdditionalVacationDaysCount"  not-null="true"/>
+
     <property name="Number"  not-null="true"/>
 	
 	<!--<property name="Comment" type="StringClob" not-null="false"/>-->  
     <!--<property name="Number" length="50" not-null="true"/>-->
 	<many-to-one name="Type" class="VacationType" column="TypeId" foreign-key="FK_Vacation_VacationType" index="Vacation_VacationType"  not-null="true"/>
+  <many-to-one name="AdditionalVacationType" class="AdditionalVacationType" column="AdditionalVacationTypeId" foreign-key="FK_Vacation_AdditionalVacationType" index="Vacation_AdditionalVacationType"  not-null="false"/>
   <!--<many-to-one name="Status" class="RequestStatus" column="StatusId" foreign-key="FK_Vacation_RequestStatus" index="Vacation_RequestStatus"  not-null="true"/>-->
 	<!--<many-to-one name="SubType" class="EmployeeDocumentSubType" column="SubTypeId" foreign-key="FK_Document_EmployeeDocumentSubType" index="IX_Document_EmployeeDocumentSubType_Id"  not-null="false"/>-->
   <many-to-one name="User" class="User" column="UserId" foreign-key="FK_Vacation_User" index="IX_Vacation_User_Id"  not-null="true"/>
@@ -28,10 +31,13 @@
   <property name="SendTo1C" not-null="false"/>
   <property name="DeleteDate" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
+  <property name="IsOriginalReceived" not-null="true"/>
 	  <!--<property name="ManagerFullNameForPrint"  length="512" not-null="false"/>
 	  <property name="ManagerPositionForPrint"  length="128" not-null="false"/>
 	  <property name="UserFullNameForPrint" length="512" not-null="false"/>-->
 
+    <property name="PrincipalVacationDaysLeft" precision="19" scale="2" not-null="false"/>
+    <property name="AdditionalVacationDaysLeft" precision="19" scale="2" not-null="false"/>
 
     <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Vacation_TimesheetStatus" index="Vacation_TimesheetStatus"  not-null="false"/>
 

@@ -1,0 +1,1 @@
+﻿alter table [dbo].[AppointmentReport] add IsColloquyPassed bit null

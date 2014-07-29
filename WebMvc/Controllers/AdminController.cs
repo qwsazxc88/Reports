@@ -7,6 +7,7 @@ using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
@@ -422,6 +423,28 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Admin)]
+        public ContentResult ConvertAttachments()
+        {
+            bool saveResult = true;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel {Error = string.Empty};
+                saveResult = AdminBl.ConvertAttachments(model);
+                error = model.Error;
 
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on ConvertAttachments:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
     }
 }

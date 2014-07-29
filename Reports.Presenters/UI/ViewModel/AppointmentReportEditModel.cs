@@ -76,6 +76,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsDelete { get; set; }
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteScanAvailable { get; set; }
+        public bool IsStaffSetDateAcceptAvailable { get; set; }
         public bool ReloadPage { get; set; }
 
         [Display(Name = "Отказано по причине")]
@@ -86,6 +87,11 @@ namespace Reports.Presenters.UI.ViewModel
         public int IsEducationExistsHidden { get; set; }
         public IList<IdNameDto> IsEducationExistsValues;
 
+        [Display(Name = "Собеседование пройдено/не пройдено")]
+        public int IsColloquyPassed { get; set; }
+        public int IsColloquyPassedHidden { get; set; }
+        public IList<IdNameDto> IsColloquyPassedValues;
+
         [Display(Name = "Кандидат принят на работу с даты")]
         public string DateAccept { get; set; }
 
@@ -93,5 +99,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
 
+        public CommentsModel CommentsModel { get; set; }
     }
 }
