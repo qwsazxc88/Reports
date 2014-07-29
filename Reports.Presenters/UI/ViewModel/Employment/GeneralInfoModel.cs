@@ -96,9 +96,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
-
-        public bool IsEditable { get; set; }
-        
+                
         public GeneralInfoModel()
         {
             this.Version = 0;

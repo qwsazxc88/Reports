@@ -86,8 +86,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]
         public string ApprovedByPersonnelManager { get; set; }
 
-        public bool IsEditable { get; set; }
-
         public PersonnelManagersModel()
         {
             this.Version = 0;

@@ -88,8 +88,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool? ApprovalStatus { get; set; }
         public string ApproverName { get; set; }
 
-        public bool IsEditable { get; set; }
-
         public BackgroundCheckModel()
         {
             this.Version = 0;

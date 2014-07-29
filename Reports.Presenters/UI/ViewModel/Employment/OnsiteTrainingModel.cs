@@ -40,8 +40,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public string ApproverName { get; set; }
 
-        public bool IsEditable { get; set; }
-
         public OnsiteTrainingModel()
         {
             this.Version = 0;

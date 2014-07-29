@@ -9,5 +9,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     {
         public int Version { get; set; }
         public int UserId { get; set; }
+
+        [Display(Name = "Черновик")]
+        public bool IsDraft { get; set; }
+
+        public bool IsEditable { get; set; }
     }
 }

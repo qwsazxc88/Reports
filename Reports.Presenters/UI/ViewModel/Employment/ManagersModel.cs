@@ -67,8 +67,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string RequestNumber { get; set; } //ok
 
-        public bool IsEditable { get; set; }
-
         [Display(Name = "Согласен на прием (руководитель)")]
         public bool? ManagerApprovalStatus { get; set; }
         public string ApprovingManagerName { get; set; }

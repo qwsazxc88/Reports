@@ -26,8 +26,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string Cohabitants { get; set; } //ok
 
-        public bool IsEditable { get; set; }
-
         public FamilyModel()
         {
             this.Version = 0;

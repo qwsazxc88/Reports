@@ -94,8 +94,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string InternationalPassportIssuedBy { get; set; }
 
-        public bool IsEditable { get; set; }
-
         public PassportModel()
         {
             this.Version = 0;
