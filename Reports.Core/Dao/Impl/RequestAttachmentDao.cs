@@ -189,6 +189,11 @@ namespace Reports.Core.Dao.Impl
             DeleteWithFile(entity);
             Session.Flush();
         }
+        public override void Delete(RequestAttachment entity)
+        {
+            DeleteWithFile(entity);
+            Session.Flush();
+        }
         public override RequestAttachment Load(int id)
         {
             RequestAttachment entity = Session.Load<RequestAttachment>(id);
