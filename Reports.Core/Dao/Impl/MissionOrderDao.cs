@@ -61,9 +61,10 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
-                                EditDate as EditDate,
+                                v.EditDate as EditDate,
                                 ao.Id as AdditionalOrderId,
-                                cast(ao.Number as nvarchar(10))+N'-изм' as AdditionalOrderNumber,
+                                case when ao.Id is null then null 
+                                     else cast(ao.Number as nvarchar(10))+N'-изм' end as AdditionalOrderNumber,
                                 ao.EditDate as AdditionalOrderEditDate,
                                 t.Name as MissionType,  
                                 case when v.Kind = 1 then  N' Внутренняя'
@@ -74,24 +75,24 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 case when (v.UserAllSum - v.AllSum 
-                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end) > 0
+                                    + case when  v.IsResidencePaid = 1 then isnull( v.SumResidence,0) else 0 end
+                                    + case when  v.IsAirTicketsPaid = 1 then isnull( v.SumAir,0) else 0 end
+                                    + case when  v.IsTrainTicketsPaid = 1 then isnull( v.SumTrain,0) else 0 end) > 0
                                     then v.UserAllSum - v.AllSum 
-                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
+                                    + case when  v.IsResidencePaid = 1 then isnull( v.SumResidence,0) else 0 end
+                                    + case when  v.IsAirTicketsPaid = 1 then isnull( v.SumAir,0) else 0 end
+                                    + case when  v.IsTrainTicketsPaid = 1 then isnull( v.SumTrain,0) else 0 end
                                     else null end
                                 as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
-                                case when ((NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
-                                          (NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
+                                case when (( v.NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
+                                          ( v.NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
                                            and v.DeleteDate is null and v.SendTo1C is null
                                            and 
-                                           ( (IsResidencePaid = 1 and ResidenceRequestNumber is null) or
-                                             (IsAirTicketsPaid = 1 and AirTicketsRequestNumber is null) or
-                                             (IsTrainTicketsPaid = 1 and TrainTicketsRequestNumber is null))
+                                           ( ( v.IsResidencePaid = 1 and  v.ResidenceRequestNumber is null) or
+                                             ( v.IsAirTicketsPaid = 1 and  v.AirTicketsRequestNumber is null) or
+                                             ( v.IsTrainTicketsPaid = 1 and  v.TrainTicketsRequestNumber is null))
                                     then N'Заказ' else N'' end  as NeedSecretary,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
@@ -99,12 +100,12 @@ namespace Reports.Core.Dao.Impl
                                           -- and v.ManagerDateAccept is not null 
                                           -- and v.UserDateAccept is not null 
                                           then N'Согласован'
-                                    when  NeedToAcceptByChief = 0
+                                    when  v.NeedToAcceptByChief = 0
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
                                           then N'Согласован'    
                                     when  v.ChiefDateAccept is null 
-                                          and NeedToAcceptByChief = 1
+                                          and v.NeedToAcceptByChief = 1
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
                                           then N'Отправлен члену правления'    
@@ -117,18 +118,19 @@ namespace Reports.Core.Dao.Impl
                                 end as State,
                                 v.BeginDate as BeginDate,  
                                 v.EndDate as EndDate,
-                                case when ao.DeleteDate is not null then N'Отклонен'
+                                case when ao.Id is null then null
+                                     when ao.DeleteDate is not null then N'Отклонен'
                                      when ao.SendTo1C is not null then N'Выгружен в 1с' 
                                      when ao.ChiefDateAccept is not null 
                                           -- and v.ManagerDateAccept is not null 
                                           -- and v.UserDateAccept is not null 
                                           then N'Согласован'
-                                    when  NeedToAcceptByChief = 0
+                                    when  ao.NeedToAcceptByChief = 0
                                           and ao.ManagerDateAccept is not null 
                                           and ao.UserDateAccept is not null 
                                           then N'Согласован'    
                                     when  ao.ChiefDateAccept is null 
-                                          and NeedToAcceptByChief = 1
+                                          and ao.NeedToAcceptByChief = 1
                                           and ao.ManagerDateAccept is not null 
                                           and ao.UserDateAccept is not null 
                                           then N'Отправлен члену правления'    
@@ -274,6 +276,18 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 17:
                     orderBy = @" order by TrainTicketType";
+                    break;
+                case 18:
+                    orderBy = @" order by AdditionalOrderNumber";
+                    break;
+                case 19:
+                    orderBy = @" order by AdditionalOrderEditDate";
+                    break;
+                case 20:
+                    orderBy = @" order by AdditionalOrderState";
+                    break;
+                case 21:
+                    orderBy = @" order by AdditionalOrderBeginDate,AdditionalOrderEndDate";
                     break;
             }
             if (sortDescending.Value)
