@@ -234,7 +234,7 @@ namespace WebMvc.Controllers
         public ActionResult MilitaryService(int? userId)
         {
             var model = EmploymentBl.GetMilitaryServiceModel(userId);
-            return View(model);
+            return model.IsFinal ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -246,13 +246,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<MilitaryServiceModel, MilitaryService>(model, out error);
-                return RedirectToActionPermanent("Experience");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetMilitaryServiceModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetMilitaryServiceModel();
+            return model.IsFinal ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
         // Experience
@@ -261,7 +258,7 @@ namespace WebMvc.Controllers
         public ActionResult Experience(int? userId)
         {
             var model = EmploymentBl.GetExperienceModel(userId);
-            return View(model);
+            return model.IsFinal ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -273,13 +270,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<ExperienceModel, Experience>(model, out error);
-                return RedirectToActionPermanent("Contacts");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetExperienceModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetExperienceModel();
+            return model.IsFinal ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -292,7 +286,8 @@ namespace WebMvc.Controllers
             model.ExperienceItems.Add(itemToAdd);
             EmploymentBl.SaveModel<ExperienceModel, Experience>(model, out error);
 
-            return RedirectToActionPermanent("Experience");
+            model = EmploymentBl.GetExperienceModel();
+            return View("Experience", model);
         }
 
         // Contacts
@@ -301,7 +296,7 @@ namespace WebMvc.Controllers
         public ActionResult Contacts(int? userId)
         {
             var model = EmploymentBl.GetContactsModel(userId);
-            return View(model);
+            return model.IsFinal ? View("ContactsReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -313,13 +308,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<ContactsModel, Contacts>(model, out error);
-                return RedirectToActionPermanent("BackgroundCheck");
+                ViewBag.Error = error;
             }
-            else
-            {
-                model = EmploymentBl.GetContactsModel();
-                return View(model);
-            }
+            model = EmploymentBl.GetContactsModel();
+            return model.IsFinal ? View("ContactsReadOnly", model) : View(model);
         }
 
         // Background Check
@@ -328,7 +320,7 @@ namespace WebMvc.Controllers
         public ActionResult BackgroundCheck(int? userId)
         {
             var model = EmploymentBl.GetBackgroundCheckModel(userId);
-            return View(model);
+            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -340,9 +332,10 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveModel<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                ViewBag.Error = error;
             }
             model = EmploymentBl.GetBackgroundCheckModel();
-            return View(model);
+            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -355,7 +348,8 @@ namespace WebMvc.Controllers
             model.References.Add(itemToAdd);
             EmploymentBl.SaveModel<BackgroundCheckModel, BackgroundCheck>(model, out error);
 
-            return RedirectToActionPermanent("BackgroundCheck");
+            model = EmploymentBl.GetBackgroundCheckModel();
+            return View("BackgroundCheck", model);
         }
 
         // Onsite Training
