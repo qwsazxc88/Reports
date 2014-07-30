@@ -36,7 +36,7 @@ namespace Reports.Core.Domain
         // TODO: EMPL Признаки ЦФО 2
         // TODO: EMPL Заявление на вычет
         // TODO: EMPL Скан заявления на вычет
-        // TODO: EMPL Группа доступа
+        public virtual AccessGroup AccessGroup { get; set; }
         public virtual User ApprovedByPersonnelManager { get; set; } //ok
         #endregion
 

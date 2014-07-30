@@ -442,6 +442,7 @@
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
     <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Domain\AdditionalVacationType.cs" />
+    <Compile Include="Domain\AccessGroup.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
@@ -954,6 +955,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentReportComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\AccessGroup.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

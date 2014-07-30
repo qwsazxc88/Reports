@@ -137,6 +137,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { positionDao = value; }
         }
 
+        protected IAccessGroupDao accessGroupDao;
+        public IAccessGroupDao AccessGroupDao
+        {
+            get { return Validate.Dependency(accessGroupDao); }
+            set { accessGroupDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -631,6 +638,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (entity != null)
             {
+                model.AccessGroupId = entity.AccessGroup.Id;
                 //model.ApprovedByPersonnelManager = entity.ApprovedByPersonnelManager;
                 model.AreaAddition = entity.AreaAddition;
                 model.AreaMultiplier = entity.AreaMultiplier;
@@ -865,7 +873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(PersonnelManagersModel model)
         {
-
+            model.AccessGroupItems = GetAccessGroups();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -1002,6 +1010,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IEnumerable<SelectListItem> GetDepartments()
         {
             return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetAccessGroups()
+        {
+            return AccessGroupDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
 
@@ -1452,6 +1465,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
         {
+            entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
             //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
             entity.AreaAddition = viewModel.AreaAddition;
             entity.AreaMultiplier = viewModel.AreaMultiplier;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -80,7 +81,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // Признаки ЦФО 2
         // Заявление на вычет
         // Скан заявления на вычет
-        // Группа доступа
+
+        [Display(Name = "Группа доступа"),
+            Required(ErrorMessage = "Обязательное поле")]
+        public int AccessGroupId { get; set; }
+        public IEnumerable<SelectListItem> AccessGroupItems { get; set; }
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]

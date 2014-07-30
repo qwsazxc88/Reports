@@ -469,6 +469,9 @@ namespace Reports.Core
             Register(Component.For(typeof(ICountryDao)).
                 ImplementedBy(typeof(CountryDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IAccessGroupDao)).
+                  ImplementedBy(typeof(AccessGroupDao)).
+                  LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

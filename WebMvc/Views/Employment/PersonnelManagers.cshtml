@@ -97,6 +97,10 @@
             @Html.LabelFor(m => m.PersonalAccountContractor)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccountContractor)<br />
             @Html.EditorFor(m => m.PersonalAccountContractor)
         </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
+            @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroupItems)
+        </div>
         <div class="formfield clearleft">
             <button type="submit">Отправить на согласование</button>                
         </div>            

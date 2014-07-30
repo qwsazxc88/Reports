@@ -47,6 +47,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetPositions();
         IEnumerable<SelectListItem> GetDirectorates();
         IEnumerable<SelectListItem> GetDepartments();
+        IEnumerable<SelectListItem> GetAccessGroups();
 
         void SetGeneralInfoModel(GeneralInfoModel model, bool hasError);
         void SetPassportModel(PassportModel model, bool hasError);        
