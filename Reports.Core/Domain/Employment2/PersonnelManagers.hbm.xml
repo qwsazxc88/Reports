@@ -15,9 +15,9 @@
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
-    <property name="TravelRelatedAddition" precision="19" scale="2" not-null="false"/>
-    <property name="CompetenceAddition" precision="19" scale="2" not-null="false"/>
-    <property name="FrontOfficeExperienceAddition" precision="19" scale="2" not-null="false"/>
+    <property name="TravelRelatedAddition" precision="15" scale="2" not-null="false"/>
+    <property name="CompetenceAddition" precision="15" scale="2" not-null="false"/>
+    <property name="FrontOfficeExperienceAddition" precision="15" scale="2" not-null="false"/>
     <!--property name="Grade" not-null="false"/-->
     <property name="OverallExperienceYears" not-null="true"/>
     <property name="OverallExperienceMonths" not-null="true"/>

@@ -13,8 +13,8 @@
     <property name="EmploymentConditions" length="250" not-null="false"/>
     <property name="Schedule" length="50" not-null="false"/>
     <property name="ProbationaryPeriod" length="50" not-null="false"/>
-    <property name="DailySalaryBasis" precision="19" scale="2" not-null="false"/>
-    <property name="HourlySalaryBasis" precision="19" scale="2" not-null="false"/>
+    <property name="DailySalaryBasis" precision="15" scale="2" not-null="false"/>
+    <property name="HourlySalaryBasis" precision="15" scale="2" not-null="false"/>
     <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
     <property name="WorkCity" length="100" not-null="false"/>
     <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
