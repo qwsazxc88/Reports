@@ -11,8 +11,8 @@
     <property name="InternalPassportSeries" length="4" not-null="true"/>
     <property name="InternalPassportNumber" length="6" not-null="true"/>
     <property name="InternalPassportDateOfIssue" not-null="false"/>
-    <property name="InternalPassportIssuedBy" length="150" not-null="true"/>
-    <property name="InternalPassportSubdivisionCode" length="7" not-null="true"/>
+    <property name="InternalPassportIssuedBy" length="250" not-null="true"/>
+    <property name="InternalPassportSubdivisionCode" length="15" not-null="true"/>
     <property name="RegistrationDate" not-null="false"/>
     <property name="ZipCode" length="6" not-null="true"/>
     <property name="Region" length="50" not-null="false"/>

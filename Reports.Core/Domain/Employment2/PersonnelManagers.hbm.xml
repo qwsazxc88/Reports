@@ -26,7 +26,7 @@
     <property name="InsurableExperienceMonths" not-null="true"/>
     <property name="InsurableExperienceDays" not-null="true"/>
     <!-- Ознакомлен с регламентными документами -->
-    <property name="PersonalAccount" length="50" not-null="true"/>
+    <property name="PersonalAccount" length="23" not-null="true"/>
     <property name="PersonalAccountContractor" length="50" not-null="true"/>
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     

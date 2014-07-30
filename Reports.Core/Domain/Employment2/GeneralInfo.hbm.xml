@@ -29,8 +29,8 @@
     <property name="INN" length="12" not-null="false"/>
     <property name="SNILS" length="14" not-null="false"/>
     
-    <property name="DisabilityCertificateSeries" length="50" not-null="false"/>
-    <property name="DisabilityCertificateNumber" length="50" not-null="false"/>
+    <property name="DisabilityCertificateSeries" length="20" not-null="false"/>
+    <property name="DisabilityCertificateNumber" length="20" not-null="false"/>
     <property name="DisabilityCertificateDateOfIssue" not-null="false"/>
     <property name="DisabilityDegree" length="5" not-null="false"/>
     <property name="DisabilityCertificateExpirationDate" not-null="false"/>

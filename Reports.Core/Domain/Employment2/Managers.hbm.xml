@@ -10,13 +10,13 @@
     <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Managers_Position" index="Managers_Position"  not-null="false"/>
     <many-to-one name="Directorate" class="Department" column="DirectorateId" foreign-key="FK_Managers_Directorate" index="Managers_Directorate"  not-null="false"/>
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Managers_Department" index="Managers_Department"  not-null="false"/>
-    <property name="EmploymentConditions" length="100" not-null="false"/>
+    <property name="EmploymentConditions" length="250" not-null="false"/>
     <property name="Schedule" length="50" not-null="false"/>
     <property name="ProbationaryPeriod" length="50" not-null="false"/>
     <property name="DailySalaryBasis" precision="19" scale="2" not-null="false"/>
     <property name="HourlySalaryBasis" precision="19" scale="2" not-null="false"/>
     <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
-    <property name="WorkCity" length="50" not-null="false"/>
+    <property name="WorkCity" length="100" not-null="false"/>
     <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
     <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
     <property name="IsFront" not-null="true"/>
