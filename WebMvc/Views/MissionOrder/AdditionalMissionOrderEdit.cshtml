@@ -148,7 +148,7 @@
         <tr>
             <td colspan="2">
                <input type="submit" value="Записать" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-               <input type="button" value="Печать приказа" onclick="window.location.href='@Url.Action("GetOrderPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
+               <input type="button" value="Печать изменения" onclick="window.location.href='@Url.Action("GetAdditionalOrderPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
                <div style="text-align: right;"><input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsDeleteAvailable) {<text>style="display:none"</text>}/>
             </div>
             </td>

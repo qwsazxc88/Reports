@@ -299,7 +299,12 @@ namespace WebMvc.Controllers
         public ActionResult PrintOrder(int id)
         {
             PrintMissionOrderViewModel model = RequestBl.GetPrintMissionOrderModel(id);
-
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult PrintAdditionalOrder(int id)
+        {
+            PrintMissionOrderViewModel model = RequestBl.GetPrintMissionOrderModel(id);
             return View(model);
         }
         [HttpGet]
@@ -318,6 +323,11 @@ namespace WebMvc.Controllers
         public ActionResult GetOrderPrintForm(int id)
         {
             return GetPrintForm(id, "PrintOrder");
+        }
+        [HttpGet]
+        public ActionResult GetAdditionalOrderPrintForm(int id)
+        {
+            return GetPrintForm(id, "PrintAdditionalOrder");
         }
         [HttpGet]
         public ActionResult GetDocumentPrintForm(int id)
