@@ -11,73 +11,87 @@
 
 <tr>
         
-    <th>
+    <th rowspan="2">
         №<br />п/п
     </th>
         
-    <th>
+    <th rowspan="2">
         ФИО
     </th>
 
-    <th>
+    <th rowspan="2">
         Дирекция
     </th>
 
-    <th>
+    <th rowspan="2">
         Город<br />места<br />работы
     </th>
 
-    <th>
+    <th rowspan="2">
         Структурное<br />подразделение
-    </th>
+    </th rowspan="2">
 
-    <th>
+    <th rowspan="2">
         Должность
     </th>        
         
-    <th>
+    <th rowspan="2">
         Дата<br />приема
     </th>
         
-    <th>
+    <th rowspan="2">
         Номер<br />приказа
     </th>
         
-    <th>
+    <th rowspan="2">
         Дата<br />приказа
     </th>
 
-    <th>
+    <th rowspan="2">
         Номер<br />трудового<br />договора
     </th>
 
     @* Вид работы (осн./совм.) *@
     @* Характер работы (пост./врем.) *@
 
-    <th>
+    <th rowspan="2">
         Исп.<br />срок
     </th>
 
-    <th>
+    <th rowspan="2">
         График<br />работы
     </th>
 
-    <th>
+    <th rowspan="2">
         Дата<br />рождения
     </th>
 
-    <th>
+    <th rowspan="2">
         Инвалидность
     </th>
 
-    <th>
+    <th rowspan="2">
         Грейд
     </th>
 
-    <th>
+    <th rowspan="2">
         Текущее<br />состояние
     </th>
 
+    <th colspan="8">
+        Документы
+    </th>
+</tr>
+
+<tr>
+    <th>Общая информация</th>
+    <th>Паспортные данные</th>
+    <th>Образование</th>
+    <th>Состав семьи</th>
+    <th>Воинский учет</th>
+    <th>Трудовая деятельность</th>
+    <th>Контактные данные</th>
+    <th>Заявление о приеме</th>
 </tr>
 
 @{ int i = 1; }
@@ -153,6 +167,15 @@
         <td>
             @candidate.Status
         </td>
+
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
 
     </tr>
 }
