@@ -155,8 +155,8 @@
             <span class="fakeFormField">@Html.DisplayFor(m => m.DisabilityCertificateDateOfIssue)&nbsp;</span>
         </div>
         <div class="formfield">
-            @Html.LabelFor(m => m.DisabilityDegree)<br />
-            <span class="fakeFormField">@Model.DisabilityDegree&nbsp;</span>
+            @Html.LabelFor(m => m.DisabilityDegreeId)<br />
+            <span class="fakeFormField">@Model.DisabilityDegrees.Where(x => x.Value == Model.DisabilityDegreeId.ToString()).FirstOrDefault().Text&nbsp;</span>
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)<br />

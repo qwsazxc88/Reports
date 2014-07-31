@@ -37,6 +37,7 @@ namespace Reports.Presenters.UI.Bl
 
         IEnumerable<SelectListItem> GetCountries();
         IEnumerable<SelectListItem> GetInsuredPersonTypes();
+        IEnumerable<SelectListItem> GetDisabilityDegrees();
         IEnumerable<SelectListItem> GetStatuses();
         IEnumerable<SelectListItem> GetDocumentTypes();
         IEnumerable<SelectListItem> GetRanks();

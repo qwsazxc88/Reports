@@ -32,7 +32,7 @@ namespace Reports.Core.Domain
         public virtual string DisabilityCertificateSeries { get; set; }
         public virtual string DisabilityCertificateNumber { get; set; }
         public virtual DateTime? DisabilityCertificateDateOfIssue { get; set; }
-        public virtual string DisabilityDegree { get; set; }
+        public virtual DisabilityDegree DisabilityDegree { get; set; }
         public virtual DateTime? DisabilityCertificateExpirationDate { get; set; }
 
         public virtual int Status { get; set; } // - статус налогоплательщика по НДФЛ

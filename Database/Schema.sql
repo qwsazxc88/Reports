@@ -457,6 +457,9 @@ alter table GeneralInfo  drop constraint FK_GeneralInfo_Citizenship
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_InsuredPersonType]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
 alter table GeneralInfo  drop constraint FK_GeneralInfo_InsuredPersonType
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_GeneralInfo_DisabilityDegree]') AND parent_object_id = OBJECT_ID('GeneralInfo'))
+alter table GeneralInfo  drop constraint FK_GeneralInfo_DisabilityDegree
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_AppointmentComment_User]') AND parent_object_id = OBJECT_ID('AppointmentComment'))
 alter table AppointmentComment  drop constraint FK_AppointmentComment_User
 
@@ -755,6 +758,8 @@ if exists (select * from dbo.sysobjects where id = object_id(N'EmploymentType') 
 if exists (select * from dbo.sysobjects where id = object_id(N'MissionType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table MissionType
 if exists (select * from dbo.sysobjects where id = object_id(N'Position') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Position
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetDay') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetDay
+if exists (select * from dbo.sysobjects where id = object_id(N'DisabilityDegree') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DisabilityDegree
+if exists (select * from dbo.sysobjects where id = object_id(N'AccessGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AccessGroup
 if exists (select * from dbo.sysobjects where id = object_id(N'NameChange') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table NameChange
 if exists (select * from dbo.sysobjects where id = object_id(N'ForeignLanguage') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table ForeignLanguage
 if exists (select * from dbo.sysobjects where id = object_id(N'[ClearanceChecklistRoleRecord]') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table [ClearanceChecklistRoleRecord]
@@ -790,7 +795,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManage
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
-if exists (select * from dbo.sysobjects where id = object_id(N'AccessGroup') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AccessGroup
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -1091,9 +1095,10 @@ create table AcceptRequestDate (
 )
 create table RequestPrintForm (
  Id INT IDENTITY NOT NULL,
-  Context VARBINARY(MAX) not null,
+  Context VARBINARY(MAX) null,
   RequestId INT not null,
   RequestTypeId INT not null,
+  FilePath NVARCHAR(1024) null,
   constraint PK_RequestPrintForm  primary key (Id)
 )
 create table EmploymentHoursType (
@@ -1838,7 +1843,7 @@ create table GeneralInfo (
   DisabilityCertificateSeries NVARCHAR(20) null,
   DisabilityCertificateNumber NVARCHAR(20) null,
   DisabilityCertificateDateOfIssue DATETIME null,
-  DisabilityDegree NVARCHAR(5) null,
+  DisabilityDegreeId INT null,
   DisabilityCertificateExpirationDate DATETIME null,
   Status INT not null,
   AgreedToPersonalDataProcessing BIT not null,
@@ -1956,6 +1961,20 @@ create table TimesheetDay (
   StatusId INT not null,
   TimesheetId INT not null,
   constraint PK_TimesheetDay  primary key (Id)
+)
+create table DisabilityDegree (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(128) null,
+  constraint PK_DisabilityDegree  primary key (Id)
+)
+create table AccessGroup (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(128) null,
+  constraint PK_AccessGroup  primary key (Id)
 )
 create table NameChange (
  Id INT IDENTITY NOT NULL,
@@ -2239,12 +2258,13 @@ create table RequestAttachment (
   Version INT not null,
   FileName NVARCHAR(64) not null,
   ContextType NVARCHAR(64) not null,
-  Context VARBINARY(MAX) not null,
+  Context VARBINARY(MAX) null,
   RequestId INT not null,
   RequestType INT not null,
   DateCreated DATETIME not null,
   Description NVARCHAR(256) null,
   CreatorRoleId INT not null,
+  FilePath NVARCHAR(1024) null,
   constraint PK_RequestAttachment  primary key (Id)
 )
 create table EmployeeDocumentType (
@@ -2330,13 +2350,6 @@ create table Document (
   OutsourcingManagerDateAccept DATETIME null,
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
-)
-create table AccessGroup (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_AccessGroup  primary key (Id)
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
@@ -2632,9 +2645,11 @@ alter table ExperienceItem add constraint FK_ExperienceItem_Experience foreign k
 create index GeneralInfo_Candidate on GeneralInfo (CandidateId)
 create index GeneralInfo_Citizenship on GeneralInfo (CitizenshipId)
 create index GeneralInfo_InsuredPersonType on GeneralInfo (InsuredPersonTypeId)
+create index GeneralInfo_DisabilityDegree on GeneralInfo (DisabilityDegreeId)
 alter table GeneralInfo add constraint FK_GeneralInfo_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table GeneralInfo add constraint FK_GeneralInfo_Citizenship foreign key (CitizenshipId) references Country
 alter table GeneralInfo add constraint FK_GeneralInfo_InsuredPersonType foreign key (InsuredPersonTypeId) references InsuredPersonType
+alter table GeneralInfo add constraint FK_GeneralInfo_DisabilityDegree foreign key (DisabilityDegreeId) references DisabilityDegree
 create index IX_AppointmentComment_User on AppointmentComment (UserId)
 create index IX_AppointmentComment_Appointment on AppointmentComment (AppointmentId)
 alter table AppointmentComment add constraint FK_AppointmentComment_User foreign key (UserId) references [Users]

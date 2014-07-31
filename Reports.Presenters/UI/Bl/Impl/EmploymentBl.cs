@@ -144,6 +144,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { accessGroupDao = value; }
         }
 
+        protected IDisabilityDegreeDao disabilityDegreeDao;
+        public IDisabilityDegreeDao DisabilityDegreeDao
+        {
+            get { return Validate.Dependency(disabilityDegreeDao); }
+            set { disabilityDegreeDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -171,7 +178,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DisabilityCertificateExpirationDate = entity.DisabilityCertificateExpirationDate;
                 model.DisabilityCertificateNumber = entity.DisabilityCertificateNumber;
                 model.DisabilityCertificateSeries = entity.DisabilityCertificateSeries;
-                model.DisabilityDegree = entity.DisabilityDegree;
+                model.DisabilityDegreeId = entity.DisabilityDegree != null ? (int?)entity.DisabilityDegree.Id : null;
 
                 model.DistrictOfBirth = entity.DistrictOfBirth;
                 model.FirstName = entity.FirstName;
@@ -827,6 +834,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.CitizenshipItems = GetCountries();
             model.InsuredPersonTypeItems = GetInsuredPersonTypes();
+            model.DisabilityDegrees = GetDisabilityDegrees();
             model.StatusItems = GetStatuses();
         }
         public void LoadDictionaries(PassportModel model)
@@ -892,6 +900,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IEnumerable<SelectListItem> GetInsuredPersonTypes()
         {
             return InsuredPersonTypeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
+        }
+
+        public IEnumerable<SelectListItem> GetDisabilityDegrees()
+        {
+            return DisabilityDegreeDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
         }
 
         public IEnumerable<SelectListItem> GetStatuses()
@@ -1077,7 +1090,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.DisabilityCertificateExpirationDate = viewModel.DisabilityCertificateExpirationDate;
             entity.DisabilityCertificateNumber = viewModel.DisabilityCertificateNumber;
             entity.DisabilityCertificateSeries = viewModel.DisabilityCertificateSeries;
-            entity.DisabilityDegree = viewModel.DisabilityDegree;
+            entity.DisabilityDegree = viewModel.DisabilityDegreeId.HasValue ? DisabilityDegreeDao.Load(viewModel.DisabilityDegreeId.Value) : null;
             
             entity.DistrictOfBirth = viewModel.DistrictOfBirth;
             entity.FirstName = viewModel.FirstName;

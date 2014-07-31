@@ -32,7 +32,7 @@
     <property name="DisabilityCertificateSeries" length="20" not-null="false"/>
     <property name="DisabilityCertificateNumber" length="20" not-null="false"/>
     <property name="DisabilityCertificateDateOfIssue" not-null="false"/>
-    <property name="DisabilityDegree" length="5" not-null="false"/>
+    <many-to-one name="DisabilityDegree" class="DisabilityDegree" column="DisabilityDegreeId" foreign-key="FK_GeneralInfo_DisabilityDegree" index="GeneralInfo_DisabilityDegree"  not-null="false"/>
     <property name="DisabilityCertificateExpirationDate" not-null="false"/>
     
     <property name="Status" not-null="true"/>

@@ -166,9 +166,9 @@
                 @Html.LabelFor(m => m.DisabilityCertificateDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateDateOfIssue)<br />
                 @Html.EditorFor(m => m.DisabilityCertificateDateOfIssue)
             </div>
-            <div class="formfield">
-                @Html.LabelFor(m => m.DisabilityDegree)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityDegree)<br />
-                @Html.TextBoxFor(m => m.DisabilityDegree)
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DisabilityDegreeId)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityDegreeId)<br />
+                @Html.DropDownListFor(m => m.DisabilityDegreeId, Model.DisabilityDegrees, string.Empty)
             </div>
             <div class="formfield">
                 @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />

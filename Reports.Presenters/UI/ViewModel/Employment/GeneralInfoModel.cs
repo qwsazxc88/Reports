@@ -82,7 +82,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? DisabilityCertificateDateOfIssue { get; set; }
 
         [Display(Name = "Группа инвалидности")]
-        public string DisabilityDegree { get; set; }
+        public int? DisabilityDegreeId { get; set; }
+        public IEnumerable<SelectListItem> DisabilityDegrees { get; set; }
 
         [Display(Name = "Срок действия справки"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
