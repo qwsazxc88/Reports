@@ -15,6 +15,7 @@ namespace WebMvc.Controllers
 {
     public class EmploymentController : Controller
     {
+        protected int RUSSIAN_FEDERATION = 643;
         protected IEmploymentBl employmentBl;
         public IEmploymentBl EmploymentBl
         {
@@ -492,7 +493,7 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(GeneralInfoModel model)
         {
             // Если не установлен флаг отсутствия отчества, то отчество должно быть заполнено
-            if (!model.IsPatronymicAbsent && (model.Patronymic == null || model.Patronymic.Length == 0))
+            if (!model.IsPatronymicAbsent && string.IsNullOrEmpty(model.Patronymic))
             {
                 ModelState.AddModelError("Patronymic", "Обязательное поле, если не отмечен флаг \"Отчество отсутствует\"");
             }
@@ -501,6 +502,15 @@ namespace WebMvc.Controllers
             if (model.DisabilityCertificateExpirationDate.HasValue && model.DisabilityCertificateExpirationDate < DateTime.Now)
             {
                 ModelState.AddModelError("DisabilityCertificateExpirationDate", "Некорректный срок действия справки");
+            }
+
+            if (model.InsuredPersonTypeId.HasValue && model.CitizenshipId == RUSSIAN_FEDERATION)
+            {
+                ModelState.AddModelError("InsuredPersonTypeId", "Заполняется только гражданами других государств");
+            }
+            if (!model.InsuredPersonTypeId.HasValue && model.CitizenshipId != RUSSIAN_FEDERATION)
+            {
+                ModelState.AddModelError("InsuredPersonTypeId", "*");
             }
             return ModelState.IsValid;
         }

@@ -12,12 +12,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Фамилия"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public string LastName { get; set; } //ok
         [Display(Name = "Имя"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
             RegularExpression(@"^[А-Яа-я]([А-Яа-я]|-|'| ){0,48}[А-Яа-я]$", ErrorMessage = "Недопустимый формат"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public string FirstName { get; set; } //ok
         [Display(Name = "Отчество"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
@@ -32,18 +32,18 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Пол")]
         public bool IsMale { get; set; } //ok
         
-        [Display(Name = "Гражданство")]
+        [Display(Name = "Гражданство"),
+            Required(ErrorMessage = "*")]
         public int CitizenshipId { get; set; } //ok
         public IEnumerable<SelectListItem> CitizenshipItems { get; set; }
         
-        [Display(Name = "Вид застрахованного лица"),
-            Required(ErrorMessage = "Обязательное поле")]
-        public int InsuredPersonTypeId { get; set; } //ok
+        [Display(Name = "Вид застрахованного лица")]
+        public int? InsuredPersonTypeId { get; set; } //ok
         public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
-            Required(ErrorMessage = "Обязательное поле"),]
+            Required(ErrorMessage = "*"),]
         public DateTime? DateOfBirth { get; set; } //ok
 
         [Display(Name = "Область"),
@@ -54,7 +54,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string DistrictOfBirth { get; set; } //ok
         [Display(Name = "Населенный пункт (город, поселок и т.п.)"),
             StringLength(50, ErrorMessage = "Не более 50 знаков."),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public string CityOfBirth { get; set; } //ok
         
         [Display(Name = "Знание иностранных языков")]
@@ -62,11 +62,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public string INN { get; set; } //ok
         [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
             RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public string SNILS { get; set; } //ok
 
         // Инвалидность
@@ -90,8 +90,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? DisabilityCertificateExpirationDate { get; set; }
 
         // ------------
-        
-        [Display(Name = "Статус")]
+
+        [Display(Name = "Статус"),
+            Required(ErrorMessage = "*")]
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
         

@@ -196,7 +196,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
 
                 model.INN = entity.INN;
-                model.InsuredPersonTypeId = entity.InsuredPersonType.Id;
+                model.InsuredPersonTypeId = entity.InsuredPersonType != null ? (int?)entity.InsuredPersonType.Id : null;
                 model.IsMale = entity.IsMale;
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
@@ -1124,7 +1124,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             entity.INN = viewModel.INN;
-            entity.InsuredPersonType = InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId);
+            entity.InsuredPersonType = viewModel.InsuredPersonTypeId.HasValue ? InsuredPersonTypeDao.Load(viewModel.InsuredPersonTypeId.Value) : null;
             entity.IsFinal = !viewModel.IsDraft;
             entity.IsMale = viewModel.IsMale;
             entity.IsPatronymicAbsent = viewModel.IsPatronymicAbsent;

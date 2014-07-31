@@ -29,7 +29,7 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Rank)&nbsp;@Html.ValidationMessageFor(m => m.Rank)<br />
-            @Html.DropDownListFor(m => m.Rank, Model.RankItems)
+            @Html.DropDownListFor(m => m.Rank, Model.RankItems, string.Empty)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.SpecialityCategory)&nbsp;@Html.ValidationMessageFor(m => m.SpecialityCategory)<br />

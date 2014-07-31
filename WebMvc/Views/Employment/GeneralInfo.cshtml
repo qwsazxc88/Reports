@@ -82,11 +82,11 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.CitizenshipId)&nbsp;@Html.ValidationMessageFor(m => m.CitizenshipId)<br />
-            @Html.DropDownListFor(m => m.CitizenshipId, Model.CitizenshipItems)
+            @Html.DropDownListFor(m => m.CitizenshipId, Model.CitizenshipItems, string.Empty)
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InsuredPersonTypeId)&nbsp;@Html.ValidationMessageFor(m => m.InsuredPersonTypeId)<br />
-            @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems)
+            @Html.DropDownListFor(m => m.InsuredPersonTypeId, Model.InsuredPersonTypeItems, string.Empty)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
@@ -178,7 +178,7 @@
 
         <div class="formfield clear">
             @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
-            @Html.DropDownListFor(m => m.StatusId, Model.StatusItems)
+            @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)&nbsp;@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
