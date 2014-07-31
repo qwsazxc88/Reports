@@ -141,8 +141,8 @@ namespace Reports.Core.Dao.Impl
                                           then N'Черновик сотрудника'    
                                     else N''
                                 end as AdditionalOrderState,
-                                ao.BeginDate as AdditionalOrderBeginDate,  
-                                ao.EndDate as AdditionalOrderEndDate,
+                                case when ao.Id is null then null else ao.BeginDate end as AdditionalOrderBeginDate,  
+                                case when ao.Id is null then null else ao.EndDate end as AdditionalOrderEndDate,
                                 case when v.AirTicketType = 1 then N'Бизнес'
                                      when v.AirTicketType = 2 then N'Эконом'
                                      else N'' end as AirTicketType,
@@ -423,32 +423,32 @@ namespace Reports.Core.Dao.Impl
                     //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
                     //    break;
                     case 1:
-                        statusWhere = @"UserDateAccept is not null";
+                        statusWhere = @"v.UserDateAccept is not null";
                         break;
                     case 2:
-                        statusWhere = @"UserDateAccept is null";
+                        statusWhere = @"v.UserDateAccept is null";
                         break;
                     case 3:
-                        statusWhere = @"ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.ManagerDateAccept is not null and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 4:
-                        statusWhere = @"ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 5:
-                        statusWhere = @"(ChiefDateAccept is not null and NeedToAcceptByChief = 1) or
-                                        (ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 1)";
+                        statusWhere = @"(v.ChiefDateAccept is not null and v.NeedToAcceptByChief = 1) or
+                                        (v.ManagerDateAccept is not null and v.NeedToAcceptByChiefAsManager = 1)";
                         break;
                     case 6:
-                        statusWhere = @"(ChiefDateAccept is null  and NeedToAcceptByChief = 1) or
-                                        (ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1)";
+                        statusWhere = @"(v.ChiefDateAccept is null  and v.NeedToAcceptByChief = 1) or
+                                        (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1)";
                         break;
                     case 7:
-                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null
-                                        and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
+                                        and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 8:
-                        statusWhere = @"UserDateAccept is not null and ((ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1) 
-                                        or (ManagerDateAccept is not null and ChiefDateAccept is null and NeedToAcceptByChief = 1))";
+                        statusWhere = @"v.UserDateAccept is not null and ((v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) 
+                                        or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1))";
                         break;
                     //case 8:
                     //    statusWhere =

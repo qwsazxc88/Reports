@@ -46,8 +46,9 @@ namespace Reports.Core.Domain
         public virtual IList<MissionComment> Comments { get; set; }
 
         public virtual bool DeleteAfterSendTo1C { get; set; }
-        
-        
+
+        public virtual bool IsAdditionalOrderExists { get; set; }
+        public virtual DateTime? AdditionalOrderRecalculateDate { get; set; }
         #endregion
 
         #region Properties

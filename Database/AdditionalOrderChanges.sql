@@ -13,3 +13,6 @@ alter table MissionOrder add MainOrderId INT null
 create index IX_MissionOrder_MainMissionOrder on MissionOrder (MainOrderId)
 alter table MissionOrder add constraint FK_MissionOrder_MainMissionOrder foreign key (MainOrderId) references MissionOrder
 end 
+
+alter table Mission add  IsAdditionalOrderExists BIT not null default(0)
+alter table Mission add  AdditionalOrderRecalculateDate datetime null

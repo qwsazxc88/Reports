@@ -8340,6 +8340,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionReportDao.SaveAndFlush(report);
 
         }
+        
+
         protected void CreateMission(MissionOrder entity)
         {
             CreateMissionReport(entity);
@@ -9129,7 +9131,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                    Type = order.Type,
                                                    NeedToAcceptByChief = order.NeedToAcceptByChief,
                                                    NeedToAcceptByChiefAsManager = order.NeedToAcceptByChiefAsManager,
-                                                   MainOrder = order
+                                                   MainOrder = order,
+                                                   BeginDate = order.BeginDate,
+                                                   EndDate = order.EndDate,
                                                };
             MissionOrderDao.SaveAndFlush(additionalOrder);
             report.AdditionalMissionOrder = additionalOrder;
@@ -9523,6 +9527,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                 model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
+                DateTime additionalBeginDate = entity.Targets.Min(x => x.BeginDate);
+                DateTime additionalEndDate = entity.Targets.Max(x => x.EndDate);
+                entity.BeginDate = additionalBeginDate > entity.MainOrder.BeginDate
+                                       ? entity.MainOrder.BeginDate
+                                       : additionalBeginDate;
+                entity.EndDate = additionalEndDate > entity.MainOrder.EndDate
+                                     ? additionalEndDate
+                                     : entity.MainOrder.EndDate;
             }
             bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id)
                 && current.UserRole == UserRole.Director;
@@ -9579,7 +9591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.UserDateAccept = DateTime.Now;*/
                             if (!entity.NeedToAcceptByChief)
                             {
-                                //CreateMission(entity);
+                                UpdateMissionFlag(entity);
                                 SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                             }
                             else
@@ -9615,7 +9627,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.ChiefDateAccept = DateTime.Now;
                                 entity.AcceptChief = currentUser;
                             }
-                            //CreateMission(entity);
+                            UpdateMissionFlag(entity);
                             SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                         }
                         else
@@ -9640,7 +9652,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 entity.ManagerDateAccept = DateTime.Now;
                                 entity.AcceptManager = currentUser;
                             }
-                            //CreateMission(entity);
+                            UpdateMissionFlag(entity);
                             SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                         }
                         else
@@ -9655,6 +9667,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+        }
+        protected void UpdateMissionFlag(MissionOrder entity)
+        {
+            Mission mission = entity.MainOrder.Mission;
+            mission.IsAdditionalOrderExists = true;
+            MissionDao.SaveAndFlush(mission);
         }
         #endregion
         #region Mission Report
