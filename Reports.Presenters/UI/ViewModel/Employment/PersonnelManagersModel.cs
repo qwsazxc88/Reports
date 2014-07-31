@@ -74,8 +74,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string PersonalAccount { get; set; }
 
         [Display(Name = "Контрагент лицевого счета"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string PersonalAccountContractor { get; set; }
+            Required(ErrorMessage = "Обязательное поле")]
+        public int PersonalAccountContractorId { get; set; }
+        public IEnumerable<SelectListItem> PersonalAccountContractors { get; set; }
         
         // Признаки ЦФО 1
         // Признаки ЦФО 2
@@ -85,7 +86,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Группа доступа"),
             Required(ErrorMessage = "Обязательное поле")]
         public int AccessGroupId { get; set; }
-        public IEnumerable<SelectListItem> AccessGroupItems { get; set; }
+        public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]

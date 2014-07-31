@@ -151,6 +151,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { disabilityDegreeDao = value; }
         }
 
+        protected IPersonalAccountContractorDao personalAccountContractorDao;
+        public IPersonalAccountContractorDao PersonalAccountContractorDao
+        {
+            get { return Validate.Dependency(personalAccountContractorDao); }
+            set { personalAccountContractorDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -665,7 +672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
                 model.OverallExperienceYears = entity.OverallExperienceYears;
                 model.PersonalAccount = entity.PersonalAccount;
-                model.PersonalAccountContractor = entity.PersonalAccountContractor;
+                model.PersonalAccountContractorId = entity.PersonalAccountContractor.Id;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
             LoadDictionaries(model);
@@ -881,7 +888,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(PersonnelManagersModel model)
         {
-            model.AccessGroupItems = GetAccessGroups();
+            model.PersonalAccountContractors = GetPersonalAccountContractors();
+            model.AccessGroups = GetAccessGroups();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -1023,6 +1031,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IEnumerable<SelectListItem> GetDepartments()
         {
             return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetPersonalAccountContractors()
+        {
+            return PersonalAccountContractorDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
         public IEnumerable<SelectListItem> GetAccessGroups()
@@ -1500,7 +1513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
             entity.PersonalAccount = viewModel.PersonalAccount;
-            entity.PersonalAccountContractor = viewModel.PersonalAccountContractor;
+            entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
         }
 

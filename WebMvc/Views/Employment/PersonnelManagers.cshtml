@@ -93,13 +93,13 @@
             @Html.LabelFor(m => m.PersonalAccount)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccount)<br />
             @Html.EditorFor(m => m.PersonalAccount)
         </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.PersonalAccountContractor)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccountContractor)<br />
-            @Html.EditorFor(m => m.PersonalAccountContractor)
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PersonalAccountContractorId)&nbsp;@Html.ValidationMessageFor(m => m.PersonalAccountContractorId)<br />
+            @Html.DropDownListFor(m => m.PersonalAccountContractorId, Model.PersonalAccountContractors)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
-            @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroupItems)
+            @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroups)
         </div>
         <div class="formfield clearleft">
             <button type="submit">Отправить на согласование</button>                

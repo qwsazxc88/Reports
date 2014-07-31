@@ -475,6 +475,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IDisabilityDegreeDao)).
                   ImplementedBy(typeof(DisabilityDegreeDao)).
                   LifeStyle.Is(type));
+            Register(Component.For(typeof(IPersonalAccountContractorDao)).
+                  ImplementedBy(typeof(PersonalAccountContractorDao)).
+                  LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

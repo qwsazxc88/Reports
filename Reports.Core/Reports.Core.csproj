@@ -255,6 +255,7 @@
     <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
+    <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -305,6 +306,7 @@
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -356,6 +358,7 @@
     <Compile Include="Domain\Employment2\Managers.cs" />
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
+    <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
@@ -966,6 +969,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\DisabilityDegree.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\PersonalAccountContractor.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

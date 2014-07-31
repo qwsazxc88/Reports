@@ -94,6 +94,9 @@ alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_Candidate]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
 alter table PersonnelManagers  drop constraint FK_PersonnelManagers_Candidate
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_PersonalAccountContractor]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
+alter table PersonnelManagers  drop constraint FK_PersonnelManagers_PersonalAccountContractor
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_AccessGroup]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
 alter table PersonnelManagers  drop constraint FK_PersonnelManagers_AccessGroup
 
@@ -795,6 +798,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManage
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'PersonalAccountContractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table PersonalAccountContractor
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -1073,7 +1077,7 @@ create table PersonnelManagers (
   InsurableExperienceMonths INT not null,
   InsurableExperienceDays INT not null,
   PersonalAccount NVARCHAR(23) not null,
-  PersonalAccountContractor NVARCHAR(50) not null,
+  PersonalAccountContractorId INT not null,
   AccessGroupId INT null,
   ApprovedByPersonnelManagerId INT null,
   constraint PK_PersonnelManagers  primary key (Id)
@@ -2351,6 +2355,13 @@ create table Document (
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
 )
+create table PersonalAccountContractor (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(128) null,
+  constraint PK_PersonalAccountContractor  primary key (Id)
+)
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
 alter table Family add constraint FK_Family_Candidate foreign key (CandidateId) references EmploymentCandidate
@@ -2413,9 +2424,11 @@ alter table Sicklist add constraint FK_Sicklist_ApprovedByManagerUser foreign ke
 alter table Sicklist add constraint FK_Sicklist_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
 create index PersonnelManagers_Candidate on PersonnelManagers (CandidateId)
+create index PersonnelManagers_PersonalAccountContractor on PersonnelManagers (PersonalAccountContractorId)
 create index PersonnelManagers_AccessGroup on PersonnelManagers (AccessGroupId)
 create index IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id on PersonnelManagers (ApprovedByPersonnelManagerId)
 alter table PersonnelManagers add constraint FK_PersonnelManagers_Candidate foreign key (CandidateId) references EmploymentCandidate
+alter table PersonnelManagers add constraint FK_PersonnelManagers_PersonalAccountContractor foreign key (PersonalAccountContractorId) references PersonalAccountContractor
 alter table PersonnelManagers add constraint FK_PersonnelManagers_AccessGroup foreign key (AccessGroupId) references AccessGroup
 alter table PersonnelManagers add constraint FK_PersonnelManagers_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)

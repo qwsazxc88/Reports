@@ -31,7 +31,7 @@ namespace Reports.Core.Domain
         public virtual int InsurableExperienceDays { get; set; } //ok
         // TODO: EMPL Ознакомлен с регламентными документами
         public virtual string PersonalAccount { get; set; } //ok
-        public virtual string PersonalAccountContractor { get; set; } //ok
+        public virtual PersonalAccountContractor PersonalAccountContractor { get; set; } //ok
         // TODO: EMPL Признаки ЦФО 1
         // TODO: EMPL Признаки ЦФО 2
         // TODO: EMPL Заявление на вычет
