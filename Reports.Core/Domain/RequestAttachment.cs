@@ -19,10 +19,13 @@ namespace Reports.Core.Domain
 
         public virtual string FileName { get; set; }
         public virtual string ContextType { get; set; }
-        protected virtual byte[] Context { get; set; }
+        public virtual byte[] Context { get; set; }
         public virtual byte[] UncompressContext
         {
-            get { return ContextCompressor.Decompress(Context); }
+            get
+            {
+                return ContextCompressor.Decompress(Context ?? FileContext);
+            }
             set
             {
                Context = ContextCompressor.Compress(value);
@@ -39,7 +42,16 @@ namespace Reports.Core.Domain
             get { return (UserRole)CreatorRole.Id; }
         }
         //public virtual Document Document { get; set; }
-
+        public virtual string FilePath { get; set; }
+        public virtual byte[] FileContext { get; set; }
+        public virtual byte[] GetContext()
+        {
+            return Context;
+        }
+        public virtual byte[] SetContext(byte[] context)
+        {
+            return Context = context;
+        }
         #endregion
 
         #region Constructors

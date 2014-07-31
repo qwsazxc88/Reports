@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Threading;
 using log4net;
 using NHibernate;
 using System.Collections;
@@ -135,6 +136,40 @@ namespace Reports.Core.Dao.Impl
             ITransaction tx = Session.Transaction;
             if(tx != null && tx.IsActive)
                 tx.Rollback();
+        }
+        public virtual void BeginTran()
+        {
+            Session.BeginTransaction();
+            //ITransaction tx = Session.Transaction;
+            //if (tx != null && tx.IsActive)
+            //    tx.Rollback();
+        }
+        public virtual void CommitTran()
+        {
+             ITransaction tx = Session.Transaction;
+             if (tx != null && tx.IsActive)
+             {
+                 try
+                 {
+                     tx.Commit();
+                     Log.DebugFormat("Commit transaction per session {0}, thread {1} success.",
+                                     Session.GetHashCode(),
+                                     Thread.CurrentThread.ManagedThreadId);
+                 }
+                 catch (Exception ex)
+                 {
+                     Log.Error("Error on tx.Commit()", ex);
+                     try
+                     {
+                         tx.Rollback();
+                     }
+                     catch (Exception rollEx)
+                     {
+
+                         Log.Error("Error on tx.Rollback()", rollEx);
+                     }
+                 }
+             }
         }
     }
 

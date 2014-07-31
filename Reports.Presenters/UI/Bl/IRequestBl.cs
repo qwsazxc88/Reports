@@ -178,6 +178,7 @@ namespace Reports.Presenters.UI.Bl
                                                                       bool? sortDescending,bool showDepts);
 
         PrintMissionReportViewModel GetPrintMissionReportModel(int id);
+        PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId);
 
         void SaveDocumentsToArchive(DeletePbRecordModel model);
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);

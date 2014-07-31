@@ -1,0 +1,67 @@
+﻿@model Reports.Presenters.UI.ViewModel.PrintMissionReportListViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Опись";
+}
+<!DOCTYPE html>
+<html>
+    <head>      
+        <link href="@Url.Content("~/Content/PrintForm.css")" rel="stylesheet" type="text/css" />  
+    </head>
+<body>                   
+<table>
+    <tr>
+        <td colspan="2" style="text-align:center">
+             ООО ИКБ"Совкомбанк" 
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align:center">
+            Опись
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Кому: 
+        </td>
+        <td>
+             @Model.To
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Куда: 
+        </td>
+        <td>
+             @Model.Address
+        </td>
+    </tr>
+    </table>
+    <table  class="grid">
+        <tr>
+            <th>
+                    № п/п
+            </th>
+            <th>
+                    Статья расхода
+            </th>
+        </tr>  
+        @if (Model.Costs != null && Model.Costs.Count > 0)
+        {
+            int i = 1;
+            foreach (string cost in Model.Costs)
+            {
+              <tr>
+                <td style="text-align:center">
+                    @i
+                </td>
+                <td>
+                     @cost
+                </td>
+              </tr>   
+                i++;
+            }
+        }
+    </table>
+ </body>
+ </html>

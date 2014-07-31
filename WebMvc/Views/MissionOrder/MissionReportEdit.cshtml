@@ -185,7 +185,7 @@
             <input type="button" id="IsDocumentsSaveToArchiveBtn" value="Оригиналы переданы в архив" onclick="return DocumentsSaveToArchive();" @if (!Model.IsDocumentsSaveToArchiveAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
             <input type="hidden" id="IsPrintArchivistAddressAvailable" name="IsPrintArchivistAddressAvailable" value="@Model.IsPrintArchivistAddressAvailable" />
-            <input type="button" value="Адрес архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
+            <input type="button" value="Документы для архивариуса" onclick="return PrintArchivistAddress();" @if (!Model.IsPrintArchivistAddressAvailable)
                                                                                                                {<text>style="display:none"</text>}/>
             </td>
         </tr>
@@ -946,9 +946,15 @@
                 },*/
                 buttons:
                 {
-                    "Печать": function () {
+                    "Печать конверта": function () {
                      var id = $('#ArchivistId').val();
                      window.location.href='@Url.Action("GetPrintArchivistAddress", "MissionOrder")'+'?id='+id;
+
+                    },
+                    "Печать описи": function () {
+                     var id = $('#ArchivistId').val();
+                     var reportId = $('#Id').val();
+                     window.location.href='@Url.Action("GetReportListPrintForm", "MissionOrder")'+'?id='+id+"&reportId="+reportId;
 
                     },
                     "Отмена": function () {
@@ -958,7 +964,8 @@
             });
      } 
      function disablePrintButton() {
-            $(".ui-dialog-buttonpane button:contains('Печать')").button("disable");
+            $(".ui-dialog-buttonpane button:contains('Печать конверта')").button("disable");
+            $(".ui-dialog-buttonpane button:contains('Печать описи')").button("disable");
      }
      function archivistChange()
      {

@@ -997,7 +997,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (model.IsDelete)
                     {
                         employment.DeleteDate = DateTime.Now;
-                        RequestAttachmentDao.DeleteForEntityId(model.Id);
+                        RequestAttachmentDao.DeleteForEntityId(model.Id, RequestAttachmentTypeEnum.Employment);
                         EmploymentDao.SaveAndFlush(employment);
                         model.IsDelete = false;
 
@@ -9914,6 +9914,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Costs = costs;
             return model;
         }
+        public PrintMissionReportListViewModel GetPrintMissionReportListModel(int id,int reportId)
+        {
+            PrintMissionReportListViewModel model = new PrintMissionReportListViewModel();
+            MissionReport report = MissionReportDao.Load(reportId);
+            if (report == null)
+                throw new ArgumentException(string.Format("Авансовый отчет (id {0}) отсутствует в базе данных.", id));
+            User user = UserDao.Load(id);
+            if (user == null)
+                throw new ArgumentException(string.Format("Не могу найти архивариуса (id={0}) в базе данных", id));
+            model.To = user.FullName;
+            model.Address = user.Address;
+            model.Costs = report.Costs.Where(x => !x.IsCostFromPurchaseBook).OrderBy(x => x.Type.SortOrder).Select(x => x.Type.Name).ToList();
+            return model;
+        }
+
         #endregion
         
         public MissionUserDeptsListModel GetMissionUserDeptsListModel()
@@ -10435,7 +10450,27 @@ namespace Reports.Presenters.UI.Bl.Impl
              User user = UserDao.Load(id);
              if(user == null)
                  throw new ArgumentException(string.Format("Не могу найти архивариуса (id={0}) в базе данных",id));
-             return new PrintArchivistAddressFormModel {Address = user.Address};
+
+             return new PrintArchivistAddressFormModel
+                        {
+                            Address = user.Address,
+                            To = user.FullName,
+                            From = CurrentUser.Name,
+                            Index = GetIndex(user.Address),
+                        };
+         }
+         protected string GetIndex(string address)
+         {
+             if (string.IsNullOrEmpty(address))
+                 return null;
+             string[] parts = address.Split(',');
+             if (parts.Length < 2)
+                 return null;
+             string index = parts[0].Trim();
+             Regex r = new Regex(@"^\d{6}$");
+             if (r.IsMatch(index))
+                 return index;
+             return null;
          }
     }
 }
