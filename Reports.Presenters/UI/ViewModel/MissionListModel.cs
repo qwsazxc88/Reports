@@ -37,13 +37,18 @@ namespace Reports.Presenters.UI.ViewModel
         public int StatusId { get; set; }
         public IList<IdNameDto> Statuses;
 
-        public IList<VacationDto> Documents { get; set; }
+        public IList<MissionDto> Documents { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
 
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
+
+
+        public bool IsApproveClick { get; set; }
+        public bool HasErrors { get; set; }
+
     }
 
     

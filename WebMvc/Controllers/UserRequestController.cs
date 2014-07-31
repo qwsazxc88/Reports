@@ -618,6 +618,8 @@ namespace WebMvc.Controllers
          public ActionResult MissionList(MissionListModel model)
          {
              RequestBl.SetMissionListModel(model,!ValidateModel(model));
+             if (model.HasErrors)
+                 ModelState.AddModelError(string.Empty, "При согласовании заявок произошла(и) ошибка(и).Не всем заявкам был установлен флаг пересчета.");
              return View(model);
          }
          protected bool ValidateModel(MissionListModel model)

@@ -7,7 +7,7 @@ namespace Reports.Core.Dao
 {
     public interface IMissionDao : IDao<Mission>
     {
-        IList<VacationDto> GetDocuments(
+        IList<MissionDto> GetDocuments(
             int userId, 
             UserRole role,
             int departmentId,
@@ -19,5 +19,7 @@ namespace Reports.Core.Dao
             string userName, 
             int sortedBy,
             bool? sortDescending);
+
+        int SetRecalculateDate(List<int> idsForApprove);
     }
 }

@@ -2521,10 +2521,36 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             SetDictionariesToModel(model, user);
-            if(hasError)
-                model.Documents = new List<VacationDto>();
+            if (hasError)
+                model.Documents = new List<MissionDto>();
             else
+            {
+                if (model.IsApproveClick)
+                {
+                    model.HasErrors = false;
+                    model.IsApproveClick = false;
+                    if (model.Documents != null)
+                    {
+                        List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
+                        SetRecalculateDateToMissions(model, idsForApprove);
+                    }
+                }
                 SetDocumentsToModel(model, user);
+            }
+        }
+        protected void SetRecalculateDateToMissions(MissionListModel model, List<int> idsForApprove)
+        {
+            if(idsForApprove.Count == 0)
+               return;
+            try
+            {
+                MissionDao.SetRecalculateDate(idsForApprove);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SetRecalculateDate",ex);
+                model.HasErrors = true;
+            }
         }
         protected void SetDictionariesToModel(MissionListModel model, User user)
         {
