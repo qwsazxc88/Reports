@@ -501,6 +501,7 @@
     <Compile Include="Enum\ExportImportType.cs" />
     <Compile Include="Enum\FamilyRelationship.cs" />
     <Compile Include="Enum\RequestStatusEnum.cs" />
+    <Compile Include="Enum\EmploymentStatus.cs" />
     <Compile Include="Exceptions\ModifyDocumentException.cs" />
     <Compile Include="Filters\BaseListFilter.cs" />
     <Compile Include="Filters\CalcListFilter.cs" />

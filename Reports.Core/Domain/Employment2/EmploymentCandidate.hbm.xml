@@ -18,6 +18,8 @@
     <many-to-one name="OnsiteTraining" class="OnsiteTraining" column="OnsiteTrainingId" foreign-key="FK_Candidate_OnsiteTraining" index="Candidate_OnsiteTraining"  not-null="false"/>
     <many-to-one name="Managers" class="Managers" column="ManagersId" foreign-key="FK_Candidate_Managers" index="Candidate_Managers"  not-null="false"/>
     <many-to-one name="PersonnelManagers" class="PersonnelManagers" column="PersonnelManagersId" foreign-key="FK_Candidate_PersonnelManagers" index="Candidate_PersonnelManagers"  not-null="false"/>
+    <property name="Status" not-null="false"/>
+    <property name="QuestionnaireDate" not-null="false"/>
 
   </class>
 </hibernate-mapping>

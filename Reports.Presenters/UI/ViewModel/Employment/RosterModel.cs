@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
@@ -10,6 +11,25 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Реестр по приему"),
             StringLength(200, ErrorMessage = "Не более 200 знаков.")]
         public IList<CandidateDto> Roster { get; set; }
+
+        // Фильтры
+        [Display(Name = "Структурное подразделение")]
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }
+
+        [Display(Name = "Статус")]
+        public int? StatusId { get; set; } //ok
+        public IEnumerable<SelectListItem> Statuses { get; set; }
+
+        [Display(Name = "ФИО сотрудника")]
+        public string UserName { get; set; }
+
+        [Display(Name = "Период с")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? BeginDate { get; set; }
+        [Display(Name = "по")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? EndDate { get; set; }
 
         public RosterModel()
         {

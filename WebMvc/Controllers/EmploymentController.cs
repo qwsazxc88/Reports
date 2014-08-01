@@ -29,7 +29,7 @@ namespace WebMvc.Controllers
         //
         // GET: /Employment/
         [HttpGet]
-        public ActionResult Index(int? userId)
+        public ActionResult Index()
         {
             return RedirectToActionPermanent("GeneralInfo");
         }
@@ -37,10 +37,10 @@ namespace WebMvc.Controllers
         // General Info
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult GeneralInfo(int? userId)
+        public ActionResult GeneralInfo(int? id)
         {
-            var model = EmploymentBl.GetGeneralInfoModel(userId);
-            return model.IsFinal? View("GeneralInfoReadOnly", model) : View(model);
+            var model = EmploymentBl.GetGeneralInfoModel(id);
+            return (model.IsFinal || id.HasValue) ? View("GeneralInfoReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -91,10 +91,10 @@ namespace WebMvc.Controllers
         // Passport
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult Passport(int? userId)
+        public ActionResult Passport(int? id)
         {
-            var model = EmploymentBl.GetPassportModel(userId);
-            return model.IsFinal ? View("PassportReadOnly", model) : View(model);
+            var model = EmploymentBl.GetPassportModel(id);
+            return (model.IsFinal || id.HasValue) ? View("PassportReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -115,10 +115,10 @@ namespace WebMvc.Controllers
         // Education
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult Education(int? userId)
+        public ActionResult Education(int? id)
         {
-            var model = EmploymentBl.GetEducationModel(userId);
-            return model.IsFinal ? View("EducationReadOnly", model) : View(model);
+            var model = EmploymentBl.GetEducationModel(id);
+            return (model.IsFinal || id.HasValue) ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -195,10 +195,10 @@ namespace WebMvc.Controllers
         // Family
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult Family(int? userId)
+        public ActionResult Family(int? id)
         {
-            var model = EmploymentBl.GetFamilyModel(userId);
-            return model.IsFinal ? View("FamilyReadOnly", model) : View(model);
+            var model = EmploymentBl.GetFamilyModel(id);
+            return (model.IsFinal || id.HasValue) ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -232,10 +232,10 @@ namespace WebMvc.Controllers
 
         // Military Service
         [HttpGet]
-        public ActionResult MilitaryService(int? userId)
+        public ActionResult MilitaryService(int? id)
         {
-            var model = EmploymentBl.GetMilitaryServiceModel(userId);
-            return model.IsFinal ? View("MilitaryServiceReadOnly", model) : View(model);
+            var model = EmploymentBl.GetMilitaryServiceModel(id);
+            return (model.IsFinal || id.HasValue) ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -256,10 +256,10 @@ namespace WebMvc.Controllers
         // Experience
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult Experience(int? userId)
+        public ActionResult Experience(int? id)
         {
-            var model = EmploymentBl.GetExperienceModel(userId);
-            return model.IsFinal ? View("ExperienceReadOnly", model) : View(model);
+            var model = EmploymentBl.GetExperienceModel(id);
+            return (model.IsFinal || id.HasValue) ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -294,10 +294,10 @@ namespace WebMvc.Controllers
         // Contacts
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult Contacts(int? userId)
+        public ActionResult Contacts(int? id)
         {
-            var model = EmploymentBl.GetContactsModel(userId);
-            return model.IsFinal ? View("ContactsReadOnly", model) : View(model);
+            var model = EmploymentBl.GetContactsModel(id);
+            return (model.IsFinal || id.HasValue) ? View("ContactsReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -318,10 +318,10 @@ namespace WebMvc.Controllers
         // Background Check
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult BackgroundCheck(int? userId)
+        public ActionResult BackgroundCheck(int? id)
         {
-            var model = EmploymentBl.GetBackgroundCheckModel(userId);
-            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
+            var model = EmploymentBl.GetBackgroundCheckModel(id);
+            return (model.IsFinal || id.HasValue) ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -356,9 +356,9 @@ namespace WebMvc.Controllers
         // Onsite Training
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult OnsiteTraining(int? userId)
+        public ActionResult OnsiteTraining(int? id)
         {
-            var model = EmploymentBl.GetOnsiteTrainingModel(userId);
+            var model = EmploymentBl.GetOnsiteTrainingModel(id);
             return View(model);
         }
 
@@ -379,7 +379,7 @@ namespace WebMvc.Controllers
         // Application Letter
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
-        public ActionResult ApplicationLetter(int? userId)
+        public ActionResult ApplicationLetter(int? id)
         {
             var model = new ApplicationLetterModel();
             return View(model);
@@ -387,7 +387,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult ApplicationLetter(ApplicationLetterModel model, string cmd = "")
+        public ActionResult ApplicationLetter(ApplicationLetterModel model)
         {
             // EmploymentBl.SaveModel<ApplicationLetterModel, ApplicationLetter>(model, out error);
             return View(model);
@@ -396,9 +396,9 @@ namespace WebMvc.Controllers
         // Filled out by managers
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult Managers(int? userId)
+        public ActionResult Managers(int? id)
         {
-            var model = EmploymentBl.GetManagersModel(userId);
+            var model = EmploymentBl.GetManagersModel(id);
             return View(model);
         }
 
@@ -419,9 +419,9 @@ namespace WebMvc.Controllers
         // Filled out by personnel managers
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult PersonnelManagers(int? userId)
+        public ActionResult PersonnelManagers(int? id)
         {
-            var model = EmploymentBl.GetPersonnelManagersModel(userId);
+            var model = EmploymentBl.GetPersonnelManagersModel(id);
             return View(model);
         }
 
@@ -444,15 +444,15 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Roster()
         {
-            var model = EmploymentBl.GetRosterModel();
+            var model = EmploymentBl.GetRosterModel(null);
             return View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult Roster(RosterModel model)
+        public ActionResult Roster(RosterFiltersModel input)
         {
-            model = EmploymentBl.GetRosterModel();
+            RosterModel model = EmploymentBl.GetRosterModel(input);
             return View(model);
         }
 

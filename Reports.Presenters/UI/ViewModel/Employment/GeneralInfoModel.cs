@@ -40,6 +40,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Вид застрахованного лица")]
         public int? InsuredPersonTypeId { get; set; } //ok
         public IEnumerable<SelectListItem> InsuredPersonTypeItems { get; set; }
+        public string InsuredPersonTypeSelectedName { get; set; }
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),

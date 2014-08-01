@@ -168,6 +168,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //UserRole role = AuthenticationService.CurrentUser.UserRole;
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             GeneralInfoModel model = new GeneralInfoModel { UserId = userId.Value };
+            LoadDictionaries(model);
             GeneralInfo entity = null;
             int? id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(userId.Value);
             if (id.HasValue)
@@ -185,7 +186,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DisabilityCertificateExpirationDate = entity.DisabilityCertificateExpirationDate;
                 model.DisabilityCertificateNumber = entity.DisabilityCertificateNumber;
                 model.DisabilityCertificateSeries = entity.DisabilityCertificateSeries;
-                model.DisabilityDegreeId = entity.DisabilityDegree != null ? (int?)entity.DisabilityDegree.Id : null;
+                model.DisabilityDegreeId =
+                    entity.DisabilityDegree != null
+                    ? (int?)entity.DisabilityDegree.Id
+                    : null;
 
                 model.DistrictOfBirth = entity.DistrictOfBirth;
                 model.FirstName = entity.FirstName;
@@ -197,6 +201,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.INN = entity.INN;
                 model.InsuredPersonTypeId = entity.InsuredPersonType != null ? (int?)entity.InsuredPersonType.Id : null;
+                model.InsuredPersonTypeSelectedName =
+                    model.InsuredPersonTypeId.HasValue
+                    ? model.InsuredPersonTypeItems.Where(x => x.Value == model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text
+                    : string.Empty;
                 model.IsMale = entity.IsMale;
                 model.IsPatronymicAbsent = entity.IsPatronymicAbsent;
                 model.LastName = entity.LastName;
@@ -213,8 +221,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
-            }
-            LoadDictionaries(model);
+            }            
             return model;
         }
 
@@ -679,14 +686,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
-        public RosterModel GetRosterModel()
+        public RosterModel GetRosterModel(RosterFiltersModel filters)
         {
-            // TODO: EMPL заменить реализацией
+            IList<EmploymentCandidate> candidates;
             RosterModel model = new RosterModel();
-            IList<EmploymentCandidate> candidates = EmploymentCandidateDao.LoadAll();
+            if (filters == null)
+            {                
+                candidates = new List<EmploymentCandidate>();
+            }
+            else
+            {
+                candidates = EmploymentCandidateDao.LoadFiltered(filters.DepartmentId, filters.StatusId, filters.UserName, filters.BeginDate, filters.EndDate);
+            }
+
+            LoadDictionaries(model);
+            
             SelectListItem tempItem = null;
             model.Roster = candidates.ToList<EmploymentCandidate>().ConvertAll<CandidateDto>(x => new CandidateDto
-            {
+            {                
                 ContractDate = x.PersonnelManagers != null ? x.PersonnelManagers.ContractDate : null,
                 ContractNumber = x.PersonnelManagers != null ? x.PersonnelManagers.ContractNumber : String.Empty,
                 DateOfBirth = x.GeneralInfo != null ? (DateTime?)x.GeneralInfo.DateOfBirth : null,
@@ -696,19 +713,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     + x.GeneralInfo.DisabilityCertificateSeries +
                     " " + x.GeneralInfo.DisabilityCertificateNumber +
                     ", дата выдачи: " + (x.GeneralInfo.DisabilityCertificateDateOfIssue.HasValue ? x.GeneralInfo.DisabilityCertificateDateOfIssue.Value.ToShortDateString() : String.Empty) +
-                    ", группа " + x.GeneralInfo.DisabilityDegree +
+                    ", группа " + (x.GeneralInfo.DisabilityDegree != null ? x.GeneralInfo.DisabilityDegree.Name : "?") +
                     ", срок действия справки: " + (x.GeneralInfo.DisabilityCertificateExpirationDate.HasValue ? x.GeneralInfo.DisabilityCertificateExpirationDate.Value.ToShortDateString() : String.Empty)
                     : String.Empty,
                 EmploymentDate = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentDate : null,
                 EmploymentOrderDate = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentOrderDate : null,
                 EmploymentOrderNumber = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentOrderNumber : String.Empty,
                 Grade = x.User != null ? x.User.Grade : null,
+                Id = x.User.Id,
                 Name = x.GeneralInfo != null ? x.GeneralInfo.LastName + " " + x.GeneralInfo.FirstName + " " + x.GeneralInfo.Patronymic : String.Empty,
                 Position = x.Managers != null ? x.Managers.Position.Name : String.Empty,
                 ProbationaryPeriod = x.Managers != null ? x.Managers.ProbationaryPeriod : String.Empty,
-                Status = x.GeneralInfo != null ?
-                    ((tempItem = GetStatuses().Where(statusItem => statusItem.Value == x.GeneralInfo.Status.ToString()).FirstOrDefault()) != null ? tempItem.Text : string.Empty)
-                    : string.Empty,
+                Status = (tempItem = GetEmploymentStatuses().Where(status => status.Value == ((int?)x.Status ?? 0).ToString()).FirstOrDefault()) != null ? tempItem.Text : string.Empty,
                 Schedule = x.Managers != null ? x.Managers.Schedule : String.Empty,
                 WorkCity = x.Managers != null ? x.Managers.WorkCity : String.Empty
             });
@@ -793,9 +809,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
-        #region Save Model
+        #region Process Saving
 
-        public bool SaveModel<TVM, TE>(TVM model, out string error)
+        public bool ProcessSaving<TVM, TE>(TVM model, out string error)
             where TVM: AbstractEmploymentModel
             where TE: new()
         {
@@ -893,7 +909,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(RosterModel model)
         {
-
+            model.Statuses = GetEmploymentStatuses();
         }
         public void LoadDictionaries(SignersModel model)
         {
@@ -1043,6 +1059,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             return AccessGroupDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
+        public IEnumerable<SelectListItem> GetEmploymentStatuses()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Ожидает согласование СБ", Value = "1"},
+                new SelectListItem {Text = "Обучение", Value = "2"},
+                new SelectListItem {Text = "Ожидает согласование руководителем", Value = "3"},
+                new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "4"},
+                new SelectListItem {Text = "Оформление Кадры", Value = "6"},
+                new SelectListItem {Text = "Выгружен в 1С", Value = "7"}
+            };
+        }
 
         #endregion
 

@@ -77,7 +77,7 @@
     </div>
     <div class="formfield">
         @Html.LabelFor(m => m.InsuredPersonTypeId)<br />
-        <span class="fakeFormField">@Model.InsuredPersonTypeItems.Where(x => x.Value == Model.InsuredPersonTypeId.ToString()).FirstOrDefault().Text&nbsp;</span>
+        <span class="fakeFormField">@Model.InsuredPersonTypeSelectedName&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.DateOfBirth)<br />

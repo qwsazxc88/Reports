@@ -22,7 +22,7 @@
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.Rank)<br />
-        <span class="fakeFormField">@Model.RankItems.Where(x => x.Value == Model.Rank.ToString()).FirstOrDefault().Text&nbsp;</span>
+        <span class="fakeFormField">@(Model.Rank != null ? @Model.RankItems.Where(x => x.Value == Model.Rank.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.SpecialityCategory)<br />
@@ -54,7 +54,8 @@
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.RegistrationExpiration)<br />
-        <span class="fakeFormField">@Model.RegistrationExpirationItems.Where(x => x.Value == Model.RegistrationExpiration.ToString()).FirstOrDefault().Text&nbsp;</span>
+        <span class="fakeFormField">@(Model.RegistrationExpiration != null ?
+            Model.RegistrationExpirationItems.Where(x => x.Value == Model.RegistrationExpiration.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
     </div>
     <div class="formfield clear">
         <br />
@@ -68,18 +69,21 @@
     <legend class="level2">Для форм Ф-6 и Ф-18</legend>
         <div class="formfield clear">
             @Html.LabelFor(m => m.PersonnelCategory)<br />
-            <span class="fakeFormField">@Model.PersonnelCategoryItems.Where(x => x.Value == Model.PersonnelCategory.ToString()).FirstOrDefault().Text&nbsp;</span>
+            <span class="fakeFormField">@(Model.PersonnelCategory != null ?
+            Model.PersonnelCategoryItems.Where(x => x.Value == Model.PersonnelCategory.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.PersonnelType)<br />
-            <span class="fakeFormField">@Model.PersonnelTypeItems.Where(x => x.Value == Model.PersonnelType.ToString()).FirstOrDefault().Text&nbsp;</span>
+            <span class="fakeFormField">@(Model.PersonnelType != null ?
+            Model.PersonnelTypeItems.Where(x => x.Value == Model.PersonnelType.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsAssigned)&nbsp;@Html.DisplayFor(m => m.IsAssigned)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.ConscriptionStatus)<br />
-            <span class="fakeFormField">@Model.ConscriptionStatusItems.Where(x => x.Value == Model.ConscriptionStatus.ToString()).FirstOrDefault().Text&nbsp;</span>
+            <span class="fakeFormField">@(Model.ConscriptionStatus != null ?
+            Model.ConscriptionStatusItems.Where(x => x.Value == Model.ConscriptionStatus.ToString()).FirstOrDefault().Text : string.Empty)&nbsp;</span>
         </div>
     </fieldset>
 </fieldset>

@@ -18,7 +18,7 @@ namespace Reports.Presenters.UI.Bl
         OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null);
         ManagersModel GetManagersModel(int? userId = null);
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
-        RosterModel GetRosterModel();
+        RosterModel GetRosterModel(RosterFiltersModel filters);
         SignersModel GetSignersModel();
 
         void LoadDictionaries(GeneralInfoModel model);
@@ -50,6 +50,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetDepartments();
         IEnumerable<SelectListItem> GetPersonalAccountContractors();
         IEnumerable<SelectListItem> GetAccessGroups();
+        IEnumerable<SelectListItem> GetEmploymentStatuses();
 
         void SetGeneralInfoModel(GeneralInfoModel model, bool hasError);
         void SetPassportModel(PassportModel model, bool hasError);        
@@ -65,6 +66,8 @@ namespace Reports.Presenters.UI.Bl
         void SetRosterModel(RosterModel model, bool hasError);        
         void SetSignersModel(SignersModel model, bool hasError);
 
-        bool SaveModel<TVM, TE>(TVM model, out string error) where TVM : AbstractEmploymentModel where TE : new();
+        bool ProcessSaving<TVM, TE>(TVM model, out string error)
+            where TVM : AbstractEmploymentModel
+            where TE : new();
     }
 }

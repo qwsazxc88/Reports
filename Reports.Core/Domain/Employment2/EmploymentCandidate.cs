@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Reports.Core.Enum;
 using Reports.Core.Dto.Employment2;
 
 namespace Reports.Core.Domain
@@ -20,5 +21,7 @@ namespace Reports.Core.Domain
         public virtual OnsiteTraining OnsiteTraining { get; set; }
         public virtual Managers Managers { get; set; }
         public virtual PersonnelManagers PersonnelManagers { get; set; }
+        public virtual EmploymentStatus Status { get; set; }
+        public virtual DateTime? QuestionnaireDate { get; set; }
     }
 }

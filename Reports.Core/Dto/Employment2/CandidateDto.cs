@@ -8,6 +8,8 @@ namespace Reports.Core.Dto.Employment2
 {
     public class CandidateDto
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string Directorate { get; set; }

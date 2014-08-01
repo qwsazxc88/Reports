@@ -678,6 +678,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'Dismissal') and O
 if exists (select * from dbo.sysobjects where id = object_id(N'AbsenceComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table AbsenceComment
 if exists (select * from dbo.sysobjects where id = object_id(N'VacationComment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table VacationComment
 if exists (select * from dbo.sysobjects where id = object_id(N'TimesheetStatus') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TimesheetStatus
+if exists (select * from dbo.sysobjects where id = object_id(N'PersonalAccountContractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table PersonalAccountContractor
 if exists (select * from dbo.sysobjects where id = object_id(N'Mission') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Mission
 if exists (select * from dbo.sysobjects where id = object_id(N'Sicklist') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Sicklist
 if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table RequestNextNumber
@@ -798,7 +799,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManage
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
-if exists (select * from dbo.sysobjects where id = object_id(N'PersonalAccountContractor') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table PersonalAccountContractor
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -953,6 +953,13 @@ create table TimesheetStatus (
   ShortName NVARCHAR(2) not null,
   Name NVARCHAR(255) not null,
   constraint PK_TimesheetStatus  primary key (Id)
+)
+create table PersonalAccountContractor (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(128) null,
+  constraint PK_PersonalAccountContractor  primary key (Id)
 )
 create table Mission (
  Id INT IDENTITY NOT NULL,
@@ -1640,6 +1647,8 @@ create table EmploymentCandidate (
   OnsiteTrainingId INT null,
   ManagersId INT null,
   PersonnelManagersId INT null,
+  Status INT null,
+  QuestionnaireDate DATETIME null,
   constraint PK_EmploymentCandidate  primary key (Id)
 )
 create table Country (
@@ -2354,13 +2363,6 @@ create table Document (
   OutsourcingManagerDateAccept DATETIME null,
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
-)
-create table PersonalAccountContractor (
- Id INT IDENTITY NOT NULL,
-  Version INT not null,
-  Code NVARCHAR(10) null,
-  Name NVARCHAR(128) null,
-  constraint PK_PersonalAccountContractor  primary key (Id)
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
