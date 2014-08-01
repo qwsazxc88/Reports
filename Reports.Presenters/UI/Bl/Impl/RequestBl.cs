@@ -8661,7 +8661,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Director:
                     if (entityId > 0)
                     {
-                        if (entity.NeedToAcceptByChief)
+                        if (entity.NeedToAcceptByChief || MissionOrderDao.CheckAdditionalOrderExists(entity.Id))
                             return true;
                         return IsDirectorManagerForEmployee(user, current);
                     }
@@ -9591,7 +9591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isDirectorManager)
                 {
                     entity.NeedToAcceptByChiefAsManager = true;
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director,true);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
                 }
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
@@ -9621,7 +9621,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 SendEmailForMissionOrderConfirm(CurrentUser, entity, true);
                             }
                             else
-                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
+                            {
+                                if (entity.MainOrder.AcceptChief != null)
+                                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
+                                else
+                                {
+                                    IList<User> directors = UserDao.GetUsersWithRole(UserRole.Director);
+                                    string to = directors.Where(director => !string.IsNullOrEmpty(director.Email)).
+                                        Aggregate(string.Empty, (current1, director) => current1 + (director.Email + ";"));
+                                    SendEmailForMissionOrderNeedToApprove(to, entity, true);
+                                }
+                            }
                         }
                         else
                         {
@@ -10419,8 +10429,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (id > 0)
             {
                 MissionReport entity = MissionReportDao.Load(id);
-                isAddAvailable = !entity.UserDateAccept.HasValue;
-                isDeleteAvailable = !entity.UserDateAccept.HasValue;
+                isAddAvailable = !entity.UserDateAccept.HasValue && (entity.AdditionalMissionOrder == null ||  IsAdditionalMissionOrderConfirmByUserOrExpired(entity.AdditionalMissionOrder));
+                isDeleteAvailable = !entity.UserDateAccept.HasValue && (entity.AdditionalMissionOrder == null || IsAdditionalMissionOrderConfirmByUserOrExpired(entity.AdditionalMissionOrder));
                 //if (isDeleteAvailable && list.Count <= 4)
                 //{
                 //    if ((entity.UserDateAccept.HasValue && CurrentUser.UserRole == UserRole.Employee) ||

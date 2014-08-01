@@ -174,7 +174,10 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
             if (whereString.Length > 0)
                 whereString += @" and ";
-            whereString += @" v.IsAdditional = 0 ";
+            if(role != UserRole.Director)
+                whereString += @" v.IsAdditional = 0 ";
+            else
+                whereString += @" ((v.IsAdditional = 0) or (ao.NeedToAcceptByChief = 1)) ";
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -383,7 +386,7 @@ namespace Reports.Core.Dao.Impl
                                             )
                                             then 1 else 0 end as Flag";
                         sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
-                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1))  ";
+                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
@@ -440,7 +443,7 @@ namespace Reports.Core.Dao.Impl
                         break;
                     case 6:
                         statusWhere = @"(v.ChiefDateAccept is null  and v.NeedToAcceptByChief = 1) or
-                                        (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1)";
+                                        (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) ";
                         break;
                     case 7:
                         statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
@@ -448,7 +451,8 @@ namespace Reports.Core.Dao.Impl
                         break;
                     case 8:
                         statusWhere = @"v.UserDateAccept is not null and ((v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) 
-                                        or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1))";
+                                        or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1)
+                                        or (ao.ManagerDateAccept is not null and ao.ChiefDateAccept is null and ao.NeedToAcceptByChief = 1))";
                         break;
                     //case 8:
                     //    statusWhere =
@@ -658,6 +662,15 @@ namespace Reports.Core.Dao.Impl
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate).
                 SetInt32("userId", userId);
+            return query.UniqueResult<int>() > 0;
+        }
+        public virtual bool CheckAdditionalOrderExists(int id)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [MainOrderId] = :id and [NeedToAcceptByChief] = 1
+                                    ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id);
             return query.UniqueResult<int>() > 0;
         }
 
