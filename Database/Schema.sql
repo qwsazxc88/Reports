@@ -367,6 +367,9 @@ alter table EmploymentCandidate  drop constraint FK_Candidate_Managers
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_PersonnelManagers]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
 alter table EmploymentCandidate  drop constraint FK_Candidate_PersonnelManagers
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Candidate_AppointmentCreator]') AND parent_object_id = OBJECT_ID('EmploymentCandidate'))
+alter table EmploymentCandidate  drop constraint FK_Candidate_AppointmentCreator
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_MissionDailyAllowanceGradeValue_DailyAllowance]') AND parent_object_id = OBJECT_ID('MissionDailyAllowanceGradeValue'))
 alter table MissionDailyAllowanceGradeValue  drop constraint FK_MissionDailyAllowanceGradeValue_DailyAllowance
 
@@ -1649,6 +1652,7 @@ create table EmploymentCandidate (
   PersonnelManagersId INT null,
   Status INT null,
   QuestionnaireDate DATETIME null,
+  AppointmentCreatorId INT null,
   constraint PK_EmploymentCandidate  primary key (Id)
 )
 create table Country (
@@ -2593,6 +2597,7 @@ create index Candidate_BackgroundCheck on EmploymentCandidate (BackgroundCheckId
 create index Candidate_OnsiteTraining on EmploymentCandidate (OnsiteTrainingId)
 create index Candidate_Managers on EmploymentCandidate (ManagersId)
 create index Candidate_PersonnelManagers on EmploymentCandidate (PersonnelManagersId)
+create index Candidate_AppointmentCreator on EmploymentCandidate (AppointmentCreatorId)
 alter table EmploymentCandidate add constraint FK_Candidate_User foreign key (UserId) references [Users]
 alter table EmploymentCandidate add constraint FK_Candidate_GeneralInfo foreign key (GeneralInfoId) references GeneralInfo
 alter table EmploymentCandidate add constraint FK_Candidate_Passport foreign key (PassportId) references Passport
@@ -2605,6 +2610,7 @@ alter table EmploymentCandidate add constraint FK_Candidate_BackgroundCheck fore
 alter table EmploymentCandidate add constraint FK_Candidate_OnsiteTraining foreign key (OnsiteTrainingId) references OnsiteTraining
 alter table EmploymentCandidate add constraint FK_Candidate_Managers foreign key (ManagersId) references Managers
 alter table EmploymentCandidate add constraint FK_Candidate_PersonnelManagers foreign key (PersonnelManagersId) references PersonnelManagers
+alter table EmploymentCandidate add constraint FK_Candidate_AppointmentCreator foreign key (AppointmentCreatorId) references [Users]
 create index IX_MissionDailyAllowanceGradeValue_DailyAllowance_Id on MissionDailyAllowanceGradeValue (DailyAllowanceId)
 create index IX_MissionDailyAllowanceGradeValue_Grade_Id on MissionDailyAllowanceGradeValue (GradeId)
 alter table MissionDailyAllowanceGradeValue add constraint FK_MissionDailyAllowanceGradeValue_DailyAllowance foreign key (DailyAllowanceId) references MissionDailyAllowance

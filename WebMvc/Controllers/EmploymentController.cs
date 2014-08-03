@@ -51,7 +51,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
+                EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetGeneralInfoModel();
@@ -66,7 +66,7 @@ namespace WebMvc.Controllers
 
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.NameChanges.Add(itemToAdd);
-            EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
+            EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
@@ -81,7 +81,7 @@ namespace WebMvc.Controllers
 
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.ForeignLanguages.Add(itemToAdd);
-            EmploymentBl.SaveModel<GeneralInfoModel, GeneralInfo>(model, out error);
+            EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
@@ -105,7 +105,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<PassportModel, Passport>(model, out error);
+                EmploymentBl.ProcessSaving<PassportModel, Passport>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetPassportModel();
@@ -129,7 +129,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
+                EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetEducationModel();
@@ -144,7 +144,7 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel();
             model.Certifications.Add(itemToAdd);
-            EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
+            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
             model = EmploymentBl.GetEducationModel();
             return View("Education", model);
@@ -158,7 +158,7 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel();
             model.HigherEducationDiplomas.Add(itemToAdd);
-            EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
+            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
             model = EmploymentBl.GetEducationModel();
             return View("Education", model);
@@ -172,7 +172,7 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel();
             model.PostGraduateEducationDiplomas.Add(itemToAdd);
-            EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
+            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
             model = EmploymentBl.GetEducationModel();
             return View("Education", model);
@@ -186,7 +186,7 @@ namespace WebMvc.Controllers
 
             EducationModel model = EmploymentBl.GetEducationModel();
             model.Training.Add(itemToAdd);
-            EmploymentBl.SaveModel<EducationModel, Education>(model, out error);
+            EmploymentBl.ProcessSaving<EducationModel, Education>(model, out error);
 
             model = EmploymentBl.GetEducationModel();
             return View("Education", model);
@@ -209,7 +209,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<FamilyModel, Family>(model, out error);
+                EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetFamilyModel();
@@ -224,7 +224,7 @@ namespace WebMvc.Controllers
 
             FamilyModel model = EmploymentBl.GetFamilyModel();
             model.Children.Add(itemToAdd);
-            EmploymentBl.SaveModel<FamilyModel, Family>(model, out error);
+            EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
 
             model = EmploymentBl.GetFamilyModel();
             return View("Family", model);
@@ -246,7 +246,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<MilitaryServiceModel, MilitaryService>(model, out error);
+                EmploymentBl.ProcessSaving<MilitaryServiceModel, MilitaryService>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetMilitaryServiceModel();
@@ -270,7 +270,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<ExperienceModel, Experience>(model, out error);
+                EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetExperienceModel();
@@ -285,7 +285,7 @@ namespace WebMvc.Controllers
 
             ExperienceModel model = EmploymentBl.GetExperienceModel();
             model.ExperienceItems.Add(itemToAdd);
-            EmploymentBl.SaveModel<ExperienceModel, Experience>(model, out error);
+            EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
 
             model = EmploymentBl.GetExperienceModel();
             return View("Experience", model);
@@ -308,7 +308,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<ContactsModel, Contacts>(model, out error);
+                EmploymentBl.ProcessSaving<ContactsModel, Contacts>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetContactsModel();
@@ -332,7 +332,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<BackgroundCheckModel, BackgroundCheck>(model, out error);
+                EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetBackgroundCheckModel();
@@ -347,7 +347,7 @@ namespace WebMvc.Controllers
 
             BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
             model.References.Add(itemToAdd);
-            EmploymentBl.SaveModel<BackgroundCheckModel, BackgroundCheck>(model, out error);
+            EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
 
             model = EmploymentBl.GetBackgroundCheckModel();
             return View("BackgroundCheck", model);
@@ -370,7 +370,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<OnsiteTrainingModel, OnsiteTraining>(model, out error);
+                EmploymentBl.ProcessSaving<OnsiteTrainingModel, OnsiteTraining>(model, out error);
             }
             model = EmploymentBl.GetOnsiteTrainingModel();
             return View(model);
@@ -410,7 +410,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<ManagersModel, Managers>(model, out error);
+                EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
             }
             model = EmploymentBl.GetManagersModel();
             return View(model);
@@ -433,7 +433,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.SaveModel<PersonnelManagersModel, PersonnelManagers>(model, out error);
+                EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
             }
             model = EmploymentBl.GetPersonnelManagersModel();
             return View(model);

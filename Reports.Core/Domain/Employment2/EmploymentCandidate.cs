@@ -23,5 +23,6 @@ namespace Reports.Core.Domain
         public virtual PersonnelManagers PersonnelManagers { get; set; }
         public virtual EmploymentStatus Status { get; set; }
         public virtual DateTime? QuestionnaireDate { get; set; }
+        public virtual User AppointmentCreator { get; set; }
     }
 }

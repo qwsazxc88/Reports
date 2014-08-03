@@ -723,3 +723,10 @@ span.fakeFormField
     padding: 1px;
     min-width: 1em;
 }
+
+span.buttonLink
+{
+    display: inline-block;
+    background-color: #fff;
+    text-decoration: none;
+}

@@ -84,87 +84,76 @@
 
 <tr>
         
-    <th rowspan="2">
+    <th>
         №<br />п/п
     </th>
         
-    <th rowspan="2">
+    <th>
         ФИО
     </th>
 
-    <th rowspan="2">
+    <th>
         Дирекция
     </th>
 
-    <th rowspan="2">
+    <th>
         Город<br />места<br />работы
     </th>
 
-    <th rowspan="2">
+    <th>
         Структурное<br />подразделение
     </th>
 
-    <th rowspan="2">
+    <th>
         Должность
     </th>        
         
-    <th rowspan="2">
+    <th>
         Дата<br />приема
     </th>
         
-    <th rowspan="2">
+    <th>
         Номер<br />приказа
     </th>
         
-    <th rowspan="2">
+    <th>
         Дата<br />приказа
     </th>
 
-    <th rowspan="2">
+    <th>
         Номер<br />трудового<br />договора
     </th>
 
     @* Вид работы (осн./совм.) *@
     @* Характер работы (пост./врем.) *@
 
-    <th rowspan="2">
+    <th>
         Исп.<br />срок
     </th>
 
-    <th rowspan="2">
+    <th>
         График<br />работы
     </th>
 
-    <th rowspan="2">
+    <th>
         Дата<br />рождения
     </th>
 
-    <th rowspan="2">
+    <th>
         Инвалидность
     </th>
 
-    <th rowspan="2">
+    <th>
         Грейд
     </th>
 
-    <th rowspan="2">
+    <th>
         Текущее<br />состояние
     </th>
 
-    <th colspan="8">
-        Анкета
+    <th>
+        <input type="checkbox" />
     </th>
-</tr>
-
-<tr>
-    <th>Общая<br />информация</th>
-    <th>Паспортные<br />данные</th>
-    <th>Образование</th>
-    <th>Состав<br />семьи</th>
-    <th>Воинский<br />учет</th>
-    <th>Трудовая<br />деятельность</th>
-    <th>Контактные<br />данные</th>
-    <th>Заявление<br />о приеме</th>
 </tr>
 
 @{ int i = 1; }
@@ -174,11 +163,11 @@
   
     <tr>
         
-        <td>
+        <td rowspan="2">
             @i@{i++;}
         </td>
         
-        <td>
+        <td rowspan="2">
             @candidate.Name
         </td>
 
@@ -241,15 +230,23 @@
             @candidate.Status
         </td>
 
-        <td>@Html.ActionLink("Просмотр", "GeneralInfo", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "Passport", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "Education", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "Family", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "MilitaryService", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "Experience", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "Contacts", new { id = candidate.Id})</td>
-        <td>@Html.ActionLink("Просмотр", "ApplicationLetter", new { id = candidate.Id})</td>
-
+        <td rowspan="2">
+            <input type="checkbox" />
+        </td>
+        
+    </tr>
+    <tr>
+        <td colspan="14">
+            Анкета:
+            <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.Id })</span>
+            <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.Id})</span>
+            <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.Id})</span>
+        </td>
     </tr>
 }
 

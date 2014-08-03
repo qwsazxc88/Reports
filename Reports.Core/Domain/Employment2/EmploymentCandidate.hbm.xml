@@ -20,6 +20,7 @@
     <many-to-one name="PersonnelManagers" class="PersonnelManagers" column="PersonnelManagersId" foreign-key="FK_Candidate_PersonnelManagers" index="Candidate_PersonnelManagers"  not-null="false"/>
     <property name="Status" not-null="false"/>
     <property name="QuestionnaireDate" not-null="false"/>
+    <many-to-one name="AppointmentCreator" class="User" column="AppointmentCreatorId" foreign-key="FK_Candidate_AppointmentCreator" index="Candidate_AppointmentCreator"  not-null="false"/>
 
   </class>
 </hibernate-mapping>
