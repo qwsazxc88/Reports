@@ -429,6 +429,17 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager)]
+        public ActionResult ManagersApproveByHigherManager(int userId)
+        {
+            string error = String.Empty;
+
+            EmploymentBl.ApproveCandidateByHigherManager(userId, out error);
+            ManagersModel model = EmploymentBl.GetManagersModel();
+            return View(model);
+        }
+
         // Filled out by personnel managers
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
@@ -446,7 +457,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.ProcessSaving<PersonnelManagersModel, PersonnelManagers>(model, out error);
+                EmploymentBl.SavePersonnelManagersReport(model, out error);
             }
             model = EmploymentBl.GetPersonnelManagersModel();
             return View(model);

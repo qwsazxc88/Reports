@@ -1500,6 +1500,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         */
 
+        /*
         protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
         {
             entity.Bonus = viewModel.Bonus;
@@ -1521,6 +1522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Schedule = viewModel.Schedule;
             entity.WorkCity = viewModel.WorkCity;
         }
+        */
 
         /*
         protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
@@ -1683,12 +1685,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
-                    if (entity.Candidate.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                    if (entity.Candidate.AppointmentCreator.Id != current.Id)
                     {
-                        
+                        error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
+                        return false;
+                    }
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
+                    {
+                        entity.Bonus = viewModel.Bonus;
+                        entity.Candidate = GetCandidate(viewModel.UserId);
+                        entity.Candidate.Managers = entity;
+                        entity.DailySalaryBasis = viewModel.DailySalaryBasis;
+                        entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
+                        entity.Directorate = DepartmentDao.Load(viewModel.DirectorateId);
+                        entity.EmploymentConditions = viewModel.EmploymentConditions;
+                        entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
+                        entity.IsFront = viewModel.IsFront;
+                        entity.IsLiable = viewModel.IsLiable;
+                        entity.PersonalAddition = viewModel.PersonalAddition;
+                        entity.Position = PositionDao.Load(viewModel.PositionId);
+                        entity.PositionAddition = viewModel.PositionAddition;
+                        entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
+                        entity.RequestNumber = viewModel.RequestNumber;
+                        entity.SalaryMultiplier = viewModel.SalaryMultiplier;
+                        entity.Schedule = viewModel.Schedule;
+                        entity.WorkCity = viewModel.WorkCity;
 
                         //entity.Approver = UserDao.Get(current.Id);
-                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
                             error = "Ошибка сохранения.";
@@ -1708,7 +1732,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
+                error = "Кандидата может согласовать только руководитель.";
+            }
+
+            return false;
+        }
+
+        public bool ApproveCandidateByHigherManager(int userId, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
+            {
+
+            }
+            else
+            {
+
             }
 
             return false;
