@@ -34,11 +34,11 @@
                 {
                    if ((dto.UserRole & UserRole.Archivist) > 0)
                     {
-                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "MissionReportsList", "MissionOrder")</div>
+                         <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "MissionReportsList", "MissionOrder")</div>
                     }
                    else
                    {
-                        <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки", "Index", "MissionOrder")</div>
+                        <div id="liMissionOrder" class="mainMenuItem">@Html.ActionLink("Приказ на командировки (подотчет)", "Index", "MissionOrder")</div>
                    }
                 }
                 @if ((dto.UserRole & UserRole.Employee) > 0
@@ -91,7 +91,7 @@
                     }
                         <div class="menuitem" id="userSicklist">@Html.ActionLink("Больничные", "SicklistList", "UserRequest")</div>
                         
-                        <div class="menuitem" id="userMission">@Html.ActionLink("Командировки", "MissionList", "UserRequest")</div>
+                        <div class="menuitem" id="userMission">@Html.ActionLink("Командировки (табель)", "MissionList", "UserRequest")</div>
                         @*<div class="menuitem" id="userTimesheetCorrection">@Html.ActionLink("Корректировки", "TimesheetCorrectionList", "UserRequest")</div>*@
                         <div class="menuitem" id="userAbsence">@Html.ActionLink("Невыходы", "AbsenceList", "UserRequest")</div>
                         <div class="menuitem" id="userVacation">@Html.ActionLink("Отпуска", "VacationList", "UserRequest")</div>
