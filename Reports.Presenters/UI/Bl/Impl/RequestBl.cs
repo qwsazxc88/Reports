@@ -8225,7 +8225,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
             }
-            return SendEmailForMissionOrderNeedToApprove(to, entity);
+            //return SendEmailForMissionOrderNeedToApprove(to, entity);
+            return new EmailDto();
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
         {
