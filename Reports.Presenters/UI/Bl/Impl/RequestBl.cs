@@ -10057,8 +10057,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected bool IsAdditionalMissionOrderConfirmByUserOrExpired(MissionOrder entity)
         {
-            return (entity.UserDateAccept.HasValue) ||
-                   (DateTime.Today > entity.CreateDate.AddMonths(1));
+            return ((entity.ManagerDateAccept.HasValue && !entity.NeedToAcceptByChief) ||
+                    (entity.ChiefDateAccept.HasValue && entity.NeedToAcceptByChief) ||
+                   (DateTime.Today > entity.CreateDate.AddMonths(1)));
         }
         protected bool IsAdditionalMissionOrderConfirmRejectOrExpired(MissionOrder entity)
         {
