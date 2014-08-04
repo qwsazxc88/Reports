@@ -72,6 +72,7 @@ namespace Reports.Presenters.UI.Bl
 
         bool ApproveBackgroundCheck (int userId, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
+        bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
     }
 }

@@ -1667,6 +1667,53 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
+        public bool ApproveCandidateByManager(ManagersModel viewModel, out string error)
+        {
+            error = string.Empty;
+
+            // TODO: Добавить реализацию
+            IUser current = AuthenticationService.CurrentUser;
+            if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
+            {
+                Managers entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<Managers>(viewModel.UserId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentManagersDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                    {
+                        
+
+                        //entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        error = "Невозможно сохранить документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ не найден.";
+                }
+            }
+            else
+            {
+                error = "Кандидата может согласовать только руководитель, создавший соответствующую заявку на подбор персонала.";
+            }
+
+            return false;
+        }
+
         public bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error)
         {
             error = string.Empty;

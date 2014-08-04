@@ -423,7 +423,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
+                EmploymentBl.ApproveCandidateByManager(model, out error);
             }
             model = EmploymentBl.GetManagersModel();
             return View(model);

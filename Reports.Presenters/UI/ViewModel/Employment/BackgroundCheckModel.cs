@@ -84,6 +84,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Ваше отношение к алкоголю")]
         public string Drinking { get; set; }
 
+        public bool IsApproveBySecurityAvailable { get; set; }
+
         [Display(Name = "Согласен на прием")]
         public bool? ApprovalStatus { get; set; }
         public string ApproverName { get; set; }

@@ -227,7 +227,14 @@
 @using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
 {
     <div class="clear">
-        <button>Согласовать</button>
+        if (Model.IsApproveBySecurityAvailable)
+        {        
+            <button>Согласовать</button>        
+        }
+        else if (Model.ApprovalStatus == true)
+        {
+            <text>Согласен на прием: </text>@Model.ApproverName
+        }
     </div>
 }
 
