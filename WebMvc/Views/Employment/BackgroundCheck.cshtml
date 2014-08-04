@@ -224,6 +224,13 @@
     </div>
 }
 
+@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
+{
+    <div class="clear">
+        <button>Согласовать</button>
+    </div>
+}
+
 <div id="add-reference-dialog" title="Добавление рекомендации">
     @using (Html.BeginForm("BackgroundCheckAddReference", "Employment", FormMethod.Post))
     {

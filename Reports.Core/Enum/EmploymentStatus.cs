@@ -8,6 +8,7 @@
         PENDING_APPROVAL_BY_HIGHER_MANAGER = 4,
         //
         PENDING_FINALIZATION_BY_PERSONNEL_MANAGER = 6,
-        SENT_TO_1C = 7
+        COMPLETE = 7,
+        SENT_TO_1C = 8
     }
 }

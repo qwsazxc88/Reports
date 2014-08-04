@@ -1068,7 +1068,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Ожидает согласование руководителем", Value = "3"},
                 new SelectListItem {Text = "Ожидает согласование вышестоящим руководителем", Value = "4"},
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
-                new SelectListItem {Text = "Выгружен в 1С", Value = "7"}
+                new SelectListItem {Text = "Завершено", Value = "7"},
+                new SelectListItem {Text = "Выгружено в 1С", Value = "8"}
             };
         }
 
@@ -1104,15 +1105,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "BackgroundCheck":
                     SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel);
                     break;
-                case "OnsiteTraining":
-                    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
-                    break;
+                //case "OnsiteTraining":
+                //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
+                //    break;
                 case "Managers":
                     SetManagersEntity(entity as Managers, viewModel as ManagersModel);
                     break;
-                case "PersonnelManagers":
-                    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
-                    break;
+                //case "PersonnelManagers":
+                //    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
+                //    break;
                 default:
                     break;
             }            
@@ -1479,8 +1480,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
+            // TODO: Добавить проверку завершенности всех предыдущих документов
+            entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
         }
 
+        /*
         protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)
         {
             entity.BeginningDate = viewModel.BeginningDate;
@@ -1494,6 +1498,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Results = viewModel.Results;
             entity.Type = viewModel.Type;
         }
+        */
 
         protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
         {
@@ -1517,6 +1522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.WorkCity = viewModel.WorkCity;
         }
 
+        /*
         protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
         {
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
@@ -1544,6 +1550,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
         }
+        */
 
         protected EmploymentCandidate GetCandidate(int userId)
         {
@@ -1554,6 +1561,179 @@ namespace Reports.Presenters.UI.Bl.Impl
                 candidate = EmploymentCommonDao.GetCandidateByUserId(userId);
             }
             return candidate;
+        }
+
+        #endregion
+
+        #region Approve
+
+        public bool ApproveBackgroundCheck(int userId, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            if ((current.UserRole & UserRole.Security) == UserRole.Security)
+            {
+                BackgroundCheck entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<BackgroundCheck>(userId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentBackgroundCheckDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
+                    {                        
+                        entity.ApprovalStatus = true;
+                        entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка согласования.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        error = "Невозможно согласовать документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ для согласования не найден.";
+                }
+            }
+            else
+            {
+                error = "Документ может согласовать только сотрудник СБ.";
+            }
+
+            return false;
+        }
+
+        public bool SaveOnsiteTrainingReport(OnsiteTrainingModel viewModel, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            if ((current.UserRole & UserRole.Trainer) == UserRole.Trainer)
+            {
+                OnsiteTraining entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<OnsiteTraining>(viewModel.UserId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentOnsiteTrainingDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
+                    {
+                        entity.BeginningDate = viewModel.BeginningDate;
+                        entity.Candidate = GetCandidate(viewModel.UserId);
+                        entity.Candidate.OnsiteTraining = entity;
+                        entity.Comments = viewModel.Comments;
+                        entity.Description = viewModel.Description;
+                        entity.EndDate = viewModel.EndDate;
+                        entity.IsComplete = viewModel.IsComplete;
+                        entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
+                        entity.Results = viewModel.Results;
+                        entity.Type = viewModel.Type;
+
+                        entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        error = "Невозможно сохранить документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ не найден.";
+                }
+            }
+            else
+            {
+                error = "Документ может сохранить только тренер.";
+            }
+
+            return false;
+        }
+
+        public bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error)
+        {
+            error = string.Empty;
+
+            IUser current = AuthenticationService.CurrentUser;
+            if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
+            {
+                PersonnelManagers entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<PersonnelManagers>(viewModel.UserId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentPersonnelManagersDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                    {
+                        entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
+                        //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
+                        entity.AreaAddition = viewModel.AreaAddition;
+                        entity.AreaMultiplier = viewModel.AreaMultiplier;
+                        entity.Candidate = GetCandidate(viewModel.UserId);
+                        entity.Candidate.PersonnelManagers = entity;
+                        entity.Candidate.User.Grade = viewModel.Grade;
+                        entity.CompetenceAddition = viewModel.CompetenceAddition;
+                        entity.ContractDate = viewModel.ContractDate;
+                        entity.ContractNumber = viewModel.ContractNumber;
+                        entity.EmploymentDate = viewModel.EmploymentDate;
+                        entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                        entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+                        entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+                        entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
+                        entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
+                        entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+                        entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
+                        entity.OverallExperienceDays = viewModel.OverallExperienceDays;
+                        entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
+                        entity.OverallExperienceYears = viewModel.OverallExperienceYears;
+                        entity.PersonalAccount = viewModel.PersonalAccount;
+                        entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+                        entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+
+                        //entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        error = "Невозможно сохранить документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ не найден.";
+                }
+            }
+            else
+            {
+                error = "Документ может сохранить только сотрудник отдела кадров.";
+            }
+
+            return false;
         }
 
         #endregion

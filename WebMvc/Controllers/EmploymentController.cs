@@ -326,7 +326,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult BackgroundCheck(BackgroundCheckModel model, string cmd = "")
+        public ActionResult BackgroundCheck(BackgroundCheckModel model)
         {
             string error = String.Empty;
 
@@ -353,6 +353,19 @@ namespace WebMvc.Controllers
             return View("BackgroundCheck", model);
         }
 
+        [HttpPost]
+        [ReportAuthorize(UserRole.Security)]
+        public ActionResult BackgroundCheckApprove(int userId)
+        {
+            string error = String.Empty;
+
+            EmploymentBl.ApproveBackgroundCheck(userId, out error);
+            ViewBag.Error = error;
+
+            BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();            
+            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
+        }
+
         // Onsite Training
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
@@ -370,7 +383,7 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
-                EmploymentBl.ProcessSaving<OnsiteTrainingModel, OnsiteTraining>(model, out error);
+                EmploymentBl.SaveOnsiteTrainingReport(model, out error);
             }
             model = EmploymentBl.GetOnsiteTrainingModel();
             return View(model);

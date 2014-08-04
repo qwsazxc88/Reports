@@ -60,7 +60,7 @@ namespace Reports.Presenters.UI.Bl
         void SetExperienceModel(ExperienceModel model, bool hasError);        
         void SetContactsModel(ContactsModel model, bool hasError);        
         void SetBackgroundCheckModel(BackgroundCheckModel model, bool hasError);        
-        void SetOnsiteTrainingModel(OnsiteTrainingModel model, bool hasError);        
+        // void SetOnsiteTrainingModel(OnsiteTrainingModel model, bool hasError);        
         void SetManagersModel(ManagersModel model, bool hasError);        
         void SetPersonnelManagersModel(PersonnelManagersModel model, bool hasError);        
         void SetRosterModel(RosterModel model, bool hasError);        
@@ -69,5 +69,9 @@ namespace Reports.Presenters.UI.Bl
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
             where TVM : AbstractEmploymentModel
             where TE : new();
+
+        bool ApproveBackgroundCheck (int userId, out string error);
+        bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
+        bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
     }
 }
