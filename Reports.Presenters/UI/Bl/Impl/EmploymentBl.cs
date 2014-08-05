@@ -10,12 +10,19 @@ using Reports.Core.Dto.Employment2;
 using Reports.Core.Domain;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel.Employment2;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
     public class EmploymentBl : BaseBl, IEmploymentBl
     {
+        public const string StrIncorrectManagerLevel = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
+        public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
+
+        public const int MinManagerLevel = 2;
+        public const int MaxManagerLevel = 6;
+
         #region Dependencies
 
         protected IEmploymentCandidateDao employmentCandidateDao;
@@ -156,6 +163,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(personalAccountContractorDao); }
             set { personalAccountContractorDao = value; }
+        }
+
+        protected IAppointmentDao appointmentDao;
+        public IAppointmentDao AppointmentDao
+        {
+            get { return Validate.Dependency(appointmentDao); }
+            set { appointmentDao = value; }
         }
 
         #endregion
@@ -1713,6 +1727,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                         //entity.Approver = UserDao.Get(current.Id);
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                        entity.ApprovingManager = entity.Candidate.AppointmentCreator;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
                             error = "Ошибка сохранения.";
@@ -1742,7 +1757,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            IUser current = AuthenticationService.CurrentUser;
+            User current = UserDao.Get(AuthenticationService.CurrentUser.Id);
             if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
             {
                 Managers entity = null;
@@ -1753,7 +1768,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
-                    if (!IsManagerChiefForCreator(current, entity.Candidate.AppointmentCreator))
+                    if (!IsCurrentUserChiefForCreator(current, entity.Candidate.AppointmentCreator))
                     {
                         error = "Кандидата может согласовать только руководитель, являющийся вышестоящим для создателя заявки на подбор персонала.";
                         return false;
@@ -1761,7 +1776,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
                     {
-                        
+                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                        entity.ApprovingHigherManager = current;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
+                        {
+                            error = "Ошибка сохранения.";
+                            return false;
+                        }
+                        return true;
                     }
                     else
                     {
@@ -1852,22 +1874,35 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
-        protected bool IsManagerChiefForCreator(IUser current, User creator)
+        protected bool IsCurrentUserChiefForCreator(User current, User creator)
         {
-            // TODO: Добавить реализацию
-            // Здесь выбираем разные варианты по уровням (4-7, 3, 2, 1)
-            switch (creator.Level)
+
+            if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,
+                        current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
+            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+                throw new ValidationException(string.Format(StrIncorrectManagerLevel,
+                        creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
+            List<DepartmentDto> departments;
+            switch (current.Level)
             {
-                case 1:
-                    break;
                 case 2:
-                    break;
+                    IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
+                    if (managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
+                        return true;
+                    IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
+                    if (managers.Any(x => x == creator.Id && creator.Level.Value == 3))
+                        return true;
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
+                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
-                    break;
+                    if (creator.Level != 4)
+                        return false;
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
+                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
                 default:
-                    break;
+                    return false;
             }
-            return true;
         }
     }
 }
