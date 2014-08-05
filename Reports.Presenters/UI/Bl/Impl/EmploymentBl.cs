@@ -1108,9 +1108,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //case "OnsiteTraining":
                 //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
                 //    break;
-                case "Managers":
-                    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
-                    break;
+                //case "Managers":
+                //    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
+                //    break;
                 //case "PersonnelManagers":
                 //    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
                 //    break;
@@ -1745,11 +1745,37 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
             {
+                Managers entity = null;
+                int? id = EmploymentCommonDao.GetDocumentId<Managers>(userId);
+                if (id.HasValue)
+                {
+                    entity = EmploymentManagersDao.Get(id.Value);
+                }
+                if (entity != null)
+                {
+                    if (!IsManagerChiefForCreator(current, entity.Candidate.AppointmentCreator))
+                    {
+                        error = "Кандидата может согласовать только руководитель, являющийся вышестоящим для создателя заявки на подбор персонала.";
+                        return false;
+                    }
 
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
+                    {
+                        
+                    }
+                    else
+                    {
+                        error = "Невозможно сохранить документ на данном этапе.";
+                    }
+                }
+                else
+                {
+                    error = "Документ не найден.";
+                }
             }
             else
             {
-
+                error = "Кандидата может согласовать только руководитель.";
             }
 
             return false;
@@ -1825,5 +1851,23 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
+        protected bool IsManagerChiefForCreator(IUser current, User creator)
+        {
+            // TODO: Добавить реализацию
+            // Здесь выбираем разные варианты по уровням (4-7, 3, 2, 1)
+            switch (creator.Level)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
     }
 }
