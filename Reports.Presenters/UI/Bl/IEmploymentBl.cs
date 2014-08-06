@@ -51,6 +51,8 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetPersonalAccountContractors();
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
+        IEnumerable<SelectListItem> GetApprovalStatuses();
+        IEnumerable<SelectListItem> GetOnsiteTrainingStatuses();
 
         void SetGeneralInfoModel(GeneralInfoModel model, bool hasError);
         void SetPassportModel(PassportModel model, bool hasError);        

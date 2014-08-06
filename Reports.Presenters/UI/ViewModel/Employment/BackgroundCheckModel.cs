@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
@@ -86,8 +87,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsApproveBySecurityAvailable { get; set; }
 
-        [Display(Name = "Согласен на прием")]
+        [Display(Name = "Согласование")]
         public bool? ApprovalStatus { get; set; }
+        public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
         public string ApproverName { get; set; }
 
         public BackgroundCheckModel()

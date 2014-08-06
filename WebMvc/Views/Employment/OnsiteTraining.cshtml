@@ -67,6 +67,25 @@
                     @Html.TextBoxFor(m => m.Results)
             </td>
         </tr>
+        
+        <tr>
+            <td colspan="2">
+                @if (Model.IsApproveByTrainerAvailable || Model.ApprovalStatus != null)
+                {        
+                    @Html.LabelFor(m => m.ApprovalStatus)
+                    @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByTrainerAvailable ? null : new { disabled = "disabled" })
+                }
+                @if (Model.ApprovalStatus != null)
+                {
+                    <span class="fakeFormField">@Model.ApproverName</span>
+                }
+                @if (Model.IsApproveByTrainerAvailable)
+                {
+                    <button>Применить</button>
+                }
+            </td>
+        </tr>
+
         <tr>
             <td>
                 @Html.LabelFor(m => m.Comments)

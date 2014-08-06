@@ -24,7 +24,7 @@
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
-            @Html.TextAreaFor(m => m.EmploymentConditions, new { @class="doublewidth" })
+            @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Schedule)&nbsp;@Html.ValidationMessageFor(m => m.Schedule)<br />
@@ -74,12 +74,41 @@
             @Html.EditorFor(m => m.RequestNumber)
         </div>
     </fieldset>
-    <button>Согласовать</button>
+    
+    <div class="clear">
+        @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ManagerApprovalStatus)
+            @Html.DropDownListFor(m => m.ManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingManagerName</span>
+        }
+        @if (Model.IsApproveByManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
 }
 
-using (@Html.BeginForm("Managers", "Employment", FormMethod.Post))
+@using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
 {
-    
+    <div class="clear">
+        @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.HigherManagerApprovalStatus)
+            @Html.DropDownListFor(m => m.HigherManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByHigherManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.HigherManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingHigherManagerName</span>
+        }
+        @if (Model.IsApproveByHigherManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
 }
 
 <script>

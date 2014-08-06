@@ -31,6 +31,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
+        // Согласование списком для руководителя
+        public bool IsBulkApproveByManagerAvailable { get; set; }
+
+        // Согласование списком для вышестоящего руководителя
+        public bool IsBulkApproveByHigherManagerAvailable { get; set; }
+
         public RosterModel()
         {
             this.Roster = new List<CandidateDto>();

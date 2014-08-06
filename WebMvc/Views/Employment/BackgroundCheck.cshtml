@@ -224,16 +224,23 @@
     </div>
 }
 
+<hr />
+
 @using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
 {
     <div class="clear">
-        if (Model.IsApproveBySecurityAvailable)
+        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
         {        
-            <button>Согласовать</button>        
+            @Html.LabelFor(m => m.ApprovalStatus)
+            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
         }
-        else if (Model.ApprovalStatus == true)
+        @if (Model.ApprovalStatus != null)
         {
-            <text>Согласен на прием: </text>@Model.ApproverName
+            <span class="fakeFormField">@Model.ApproverName</span>
+        }
+        @if (Model.IsApproveBySecurityAvailable)
+        {
+            <button>Применить</button>
         }
     </div>
 }

@@ -592,8 +592,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 model.Smoking = entity.Smoking;
                 model.Sports = entity.Sports;
+                                
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
+
+                model.ApproverName = entity.Approver.Name;
+                model.ApprovalStatus = entity.ApprovalStatus;
+                model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
             }
             LoadDictionaries(model);
             return model;
@@ -620,6 +626,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ReasonsForIncompleteTraining = entity.ReasonsForIncompleteTraining;
                 model.Results = entity.Results;
                 model.Type = entity.Type;
+
+                model.ApproverName = entity.Approver.Name;
+                model.ApprovalStatus = entity.IsComplete;
+                model.IsApproveByTrainerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer);
             }
             LoadDictionaries(model);
             return model;
@@ -655,6 +666,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Schedule = entity.Schedule;
                 model.WorkCity = entity.WorkCity;
 
+                model.ApprovingManagerName = entity.ApprovingManager.Name;
+                model.ApprovingHigherManagerName = entity.ApprovingHigherManager.Name;
+                model.ManagerRejectionReason = entity.ManagerRejectionReason;
+
+                model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
+                model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
+                model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
+
+                model.IsApproveByManagerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+
+                model.IsApproveByHigherManagerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
+                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
             }
             LoadDictionaries(model);
             return model;
@@ -904,17 +928,19 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(BackgroundCheckModel model)
         {
-
+            model.ApprovalStatuses = GetApprovalStatuses();
         }
         public void LoadDictionaries(OnsiteTrainingModel model)
         {
-
+            model.ApprovalStatuses = GetOnsiteTrainingStatuses();
         }
         public void LoadDictionaries(ManagersModel model)
         {
             model.PositionItems = GetPositions();
             model.DirectorateItems = GetDirectorates();
             model.DepartmentItems = GetDepartments();
+
+            model.ApprovalStatuses = GetApprovalStatuses();
         }
         public void LoadDictionaries(PersonnelManagersModel model)
         {
@@ -1084,6 +1110,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 new SelectListItem {Text = "Оформление Кадры", Value = "6"},
                 new SelectListItem {Text = "Завершено", Value = "7"},
                 new SelectListItem {Text = "Выгружено в 1С", Value = "8"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetApprovalStatuses()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Согласен на прием", Value = "true"},
+                new SelectListItem {Text = "Отклонить прием", Value = "false"}
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetOnsiteTrainingStatuses()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = "Обучение пройдено", Value = "true"},
+                new SelectListItem {Text = "Обучение не пройдено", Value = "false"}
             };
         }
 
