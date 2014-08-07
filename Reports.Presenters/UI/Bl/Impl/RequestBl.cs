@@ -9258,12 +9258,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return true;
             if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
                 return false;
-            DateTime minDate = entity.MainOrder.BeginDate.Value < entity.BeginDate.Value
+            DateTime minDate = entity.BeginDate.Value; /*entity.MainOrder.BeginDate.Value < entity.BeginDate.Value
                                    ? entity.MainOrder.BeginDate.Value
-                                   : entity.BeginDate.Value;
-            DateTime maxDate = entity.MainOrder.EndDate.Value > entity.EndDate.Value
+                                   : entity.BeginDate.Value;*/
+            DateTime maxDate = entity.EndDate.Value;/*entity.MainOrder.EndDate.Value > entity.EndDate.Value
                                    ? entity.MainOrder.EndDate.Value
-                                   : entity.EndDate.Value;
+                                   : entity.EndDate.Value;*/
             return (maxDate.Subtract(minDate).Days > 7) ||
                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(minDate, maxDate) > 0);
 
@@ -9572,12 +9572,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SaveMissionTargets(entity, model.Targets);
                 DateTime additionalBeginDate = entity.Targets.Min(x => x.BeginDate);
                 DateTime additionalEndDate = entity.Targets.Max(x => x.EndDate);
-                entity.BeginDate = additionalBeginDate > entity.MainOrder.BeginDate
+                entity.BeginDate = additionalBeginDate/*additionalBeginDate > entity.MainOrder.BeginDate
                                        ? entity.MainOrder.BeginDate
-                                       : additionalBeginDate;
-                entity.EndDate = additionalEndDate > entity.MainOrder.EndDate
+                                       : additionalBeginDate*/;
+                entity.EndDate = additionalEndDate/*additionalEndDate > entity.MainOrder.EndDate
                                      ? additionalEndDate
-                                     : entity.MainOrder.EndDate;
+                                     : entity.MainOrder.EndDate*/;
             }
             bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id)
                 && current.UserRole == UserRole.Director;
