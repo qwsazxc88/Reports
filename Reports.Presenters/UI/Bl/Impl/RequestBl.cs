@@ -9546,8 +9546,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             if (model.IsEditable)
             {
-                entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
-                entity.EndDate = DateTime.Parse(model.EndMissionDate);
+                //entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
+                //entity.EndDate = DateTime.Parse(model.EndMissionDate);
                 //entity.Goal = MissionGoalDao.Load(model.GoalId);
                 //entity.Type = MissionTypeDao.Load(model.TypeId);
                 //entity.Kind = model.Kind;
@@ -9564,11 +9564,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //entity.UserSumCash = GetSum(model.UserSumCash);
                 //entity.UserSumNotCash = GetSum(model.UserSumNotCash);
                 entity.NeedToAcceptByChiefAsManager = entity.MainOrder.NeedToAcceptByChiefAsManager;
-                entity.NeedToAcceptByChief = IsAdditionalMissionOrderLong(entity);
+              
                 //entity.IsResidencePaid = model.IsResidencePaid;
                 //entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
                 //entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
-                model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+               
                 SaveMissionTargets(entity, model.Targets);
                 DateTime additionalBeginDate = entity.Targets.Min(x => x.BeginDate);
                 DateTime additionalEndDate = entity.Targets.Max(x => x.EndDate);
@@ -9578,6 +9578,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.EndDate = additionalEndDate/*additionalEndDate > entity.MainOrder.EndDate
                                      ? additionalEndDate
                                      : entity.MainOrder.EndDate*/;
+                entity.NeedToAcceptByChief = IsAdditionalMissionOrderLong(entity);
+                model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
             }
             bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id)
                 && current.UserRole == UserRole.Director;
