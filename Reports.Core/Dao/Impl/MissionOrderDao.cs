@@ -277,9 +277,24 @@ namespace Reports.Core.Dao.Impl
                                         and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         case 3:
+                            sqlQueryPartTemplate += @" union 
+                                select distinct emp.id from Users emp
+                                    inner join dbo.Department dept
+	                                    on emp.DepartmentId = dept.id
+                                where
+	                                (emp.RoleId & 2) > 0
+	                                and
+	                                emp.departmentid in
+		                                (select Department.id from Department where Department.Path like
+			                                (select department.path+'%' from department where id =
+				                                (select departmentid from users where id={2})
+			                                )
+		                                )
+                                    and
+                                    not (select Login from dbo.Users where Id={2}) = emp.Login + N'R'";
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                         and v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5", "3", currentUser.Id);
+                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5,6", "3", currentUser.Id);
                             break;
                         case 4:
                             sqlQueryPart = string.Format(sqlQueryPartTemplate, "5", "4", currentUser.Id);
