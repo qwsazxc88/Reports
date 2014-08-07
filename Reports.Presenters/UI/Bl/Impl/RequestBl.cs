@@ -29,6 +29,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int AbsenceFirstTimesheetStatisId = 15;
         public const int AbsenceLastTimesheetStatisId = 18;
 
+        public const int LastValidDay = 5;
+
         #region DAOs
         
         protected IVacationTypeDao vacationTypeDao;
@@ -7911,6 +7913,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
                                                    DateTime.Parse(model.EndMissionDate));
         }
+        public bool CheckOrderBeginDate(string beginMissionDate)
+        {
+            DateTime beginDate = DateTime.Parse(beginMissionDate);
+            DateTime first = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            if (DateTime.Today.Day < 6)
+                first = first.AddMonths(-1);
+            return beginDate >= first;
+        }
         public bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error)
         {
             error = string.Empty;
@@ -8293,6 +8303,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void CreateMissionReport(MissionOrder entity)
         {
+            try
+            {
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
             IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
@@ -8364,7 +8376,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             report.Costs = list;
             //report.UserAllSum = report.Costs.Sum(x => x.UserSum).Value;
             MissionReportDao.SaveAndFlush(report);
-
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format("Exception on CreateMissionReport: orderId {0}",entity.Id),ex);
+            }
         }
         
 
@@ -8495,6 +8511,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue? true: new bool?();
             model.IsChiefApproved = entity.ChiefDateAccept.HasValue ? true : new bool?();
+                
             switch (currentUserRole)
             {
                 case UserRole.Employee:

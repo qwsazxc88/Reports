@@ -27,8 +27,9 @@ namespace WebMvc.Controllers
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
 
-        public const string StrOtherOrdersExists =
-            "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
+        public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
+        public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
+        public const string StrOrderIsInPast  = "Создание/редактирование приказа в прошлом невозможно";
 
         public const string SessionMissionOrderFilterName = "MissionOrderFilter";
         public const string SessionMissionReportFilterName = "MissionReportFilter";
@@ -181,8 +182,12 @@ namespace WebMvc.Controllers
         protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
         {
             //return false;
+            if (string.IsNullOrEmpty(model.BeginMissionDate) || string.IsNullOrEmpty(model.EndMissionDate))
+                ModelState.AddModelError("BeginMissionDate", StrNoBeginOrEndDate);
             if(RequestBl.CheckOtherOrdersExists(model))
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
+            if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
+                ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(MissionOrderEditModel model)
