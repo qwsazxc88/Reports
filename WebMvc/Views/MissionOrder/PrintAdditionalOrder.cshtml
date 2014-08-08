@@ -1,0 +1,263 @@
+﻿@model Reports.Presenters.UI.ViewModel.PrintMissionOrderViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Изменение приказа на командировку";
+}
+
+<HTML><HEAD>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=GENERATOR content="MSHTML 10.00.9200.16660"></HEAD>
+<BODY><TBODY>
+<TABLE style="HEIGHT: 322px; WIDTH: 971px">
+<TBODY>
+    <TR height=30>
+        <TH><P align=left>Изменение приказа № К-@Model.DocumentNumber-изм</P></TH>
+        <TH><P align=left>о направлении сотрудника&nbsp;в командировку</P></TH>
+     </TR>
+<TR>
+<TD height=30>Дата составления</TD>
+<TH style="text-align:left">@Model.DateCreated</TH></TR>
+<TR>
+<TD height=30>Организация</TD>
+<TH style="text-align:left">@Model.Organization</TH></TR>
+@*<TR>
+<TD height=30>Номер документа</TD>
+<TH style="text-align:left">@Model.DocumentNumber</TH></TR>*@
+<TR>
+<TD height=30>Сотрудник</TD>
+<TH style="text-align:left">@Model.UserName</TH></TR>
+<TR>
+<TD height=30>Табельный номер</TD>
+<TH style="text-align:left">@Model.UserNumber</TH></TR>
+<TR>
+<TD height=30 style="width:135px">Структурное подразделение</TD>
+<TH style="text-align:left">@Model.Department</TH></TR>
+    <TR>
+        <TD height=30>Должность</TD>
+        <TH style="text-align:left">@Model.Position</TH>
+    </TR>
+   @* <TR>
+        <TD height=30>Руководитель</TD>
+        <TH style="text-align:left">@Model.ManagerName</TH>
+    </TR>
+    <TR>
+        <TD height=30>Кадровик</TD>
+        <TH style="text-align:left">@Model.PersonnelName</TH>
+    </TR>*@
+    </TBODY></TABLE></TBODY></TABLE>
+<P>
+<HR>
+<SUP><I>А. Заполняется до отъезда в командировку&nbsp;&nbsp; 
+<TABLE style="HEIGHT: 29px; WIDTH: 971px" cellSpacing=0 cols=15 rules=none border=0 frame=void>
+<COLGROUP><FONT size=2>
+<COL width=86>
+<COL width=18>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=93>
+<COL width=59>
+<COL width=101>
+<COL width=26>
+<COL width=62>
+<COL width=21>
+<COL width=22>
+<COL width=16>
+<COL width=138>
+<COL width=66></FONT></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=189 colSpan=3 align=left>
+<P><STRONG>Цель командировки:</STRONG></P></TD>
+<TD style="BORDER-BOTTOM: #000000 1px solid" width=775 colSpan=12 align=left><FONT size=2></FONT>@Model.Goal</TD></TR>
+<TR>
+<TD height=17 align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD colSpan=12 align=left><FONT size=2>(цель командировки должна быть конкретизирована)</FONT></TD></TR></TBODY></TABLE><STRONG>
+<P align=left><FONT size=2>&nbsp;&nbsp;&nbsp; 
+<TABLE style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-LEFT: #000000 1px solid;HEIGHT: 25px; WIDTH: 1067px" cellSpacing=0 cols=1 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=31></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=1059 colSpan=13 align=center><B>Место назначения</B></TD></TR></TBODY></TABLE>
+<TABLE style="border:#000000 1px solid; HEIGHT: 77px; WIDTH: 1067px" cellSpacing=0 cols=13 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=31>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=180>
+<COL width=86>
+<COL width=37>
+<COL width=86>
+<COL width=25>
+<COL width=20>
+<COL width=16>
+<COL width=161>
+<COL width=55></COLGROUP>
+<TBODY>
+ @foreach (var target in Model.Targets)
+ {
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=34 rowSpan=2 width=31 align=center>@target.Number.</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=100 align=center>страна, город</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=352 colSpan=3 align=center>@target.Country
+<P align=center>&nbsp;</P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=86 align=center>дата начала</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=37 align=center>"@target.BeginDay"</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" width=86 align=center>@target.BeginMonth</TD>
+@*<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" width=25 align=center SDNUM="1049;" SDVAL="20"></TD>*@
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" width=20 align=center>@target.BeginYear</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" width=16 align=center>г.</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=161 align=center>всего календ.дней</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=55 align=center>@target.Days</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>организация</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" colSpan=3 align=center><BR>@target.Organization</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>дата окончания</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>"@target.EndDay"</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" align=center>@target.EndMonth</TD>
+@*<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" align=center SDNUM="1049;" SDVAL="20"></TD>*@
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" align=center>@target.EndYear</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid" align=center>г.</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>не считая время пути</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=center>@target.RealDays</TD>
+</TR>
+ }
+</TBODY></TABLE></FONT></P>
+<P>&nbsp; 
+@*<TABLE style="border:#000000 1px solid;HEIGHT: 339px; WIDTH: 1068px" cellSpacing=0 cols=3 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=86>
+<COL width=86>
+<COL width=86></COLGROUP>
+<TBODY>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 width=86 align=left>
+<P align=center><STRONG>Наименование</STRONG></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=86 align=left>
+<P align=center><STRONG>Итого по G расчетная</STRONG></P></TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" width=86 align=left>
+<P align=center><STRONG>Сумма, запрашиваемая сотрудником</STRONG></P></TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>Суточные (руб. В день командировки)</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.GradeDailySum</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.UserDailySum</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>Проживание (стоимость номера руб./сутки)</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.GradeResSum</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.UserResSum</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>Авиа билеты (руб.)</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.GradeAviaSum</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.UserAviaSum</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>Железнодорожные билеты (руб.)</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.GradeTrainSum</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.UserTrainSum</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" height=17 align=left>Итого</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.GradeAllSum</TD>
+<TD style="BORDER-TOP: #000000 1px solid; BORDER-RIGHT: #000000 1px solid; BORDER-BOTTOM: #000000 1px solid; BORDER-LEFT: #000000 1px solid" align=left><BR>@Model.UserAllSum</TD></TR></TBODY>
+</TABLE>*@
+</P></STRONG></I></SUP>
+<FORM>
+@*<P align=left><FONT size=2>Прошу выдать сумму мне в подотчет:&nbsp;&nbsp; </FONT><INPUT maxLength=10 size=6 value="@Model.UserCashSum"/><FONT size=2>&nbsp; - наличными в кассе&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;</FONT><INPUT maxLength=10 size=6 value="@Model.UserNotCashSum"><FONT size=2>&nbsp;- перечислить на зарплатную карту</FONT></P>
+<P align=left><FONT size=2>Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм.</FONT></P>*@
+<DIV align=left><FONT size=2>
+<TABLE style="HEIGHT: 18px; WIDTH: 518px" cellSpacing=0 cols=6 rules=none border=0 frame=void>
+<COLGROUP><FONT size=2>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=86></FONT></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=343 colSpan=4 align=left><FONT size=2 face="">С условиями настоящего Приказа ознакомлен(а)</FONT></TD>
+<TD width=171 colSpan=2 align=left><FONT size=2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </FONT></TD></TR>
+<TR>
+<TD height=17 align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD align=left><FONT size=2>&nbsp;</FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись сотрудника)</FONT></TD></TR></TBODY></TABLE></FONT></DIV>
+<DIV align=left><FONT size=2>Расходы утверждены функциональным руководителем*</FONT></DIV>
+<DIV align=left><FONT size=2>&nbsp; 
+<TABLE style="HEIGHT: 57px; WIDTH: 936px" cellSpacing=0 cols=12 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=86>
+<COL width=109>
+<COL width=37>
+<COL width=86>
+<COL width=78>
+<COL width=65>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=36>
+<COL width=86>
+<COL width=62></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=195 colSpan=2 align=left>@Model.ManagerPosition</TD>
+<TD width=37 align=left></TD>
+<TD width=163 colSpan=2 align=left></TD>
+<TD width=65 align=left></TD>
+<TD width=350 colSpan=3 align=left>@Model.ManName</TD>
+<TD width=36 align=left></TD>
+<TD width=148 colSpan=2 align=left>@Model.ManagerDate</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(должность руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=3 align=center><FONT size=2>(расшифровка руководителя, Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE></FONT></DIV>
+<DIV align=left><FONT size=2>Нужное отметить V</FONT></DIV>
+<DIV align=left><FONT size=2>Командировка приходится в выходные/праздничные дни&nbsp;или её продолжительность более семи дней&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@if(Model.IsLongOrder){<text>да - <INPUT type=checkbox checked="true">&nbsp;&nbsp;&nbsp;&nbsp; нет - <INPUT type=checkbox> </text>} else {<text>да - <INPUT type=checkbox>&nbsp;&nbsp;&nbsp;&nbsp; нет - <INPUT type=checkbox  checked="true"></text>}</DIV>
+<DIV align=left>Согласование Члена Розничного Правления/Члена Правления**, курирующего функциональное направление,если в одном из пунктов отмечено "да" (для сотрудников УК)</DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>Необходимость командировки согласована дополнительно:</DIV>
+<DIV align=left>&nbsp; 
+<TABLE style="HEIGHT: 57px; WIDTH: 936px" cellSpacing=0 cols=12 rules=none border=0 frame=void>
+<COLGROUP>
+<COL width=86>
+<COL width=109>
+<COL width=37>
+<COL width=86>
+<COL width=78>
+<COL width=65>
+<COL width=86>
+<COL width=86>
+<COL width=86>
+<COL width=36>
+<COL width=86>
+<COL width=62></COLGROUP>
+<TBODY>
+<TR>
+<TD height=17 width=195 colSpan=2 align=left>@Model.ChiefPosition</TD>
+<TD width=37 align=left></TD>
+<TD width=163 colSpan=2 align=left></TD>
+<TD width=65 align=left></TD>
+<TD width=350 colSpan=3 align=left>@Model.ChiefName</TD>
+<TD width=36 align=left></TD>
+<TD width=148 colSpan=2 align=left>@Model.ChiefDate</TD></TR>
+<TR>
+<TD style="BORDER-TOP: #000000 1px solid" height=17 colSpan=2 align=center><FONT size=2>(должность руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(подпись руководителя)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=3 align=center><FONT size=2>(расшифровка руководителя, Ф.И.О.)</FONT></TD>
+<TD align=left><FONT size=2></FONT></TD>
+<TD style="BORDER-TOP: #000000 1px solid" colSpan=2 align=center><FONT size=2>(дата)</FONT></TD></TR></TBODY></TABLE></DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>&nbsp;</DIV>
+<DIV align=left>*Роль функционального руководителя выполняет для сотрудников Дирекцией - Региональный Директор, для сотрудников УК - Руководитель Департамента.</DIV>
+<DIV align=left>**Для сотрудника УК - Член Розничного Правления/Член Правления,курирующий функциональное направление,для сотрудников дирекций - цепочка согласования такая же, как и для стандартной командировки.</DIV>
+<DIV align=left>***Полный перечень лимитов по командировкам изложен в Положении о деловых поездках и Памятке отбывающему в командирокку.</DIV></FONT></FORM></BODY></HTML>

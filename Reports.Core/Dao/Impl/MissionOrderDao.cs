@@ -32,6 +32,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderId", NHibernateUtil.Int32).
+                AddScalar("AdditionalOrderNumber", NHibernateUtil.String).
+                AddScalar("AdditionalOrderEditDate", NHibernateUtil.DateTime).
                 AddScalar("MissionType", NHibernateUtil.String).
                 AddScalar("MissionKind", NHibernateUtil.String).
                 AddScalar("Target", NHibernateUtil.String).
@@ -44,6 +47,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("State", NHibernateUtil.String).
                 AddScalar("BeginDate", NHibernateUtil.DateTime).
                 AddScalar("EndDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderState", NHibernateUtil.String).
+                AddScalar("AdditionalOrderBeginDate", NHibernateUtil.DateTime).
+                AddScalar("AdditionalOrderEndDate", NHibernateUtil.DateTime).
                 AddScalar("Flag", NHibernateUtil.Boolean).
                 AddScalar("Number", NHibernateUtil.Int32).
                 AddScalar("AirTicketType", NHibernateUtil.String).
@@ -55,7 +61,11 @@ namespace Reports.Core.Dao.Impl
                                 u.Name as UserName,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
-                                EditDate as EditDate,
+                                v.EditDate as EditDate,
+                                ao.Id as AdditionalOrderId,
+                                case when ao.Id is null then null 
+                                     else cast(ao.Number as nvarchar(10))+N'-изм' end as AdditionalOrderNumber,
+                                ao.EditDate as AdditionalOrderEditDate,
                                 t.Name as MissionType,  
                                 case when v.Kind = 1 then  N' Внутренняя'
                                      when v.Kind = 2 then  N' Внешняя'
@@ -65,24 +75,24 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 case when (v.UserAllSum - v.AllSum 
-                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end) > 0
+                                    + case when  v.IsResidencePaid = 1 then isnull( v.SumResidence,0) else 0 end
+                                    + case when  v.IsAirTicketsPaid = 1 then isnull( v.SumAir,0) else 0 end
+                                    + case when  v.IsTrainTicketsPaid = 1 then isnull( v.SumTrain,0) else 0 end) > 0
                                     then v.UserAllSum - v.AllSum 
-                                    + case when IsResidencePaid = 1 then isnull(SumResidence,0) else 0 end
-                                    + case when IsAirTicketsPaid = 1 then isnull(SumAir,0) else 0 end
-                                    + case when IsTrainTicketsPaid = 1 then isnull(SumTrain,0) else 0 end
+                                    + case when  v.IsResidencePaid = 1 then isnull( v.SumResidence,0) else 0 end
+                                    + case when  v.IsAirTicketsPaid = 1 then isnull( v.SumAir,0) else 0 end
+                                    + case when  v.IsTrainTicketsPaid = 1 then isnull( v.SumTrain,0) else 0 end
                                     else null end
                                 as GradeIncrease,
                                 v.UserAllSum as UserSum,
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
-                                case when ((NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
-                                          (NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
+                                case when (( v.NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
+                                          ( v.NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
                                            and v.DeleteDate is null and v.SendTo1C is null
                                            and 
-                                           ( (IsResidencePaid = 1 and ResidenceRequestNumber is null) or
-                                             (IsAirTicketsPaid = 1 and AirTicketsRequestNumber is null) or
-                                             (IsTrainTicketsPaid = 1 and TrainTicketsRequestNumber is null))
+                                           ( ( v.IsResidencePaid = 1 and  v.ResidenceRequestNumber is null) or
+                                             ( v.IsAirTicketsPaid = 1 and  v.AirTicketsRequestNumber is null) or
+                                             ( v.IsTrainTicketsPaid = 1 and  v.TrainTicketsRequestNumber is null))
                                     then N'Заказ' else N'' end  as NeedSecretary,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 
@@ -90,12 +100,12 @@ namespace Reports.Core.Dao.Impl
                                           -- and v.ManagerDateAccept is not null 
                                           -- and v.UserDateAccept is not null 
                                           then N'Согласован'
-                                    when  NeedToAcceptByChief = 0
+                                    when  v.NeedToAcceptByChief = 0
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
                                           then N'Согласован'    
                                     when  v.ChiefDateAccept is null 
-                                          and NeedToAcceptByChief = 1
+                                          and v.NeedToAcceptByChief = 1
                                           and v.ManagerDateAccept is not null 
                                           and v.UserDateAccept is not null 
                                           then N'Отправлен члену правления'    
@@ -108,6 +118,31 @@ namespace Reports.Core.Dao.Impl
                                 end as State,
                                 v.BeginDate as BeginDate,  
                                 v.EndDate as EndDate,
+                                case when ao.Id is null then null
+                                     when ao.DeleteDate is not null then N'Отклонен'
+                                     when ao.SendTo1C is not null then N'Выгружен в 1с' 
+                                     when ao.ChiefDateAccept is not null 
+                                          -- and v.ManagerDateAccept is not null 
+                                          -- and v.UserDateAccept is not null 
+                                          then N'Согласован'
+                                    when  ao.NeedToAcceptByChief = 0
+                                          and ao.ManagerDateAccept is not null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Согласован'    
+                                    when  ao.ChiefDateAccept is null 
+                                          and ao.NeedToAcceptByChief = 1
+                                          and ao.ManagerDateAccept is not null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Отправлен члену правления'    
+                                    when  ao.ManagerDateAccept is null 
+                                          and ao.UserDateAccept is not null 
+                                          then N'Отправлен руководителю'    
+                                    when  ao.UserDateAccept is null 
+                                          then N'Черновик сотрудника'    
+                                    else N''
+                                end as AdditionalOrderState,
+                                case when ao.Id is null then null else ao.BeginDate end as AdditionalOrderBeginDate,  
+                                case when ao.Id is null then null else ao.EndDate end as AdditionalOrderEndDate,
                                 case when v.AirTicketType = 1 then N'Бизнес'
                                      when v.AirTicketType = 2 then N'Эконом'
                                      else N'' end as AirTicketType,
@@ -117,6 +152,7 @@ namespace Reports.Core.Dao.Impl
                                 {0}  
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
+                                left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
@@ -136,6 +172,12 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForMoList;
             string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
+            if (whereString.Length > 0)
+                whereString += @" and ";
+            if(role != UserRole.Director)
+                whereString += @" v.IsAdditional = 0 ";
+            else
+                whereString += @" ((v.IsAdditional = 0) or (ao.NeedToAcceptByChief = 1)) ";
             //whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -237,6 +279,18 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 17:
                     orderBy = @" order by TrainTicketType";
+                    break;
+                case 18:
+                    orderBy = @" order by AdditionalOrderNumber";
+                    break;
+                case 19:
+                    orderBy = @" order by AdditionalOrderEditDate";
+                    break;
+                case 20:
+                    orderBy = @" order by AdditionalOrderState";
+                    break;
+                case 21:
+                    orderBy = @" order by AdditionalOrderBeginDate,AdditionalOrderEndDate";
                     break;
             }
             if (sortDescending.Value)
@@ -347,7 +401,7 @@ namespace Reports.Core.Dao.Impl
                                             )
                                             then 1 else 0 end as Flag";
                         sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
-                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1))  ";
+                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
@@ -387,32 +441,33 @@ namespace Reports.Core.Dao.Impl
                     //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
                     //    break;
                     case 1:
-                        statusWhere = @"UserDateAccept is not null";
+                        statusWhere = @"v.UserDateAccept is not null";
                         break;
                     case 2:
-                        statusWhere = @"UserDateAccept is null";
+                        statusWhere = @"v.UserDateAccept is null";
                         break;
                     case 3:
-                        statusWhere = @"ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.ManagerDateAccept is not null and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 4:
-                        statusWhere = @"ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 5:
-                        statusWhere = @"(ChiefDateAccept is not null and NeedToAcceptByChief = 1) or
-                                        (ManagerDateAccept is not null and NeedToAcceptByChiefAsManager = 1)";
+                        statusWhere = @"(v.ChiefDateAccept is not null and v.NeedToAcceptByChief = 1) or
+                                        (v.ManagerDateAccept is not null and v.NeedToAcceptByChiefAsManager = 1)";
                         break;
                     case 6:
-                        statusWhere = @"(ChiefDateAccept is null  and NeedToAcceptByChief = 1) or
-                                        (ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1)";
+                        statusWhere = @"(v.ChiefDateAccept is null  and v.NeedToAcceptByChief = 1) or
+                                        (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) ";
                         break;
                     case 7:
-                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null
-                                        and NeedToAcceptByChiefAsManager = 0";
+                        statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
+                                        and v.NeedToAcceptByChiefAsManager = 0";
                         break;
                     case 8:
-                        statusWhere = @"UserDateAccept is not null and ((ManagerDateAccept is null and NeedToAcceptByChiefAsManager = 1) 
-                                        or (ManagerDateAccept is not null and ChiefDateAccept is null and NeedToAcceptByChief = 1))";
+                        statusWhere = @"v.UserDateAccept is not null and ((v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) 
+                                        or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1)
+                                        or (ao.ManagerDateAccept is not null and ao.ChiefDateAccept is null and ao.NeedToAcceptByChief = 1))";
                         break;
                     //case 8:
                     //    statusWhere =
@@ -622,6 +677,15 @@ namespace Reports.Core.Dao.Impl
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate).
                 SetInt32("userId", userId);
+            return query.UniqueResult<int>() > 0;
+        }
+        public virtual bool CheckAdditionalOrderExists(int id)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [MainOrderId] = :id and [NeedToAcceptByChief] = 1
+                                    ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id);
             return query.UniqueResult<int>() > 0;
         }
 

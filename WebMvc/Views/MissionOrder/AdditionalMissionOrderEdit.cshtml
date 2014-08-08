@@ -1,0 +1,938 @@
+﻿@model Reports.Presenters.UI.ViewModel.AdditionalMissionOrderEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Изменение приказа на командировку";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                @Html.ValidationSummary(false)
+                <div id="Error" style="color:Red;display:none;"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @Html.Partial("../UserInfoView", Model)
+            </td>
+        </tr>
+        @if (Model.IsDeleted)
+        { 
+        <tr>
+            <td colspan="2" style="color:Red">Изменение отклонено</td>
+        </tr>
+        }
+       
+        <tr>
+            <td style="width:225px">
+                @Html.LabelFor(m => m.Goal):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Goal)
+                <input type="hidden" id="Goal" name="Goal" value="@Model.Goal" />
+            </td>
+        </tr>
+        <tr id="trType">
+            <td>
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                <input type="hidden" id="IsDeleteAvailable" name="IsDeleteAvailable" value="@Model.IsDeleteAvailable" />
+                <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDelete" />
+                <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                @Html.LabelFor(m => m.Type):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Type)
+                <input type="hidden" id="Type" name="Type" value="@Model.Type" />
+                <input type="hidden" id="TypeId" name="TypeId" value="@Model.TypeId" />
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.Kind):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Kind)
+                <input type="hidden" id="Kind" name="Kind" value="@Model.Kind" />
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.Grade):
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Grade)
+                <input type="hidden" id="Grade" name="Grade" value="@Model.Grade" />
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2" style="font-weight:bold">
+               Место назначения &nbsp;<input type="button" value="Добавить" name="AddTargetBtn" id="AddTargetBtn" class="targetBtn" onclick="addTarget();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+               <input type="hidden" id="Targets" name="Targets" value="@Model.Targets" />
+                <table id="targetsTable"></table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="font-weight:bold">
+            По приезду из командировки в течение 15 дней должен быть заполнен Авансовый отчет и предоставлены подтверждающие документы.<br/>
+            В случае не заполнения Авансового отчета в указанный срок, вся сумма подотчета подлежит удержанию в полном <br/>
+            объеме из заработной платы. 
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.BeginMissionDate):
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.BeginMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+            </td>
+        </tr>
+         <tr>
+            <td>
+                @Html.LabelFor(m => m.EndMissionDate):
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.EndMissionDate, new { @readonly = "read-only", @class = "fixedSize" })
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsUserApprovedAvailable" name="IsUserApprovedAvailable" value="@Model.IsUserApprovedAvailable" />
+                @Html.CheckBox("IsUserApproved", Model.IsUserApproved, Model.IsUserApprovedAvailable ? null : (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsUserApproved)
+                @if (!Model.IsUserApprovedAvailable)
+                {
+                    <input type="hidden" id="IsUserApprovedHidden" name="IsUserApprovedHidden" value="@Model.IsUserApprovedHidden" />
+                }
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                @Html.CheckBox("IsChiefApproveNeed", Model.IsChiefApproveNeed, (object)new { disabled = "disabled" }) 
+                @Html.LabelFor(model => model.IsChiefApproveNeed)
+                <input type="hidden" id="IsChiefApproveNeedHidden" name="IsChiefApproveNeedHidden" value="@Model.IsChiefApproveNeedHidden" />
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                    Расходы утверждены функциональным руководителем
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, true, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
+                    @Html.RadioButtonFor(model => model.IsManagerApproved, false, Model.IsManagerApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
+                    @if (!Model.IsManagerApproveAvailable)
+                    {
+                        <input type="hidden" id="IsManagerApprovedHidden" name="IsManagerApprovedHidden" value="@Model.IsManagerApprovedHidden" />
+                    }
+                    <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
+            </td>
+        </tr>
+         <tr>
+            <td colspan="2">
+                    Согласование Члена Розничного Правления/ Члена Правления, курирующего функциональное  направление
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
+                    @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
+                    @if (!Model.IsChiefApproveAvailable)
+                    {
+                        <input type="hidden" id="IsChiefApprovedHidden" name="IsChiefApprovedHidden" value="@Model.IsChiefApprovedHidden" />
+                    }
+                    <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+               <input type="submit" value="Записать" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+               <input type="button" value="Печать изменения" onclick="window.location.href='@Url.Action("GetAdditionalOrderPrintForm", "MissionOrder", new { id = Model.Id })';"/>   
+               <div style="text-align: right;"><input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsDeleteAvailable) {<text>style="display:none"</text>}/>
+            </div>
+            </td>
+        </tr>
+        
+    </table>
+    </div>
+    <br />
+    @*<div class="comment-wrap">
+    <table style="width:100%">
+         <tr>
+            <td colspan="2">
+                <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+            </td>
+        </tr>
+    </table>
+    </div>*@
+    <script type="template/html" id="targetTemplate">
+                    <table id="targetsTable">
+                            <tbody>
+                                {{#List}}
+                                <tr>
+                                    <td>
+                                        Страна
+                                    </td>
+                                    <td>
+                                        {{Country}} &nbsp;
+                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});"/>
+                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});"/>
+                                    </td>
+                                </tr>    
+                               <tr>
+                                    <td>
+                                        Маршрут
+                                    </td>
+                                    <td>
+                                        {{City}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Организация
+                                    </td>
+                                    <td>
+                                        {{Organization}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Дата начала {{DateFrom}}
+                                    </td>
+                                     <td>
+                                        Дата окончания {{DateTo}} 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Всего календарных дней
+                                    </td>
+                                    <td>
+                                        {{AllDaysCount}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Дней, не считая время в пути
+                                    </td>
+                                    <td>
+                                        {{TargetDaysCount}}
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td>
+                                        Суточные
+                                    </td>
+                                    <td>
+                                        {{DailyAllowanceName}}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Проживание
+                                    </td>
+                                    <td>
+                                        {{ResidenceName}}
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td>
+                                        Авиа билеты
+                                    </td>
+                                    <td>
+                                        {{AirTicketTypeName}}
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td>
+                                       Железнодорожные билеты
+                                    </td>
+                                    <td>
+                                        {{TrainTicketTypeName}}
+                                    </td>
+                                </tr>
+                                 <tr>
+                                    <td colspan="2">
+                                       <hr style="margin-bottom:20px;margin-top:20px;background-color:Gray;height:1px;border:none;">
+                                    </td>
+                                </tr>
+                               {{/List}}
+                        </tbody>
+                    </table>
+    </script>
+    <script type="text/javascript">
+        var  actionEditTargetDialogUrl = "@Url.Action("EditTargetDialog", "MissionOrder")";
+        $(document).ready(function () {
+            /*$("#BeginDate").datepicker();
+            $("#EndDate").datepicker();
+            $(".hasDatepicker").width("75px");
+            $("#DaysCount").width("50px");*/
+            //setActiveMenuItem("moAllOrders");
+            var targets = JSON.parse($("#Targets").val());
+            renderTargetsTable(targets);
+            setTargetBtnState();
+//            IsResidencePaidChange();
+//            IsAirTicketsPaidChange();
+//            IsTrainTicketsPaidChange();
+        });
+        function ValidateForm() {
+            clearEditTargetErrors($("#trType"));
+            clearErrors();
+//            if($("#IsSecritaryEditable").val == "True")
+//                return true;
+            /*if(!CalcUserSum())
+                return false;*/
+//            if(!CalcUserCashNotCashSums())
+//                return false;
+            var targets = JSON.parse($("#Targets").val());
+            if(targets.List.length == 0)
+            {
+               addError("Необходимо указать хотя бы одно место назначения");
+               return false;
+            }   
+            var hasError = false;
+            jQuery.each(targets.List, function( i, val ) {
+                if((val.CountryId == 1 && $("#TypeId").val() != 1) ||
+                       (val.CountryId == 2 && $("#TypeId").val() != 2) || 
+                       (val.CountryId == 3 && $("#TypeId").val() != 4) ||
+                       (val.CountryId == 4 && $("#TypeId").val() != 3))
+                 {
+                   hasError = true;
+                 }
+            });
+            if(hasError)
+            {
+                //addError("Страна места назначения должна совпадать с типом командировки");
+                addEditTargetError($("#TypeId"),"Страна места назначения должна совпадать с типом командировки");
+                return false;
+            }
+            return true;
+        }
+        /*function SetApprovedForAllAndValidateForm() {
+            SetApprovedAndValidateForm();
+            $("#IsApprovedForAll").val('true');
+            return true;
+        }
+        function SetApprovedAndValidateForm() {
+            $("#IsApproved").val('true');
+            return true;
+        }*/
+        function Delete() {
+            $("#IsDelete").val("true");
+            return true;
+        }
+
+        function renderTargetsTable(targets) {
+            var template = $("#targetTemplate").html();
+            var html = Mustache.render(template, targets);
+            $("#targetsTable").html(html);
+            /*if ($("#IsReadOnly").val() == 'True') {
+                $(".deleteLink").hide();
+            }*/
+        }
+        function deleteTarget(targetId) {
+            var targets = JSON.parse($("#Targets").val());
+            targets.List = jQuery.grep(targets.List, function (value, i) {
+                return value.TargetId != targetId;
+            });
+            calculateSums(targets.List);
+            renderTargetsTable(targets);
+            $("#Targets").val(JSON.stringify(targets));
+            setTargetBtnState();
+        }
+        function addTarget() {
+            createTargetDialog(actionEditTargetDialogUrl,"id=0");
+        }
+        function editTarget(targetId) {
+            clearEditTargetCommonErrors();
+            var targets = JSON.parse($("#Targets").val());
+            var obj = findByTargetId(targets.List,targetId);
+            if(obj == undefined)
+            {
+                addEditTargetCommonError("Не найден объект для редактирования");
+                return;
+            }
+            var params = "id="+targetId+"&json="+escapeJson(JSON.stringify(obj));
+            createTargetDialog(actionEditTargetDialogUrl,params);
+        }
+         function setTargetBtnState()
+        {
+            if($("#IsEditable").val() == "False")
+                $(".targetBtn").hide();
+            else
+            {
+                $(".targetBtn").show();
+                var targets = JSON.parse($("#Targets").val());
+                if(targets.List.length > 5)
+                    $("#AddTargetBtn").hide();
+                else
+                    $("#AddTargetBtn").show();
+            }
+        }
+
+        function disableSaveButton() {
+            $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+        }
+
+        function createTargetDialog(url,params) {
+            var elem = document.createElement('div');
+            elem.id = "divTargetDialog";
+            var newDiv = $(elem);
+            var title = "Редактирование места назначения";
+            $(newDiv).text('Подождите, идет загрузка данных ...');
+            $(newDiv).load(url + "?"+ params+ " #targetDialogTable"
+             , function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditTargetDilaogTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     else
+                     {
+                        $("#BeginDate").datepicker();
+                        $("#EndDate").datepicker();
+                        $(".hasDatepicker").width("85px"); 
+                        $("#RealDays").width("85px"); 
+                        $("#AllDays").width("85px"); 
+                        $("#BeginDate").change(function(){getDateDiff();});
+                        $("#EndDate").change(function(){getDateDiff();});
+                     }
+                 }
+             }
+            );
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 830,
+                height: 520,
+                // fix IE6  
+                bgiframe: true,
+                /*open: function (event, ui) {
+                    $("#BeginDate").datepicker();
+                    $("#EndDate").datepicker();
+                    $(".hasDatepicker").width("75px"); 
+                },*/
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Сохранить": function () {
+                        if(!validateTarget())
+                            return;
+                        if(!addObject())
+                             return;
+                        $(this).dialog("close");
+                        setTargetBtnState();
+                    },
+                    "Отмена": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        /*function addCheckedObjects() {
+    var agents = JSON.parse($("#Agents").val());
+    $(".checkAgent").each(function () {
+        if ($(this).is(":checked")) {
+            var tr = $(this).parents('tr[class^="checkTr"]');
+            var agentId = tr.find(".checkId").val();
+            var fio = tr.find(".checkFio").text();
+            var team = tr.find(".checkTeam").text();
+            var region = tr.find(".checkRegion").text();
+            var newObj = { AgentId: agentId, Fio: fio, Team: team, Region: region };
+            agents.List.push(newObj);
+        }
+    });
+    agents.List.sort(function (a, b) {
+        return a.Fio > b.Fio ? 1 : -1;
+    });
+    renderAgentTable(agents);
+    $("#Agents").val(JSON.stringify(agents));
+}*/
+        function addObject()
+        {
+            clearEditTargetCommonErrors();
+            var targets = JSON.parse($("#Targets").val());
+            var targetId = $("#TargetId").val();
+            var countryId = parseInt($("#CountryId").val(),10);
+            var country = $("#CountryId option:selected").text();
+            var city = $("#City").val();
+            var organization = $("#Organization").val();
+            var dateFrom = $("#BeginDate").val();
+            var dateTo = $("#EndDate").val();
+            var allDaysCount = parseInt($("#AllDays").val(),10);
+            var targetDaysCount = parseInt($("#RealDays").val(),10);
+            var dailyAllowanceId = parseInt($("#DailyAllowanceId").val(),10);
+            var dailyAllowanceName = $("#DailyAllowanceId option:selected").text();
+            var residenceId = parseInt($("#ResidenceId").val(),10);
+            var residenceName = $("#ResidenceId option:selected").text();
+            var airTicketTypeId = parseInt($("#AirTicketTypeId").val(),10);
+            var airTicketTypeName = $("#AirTicketTypeId option:selected").text();
+            var trainTicketTypeId = parseInt($("#TrainTicketTypeId").val(),10);
+            var trainTicketTypeName = $("#TrainTicketTypeId option:selected").text();
+            if(targetId == 0)
+            {
+                var targetId = findMinId(targets.List);
+                var newObj = { TargetId: targetId, CountryId: countryId, Country: country, City: city,Organization:organization, DateFrom:dateFrom,
+                DateTo:dateTo,AllDaysCount:allDaysCount,TargetDaysCount:targetDaysCount,DailyAllowanceId:dailyAllowanceId,DailyAllowanceName:dailyAllowanceName,
+                 ResidenceId:residenceId,ResidenceName:residenceName,AirTicketTypeId:airTicketTypeId,AirTicketTypeName:airTicketTypeName,
+                 TrainTicketTypeId:trainTicketTypeId,TrainTicketTypeName:trainTicketTypeName };
+                targets.List.push(newObj);
+            }
+            else
+            {
+                var obj = findByTargetId(targets.List,targetId);
+                 if(obj == undefined)
+                 {
+                    addEditTargetCommonError("Не найден объект для сохранения");
+                    return false;
+                 }
+                 obj.CountryId = countryId; 
+                 obj.Country = country; 
+                 obj.City = city;
+                 obj.Organization = organization; 
+                 obj.DateFrom = dateFrom;
+                 obj.DateTo = dateTo;
+                 obj.AllDaysCount = allDaysCount;
+                 obj.TargetDaysCount = targetDaysCount;
+                 obj.DailyAllowanceId = dailyAllowanceId;
+                 obj.DailyAllowanceName = dailyAllowanceName;
+                 obj.ResidenceId = residenceId;
+                 obj.ResidenceName = residenceName;
+                 obj.AirTicketTypeId = airTicketTypeId;
+                 obj.AirTicketTypeName = airTicketTypeName;
+                 obj.TrainTicketTypeId = trainTicketTypeId;
+                 obj.TrainTicketTypeName = trainTicketTypeName;
+            }
+            
+
+            renderTargetsTable(targets);
+            $("#Targets").val(JSON.stringify(targets));
+            return calculateSums(targets.List);
+        }
+        function calculateSums(list)
+        {
+//                var sumDaily = 0;
+//                var sumResidence = 0;
+//                var sumAir = 0; 
+//                var sumTrain = 0; 
+                var beginDate = '';
+                var endDate = '';
+                jQuery.each( list, function( i, val ) {
+
+                    try {
+                        var bDate = $.datepicker.parseDate("dd.mm.yy", val.DateFrom);
+                        var eDate = $.datepicker.parseDate("dd.mm.yy", val.DateTo);
+                        if(beginDate == '')
+                            beginDate = bDate;
+                        else if(bDate < beginDate)
+                            beginDate = bDate;   
+                         if(endDate == '')
+                            endDate = eDate;
+                        else if(eDate > endDate)
+                            endDate = eDate;
+                    }
+                    catch (error) {
+                    }
+
+//                   var dailyType  = val.DailyAllowanceId;
+//                   dailyTargetSum = 0;
+//                   if(dailyType != 0)
+//                   {
+//                       var dailyAmount = findTypeGrade($("#DailyAllowanceGrades").val(),dailyType);
+//                       if(dailyAmount == undefined)
+//                       {
+//                            addEditTargetCommonError("Не найден лимит на расходы для суточных");
+//                            return false;
+//                       }
+//                       dailyTargetSum = dailyAmount * val.AllDaysCount;
+//                   }
+//                   sumDaily = sumDaily + dailyTargetSum;
+//                   var resType  = val.ResidenceId;
+//                   resTargetSum = 0;
+//                   if(resType != 0)
+//                   {
+//                       var resAmount = findTypeGrade($("#ResidenceGrades").val(),resType);
+//                       if(resAmount == undefined)
+//                       {
+//                            addEditTargetCommonError("Не найден лимит на расходы для проживания");
+//                            return false;
+//                       }
+//                       resTargetSum = resAmount * val.TargetDaysCount;
+//                   }
+//                   sumResidence = sumResidence+resTargetSum;
+//                   var airType  = val.AirTicketTypeId;
+//                   airTargetSum = 0;
+//                   if(airType != 0)
+//                   {
+//                       var airAmount = findTypeGrade($("#AirTicketTypeGrades").val(),airType);
+//                       if(airAmount == undefined)
+//                       {
+//                            addEditTargetCommonError("Не найден лимит на расходы для авиабилетов");
+//                            return false;
+//                       }
+//                       airTargetSum = airAmount;
+//                   }
+//                   sumAir = sumAir+airTargetSum;
+//                   var trainType  = val.TrainTicketTypeId;
+//                   trainTargetSum = 0;
+//                   if(trainType != 0)
+//                   {
+//                       var trainAmount = findTypeGrade($("#TrainTicketTypeGrades").val(),trainType);
+//                       if(trainAmount == undefined)
+//                       {
+//                            addEditTargetCommonError("Не найден лимит на расходы для ж/д билетов");
+//                            return false;
+//                       }
+//                       trainTargetSum = trainAmount;
+//                   }
+//                   sumTrain = sumTrain+trainTargetSum;
+//                   
+
+                });
+//                $("#AllSumDaily").val(sumDaily);
+//                $("#AllSumResidence").val(sumResidence);
+//                $("#AllSumAir").val(sumAir);
+//                $("#AllSumTrain").val(sumTrain);
+//                $("#AllSum").val(sumDaily+sumResidence+sumAir+sumTrain);
+                if(beginDate != '')
+                    $("#BeginMissionDate").val($.datepicker.formatDate('dd.mm.yy', beginDate));
+                else
+                    $("#BeginMissionDate").val('');
+                if(endDate != '')
+                    $("#EndMissionDate").val($.datepicker.formatDate('dd.mm.yy', endDate));
+                else
+                    $("#EndMissionDate").val('');
+                return true;
+        }
+        function findMinId(list)
+        {
+            var minId = 0;
+            jQuery.each( list, function( i, val ) {
+                if(val.TargetId < minId)
+                    minId = val.TargetId;
+            });
+            return minId - 1;
+        }
+        function findByTargetId(list,targetId)
+        {
+            var obj = undefined;
+            jQuery.each( list, function( i, val ) {
+                if(val.TargetId == targetId)
+                {
+                   obj = val;
+                   return obj;
+                }
+            });
+            return obj;
+        }
+        function findTypeGrade(field,id)
+        {
+             var types = JSON.parse(field);
+             var obj = findById(types,id);
+            if(obj == undefined)
+                return undefined;
+            return obj.Amount;
+        }
+        function findById(list,targetId)
+        {
+            var obj = undefined;
+            jQuery.each( list, function( i, val ) {
+                if(val.Id == targetId)
+                {
+                   obj = val;
+                   return obj;
+                }
+            });
+            return obj;
+        }
+        
+        function validateTarget()
+        {
+            clearEditTargetErrors($("#targetDialogTable"));
+            var result = true;
+            var beginDate = undefined;
+            var endDate = undefined;
+
+           
+            result = validate_FieldIsNotEmptyAddError($("#BeginDate"));
+            if (result) {
+                try {
+                    beginDate = $.datepicker.parseDate("dd.mm.yy",$('#BeginDate').val());
+                }
+                catch (error) {
+                    addEditTargetError($("#BeginDate"), "Неправильная дата");
+                    result = false;
+                }
+            }
+            var result1 = validate_FieldIsNotEmptyAddError($("#EndDate"));
+            if (result1) {
+                try {
+                    endDate = $.datepicker.parseDate("dd.mm.yy", $('#EndDate').val());
+                }
+                catch (error) {
+                    //addEditTargetError($("#EndDate"), "Неправильная дата");
+                   
+                    result = false;
+                }
+            }
+            else
+                result = false;
+            if ((beginDate != undefined) && (endDate != undefined)) {
+                if(beginDate > endDate)
+                {
+                    addEditTargetError($("#BeginDate"), "Дата начала не может превышать дату окончания");
+                    result = false;
+                }
+                 if(($("#CountryId").val() == 1 && $("#TypeId").val() != 1) ||
+                       ($("#CountryId").val() == 2 && $("#TypeId").val() != 2) || 
+                       ($("#CountryId").val() == 3 && $("#TypeId").val() != 4) ||
+                       ($("#CountryId").val() == 4 && $("#TypeId").val() != 3))
+                 {
+                    addEditTargetError($("#CountryId"), "Страна должна совпадать с типом командировки");
+                     result = false;
+                 }
+                 var targets = JSON.parse($("#Targets").val());
+                 var targetId = $("#TargetId").val();
+                 var hasError = false;
+                 jQuery.each(targets.List, function( i, val ) {
+                        if(val.TargetId != targetId)
+                        {
+                           if(!hasError)
+                           {
+                                try 
+                                {
+                                        var bDate = $.datepicker.parseDate("dd.mm.yy", val.DateFrom);
+                                        var eDate = $.datepicker.parseDate("dd.mm.yy", val.DateTo);
+                                        if(((beginDate >= bDate ) && (beginDate <= eDate)) ||
+                                           ((endDate >= bDate ) && (endDate <= eDate)) || 
+                                           ((bDate >= beginDate ) && (bDate <= endDate)) || 
+                                           ((eDate >= beginDate ) && (eDate <= endDate))
+                                           )
+                                           hasError = true;
+
+                                }
+                                catch (error) {
+                                }
+                           }
+                        }
+                    });
+                    if(hasError)
+                    {
+                        addEditTargetError($("#BeginDate"), "Разные места назначения не могут пересекаться по датам.");
+                        addEditTargetError($("#EndDate"), "");
+                        result = false;
+                    }
+            }
+            if(!validate_FieldIsNotEmptyAddError($("#City")))
+                result = false;
+            if(!validate_FieldIsNotEmptyAddError($("#Organization")))
+                result = false;
+            if(!validate_FieldIsNotEmptyAddError($("#RealDays")))
+                result = false;
+            else
+            {
+                var days = parseInt($("#RealDays").val(), 10);
+                if (!(/^[0-9]+$/i).test($("#RealDays").val()) || isNaN(days) || (days < 0)) {
+                    addEditTargetError($("#RealDays"),"Поле должно быть целым неотрицательным числом");
+                    result = false;
+                }
+                else
+                {
+                    var allDays = parseInt($("#AllDays").val(), 10);
+                    if(days > allDays)
+                    {
+                        addEditTargetError($("#RealDays"),"Значение не должно превышать числа кадендарных дней");
+                        result = false;
+                    }
+                }
+            }
+            return result;
+        }
+        function clearEditTargetErrors(form) {
+            form.find(":input").removeClass("input-validation-error");
+            form.find(".error").remove();
+        }
+        function addEditTargetError(el, value) {
+            el.addClass("input-validation-error");
+            var msg = value.toString();
+            $("<span/>").addClass("error field-validation-error").text(msg).appendTo(el.parent());
+            if (value.length > 20) $("<span/>").parent().css("width", 500);
+        }
+        function validate_FieldIsNotEmptyAddError(control) {
+            return validate_FieldIsNotEmpty(control, true);
+        }
+        function validate_FieldIsNotEmpty(control, addErrorToForm) {
+            if (control.val() != '')
+                return true;
+            if (addErrorToForm) {
+                addEditTargetError(control, "Обязательное поле");
+            }
+            return false;
+        }
+        function getDateDiff()
+        {
+            var beginDate = undefined;
+            var endDate = undefined;
+            if(($("#BeginDate").val() != '') && ($("#EndDate").val() != ''))
+            {
+                try {
+                    beginDate = $.datepicker.parseDate("dd.mm.yy",$('#BeginDate').val());
+                    endDate = $.datepicker.parseDate("dd.mm.yy", $('#EndDate').val());
+                }
+                catch (error) {
+                   
+                }
+                if ((beginDate != undefined) && (endDate != undefined)) {
+                    var value =  (endDate - beginDate)/(3600*24*1000) + 1;
+                    $("#AllDays").val(value);
+                    return;
+                }
+            }
+            $("#AllDays").val("");
+        }
+        function addEditTargetCommonError(value) {
+            $("#EditTargetDlgError").text(value);
+            $("#EditTargetDlgError").show();
+        }
+       
+        function clearEditTargetCommonErrors() {
+            $("#EditTargetDlgError").text("");
+            $("#EditTargetDlgError").hide();
+        }
+//        function CalcUserCashNotCashSums(){
+//            clearEditTargetErrors($("#trUserSumCash"));
+//            clearEditTargetErrors($("#trUserSumNotCash"));
+//            var allCashSum = 0;
+//            var sum = ValidateSum($("#UserSumCash"));
+//            var sumCash = 0;
+//            if(sum != undefined)
+//            {
+//                sumCash = sum;
+//                allCashSum = allCashSum + sum;
+//            }
+//            else if ($("#UserSumCash").val() != '')
+//                return false;
+//            sum = ValidateSum($("#UserSumNotCash"));
+
+//            var sumNotCash = 0;
+//            if(sum != undefined)
+//            {
+//                sumNotCash = sum;
+//                allCashSum = allCashSum + sum;
+//            }
+//            else if ($("#UserSumNotCash").val() != '')
+//                return false;
+//            var allSumStr = ReplaceToRussianDecimalPointC(allCashSum.toString());
+//            $("#UserAllSum").val(allSumStr);
+//            if(sumCash > 0 && sumNotCash > 0)
+//            {
+//                addEditTargetError($("#UserSumCash"),"Только одна из сумм - наличными в кассе или на зарплатную карту - может быть указана.");
+//                return false;
+//            }
+//            return true;
+           
+            /*if(allCashSum > 0)
+            {
+                if($("#UserAllSum").val() != '')
+                {
+                    var sum = ValidateFloat($("#UserAllSum"));
+                    if((sum == undefined) || (sum != allCashSum))
+                    {
+                        addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                    return false;
+                }    
+            }
+            else
+            {
+                 var sum = ValidateFloat($("#UserAllSum"));
+                 if((sum == undefined) || (sum == 0))
+                    return true;
+                  addEditTargetError($("#UserSumCash"),"Сумма подотчетных сумм должна совпадать с запрашиваемым итогом");
+                  return false; 
+            }*/
+//        }
+        function CalcUserSum() {
+            /*var isError = false;
+            clearEditTargetErrors($("#AllTargetSums"));
+            var allSum = 0;
+            var sum = ValidateSum($("#UserAllSumDaily"));
+            if(sum != undefined)
+                allSum = allSum + sum;
+            else if($("#UserAllSumDaily").val() != '')
+                isError = true;
+            sum = ValidateSum($("#UserAllSumResidence"));
+            if(sum != undefined)
+                allSum = allSum + sum;
+            else if($("#UserAllSumResidence").val() != '')
+                isError = true;
+            sum = ValidateSum($("#UserAllSumAir"));
+            if(sum != undefined)
+                allSum = allSum + sum;
+            else if($("#UserAllSumAir").val() != '')
+                isError = true;
+            sum = ValidateSum($("#UserAllSumTrain"));
+            if(sum != undefined)
+                allSum = allSum + sum;
+            else if($("#UserAllSumTrain").val() != '')
+                isError = true;
+            var allSumStr = ReplaceToRussianDecimalPointC(allSum.toString());
+            $("#UserAllSum").val(allSumStr);
+            return !isError;*/
+        }
+//        function ValidateSum(control)
+//        {
+//            if(control.val() == '')
+//                return undefined;
+//            var sum = ValidateFloat(control);
+//            if(sum == undefined)
+//            {
+//                addEditTargetError(control,"Поле должно быть неотрицательным десятичным числом");
+//                return undefined;
+//            }
+//            else if (sum < 0)
+//            {
+//                addEditTargetError(control,"Поле должно быть неотрицательным десятичным числом");
+//                return undefined;
+//            }
+//            else
+//                return sum;
+//        }
+//        function IsTrainTicketsPaidChange()
+//        {
+//            //OnCheckboxChange($("#IsTrainTicketsPaid"),$("#UserAllSumTrain"));
+//        }
+//        function IsAirTicketsPaidChange()
+//        {
+//            //OnCheckboxChange($("#IsAirTicketsPaid"),$("#UserAllSumAir"));
+//        }
+//        function IsResidencePaidChange()
+//        {
+//            //OnCheckboxChange($("#IsResidencePaid"),$("#UserAllSumResidence"));
+//        }
+//        function OnCheckboxChange(checkbox,input)
+//        {
+//             if (checkbox.is(":checked")) {
+//                 input.val('');
+//                 input.attr('readonly', true);
+//             }
+//             else
+//                input.removeAttr('readonly');
+//            CalcUserSum()
+//        }
+    </script>
+    <script src="@Url.Content("~/Scripts/mustache.js")" type="text/javascript"></script>
+}

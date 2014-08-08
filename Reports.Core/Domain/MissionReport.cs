@@ -73,6 +73,7 @@ namespace Reports.Core.Domain
         public virtual User Archivist { get; set; }
 
         public virtual MissionOrder MissionOrder { get; set; }
+        public virtual MissionOrder AdditionalMissionOrder { get; set; }
 
         public virtual IList<MissionReportCost> Costs { get; set; }
 

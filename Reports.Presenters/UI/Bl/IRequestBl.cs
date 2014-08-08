@@ -136,6 +136,7 @@ namespace Reports.Presenters.UI.Bl
         CreateMissionOrderModel GetCreateMissionOrderModel();
         void ReloadDictionaries(MissionOrderEditModel model);
         bool CheckOtherOrdersExists(MissionOrderEditModel model);
+        bool CheckOrderBeginDate(string beginMissionDate);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);
@@ -184,5 +185,9 @@ namespace Reports.Presenters.UI.Bl
         void SetPrintArchivistAddressModel(PrintArchivistAddressModel model);
         PrintArchivistAddressFormModel GetPrintArchivistAddressFormModel(int id);
         bool SaveUniqueAttachment(SaveAttacmentModel model);
+
+        int CreateAdditionalOrder(int missionReportId);
+        AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id);
+        bool SaveAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model, out string error);
     }
 }

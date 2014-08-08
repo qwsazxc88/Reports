@@ -173,6 +173,12 @@
                         <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Дата</a></div>
                     </th>
                     <th>
+                        <div id="sort18"  style="min-width:70px"><a href="#"  onclick = "SortChanged(18);">Номер<br/> изм.<br/> приказа</a></div>
+                    </th>
+                    <th>
+                        <div id="sort19" style="min-width:70px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
+                    </th>
+                    <th>
                         <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
                     </th>
                      <th>
@@ -206,6 +212,12 @@
                         <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
                     </th>
                      <th>
+                        <div id="sort20"  style="min-width:70px"><a href="#"  onclick = "SortChanged(20);">Состояние<br/>изм.</a></div>
+                    </th>
+                     <th>
+                        <div id="sort21"  style="min-width:70px"><a href="#"  onclick = "SortChanged(21);">Период</a></div>
+                    </th>
+                     <th>
                         <div id="sort16" style="min-width:70px"><a href="#"  onclick = "SortChanged(16);">Авиа <br/>билеты</a></div>
                     </th>
                     <th>
@@ -231,6 +243,13 @@
                                 <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>
                             </td>
                             <td>@doc.EditDate.ToShortDateString()</td>
+                            <td style="text-align:left">
+                                @if(doc.AdditionalOrderId != null)
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("AdditionalMissionOrderEdit", new { id = doc.AdditionalOrderId })' style="cursor:hand">@doc.AdditionalOrderNumber</a>
+                                }
+                            </td>
+                            <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>
                             <td>@doc.MissionType</td>
                             <td>@doc.MissionKind</td>
                             <td>@doc.Target</td>
@@ -242,6 +261,18 @@
                             <td>@doc.NeedSecretary</td>
                             <td>@doc.State</td>
                             <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
+                            <td>
+                              @if(doc.AdditionalOrderId != null)
+                              {
+                                  @doc.AdditionalOrderState
+                              }
+                            </td>
+                            <td>
+                              @if(doc.AdditionalOrderId != null && doc.AdditionalOrderBeginDate != null)
+                              {
+                                  <text>@doc.AdditionalOrderBeginDate.Value.ToString("dd.MM") - @doc.AdditionalOrderEndDate.Value.ToString("dd.MM")</text>
+                              }
+                            </td>
                             <td>@doc.AirTicketType</td>
                             <td>@doc.TrainTicketType</td>
                             @if (Model.IsApproveAvailable)

@@ -120,7 +120,7 @@
           <div class="action-wrap">
             <table style="width:100%">
                  <tr>
-                    <td colspan="2">
+                    <td>
                             @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
@@ -137,7 +137,14 @@
                                 }
                             }                                                                                               
                             </td>
-                        </tr>
+                            <td style="text-align:right">
+                             <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
+                             @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
+                             {
+                                 <input type="submit" value="Записать" onclick="return approveClick();"/>
+                             }
+                            </td>
+                 </tr>
               </table>  
            </div>
         </td>
@@ -173,6 +180,11 @@
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
                     </th>
+                    @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
+                    {
+                        <th><div id="sort8"><a href="#"  onclick = "SortChanged(8);">Есть изменение<br/> приказа</a></div></th>
+                        <th style="width:100px"><div id="sort9"><a href="#"  onclick = "SortChanged(9);">Пересчет</a></div></th>
+                    }
                    @* <th>
                         Дата окончания
                     </th>*@
@@ -180,8 +192,10 @@
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
                     var i = 1;
+                    
                     foreach (var doc in Model.Documents)
                     {
+                        var j = i - 1; 
                         <tr>
                             <td>@i</td>
                             <td style="text-align:left">
@@ -193,8 +207,24 @@
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
-                       @*     <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
-                            <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
+                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.OutsourcingManager)
+                            {
+                                <td>@doc.IsAdditionalOrderExists</td>
+                                <td style="text-align:center">
+                                    @if(doc.Flag.HasValue)
+                                    {
+                                        if (doc.Flag.Value)
+                                        {
+                                            @Html.CheckBoxFor(m => m.Documents[j].IsChecked, new { @class = "selcheck" })
+                                            <input type="hidden" class="selid" id="Documents[@j].Id" name="Documents[@j].Id" value="@doc.Id" />
+                                        }
+                                        else
+                                        {
+                                            <text>Да</text>
+                                        }
+                                    }
+                                </td>
+                            }
                         </tr>
                         i++;
                     }
@@ -232,6 +262,24 @@
         $("#StatusId").val('0');
          $("#UserName").val('');
         //$("#PaymentPercentType").val('0');
+    }
+//    function setSelection()
+//    {
+//        if($("#setAll").is(':checked'))
+//            $(".selcheck").attr('checked','checked');
+//        else
+//            $(".selcheck").removeAttr('checked');
+//    }
+    function approveClick()
+    {
+        clearErrors();
+        if($(".selcheck").filter(':checked').length == 0)
+        {
+            alert("Не выбрано ни одной заявки для пересчета");
+            return false;
+        }
+        $("#IsApproveClick").val('True');
+        return true;
     }
  </script>   
 }
