@@ -427,8 +427,8 @@ namespace Reports.Core.Dao.Impl
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
-                //if (statusId != 10)
-                //    statusWhere += " and DeleteDate is null ";
+                if (statusId != 10)
+                    statusWhere += " and DeleteDate is null ";
                 //if (statusId != 9 && statusId != 10)
                 //    statusWhere += " and SendTo1C is null ";
                 if (whereString.Length > 0)
