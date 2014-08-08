@@ -592,6 +592,9 @@ alter table Managers  drop constraint FK_Managers_Directorate
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Department]') AND parent_object_id = OBJECT_ID('Managers'))
 alter table Managers  drop constraint FK_Managers_Department
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_Schedule]') AND parent_object_id = OBJECT_ID('Managers'))
+alter table Managers  drop constraint FK_Managers_Schedule
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Managers_ApprovingManager]') AND parent_object_id = OBJECT_ID('Managers'))
 alter table Managers  drop constraint FK_Managers_ApprovingManager
 
@@ -802,6 +805,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'AppointmentManage
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
+if exists (select * from dbo.sysobjects where id = object_id(N'Schedule') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Schedule
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -2135,7 +2139,7 @@ create table Managers (
   DirectorateId INT null,
   DepartmentId INT null,
   EmploymentConditions NVARCHAR(250) null,
-  Schedule NVARCHAR(50) null,
+  ScheduleId INT null,
   ProbationaryPeriod NVARCHAR(50) null,
   DailySalaryBasis DECIMAL(15, 2) null,
   HourlySalaryBasis DECIMAL(15, 2) null,
@@ -2367,6 +2371,13 @@ create table Document (
   OutsourcingManagerDateAccept DATETIME null,
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
+)
+create table Schedule (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Code NVARCHAR(10) null,
+  Name NVARCHAR(128) null,
+  constraint PK_Schedule  primary key (Id)
 )
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
@@ -2748,6 +2759,7 @@ create index Managers_Candidate on Managers (CandidateId)
 create index Managers_Position on Managers (PositionId)
 create index Managers_Directorate on Managers (DirectorateId)
 create index Managers_Department on Managers (DepartmentId)
+create index Managers_Schedule on Managers (ScheduleId)
 create index Managers_ApprovingManager on Managers (ApprovingManagerId)
 create index Managers_ApprovingHigherManager on Managers (ApprovingHigherManagerId)
 create index Managers_RejectingChief on Managers (RejectingChiefId)
@@ -2755,6 +2767,7 @@ alter table Managers add constraint FK_Managers_Candidate foreign key (Candidate
 alter table Managers add constraint FK_Managers_Position foreign key (PositionId) references Position
 alter table Managers add constraint FK_Managers_Directorate foreign key (DirectorateId) references Department
 alter table Managers add constraint FK_Managers_Department foreign key (DepartmentId) references Department
+alter table Managers add constraint FK_Managers_Schedule foreign key (ScheduleId) references Schedule
 alter table Managers add constraint FK_Managers_ApprovingManager foreign key (ApprovingManagerId) references [Users]
 alter table Managers add constraint FK_Managers_ApprovingHigherManager foreign key (ApprovingHigherManagerId) references [Users]
 alter table Managers add constraint FK_Managers_RejectingChief foreign key (RejectingChiefId) references [Users]

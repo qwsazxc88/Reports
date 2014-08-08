@@ -48,6 +48,7 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetPositions();
         IEnumerable<SelectListItem> GetDirectorates();
         IEnumerable<SelectListItem> GetDepartments();
+        IEnumerable<SelectListItem> GetSchedules();
         IEnumerable<SelectListItem> GetPersonalAccountContractors();
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();

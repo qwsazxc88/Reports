@@ -27,9 +27,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]
         public string EmploymentConditions { get; set; } //ok
 
-        [Display(Name = "График работы"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string Schedule { get; set; } //ok
+        [Display(Name = "График работы")]
+        public int? ScheduleId { get; set; }
+        public IEnumerable<SelectListItem> Schedules { get; set; }
 
         [Display(Name = "Испытательный срок"),
             StringLength(50, ErrorMessage = "Не более 200 знаков.")]

@@ -14,7 +14,7 @@ namespace Reports.Core.Domain
         public virtual Department Directorate { get; set; } //ok
         public virtual Department Department { get; set; } //ok
         public virtual string EmploymentConditions { get; set; } //ok
-        public virtual string Schedule { get; set; } // OK?
+        public virtual Schedule Schedule { get; set; } // OK?
         public virtual string ProbationaryPeriod { get; set; } //ok
         public virtual decimal? DailySalaryBasis { get; set; }
         public virtual decimal? HourlySalaryBasis { get; set; }

@@ -172,6 +172,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { appointmentDao = value; }
         }
 
+        protected IScheduleDao scheduleDao;
+        public IScheduleDao ScheduleDao
+        {
+            get { return Validate.Dependency(scheduleDao); }
+            set { scheduleDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -663,7 +670,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
-                model.Schedule = entity.Schedule;
+                model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
                 model.WorkCity = entity.WorkCity;
 
                 model.ApprovingManagerName = entity.ApprovingManager.Name;
@@ -763,7 +770,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Position = x.Managers != null ? x.Managers.Position.Name : String.Empty,
                 ProbationaryPeriod = x.Managers != null ? x.Managers.ProbationaryPeriod : String.Empty,
                 Status = (tempItem = GetEmploymentStatuses().Where(status => status.Value == ((int?)x.Status ?? 0).ToString()).FirstOrDefault()) != null ? tempItem.Text : string.Empty,
-                Schedule = x.Managers != null ? x.Managers.Schedule : String.Empty,
+                Schedule = x.Managers != null && x.Managers.Schedule != null ? x.Managers.Schedule.Name : String.Empty,
                 WorkCity = x.Managers != null ? x.Managers.WorkCity : String.Empty
             });
 
@@ -939,6 +946,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PositionItems = GetPositions();
             model.DirectorateItems = GetDirectorates();
             model.DepartmentItems = GetDepartments();
+            model.Schedules = GetSchedules();
 
             model.ApprovalStatuses = GetApprovalStatuses();
         }
@@ -1087,6 +1095,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IEnumerable<SelectListItem> GetDepartments()
         {
             return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
+        }
+
+        public IEnumerable<SelectListItem> GetSchedules()
+        {
+            return ScheduleDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
         }
 
         public IEnumerable<SelectListItem> GetPersonalAccountContractors()
@@ -1766,7 +1779,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
-                        entity.Schedule = viewModel.Schedule;
+                        entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
                         entity.WorkCity = viewModel.WorkCity;
 
                         //entity.Approver = UserDao.Get(current.Id);
