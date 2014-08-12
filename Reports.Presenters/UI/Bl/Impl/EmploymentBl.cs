@@ -733,46 +733,29 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public RosterModel GetRosterModel(RosterFiltersModel filters)
         {
-            IList<EmploymentCandidate> candidates;
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
             RosterModel model = new RosterModel();
             if (filters == null)
             {                
-                candidates = new List<EmploymentCandidate>();
+                model.Roster = new List<CandidateDto>();
             }
             else
             {
-                candidates = EmploymentCandidateDao.LoadFiltered(filters.DepartmentId, filters.StatusId, filters.UserName, filters.BeginDate, filters.EndDate);
+                model.Roster = EmploymentCandidateDao.GetCandidates(current.Id,
+                    current.UserRole,
+                    filters != null ? filters.DepartmentId : 0,
+                    filters != null ? filters.StatusId.Value : 0,
+                    filters != null ? filters.BeginDate : null,
+                    filters != null ? filters.EndDate : null,
+                    null,
+                    0,
+                    null);
             }
 
             LoadDictionaries(model);
-            
-            SelectListItem tempItem = null;
-            model.Roster = candidates.ToList<EmploymentCandidate>().ConvertAll<CandidateDto>(x => new CandidateDto
-            {                
-                ContractDate = x.PersonnelManagers != null ? x.PersonnelManagers.ContractDate : null,
-                ContractNumber = x.PersonnelManagers != null ? x.PersonnelManagers.ContractNumber : String.Empty,
-                DateOfBirth = x.GeneralInfo != null ? (DateTime?)x.GeneralInfo.DateOfBirth : null,
-                Department = x.Managers != null ? x.Managers.Department.Name : String.Empty,
-                Directorate = x.Managers != null ? x.Managers.Directorate.Name : String.Empty,
-                Disabilities = x.GeneralInfo != null ? "Справка "
-                    + x.GeneralInfo.DisabilityCertificateSeries +
-                    " " + x.GeneralInfo.DisabilityCertificateNumber +
-                    ", дата выдачи: " + (x.GeneralInfo.DisabilityCertificateDateOfIssue.HasValue ? x.GeneralInfo.DisabilityCertificateDateOfIssue.Value.ToShortDateString() : String.Empty) +
-                    ", группа " + (x.GeneralInfo.DisabilityDegree != null ? x.GeneralInfo.DisabilityDegree.Name : "?") +
-                    ", срок действия справки: " + (x.GeneralInfo.DisabilityCertificateExpirationDate.HasValue ? x.GeneralInfo.DisabilityCertificateExpirationDate.Value.ToShortDateString() : String.Empty)
-                    : String.Empty,
-                EmploymentDate = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentDate : null,
-                EmploymentOrderDate = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentOrderDate : null,
-                EmploymentOrderNumber = x.PersonnelManagers != null ? x.PersonnelManagers.EmploymentOrderNumber : String.Empty,
-                Grade = x.User != null ? x.User.Grade : null,
-                Id = x.User.Id,
-                Name = x.GeneralInfo != null ? x.GeneralInfo.LastName + " " + x.GeneralInfo.FirstName + " " + x.GeneralInfo.Patronymic : String.Empty,
-                Position = x.Managers != null ? x.Managers.Position.Name : String.Empty,
-                ProbationaryPeriod = x.Managers != null ? x.Managers.ProbationaryPeriod : String.Empty,
-                Status = (tempItem = GetEmploymentStatuses().Where(status => status.Value == ((int?)x.Status ?? 0).ToString()).FirstOrDefault()) != null ? tempItem.Text : string.Empty,
-                Schedule = x.Managers != null && x.Managers.Schedule != null ? x.Managers.Schedule.Name : String.Empty,
-                WorkCity = x.Managers != null ? x.Managers.WorkCity : String.Empty
-            });
+
+            model.IsBulkApproveByManagerAvailable = model.Roster.All(x => x.IsApproveByManagerAvailable);
+            model.IsBulkApproveByHigherManagerAvailable = model.Roster.All(x => x.IsApproveByHigherManagerAvailable);
 
             return model;
         }
@@ -1931,7 +1914,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
-        protected bool IsCurrentUserChiefForCreator(User current, User creator)
+        public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
 
             if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)

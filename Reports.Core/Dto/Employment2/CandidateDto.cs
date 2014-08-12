@@ -46,6 +46,14 @@ namespace Reports.Core.Dto.Employment2
 
         public string Status { get; set; }
 
+        public bool? IsApprovedByManager { get; set; }
+
+        public bool? IsApprovedByHigherManager { get; set; }
+
+        public bool IsApproveByManagerAvailable { get; set; }
+
+        public bool IsApproveByHigherManagerAvailable { get; set; }
+
         /*
         [Display(Name = "Паспортные данные"),
             StringLength(500, ErrorMessage = "Не более 500 знаков."),
