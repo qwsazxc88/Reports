@@ -8728,6 +8728,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
                     break;
                 case 3:
+                case 4:
+                case 6:
                     /*
                     if (manager != null)
                     {
@@ -8750,8 +8752,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return true;
                     }
                     break;
-                case 4:
-                    if (manager != null)
+                
+                    /*if (manager != null)
                     {
                         if ((((manager.Level == 4) && !manager.IsMainManager) || (manager.Level == 5)) &&
                             manager.Department.Path.StartsWith(currentUser.Department.Path))
@@ -8759,7 +8761,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                         throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                    break;
+                    break;*/
                 case 5:
                     if (manager != null)
                     {
@@ -8776,8 +8778,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         canEdit = true;
                         return true;
                     }
-                    break;
-                case 6:
+                    break;                
+                    /*
                     if (manager != null)
                     {
                         if ((((manager.Level == 6) && !manager.IsMainManager)) &&
@@ -8788,6 +8790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         user.Department.Path.StartsWith(currentUser.Department.Path))
                         return true;
                     break;
+                    */
             }
             return false;
         }
