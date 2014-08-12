@@ -331,6 +331,7 @@ namespace Reports.Core.Dao.Impl
                                         and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         case 3:
+                        case 4:
                             sqlQueryPartTemplate += @" union 
                                 select distinct emp.id from Users emp
                                     inner join dbo.Department dept
@@ -348,11 +349,14 @@ namespace Reports.Core.Dao.Impl
                                     not (select Login from dbo.Users where Id={2}) = emp.Login + N'R'";
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                         and v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5,6", "3", currentUser.Id);
-                            break;
-                        case 4:
-                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "5", "4", currentUser.Id);
-                            sqlFlag = "0 as Flag";
+                            if (currentUser.Level == 3)
+                            {
+                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5,6", "3", currentUser.Id);
+                            }
+                            else
+                            {
+                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "5,6", "4", currentUser.Id);
+                            }
                             break;
                         case 5:
                         case 6:
@@ -366,15 +370,14 @@ namespace Reports.Core.Dao.Impl
                                 empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R')";
                             if (currentUser.Level == 5)
                             {
-                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);
-                                sqlFlag = @"case when v.UserDateAccept is not null 
-                                            and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
+                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);                                
                             }
                             else
                             {
                                 sqlQueryPart = string.Format(sqlQueryPartTemplate, "-1", "6", currentUser.Id);
-                                sqlFlag = "0 as Flag";
                             }
+                            sqlFlag = @"case when v.UserDateAccept is not null 
+                                            and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
