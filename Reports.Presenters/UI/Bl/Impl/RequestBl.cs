@@ -29,6 +29,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int AbsenceFirstTimesheetStatisId = 15;
         public const int AbsenceLastTimesheetStatisId = 18;
 
+        public const int DailyCostTypeId = 1;
+
         public const int LastValidDay = 5;
 
         #region DAOs
@@ -9924,7 +9926,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,IsEditable = model.IsEditable && !cost.IsCostFromOrder
                         ,IsDeleteAvailable = model.IsEditable && !cost.IsCostFromOrder
                         ,ScanId = attachment == null? 0 :attachment.Id
-                        ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook
+                        ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook && (cost.Type.Id != DailyCostTypeId) 
                         ,DeleteScanAvailable = model.IsEditable && attachment != null 
                     };
                     if (!cost.IsCostFromPurchaseBook && attachment == null && model.IsEditable)
