@@ -113,7 +113,8 @@
               </table>  
            </div>                        
         </td>
-    </tr>             
+    </tr>
+    @*
     <tr>
         <td colspan="2">
           <div class="action-wrap">
@@ -126,12 +127,12 @@
                             {
                                 if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                                 {
-                                    @*@Html.ActionLink("Создать новую заявку", "MissionEdit", new { id = 0, userId = Model.UserId })*@
+                                    --- @Html.ActionLink("Создать новую заявку", "MissionEdit", new { id = 0, userId = Model.UserId })
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("MissionEdit", "UserRequest", new { id = 0, userId = Model.UserId })'"/>   
                                 }
                                 else
                                 {
-                                @*    @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                                --- @Html.ActionLink("Создать новую заявку", "CreateRequest") 
                                     <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "UserRequest")'"/>
                                 }
                             }                                                                                               
@@ -140,7 +141,8 @@
               </table>  
            </div>
         </td>
-    </tr>       
+    </tr>
+    *@
     <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />

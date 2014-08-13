@@ -730,3 +730,14 @@ span.buttonLink
     background-color: #fff;
     text-decoration: none;
 }
+
+.announcement
+{
+    border: 1px solid red;
+    background: #fee;
+    margin: 3px 0;
+    padding: 3px;
+    width: 120em;
+    display: inline-block;
+    text-align:justify;
+}

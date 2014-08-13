@@ -8225,7 +8225,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
             }
-            return SendEmailForMissionOrderNeedToApprove(to, entity);
+            //return SendEmailForMissionOrderNeedToApprove(to, entity);
+            return new EmailDto();
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
         {
@@ -8663,6 +8664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
                     break;
                 case 3:
+                    /*
                     if (manager != null)
                     {
                         if ((((manager.Level == 3) && !manager.IsMainManager) || (manager.Level == 4) ||
@@ -8675,6 +8677,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                         throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
+                    break;
+                     */
+
+                    if (user.Department.Path.StartsWith(currentUser.Department.Path))
+                    {
+                        canEdit = true;
+                        return true;
+                    }
                     break;
                 case 4:
                     if (manager != null)
