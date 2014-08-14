@@ -154,7 +154,7 @@
     @if (Model.IsBulkApproveByManagerAvailable)
     {
         <th>
-            Согласовано<br />руководителем<br />
+            <br />Согласовано<br />руководителем<br />
             <input type="checkbox" id="setAllByManager" />
         </th>
     }
@@ -242,21 +242,34 @@
         <td>
             @candidate.Status
         </td>
-        @*
+        
         @if (Model.IsBulkApproveByManagerAvailable)
         {
-            <td rowspan="2">
-                @Html.CheckBoxFor(m => m.Roster[i].IsApprovedByManager, new { @class = "selcheck" })
+            <td rowspan="2" class="centered">
+                @if (!Model.Roster[i - 1].IsApprovedByManager.HasValue)
+                {
+                    Model.Roster[i - 1].IsApprovedByManager = false;
+                }
+                @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
+                {
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager.Value, new { @class = "selcheckManager" })
+                }
             </td>
         }
         
         @if (Model.IsBulkApproveByHigherManagerAvailable)
         {
-            <td rowspan="2">
-                @Html.CheckBoxFor(m => m.Roster[i].IsApprovedByHigherManager, new { @class = "selcheck" })
+            <td rowspan="2" class="centered">
+                @if (!Model.Roster[i - 1].IsApprovedByHigherManager.HasValue)
+                {
+                    Model.Roster[i - 1].IsApprovedByHigherManager = false;
+                }
+                @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
+                {
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager.Value, new { @class = "selcheckHigherManager" })
+                }
             </td>
-        }
-        *@
+        }        
 
         @{i++;}
     </tr>

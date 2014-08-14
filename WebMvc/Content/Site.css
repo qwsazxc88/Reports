@@ -302,6 +302,11 @@ table.centered td
     text-align: center;
 }
 
+td.centered
+{
+    text-align: center;
+}
+
 /* MISC  
 ----------------------------------------------------------*/
 .clear
