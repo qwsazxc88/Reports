@@ -9929,7 +9929,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook && (cost.Type.Id != DailyCostTypeId) 
                         ,DeleteScanAvailable = model.IsEditable && attachment != null 
                     };
-                    if (!cost.IsCostFromPurchaseBook && attachment == null && model.IsEditable)
+                    if (!cost.IsCostFromPurchaseBook && (cost.Type.Id != DailyCostTypeId ) && (attachment == null) && model.IsEditable)
                         model.IsAttachmentsInvalid = true;
                     LoadTransactions(model,cost,dto);
                     list.Add(dto);
