@@ -744,7 +744,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Roster = EmploymentCandidateDao.GetCandidates(current.Id,
                     current.UserRole,
                     filters != null ? filters.DepartmentId : 0,
-                    filters != null ? filters.StatusId.Value : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     null,
@@ -754,8 +754,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             LoadDictionaries(model);
 
-            model.IsBulkApproveByManagerAvailable = model.Roster.All(x => x.IsApproveByManagerAvailable);
-            model.IsBulkApproveByHigherManagerAvailable = model.Roster.All(x => x.IsApproveByHigherManagerAvailable);
+            model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
+            model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
 
             return model;
         }

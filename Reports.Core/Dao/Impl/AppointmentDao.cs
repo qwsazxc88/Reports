@@ -367,7 +367,7 @@ namespace Reports.Core.Dao.Impl
         }
         public override string GetWhereForUserRole(UserRole role, int userId)
         {
-             User currentUser = UserDao.Load(userId);
+            User currentUser = UserDao.Load(userId);
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
             switch (role)

@@ -57,7 +57,7 @@ namespace Reports.Core.Dao.Impl
 						+ N', группа ' + disabilityDegree.Name
 						+ N', срок действия справки: ' + convert(varchar, generalInfo.DisabilityCertificateExpirationDate, 104)
 					end Disabilities
-                , users.Grade Grade
+                , candidateUser.Grade Grade
 				, case
 					when candidate.Status = 1 then N'Ожидает согласование СБ'
 					when candidate.Status = 2 then N'Обучение'
@@ -71,7 +71,7 @@ namespace Reports.Core.Dao.Impl
                 , managers.ManagerApprovalStatus IsApprovedByManager
                 , managers.HigherManagerApprovalStatus IsApprovedByHigherManager
 				, case
-					when candidate.Status = 3 -- and candidate.AppointmentCreatorId = :userId 
+					when candidate.Status = 3 and candidate.AppointmentCreatorId = :currentId 
 						then 1
 					else 0
 					end IsApproveByManagerAvailable
@@ -86,12 +86,16 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.Department directorate on directorate.Id = managers.DirectorateId
                 left join dbo.Department department on department.Id = managers.DepartmentId
                 left join dbo.Position position on position.Id = managers.PositionId
-				left join dbo.Schedule schedule on schedule.Id = managers.ScheduleId
-				left join dbo.Users users on candidate.UserId = users.Id
-				left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
+                left join dbo.Schedule schedule on schedule.Id = managers.ScheduleId
+                left join dbo.Users candidateUser on candidate.UserId = candidateUser.Id
+                left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
+                inner join dbo.Users currentUser on currentUser.Id = :currentId
+                inner join dbo.Department currentDepartment on currentDepartment.Id = currentUser.DepartmentId
+                inner join dbo.Users appointmentCreator on appointmentCreator.Id = candidate.AppointmentCreatorId
+                inner join dbo.Department appointmentCreatorDepartment on appointmentCreatorDepartment.Id = appointmentCreator.DepartmentId
             ";
 
-        public IList<CandidateDto> GetCandidates(int userId,
+        public IList<CandidateDto> GetCandidates(int currentId,
                 UserRole role,
                 int departmentId,
                 int statusId,
@@ -102,42 +106,62 @@ namespace Reports.Core.Dao.Impl
                 bool? sortDescending)
         {
             string sqlQuery = sqlSelectForCandidateList;
-            string whereString = GetWhereForUserRole(role, userId);
+            string whereString = GetWhereForUserRole(role, currentId);
             //whereString = GetStatusWhere(whereString, statusId);
             //whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             //whereString = GetUserNameWhere(whereString, userName);
-            //sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
+            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
 
             // Set named params
-            query.SetInt32("userId", userId);
+            query.SetInt32("currentId", currentId);
 
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
         }
 
-        public override string GetWhereForUserRole(UserRole role, int userId)
-        {
-            User currentUser = UserDao.Load(userId);
+        public override string GetWhereForUserRole(UserRole role, int currentId)
+        {            
+            string sqlQueryPart = string.Empty;
+            User currentUser = UserDao.Load(currentId);
             if (currentUser == null)
-                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
-            switch (currentUser.Level)
+                throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", currentId));
+            switch (role)
             {
-                case 2:
+                case UserRole.Manager:
+                    // кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
+                    sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+                    // кандидаты, которых текущий пользователь может согласовать как вышестоящий руководитель
+                    switch (currentUser.Level)
+                    {
+                        // руководитель 2 уровня видит кандидатов, заявки на подбор которых создавали руководители 3 уровня его ветки
+                        case 2:
+                            sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level = 3)
+                            ";
+                            break;
+                        // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
+                        case 3:
+                            sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > 3)
+                            ";
+                            break;
+                        // руководители уровней ниже 3 не согласуют кандидатов как вышестоящие руководители -> не видят их
+                        default:
+                            break;
+                    }
                     break;
-                case 3:
-                    break;
-                case 4:
-                case 5:
-                case 6:
+                // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация не производится
+                case UserRole.PersonnelManager:
+                case UserRole.Security:
+                case UserRole.Trainer:
+                case UserRole.OutsourcingManager:
                     break;
                 default:
-                    break;
+                    throw new ArgumentException(string.Format("Invalid user role {0}", role));
             }
 
-            return "";
+            return sqlQueryPart;
         }
 
         public override string GetStatusWhere(string whereString, int statusId)
