@@ -6,10 +6,10 @@
     <version name="Version" column= "Version"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
-    <property name="BeginDate" not-null="true"/>
-    <property name="EndDate" not-null="true"/>
+    <property name="BeginDate" not-null="false"/>
+    <property name="EndDate" not-null="false"/>
     <property name="Number"  not-null="true"/>
-
+    <property name="IsAdditional"  not-null="false"/>
 	  
 	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
 	<property name="Kind"  not-null="true"/>
@@ -54,7 +54,7 @@
 	<property name="DeleteAfterSendTo1C" not-null="true"/>
 
 	<many-to-one name="Mission" class="Mission" column="MissionId" foreign-key="FK_MissionOrder_Mission" index="IX_MissionOrder_Mission"  not-null="false"/>
-	  
+  <many-to-one name="MainOrder" class="MissionOrder" column="MainOrderId" foreign-key="FK_MissionOrder_MainMissionOrder" index="IX_MissionOrder_MainMissionOrder"  not-null="false"/>
 	  
 	  <bag name="Targets" lazy="true" inverse="true" cascade="all-delete-orphan">
 		  <key column="MissionOrderId" foreign-key="FK_MissionOrderTarget_MissionOrder"/>

@@ -188,5 +188,91 @@ namespace Reports.Presenters.UI.ViewModel
         public List<IdNameDto> TrainTicketTypes { get; set; }
     }
 
+    public class AdditionalMissionOrderEditModel : UserInfoModel, IContainId
+    {
+        public int Version { get; set; }
 
+        #region IContainId Members
+
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        #endregion
+
+        [Display(Name = "Дата начала командировки")]
+        public string BeginMissionDate { get; set; }
+
+        [Display(Name = "Дата окончания командировки")]
+        public string EndMissionDate { get; set; }
+
+        [Display(Name = "Цель командировки")]
+        public string Goal { get; set; }
+
+        [Display(Name = "Тип командировки")]
+        public string Type { get; set; }
+        public int TypeId { get; set; }
+        
+        [Display(Name = "Вид командировки")]
+        public string Kind { get; set; }
+ 
+        public string Targets { get; set; }
+
+        [Display(Name = "Грейд G (1,2,3,4)")]
+        public string Grade { get; set; }
+
+        [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]
+        public bool IsUserApproved { get; set; }
+        public bool IsUserApprovedAvailable { get; set; }
+        public bool IsUserApprovedHidden { get; set; }
+
+        [Display(Name = "Командировка приходится на выходные/праздничные дни или её продолжительность более семи дней")]
+        public bool IsChiefApproveNeed { get; set; }
+        public bool IsChiefApproveNeedHidden { get; set; }
+
+        public bool? IsManagerApproved { get; set; }
+        public bool IsManagerApproveAvailable { get; set; }
+        public bool? IsManagerApprovedHidden { get; set; }
+
+
+        public bool? IsChiefApproved { get; set; }
+        public bool IsChiefApproveAvailable { get; set; }
+        public bool? IsChiefApprovedHidden { get; set; }
+        //public bool IsManagerNotApproved { get; set; }
+
+        //public RequestCommentsModel CommentsModel { get; set; }
+
+        public bool IsEditable { get; set; }
+
+        public bool IsSaveAvailable { get; set; }
+        public bool IsDeleteAvailable { get; set; }
+        public bool IsDelete { get; set; }
+        public bool IsDeleted { get; set; }
+
+        public bool ReloadPage { get; set; }
+
+        //public bool IsResidencePaid { get; set; }
+        //public bool IsResidencePaidHidden { get; set; }
+        //public bool IsAirTicketsPaid { get; set; }
+        //public bool IsAirTicketsPaidHidden { get; set; }
+        //public bool IsTrainTicketsPaid { get; set; }
+        //public bool IsTrainTicketsPaidHidden { get; set; }
+
+        //[Display(Name = "Гостиница (номер ЭССЗ)")]
+        //public string ResidenceRequestNumber { get; set; }
+        //[Display(Name = "Билеты авиа (номер ЭССЗ)")]
+        //public string AirTicketsRequestNumber { get; set; }
+        //[Display(Name = "Билеты ж/д (номер ЭССЗ)")]
+        //public string TrainTicketsRequestNumber { get; set; }
+        //public bool IsSecritaryEditable { get; set; }
+
+        //[Display(Name = "Секретарь")]
+        //public string SecretaryFio { get; set; }
+
+        //public int AirTicketType { get; set; }
+        //public int AirTicketTypeHidden { get; set; }
+        //public IList<IdNameDto> AirTicketTypes;
+
+        //public int TrainTicketType { get; set; }
+        //public int TrainTicketTypeHidden { get; set; }
+        //public IList<IdNameDto> TrainTicketTypes;
+    }
 }

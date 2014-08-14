@@ -28,7 +28,8 @@
   <property name="SendTo1C" not-null="false"/>
   <property name="DeleteDate" not-null="false"/>
   <property name="DeleteAfterSendTo1C" not-null="true"/>
-
+  <property name="IsAdditionalOrderExists" not-null="true"/>
+  <property name="AdditionalOrderRecalculateDate" not-null="false"/>
 
 
   <many-to-one name="TimesheetStatus" class="TimesheetStatus" column="TimesheetStatusId" foreign-key="FK_Mission_TimesheetStatus" index="Mission_TimesheetStatus"  not-null="false"/>

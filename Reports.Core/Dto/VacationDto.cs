@@ -18,6 +18,12 @@ namespace Reports.Core.Dto
         public bool IsOriginalReceived { get; set; }
         public bool IsPersonnelFileSentToArchive { get; set; }
     }
+    public class MissionDto : VacationDto
+    {
+        public bool IsChecked { get; set; }
+        public bool? Flag { get; set; }
+        public string IsAdditionalOrderExists { get; set; }
+    }
     public class AllRequestDto : VacationDto
     {
         public string EditUrl { get; set; }

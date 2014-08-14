@@ -122,7 +122,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return subject;
         }
         
-        protected EmailDto SendEmailForMissionOrderReject(IUser current, MissionOrder entity)
+        protected EmailDto SendEmailForMissionOrderReject(IUser current, MissionOrder entity, bool isAdditional)
         {
             string to = entity.Creator.Email;
             if (string.IsNullOrEmpty(to))
@@ -131,13 +131,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
             User curUser = UserDao.Load(CurrentUser.Id);
-            const string subject = @"Приказ на командировку отклонен";
-            string body = string.Format(@"Приказ на командировку № {0} от {1} отклонен руководителем {2}, {3}.<br/>
-                                        <a href=""https://ruscount.com:8002"">Кадровый портал</a>", entity.Number
-                                    , entity.EditDate.ToShortDateString(),curUser.Name,curUser.Email);
+            string name = isAdditional ? "Изменение приказа на командировку" : "Приказ на командировку";
+            string subject = string.Format(@"{0}{1}",name, isAdditional ? " отклонено" : " отклонен");
+            string body = string.Format(@"{4} № {0} от {1} {5} руководителем {2}, {3}.<br/>
+                                        <a href=""https://ruscount.com:8002"">Кадровый портал</a>"
+                                    , isAdditional ? entity.Number + "-изм" : entity.Number.ToString()
+                                    , entity.EditDate.ToShortDateString(),curUser.Name,curUser.Email,
+                                    name, isAdditional ? " отклонено" : " отклонен"
+                                    );
             return SendEmail(to, subject, body);
         }
-        protected EmailDto SendEmailForMissionOrderConfirm(IUser current, MissionOrder entity)
+        protected EmailDto SendEmailForMissionOrderConfirm(IUser current, MissionOrder entity, bool isAdditional)
         {
             string to = entity.User.Email;
             if(string.IsNullOrEmpty(to))
@@ -146,14 +150,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
             User curUser = UserDao.Load(CurrentUser.Id);
-            const string subject = @"Приказ на командировку утвержден";
-            string body = string.Format(@"Приказ на командировку № {0} от {1} утвержден руководителем {2}.<br/>
-                                        <a href=""https://ruscount.com:8002"">Кадровый портал</a>", entity.Number
+            string name = isAdditional ? "Изменение приказа на командировку" : "Приказ на командировку";
+            string subject = string.Format(@"{0}{1}", name, isAdditional ? " утверждено" : " утвержден"); //@"Приказ на командировку утвержден";
+            string body = string.Format(@"{3} № {0} от {1} {4} руководителем {2}.<br/>
+                                        <a href=""https://ruscount.com:8002"">Кадровый портал</a>"
+                                        ,isAdditional ? entity.Number + "-изм" : entity.Number.ToString()
                                         ,entity.EditDate.ToShortDateString()
-                                        ,curUser.Name);
+                                        , curUser.Name, name, isAdditional ? " утверждено" : " утвержден");
             return SendEmail(to, subject, body);
         }
-        protected EmailDto SendEmailForMissionOrderNeedToApprove(string to, MissionOrder entity)
+        protected EmailDto SendEmailForMissionOrderNeedToApprove(string to, MissionOrder entity,bool isAdditional)
         {
             if (string.IsNullOrEmpty(to))
             {
@@ -161,11 +167,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
             to = to.Substring(0, to.Length - 1);
-            const string subject = @"Новый приказ на командировку";
-            string body = string.Format(@"Новый Приказ на командировку № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
-                                          <a href=""https://ruscount.com:8002"">Кадровый портал</a>", 
-                                          entity.Number,entity.EditDate.ToShortDateString(),entity.User.Name,entity.User.Department.Name);
-            return SendEmail(to, subject, body);
+            string name = isAdditional ? "Новое изменение приказа на командировку" : "Новый приказ на командировку";
+            //const string subject = @"Новый приказ на командировку";
+            string body = string.Format(@"{4} № {0} от {1} ({2}, {3}) требует вашего согласования.<br/>
+                                          <a href=""https://ruscount.com:8002"">Кадровый портал</a>",
+                         (isAdditional ? entity.Number+"-изм" : entity.Number.ToString()), 
+                         entity.EditDate.ToShortDateString(), entity.User.Name, entity.User.Department.Name, name);
+            return SendEmail(to, name, body);
         }
 
         protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(IList<User> addresseeList, Dismissal entity)

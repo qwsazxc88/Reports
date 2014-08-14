@@ -27,8 +27,9 @@ namespace WebMvc.Controllers
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
 
-        public const string StrOtherOrdersExists =
-            "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
+        public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
+        public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
+        public const string StrOrderIsInPast  = "Создание/редактирование приказа в прошлом невозможно";
 
         public const string SessionMissionOrderFilterName = "MissionOrderFilter";
         public const string SessionMissionReportFilterName = "MissionReportFilter";
@@ -181,8 +182,12 @@ namespace WebMvc.Controllers
         protected bool ValidateMissionOrderEditModel(MissionOrderEditModel model)
         {
             //return false;
+            if (string.IsNullOrEmpty(model.BeginMissionDate) || string.IsNullOrEmpty(model.EndMissionDate))
+                ModelState.AddModelError("BeginMissionDate", StrNoBeginOrEndDate);
             if(RequestBl.CheckOtherOrdersExists(model))
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
+            if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
+                ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(MissionOrderEditModel model)
@@ -299,7 +304,12 @@ namespace WebMvc.Controllers
         public ActionResult PrintOrder(int id)
         {
             PrintMissionOrderViewModel model = RequestBl.GetPrintMissionOrderModel(id);
-
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult PrintAdditionalOrder(int id)
+        {
+            PrintMissionOrderViewModel model = RequestBl.GetPrintMissionOrderModel(id);
             return View(model);
         }
         [HttpGet]
@@ -318,6 +328,11 @@ namespace WebMvc.Controllers
         public ActionResult GetOrderPrintForm(int id)
         {
             return GetPrintForm(id, "PrintOrder");
+        }
+        [HttpGet]
+        public ActionResult GetAdditionalOrderPrintForm(int id)
+        {
+            return GetPrintForm(id, "PrintAdditionalOrder");
         }
         [HttpGet]
         public ActionResult GetDocumentPrintForm(int id)
@@ -624,7 +639,120 @@ namespace WebMvc.Controllers
             }*/
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee)]
+        public ActionResult CreateAdditionalOrder(int id)
+        {
+            int additionalOrderId = RequestBl.CreateAdditionalOrder(id);
+            return RedirectToAction("AdditionalMissionOrderEdit", new RouteValueDictionary { { "id", additionalOrderId } });
+        }
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Findep)]
+        public ActionResult AdditionalMissionOrderEdit(int id)
+        {
+            AdditionalMissionOrderEditModel model = RequestBl.GetAdditionalMissionOrderEditModel(id);
+            return View(model);
+        }
 
+        [HttpPost]
+        public ActionResult AdditionalMissionOrderEdit(AdditionalMissionOrderEditModel model)
+        {
+            CorrectCheckboxes(model);
+            //CorrectDropdowns(model);
+            if (!ValidateAdditionalMissionOrderEditModel(model))
+            {
+                //model.IsApproved = false;
+                //model.IsApprovedForAll = false;
+                //RequestBl.ReloadDictionaries(model);
+                return View(model);
+            }
+
+            string error;
+            if (!RequestBl.SaveAdditionalMissionOrderEditModel(model, out error))
+            {
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(RequestBl.GetAdditionalMissionOrderEditModel(model.Id));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            if (!string.IsNullOrEmpty(error))
+                return View(model);
+            return RedirectToAction("Index");
+
+        }
+        protected bool ValidateAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model)
+        {
+            //return false;
+            /*if (RequestBl.CheckOtherOrdersExists(model))
+                ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);*/
+            return ModelState.IsValid;
+        }
+        protected void CorrectCheckboxes(AdditionalMissionOrderEditModel model)
+        {
+            if (!model.IsChiefApproveAvailable /*&& model.IsChiefApprovedHidden.Value*/)
+            {
+                if (ModelState.ContainsKey("IsChiefApproved"))
+                    ModelState.Remove("IsChiefApproved");
+                model.IsChiefApproved = model.IsChiefApprovedHidden;
+            }
+            if (!model.IsManagerApproveAvailable /*&& model.IsManagerApprovedHidden.Value*/)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+                model.IsManagerApproved = model.IsManagerApprovedHidden;
+            }
+            if (!model.IsUserApprovedAvailable && model.IsUserApprovedHidden)
+            {
+                if (ModelState.ContainsKey("IsUserApproved"))
+                    ModelState.Remove("IsUserApproved");
+                model.IsUserApproved = model.IsUserApprovedHidden;
+            }
+            if (ModelState.ContainsKey("IsChiefApproveNeed"))
+                ModelState.Remove("IsChiefApproveNeed");
+            model.IsChiefApproveNeed = model.IsChiefApproveNeedHidden;
+
+            if (model.IsManagerApproveAvailable && model.IsManagerApproved.HasValue
+                && !model.IsManagerApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
+            if (model.IsChiefApproveAvailable && model.IsChiefApproved.HasValue
+                && !model.IsChiefApproved.Value)
+            {
+                if (ModelState.ContainsKey("IsChiefApproved"))
+                    ModelState.Remove("IsChiefApproved");
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
+            //if (!model.IsEditable)
+            //{
+            //    if (model.IsResidencePaidHidden)
+            //    {
+            //        if (ModelState.ContainsKey("IsResidencePaid"))
+            //            ModelState.Remove("IsResidencePaid");
+            //        model.IsResidencePaid = model.IsResidencePaidHidden;
+            //    }
+            //    if (model.IsAirTicketsPaidHidden)
+            //    {
+            //        if (ModelState.ContainsKey("IsAirTicketsPaid"))
+            //            ModelState.Remove("IsAirTicketsPaid");
+            //        model.IsAirTicketsPaid = model.IsAirTicketsPaidHidden;
+            //    }
+            //    if (model.IsTrainTicketsPaidHidden)
+            //    {
+            //        if (ModelState.ContainsKey("IsTrainTicketsPaid"))
+            //            ModelState.Remove("IsTrainTicketsPaid");
+            //        model.IsTrainTicketsPaid = model.IsTrainTicketsPaidHidden;
+            //    }
+            //}
+        }
         [HttpGet]
         public ActionResult GetReportPrintForm(int id)
         {

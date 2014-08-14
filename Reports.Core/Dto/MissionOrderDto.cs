@@ -11,6 +11,9 @@ namespace Reports.Core.Dto
         public string Dep7Name { get; set; }
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
+        public int? AdditionalOrderId { get; set; }
+        public string AdditionalOrderNumber { get; set; }
+        public DateTime? AdditionalOrderEditDate { get; set; }
         public string MissionType { get; set; }
         public string MissionKind { get; set; }
         public string Target { get; set; }
@@ -23,6 +26,9 @@ namespace Reports.Core.Dto
         public string State { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string AdditionalOrderState { get; set; }
+        public DateTime? AdditionalOrderBeginDate { get; set; }
+        public DateTime? AdditionalOrderEndDate { get; set; }
         public string AirTicketType { get; set; }
         public string TrainTicketType { get; set; }
         public bool Flag { get; set; }
