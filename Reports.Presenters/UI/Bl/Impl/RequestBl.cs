@@ -7930,6 +7930,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
                                                    DateTime.Parse(model.EndMissionDate));
         }
+        public bool CheckAnyOtherOrdersExists(MissionOrderEditModel model)
+        {
+            return MissionOrderDao.CheckAnyOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
+                                                   DateTime.Parse(model.EndMissionDate));
+        }
         public bool CheckOrderBeginDate(string beginMissionDate)
         {
             DateTime beginDate = DateTime.Parse(beginMissionDate);
@@ -8323,6 +8328,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
+                if (entity.Id == 0)
+                    MissionOrderDao.SaveAndFlush(entity);
+
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
             IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
@@ -8404,6 +8412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void CreateMission(MissionOrder entity)
         {
+         
             CreateMissionReport(entity);
             if (entity.Mission != null)
                 throw new ArgumentException(
@@ -10257,7 +10266,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SaveMissionCostsTransactions(entity, model);
             }
-            if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
+            if (entity.AccountantDateAccept.HasValue && 
+                !entity.DeleteDate.HasValue && 
+                !entity.ArchiveDate.HasValue &&
+                current.UserRole == UserRole.Archivist)
             {
                 entity.ArchiveDate = DateTime.Parse(model.ArchiveDate);
                 entity.ArchiveNumber = model.ArchiveNumber;
