@@ -1916,15 +1916,38 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
+            IList<int> idsToApproveByManager;
+            IList<int> idsToApproveByHigherManager;
+
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
             if (roster.Roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
                                           (current.UserRole & UserRole.Chief) == UserRole.Chief ||
                                           (current.UserRole & UserRole.Director) == UserRole.Director))
             {
-                IList<int> idsToApproveByManager = roster.Roster.Where(x => x.IsApprovedByManager == true).Select(x => x.Id).ToList();
-                IList<int> idsToApproveByHigherManager = roster.Roster.Where(x => x.IsApprovedByHigherManager == true).Select(x => x.Id).ToList();
+                idsToApproveByManager = roster.Roster.Where(x => x.IsApprovedByManager == true).Select(x => x.Id).ToList();
+                idsToApproveByHigherManager = roster.Roster.Where(x => x.IsApprovedByHigherManager == true).Select(x => x.Id).ToList();
+
+                List<EmploymentCandidate> entities = EmploymentCandidateDao.LoadForIdsList(idsToApproveByManager).ToList();
+                foreach (EmploymentCandidate entity in entities)
+                {
+                    entity.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                    entity.Managers.ApprovingManager = current;
+                    entity.Managers.ManagerApprovalStatus = true;
+                    EmploymentCandidateDao.SaveAndFlush(entity);
+                }
+
+                entities = EmploymentCandidateDao.LoadForIdsList(idsToApproveByHigherManager).ToList();
+                foreach (EmploymentCandidate entity in entities)
+                {
+                    entity.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
+                    entity.Managers.ApprovingHigherManager = current;
+                    entity.Managers.HigherManagerApprovalStatus = true;
+                    EmploymentCandidateDao.SaveAndFlush(entity);
+                }
             }
+
+            
 
             return true;
         }

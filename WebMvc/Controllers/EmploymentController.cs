@@ -474,7 +474,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult Roster(RosterFiltersModel input)
+        public ActionResult Roster(RosterFiltersModel input, string submit)
         {
             RosterModel model = EmploymentBl.GetRosterModel(input);
             return View(model);
@@ -482,13 +482,15 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director)]
-        public ActionResult Roster(RosterFiltersModel input, RosterModel roster, string cmd)
+        public ActionResult Roster(RosterFiltersModel input, string cmd, RosterModel roster)
         {
+            string error = string.Empty;
+            
             if (cmd == "SaveApprovals")
             {
-                EmploymentBl.SaveApprovals(roster);
+                EmploymentBl.SaveApprovals(roster, out error);
             }
-
+            
             RosterModel model = EmploymentBl.GetRosterModel(input);
             return View(model);
         }

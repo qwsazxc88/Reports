@@ -16,5 +16,7 @@ namespace Reports.Core.Dao
                 string userName,
                 int sortBy,
                 bool? sortDescending);
+
+        IList<EmploymentCandidate> LoadForIdsList(IList<int> ids);
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using NHibernate.Transform;
 using NHibernate;
+using NHibernate.Criterion;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -120,6 +121,15 @@ namespace Reports.Core.Dao.Impl
 
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
+        }
+
+        public IList<EmploymentCandidate> LoadForIdsList(IList<int> ids)
+        {
+            if (ids.Count == 0)
+                return new List<EmploymentCandidate>();
+            ICriteria criteria = Session.CreateCriteria(typeof(EmploymentCandidate));
+            criteria.Add(Restrictions.In("Id", ids.ToList()));
+            return criteria.List<EmploymentCandidate>();
         }
 
         public override string GetWhereForUserRole(UserRole role, int currentId)
