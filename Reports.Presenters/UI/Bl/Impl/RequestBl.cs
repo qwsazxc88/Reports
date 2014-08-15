@@ -7662,18 +7662,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ApproveOrder(MissionOrderListModel model,MissionOrder order)
         {
-            switch (CurrentUser.UserRole)
+            try
             {
-                case UserRole.Manager:
-                    ApproveOrderForManager(model,order);
-                    break;
-                case UserRole.Director:
-                    ApproveOrderForDirector(model, order);
-                    break;
-                default:
+                if(MissionOrderDao.CheckOtherOrdersExists(order.Id, order.User.Id, order.BeginDate.Value,order.EndDate.Value) ||
+                    !CheckOrderBeginDate(order.BeginDate.Value.ToString()))
+                {
                     model.HasErrors = true;
-                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2}",order.Id,CurrentUser.Id,CurrentUser.UserRole);
-                    break;
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - order check fail", order.Id, CurrentUser.Id, CurrentUser.UserRole);
+                    return;
+                }
+                switch (CurrentUser.UserRole)
+                {
+                    case UserRole.Manager:
+                        ApproveOrderForManager(model,order);
+                        break;
+                    case UserRole.Director:
+                        ApproveOrderForDirector(model, order);
+                        break;
+                    default:
+                        model.HasErrors = true;
+                        Log.ErrorFormat("Cannot approve order {0} user {1} role {2}",order.Id,CurrentUser.Id,CurrentUser.UserRole);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format("Cannot approve order {0} user {1} role {2}", order.Id, CurrentUser.Id, CurrentUser.UserRole),ex);
+                model.HasErrors = true;
             }
         }
         protected void ApproveOrderForManager(MissionOrderListModel model,MissionOrder entity)
