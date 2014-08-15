@@ -682,6 +682,23 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("userId", userId);
             return query.UniqueResult<int>() > 0;
         }
+        public virtual bool CheckAnyOtherOrdersExists(int id, int userId, DateTime beginDate, DateTime endDate)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [Id] != :id
+                                    and [UserId] = :userId
+                                    and ([BeginDate] between :beginDate and :endDate
+                                    or [EndDate] between :beginDate and :endDate
+                                    or :beginDate between [BeginDate] and  [EndDate]
+                                    or :endDate between [BeginDate] and  [EndDate])
+                                    and [DeleteDate] is null";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id).
+                SetDateTime("beginDate", beginDate).
+                SetDateTime("endDate", endDate).
+                SetInt32("userId", userId);
+            return query.UniqueResult<int>() > 0;
+        }
         public virtual bool CheckAdditionalOrderExists(int id)
         {
             const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]

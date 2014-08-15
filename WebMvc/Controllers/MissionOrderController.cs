@@ -184,8 +184,10 @@ namespace WebMvc.Controllers
             //return false;
             if (string.IsNullOrEmpty(model.BeginMissionDate) || string.IsNullOrEmpty(model.EndMissionDate))
                 ModelState.AddModelError("BeginMissionDate", StrNoBeginOrEndDate);
-            if(RequestBl.CheckOtherOrdersExists(model))
+            if(RequestBl.CheckAnyOtherOrdersExists(model))
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);
+            /*if (RequestBl.CheckOtherOrdersExists(model))
+                ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);*/
             if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
                 ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
             return ModelState.IsValid;
