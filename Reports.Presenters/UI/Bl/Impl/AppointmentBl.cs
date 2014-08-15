@@ -142,6 +142,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetInitialDates(model);
             SetDictionariesToModel(model);
             model.IsAddAvailable = role == UserRole.Manager;
+            model.IsAddForStaffAvailable = role == UserRole.StaffManager;
             //SetInitialStatus(model);
             //SetIsAvailable(model);
             return model;
@@ -1643,6 +1644,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             RequestAttachmentDao.Delete(model.Id);
             return true;
+        }
+
+
+        public AppointmentSelectManagerModel GetSelectManagerModel()
+        {
+            return new AppointmentSelectManagerModel
+            {
+                Managers = UserDao.GetManagersWithDepartments().ToList(),
+            };
         }
     }
 }

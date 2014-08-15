@@ -34,6 +34,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool HasErrors { get; set; }
 
+        public bool IsAddForStaffAvailable { get; set; }
+
         #region BeginEndCreateDate Members
 
         [Display(Name = "Период с")]
