@@ -1912,6 +1912,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
+        public bool SaveApprovals(RosterModel roster, out string error)
+        {
+            error = string.Empty;
+
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (roster.Roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
+                                          (current.UserRole & UserRole.Chief) == UserRole.Chief ||
+                                          (current.UserRole & UserRole.Director) == UserRole.Director))
+            {
+                IList<int> idsToApproveByManager = roster.Roster.Where(x => x.IsApprovedByManager == true).Select(x => x.Id).ToList();
+                IList<int> idsToApproveByHigherManager = roster.Roster.Where(x => x.IsApprovedByHigherManager == true).Select(x => x.Id).ToList();
+            }
+
+            return true;
+        }
+
         #endregion
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)

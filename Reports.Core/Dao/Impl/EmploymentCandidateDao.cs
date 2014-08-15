@@ -76,7 +76,7 @@ namespace Reports.Core.Dao.Impl
 					else 0
 					end IsApproveByManagerAvailable
 				, case
-					when candidate.Status = 4 then 1
+					when candidate.Status = 4 and appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' then 1
 					else 0
 					end IsApproveByHigherManagerAvailable
               from dbo.EmploymentCandidate candidate

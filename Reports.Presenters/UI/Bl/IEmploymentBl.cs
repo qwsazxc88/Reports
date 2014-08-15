@@ -79,7 +79,8 @@ namespace Reports.Presenters.UI.Bl
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
+        bool SaveApprovals(RosterModel roster, out string error);
 
-        bool IsCurrentUserChiefForCreator(User current, User creator);
+        bool IsCurrentUserChiefForCreator(User current, User creator);        
     }
 }

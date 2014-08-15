@@ -480,6 +480,19 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director)]
+        public ActionResult Roster(RosterFiltersModel input, RosterModel roster, string cmd)
+        {
+            if (cmd == "SaveApprovals")
+            {
+                EmploymentBl.SaveApprovals(roster);
+            }
+
+            RosterModel model = EmploymentBl.GetRosterModel(input);
+            return View(model);
+        }
+
         // Custom report
         /*
         [HttpGet]
