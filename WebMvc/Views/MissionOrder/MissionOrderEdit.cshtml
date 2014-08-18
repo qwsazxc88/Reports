@@ -213,7 +213,7 @@
             <td>
                 @Html.LabelFor(m => m.UserSumNotCash):
             </td>
-            <td>
+            <td style="font-weight: bold; color: red">
                 @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserCashNotCashSums();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
