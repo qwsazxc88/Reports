@@ -8,8 +8,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class RosterModel
     {
-        [Display(Name = "Реестр по приему"),
-            StringLength(200, ErrorMessage = "Не более 200 знаков.")]
+        [Display(Name = "Реестр по приему")]
         public IList<CandidateDto> Roster { get; set; }
 
         // Фильтры

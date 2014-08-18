@@ -477,6 +477,7 @@
     <Compile Include="Dto\Employment2\CandidateDto.cs" />
     <Compile Include="Dto\Employment2\ReferenceDto.cs" />
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />

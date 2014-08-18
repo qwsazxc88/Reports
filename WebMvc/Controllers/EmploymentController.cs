@@ -474,25 +474,34 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult Roster(RosterFiltersModel input, string submit)
+        public ActionResult Roster(RosterFiltersModel input, RosterModel roster, bool isApproveModified = false)
         {
             RosterModel model = EmploymentBl.GetRosterModel(input);
+            /*
+            string error = string.Empty;
+            
+            if (isApproveModified)
+            {
+                EmploymentBl.SaveApprovals(roster, out error);
+            }
+            */
             return View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director)]
-        public ActionResult Roster(RosterFiltersModel input, string cmd, RosterModel roster)
+        public ActionResult RosterBulkApprove(RosterInputModel roster)
         {
             string error = string.Empty;
             
-            if (cmd == "SaveApprovals")
+            if (EmploymentBl.SaveApprovals(roster, out error))
             {
-                EmploymentBl.SaveApprovals(roster, out error);
+                return Json(new { ok = true });
             }
-            
-            RosterModel model = EmploymentBl.GetRosterModel(input);
-            return View(model);
+            else
+            {
+                return Json(new { ok = false, error = error });
+            }
         }
 
         // Custom report

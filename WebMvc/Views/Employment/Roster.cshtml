@@ -6,7 +6,7 @@
 
 @* BEGIN Выбор параметров *@
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Roster", "Employment", FormMethod.Post, new {id = "mainForm"}))
 {
     <table style="width:100%">
         <tr>
@@ -64,7 +64,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                            <button type="submit" name="submit" value="List">Выбрать</button>
+                            <button type="submit" name="submit">Выбрать</button>
                             <input type="button" value="Очистить" onclick="resetFilter();"/>
                             </td>
                         </tr>                        
@@ -76,8 +76,8 @@
             <td colspan="2" style = "text-align:right">
                 @if (Model.IsBulkApproveByManagerAvailable || Model.IsBulkApproveByHigherManagerAvailable)
                 {
-                    <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />
-                    <button type="submit" id="SaveApprovals" name="cmd" value="SaveApprovals">Записать</button>
+                    <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
+                    <button id="SaveApprovals">Записать</button>
                 }
             </td>
         </tr>
@@ -186,7 +186,7 @@
         
             <td rowspan="2">
                 @i
-                @Html.HiddenFor(m => m.Roster[i-1].Id)
+                @Html.HiddenFor(m => m.Roster[i - 1].Id)
             </td>
         
             <td rowspan="2">
@@ -255,13 +255,9 @@
             @if (Model.IsBulkApproveByManagerAvailable)
             {
                 <td rowspan="2" class="centered">
-                    @if (!Model.Roster[i - 1].IsApprovedByManager.HasValue)
-                    {
-                        Model.Roster[i - 1].IsApprovedByManager = false;
-                    }
                     @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
                     {
-                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager.Value, new { @class = "selcheckByManager" })                    
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager, new { @class = "selcheckByManager", dataId = Model.Roster[i - 1].Id })
                     }
                 </td>
             }
@@ -269,13 +265,9 @@
             @if (Model.IsBulkApproveByHigherManagerAvailable)
             {
                 <td rowspan="2" class="centered">
-                    @if (!Model.Roster[i - 1].IsApprovedByHigherManager.HasValue)
-                    {
-                        Model.Roster[i - 1].IsApprovedByHigherManager = false;
-                    }
                     @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
                     {
-                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager.Value, new { @class = "selcheckByHigherManager" })
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager, new { @class = "selcheckByHigherManager", dataId = Model.Roster[i - 1].Id })
                     }
                 </td>
             }        
@@ -322,18 +314,35 @@
             {
                 $(".selcheckByManager").removeAttr('checked');
             }
-         });
+        });
 
-         $("#setAllByHigherManager").click(function(){
-            if ($(this).is(':checked'))
-            {
-                $(".selcheckByHigherManager").attr('checked','checked');
-            }
-            else
-            {
-                $(".selcheckByHigherManager").removeAttr('checked');
-            }
-         });
+        $("#setAllByHigherManager").click(function(){
+        if ($(this).is(':checked'))
+        {
+            $(".selcheckByHigherManager").attr('checked','checked');
+        }
+        else
+        {
+            $(".selcheckByHigherManager").removeAttr('checked');
+        }
+        });
+
+        $("#SaveApprovals").click(function(e){
+            $("#IsApproveModified").val("true");
+            
+            $.post("/Employment/RosterBulkApprove",                
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok === true) {
+                        showInputActionResult([$(this)], true);
+                    }
+                    else {
+                        showInputActionResult([$(this)], false);
+                    }
+                }
+            );
+            e.preventDefault();
+        });
     });
 
     function resetFilter() {

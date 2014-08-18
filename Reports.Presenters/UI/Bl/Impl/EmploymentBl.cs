@@ -1912,7 +1912,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        public bool SaveApprovals(RosterModel roster, out string error)
+        public bool SaveApprovals(RosterInputModel roster, out string error)
         {
             error = string.Empty;
 

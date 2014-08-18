@@ -46,9 +46,9 @@ namespace Reports.Core.Dto.Employment2
 
         public string Status { get; set; }
 
-        public bool? IsApprovedByManager { get; set; }
+        public bool IsApprovedByManager { get; set; }
 
-        public bool? IsApprovedByHigherManager { get; set; }
+        public bool IsApprovedByHigherManager { get; set; }
 
         public bool IsApproveByManagerAvailable { get; set; }
 

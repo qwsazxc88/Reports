@@ -26,3 +26,15 @@ var attachDatepickerToInputs = function ($inputs, range, makeReadonly) {
         $inputs.attr("readOnly", "true");
     }
 };
+
+function showInputActionResult(inputs, isOk) {
+    var color = isOk ? "lightgreen" : "pink";
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].css("background-color", color);
+    }
+    setTimeout(function () {
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].css("background-color", "white");
+        }
+    }, 700);
+}
