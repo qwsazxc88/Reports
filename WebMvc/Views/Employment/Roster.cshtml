@@ -277,14 +277,14 @@
         <tr>
             <td colspan="14">
                 Анкета:
-                <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.Id })</span>
-                <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.Id })</span>
+                <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
             </td>
         </tr>
     }

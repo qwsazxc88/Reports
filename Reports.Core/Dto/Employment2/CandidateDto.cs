@@ -10,6 +10,8 @@ namespace Reports.Core.Dto.Employment2
     {
         public int Id { get; set; }
 
+        public int UserId { get; set; }
+
         public string Name { get; set; }
 
         public string Directorate { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Domain;
+using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -79,7 +80,7 @@ namespace Reports.Presenters.UI.Bl
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
-        bool SaveApprovals(RosterInputModel roster, out string error);
+        bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);        
     }

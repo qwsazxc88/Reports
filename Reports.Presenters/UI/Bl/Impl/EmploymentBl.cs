@@ -1912,7 +1912,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        public bool SaveApprovals(RosterInputModel roster, out string error)
+        public bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error)
         {
             error = string.Empty;
 
@@ -1921,12 +1921,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
 
-            if (roster.Roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
+            if (roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
                                           (current.UserRole & UserRole.Chief) == UserRole.Chief ||
                                           (current.UserRole & UserRole.Director) == UserRole.Director))
             {
-                idsToApproveByManager = roster.Roster.Where(x => x.IsApprovedByManager == true).Select(x => x.Id).ToList();
-                idsToApproveByHigherManager = roster.Roster.Where(x => x.IsApprovedByHigherManager == true).Select(x => x.Id).ToList();
+                idsToApproveByManager = roster.Where(x => x.IsApprovedByManager == true).Select(x => x.Id).ToList();
+                idsToApproveByHigherManager = roster.Where(x => x.IsApprovedByHigherManager == true).Select(x => x.Id).ToList();
 
                 List<EmploymentCandidate> entities = EmploymentCandidateDao.LoadForIdsList(idsToApproveByManager).ToList();
                 foreach (EmploymentCandidate entity in entities)

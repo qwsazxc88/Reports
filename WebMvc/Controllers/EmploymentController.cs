@@ -490,7 +490,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director)]
-        public ActionResult RosterBulkApprove(RosterInputModel roster)
+        public ActionResult RosterBulkApprove(IList<CandidateApprovalDto> roster)
         {
             string error = string.Empty;
             

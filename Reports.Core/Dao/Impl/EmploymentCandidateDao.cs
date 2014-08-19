@@ -37,6 +37,7 @@ namespace Reports.Core.Dao.Impl
 
         protected const string sqlSelectForCandidateList =
             @"select candidate.Id Id
+                , candidate.UserId UserId
                 , generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic as Name
                 , directorate.Name Directorate
                 , managers.WorkCity WorkCity
@@ -211,6 +212,7 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
+                .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
                 .AddScalar("Directorate", NHibernateUtil.String)
                 .AddScalar("WorkCity", NHibernateUtil.String)
