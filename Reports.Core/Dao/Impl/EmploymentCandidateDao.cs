@@ -112,7 +112,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
-            //whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetUserNameWhere(whereString, userName);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -187,6 +187,7 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
+        //ok
         public override string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate)
         {
             if (beginDate.HasValue)
@@ -212,6 +213,17 @@ namespace Reports.Core.Dao.Impl
                 Department department = DepartmentDao.Load(departmentId);
                 whereString += string.Format(@" department.Path  like '{0}' and department.ItemLevel = {1}", department.Path + "%", 7);
             }
+            return whereString;
+        }
+
+        public override string GetUserNameWhere(string whereString, string userName)
+        {
+            if (!string.IsNullOrEmpty(userName))
+            {
+                whereString = string.Format(@"{0} (generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic) like N'%' + :userName + N'%'",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+
             return whereString;
         }
 

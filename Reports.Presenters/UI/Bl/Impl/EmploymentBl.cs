@@ -747,7 +747,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
-                    null,
+                    filters != null ? filters.UserName : null,
                     0,
                     null);
             }
