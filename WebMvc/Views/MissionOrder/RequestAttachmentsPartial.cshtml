@@ -203,10 +203,17 @@ function setupUploader()
                 return;
             }
             var result = responseJSON; //JSON.parse("{"+responseJSON+"}");  
-            if(!result.Result)
+            /* if(!result.Result)
             {
                 addAttachmentError(result.Error);
                 //Render();
+            }*/
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
+            {
+                if((result.success != undefined) && (!result.success))
+                    addAttachmentError("Ошибка - не получен ответ сервера.");
+                else
+                    addAttachmentError(result.Error);
             }
             else
             {
