@@ -7662,18 +7662,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ApproveOrder(MissionOrderListModel model,MissionOrder order)
         {
-            switch (CurrentUser.UserRole)
+            try
             {
-                case UserRole.Manager:
-                    ApproveOrderForManager(model,order);
-                    break;
-                case UserRole.Director:
-                    ApproveOrderForDirector(model, order);
-                    break;
-                default:
+                if(MissionOrderDao.CheckOtherOrdersExists(order.Id, order.User.Id, order.BeginDate.Value,order.EndDate.Value) ||
+                    !CheckOrderBeginDate(order.BeginDate.Value.ToString()))
+                {
                     model.HasErrors = true;
-                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2}",order.Id,CurrentUser.Id,CurrentUser.UserRole);
-                    break;
+                    Log.ErrorFormat("Cannot approve order {0} user {1} role {2} - order check fail", order.Id, CurrentUser.Id, CurrentUser.UserRole);
+                    return;
+                }
+                switch (CurrentUser.UserRole)
+                {
+                    case UserRole.Manager:
+                        ApproveOrderForManager(model,order);
+                        break;
+                    case UserRole.Director:
+                        ApproveOrderForDirector(model, order);
+                        break;
+                    default:
+                        model.HasErrors = true;
+                        Log.ErrorFormat("Cannot approve order {0} user {1} role {2}",order.Id,CurrentUser.Id,CurrentUser.UserRole);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(string.Format("Cannot approve order {0} user {1} role {2}", order.Id, CurrentUser.Id, CurrentUser.UserRole),ex);
+                model.HasErrors = true;
             }
         }
         protected void ApproveOrderForManager(MissionOrderListModel model,MissionOrder entity)
@@ -7913,6 +7928,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool CheckOtherOrdersExists(MissionOrderEditModel model)
         {
             return MissionOrderDao.CheckOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
+                                                   DateTime.Parse(model.EndMissionDate));
+        }
+        public bool CheckAnyOtherOrdersExists(MissionOrderEditModel model)
+        {
+            return MissionOrderDao.CheckAnyOtherOrdersExists(model.Id, model.UserId, DateTime.Parse(model.BeginMissionDate),
                                                    DateTime.Parse(model.EndMissionDate));
         }
         public bool CheckOrderBeginDate(string beginMissionDate)
@@ -8308,6 +8328,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
+                if (entity.Id == 0)
+                    MissionOrderDao.SaveAndFlush(entity);
+
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
             IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
@@ -8389,6 +8412,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void CreateMission(MissionOrder entity)
         {
+         
             CreateMissionReport(entity);
             if (entity.Mission != null)
                 throw new ArgumentException(
@@ -10242,7 +10266,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SaveMissionCostsTransactions(entity, model);
             }
-            if (entity.AccountantDateAccept.HasValue && !entity.DeleteDate.HasValue && !entity.ArchiveDate.HasValue)
+            if (entity.AccountantDateAccept.HasValue && 
+                !entity.DeleteDate.HasValue && 
+                !entity.ArchiveDate.HasValue &&
+                current.UserRole == UserRole.Archivist)
             {
                 entity.ArchiveDate = DateTime.Parse(model.ArchiveDate);
                 entity.ArchiveNumber = model.ArchiveNumber;
