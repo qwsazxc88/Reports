@@ -301,23 +301,15 @@
                 height: 160,
                 // fix IE6  
                 bgiframe: true,
-                /*open: function (event, ui) {
-                    $("#BeginDate").datepicker();
-                    $("#EndDate").datepicker();
-                    $(".hasDatepicker").width("75px"); 
-                },*/
                 close: function (event, ui) {
                     $(this).dialog("destroy").remove();
                 },
                 buttons:
                 {
                     "Создать заявку": function () {
-                        /*if(!validateCost())
-                            return;
-                        if(!addCostToTemplate())
-                             return;*/
+                        var managerId = $("#ManagerId").val();
                         $(this).dialog("close");
-                        //setTargetBtnState();
+                        window.location.href = '@Url.Action("AppointmentEdit", "Appointment")?id=0&managerId=' + managerId;
                     },
                     "Отмена": function () {
                         $(this).dialog("close");

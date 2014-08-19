@@ -45,6 +45,7 @@ namespace Reports.Core.Domain
 
         public virtual User Creator { get; set; }
 
+        public virtual User StaffCreator { get; set; }
 
         public virtual DateTime? ManagerDateAccept { get; set; }
         public virtual User AcceptManager { get; set; }

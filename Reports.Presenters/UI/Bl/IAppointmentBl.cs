@@ -9,13 +9,13 @@ namespace Reports.Presenters.UI.Bl
         AppointmentListModel GetAppointmentListModel();
         void SetAppointmentListModel(AppointmentListModel model, bool hasError);
 
-        AppointmentEditModel GetAppointmentEditModel(int id);
+        AppointmentEditModel GetAppointmentEditModel(int id, int? managerId);
 
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
         bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
         void ReloadDictionaries(AppointmentEditModel model);
-        bool CheckDepartment(int departmentId, out int level);
+        bool CheckDepartment(AppointmentEditModel model, out int level);
         int GetRequeredDepartmentLevel();
         bool SaveAppointmentEditModel(AppointmentEditModel model, out string error);
 
