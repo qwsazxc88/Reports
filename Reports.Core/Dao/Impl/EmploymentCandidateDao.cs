@@ -109,18 +109,17 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForCandidateList;
             string whereString = GetWhereForUserRole(role, currentId);
-            //whereString = GetStatusWhere(whereString, statusId);
-            //whereString = GetDatesWhere(whereString, beginDate, endDate);
+            whereString = GetStatusWhere(whereString, statusId);
+            whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             //whereString = GetUserNameWhere(whereString, userName);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
 
-            // Set named params
-            query.SetInt32("currentId", currentId);
+            AddNamedParamsToQuery(query, currentId, beginDate, endDate, userName);
 
-            AddDatesToQuery(query, beginDate, endDate, userName);
+            //AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean<CandidateDto>()).List<CandidateDto>();
         }
 
@@ -133,6 +132,7 @@ namespace Reports.Core.Dao.Impl
             return criteria.List<EmploymentCandidate>();
         }
 
+        //ok
         public override string GetWhereForUserRole(UserRole role, int currentId)
         {            
             string sqlQueryPart = string.Empty;
@@ -161,6 +161,7 @@ namespace Reports.Core.Dao.Impl
                         default:
                             break;
                     }
+                    sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
                     break;
                 // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация не производится
                 case UserRole.PersonnelManager:
@@ -175,12 +176,31 @@ namespace Reports.Core.Dao.Impl
             return sqlQueryPart;
         }
 
+        //ok
         public override string GetStatusWhere(string whereString, int statusId)
         {
+            if (statusId > 0)
+            {
+                whereString = string.Format(@"{0} candidate.Status = {1}", (whereString.Length > 0 ? whereString + @" and" : string.Empty), statusId);
+            }
+
             return whereString;
         }
 
-        // ok
+        public override string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                whereString = string.Format(@"{0} candidate.QuestionnaireDate >= :beginDate",
+                    (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+            }
+            whereString = string.Format(@"{0} candidate.QuestionnaireDate <= :endDate",
+                (whereString.Length > 0 ? whereString + @" and" : string.Empty));
+
+            return whereString;
+        }
+
+        //ok
         public override string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)
@@ -210,7 +230,7 @@ namespace Reports.Core.Dao.Impl
 
         public override IQuery CreateQuery(string sqlQuery)
         {
-            return Session.CreateSQLQuery(sqlQuery)
+            IQuery query = Session.CreateSQLQuery(sqlQuery)
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
@@ -234,6 +254,22 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("IsApproveByManagerAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByHigherManagerAvailable", NHibernateUtil.Boolean)
                 ;
+
+            return query;
+        }
+
+        private void AddNamedParamsToQuery(IQuery query, int currentId, DateTime? beginDate, DateTime? endDate, string userName)
+        {
+            query.SetInt32("currentId", currentId);
+            if (beginDate.HasValue)
+            {
+                query.SetDateTime("beginDate", beginDate.Value);
+            }
+            query.SetDateTime("endDate", endDate.HasValue ? endDate.Value : DateTime.Now);
+            if (!string.IsNullOrEmpty(userName))
+            {
+                query.SetString("userName", userName);
+            }
         }
     }
 }
