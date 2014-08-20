@@ -82,6 +82,7 @@ namespace Reports.Presenters.UI.Bl
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
 
-        bool IsCurrentUserChiefForCreator(User current, User creator);        
+        bool IsCurrentUserChiefForCreator(User current, User creator);
+        string GetStartView();
     }
 }

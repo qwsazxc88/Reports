@@ -10,6 +10,7 @@ using Reports.Core.Domain;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using Reports.Presenters.Services.Impl;
 
 namespace WebMvc.Controllers
 {
@@ -29,11 +30,13 @@ namespace WebMvc.Controllers
         //
         // GET: /Employment/
         [HttpGet]
+        [ActionName("Index")]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Index()
         {
-            return RedirectToActionPermanent("GeneralInfo");
+            return RedirectToAction(EmploymentBl.GetStartView());
         }
-
+        
         // General Info
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
@@ -42,7 +45,7 @@ namespace WebMvc.Controllers
             var model = EmploymentBl.GetGeneralInfoModel(id);
             return (model.IsFinal || id.HasValue) ? View("GeneralInfoReadOnly", model) : View(model);
         }
-
+        
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
         public ActionResult GeneralInfo(GeneralInfoModel model)

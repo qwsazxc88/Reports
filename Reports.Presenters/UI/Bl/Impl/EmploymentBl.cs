@@ -1984,5 +1984,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
             }
         }
+
+        public string GetStartView()
+        {
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            if ((currentUserRole & UserRole.Candidate) == UserRole.Candidate)
+            {
+                return "GeneralInfo";
+            }
+            else
+            {
+                return "Roster";
+            }
+        }
     }
 }
