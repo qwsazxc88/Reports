@@ -1238,6 +1238,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPrintLoginAvailable = state;
             model.IsColloquyDateEditable = state;
             model.IsStaffSetDateAcceptAvailable = state;
+            model.ApproveForAllAvailable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {
@@ -1276,26 +1277,72 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.StaffManager:
-                    if (!entity.DeleteDate.HasValue && !entity.DateAccept.HasValue
-                        && current.Id == entity.Appointment.AcceptStaff.Id)
+                    if (!entity.DeleteDate.HasValue && current.Id == entity.Appointment.AcceptStaff.Id)
                     {
-                        if(!entity.StaffDateAccept.HasValue)
+                        if (!entity.DateAccept.HasValue)
                         {
-                            model.IsEditable = true;
-                            if (!entity.ManagerDateAccept.HasValue)
-                                model.IsManagerRejectAvailable = true;
-                            if (model.AttachmentId > 0)
+                            if (!entity.StaffDateAccept.HasValue)
                             {
-                                model.IsStaffApproveAvailable = true;
-                                model.IsDeleteScanAvailable = true;
+                                model.IsEditable = true;
+                                if (model.AttachmentId > 0)
+                                {
+                                    model.IsStaffApproveAvailable = true;
+                                    model.IsDeleteScanAvailable = true;
+                                    model.IsManagerApproveAvailable = true;
+                                    model.IsColloquyDateEditable = true;
+                                    model.IsManagerEditable = true;
+                                    if (!string.IsNullOrEmpty(entity.TempLogin))
+                                        model.IsPrintLoginAvailable = true;
+                                }
                             }
+                            else if (!entity.ManagerDateAccept.HasValue)
+                            {
+                                model.IsManagerRejectAvailable = true;
+                                model.IsManagerApproveAvailable = true;
+                                model.IsColloquyDateEditable = true;
+                                model.IsManagerEditable = true;
+                                if (!string.IsNullOrEmpty(entity.TempLogin))
+                                    model.IsPrintLoginAvailable = true;
+                            }
+                            else if (entity.AcceptManager.Id == current.Id)
+                            {
+                                model.IsManagerRejectAvailable = true;
+                                model.IsManagerEditable = true;
+                                if (!string.IsNullOrEmpty(entity.TempLogin))
+                                    model.IsPrintLoginAvailable = true;
+                            }
+                            /*if (!entity.StaffDateAccept.HasValue)
+                            {
+                                model.IsEditable = true;
+                                if (model.AttachmentId > 0)
+                                {
+                                    model.IsStaffApproveAvailable = true;
+                                    model.IsDeleteScanAvailable = true;
+                                    model.IsManagerApproveAvailable = true;
+                                    model.IsColloquyDateEditable = true;
+                                }
+                            } 
+                            else
+                            {
+                                model.IsManagerRejectAvailable = true;
+                                if (!entity.ManagerDateAccept.HasValue)
+                                {
+                                    model.IsManagerApproveAvailable = true;
+                                    model.IsColloquyDateEditable = true;
+                                }
+                                else
+                                {
+                                    model.IsManagerEditable = true;
+                                    if (!string.IsNullOrEmpty(entity.TempLogin))
+                                        model.IsPrintLoginAvailable = true;
+                                }
+                            }*/
+                            if (entity.ManagerDateAccept.HasValue && model.IsColloquyPassed == 1)
+                                model.IsStaffSetDateAcceptAvailable = true;
+                            model.IsAddAvailable = true;
+                            /*if (model.AttachmentId > 0)
+                                model.ApproveForAllAvailable = true;*/
                         }
-                        model.IsAddAvailable = true;
-                    }
-                    if (!entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue && model.IsColloquyPassed == 1
-                       && current.Id == entity.Appointment.AcceptStaff.Id && !entity.DateAccept.HasValue)
-                    {
-                        model.IsStaffSetDateAcceptAvailable = true;
                     }
                     break;
                 case UserRole.OutsourcingManager:
@@ -1506,19 +1553,39 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.StaffManager:
                 {
-                    if (!entity.DeleteDate.HasValue && !entity.StaffDateAccept.HasValue
-                        && model.IsStaffApproved && model.AttachmentId > 0
-                        && entity.Appointment.AcceptStaff.Id == current.Id)
+                    if (!entity.DeleteDate.HasValue && entity.Appointment.AcceptStaff.Id == current.Id)
                     {
-                        entity.StaffDateAccept = DateTime.Now;
-                        entity.AcceptStaff = currUser;
-                    }
-                    if (!entity.DeleteDate.HasValue && entity.AcceptStaff != null 
-                        && entity.AcceptStaff.Id == current.Id && dateAcceptSet)
-                    {
-                        RejectReportsExceptId(entity.Appointment.Id, entity.Id, entity.Creator,
-                                              string.Format("Другой кандидат принят на работу (отчет № {0})",
-                                                            entity.Number));
+                        /*if (model.ApproveForAll)
+                        {
+
+                        }
+                        else
+                        {*/
+                            if (!entity.StaffDateAccept.HasValue && model.IsStaffApproved && model.AttachmentId > 0)
+                            {
+                                entity.StaffDateAccept = DateTime.Now;
+                                entity.AcceptStaff = currUser;
+                            } 
+                            if (entity.StaffDateAccept.HasValue && !entity.ManagerDateAccept.HasValue && model.IsManagerApproved)
+                            {
+                                entity.ManagerDateAccept = DateTime.Now;
+                                entity.AcceptManager = currUser;
+                                entity.TempLogin = entity.Id.ToString();
+                                entity.TempPassword = CreatePassword(PasswordLength);
+                            }
+                            /*if (entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
+                            {
+                                RejectReportsExceptId(entity.Appointment.Id, entity.Id, entity.Appointment.Creator,
+                                                      string.Format("Другой кандидат принят на работу (отчет № {0})",
+                                                                    entity.Number));
+                            }*/
+                            if (entity.AcceptStaff != null && dateAcceptSet)
+                            {
+                                RejectReportsExceptId(entity.Appointment.Id, entity.Id, entity.Creator,
+                                                      string.Format("Другой кандидат принят на работу (отчет № {0})",
+                                                                    entity.Number));
+                            }
+                        //}
                     }
                 }
                 break;

@@ -430,14 +430,14 @@ namespace WebMvc.Controllers
         #endregion
         #region PrintLogin
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.StaffManager)]
         public ActionResult PrintLoginForm(int id)
         {
             PrintLoginFormModel model = AppointmentBl.GetPrintLoginFormModel(id);
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.StaffManager)]
         public ActionResult GetLoginPrintForm(int id)
         {
             string args = string.Format(@"id={0}",id);
