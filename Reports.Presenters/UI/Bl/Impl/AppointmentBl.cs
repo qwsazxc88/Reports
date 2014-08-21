@@ -1238,7 +1238,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsPrintLoginAvailable = state;
             model.IsColloquyDateEditable = state;
             model.IsStaffSetDateAcceptAvailable = state;
-            model.ApproveForAllAvailable = state;
+            //model.ApproveForAllAvailable = state;
         }
         protected void SetFlagsState(int id, User current, UserRole currRole, AppointmentReport entity, AppointmentReportEditModel model)
         {

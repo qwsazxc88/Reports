@@ -101,7 +101,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public CommentsModel CommentsModel { get; set; }
 
-        public bool ApproveForAllAvailable { get; set; }
-        public bool ApproveForAll { get; set; }
+        /*public bool ApproveForAllAvailable { get; set; }
+        public bool ApproveForAll { get; set; }*/
     }
 }
