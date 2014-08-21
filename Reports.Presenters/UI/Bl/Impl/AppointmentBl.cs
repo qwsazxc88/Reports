@@ -1256,22 +1256,27 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currRole)
             {
                 case UserRole.Manager:
-                    if (current.Id == entity.Appointment.Creator.Id 
-                       && !entity.DeleteDate.HasValue && !entity.DateAccept.HasValue)
+                    if (current.Id == entity.Appointment.Creator.Id && !entity.DeleteDate.HasValue)
                     {
-                        if (entity.StaffDateAccept.HasValue)
+                        if (entity.AcceptManager != null && !string.IsNullOrEmpty(entity.TempLogin))
+                                model.IsPrintLoginAvailable = true;
+                        
+                        if (!entity.DateAccept.HasValue)
                         {
-                            model.IsManagerRejectAvailable = true;
-                            if (!entity.ManagerDateAccept.HasValue)
+                            if (entity.StaffDateAccept.HasValue)
                             {
-                                model.IsManagerApproveAvailable = true;
-                                model.IsColloquyDateEditable = true;
-                            }
-                            else
-                            {
-                                model.IsManagerEditable = true;
-                                if (!string.IsNullOrEmpty(entity.TempLogin))
-                                    model.IsPrintLoginAvailable = true;
+                                model.IsManagerRejectAvailable = true;
+                                if (!entity.ManagerDateAccept.HasValue)
+                                {
+                                    model.IsManagerApproveAvailable = true;
+                                    model.IsColloquyDateEditable = true;
+                                }
+                                else
+                                {
+                                    model.IsManagerEditable = true;
+                                    if (!string.IsNullOrEmpty(entity.TempLogin))
+                                        model.IsPrintLoginAvailable = true;
+                                }
                             }
                         }
                     }
@@ -1279,6 +1284,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.StaffManager:
                     if (!entity.DeleteDate.HasValue && current.Id == entity.Appointment.AcceptStaff.Id)
                     {
+                        if (entity.AcceptManager != null && entity.AcceptManager.Id == current.Id && 
+                                !string.IsNullOrEmpty(entity.TempLogin))
+                            model.IsPrintLoginAvailable = true;
+                        
                         if (!entity.DateAccept.HasValue)
                         {
                             if (!entity.StaffDateAccept.HasValue)
@@ -1291,8 +1300,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     model.IsManagerApproveAvailable = true;
                                     model.IsColloquyDateEditable = true;
                                     model.IsManagerEditable = true;
-                                    if (!string.IsNullOrEmpty(entity.TempLogin))
-                                        model.IsPrintLoginAvailable = true;
                                 }
                             }
                             else if (!entity.ManagerDateAccept.HasValue)
@@ -1301,15 +1308,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 model.IsManagerApproveAvailable = true;
                                 model.IsColloquyDateEditable = true;
                                 model.IsManagerEditable = true;
-                                if (!string.IsNullOrEmpty(entity.TempLogin))
-                                    model.IsPrintLoginAvailable = true;
                             }
                             else if (entity.AcceptManager.Id == current.Id)
                             {
                                 model.IsManagerRejectAvailable = true;
                                 model.IsManagerEditable = true;
-                                if (!string.IsNullOrEmpty(entity.TempLogin))
-                                    model.IsPrintLoginAvailable = true;
                             }
                             /*if (!entity.StaffDateAccept.HasValue)
                             {
