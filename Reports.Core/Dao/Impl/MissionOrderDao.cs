@@ -315,18 +315,19 @@ namespace Reports.Core.Dao.Impl
                         throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
 
                     string sqlQueryPartTemplate =
-                        @" u.Id in (        select distinct emp.Id from dbo.Users emp
+                        @" select distinct emp.Id from dbo.Users emp
                                             inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
                                              inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
                                              ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
                                              inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
                                              inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
                     string sqlQueryPart = string.Empty;
-                    string sqlFlag = string.Empty;     
+                    string sqlFlag = string.Empty;
+
                     switch (currentUser.Level)
                     {
                         case 2:
-                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2",currentUser.Id);
+                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2", currentUser.Id);
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                         and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
@@ -382,11 +383,16 @@ namespace Reports.Core.Dao.Impl
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
                     }
+
+                    sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
+
                     sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     // Автороль должна действовать только для уровней ниже третьего
-                    sqlQueryPart = String.Format(" (u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
-                    sqlQueryPart += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-                    sqlQueryPart += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    // Ручные привязки человек-человек и человек-подразделение из MissionOrderRoleRecord
+                    sqlQueryPart += string.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    sqlQueryPart += string.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     return sqlQueryPart;
                 case UserRole.Director:
                         //User currUser = UserDao.Load(userId);
