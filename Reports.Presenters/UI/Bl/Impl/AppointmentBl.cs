@@ -119,6 +119,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentReportCommentDao); }
             set { appointmentReportCommentDao = value; }
         }
+
+        protected IEmploymentCommonDao employmentCommonDao;
+        public IEmploymentCommonDao EmploymentCommonDao
+        {
+            get { return Validate.Dependency(employmentCommonDao); }
+            set { employmentCommonDao = value; }
+        }
+
         #endregion
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -1529,7 +1537,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
 
-                        CreateUserForCandidate(entity);
+                        CreateCandidate(entity);
                     }
                     if (!entity.DeleteDate.HasValue && entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
                     {
@@ -1546,7 +1554,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        private void CreateUserForCandidate(AppointmentReport entity)
+        private void CreateCandidate(AppointmentReport entity)
         {
             User newUserEntity = new User();
             newUserEntity.Login = entity.TempLogin;
@@ -1558,7 +1566,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             newUserEntity.RoleId = (int)UserRole.Candidate;
             newUserEntity.GivesCredit = false;
             newUserEntity.IsMainManager = false;
-            UserDao.SaveAndFlush(newUserEntity);
+            //UserDao.SaveAndFlush(newUserEntity);
+            EmploymentCommonDao.SaveAndFlush(new EmploymentCandidate { User = newUserEntity });
         }
 
         protected void RejectReportsExceptId(int appointmentId,int exceptReportId,User user,string rejectReason)

@@ -1190,7 +1190,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             entity.DistrictOfBirth = viewModel.DistrictOfBirth;
             entity.FirstName = viewModel.FirstName;
-            //entity.Candidate = EmploymentCandidateDao.LoadAll().Where(x => x.User.
 
             if (entity.ForeignLanguages == null)
             {
@@ -1610,13 +1609,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected EmploymentCandidate GetCandidate(int userId)
         {
-            EmploymentCandidate candidate = EmploymentCommonDao.GetCandidateByUserId(userId);
-            if (candidate == null)
-            {
-                EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(new EmploymentCandidate { User = UserDao.Get(userId) });
-                candidate = EmploymentCommonDao.GetCandidateByUserId(userId);
-            }
-            return candidate;
+            return EmploymentCommonDao.GetCandidateByUserId(userId);
         }
 
         #endregion
