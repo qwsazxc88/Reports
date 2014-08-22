@@ -52,7 +52,7 @@
                         </td>         
                         <td>
                             @if (attach.IsDeleteAvailable)
-                            {<text><a class="ui-notify-close" onclick="return deleteAttachment(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                            {<text><a class="ui-notify-close" onclick="return deleteAttachmentPartial(@attach.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                          </td>  
                     </tr>   
                     }
@@ -219,7 +219,7 @@ function setupUploader()
         debug: true
     });
 }
-    function deleteAttachment(id){
+    function deleteAttachmentPartial(id){
         var actionUrl="@Url.Action("DeleteAttachment", "MissionOrder")";
         var url = actionUrl + "?Id=" + id;
         $.getJSON(url,
