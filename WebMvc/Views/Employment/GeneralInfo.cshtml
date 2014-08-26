@@ -13,18 +13,24 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Общая информация</legend>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
-            @Html.TextBoxFor(m => m.LastName)
+        <div class="formfield clearleft" style="float:right">
+            <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
+                <div style="width: 96px; height: 96px; background: gray;"></div>
+                <input type="file" name="files" />
+            </fieldset>            
         </div>
         <div class="formfield">
+            @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
+            @Html.TextBoxFor(m => m.LastName)
+        </div>        
+        <div class="formfield clearleft">
             @Html.LabelFor(m => m.FirstName)&nbsp;@Html.ValidationMessageFor(m => m.FirstName)<br />
             @Html.TextBoxFor(m => m.FirstName)
         </div>
-        <div class="formfield">
+        <div class="formfield clearleft">
             @Html.LabelFor(m => m.Patronymic)&nbsp;@Html.ValidationMessageFor(m => m.Patronymic)<br />
             @Html.TextBoxFor(m => m.Patronymic)&nbsp;@Html.CheckBoxFor(m => m.IsPatronymicAbsent)@Html.LabelFor(m => m.IsPatronymicAbsent)
-        </div>
+        </div>        
 
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.NameChanges)</legend>
@@ -148,10 +154,27 @@
             @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
         <div class="formfield">
+            Выбрать скан для загрузки<br /><input type="file" name="files" />
+        </div>
+        <div class="formfield">
+            <br /><a href="">Открыть</a>
+        </div>
+        <div class="formfield">
+            <br /><a href="">Удалить</a>
+        </div>
+        <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
             @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
         </div>
-
+        <div class="formfield">
+            Выбрать скан для загрузки<br /><input type="file" name="files" />
+        </div>
+        <div class="formfield">
+            <br /><a href="">Открыть</a>
+        </div>
+        <div class="formfield">
+            <br /><a href="">Удалить</a>
+        </div>
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Инвалидность</legend>
             <div class="formfield clear">
@@ -173,6 +196,15 @@
             <div class="formfield">
                 @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)&nbsp;@Html.ValidationMessageFor(m => m.DisabilityCertificateExpirationDate)<br />
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
+            </div>
+            <div class="formfield clear">
+                Выбрать скан для загрузки<br /><input type="file" name="files" />
+            </div>
+            <div class="formfield">
+                <br /><a href="">Открыть</a>
+            </div>
+            <div class="formfield">
+                <br /><a href="">Удалить</a>
             </div>
         </fieldset>
 

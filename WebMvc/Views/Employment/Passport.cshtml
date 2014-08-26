@@ -16,6 +16,15 @@
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
+        <div class="formfield">
+            Выбрать скан для загрузки<br /><input type="file" name="files" />
+        </div>
+        <div class="formfield">
+            <br /><a href="">Открыть</a>
+        </div>
+        <div class="formfield">
+            <br /><a href="">Удалить</a>
+        </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
             @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })

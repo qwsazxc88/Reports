@@ -144,6 +144,29 @@
     <a href="" id="add-child">Добавить запись о ребенке</a>
     </fieldset>
     
+    @Html.LabelFor(m => m.Cohabitants)
+    @Html.TextAreaFor(m => m.Cohabitants)
+
+    <div class="formfield clear">
+        Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name="files" />
+    </div>
+    <div class="formfield">
+        <br /><a href="">Открыть</a>
+    </div>
+    <div class="formfield">
+        <br /><a href="">Удалить</a>
+    </div>
+    
+    <div class="formfield clear">
+        Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="files" />
+    </div>
+    <div class="formfield">
+        <br /><a href="">Открыть</a>
+    </div>
+    <div class="formfield">
+        <br /><a href="">Удалить</a>
+    </div>
+    
     <div class="clear">
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>

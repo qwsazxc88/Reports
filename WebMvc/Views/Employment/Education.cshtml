@@ -45,6 +45,9 @@
                         <th>
                             @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
                         </th>
+                        <th>
+                            Сканы
+                        </th>
                     </tr>
                     
                     @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
@@ -76,6 +79,17 @@
                             </td>
                             <td>
                                 @Model.HigherEducationDiplomas[i].Department
+                            </td>
+                            <td>
+                                <div class="formfield">
+                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                </div>
+                                <div class="formfield clear">
+                                    <br /><a href="">Открыть</a>
+                                </div>
+                                <div class="formfield">
+                                    <br /><a href="">Удалить</a>
+                                </div>
                             </td>
                             @*<td id="delete-foreign-language">
                                 <a href="" data-index=@i>Удалить</a>
@@ -117,6 +131,9 @@
                         <th>
                             @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
                         </th>
+                        <th>
+                            Сканы
+                        </th>
                     </tr>
                     
                     @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
@@ -139,6 +156,17 @@
                             </td>
                             <td>
                                 @Model.PostGraduateEducationDiplomas[i].Speciality
+                            </td>
+                            <td>
+                                <div class="formfield">
+                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                </div>
+                                <div class="formfield clear">
+                                    <br /><a href="">Открыть</a>
+                                </div>
+                                <div class="formfield">
+                                    <br /><a href="">Удалить</a>
+                                </div>
                             </td>
                             @*<td id="delete-foreign-language">
                                 <a href="" data-index=@i>Удалить</a>
@@ -176,7 +204,10 @@
                             </th>
                             <th>
                                 @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
-                            </th>                            
+                            </th>
+                            <th>
+                                Сканы
+                            </th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Certifications.Count; i++)
@@ -193,7 +224,18 @@
                                 </td>
                                 <td>
                                     @Model.Certifications[i].InitiatingOrder
-                                </td>                                
+                                </td>
+                                <td>
+                                    <div class="formfield">
+                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                    </div>
+                                    <div class="formfield clear">
+                                        <br /><a href="">Открыть</a>
+                                    </div>
+                                    <div class="formfield">
+                                        <br /><a href="">Удалить</a>
+                                    </div>
+                                </td>
                                 @*<td id="delete-foreign-language">
                                     <a href="" data-index=@i>Удалить</a>
                                 </td>*@
@@ -232,6 +274,9 @@
                             <th>
                                 @Html.LabelFor(m => m.Training[0].Speciality)
                             </th>
+                            <th>
+                                Сканы
+                            </th>
                         </tr>
                     
                         @for (var i = 0; i < Model.Training.Count; i++)
@@ -254,6 +299,17 @@
                                 </td>
                                 <td>
                                     @Model.Training[i].Speciality
+                                </td>
+                                <td>
+                                    <div class="formfield">
+                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                    </div>
+                                    <div class="formfield clear">
+                                        <br /><a href="">Открыть</a>
+                                    </div>
+                                    <div class="formfield">
+                                        <br /><a href="">Удалить</a>
+                                    </div>
                                 </td>
                                 @*<td id="delete-foreign-language">
                                     <a href="" data-index=@i>Удалить</a>
