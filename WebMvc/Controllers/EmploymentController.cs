@@ -48,7 +48,7 @@ namespace WebMvc.Controllers
         
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult GeneralInfo(GeneralInfoModel model)
+        public ActionResult GeneralInfo(GeneralInfoModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -102,7 +102,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult Passport(PassportModel model)
+        public ActionResult Passport(PassportModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -206,7 +206,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult Family(FamilyModel model)
+        public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -243,7 +243,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult MilitaryService(MilitaryServiceModel model)
+        public ActionResult MilitaryService(MilitaryServiceModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -267,7 +267,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult Experience(ExperienceModel model)
+        public ActionResult Experience(ExperienceModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -329,7 +329,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult BackgroundCheck(BackgroundCheckModel model)
+        public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
@@ -403,7 +403,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult ApplicationLetter(ApplicationLetterModel model)
+        public ActionResult ApplicationLetter(ApplicationLetterModel model, IEnumerable<HttpPostedFileBase> files)
         {
             // EmploymentBl.SaveModel<ApplicationLetterModel, ApplicationLetter>(model, out error);
             return View(model);
@@ -454,7 +454,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
-        public ActionResult PersonnelManagers(PersonnelManagersModel model)
+        public ActionResult PersonnelManagers(PersonnelManagersModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
 
