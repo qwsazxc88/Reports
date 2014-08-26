@@ -10088,16 +10088,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsAccountantEditable = true;
                                 model.IsAccountantApproveAvailable = true;
+                                model.IsAccountantRejectAvailable = true;
                                 if (model.IsAccountantApproveAvailable &&
                                     entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
                                                           (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
                                     model.IsAccountantApproveAvailable = false;
 
                             }
-                            else
+                            /*else
                             {
                                 model.IsAccountantRejectAvailable = true;
-                            }
+                            }*/
                         }
                     }
                     break;
@@ -10264,7 +10265,24 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsAccountantEditable)
             {
-                SaveMissionCostsTransactions(entity, model);
+                if (model.IsAccountantReject)
+                {
+                    foreach (MissionReportCost c in entity.Costs)
+                    {
+                        List<AccountingTransaction> deleted = c.AccountingTransactions.ToList();
+                        foreach (AccountingTransaction tran in deleted)
+                            c.AccountingTransactions.Remove(tran);
+                        c.AccountantSum = 0;
+
+                    }
+                    entity.AccountantAllSum = entity.Costs.Sum(x => x.AccountantSum).Value;
+                    MissionReportDao.SaveAndFlush(entity);
+                    //model.IsEditable = false;
+                    model.IsAccountantEditable = false;
+                    LoadCosts(model,entity);
+                }
+                else
+                    SaveMissionCostsTransactions(entity, model);
             }
             if (entity.AccountantDateAccept.HasValue && 
                 !entity.DeleteDate.HasValue && 
@@ -10313,19 +10331,35 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (current.UserRole == UserRole.Accountant && entity.ManagerDateAccept.HasValue)
             {
-                if(!entity.AccountantDateAccept.HasValue && model.IsAccountantApproved)
+                if(!entity.AccountantDateAccept.HasValue )
                 {
-                    entity.AccountantDateAccept = DateTime.Now;
-                    entity.AcceptAccountant = UserDao.Load(current.Id);
-                    SetMissionTransactionEditable(model, false);
+                    if (model.IsAccountantApproved)
+                    {
+                        entity.AccountantDateAccept = DateTime.Now;
+                        entity.AcceptAccountant = UserDao.Load(current.Id);
+                        SetMissionTransactionEditable(model, false);
+                    }
+                    else if (model.IsAccountantReject)
+                    {
+                        entity.AccountantDateAccept = null;
+                        entity.AcceptAccountant = UserDao.Load(current.Id);
+                        entity.ManagerDateAccept = null;
+                        entity.AcceptManager = null;
+                        entity.UserDateAccept = null;
+                        entity.AcceptUser = null;
+                        //SetMissionTransactionEditable(model, true);
+                        model.IsAccountantReject = false;
+                        model.IsAccountantApproved = false;
+                        model.IsUserApproved = false;
+                    }
                 }
-                else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
+                /*else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
                 {
                     entity.AccountantDateAccept = null;
                     entity.AcceptAccountant = UserDao.Load(current.Id);
                     SetMissionTransactionEditable(model, true);
                     model.IsAccountantReject = false;
-                }
+                }*/
             }
         }
         protected void SetMissionCostsEditable(MissionReportEditModel model,bool isEditable)
