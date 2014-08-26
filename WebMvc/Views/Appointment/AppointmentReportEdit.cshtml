@@ -240,6 +240,9 @@
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                            {<text>style="display:none"</text>}/>
+                   @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
+                    <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
+                    <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />*@
                 </td>
                 <td style="text-align:right">
                     <input type="submit" value="Отклонить отчет" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable)
@@ -306,6 +309,14 @@
         $("#IsDelete").val("true");
         return true;
     }
+    /*function ValidateFormApproveAll()
+    {
+        var result = ValidateForm();
+        if(!result)
+            return result;
+        $("#ApproveForAll").val('True');
+        return true;
+    }*/
     function ValidateForm()
     {
         var result = true;
@@ -342,8 +353,13 @@
              }
              if(($("#ColloquyDate").val() != '') && !isCheckboxChecked($("#IsManagerApproved")))
              {
-                 addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Дата собеседования"');
+                 addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Дата собеседования". ');
                  result = false;
+             }
+             if(isCheckboxChecked($("#IsManagerApproved")) && !isCheckboxChecked($("#IsStaffApproved")))
+             {
+                addControlError($("#IsStaffApproved"),'Чекбокс "Отправить на согласование" должен быть отмечен - установлен чекбокс "Кандидат приглашен на собеседование". ');
+                result = false;
              }
         }
 
@@ -351,7 +367,7 @@
         clearControlErrors($("#RejectReason"));
         if(($("#IsManagerRejectAvailable").val() == 'True') && $("#RejectReason").val())
         {
-            addControlError($("#RejectReason"),'Поле используется только при отклонении отчета.Для отклонения отчета используйте кнопку <Отклонить отчет>');
+            addControlError($("#RejectReason"),'Поле используется только при отклонении отчета.Для отклонения отчета используйте кнопку <Отклонить отчет>. ');
                 result = false;
         }
         clearControlErrors($("#IsEducationExists"));
@@ -360,35 +376,45 @@
         {
             if(($("#DateAccept").val()) && ($("#IsEducationExists").val() == -1))
             {
-                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение');
+                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение. ');
                  result = false;
             }
         }
         if($("#IsManagerEditable").val() == 'True')
         {
-//            if(($("#IsEducationExists").val() != -1) && ($("#IsColloquyPassed").val() == -1))
-//            {
-//                  addControlError($("#IsColloquyPassed"),'Нужно указать, пройдено ли собеседование');
-//                  result = false;
-//            }
+            if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsColloquyPassed").val() != -1))
+            {
+                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Собеседование пройдено/не пройдено". ');
+                  result = false;
+            }
+             if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#IsEducationExists").val() != -1))
+            {
+                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - заполнено поле "Обучение пройдено/не пройдено". ');
+                  result = false;
+            }
+             if((!isCheckboxChecked($("#IsManagerApproved"))) && ($("#DateAccept").val()))
+            {
+                  addControlError($("#IsManagerApproved"),'Чекбокс "Кандидат приглашен на собеседование" должен быть отмечен - установлено дата приема на работу. ');
+                  result = false;
+            }
             if(($("#DateAccept").val() || ($("#IsEducationExists").val() != -1)) && ($("#IsColloquyPassed").val() == -1))
             {
-                  addControlError($("#IsColloquyPassed"),'Нужно указать, пройдено ли собеседование');
+                  addControlError($("#IsColloquyPassed"),'Нужно указать, пройдено ли собеседование. ');
                   result = false;
             }
             if(($("#IsEducationExists").val() != -1) && ($("#IsColloquyPassed").val() == 0))
             {
-                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - непустой выбор в поле "Обучение пройдено/не пройдено" невозможен.');
+                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - непустой выбор в поле "Обучение пройдено/не пройдено" невозможен. ');
                   result = false;
             }
             if($("#DateAccept").val() && ($("#IsColloquyPassed").val() == 0))
             {
-                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - установка даты приема на работу невозможна.');
+                  addControlError($("#IsColloquyPassed"),'В поле "Собеседование пройдено/не пройдено" выбрано значение "Нет" - установка даты приема на работу невозможна. ');
                   result = false;
             }
             if(($("#DateAccept").val()) && ($("#IsEducationExists").val() == -1))
             {
-                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение');
+                 addControlError($("#IsEducationExists"),'Нужно указать, прошел ли кандидат обучение. ');
                  result = false;
             }
             
@@ -433,7 +459,21 @@
                                $("#IsStaffApproveAvailable").val("false");     
                                $("#IsStaffApproved").attr("checked",false);
                                $("#IsStaffApproved").attr("disabled","disable");
-                                $("#ScanUrl").hide();                          
+                               $("#IsManagerApproveAvailable").val("false");     
+                               $("#IsManagerApproved").attr("checked",false);
+                               $("#IsManagerApproved").attr("disabled","disable");
+                               $("#ColloquyDate").val(""); 
+                               $("#ColloquyDate").attr("disabled","disable");
+                               $("#DateAccept").val(""); 
+                               $("#DateAccept").attr("disabled","disable");
+                               $("#IsEducationExists").val(-1)   
+                               $("#IsEducationExists").attr("disabled","disable"); 
+                               $("#IsColloquyPassed").val(-1)   
+                               $("#IsColloquyPassed").attr("disabled","disable"); 
+                               $("#RejectReason").val(""); 
+                                $("#IsColloquyDateEditable").val('False');  
+                                $("#IsManagerEditable").val('False');   
+                               $("#ScanUrl").hide();                          
                            }
                        }
                      );

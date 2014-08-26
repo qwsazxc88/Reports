@@ -65,6 +65,8 @@ namespace Reports.Core.Dao
 
         IList<IdNameDto> GetUsersWithPurchaseBookReportCosts();
         IList<IdNameAddressDto> GetArchivistAddresses();
+
+        IList<IdNameDto> GetManagersWithDepartments();
     }
 }
 

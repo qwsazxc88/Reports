@@ -39,7 +39,7 @@
                 <input type="hidden" id="OrderDates" name="OrderDates" value="@Model.OrderDates" />
             </td>
         </tr>
-        <tr>
+        @*<tr>
             <td colspan="2">
                 <input type="hidden" id="IsCreateAdditionalOrderAvailable" name="IsCreateAdditionalOrderAvailable" value="@Model.IsCreateAdditionalOrderAvailable" />
                 @if (Model.IsCreateAdditionalOrderAvailable)
@@ -48,7 +48,7 @@
                     <text><br/>Изменение приказа на командировку создается при несовпадении фактических дат командировки с датами из приказа</text>
                 }
             </td>
-        </tr>
+        </tr>*@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
@@ -1024,7 +1024,7 @@
             draggable: false,
             resizable: false,
             width: 350,
-	        height: 180,
+	        height: 200,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },
@@ -1074,10 +1074,14 @@
                 addCostAttachmentError("Ошибка асинхронного запроса - не был получен ответ.");
                 return;
             }
-            var result = responseJSON; //JSON.parse("{"+responseJSON+"}");  
-            if(!result.Result)
+            var result = responseJSON; //JSON.parse("{"+responseJSON+"}"); 
+             
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
             {
-                addCostAttachmentError(result.Error);
+                if((result.success != undefined) && (!result.success))
+                    addCostAttachmentError("Ошибка - не получен ответ сервера.");
+                else
+                    addCostAttachmentError(result.Error);
             }
             else
             {

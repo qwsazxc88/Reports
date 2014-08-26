@@ -38,6 +38,7 @@
 	<!--<property name="BeginDate" not-null="false"/>-->
 	  
 	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_Appointment_CreatorUser" index="IX_Appointment_CreatorUser_Id"  not-null="true"/>
+  <many-to-one name="StaffCreator" class="User" column="StaffCreatorId" foreign-key="FK_Appointment_StaffCreatorUser" index="IX_Appointment_StaffCreatorUser_Id"  not-null="false"/>
 	<property name="ManagerDateAccept" not-null="false"/>
 	<many-to-one name="AcceptManager" class="User" column="AcceptManagerId" foreign-key="FK_Appointment_AcceptManager" index="IX_Appointment_AcceptManager"  not-null="false"/>
 	<property name="ChiefDateAccept" not-null="false"/>

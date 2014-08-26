@@ -81,15 +81,25 @@
     </tr>
      <tr>
         <td colspan="2">
-        @if (Model.IsAddAvailable)
+        @if (Model.IsAddAvailable || Model.IsAddForStaffAvailable)
         {
           <div class="action-wrap">
             <table style="width:100%">
                     <tr>
-                            <td>
-                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
-                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
-                            </td>
+                            @if (Model.IsAddAvailable)
+                            { 
+                                <td>
+                                    <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("AppointmentEdit", "Appointment", new { id = 0 })'"/>                                                                             
+                                </td>
+                            }
+                             @if (Model.IsAddForStaffAvailable)
+                             { 
+                                <td>
+                                    <input type="hidden" id="IsAddForStaffAvailable" name="IsAddForStaffAvailable" value="@Model.IsAddForStaffAvailable" />
+                                    <input type="button" value="Создать заявку за руководителя" onclick="return createAppointmentForStaff();"/>                                                                             
+                                </td>
+                             }
                             @*<td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
                                 @if(Model.IsApproveAvailable)
@@ -257,4 +267,58 @@
         $("#IsApproveClick").val('True');
         return true;
     }*/
+    var  actionSelectManagerDialogUrl = "@Url.Action("SelectManagerDialog", "Appointment")";
+    function createAppointmentForStaff() {
+            createSelectManagerDialog(actionSelectManagerDialogUrl);
+    }
+    function createSelectManagerDialog(url/*,params*/) {
+            var elem = document.createElement('div');
+            elem.id = "divSelectManagerDialog";
+            var newDiv = $(elem);
+            var title = "Выбор руководителя";
+            $(newDiv).text('Подождите, идет загрузка данных ...');
+            $(newDiv).load(url + "?"/*+ params*/+ " #selectManagerDialogTable"
+             , function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#DialogTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     /*else
+                     {
+                     }*/
+                 }
+             }
+            );
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 780,
+                height: 160,
+                // fix IE6  
+                bgiframe: true,
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Создать заявку": function () {
+                        var managerId = $("#ManagerId").val();
+                        $(this).dialog("close");
+                        window.location.href = '@Url.Action("AppointmentEdit", "Appointment")?id=0&managerId=' + managerId;
+                    },
+                    "Отмена": function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        function disableSaveButton() {
+            $(".ui-dialog-buttonpane button:contains('Создать заявку')").button("disable");
+        }
+
  </script>
