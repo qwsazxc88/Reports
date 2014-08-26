@@ -909,8 +909,32 @@ namespace WebMvc.Controllers
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
         }
+        protected string  GetFileName(object qqFile,out byte[] context)
+        {
+            context = null;
+            if (qqFile is string[])
+            {
+                string[] array = (string[])qqFile;
+                if (array.Length == 0)
+                    throw new ArgumentException("Файл не прикреплен");
+                return array[0];
+            }
+            if(qqFile is HttpPostedFileBase[])
+            {
+                HttpPostedFileBase[] array = (HttpPostedFileBase[]) qqFile;
+                if(array.Length == 0)
+                    throw new ArgumentException("Файл не прикреплен");
+                HttpPostedFileBase file = array[0];
+                string name = file.FileName;
+                long length = file.InputStream.Length;
+                context = new byte[length];
+                file.InputStream.Read(context, 0,(int)length);
+                return Path.GetFileName(name);
+            }
+            throw new ArgumentException("Неправильный тип аргумента");
+        }
         [HttpPost]
-        public ContentResult SaveAttachment(int id, string description, string qqFile)
+        public ContentResult SaveAttachment(int id, string description, object qqFile)
         {
             bool saveResult;
             string error;
@@ -935,6 +959,10 @@ namespace WebMvc.Controllers
                 }
                 else
                 {
+                    byte[] context;
+                    string fileName = GetFileName(qqFile,out context);
+                    if (context != null)
+                        bytes = context;
                     var model = new SaveAttacmentModel
                     {
                         EntityId = id,
@@ -943,7 +971,7 @@ namespace WebMvc.Controllers
                         FileDto = new UploadFileDto
                         {
                             Context = bytes,
-                            FileName = qqFile,
+                            FileName = fileName,
                             //ContextType = Request.Content,
                         }
                     };
@@ -1556,7 +1584,7 @@ namespace WebMvc.Controllers
             }
         }
         [HttpPost]
-        public ContentResult SaveCostAttachment(int id,string qqFile)
+        public ContentResult SaveCostAttachment(int id,object qqFile)
         {
             bool saveResult;
             string error;
@@ -1572,6 +1600,10 @@ namespace WebMvc.Controllers
                     error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
                 else
                 {
+                    byte[] context;
+                    string fileName = GetFileName(qqFile, out context);
+                    if (context != null)
+                        bytes = context;
                     var model = new SaveAttacmentModel
                                     {
                                         EntityId = id,
@@ -1580,7 +1612,7 @@ namespace WebMvc.Controllers
                                         FileDto = new UploadFileDto
                                         {
                                             Context = bytes,
-                                            FileName = qqFile,
+                                            FileName = fileName,
                                             //ContextType = Request.Content,
                                         }
                                     };
