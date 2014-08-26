@@ -10333,13 +10333,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if(!entity.AccountantDateAccept.HasValue )
                 {
-                    if (model.IsAccountantApproved)
-                    {
-                        entity.AccountantDateAccept = DateTime.Now;
-                        entity.AcceptAccountant = UserDao.Load(current.Id);
-                        SetMissionTransactionEditable(model, false);
-                    }
-                    else if (model.IsAccountantReject)
+                    if (model.IsAccountantReject)
                     {
                         entity.AccountantDateAccept = null;
                         entity.AcceptAccountant = UserDao.Load(current.Id);
@@ -10351,6 +10345,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsAccountantReject = false;
                         model.IsAccountantApproved = false;
                         model.IsUserApproved = false;
+                    }
+                    else if (model.IsAccountantApproved)
+                    {
+                        entity.AccountantDateAccept = DateTime.Now;
+                        entity.AcceptAccountant = UserDao.Load(current.Id);
+                        SetMissionTransactionEditable(model, false);
                     }
                 }
                 /*else if(entity.AccountantDateAccept.HasValue && model.IsAccountantReject)
