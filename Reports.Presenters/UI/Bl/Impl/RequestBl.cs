@@ -10067,12 +10067,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                         && entity.UserDateAccept.HasValue && isUserManager && canEdit)
                     {
+                        model.IsManagerRejectAvailable = true;
                         if (entity.AdditionalMissionOrder == null || 
                             IsAdditionalMissionOrderConfirmRejectOrExpired(entity.AdditionalMissionOrder))
-                        {
                             model.IsManagerApproveAvailable = true;
-                            model.IsManagerRejectAvailable = true;
-                        }
                     }
 
                     //}
@@ -10081,6 +10079,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue 
                         && !entity.SendTo1C.HasValue)
                     {
+                        if (!entity.AccountantDateAccept.HasValue)
+                            model.IsAccountantRejectAvailable = true;
                         if (entity.AdditionalMissionOrder == null ||
                             IsAdditionalMissionOrderConfirmRejectOrExpired(entity.AdditionalMissionOrder))
                         {
@@ -10088,7 +10088,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             {
                                 model.IsAccountantEditable = true;
                                 model.IsAccountantApproveAvailable = true;
-                                model.IsAccountantRejectAvailable = true;
+                                //model.IsAccountantRejectAvailable = true;
                                 if (model.IsAccountantApproveAvailable &&
                                     entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
                                                           (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
@@ -10265,7 +10265,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             if (model.IsAccountantEditable)
             {
-                if (model.IsAccountantReject)
+                if (model.IsAccountantReject) //?? flag can be set when AccountantEditable is not set
                 {
                     foreach (MissionReportCost c in entity.Costs)
                     {
