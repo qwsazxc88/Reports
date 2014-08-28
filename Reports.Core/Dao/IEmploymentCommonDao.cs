@@ -10,6 +10,6 @@ namespace Reports.Core.Dao
         int GetDocumentId<T>(int userId);
         T GetEntityById<T>(int id);
         EmploymentCandidate GetCandidateByUserId(int userId);
-        bool SaveOrUpdateDocument<T>(T entity, int userId);
+        bool SaveOrUpdateDocument<T>(T entity);
     }
 }

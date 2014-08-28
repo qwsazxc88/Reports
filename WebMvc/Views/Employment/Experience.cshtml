@@ -4,123 +4,207 @@
     ViewBag.Title = "Прием - Трудовая деятельность";
 }
 
-@using (Html.BeginForm("Family", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+<span style="color:red;">@ViewBag.Error</span>
+
+@using (Html.BeginForm("Experience", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Опыт работы</legend>
-    <table class="grid">
-        <thead>
-            <tr>
-                <th>
-                    Начало работы
-                </th>
-                <th>
-                    Окончание работы
-                </th>
-                <th>
-                    Организация
-                </th>
-                <th>
-                    Должность
-                </th>
-                <th>
-                    Адрес организации,<br />телефон отдела кадров, секретаря
-                </th>
-            </tr>
-        </thead>
-        <tbody>                
-                @for (var i = 0; i < Model.ExperienceItems.Count; i++)
-                {
-                    <tr>
-                        <td>
-                            @Html.EditorFor(m => m.ExperienceItems[i].BeginningDate)
-                        </td>  
-                        <td>
-                            @Html.EditorFor(m => m.ExperienceItems[i].EndDate)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.ExperienceItems[i].Company)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.ExperienceItems[i].Position)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.ExperienceItems[i].CompanyContacts)
-                        </td>
-                    </tr>
-                }                
-        </tbody>
-    </table>
-    </fieldset>
-    <br />
-    <fieldset class="bordered doc-wrap panel">
-        <legend>Сведения о трудовой книжке</legend>
-        <table>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookSeries)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookSeries)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookNumber)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookNumber)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookDateOfIssue)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookDateOfIssue)
-                </td>
-            </tr>
-        </table>
-    </fieldset>
-    <br />
-    <fieldset class="bordered doc-wrap panel">
-        <legend>Сведения о вкладыше в трудовую книжку</legend>
-        <table>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookSupplementSeries)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookSupplementSeries)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookSupplementNumber)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookSupplementNumber)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
-                </td>
-                <td>
-                    @Html.EditorFor(m => m.WorkBookSupplementDateOfIssue)
-                </td>
-            </tr>
-        </table>
+        
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.ExperienceItems)</legend>
+            @if (Model.ExperienceItems.Count > 0)
+            {
+                <div id="experience-items-container">
+                    <table class="grid">
+                    
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.ExperienceItems[0].BeginningDate)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.ExperienceItems[0].EndDate)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.ExperienceItems[0].Company)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.ExperienceItems[0].Position)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
+                            </th> 
+                        </tr>
+                    
+                        @for (var i = 0; i < Model.ExperienceItems.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @(Model.ExperienceItems[i].BeginningDate.HasValue ? @Model.ExperienceItems[i].BeginningDate.Value.ToShortDateString() : string.Empty)
+                                </td>
+                                <td>
+                                    @(Model.ExperienceItems[i].EndDate.HasValue ? @Model.ExperienceItems[i].EndDate.Value.ToShortDateString() : string.Empty)
+                                </td>
+                                <td>
+                                    @Model.ExperienceItems[i].Company
+                                </td>
+                                <td>
+                                    @Model.ExperienceItems[i].Position
+                                </td>
+                                <td>
+                                    @Model.ExperienceItems[i].CompanyContacts
+                                </td>
+                                @*<td id="delete-foreign-language">
+                                    <a href="" data-index=@i>Удалить</a>
+                                </td>*@
+                            </tr>
+                        }                    
+
+                    </table>
+                </div>
+            }
+            <a href="" id="add-experience-item">Добавить новую запись</a>
+        </fieldset>
+
+        <br />
+    
+        <fieldset class="bordered nomargin clear">
+            <legend class="level2">@Html.LabelFor(m => m.ExperienceItems)</legend>
+            <table>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSeries)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSeries)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookNumber)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookDateOfIssue)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookDateOfIssue)
+                    </td>
+                </tr>
+            </table>
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="files" />
+            </div>
+            <div class="formfield">
+                <br /><a href="">Открыть</a>
+            </div>
+            <div class="formfield">
+                <br /><a href="">Удалить</a>
+            </div>
+        </fieldset>
+    
+        <br />
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Сведения о вкладыше в трудовую книжку</legend>
+            <table>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementSeries)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementSeries)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementNumber)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
+                    </td>
+                    <td>
+                        @Html.EditorFor(m => m.WorkBookSupplementDateOfIssue)
+                    </td>
+                </tr>
+            </table>
+            <div class="formfield">
+                Выбрать скан для загрузки<br /><input type="file" name="files" />
+            </div>
+            <div class="formfield">
+                <br /><a href="">Открыть</a>
+            </div>
+            <div class="formfield">
+                <br /><a href="">Удалить</a>
+            </div>
+        </fieldset>
+
     </fieldset>
 
     <div class="clear">
-        <button type="submit">Записать черновик</button>
+        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>
     </div>
 }
 
-<script>
+@* --- *@
+
+<div id="add-experience-item-dialog" title="Добавление сведений о трудовой деятельности">
+    @using (Html.BeginForm("ExperienceAddExperienceItem", "Employment", FormMethod.Post))
+    {
+        <label for="BeginningDate" style="display:block;">Начало работы</label><input type="text" id="BeginningDate" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="EndDate" style="display:block;">Окончание работы</label><input type="text" id="EndDate" name="EndDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Company" style="display:block;">Организация</label><input type="text" name="Company" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Position" style="display:block;">Должность</label><input type="text" name="Position" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="CompanyContacts" style="display:block;">Адрес организации, телефон отдела кадров, секретаря</label><input type="text" name="CompanyContacts" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+@* --- *@
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
+        attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
+
+        var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-experience-item-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $("#add-experience-item").click(function (e) {
+            $addExperienceItemDialog.dialog("open");
+            e.preventDefault();
+        });
     });
 </script>

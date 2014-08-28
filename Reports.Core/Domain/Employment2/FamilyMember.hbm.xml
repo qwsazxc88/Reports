@@ -6,7 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="Relationship" class="FamilyRelationship" column="RelationshipId" foreign-key="FK_FamilyMember_Relationship" index="FamilyMember_Relationship"  not-null="false"/>
+    <property name="RelationshipId" not-null="false"/>
     <property name="Name" length="50" not-null="false"/>
     <property name="PassportData" length="150" not-null="false"/>
     <property name="DateOfBirth" not-null="false"/>

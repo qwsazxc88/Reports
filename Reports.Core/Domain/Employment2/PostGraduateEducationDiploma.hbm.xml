@@ -6,7 +6,12 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    
+    <property name="IssuedBy" length="150" not-null="false"/>
+    <property name="Series" length="10" not-null="false"/>
+    <property name="Number" length="10" not-null="false"/>
+    <property name="AdmissionYear" length="4" not-null="false"/>
+    <property name="GraduationYear" length="4" not-null="false"/>
+    <property name="Speciality" length="50" not-null="false"/>
 
   </class>
 </hibernate-mapping>

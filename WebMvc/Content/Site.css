@@ -226,6 +226,26 @@ input[type="text"]
     border: 1px solid black;
 }
 
+input[type="text"].halfwidth
+{
+    width: 100px;
+}
+
+input[type="text"].doublewidth, textarea.doublewidth
+{
+    width: 400px;
+}
+
+input[type="text"].triplewidth, textarea.triplewidth
+{
+    width: 600px;
+}
+
+input[type="text"].calc
+{
+    text-align: right;
+}
+
 input[type="password"] 
 {
     width: 200px;
@@ -278,6 +298,11 @@ table.grid th
 }
 
 table.centered td
+{
+    text-align: center;
+}
+
+td.centered
 {
     text-align: center;
 }
@@ -675,6 +700,40 @@ margin-right:5px;
 .fixedSize
 {
     width:85px!important;
+}
+
+div.letter
+{
+    padding: 5px;
+    width: 760px;
+    background-color: Silver;
+}
+
+div.letter>p
+{
+    font-size: 14px;
+    font-style: italic;
+}
+
+div.letter>p.content
+{
+    text-indent: 5ex;
+}
+
+span.fakeFormField
+{
+    display: inline-block;
+    border:2px inset #eee;
+    background-color: #eee;
+    padding: 1px;
+    min-width: 1em;
+}
+
+span.buttonLink
+{
+    display: inline-block;
+    background-color: #fff;
+    text-decoration: none;
 }
 
 .announcement

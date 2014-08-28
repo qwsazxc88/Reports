@@ -1,0 +1,281 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.EducationModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Образование";
+}
+
+<fieldset class="bordered doc-wrap panel">
+<legend>@Html.LabelFor(m => m.HigherEducationDiplomas)</legend>
+    @if (Model.HigherEducationDiplomas.Count > 0)
+    {
+        <div id="higher-education-diplomas-container">
+            <table class="grid">
+                
+                <tr>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Series)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Number)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].AdmissionYear)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].GraduationYear)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Qualification)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Speciality)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Profession)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
+                    </th>
+                </tr>
+                
+                @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].IssuedBy
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Series
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Number
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].AdmissionYear
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].GraduationYear
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Qualification
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Speciality
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Profession
+                        </td>
+                        <td>
+                            @Model.HigherEducationDiplomas[i].Department
+                        </td>
+                        @*<td id="delete-foreign-language">
+                            <a href="" data-index=@i>Удалить</a>
+                        </td>*@
+                    </tr>
+                }                    
+
+            </table>
+        </div>
+    }
+    else
+    {
+        <text>-</text>
+    }
+</fieldset>
+
+<br />
+
+<fieldset class="bordered doc-wrap panel">
+<legend>@Html.LabelFor(m => m.PostGraduateEducationDiplomas)</legend>
+    @if (Model.PostGraduateEducationDiplomas.Count > 0)
+    {
+        <div id="post-graduate-education-diplomas-container">
+            <table class="grid">
+                
+                <tr>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Series)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Number)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].AdmissionYear)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].GraduationYear)
+                    </th>
+                    <th>
+                        @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
+                    </th>
+                </tr>
+                
+                @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].IssuedBy
+                        </td>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].Series
+                        </td>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].Number
+                        </td>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].AdmissionYear
+                        </td>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].GraduationYear
+                        </td>
+                        <td>
+                            @Model.PostGraduateEducationDiplomas[i].Speciality
+                        </td>
+                        @*<td id="delete-foreign-language">
+                            <a href="" data-index=@i>Удалить</a>
+                        </td>*@
+                    </tr>
+                }                    
+
+            </table>
+        </div>
+    }
+    else
+    {
+        <text>-</text>
+    }
+</fieldset>
+
+<br />
+
+<fieldset class="bordered doc-wrap panel">
+<legend>Сведения о дополнительном образовании</legend>
+    
+    <fieldset class="bordered nomargin clear">
+    <legend class="level2">@Html.LabelFor(m => m.Certifications)</legend>
+        @if (Model.Certifications.Count > 0)
+        {
+            <div id="certifications-container">
+                <table class="grid">
+                
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.Certifications[0].CertificationDate)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Certifications[0].CertificateNumber)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Certifications[0].CertificateDateOfIssue)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
+                        </th>                            
+                    </tr>
+                
+                    @for (var i = 0; i < Model.Certifications.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.Certifications[i].CertificationDate
+                            </td>
+                            <td>
+                                @Model.Certifications[i].CertificateNumber
+                            </td>
+                            <td>
+                                @Model.Certifications[i].CertificateDateOfIssue
+                            </td>
+                            <td>
+                                @Model.Certifications[i].InitiatingOrder
+                            </td>                                
+                            @*<td id="delete-foreign-language">
+                                <a href="" data-index=@i>Удалить</a>
+                            </td>*@
+                        </tr>
+                    }                    
+
+                </table>
+            </div>
+        }
+        else
+        {
+            <text>-</text>
+        }
+    </fieldset>
+
+    <fieldset class="bordered nomargin clear">
+    <legend class="level2">@Html.LabelFor(m => m.Training)</legend>
+        @if (Model.Training.Count > 0)
+        {
+            <div id="training-container">
+                <table class="grid">
+                
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].CertificateIssuedBy)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].Series)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].Number)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].BeginningDate)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].EndDate)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.Training[0].Speciality)
+                        </th>
+                    </tr>
+                
+                    @for (var i = 0; i < Model.Training.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.Training[i].CertificateIssuedBy
+                            </td>
+                            <td>
+                                @Model.Training[i].Series
+                            </td>
+                            <td>
+                                @Model.Training[i].Number
+                            </td>
+                            <td>
+                                @Model.Training[i].BeginningDate
+                            </td>
+                            <td>
+                                @Model.Training[i].EndDate
+                            </td>
+                            <td>
+                                @Model.Training[i].Speciality
+                            </td>
+                            @*<td id="delete-foreign-language">
+                                <a href="" data-index=@i>Удалить</a>
+                            </td>*@
+                        </tr>
+                    }                    
+
+                </table>
+            </div>
+        }
+        else
+        {
+            <text>-</text>
+        }
+    </fieldset>
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empEducation");
+    });
+</script>

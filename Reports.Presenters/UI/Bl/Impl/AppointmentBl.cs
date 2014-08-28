@@ -119,6 +119,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(appointmentReportCommentDao); }
             set { appointmentReportCommentDao = value; }
         }
+
+        protected IEmploymentCommonDao employmentCommonDao;
+        public IEmploymentCommonDao EmploymentCommonDao
+        {
+            get { return Validate.Dependency(employmentCommonDao); }
+            set { employmentCommonDao = value; }
+        }
+
         #endregion
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
@@ -1603,6 +1611,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = currUser;
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
+
+                        CreateCandidate(entity);
                     }
                     if (!entity.DeleteDate.HasValue && entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
                     {
@@ -1618,6 +1628,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }
         }
+
+        private void CreateCandidate(AppointmentReport entity)
+        {
+            User newUserEntity = new User();
+            newUserEntity.Login = entity.TempLogin;
+            newUserEntity.Password = entity.TempPassword;            
+            newUserEntity.IsFirstTimeLogin = true;
+            newUserEntity.IsActive = true;
+            newUserEntity.IsNew = true;
+            newUserEntity.Name = entity.Name;
+            newUserEntity.RoleId = (int)UserRole.Candidate;
+            newUserEntity.GivesCredit = false;
+            newUserEntity.IsMainManager = false;
+            //UserDao.SaveAndFlush(newUserEntity);
+            EmploymentCommonDao.SaveAndFlush(new EmploymentCandidate { User = newUserEntity });
+        }
+
         protected void RejectReportsExceptId(int appointmentId,int exceptReportId,User user,string rejectReason)
         {
             List<AppointmentReport> list = AppointmentReportDao.LoadForAppointmentId(appointmentId);

@@ -10,6 +10,7 @@
     <property name="LastName" length="50" not-null="true"/>
     <property name="FirstName" length="50" not-null="true"/>
     <property name="Patronymic" length="50" not-null="false"/>
+    <property name="IsPatronymicAbsent" not-null="true"/>
     <bag name="NameChanges" lazy="true" cascade="all-delete-orphan">
       <key column="GeneralInfoId" foreign-key="FK_NameChange_GeneralInfo"/>
       <one-to-many class="NameChange"/>
@@ -17,7 +18,7 @@
     <property name="IsMale" not-null="false"/>
     <many-to-one name="Citizenship" class="Country" column="CitizenshipId" foreign-key="FK_GeneralInfo_Citizenship" index="GeneralInfo_Citizenship"  not-null="false"/>
     <many-to-one name="InsuredPersonType" class="InsuredPersonType" column="InsuredPersonTypeId" foreign-key="FK_GeneralInfo_InsuredPersonType" index="GeneralInfo_InsuredPersonType"  not-null="false"/>
-    <property name="DateOfBirth" not-null="true"/>
+    <property name="DateOfBirth" not-null="false"/>
     <property name="RegionOfBirth" length="50" not-null="false"/>
     <property name="DistrictOfBirth" length="50" not-null="false"/>
     <property name="CityOfBirth" length="50" not-null="true"/>
@@ -27,12 +28,17 @@
     </bag>
     <property name="INN" length="12" not-null="false"/>
     <property name="SNILS" length="14" not-null="false"/>
-    <bag name="Disabilities" lazy="true" cascade="all-delete-orphan">
-      <key column="GeneralInfoId" foreign-key="FK_Disability_GeneralInfo"/>
-      <one-to-many class="Disability"/>
-    </bag>
+    
+    <property name="DisabilityCertificateSeries" length="20" not-null="false"/>
+    <property name="DisabilityCertificateNumber" length="20" not-null="false"/>
+    <property name="DisabilityCertificateDateOfIssue" not-null="false"/>
+    <many-to-one name="DisabilityDegree" class="DisabilityDegree" column="DisabilityDegreeId" foreign-key="FK_GeneralInfo_DisabilityDegree" index="GeneralInfo_DisabilityDegree"  not-null="false"/>
+    <property name="DisabilityCertificateExpirationDate" not-null="false"/>
+    
     <property name="Status" not-null="true"/>
     <property name="AgreedToPersonalDataProcessing" not-null="true"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

@@ -50,7 +50,40 @@
         DismissalOrderScan = 103,
         VacationOrderScan = 104,
         ChildVacationOrderScan = 105,
-        MissionOrderScan = 118
+        MissionOrderScan = 118,
+
+        // Employment documents
+
+        Photo = 201,
+        INNScan = 202,
+        SNILSScan = 203,
+        DisabilityCertificateScan = 204,
+
+        PassportScan = 211,
+
+        HigherEducationDiplomaScan = 221,
+        PostGraduateEducationDiplomaScan = 222,
+        CertificationScan = 223,
+        Training = 224,
+
+        MarriageCertificateScan = 231,
+        ChildBirthCertificateScan = 232,
+        //SpousePassportScan = 233,
+
+        MilitaryCardScan = 241,
+        MobilizationTicketScan = 242,
+
+        WorkbookScan = 251,
+        WorkbookSupplementScan = 252,
+
+        PersonalDataProcessingScan = 261,
+        InfoValidityScan = 262,
+
+        ApplicationLetterScan = 271,
+
+        // ? = 281,
+        // ? = 282,
+
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

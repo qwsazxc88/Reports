@@ -2,15 +2,16 @@
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class PassportModel : AbstractEmploymentModel
     {
-        //[Display(Name = "Вид документа"),
-        //    Required(ErrorMessage = "Обязательное поле")]
-        //public int DocumentType { get; set;}
-        //public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
+        [Display(Name = "Вид документа"),
+            Required(ErrorMessage = "Обязательное поле")]
+        public int DocumentTypeId { get; set;}
+        public IEnumerable<SelectListItem> DocumentTypeItems { get; set; }
 
         [Display(Name = "Серия", Prompt = "4 цифры"),
             RegularExpression(@"^\d{4}$", ErrorMessage = "Требуется 4 цифры"),
@@ -25,7 +26,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime InternalPassportDateOfIssue { get; set; }
+        public DateTime? InternalPassportDateOfIssue { get; set; }
 
         [Display(Name = "Кем выдан"),
             StringLength(150, ErrorMessage = "Не более 150 знаков."),
@@ -40,7 +41,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Дата регистрации"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
             Required(ErrorMessage = "Обязательное поле")]
-        public DateTime RegistrationDate { get; set; }
+        public DateTime? RegistrationDate { get; set; }
 
         [Display(Name = "Почтовый индекс", Prompt = "6 цифр"),
             RegularExpression(@"^\d{6}$", ErrorMessage = "Требуется 6 цифр"),
@@ -87,7 +88,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime InternationalPassportDateOfIssue { get; set; }
+        public DateTime? InternationalPassportDateOfIssue { get; set; }
 
         [Display(Name = "Кем выдан"),
             StringLength(150, ErrorMessage = "Не более 150 знаков.")]

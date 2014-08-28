@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web.Mvc;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -9,7 +10,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     {
         [Display(Name = "Дата приказа о приеме"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime EmploymentOrderDate { get; set; }
+        public DateTime? EmploymentOrderDate { get; set; }
 
         [Display(Name = "Номер приказа о приеме"),
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
@@ -17,11 +18,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         [Display(Name = "Принять на работу с даты"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime EmploymentDate { get; set; }
+        public DateTime? EmploymentDate { get; set; }
 
         [Display(Name = "Дата ТД"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime ContractDate { get; set; }
+        public DateTime? ContractDate { get; set; }
 
         [Display(Name = "Номер ТД"),
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
@@ -45,47 +46,47 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Надбавка за стаж работы специалистом фронт-офиса")]
         public decimal? FrontOfficeExperienceAddition { get; set; }
 
-        // Грейд
+        [Display(Name = "Грейд")]
+        public int? Grade { get; set; }
 
-        [Display(Name = "лет"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "лет")]
         public int OverallExperienceYears { get; set; }
 
-        [Display(Name = "месяцев"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "месяцев")]
         public int OverallExperienceMonths { get; set; }
 
-        [Display(Name = "дней"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "дней")]
         public int OverallExperienceDays { get; set; }
 
-        [Display(Name = "лет"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "лет")]
         public int InsurableExperienceYears { get; set; }
 
-        [Display(Name = "месяцев"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "месяцев")]
         public int InsurableExperienceMonths { get; set; }
 
-        [Display(Name = "дней"),
-            StringLength(2, ErrorMessage = "Не более 2 знаков.")]
+        [Display(Name = "дней")]
         public int InsurableExperienceDays { get; set; }        
 
         // Ознакомлен с регламентными документами
 
-        [Display(Name = "Лицевой счет"),
+        [Display(Name = "Номер лицевого счета"),
             StringLength(50, ErrorMessage = "Не более 50 знаков.")]
         public string PersonalAccount { get; set; }
 
         [Display(Name = "Контрагент лицевого счета"),
-            StringLength(50, ErrorMessage = "Не более 50 знаков.")]
-        public string PersonalAccountContractor { get; set; }
+            Required(ErrorMessage = "Обязательное поле")]
+        public int PersonalAccountContractorId { get; set; }
+        public IEnumerable<SelectListItem> PersonalAccountContractors { get; set; }
         
         // Признаки ЦФО 1
         // Признаки ЦФО 2
         // Заявление на вычет
         // Скан заявления на вычет
-        // Группа доступа
+
+        [Display(Name = "Группа доступа"),
+            Required(ErrorMessage = "Обязательное поле")]
+        public int AccessGroupId { get; set; }
+        public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]

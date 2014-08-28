@@ -5,28 +5,39 @@
 
 @using (Html.BeginForm("ApplicationLetter", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @*Html.HiddenFor(m => m.UserId)*@
+    
     <fieldset class="bordered doc-wrap panel">
-    <legend>Заявление о приеме</legend>    
-    <div style="padding: 5px; width: 760px; background-color: Silver;">
-        <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
-        <p style="font-size: 14px; font-style: italic; margin-left: 50%;">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </p>
-        <p style="font-size: 14px; font-style: italic; text-align: center;">
-            заявление.
-        </p>
-        <p style="font-size: 14px; font-style: italic; text-indent: 5ex;">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>        
-    </div>
+    <legend>Заявление о приеме</legend>
+        <div class="formfield clear">
+            Выбрать скан для загрузки<br /><input type="file" name="files" />
+        </div>
+        <div class="formfield">
+            <br /><a href="">Открыть</a>
+        </div>
+        <div class="formfield">
+            <br /><a href="">Удалить</a>
+        </div>
+        <div class="letter">
+            <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
+            <p style="margin-left: 50%;">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <p style="text-align: center;">
+                заявление.
+            </p>
+            <p class="content">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>        
+        </div>
     </fieldset>
     
     <div class="clear">
-        <button type="submit">Записать черновик</button>
+        @*Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
         <button type="submit">Сохранить</button>
     </div>
 }  

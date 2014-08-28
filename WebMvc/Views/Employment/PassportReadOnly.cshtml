@@ -1,0 +1,98 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PassportModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Паспортные данные";
+}
+
+<fieldset class="bordered doc-wrap panel">
+<legend>Паспорт РФ</legend>
+    <div class="formfield clearleft">
+        @Html.LabelFor(m => m.DocumentTypeId)<br />
+        <span class="fakeFormField">@Model.DocumentTypeItems.Where(x => x.Value == Model.DocumentTypeId.ToString()).FirstOrDefault().Text&nbsp;</span>
+    </div>
+    <div class="formfield clearleft">
+        @Html.LabelFor(m => m.InternalPassportSeries)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternalPassportSeries)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.InternalPassportNumber)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternalPassportNumber)&nbsp;</span>
+    </div>
+    <div class="formfield clearleft">
+        @Html.LabelFor(m => m.InternalPassportDateOfIssue)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternalPassportDateOfIssue)&nbsp;</span>
+    </div>
+    <div class="formfield clearleft">
+        @Html.LabelFor(m => m.InternalPassportIssuedBy)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternalPassportIssuedBy)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.InternalPassportSubdivisionCode)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternalPassportSubdivisionCode)&nbsp;</span>
+    </div>
+    <fieldset class="bordered nomargin clear">
+    <legend class="level2">Регистрация</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.RegistrationDate)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.RegistrationDate)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ZipCode)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.ZipCode)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Region)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Region)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.District)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.District)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.City)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.City)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Street)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Street)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.StreetNumber)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.StreetNumber)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.Building)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Building)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.Apartment)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Apartment)&nbsp;</span>
+        </div>
+    </fieldset>
+</fieldset>
+<br />
+<fieldset class="bordered doc-wrap clear panel">
+<legend>Заграничный паспорт</legend>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.InternationalPassportSeries)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternationalPassportSeries)&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.InternationalPassportNumber)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternationalPassportNumber)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.InternationalPassportDateOfIssue)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternationalPassportDateOfIssue)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.InternationalPassportIssuedBy)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.InternationalPassportIssuedBy)&nbsp;</span>
+    </div>
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empPassport");
+    });
+</script>
