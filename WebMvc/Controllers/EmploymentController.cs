@@ -16,7 +16,7 @@ using Reports.Core.Dto;
 
 namespace WebMvc.Controllers
 {
-    public class EmploymentController : Controller
+    public class EmploymentController : BaseController
     {
         public const int MaxFileSize = 2 * 1024 * 1024;
 
@@ -677,6 +677,45 @@ namespace WebMvc.Controllers
         }
 
         #endregion
-       
+
+        #region Attachments
+
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public FileContentResult ViewAttachment(int id)
+        {
+            try
+            {
+                AttachmentModel model = EmploymentBl.GetFileContext(id);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on ViewAttachment:", ex);
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public JsonResult DeleteAttachment(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = EmploymentBl.DeleteAttachment(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            return Json(new { Error = error, Result = saveResult });
+        }
+
+        #endregion
     }
 }

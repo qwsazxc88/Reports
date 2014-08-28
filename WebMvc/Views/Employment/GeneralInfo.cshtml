@@ -154,34 +154,47 @@
             @Html.LabelFor(m => m.INN)&nbsp;@Html.ValidationMessageFor(m => m.INN)<br />
             @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
+
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
-        </div>
+                Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
+            </div>
+
         @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
         {
             <div class="formfield">
-                <br />
+                <br />Скан:
                 <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
                     @Model.INNScanAttachmentFilename
                 </a>
             </div>
+            <div class="formfield">
+                <br /><input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
+            </div>
         }
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
+        
         <div class="formfield clear">
             @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
             @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
         </div>
+
         <div class="formfield">
             Выбрать скан для загрузки<br /><input type="file" name="files" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
         </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
+
+        @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.SNILSScanAttachmentFilename
+                </a>
+            </div>
+            <div class="formfield">
+                <br /><a href="">Удалить</a>
+            </div>
+        }
+
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Инвалидность</legend>
             <div class="formfield clear">
@@ -263,6 +276,22 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Employment")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления скана:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
         attachDatepickerToInputs($('#DateOfBirth, #DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-80:+0", true);

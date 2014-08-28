@@ -9,6 +9,7 @@ using Reports.Core.Dto;
 using Reports.Core.Dto.Employment2;
 using Reports.Core.Domain;
 using Reports.Presenters.Services;
+using Reports.Presenters.UI.ViewModel;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
@@ -139,13 +140,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { countryDao = value; }
         }
 
-        protected IPositionDao positionDao;
-        public IPositionDao PositionDao
-        {
-            get { return Validate.Dependency(positionDao); }
-            set { positionDao = value; }
-        }
-
         protected IAccessGroupDao accessGroupDao;
         public IAccessGroupDao AccessGroupDao
         {
@@ -244,8 +238,36 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Version = entity.Version;
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
+
+                int attachmentId = 0;
+                string attachmentFilename = string.Empty;
+                GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
+                model.INNScanAttachmentId = attachmentId;
+                model.INNScanAttachmentFilename = attachmentFilename;
+
+                /*/---
+                int candidateId = entity.Candidate.Id;
+                RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Candidate.Id, type);
+                if (attach != null)
+                {
+                    model.INNScanAttachmentId = attach.Id;
+                    model.INNScanAttachmentFilename = attach.FileName;
+                }
+
+                //---*/
             }            
             return model;
+        }
+
+        protected void GetAttachmentData(ref int attachmentId, ref string attachmentFilename, int candidateId, RequestAttachmentTypeEnum type)
+        {
+            if (candidateId == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(candidateId, type);
+            if (attach == null)
+                return;
+            attachmentId = attach.Id;
+            attachmentFilename = attach.FileName;
         }
 
         public PassportModel GetPassportModel(int? userId = null)
@@ -1573,6 +1595,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 FileName = Path.GetFileName(postedFile.FileName)
             };
         }
+
+        public AttachmentModel GetFileContext(int id)
+        {
+            RequestAttachment attachment = RequestAttachmentDao.Load(id);
+            return new AttachmentModel
+            {
+                Context = attachment.UncompressContext,
+                FileName = attachment.FileName,
+                ContextType = attachment.ContextType
+            };
+        }
+
         protected byte[] GetFileData(HttpPostedFileBase file)
         {
             var length = file.ContentLength;

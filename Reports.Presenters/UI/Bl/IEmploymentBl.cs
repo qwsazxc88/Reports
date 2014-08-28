@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Reports.Presenters.UI.ViewModel;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Domain;
 using Reports.Core.Dto.Employment2;
@@ -70,5 +71,7 @@ namespace Reports.Presenters.UI.Bl
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
         string GetStartView();
+        AttachmentModel GetFileContext(int id);
+        bool DeleteAttachment(DeleteAttacmentModel model);
     }
 }
