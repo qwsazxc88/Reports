@@ -39,7 +39,7 @@ namespace Reports.Core.Domain
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }
-        // Фото
+
         #endregion
 
         #region Constructors

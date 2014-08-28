@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -99,6 +100,20 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Согласен на обработку своих персональных данных")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
+
+        public HttpPostedFileBase PhotoFile { get; set; }
+        public HttpPostedFileBase INNScanFile { get; set; }
+        public HttpPostedFileBase SNILSScanFile { get; set; }
+        public HttpPostedFileBase DisabilityCertificateScanFile { get; set; }
+
+        public string PhotoAttachmentFilename { get; set; }
+        public int PhotoAttachmentId { get; set; }
+        public string INNScanAttachmentFilename { get; set; }
+        public int INNScanAttachmentId { get; set; }
+        public string SNILSScanAttachmentFilename { get; set; }
+        public int SNILSScanAttachmentId { get; set; }
+        public string DisabilityCertificateScanAttachmentFilename { get; set; }
+        public int DisabilityCertificateScanAttachmentId { get; set; }
                 
         public GeneralInfoModel()
         {

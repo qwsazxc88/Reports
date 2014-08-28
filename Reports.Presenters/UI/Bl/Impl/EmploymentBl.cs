@@ -11,11 +11,13 @@ using Reports.Core.Domain;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel.Employment2;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
+using System.IO;
 
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
-    public class EmploymentBl : BaseBl, IEmploymentBl
+    public class EmploymentBl : RequestBl, IEmploymentBl
     {
         public const string StrIncorrectManagerLevel = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
         public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
@@ -766,118 +768,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new SignersModel();
         }
 
-        #endregion
-
-        #region Set Model
-
-        public void SetGeneralInfoModel(GeneralInfoModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetPassportModel(PassportModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetEducationModel(EducationModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetFamilyModel(FamilyModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetMilitaryServiceModel(MilitaryServiceModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetExperienceModel(ExperienceModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetContactsModel(ContactsModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetBackgroundCheckModel(BackgroundCheckModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetOnsiteTrainingModel(OnsiteTrainingModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetManagersModel(ManagersModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetPersonnelManagersModel(PersonnelManagersModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetRosterModel(RosterModel model, bool hasError)
-        {
-
-        }
-        
-        public void SetSignersModel(SignersModel model, bool hasError)
-        {
-
-        }
-
-        #endregion
-
-        #region Process Saving
-
-        public bool ProcessSaving<TVM, TE>(TVM model, out string error)
-            where TVM: AbstractEmploymentModel
-            where TE: new()
-        {
-            error = string.Empty;
-            User user = null;
-            IUser current = AuthenticationService.CurrentUser;
-
-            int id = EmploymentCommonDao.GetDocumentId<TE>(model.UserId);
-            TE entity = EmploymentCommonDao.GetEntityById<TE>(id);
-
-            if (entity == null)
-            {
-                entity = new TE();
-            }
-            
-            try
-            {
-                user = UserDao.Load(model.UserId);
-                if (model.UserId == AuthenticationService.CurrentUser.Id)
-                {
-                    SetEntity<TVM, TE>(entity, model);
-                    EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
-                    // EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
-                }
-            }
-            catch (Exception exc)
-            {
-
-            }
-            finally
-            {
-
-            }
-
-            return false;
-        }
-
-        #endregion
+        #endregion        
 
         #region LoadDictionaries
 
@@ -1129,6 +1020,48 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #endregion
 
+        #region Process Saving
+
+        public bool ProcessSaving<TVM, TE>(TVM model, out string error)
+            where TVM : AbstractEmploymentModel
+            where TE : new()
+        {
+            error = string.Empty;
+            User user = null;
+            IUser current = AuthenticationService.CurrentUser;
+
+            int id = EmploymentCommonDao.GetDocumentId<TE>(model.UserId);
+            TE entity = EmploymentCommonDao.GetEntityById<TE>(id);
+
+            if (entity == null)
+            {
+                entity = new TE();
+            }
+
+            try
+            {
+                user = UserDao.Load(model.UserId);
+                if (model.UserId == AuthenticationService.CurrentUser.Id)
+                {
+                    SetEntity<TVM, TE>(entity, model);
+                    EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
+                    // EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
+                }
+            }
+            catch (Exception exc)
+            {
+
+            }
+            finally
+            {
+
+            }
+
+            return false;
+        }
+
+        #endregion
+
         #region SetEntity
 
         protected void SetEntity<TVM, TE>(TE entity, TVM viewModel)
@@ -1231,6 +1164,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
             entity.Status = viewModel.StatusId;
+
+            // ---------------------------------------
+            if (viewModel.INNScanFile != null)
+            {
+                UploadFileDto INNScanFileDto = GetFileContext(viewModel.INNScanFile);
+                string fileName = string.Empty;
+                //int? attachmentId = 
+                SaveAttachment(entity.Candidate.Id, viewModel.INNScanAttachmentId, INNScanFileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+
+                /*if (attachmentId.HasValue)
+                {
+                    viewModel.INNScanAttachmentId = attachmentId.Value;
+                    viewModel.INNScanAttachmentFilename = fileName;
+                }*/
+            }            
+            // ---------------------------------------
         }
 
         protected void SetPassportEntity(Passport entity, PassportModel viewModel)
@@ -1610,6 +1559,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected EmploymentCandidate GetCandidate(int userId)
         {
             return EmploymentCommonDao.GetCandidateByUserId(userId);
+        }
+
+        protected UploadFileDto GetFileContext(HttpPostedFileBase postedFile)
+        {
+            if ((postedFile == null) || (postedFile.ContentLength == 0))
+                return null;
+            byte[] context = GetFileData(postedFile);
+            return new UploadFileDto
+            {
+                Context = context,
+                ContextType = postedFile.ContentType,
+                FileName = Path.GetFileName(postedFile.FileName)
+            };
+        }
+        protected byte[] GetFileData(HttpPostedFileBase file)
+        {
+            var length = file.ContentLength;
+            var fileContent = new byte[length];
+            file.InputStream.Read(fileContent, 0, length);
+            return fileContent;
         }
 
         #endregion

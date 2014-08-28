@@ -16,7 +16,8 @@
         <div class="formfield clearleft" style="float:right">
             <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
                 <div style="width: 96px; height: 96px; background: gray;"></div>
-                <input type="file" name="files" />
+                <input type="file" name="PhotoFile" />
+                <br />@Html.ValidationMessageFor(m => m.PhotoFile)
             </fieldset>            
         </div>
         <div class="formfield">
@@ -154,11 +155,17 @@
             @Html.TextBoxFor(m => m.INN, new { pattern = @"^\d{12}$", title = "12 цифр (############)" })
         </div>
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="files" />
+            Выбрать скан для загрузки<br /><input type="file" name="INNScanFile" /> @Html.ValidationMessageFor(m => m.INNScanFile)
         </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
+        @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.INNScanAttachmentFilename
+                </a>
+            </div>
+        }
         <div class="formfield">
             <br /><a href="">Удалить</a>
         </div>
@@ -167,7 +174,7 @@
             @Html.TextBoxFor(m => m.SNILS, new { pattern = @"^(\d{3}-){3}\d{2}$", title = "###-###-###-##" })
         </div>
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="files" />
+            Выбрать скан для загрузки<br /><input type="file" name="files" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
         </div>
         <div class="formfield">
             <br /><a href="">Открыть</a>
@@ -198,7 +205,7 @@
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
             </div>
             <div class="formfield clear">
-                Выбрать скан для загрузки<br /><input type="file" name="files" />
+                Выбрать скан для загрузки<br /><input type="file" name="files" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
             </div>
             <div class="formfield">
                 <br /><a href="">Открыть</a>

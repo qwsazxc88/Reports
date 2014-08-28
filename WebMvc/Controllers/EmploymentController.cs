@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,13 +12,17 @@ using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using Reports.Presenters.Services.Impl;
+using Reports.Core.Dto;
 
 namespace WebMvc.Controllers
 {
     public class EmploymentController : Controller
     {
-        protected int RUSSIAN_FEDERATION = 643;
+        public const int MaxFileSize = 2 * 1024 * 1024;
+
+        protected int RUSSIAN_FEDERATION = 643;        
         protected IEmploymentBl employmentBl;
+
         public IEmploymentBl EmploymentBl
         {
             get
@@ -48,7 +53,7 @@ namespace WebMvc.Controllers
         
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult GeneralInfo(GeneralInfoModel model, IEnumerable<HttpPostedFileBase> files)
+        public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
 
@@ -541,6 +546,23 @@ namespace WebMvc.Controllers
         #region Model Validation
 
         [NonAction]
+        protected void ValidateFileLength(HttpPostedFileBase postedFile, string inputName)
+        {
+            if (postedFile != null)
+            {
+                if (postedFile.ContentLength > MaxFileSize)
+                {
+                    ModelState.AddModelError(inputName, string.Format("Размер файла превышает допустимый ({0} Мб).", MaxFileSize / (1024 * 1024)));
+                }
+                if (postedFile.ContentLength == 0)
+                {
+                    ModelState.AddModelError(inputName, string.Format("Прикрепленный файл пуст."));
+                }
+            }
+
+        }
+
+        [NonAction]
         protected bool ValidateModel(GeneralInfoModel model)
         {
             // Если не установлен флаг отсутствия отчества, то отчество должно быть заполнено
@@ -563,6 +585,10 @@ namespace WebMvc.Controllers
             {
                 ModelState.AddModelError("InsuredPersonTypeId", "*");
             }
+            ValidateFileLength(model.PhotoFile, "PhotoFile");
+            ValidateFileLength(model.INNScanFile, "INNScanFile");
+            ValidateFileLength(model.SNILSScanFile, "SNILSScanFile");
+            ValidateFileLength(model.DisabilityCertificateScanFile, "DisabilityCertificateScanFile");
             return ModelState.IsValid;
         }
 
@@ -651,5 +677,6 @@ namespace WebMvc.Controllers
         }
 
         #endregion
+       
     }
 }
