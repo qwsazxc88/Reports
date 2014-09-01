@@ -88,7 +88,7 @@ namespace Reports.Core.Dao.Impl
                                 case when v.MissionId is null then N'Нет' else N'Да' end as HasMission, 
                                 case when (( v.NeedToAcceptByChief = 1 and v.ChiefDateAccept is not null) or
                                           ( v.NeedToAcceptByChief = 0 and v.UserDateAccept is not null))
-                                           and v.DeleteDate is null and v.SendTo1C is null
+                                           and v.DeleteDate is null /*and v.SendTo1C is null*/
                                            and 
                                            ( ( v.IsResidencePaid = 1 and  v.ResidenceRequestNumber is null) or
                                              ( v.IsAirTicketsPaid = 1 and  v.AirTicketsRequestNumber is null) or
