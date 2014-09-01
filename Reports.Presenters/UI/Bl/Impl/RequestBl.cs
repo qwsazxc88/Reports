@@ -17,7 +17,7 @@ using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
-    public class RequestBl : BaseBl, IRequestBl
+    public class  RequestBl : BaseBl, IRequestBl
     {
        
         protected string EmptyDepartmentName = string.Empty;
@@ -8578,7 +8578,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDeleteAvailable = true;
                     break;
                 case UserRole.Secretary:
-                    if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue &&
+                    if (/*!entity.SendTo1C.HasValue &&*/ !entity.DeleteDate.HasValue &&
                         ((entity.NeedToAcceptByChief && entity.ChiefDateAccept.HasValue) ||
                          (!entity.NeedToAcceptByChief && entity.ManagerDateAccept.HasValue)) &&
                         (entity.IsAirTicketsPaid || entity.IsResidencePaid || entity.IsTrainTicketsPaid))
