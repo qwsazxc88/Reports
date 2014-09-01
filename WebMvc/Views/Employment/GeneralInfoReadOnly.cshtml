@@ -135,6 +135,13 @@
     <div class="formfield clear">
         @Html.LabelFor(m => m.INN)<br />
         <span class="fakeFormField">@Model.INN&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.INNScanAttachmentFilename
+            </a>
+        }
     </div>
     <div class="formfield">
         @Html.LabelFor(m => m.SNILS)<br />
@@ -156,7 +163,7 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DisabilityDegreeId)<br />
-            <span class="fakeFormField">@Model.DisabilityDegrees.Where(x => x.Value == Model.DisabilityDegreeId.ToString()).FirstOrDefault().Text&nbsp;</span>
+            @Html.DropDownListFor(m => m.DisabilityDegreeId, Model.DisabilityDegrees, string.Empty, new { disabled = "disabled" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)<br />

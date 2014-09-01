@@ -6,7 +6,7 @@
     </id>
     <version name="Version" column= "Version"/>
 
-    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_Candidate_User" index="Candidate_User"  not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_Candidate_User" index="Candidate_User"  not-null="false" cascade="save-update" />
     <many-to-one name="GeneralInfo" class="GeneralInfo" column="GeneralInfoId" foreign-key="FK_Candidate_GeneralInfo" index="Candidate_GeneralInfo"  not-null="false"/>
     <many-to-one name="Passport" class="Passport" column="PassportId" foreign-key="FK_Candidate_Passport" index="Candidate_Passport"  not-null="false"/>
     <many-to-one name="Education" class="Education" column="EducationId" foreign-key="FK_Candidate_Education" index="Candidate_Education"  not-null="false"/>
