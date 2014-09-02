@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
-    public class Experience : AbstractEntityWithVersion
+    public class Experience : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion
