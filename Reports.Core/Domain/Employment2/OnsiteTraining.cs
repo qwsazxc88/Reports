@@ -2,7 +2,7 @@ using System;
 
 namespace Reports.Core.Domain
 {
-    public class OnsiteTraining : AbstractEntityWithVersion
+    public class OnsiteTraining : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion

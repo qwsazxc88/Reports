@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -1067,6 +1068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     SetEntity<TVM, TE>(entity, model);
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
+                    SaveAttachments<TVM>((entity as IEmploymentInfoSection).Candidate.Id, model);
                     // EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
                 }
             }
@@ -1082,7 +1084,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        #endregion
+        protected void SaveAttachments<TVM>(int candidateId, TVM viewModel)
+        {
+            switch (viewModel.GetType().Name)
+            {
+                case "GeneralInfoModel":
+                    if ((viewModel as GeneralInfoModel).INNScanFile != null)
+                    {
+                        UploadFileDto INNScanFileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
+                        string fileName = string.Empty;
+                        //int? attachmentId = 
+                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).INNScanAttachmentId, INNScanFileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        #endregion        
 
         #region SetEntity
 
@@ -1185,23 +1205,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Patronymic = viewModel.IsPatronymicAbsent ? String.Empty : viewModel.Patronymic;
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
-            entity.Status = viewModel.StatusId;
-
-            // ---------------------------------------
-            if (viewModel.INNScanFile != null)
-            {
-                UploadFileDto INNScanFileDto = GetFileContext(viewModel.INNScanFile);
-                string fileName = string.Empty;
-                //int? attachmentId = 
-                SaveAttachment(entity.Candidate.Id, viewModel.INNScanAttachmentId, INNScanFileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
-
-                /*if (attachmentId.HasValue)
-                {
-                    viewModel.INNScanAttachmentId = attachmentId.Value;
-                    viewModel.INNScanAttachmentFilename = fileName;
-                }*/
-            }            
-            // ---------------------------------------
+            entity.Status = viewModel.StatusId;            
         }
 
         protected void SetPassportEntity(Passport entity, PassportModel viewModel)

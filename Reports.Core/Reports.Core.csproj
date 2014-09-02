@@ -349,6 +349,7 @@
     <Compile Include="Domain\EmployeeDocumentType.cs" />
     <Compile Include="Domain\Employment.cs" />
     <Compile Include="Domain\Employment2\GeneralInfo.cs" />
+    <Compile Include="Domain\Employment2\IEmploymentInfoSection.cs" />
     <Compile Include="Domain\Employment2\Passport.cs" />
     <Compile Include="Domain\Employment2\Education.cs" />
     <Compile Include="Domain\Employment2\Family.cs" />

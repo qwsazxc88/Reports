@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
-    public class BackgroundCheck : AbstractEntityWithVersion
+    public class BackgroundCheck : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion

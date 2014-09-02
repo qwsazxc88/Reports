@@ -2,7 +2,7 @@ using System;
 
 namespace Reports.Core.Domain
 {
-    public class PersonnelManagers : AbstractEntityWithVersion
+    public class PersonnelManagers : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion

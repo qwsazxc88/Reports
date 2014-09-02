@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class Contacts : AbstractEntityWithVersion
+    public class Contacts : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion

@@ -2,7 +2,7 @@ using System;
 
 namespace Reports.Core.Domain
 {
-    public class Passport : AbstractEntityWithVersion
+    public class Passport : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion

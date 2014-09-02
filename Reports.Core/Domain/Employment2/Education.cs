@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
-    public class Education : AbstractEntityWithVersion
+    public class Education : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion
