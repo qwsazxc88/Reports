@@ -67,9 +67,9 @@ namespace WebMvc.Controllers
         }
         [HttpGet]
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]
-        public ActionResult AppointmentEdit(int id)
+        public ActionResult AppointmentEdit(int id,int? managerId)
         {
-            AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id);
+            AppointmentEditModel model = AppointmentBl.GetAppointmentEditModel(id, managerId);
             return View(model);
         }
         [HttpPost]
@@ -82,6 +82,7 @@ namespace WebMvc.Controllers
             if (!ValidateAppointmentEditModel(model))
             {
                 model.IsDelete = false;
+                model.ApproveForAll = false;
                 AppointmentBl.ReloadDictionaries(model);
                 return View(model);
             }
@@ -89,12 +90,14 @@ namespace WebMvc.Controllers
             if (!AppointmentBl.SaveAppointmentEditModel(model, out error))
             {
                 model.IsDelete = false;
+                model.ApproveForAll = false;
                 if (model.ReloadPage)
                 {
                     ModelState.Clear();
                     if (!string.IsNullOrEmpty(error))
                         ModelState.AddModelError("", error);
-                    return View(AppointmentBl.GetAppointmentEditModel(model.Id));
+                    return View(AppointmentBl.GetAppointmentEditModel(model.Id,
+                                model.StaffCreatorId == 0?new int?(): model.UserId));
                 }
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("", error);
@@ -105,6 +108,7 @@ namespace WebMvc.Controllers
                     ModelState.AddModelError("", error);
             }
             model.IsDelete = false;
+            model.ApproveForAll = false;
             return View(model);
             /*if (!string.IsNullOrEmpty(error))
                 return View(model);
@@ -154,7 +158,7 @@ namespace WebMvc.Controllers
             }
             //todo need to check department
             int depLevel;
-            if (!AppointmentBl.CheckDepartment(model.DepartmentId, out depLevel))
+            if (!AppointmentBl.CheckDepartment(model, out depLevel))
             {
                 if(depLevel != AppointmentBl.GetRequeredDepartmentLevel())
                     ModelState.AddModelError("SelectDepartmentBtn", string.Format(StrInvalidDepartmentLevel, 
@@ -205,7 +209,11 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("IsStaffReceiveRejectMail"))
                     ModelState.Remove("IsStaffReceiveRejectMail");
             }
-           
+            if (model.ApproveForAll)
+            {
+                if (ModelState.ContainsKey("IsManagerApproved"))
+                    ModelState.Remove("IsManagerApproved");
+            }
             /*if (model.IsManagerApproveAvailable && model.IsManagerApproved.HasValue
                 && !model.IsManagerApproved.Value)
             {
@@ -220,6 +228,38 @@ namespace WebMvc.Controllers
                 if (ModelState.ContainsKey("IsManagerApproved"))
                     ModelState.Remove("IsManagerApproved");
             }*/
+        }
+
+
+        [HttpGet]
+        //[ReportAuthorize(UserRole.Manager)]
+        public ActionResult SelectManagerDialog()
+        {
+            try
+            {
+                //MissionReportEditCostModel model = new MissionReportEditCostModel { CostId = id };
+                //if (!string.IsNullOrEmpty(json))
+                //{
+                //    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+                //    CostDto dto = jsonSerializer.Deserialize<CostDto>(json);
+                //    model.AccountantSum = dto.AccountantSum;
+                //    model.CostTypeId = dto.CostTypeId;
+                //    //model.Count = dto.Count;
+                //    model.GradeSum = dto.GradeSum;
+                //    model.PurchaseBookSum = dto.PurchaseBookSum;
+                //    model.UserSum = dto.UserSum;
+
+
+                //}
+                AppointmentSelectManagerModel model = AppointmentBl.GetSelectManagerModel();
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("SelectManagerDialogError", new DialogErrorModel { Error = error });
+            }
         }
         #endregion
 
@@ -390,14 +430,14 @@ namespace WebMvc.Controllers
         #endregion
         #region PrintLogin
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.StaffManager)]
         public ActionResult PrintLoginForm(int id)
         {
             PrintLoginFormModel model = AppointmentBl.GetPrintLoginFormModel(id);
             return View(model);
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Manager)]
+        [ReportAuthorize(UserRole.Manager | UserRole.StaffManager)]
         public ActionResult GetLoginPrintForm(int id)
         {
             string args = string.Format(@"id={0}",id);

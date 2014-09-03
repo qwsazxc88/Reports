@@ -686,6 +686,8 @@
     <Content Include="Views\MissionOrder\AdditionalMissionOrderEdit.cshtml" />
     <Content Include="Views\MissionOrder\PrintReportList.cshtml" />
     <Content Include="Views\MissionOrder\PrintAdditionalOrder.cshtml" />
+    <Content Include="Views\Appointment\SelectManagerDialog.cshtml" />
+    <Content Include="Views\Appointment\SelectManagerDialogError.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

@@ -102,9 +102,10 @@ $(document).ready(function () {
                 $(this).dialog("destroy").remove();
             },
             open: function(event, ui) {
-            setTimeout(function()   {
+                timedSetupUploader();
+            /*setTimeout(function()   {
                     setupUploader();
-                }, 200);          
+                }, 200);      */    
             },
             buttons:
             {
@@ -118,6 +119,18 @@ $(document).ready(function () {
                 }
             }
         });
+    }
+    function timedSetupUploader()
+    {
+            elem = document.getElementById('file-uploader');
+            if(elem == null)
+            {
+                setTimeout(function()   {
+                    timedSetupUploader();
+                }, 100);    
+            }
+            else
+                setupUploader();
     }
     function ValidateAttachment()
     {
@@ -203,10 +216,17 @@ function setupUploader()
                 return;
             }
             var result = responseJSON; //JSON.parse("{"+responseJSON+"}");  
-            if(!result.Result)
+            /* if(!result.Result)
             {
                 addAttachmentError(result.Error);
                 //Render();
+            }*/
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
+            {
+                if((result.success != undefined) && (!result.success))
+                    addAttachmentError("Ошибка - не получен ответ сервера.");
+                else
+                    addAttachmentError(result.Error);
             }
             else
             {

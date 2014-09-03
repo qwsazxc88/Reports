@@ -100,5 +100,8 @@ namespace Reports.Presenters.UI.ViewModel
         public int AttachmentId { get; set; }
 
         public CommentsModel CommentsModel { get; set; }
+
+        /*public bool ApproveForAllAvailable { get; set; }
+        public bool ApproveForAll { get; set; }*/
     }
 }

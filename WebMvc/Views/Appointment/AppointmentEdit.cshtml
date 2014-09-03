@@ -246,6 +246,7 @@
                 <td>
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                 <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                <input type="hidden" id="StaffCreatorId" name="StaffCreatorId" value="@Model.StaffCreatorId" />
                 <input type="hidden" id="Version" name="Version" value="@Model.Version" />
                 <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
                 <input type="hidden" id="IsDelete" name="IsDelete" value="@Model.IsDeleted" />
@@ -312,6 +313,9 @@
              <tr>
                 <td>
                    <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
+                   <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
+                   <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />
                 </td>
                 <td style="text-align:right">
                     <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
@@ -402,6 +406,14 @@
         if(!IsFieldNotEmpty($("#DesirableBeginDate")))
             result = false;
         return result;
+    }
+    function ValidateFormApproveAll()
+    {
+        var result = ValidateForm();
+        if(!result)
+            return result;
+        $("#ApproveForAll").val('True');
+        return true;
     }
     function IsFieldNotEmpty(control)
     {

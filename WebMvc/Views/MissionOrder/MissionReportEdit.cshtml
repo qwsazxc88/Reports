@@ -1024,15 +1024,14 @@
             draggable: false,
             resizable: false,
             width: 350,
-	        height: 180,
+	        height: 200,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },
             open: function(event, ui) {
-            setTimeout(function()   {
-                    setupCostUploader();
-                }, 200);          
+                timedSetupCostUploader(); 
             },
+
             buttons:
             {
                 "Отмена": function () {
@@ -1040,6 +1039,18 @@
                 }
             }
         });
+    }
+    function timedSetupCostUploader()
+    {
+            elem = document.getElementById('file-uploader');
+            if(elem == null)
+            {
+                setTimeout(function()   {
+                    timedSetupCostUploader();
+                }, 100);    
+            }
+            else
+                setupCostUploader();
     }
     function setupCostUploader()
     {
@@ -1074,10 +1085,14 @@
                 addCostAttachmentError("Ошибка асинхронного запроса - не был получен ответ.");
                 return;
             }
-            var result = responseJSON; //JSON.parse("{"+responseJSON+"}");  
-            if(!result.Result)
+            var result = responseJSON; //JSON.parse("{"+responseJSON+"}"); 
+             
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
             {
-                addCostAttachmentError(result.Error);
+                if((result.success != undefined) && (!result.success))
+                    addCostAttachmentError("Ошибка - не получен ответ сервера.");
+                else
+                    addCostAttachmentError(result.Error);
             }
             else
             {

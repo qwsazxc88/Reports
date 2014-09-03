@@ -95,6 +95,18 @@ namespace Reports.Core.Dao.Impl
                 SetString("path", departmentPath);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }
+        public virtual IList<IdNameDto> GetManagersWithDepartments()
+        {
+            const string sqlQuery = @" select u.Id,u.Name+N' '+d.Name as Name from Users u 
+                    inner join Department d on u.DepartmentId = d.Id
+                    where (u.RoleId & 4) > 0 
+                    and u.[IsActive] = 1
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
         public virtual IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList,int level)
         {
             const string sqlQuery = @" select emp.Id,emp.Name from Users emp
