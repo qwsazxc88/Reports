@@ -1327,64 +1327,73 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FamilyMembers = new List<FamilyMember>();
             }
 
-            if (viewModel.Father != null && entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER).Count() == 0)
+            // Если информация об отце заносится в БД впервые
+            if (viewModel.Father != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER))
             {
-                entity.FamilyMembers.Add(new FamilyMember
-                {
-                    RelationshipId = FamilyRelationship.FATHER,
-                    Contacts = viewModel.Father.Contacts,
-                    DateOfBirth = viewModel.Father.DateOfBirth,
-                    Name = viewModel.Father.Name,
-                    PassportData = viewModel.Father.PassportData,
-                    PlaceOfBirth = viewModel.Father.PlaceOfBirth,
-                    WorksAt = viewModel.Father.WorksAt
-                });
+                FamilyMember father = SetFamilyMember(new FamilyMember(), viewModel.Father);
+                entity.FamilyMembers.Add(father);
+            }
+            // Если требуется обновление информации об отце
+            else if (viewModel.Father != null)
+            {
+                FamilyMember father = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.FATHER);
+                SetFamilyMember(father, viewModel.Father);
             }
 
-            if (viewModel.Father != null && entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER).Count() == 0)
+            if (viewModel.Mother != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER))
             {
-                entity.FamilyMembers.Add(new FamilyMember
-                {
-                    RelationshipId = FamilyRelationship.MOTHER,
-                    Contacts = viewModel.Mother.Contacts,
-                    DateOfBirth = viewModel.Mother.DateOfBirth,
-                    Name = viewModel.Mother.Name,
-                    PassportData = viewModel.Mother.PassportData,
-                    PlaceOfBirth = viewModel.Mother.PlaceOfBirth,
-                    WorksAt = viewModel.Mother.WorksAt
-                });
+                FamilyMember mother = SetFamilyMember(new FamilyMember(), viewModel.Mother);
+                entity.FamilyMembers.Add(mother);
+            }
+            else if (viewModel.Mother != null)
+            {
+                FamilyMember mother = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.MOTHER);
+                SetFamilyMember(mother, viewModel.Mother);
             }
 
-            if (viewModel.IsMarried && viewModel.Father != null && entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE).Count() == 0)
+            if (viewModel.IsMarried && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE))
             {
-                entity.FamilyMembers.Add(new FamilyMember
-                {
-                    RelationshipId = FamilyRelationship.SPOUSE,
-                    Contacts = viewModel.Spouse.Contacts,
-                    DateOfBirth = viewModel.Spouse.DateOfBirth,
-                    Name = viewModel.Spouse.Name,
-                    PassportData = viewModel.Spouse.PassportData,
-                    PlaceOfBirth = viewModel.Spouse.PlaceOfBirth,
-                    WorksAt = viewModel.Spouse.WorksAt
-                });
+                FamilyMember spouse = SetFamilyMember(new FamilyMember(), viewModel.Spouse);
+                entity.FamilyMembers.Add(spouse);
+            }
+            else if (viewModel.Mother != null)
+            {
+                FamilyMember spouse = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.SPOUSE);
+                SetFamilyMember(spouse, viewModel.Spouse);
             }
 
             if (viewModel.Children != null && viewModel.Children.Count > entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD).Count())
             {
                 int lastIndex = viewModel.Children.Count - 1;
-                entity.FamilyMembers.Add(new FamilyMember
-                {
-                    RelationshipId = FamilyRelationship.CHILD,
-                    Contacts = viewModel.Children[lastIndex].Contacts,
-                    DateOfBirth = viewModel.Children[lastIndex].DateOfBirth,
-                    Name = viewModel.Children[lastIndex].Name,
-                    PassportData = viewModel.Children[lastIndex].PassportData,
-                    PlaceOfBirth = viewModel.Children[lastIndex].PlaceOfBirth,
-                    WorksAt = viewModel.Children[lastIndex].WorksAt
-                });
+                entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), viewModel.Children[lastIndex]));
             }
 
             entity.IsFinal = !viewModel.IsDraft;
+        }
+
+        protected FamilyMember GetFamilyMemberByRelationship(IList<FamilyMember> familyMembers, FamilyRelationship relationship)
+        {
+            FamilyMember result = null;
+            for (var i = 0; i < familyMembers.Count; i++)
+            {
+                if (familyMembers[i].RelationshipId == relationship)
+                {
+                    result = familyMembers[i];
+                    break;
+                }
+            }
+            return result;
+        }
+
+        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyMemberDto data)
+        {
+            familyMember.Contacts = data.Contacts;
+            familyMember.DateOfBirth = data.DateOfBirth;
+            familyMember.Name = data.Name;
+            familyMember.PassportData = data.PassportData;
+            familyMember.PlaceOfBirth = data.PlaceOfBirth;
+            familyMember.WorksAt = data.WorksAt;
+            return familyMember;
         }
 
         protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
