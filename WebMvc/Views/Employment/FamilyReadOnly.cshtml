@@ -35,29 +35,32 @@
         </tr>
     </thead>
     <tbody>
-        <tr id="spouse-row" style="display: none; vertical-align:top;">
-            <td style="">
-                @Html.LabelFor(m => m.Spouse)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.PassportData)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.DateOfBirth)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.PlaceOfBirth)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.WorksAt)
-            </td>
-            <td>
-                @Html.DisplayFor(m => m.Spouse.Contacts)
-            </td>
-        </tr>
+        @if (Model.Spouse != null)
+        {
+            <tr id="spouse-row" style="vertical-align:top;">
+                <td style="">
+                    @Html.LabelFor(m => m.Spouse)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.PassportData)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.DateOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.WorksAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.Contacts)
+                </td>
+            </tr>
+        }
         <tr style="vertical-align:top;">
             <td>
                 @Html.LabelFor(m => m.Father)
