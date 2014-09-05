@@ -7864,7 +7864,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserAllSumDaily = FormatSum(entity.UserSumDaily);
                 model.UserAllSumResidence = FormatSum(entity.UserSumResidence);
                 model.UserAllSumTrain = FormatSum(entity.UserSumTrain);
-                model.DateCreated = entity.EditDate.ToShortDateString();
+                model.DateCreated = entity.CreateDate.ToShortDateString();
                 model.Version = entity.Version;
                 model.UserSumCash = FormatSum(entity.UserSumCash);
                 model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
@@ -8887,7 +8887,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 MissionOrder missionOrder = MissionOrderDao.Load(model.Id);
                 model.DocumentNumber = missionOrder.Number.ToString();
-                model.DateCreated = missionOrder.EditDate.ToShortDateString();
+                model.DateCreated = missionOrder.CreateDate.ToShortDateString();
                 if (missionOrder.DeleteDate.HasValue)
                     model.IsDeleted = true;
             }
@@ -9097,7 +9097,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
             SetUserInfoModel(order.User,model);
             model.DocumentNumber = order.Number.ToString();
-            model.DateCreated = order.EditDate.ToShortDateString();
+            model.DateCreated = order.CreateDate.ToShortDateString();
             model.Goal = order.Goal.Name;
             int i = 1;
             List<PrintMissionTargetViewModel> targets = order.Targets.Select(target => new PrintMissionTargetViewModel
@@ -9150,7 +9150,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
             SetUserInfoModel(order.User, model);
             model.DocumentNumber = order.Number.ToString();
-            model.DateCreated = order.EditDate.ToShortDateString();
+            model.DateCreated = order.CreateDate.ToShortDateString();
             return model;
         }
 
