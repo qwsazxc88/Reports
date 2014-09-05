@@ -15,7 +15,8 @@ function trimSpaces(str) {
     return trimSpacesLeft(trimSpacesRight(str));
 }
 function GetTwoDigitValue(value) {
-    return parseInt(value * 100, 10) / 100;
+    //return parseInt(value * 100, 10) / 100;
+    return 1*value.toFixed(2);
 }
 function addError(value) {
     $("#Error").text(value);
