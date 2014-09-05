@@ -144,8 +144,10 @@
     <a href="" id="add-child">Добавить запись о ребенке</a>
     </fieldset>
     
-    @Html.LabelFor(m => m.Cohabitants)
-    @Html.TextAreaFor(m => m.Cohabitants)
+    <div class="formfield">
+        @Html.LabelFor(m => m.Cohabitants)
+        @Html.TextAreaFor(m => m.Cohabitants)
+    </div>
 
     <div class="formfield clear">
         Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name="files" />
