@@ -278,7 +278,6 @@
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td></td>
                                      <td></td>
                                     <td>{{Sum}}</td>
                                     <td>
@@ -481,7 +480,7 @@
                 result =  false;
             else
             {
-             if(ValidateSumC($("#UserSum")) == undefined)
+             if(ValidateSumNotNegative($("#UserSum")) == undefined)
                 result = false;
             }
             /*if(!validateFieldIsNotEmptyAddError($("#Count")))
@@ -634,9 +633,9 @@
             if(diffSum == undefined)
                 return undefined;
             total.GradeSum = totalGradeSum;
-            total.UserSum = totalUserSum;
-            total.PurchaseBookSum = totalPbSum;
-            total.AccountantSum = totalAccountantSum;
+            total.UserSum = 1*totalUserSum.toFixed(2);
+            total.PurchaseBookSum = 1*totalPbSum.toFixed(2);
+            total.AccountantSum = 1*totalAccountantSum.toFixed(2);
             if(userReceiveSum.UserSum != null)
                 diffSum.UserSum = totalAccountantSum - totalPbSum - userReceiveSum.UserSum;
             else    

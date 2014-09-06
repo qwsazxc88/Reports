@@ -9947,7 +9947,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ,PurchaseBookSum = cost.BookOfPurchaseSum
                         ,UserSum = cost.UserSum
                         ,SortOrder = cost.Type.SortOrder
-                        ,IsEditable = model.IsEditable && !cost.IsCostFromOrder
+                        ,IsEditable = model.IsEditable && !cost.IsCostFromPurchaseBook//!cost.IsCostFromOrder
                         ,IsDeleteAvailable = model.IsEditable && !cost.IsCostFromOrder
                         ,ScanId = attachment == null? 0 :attachment.Id
                         ,AddScanAvailable = model.IsEditable && !cost.IsCostFromPurchaseBook && (cost.Type.Id != DailyCostTypeId) 
