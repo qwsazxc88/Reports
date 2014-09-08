@@ -734,6 +734,9 @@ span.buttonLink
     display: inline-block;
     background-color: #fff;
     text-decoration: none;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 3px;
 }
 
 .announcement
