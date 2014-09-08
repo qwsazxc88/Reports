@@ -476,13 +476,13 @@
         {
             clearDlgErrors($("#costDialogTable"));
             var result = true;
-            /*if(!validateFieldIsNotEmptyAddError($("#UserSum")))
+            if(!validateFieldIsNotEmptyAddError($("#UserSum")))
                 result =  false;
             else
-            {*/
-             if(($("#UserSum").val()!='') &&(ValidateSumC($("#UserSum")) == undefined))
+            {
+             if(/*($("#UserSum").val()!='') &&*/(ValidateSumC($("#UserSum")) == undefined))
                 result = false;
-            //}
+            }
             /*if(!validateFieldIsNotEmptyAddError($("#Count")))
                 result = false;
             else
