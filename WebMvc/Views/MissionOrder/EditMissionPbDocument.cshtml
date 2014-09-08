@@ -312,10 +312,10 @@
             if($("#IsWithNds").is(":checked"))
             {
                var nds = sum*0.1525;
-               nds = nds.toFixed(2);
+               nds = 1*nds.toFixed(2);
                $("#SumNds").val(FormatFloat(nds));
                var sum1 = sum - nds;
-               $("#Sum").val(FormatFloat(sum1.toFixed(2)));
+               $("#Sum").val(FormatFloat(1*sum1.toFixed(2)));
             }
             else
                 $("#Sum").val(FormatFloat(sum));
@@ -350,7 +350,7 @@
             if(sum != undefined && allSum != undefined)
             {
                 var sum1 = allSum - sum;
-                $("#Sum").val(FormatFloat(sum1.toFixed(2)));
+                $("#Sum").val(FormatFloat(1*sum1.toFixed(2)));
             }
             else
                 $("#Sum").val('');
@@ -378,10 +378,10 @@
                 if(allSum != undefined)
                 {
                    var nds = allSum*0.1525;
-                   nds = nds.toFixed(2);
+                   nds = 1*nds.toFixed(2);
                    $("#SumNds").val(FormatFloat(nds));
                    var sum = allSum - nds;
-                   $("#Sum").val(FormatFloat(sum.toFixed(2)));
+                   $("#Sum").val(FormatFloat(1*sum.toFixed(2)));
                 }
                 else
                 {

@@ -218,7 +218,6 @@
                                 <tr>
                                    <td>№ пп</td>
                                    <td style='width:400px'>Наименование расходов</td>
-                                   <td>Норма по грейду</td>
                                    <td>Оплачено фактически <br/>сотрудником (сумма, руб)</td>
                                    <td style='text-align:center'>Документ</td>
                                    <td>Оплачено организацией <br/>за сотрудника</td>
@@ -242,7 +241,6 @@
                                         {{/IsEditable}}
                                     </td>
                                     <td>{{Name}}</td>
-                                    <td>{{GradeSum}}</td>
                                     <td>
                                         {{^IsHidden}}
                                             {{UserSum}}
@@ -277,7 +275,6 @@
                                  {{^IsTransactionsHidden}}
                                 {{#Trans}}
                                 <tr>
-                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -484,7 +481,7 @@
                 result =  false;
             else
             {
-             if(ValidateSumC($("#UserSum")) == undefined)
+             if(/*($("#UserSum").val()!='') &&*/(ValidateSumC($("#UserSum")) == undefined))
                 result = false;
             }
             /*if(!validateFieldIsNotEmptyAddError($("#Count")))
@@ -637,9 +634,9 @@
             if(diffSum == undefined)
                 return undefined;
             total.GradeSum = totalGradeSum;
-            total.UserSum = totalUserSum;
-            total.PurchaseBookSum = totalPbSum;
-            total.AccountantSum = totalAccountantSum;
+            total.UserSum = 1*totalUserSum.toFixed(2);
+            total.PurchaseBookSum = 1*totalPbSum.toFixed(2);
+            total.AccountantSum = 1*totalAccountantSum.toFixed(2);
             if(userReceiveSum.UserSum != null)
                 diffSum.UserSum = totalAccountantSum - totalPbSum - userReceiveSum.UserSum;
             else    
