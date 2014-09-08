@@ -628,7 +628,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
 
-                model.ApproverName = entity.Approver.Name;
+                model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Security) == UserRole.Security);
