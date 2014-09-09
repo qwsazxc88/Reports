@@ -55,10 +55,8 @@ namespace Reports.Core.Dao
                                                                              int departmentId, string userName);
 
         IList<User> LoadForIdsList(List<int> userIds);
-        IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList, int level);
 
-        IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, List<int> levelList,
-                                                                      int level);
+        IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, int level);
 
         User GetManagerForEmployee(string login);
         IList<IdNameDto> GetMainManagersForLevelDepartment(int level, string departmentPath);

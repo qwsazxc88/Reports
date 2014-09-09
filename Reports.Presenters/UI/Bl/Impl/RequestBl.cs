@@ -7561,21 +7561,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (currentUser.Level)
             {
                 case 2:
-                    list = UserDao.GetUsersForCreateMissionOrder(currentUser.Department.Path,
-                                                                             new List<int> {3},2);
-                    model.Users = list;
-                    break;
                 case 3:
-                    list = UserDao.GetUsersForCreateMissionOrder(currentUser.Department.Path,
-                                                                             new List<int> { 4,5 }, 3);
-                    model.Users = list;
-                    break;
+                case 4:
                 case 5:
-                    list = UserDao.GetManagersAndEmployeesForCreateMissionOrder(currentUser.Department.Path,
-                                                                             new List<int> { 6 }, 5);
+                case 6:
+                    list = UserDao.GetManagersAndEmployeesForCreateMissionOrder(currentUser.Department.Path, currentUser.Level.Value);
                     model.Users = list;
                     break;
-
             }
             return model;
         }
@@ -7621,9 +7613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if(currentUser == null)
                         throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
                             CurrentUser.Id));
-                    model.IsAddAvailable = currentUser.IsMainManager && ((currentUser.Level == 2) ||
-                                           (currentUser.Level == 3) ||
-                                           (currentUser.Level == 5));
+                    model.IsAddAvailable = ((currentUser.UserRole & UserRole.Manager) == UserRole.Manager) && currentUser.Level.HasValue && currentUser.Level >= 3;
                     model.IsApproveAvailable = model.IsAddAvailable || (currentUser.MissionOrderRoleRecords
                         .Where<MissionOrderRoleRecord>(morr => morr.Role.Id == 1)
                         .FirstOrDefault<MissionOrderRoleRecord>() != null);

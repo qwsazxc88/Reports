@@ -21,6 +21,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                @{ViewBag.HidePersonnel = true;}
                 @Html.Partial("../UserInfoView", Model)
             </td>
         </tr>
@@ -39,7 +40,7 @@
                 <input type="hidden" id="OrderDates" name="OrderDates" value="@Model.OrderDates" />
             </td>
         </tr>
-        @*<tr>
+        <tr>
             <td colspan="2">
                 <input type="hidden" id="IsCreateAdditionalOrderAvailable" name="IsCreateAdditionalOrderAvailable" value="@Model.IsCreateAdditionalOrderAvailable" />
                 @if (Model.IsCreateAdditionalOrderAvailable)
@@ -48,7 +49,7 @@
                     <text><br/>Изменение приказа на командировку создается при несовпадении фактических дат командировки с датами из приказа</text>
                 }
             </td>
-        </tr>*@
+        </tr>
         <tr>
             <td colspan="2">
                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />

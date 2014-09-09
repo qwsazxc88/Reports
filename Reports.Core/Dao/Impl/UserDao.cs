@@ -107,7 +107,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Name", NHibernateUtil.String);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }
-        public virtual IList<IdNameDto> GetUsersForCreateMissionOrder(string departmentPath, List<int> levelList,int level)
+
+        public virtual IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, int level)
         {
             const string sqlQuery = @" select emp.Id,emp.Name from Users emp
                     inner join Users man on emp.Login+N'R' = man.Login
@@ -115,25 +116,7 @@ namespace Reports.Core.Dao.Impl
                     and emp.IsActive = 1 and man.IsActive = 1 
                     inner join dbo.Department d on man.DepartmentId = d.Id
                     where d.Path like :path and 
-                    ((man.[level] in (:levelList)) or ((man.[level] = :level) and (man.IsMainManager = 0))) 
-                    order by Name";
-            IQuery query = Session.CreateSQLQuery(sqlQuery).
-                AddScalar("Id", NHibernateUtil.Int32).
-                AddScalar("Name", NHibernateUtil.String).
-                SetString("path", departmentPath + "%").
-                SetInt32("level", level).
-                SetParameterList("levelList", levelList);
-            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
-        }
-        public virtual IList<IdNameDto> GetManagersAndEmployeesForCreateMissionOrder(string departmentPath, List<int> levelList, int level)
-        {
-            const string sqlQuery = @" select emp.Id,emp.Name from Users emp
-                    inner join Users man on emp.Login+N'R' = man.Login
-                    and ((emp.RoleId & 2) > 0) and man.RoleId = 4
-                    and emp.IsActive = 1 and man.IsActive = 1 
-                    inner join dbo.Department d on man.DepartmentId = d.Id
-                    where d.Path like :path and 
-                    ((man.[level] in (:levelList)) or ((man.[level] = :level) and (man.IsMainManager = 0)))
+                    ((man.[level] > :level) or ((man.[level] = :level) and (man.IsMainManager = 0)))
                     union 
                     select emp.Id,emp.Name from Users emp
                     inner join dbo.Department d on emp.DepartmentId = d.Id
@@ -145,8 +128,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
                 SetString("path", departmentPath + "%").
-                SetInt32("level", level).
-                SetParameterList("levelList", levelList);
+                SetInt32("level", level);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
         }
         public virtual IList<User> GetUserWithEmailAndRole(UserRole role, string email,

@@ -16,6 +16,7 @@
         </tr>
         <tr>
             <td colspan="2">
+                @{ViewBag.HidePersonnel = true;}
                 @Html.Partial("../UserInfoView", Model)
             </td>
         </tr>
@@ -102,7 +103,7 @@
                             Наименование
                         </td>
                          <td>
-                            Итого по G расчетная
+                            Норма по грейду G<br />(расчетная)
                         </td>
                          <td>
                             Сумма, запрашиваемая<br/> сотрудником
@@ -126,7 +127,7 @@
                     </tr>
                      <tr>
                         <td>
-                            Проживание (стоимость номера руб./сутки)
+                            Проживание
                         </td>
                          <td>
                             @Html.TextBoxFor(m => m.AllSumResidence, new { @readonly = "read-only", @class = "fixedSize" })
@@ -210,10 +211,10 @@
             </td>
         </tr>
         <tr  id="trUserSumNotCash">
-            <td>
+            <td style="font-weight: bold; color: red">
                 @Html.LabelFor(m => m.UserSumNotCash):
             </td>
-            <td style="font-weight: bold; color: red">
+            <td>
                 @Html.TextBoxFor(model => model.UserSumNotCash, Model.IsEditable ? (object)new { @class = "fixedSize", onchange = "CalcUserCashNotCashSums();" } : (object)new { @readonly = "read-only", @class = "fixedSize" }) 
             </td>
         </tr>
