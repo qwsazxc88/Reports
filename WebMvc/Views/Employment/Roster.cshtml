@@ -101,6 +101,10 @@
         </th>
 
         <th>
+            Анкета
+        </th>
+
+        <th>
             Дирекция
         </th>
 
@@ -193,63 +197,67 @@
                 @candidate.Name
             </td>
 
-            <td>
-                @candidate.Directorate
+            <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
+                <span class="buttonLink">Разделы</span>
             </td>
 
             <td>
-                @candidate.WorkCity
+                &nbsp;@candidate.Directorate
             </td>
 
             <td>
-                @candidate.Department
+                &nbsp;@candidate.WorkCity
             </td>
 
             <td>
-                @candidate.Position
+                &nbsp;@candidate.Department
+            </td>
+
+            <td>
+                &nbsp;@candidate.Position
             </td>        
         
             <td>
-                @(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
+                &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
             </td>
         
             <td>
-                @candidate.EmploymentOrderNumber
+                &nbsp;@candidate.EmploymentOrderNumber
             </td>
         
             <td>
-                @(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
+                &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
             </td>
 
             <td>
-                @candidate.ContractNumber
+                &nbsp;@candidate.ContractNumber
             </td>
 
             @* Вид работы (осн./совм.) *@
             @* Характер работы (пост./врем.) *@
 
             <td>
-                @candidate.ProbationaryPeriod
+                &nbsp;@candidate.ProbationaryPeriod
             </td>
 
             <td>
-                @candidate.Schedule
+                &nbsp;@candidate.Schedule
             </td>
 
             <td>
-                @(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
+                &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
             </td>
 
             <td>
-                @candidate.Disabilities
+                &nbsp;@candidate.Disabilities
             </td>
 
             <td>
-                @candidate.Grade
+                &nbsp;@candidate.Grade
             </td>
 
             <td>
-                @candidate.Status
+                &nbsp;@candidate.Status
             </td>
         
             @if (Model.IsBulkApproveByManagerAvailable)
@@ -258,7 +266,7 @@
                     @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
                     {
                         @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager, new { @class = "selcheckByManager", dataId = Model.Roster[i - 1].Id })
-                    }
+                    }&nbsp;
                 </td>
             }
         
@@ -268,23 +276,24 @@
                     @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
                     {
                         @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager, new { @class = "selcheckByHigherManager", dataId = Model.Roster[i - 1].Id })
-                    }
+                    }&nbsp;
                 </td>
             }        
 
             @{i++;}
         </tr>
         <tr>
-            <td colspan="14">
-                Анкета:
-                <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
-                <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+            <td colspan="14" style="padding: 0;">
+                <div style="display:none;">
+                    <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+                </div>
             </td>
         </tr>
     }
@@ -342,6 +351,10 @@
                 }
             );
             e.preventDefault();
+        });
+
+        $("td.displayLinks > span").click(function () {
+            $(this).parent().parent().next().children().children().toggle();
         });
     });
 

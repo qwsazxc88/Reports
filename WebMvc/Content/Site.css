@@ -732,11 +732,19 @@ span.fakeFormField
 span.buttonLink
 {
     display: inline-block;
+    color: blue;
     background-color: #fff;
     text-decoration: none;
     border: 1px solid gray;
     border-radius: 5px;
+    margin: 3px;
     padding: 3px;
+    cursor: pointer;
+}
+
+span.buttonLink a
+{
+    text-decoration: none;
 }
 
 .announcement
