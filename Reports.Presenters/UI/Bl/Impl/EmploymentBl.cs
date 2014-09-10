@@ -1690,10 +1690,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity = EmploymentOnsiteTrainingDao.Get(id.Value);
                 }
+                if (entity == null)
+                {
+                    entity = new OnsiteTraining();
+                    entity.Candidate = GetCandidate(viewModel.UserId);
+                }
                 if (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
                 {
-                    entity.BeginningDate = viewModel.BeginningDate;
-                    entity.Candidate = GetCandidate(viewModel.UserId);
+                    entity.BeginningDate = viewModel.BeginningDate;                    
                     entity.Candidate.OnsiteTraining = entity;
                     entity.Comments = viewModel.Comments;
                     entity.Description = viewModel.Description;
@@ -1704,7 +1708,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Type = viewModel.Type;
 
                     entity.Approver = UserDao.Get(current.Id);
-                    entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
                     if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
                     {
                         error = "Ошибка сохранения.";

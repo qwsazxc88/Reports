@@ -368,10 +368,17 @@ namespace WebMvc.Controllers
             string error = String.Empty;
 
             EmploymentBl.ApproveBackgroundCheck(userId, out error);
-            ViewBag.Error = error;
 
-            BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();            
-            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View("BackgroundCheck", model);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+                BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
+                return View("BackgroundCheckReadOnly", model);
+            }
+            else
+            {
+                return RedirectToAction("Roster");
+            }
         }
 
         // Onsite Training
@@ -380,7 +387,7 @@ namespace WebMvc.Controllers
         public ActionResult OnsiteTraining(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
-            return View(model);
+            return model.ApprovalStatus.HasValue ? View("OnsiteTrainingReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -392,8 +399,18 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 EmploymentBl.SaveOnsiteTrainingReport(model, out error);
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    ViewBag.Error = error;
+                    return View(model);
+                }
+                else
+                {
+                    return RedirectToAction("Roster");
+                }
             }
-            model = EmploymentBl.GetOnsiteTrainingModel();
+
             return View(model);
         }
 
