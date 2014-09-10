@@ -48,7 +48,10 @@
                 @Html.LabelFor(m => m.IsComplete)
             </td>
             <td>
-                    @Html.EditorFor(m => m.IsComplete)
+                @Html.DropDownListFor(m => m.IsComplete, new List<SelectListItem> {
+                    new SelectListItem {Text = "Нет", Value = "false"},
+                    new SelectListItem {Text = "Да", Value = "true"}
+                })
             </td>
         </tr>
         <tr>

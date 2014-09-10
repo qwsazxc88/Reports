@@ -371,7 +371,7 @@ namespace WebMvc.Controllers
             ViewBag.Error = error;
 
             BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();            
-            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
+            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View("BackgroundCheck", model);
         }
 
         // Onsite Training
