@@ -171,6 +171,7 @@
 
 @using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
 {
+    @Html.HiddenFor(m => m.UserId)
     <div class="clear">
         @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
         {        
