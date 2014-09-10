@@ -292,7 +292,14 @@
                     <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
                     <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
                     <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+
+                    <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Обучение", "Training", new { id = candidate.UserId })</span>
+
                     <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+
+                    @*<span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>*@
                 </div>
             </td>
         </tr>
