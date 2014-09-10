@@ -36,7 +36,7 @@ namespace WebMvc.Controllers
         // GET: /Employment/
         [HttpGet]
         [ActionName("Index")]
-        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Index()
         {
             return RedirectToAction(EmploymentBl.GetStartView());
