@@ -10006,8 +10006,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName + " " +
+                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
             if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
-                model.AccountantFio = entity.AcceptAccountant.FullName;// +", " + entity.AcceptAccountant.Email;
+                model.AccountantFio = entity.AcceptAccountant.FullName + " " + 
+                    entity.AccountantDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
             if (entity.Archivist != null)
                 model.ArchivistFio = entity.Archivist.FullName;
             
