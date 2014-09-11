@@ -11009,14 +11009,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<IdNameDto> result = new List<IdNameDto>();
             foreach (MissionReport report in reports)
             {
+                if (result.Any(x => x.Id == report.Id)) 
+                    continue;
                 string name = "AO" + report.Number;
-                name += " " + FormatDate(report.MissionOrder.BeginDate) + " - " +
-                        FormatDate(report.MissionOrder.EndDate);
-                /*report.MissionOrder.BeginDate.ToShortDateString() + " - " +
-                        report.MissionOrder.EndDate.ToShortDateString()*/;
+                name += " " + FormatDate(report.MissionOrder.BeginDate) + " - " + FormatDate(report.MissionOrder.EndDate);
                 if (report.MissionOrder.Targets.Count() > 0)
                     name += " " + report.MissionOrder.Targets.First().City;
-                result.Add(new IdNameDto{Id = report.Id,Name = name});
+                result.Add(new IdNameDto {Id = report.Id, Name = name});
             }
             return result;
         }
