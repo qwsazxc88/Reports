@@ -496,7 +496,8 @@ namespace WebMvc.Controllers
                 DepartmentId = model.DepartmentId,
                 EndDate = model.EndDate,
                 StatusId = model.StatusId,
-                UserName = model.UserName
+                UserName = model.UserName,
+                Number = model.Number,
             };
             System.Web.HttpContext.Current.Session[SessionMissionReportFilterName] = filterModel;
         }
@@ -510,6 +511,7 @@ namespace WebMvc.Controllers
                 model.BeginDate = filterModel.BeginDate;
                 model.EndDate = filterModel.EndDate;
                 model.UserName = filterModel.UserName;
+                model.Number = filterModel.Number;
                 if (AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
                 {
                     Department dep = DepartmentDao.Load(filterModel.DepartmentId);

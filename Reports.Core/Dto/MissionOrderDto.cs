@@ -51,6 +51,7 @@ namespace Reports.Core.Dto
         public decimal UserSum { get; set; }
         public decimal AccountantSum { get; set; }
         public Decimal? GradeIncrease { get; set; }
+        public Decimal? Saldo { get; set; }
         public string State { get; set; }
         public string AccountantName { get; set; }
         public string IsDocumentsSaveToArchive { get; set; }

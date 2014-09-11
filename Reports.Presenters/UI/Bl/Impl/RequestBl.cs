@@ -9852,6 +9852,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.Number,
                 model.SortBy,
                 model.SortDescending);
         }

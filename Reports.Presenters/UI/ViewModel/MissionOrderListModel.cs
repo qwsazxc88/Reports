@@ -50,5 +50,6 @@ namespace Reports.Presenters.UI.ViewModel
         public DateTime? BeginDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string UserName { get; set; }
+        public string Number { get; set; }
     }
 }
