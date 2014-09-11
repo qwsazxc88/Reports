@@ -7777,6 +7777,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.Number,
                 model.SortBy,
                 model.SortDescending);
         }        
@@ -7797,6 +7798,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(6, "Не одобрен членом правления"),
                                                            new IdNameDto(7, "Требует одобрения руководителем"),
                                                            new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           new IdNameDto(9, "Выгружен в 1С"),
                                                            //new IdNameDto(10, "Отклоненные"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
