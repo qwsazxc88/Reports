@@ -35,11 +35,12 @@ namespace Reports.Core.Dao.Impl
 
         #endregion
 
+        #region sqlSelectForCandidateList
+
         protected const string sqlSelectForCandidateList =
             @"select candidate.Id Id
                 , candidate.UserId UserId
                 , generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic as Name
-                , directorate.Name Directorate
                 , managers.WorkCity WorkCity
                 , department.Name Department
                 , position.Name Position
@@ -63,11 +64,13 @@ namespace Reports.Core.Dao.Impl
 				, case
 					when candidate.Status = 1 then N'Ожидает согласование СБ'
 					when candidate.Status = 2 then N'Обучение'
-					when candidate.Status = 3 then N'Ожидает согласование руководителем'
-					when candidate.Status = 4 then N'Ожидает согласование вышестоящим руководителем'
+                    when candidate.Status = 3 then N'Ожидается заявление о приеме'
+					when candidate.Status = 4 then N'Ожидает согласование руководителем'
+					when candidate.Status = 5 then N'Ожидает согласование вышестоящим руководителем'
 					when candidate.Status = 6 then N'Оформление Кадры'
-					when candidate.Status = 7 then N'Завершено'
+					when candidate.Status = 7 then N'Принят'
 					when candidate.Status = 8 then N'Выгружено в 1С'
+					when candidate.Status = 9 then N'Отклонен'
 					else N''
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
@@ -85,17 +88,18 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.GeneralInfo generalInfo on generalInfo.Id = candidate.GeneralInfoId
                 left join dbo.Managers managers on managers.Id = candidate.ManagersId
                 left join dbo.PersonnelManagers personnelManagers on personnelManagers.Id = candidate.PersonnelManagersId
-                left join dbo.Department directorate on directorate.Id = managers.DirectorateId
                 left join dbo.Department department on department.Id = managers.DepartmentId
                 left join dbo.Position position on position.Id = managers.PositionId
                 left join dbo.Schedule schedule on schedule.Id = managers.ScheduleId
                 left join dbo.Users candidateUser on candidate.UserId = candidateUser.Id
                 left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
                 inner join dbo.Users currentUser on currentUser.Id = :currentId
-                inner join dbo.Department currentDepartment on currentDepartment.Id = currentUser.DepartmentId
+                left join dbo.Department currentDepartment on currentDepartment.Id = currentUser.DepartmentId
                 inner join dbo.Users appointmentCreator on appointmentCreator.Id = candidate.AppointmentCreatorId
                 inner join dbo.Department appointmentCreatorDepartment on appointmentCreatorDepartment.Id = appointmentCreator.DepartmentId
             ";
+
+        #endregion
 
         public IList<CandidateDto> GetCandidates(int currentId,
                 UserRole role,
@@ -246,7 +250,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
-                .AddScalar("Directorate", NHibernateUtil.String)
                 .AddScalar("WorkCity", NHibernateUtil.String)
                 .AddScalar("Department", NHibernateUtil.String)
                 .AddScalar("Position", NHibernateUtil.String)
@@ -259,7 +262,7 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Schedule", NHibernateUtil.String)
                 .AddScalar("DateOfBirth", NHibernateUtil.DateTime)
                 .AddScalar("Disabilities", NHibernateUtil.String)
-                .AddScalar("Grade", NHibernateUtil.String)
+                .AddScalar("Grade", NHibernateUtil.Int32)
                 .AddScalar("Status", NHibernateUtil.String)
                 .AddScalar("IsApprovedByManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApprovedByHigherManager", NHibernateUtil.Boolean)

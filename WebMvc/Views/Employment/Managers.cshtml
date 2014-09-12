@@ -14,14 +14,19 @@
             @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
             @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
         </div>
+        
         <div class="formfield clear">
-            @Html.LabelFor(m => m.DirectorateId)&nbsp;@Html.ValidationMessageFor(m => m.DirectorateId)<br />
-            @Html.DropDownListFor(m => m.DirectorateId, Model.DirectorateItems)
+            @Html.LabelFor(m => m.DepartmentName):
+        </div>
+        <div class="formfield">
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            @Html.HiddenFor(m => m.DepartmentName)
+            @Html.HiddenFor(m => m.DepartmentId)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.DepartmentId)&nbsp;@Html.ValidationMessageFor(m => m.DepartmentId)<br />
-            @Html.DropDownListFor(m => m.DepartmentId, Model.DepartmentItems)
+            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
         </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
             @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
@@ -94,6 +99,7 @@
 
 @using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
 {
+    @Html.HiddenFor(m => m.UserId)
     <div class="clear">
         @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
         {        
@@ -112,6 +118,9 @@
 }
 
 <script>
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
     $(document).ready(function () {
         setActiveMenuItem("empManagers");
         $('#isFrontContainer').buttonset();

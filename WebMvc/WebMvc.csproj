@@ -697,6 +697,9 @@
     <Content Include="Views\Employment\ExperienceReadOnly.cshtml" />
     <Content Include="Views\Employment\ContactsReadOnly.cshtml" />
     <Content Include="Views\Employment\BackgroundCheckReadOnly.cshtml" />
+    <Content Include="Views\Employment\OnsiteTrainingReadOnly.cshtml" />
+    <Content Include="Views\Employment\CreateCandidate.cshtml" />
+    <Content Include="Views\Employment\PrintCreatedCandidate.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

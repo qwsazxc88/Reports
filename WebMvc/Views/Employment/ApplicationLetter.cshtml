@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ApplicationLetterModel
+@{
     Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
     ViewBag.Title = "Прием - Заявление о приеме на работу";
 }
@@ -10,15 +11,25 @@
     <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>
         <div class="formfield clear">
-            Выбрать скан для загрузки<br /><input type="file" name="files" />
+            Выбрать скан для загрузки<br /><input type="file" name="ApplicationLetterScanFile" />
         </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
-        <div class="letter">
+        
+        @if (!string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ApplicationLetterScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.ApplicationLetterScanAttachmentFilename
+                </a>
+            </div>
+            @*
+            <div class="formfield">
+                <br /><input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment(@Model.ApplicationLetterScanAttachmentId);" />
+            </div>
+            *@
+        }
+
+        <div class="letter clear">
             <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
             <p style="margin-left: 50%;">
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
