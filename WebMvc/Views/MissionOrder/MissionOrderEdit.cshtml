@@ -202,7 +202,7 @@
             объеме из заработной платы. 
             </td>
         </tr>
-        <tr id="trUserSumCash">
+        <tr id="trUserSumCash" style="display:none">
             <td>
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
@@ -998,6 +998,12 @@
         function CalcUserCashNotCashSums(){
             clearEditTargetErrors($("#trUserSumCash"));
             clearEditTargetErrors($("#trUserSumNotCash"));
+            if($("#UserSumNotCash").val() == '')
+            {
+                $("#UserAllSum").val('');
+                addEditTargetError($("#UserSumNotCash"),"Обязательное поле");
+                return false;
+            }
             var allCashSum = 0;
             var sum = ValidateSum($("#UserSumCash"));
             var sumCash = 0;
