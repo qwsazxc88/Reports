@@ -7912,6 +7912,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             SetUserInfoModel(user, model);
             SetFlagsState(id,user,entity,model);
+            SetStaticFields(model, entity);
             LoadDictionaries(model);
             SetHiddenFields(model);
             return model;
@@ -7939,21 +7940,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            MissionOrder missionOrder = null;
             try
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                MissionOrder missionOrder = null;
                 if (model.Id != 0)
-                {
                     missionOrder = MissionOrderDao.Load(model.Id);
-                }
                 if (!CheckUserMoRights(user, current, model.Id, missionOrder, true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
                 }
-               
                 if (model.Id == 0)
                 {
                     missionOrder = new MissionOrder
@@ -8040,6 +8038,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             finally
             {
                 SetUserInfoModel(user, model);
+                SetStaticFields(model, missionOrder);
                 LoadDictionaries(model);
                 SetHiddenFields(model);
             }
@@ -8882,7 +8881,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateCreated = missionOrder.CreateDate.ToShortDateString();
                 if (missionOrder.DeleteDate.HasValue)
                     model.IsDeleted = true;
+                SetStaticFields(model, missionOrder);
             }
+        }
+        protected void SetStaticFields(MissionOrderEditModel model, MissionOrder entity)
+        {
+            if(entity == null)
+            {
+                Log.Warn("SetStaticFields: entity == null");
+                return;
+            }
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName + " " +
+                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.AcceptChief != null && entity.ChiefDateAccept.HasValue)
+                model.ChiefFio = entity.AcceptChief.FullName + " " +
+                    entity.ChiefDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId,MissionOrder entity,DateTime gradeDate)
         {
@@ -9893,6 +9907,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
             LoadCosts(model, entity);
+            SetStaticFields(model, entity);
             SetHiddenFields(model);
             return model;
         }
@@ -10002,6 +10017,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user,(UserInfoModel)model);
             model.UserFio ="Сотрудник " + user.FullName;
         }
+        protected void SetStaticFields(MissionReportEditModel model,MissionReport entity)
+        {
+            if (entity == null)
+            {
+                Log.Warn("MissionReportEdit setStaticFields: entity == null");
+                return;
+            }
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName + " " +
+                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
+                model.AccountantFio = entity.AcceptAccountant.FullName + " " +
+                    entity.AccountantDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.Archivist != null)
+                model.ArchivistFio = entity.Archivist.FullName;
+        }
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
             SetFlagsState(model, false);
@@ -10010,15 +10041,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
-            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
-                model.ManagerFio = entity.AcceptManager.FullName + " " +
-                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
-            if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
-                model.AccountantFio = entity.AcceptAccountant.FullName + " " + 
-                    entity.AccountantDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
-            if (entity.Archivist != null)
-                model.ArchivistFio = entity.Archivist.FullName;
-            
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -10206,11 +10228,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            MissionReport missionReport = null;
             try
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                MissionReport missionReport = MissionReportDao.Load(model.Id);
+                missionReport = MissionReportDao.Load(model.Id);
                 model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", missionReport.Number);
                 model.DocumentNumber =  missionReport.Number.ToString();
                 model.DateCreated = missionReport.CreateDate.ToShortDateString();
@@ -10247,6 +10270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SetUserInfoModel(user, model);
                 LoadDictionaries(model);
+                SetStaticFields(model, missionReport);
                 SetHiddenFields(model);
             }
         }

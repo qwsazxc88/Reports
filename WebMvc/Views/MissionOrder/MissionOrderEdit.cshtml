@@ -265,8 +265,11 @@
             </td>
         </tr>
          <tr>
+            <td colspan="2">@Html.LabelFor(m => m.ManagerFio):&nbsp;&nbsp;@Model.ManagerFio</td>
+        </tr>
+         <tr>
             <td colspan="2">
-                    Согласование Члена Розничного Правления/ Члена Правления, курирующего функциональное  направление
+                    Согласование Члена Розничного Правления/Члена Правления, курирующего функциональное  направление
                     @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
                     @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
                     @if (!Model.IsChiefApproveAvailable)
@@ -275,6 +278,9 @@
                     }
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
             </td>
+        </tr>
+         <tr>
+            <td colspan="2">@Html.LabelFor(m => m.ChiefFio):&nbsp;&nbsp;@Model.ChiefFio</td>
         </tr>
         <tr>
             <td colspan="2" style="font-weight:bold">Секретариат</td>

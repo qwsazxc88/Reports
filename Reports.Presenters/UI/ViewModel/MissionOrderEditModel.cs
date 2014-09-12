@@ -74,11 +74,15 @@ namespace Reports.Presenters.UI.ViewModel
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }
         public bool? IsManagerApprovedHidden { get; set; }
+        [Display(Name = "ФИО функционального руководителя")]
+        public string ManagerFio { get; set; }
         
 
         public bool? IsChiefApproved { get; set; }
         public bool IsChiefApproveAvailable { get; set; }
         public bool? IsChiefApprovedHidden { get; set; }
+        [Display(Name = "ФИО Члена Розничного Правления/Члена Правления, курирующего функциональное  направление")]
+        public string ChiefFio { get; set; }
         //public bool IsManagerNotApproved { get; set; }
 
         public RequestCommentsModel CommentsModel { get; set; }
