@@ -14,14 +14,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int PositionId { get; set; }
         public IEnumerable<SelectListItem> PositionItems { get; set; }
 
-        [Display(Name = "Дирекция"),
-            Required(ErrorMessage = "Обязательное поле")]
-        public int DirectorateId { get; set; }
-        public IEnumerable<SelectListItem> DirectorateItems { get; set; }
-
         [Display(Name = "Структурное подразделение")]
-        public int DepartmentId { get; set; }
-        public IEnumerable<SelectListItem> DepartmentItems { get; set; }
+        public string DepartmentName { get; set; }
+        public int DepartmentId { get; set; }        
 
         [Display(Name = "Условия приема на работу"),
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]

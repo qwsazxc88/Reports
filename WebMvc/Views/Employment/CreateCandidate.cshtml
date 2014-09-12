@@ -27,8 +27,8 @@
         </div>
         <div class="formfield">
             <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-            <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
-            <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+            @Html.HiddenFor(m => m.DepartmentName)
+            @Html.HiddenFor(m => m.DepartmentId)
         </div>
         <div class="formfield clear">
             <input type="button" value="Выбрать" onclick="changeDepartment();"/>

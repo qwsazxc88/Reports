@@ -41,7 +41,6 @@ namespace Reports.Core.Dao.Impl
             @"select candidate.Id Id
                 , candidate.UserId UserId
                 , generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic as Name
-                , directorate.Name Directorate
                 , managers.WorkCity WorkCity
                 , department.Name Department
                 , position.Name Position
@@ -89,7 +88,6 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.GeneralInfo generalInfo on generalInfo.Id = candidate.GeneralInfoId
                 left join dbo.Managers managers on managers.Id = candidate.ManagersId
                 left join dbo.PersonnelManagers personnelManagers on personnelManagers.Id = candidate.PersonnelManagersId
-                left join dbo.Department directorate on directorate.Id = managers.DirectorateId
                 left join dbo.Department department on department.Id = managers.DepartmentId
                 left join dbo.Position position on position.Id = managers.PositionId
                 left join dbo.Schedule schedule on schedule.Id = managers.ScheduleId
@@ -252,7 +250,6 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Id", NHibernateUtil.Int32)
                 .AddScalar("UserId", NHibernateUtil.Int32)
                 .AddScalar("Name", NHibernateUtil.String)
-                .AddScalar("Directorate", NHibernateUtil.String)
                 .AddScalar("WorkCity", NHibernateUtil.String)
                 .AddScalar("Department", NHibernateUtil.String)
                 .AddScalar("Position", NHibernateUtil.String)

@@ -52,8 +52,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetPersonnelTypes();
         IEnumerable<SelectListItem> GetConscriptionStatuses();
         IEnumerable<SelectListItem> GetPositions();
-        IEnumerable<SelectListItem> GetDirectorates();
-        IEnumerable<SelectListItem> GetDepartments();
         IEnumerable<SelectListItem> GetSchedules();
         IEnumerable<SelectListItem> GetPersonalAccountContractors();
         IEnumerable<SelectListItem> GetAccessGroups();

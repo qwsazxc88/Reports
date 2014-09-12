@@ -686,9 +686,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.Bonus = entity.Bonus;
-                model.DirectorateId = entity.Directorate.Id;
                 model.DailySalaryBasis = entity.DailySalaryBasis;
                 model.DepartmentId = entity.Department.Id;
+                model.DepartmentName = entity.Department.Name;
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.HourlySalaryBasis = entity.HourlySalaryBasis;
                 model.IsFront = entity.IsFront;
@@ -786,7 +786,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 | UserRole.StaffManager)) > 0;
             model.IsManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
-                | UserRole.Manager)) > 0;
+                | UserRole.Manager
+                | UserRole.OutsourcingManager)) > 0;
             model.IsPersonalManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
                 | UserRole.Manager
@@ -890,8 +891,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(ManagersModel model)
         {
             model.PositionItems = GetPositions();
-            model.DirectorateItems = GetDirectorates();
-            model.DepartmentItems = GetDepartments();
             model.Schedules = GetSchedules();
 
             model.ApprovalStatuses = GetApprovalStatuses();
@@ -1031,16 +1030,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IEnumerable<SelectListItem> GetPositions()
         {
             return PositionDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
-        }
-
-        public IEnumerable<SelectListItem> GetDirectorates()
-        {
-            return DepartmentDao.LoadAllSorted().Where(item => item.ItemLevel == 3).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
-        }
-
-        public IEnumerable<SelectListItem> GetDepartments()
-        {
-            return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
         public IEnumerable<SelectListItem> GetSchedules()
@@ -1652,8 +1641,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Type = viewModel.Type;
         }
         */
+        #endregion
 
-        
         protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
         {
             entity.Bonus = viewModel.Bonus;
@@ -1661,7 +1650,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.Managers = entity;
             entity.DailySalaryBasis = viewModel.DailySalaryBasis;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-            entity.Directorate = DepartmentDao.Load(viewModel.DirectorateId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
             entity.IsFront = viewModel.IsFront;
@@ -1709,8 +1697,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
         }
         
-        #endregion
-
         protected EmploymentCandidate GetCandidate(int userId)
         {
             return EmploymentCommonDao.GetCandidateByUserId(userId);
@@ -1891,7 +1877,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Candidate.Managers = entity;
                         entity.DailySalaryBasis = viewModel.DailySalaryBasis;
                         entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-                        entity.Directorate = DepartmentDao.Load(viewModel.DirectorateId);
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
                         entity.IsFront = viewModel.IsFront;
