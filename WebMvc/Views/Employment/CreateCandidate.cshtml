@@ -1,0 +1,115 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.CreateCandidateModel
+@{
+    ViewBag.Title = "Прием - Добавление кандидата";
+}
+
+<span style="color:red;">@ViewBag.Error</span>
+
+@using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
+{
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Добавление кандидата</legend>
+        <div class="formfield">
+            @Html.LabelFor(m => m.PassportData)&nbsp;@Html.ValidationMessageFor(m => m.PassportData)<br />
+            @Html.TextBoxFor(m => m.PassportData)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
+            @Html.TextBoxFor(m => m.SNILS)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
+            @Html.TextBoxFor(m => m.DateOfBirth)
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DepartmentName):
+        </div>
+        <div class="formfield">
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+            <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+        </div>
+        <div class="formfield clear">
+            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+        </div>
+
+        @if (Model.IsOnBehalfOfManagerAvailable)
+        {
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.OnBehalfOfManagerName):
+            </div>
+            <div class="formfield">
+                <label id="OnBehalfOfManagerNameLabel">@Model.OnBehalfOfManagerName</label>
+                @Html.HiddenFor(m => m.OnBehalfOfManagerId)
+                @Html.HiddenFor(m => m.OnBehalfOfManagerName)
+            </div>
+            <div class="formfield clear">
+                <input type="button" value="Выбрать" onclick="changeManager();"/>
+            </div>
+        }
+    </fieldset>
+    
+    <div class="clear">        
+        @if (!Model.UserId.HasValue)
+        {
+            <button type="submit">Сохранить</button>
+        }
+        else
+        {
+            <a href="@Url.Action("PrintCreatedCandidate", new { userId = Model.UserId })" target="_blank">Распечатать учетные данные кандидата</a>
+        }
+    </div>
+}
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionSelectManagerDialogUrl = "@Url.Action("SelectManagerDialog", "Appointment")";
+
+    $(document).ready(function () {
+        attachDatepickerToInputs($('#DateOfBirth'), "-80:+0", true);
+    });
+
+    function changeManager() {
+            var title = "Выбор руководителя";
+
+            var newDiv = $("<div>")
+                .attr("id", "divSelectManagerDialog")
+                .text("Подождите, идет загрузка данных ...");
+            
+            $(newDiv).load(actionSelectManagerDialogUrl + "?" + " #selectManagerDialogTable", function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            });
+            
+            $(newDiv).dialog(
+            {
+                // initialize dialog box
+                autoOpen: true,
+                modal: true,
+                title: title,
+                width: 780,
+                height: 160,
+                // fix IE6  
+                bgiframe: true,
+                close: function (event, ui) {
+                    $(this).dialog("destroy").remove();
+                },
+                buttons:
+                {
+                    "Выбрать": function () {
+                        $("#OnBehalfOfManagerId").val($("#ManagerId").val());
+                        $("#OnBehalfOfManagerName").val($("#ManagerId option:selected").text());
+                        $("#OnBehalfOfManagerNameLabel").text($("#OnBehalfOfManagerName").val());
+                        $(this).dialog("close");
+                    }
+                }
+            });
+            
+        }
+</script>

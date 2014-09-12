@@ -41,6 +41,43 @@ namespace WebMvc.Controllers
         {
             return RedirectToAction(EmploymentBl.GetStartView());
         }
+
+        // Create new candidate
+        [HttpGet]
+        public ActionResult CreateCandidate()
+        {
+            var model = EmploymentBl.GetCreateCandidateModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult CreateCandidate(CreateCandidateModel model)
+        {
+            string error = string.Empty;
+
+            if (ValidateModel(model))
+            {
+                model.UserId = EmploymentBl.CreateCandidate(model, out error);
+                ViewBag.Error = error;
+            }
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;                
+            }
+            return View(EmploymentBl.GetCreateCandidateModel());
+        }
+
+        public ActionResult PrintCreatedCandidate(int userId)
+        {
+            string error = string.Empty;
+            var model = EmploymentBl.GetPrintCreatedCandidateModel(userId, out error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+            }
+            return View(model);
+        }
         
         // General Info
         [HttpGet]
@@ -363,11 +400,11 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckApprove(int userId)
+        public ActionResult BackgroundCheckApprove(int userId, bool? approvalStatus)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveBackgroundCheck(userId, out error);
+            EmploymentBl.ApproveBackgroundCheck(userId, approvalStatus, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -419,15 +456,20 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult ApplicationLetter(int? id)
         {
-            var model = new ApplicationLetterModel();
+            var model = EmploymentBl.GetApplicationLetterModel(id);
             return View(model);
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult ApplicationLetter(ApplicationLetterModel model, IEnumerable<HttpPostedFileBase> files)
+        public ActionResult ApplicationLetter(ApplicationLetterModel model)
         {
-            // EmploymentBl.SaveModel<ApplicationLetterModel, ApplicationLetter>(model, out error);
+            string error = string.Empty;
+
+            if (ValidateModel(model))
+            {
+                EmploymentBl.ProcessSaving(model, out error);
+            }
             return View(model);
         }
 
@@ -448,21 +490,36 @@ namespace WebMvc.Controllers
 
             if (ValidateModel(model))
             {
+                EmploymentBl.ProcessSaving<ManagersModel, Managers>(model, out error);
                 EmploymentBl.ApproveCandidateByManager(model, out error);
             }
-            model = EmploymentBl.GetManagersModel();
-            return View(model);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Roster");
+            }
         }
 
         [HttpPost]
         [ReportAuthorize(UserRole.Manager)]
-        public ActionResult ManagersApproveByHigherManager(int userId)
+        public ActionResult ManagersApproveByHigherManager(int userId, bool? higherManagerApprovalStatus)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveCandidateByHigherManager(userId, out error);
-            ManagersModel model = EmploymentBl.GetManagersModel();
-            return View(model);
+            EmploymentBl.ApproveCandidateByHigherManager(userId, higherManagerApprovalStatus, out error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+                return View("Managers", EmploymentBl.GetManagersModel(userId));
+            }
+            else
+            {
+                return RedirectToAction("Roster");
+            }
         }
 
         // Filled out by personnel managers
@@ -485,7 +542,15 @@ namespace WebMvc.Controllers
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
             }
             model = EmploymentBl.GetPersonnelManagersModel();
-            return View(model);
+            if (!string.IsNullOrEmpty(error))
+            {
+                ViewBag.Error = error;
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("Roster");
+            }
         }
 
         // Employment roster
@@ -579,6 +644,22 @@ namespace WebMvc.Controllers
 
         }
 
+        protected bool ValidateModel(CreateCandidateModel model)
+        {
+            int numberOfFilledFields = 0;
+
+            numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
+            numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
+            numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
+
+            if (numberOfFilledFields < 2)
+            {
+                ModelState.AddModelError(null, "Необходимо заполнить хотя бы 2 поля личных данных.");
+            }
+
+            return ModelState.IsValid;
+        }
+
         [NonAction]
         protected bool ValidateModel(GeneralInfoModel model)
         {
@@ -662,6 +743,13 @@ namespace WebMvc.Controllers
         protected bool ValidateModel(OnsiteTrainingModel model)
         {
 
+            return ModelState.IsValid;
+        }
+
+        [NonAction]
+        protected bool ValidateModel(ApplicationLetterModel model)
+        {
+            ValidateFileLength(model.ApplicationLetterScanFile, "ApplicationLetterScanFile");
             return ModelState.IsValid;
         }
 

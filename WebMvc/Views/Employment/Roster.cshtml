@@ -84,6 +84,10 @@
     </table>
 
     @* END Выбор параметров *@
+    
+    <div style="margin: 10px;">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</div>
+    
+    @* END CreateCandidate *@
 
     <fieldset class="bordered doc-wrap panel">
     <legend>Реестр по приему</legend>
@@ -298,8 +302,8 @@
 
                     <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
 
-                    @*<span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>*@
+                    <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
+                    <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
                 </div>
             </td>
         </tr>

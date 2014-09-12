@@ -44,7 +44,7 @@ namespace Reports.Core.Dto.Employment2
 
         public string Disabilities { get; set; }
 
-        public int? Grade { get; set; }
+        public Int32 Grade { get; set; }
 
         public string Status { get; set; }
 

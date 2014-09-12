@@ -75,7 +75,6 @@
             <td colspan="2">
                 @if (Model.IsApproveByTrainerAvailable || Model.ApprovalStatus != null)
                 {        
-                    @Html.LabelFor(m => m.ApprovalStatus)
                     @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByTrainerAvailable ? null : new { disabled = "disabled" })
                 }
                 @if (Model.ApprovalStatus != null)
