@@ -769,6 +769,31 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
             RosterModel model = new RosterModel();
+
+            model.IsCandidateInfoAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.Security
+                | UserRole.StaffManager)) > 0;
+            model.IsBackgroundCheckAvailable = (current.UserRole & (UserRole.Security
+                | UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.StaffManager)) > 0;
+            model.IsManagersAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager)) > 0;
+            model.IsPersonalManagersAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.StaffManager)) > 0;
+
             if (filters == null)
             {                
                 model.Roster = new List<CandidateDto>();
@@ -806,15 +831,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = string.Empty;
             var user = userDao.Load(id);
 
-            if (GetCandidate(id).AppointmentCreator.Id == AuthenticationService.CurrentUser.Id)
-            {
-                return new PrintCreatedCandidateModel { Login = user.Login, Password = user.Password };
-            }
-            else
-            {
-                error = "Доступ запрещен";
-                return new PrintCreatedCandidateModel();
-            }
+            return new PrintCreatedCandidateModel { Login = user.Login, Password = user.Password };
         }
 
         public SignersModel GetSignersModel()

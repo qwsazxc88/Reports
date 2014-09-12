@@ -68,7 +68,7 @@ namespace WebMvc.Controllers
 
             return View(model);
         }
-
+        
         public ActionResult PrintCreatedCandidate(int userId)
         {
             string error = string.Empty;

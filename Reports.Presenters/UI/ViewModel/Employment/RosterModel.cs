@@ -3,11 +3,17 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using Reports.Core;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class RosterModel
     {
+        public bool IsCandidateInfoAvailable { get; set; }
+        public bool IsBackgroundCheckAvailable { get; set; }
+        public bool IsManagersAvailable { get; set; }
+        public bool IsPersonalManagersAvailable { get; set; }
+
         [Display(Name = "Реестр по приему")]
         public IList<CandidateDto> Roster { get; set; }
 

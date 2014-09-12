@@ -85,7 +85,7 @@
 
     @* END Выбор параметров *@
     
-    <div style="margin: 10px;">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</div>
+    <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
     
     @* END CreateCandidate *@
 
@@ -289,21 +289,37 @@
         <tr>
             <td colspan="14" style="padding: 0;">
                 <div style="display:none;">
-                    <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                    @if (Model.IsCandidateInfoAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                    }
 
-                    <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
+                    @if (Model.IsBackgroundCheckAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
+                    }
+                    
                     <span class="buttonLink">@Html.ActionLink("Обучение", "OnsiteTraining", new { id = candidate.UserId })</span>
 
-                    <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+                    @if (Model.IsCandidateInfoAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+                    }
 
-                    <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
-                    <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
+                    @if (Model.IsManagersAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
+                    }
+                    @if (Model.IsPersonalManagersAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
+                    }
                 </div>
             </td>
         </tr>
