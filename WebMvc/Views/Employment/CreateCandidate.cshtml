@@ -36,6 +36,7 @@
 
         @if (Model.IsOnBehalfOfManagerAvailable)
         {
+            @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
             <div class="formfield clear">
                 @Html.LabelFor(m => m.OnBehalfOfManagerName):
             </div>

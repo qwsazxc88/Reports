@@ -65,7 +65,8 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;                
             }
-            return View(EmploymentBl.GetCreateCandidateModel());
+
+            return View(model);
         }
 
         public ActionResult PrintCreatedCandidate(int userId)
