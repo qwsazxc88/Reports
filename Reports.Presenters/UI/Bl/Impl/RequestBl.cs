@@ -9813,6 +9813,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(7, "Требует одобрения руководителем"),
                                                            new IdNameDto(8, "Требует одобрения бухгалтером"),
                                                            new IdNameDto(10, "Отклонен"),
+                                                           new IdNameDto(9, "Выгружен в 1С"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;

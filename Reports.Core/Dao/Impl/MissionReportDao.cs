@@ -27,6 +27,7 @@ namespace Reports.Core.Dao.Impl
             @"select v.Id as Id,
                                 u.Id as UserId,
                                 u.Name as UserName,
+                                up.Name as Position,
                                 dep.Name as Dep7Name,
                                 v.EditDate as EditDate,
                                 v.Number as ReportNumber,
@@ -77,6 +78,7 @@ namespace Reports.Core.Dao.Impl
                                 inner join[dbo].[MissionOrder] o on o.Id = v.[MissionOrderId]
                                 -- left join dbo.MissionType t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[Users] uBuh on uBuh.Id = v.AcceptAccountant
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id";
                                 //{0}";
@@ -307,6 +309,9 @@ namespace Reports.Core.Dao.Impl
                     case 8:
                         statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is not null and v.[AccountantDateAccept] is null";
                         break;
+                   case 9:
+                        statusWhere = @"v.SendTo1C is not null";
+                        break;
                     //case 8:
                     //    statusWhere =
                     //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
@@ -314,9 +319,6 @@ namespace Reports.Core.Dao.Impl
                     case 10:
                         statusWhere = @"v.[DeleteDate] is not null";
                         break;
-                    //case 9:
-                    //    statusWhere = @"SendTo1C is not null";
-                    //    break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
@@ -421,6 +423,9 @@ namespace Reports.Core.Dao.Impl
                 case 16:
                     orderBy = @" order by Saldo";
                     break;
+                case 17:
+                    orderBy = @" order by Position";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -458,6 +463,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("Position", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("ReportNumber", NHibernateUtil.Int32).
