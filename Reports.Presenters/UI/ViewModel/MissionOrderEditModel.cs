@@ -70,6 +70,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Командировка приходится на выходные/праздничные дни или её продолжительность более семи дней")]
         public bool IsChiefApproveNeed { get; set; }
         public bool IsChiefApproveNeedHidden { get; set; }
+        [Display(Name = "Причина командировки на выходные/праздничные дни или продолжительностью более 7 дней")]
+        public string LongTermReason { get; set; }
 
         public bool? IsManagerApproved { get; set; }
         public bool IsManagerApproveAvailable { get; set; }

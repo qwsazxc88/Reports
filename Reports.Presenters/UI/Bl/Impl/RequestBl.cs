@@ -7873,6 +7873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TrainTicketType = entity.TrainTicketType;
 
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+                model.LongTermReason = entity.LongTermReason;
                 model.DocumentNumber = entity.Number.ToString();
 
                 MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
@@ -8067,6 +8068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.UserSumNotCash = GetSum(model.UserSumNotCash);
                 entity.NeedToAcceptByChiefAsManager = isDirectorManager;
                 entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
+                entity.LongTermReason = string.IsNullOrEmpty(model.LongTermReason) ? null : model.LongTermReason;
                 entity.IsResidencePaid = model.IsResidencePaid;
                 entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
                 entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
@@ -8298,8 +8300,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
                 return false;
-            return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
-                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);
+            /*return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
+                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);*/
+            return IsMissionOrderLong(entity.EndDate.Value, entity.BeginDate.Value);
+        }
+        public bool IsMissionOrderLong(DateTime endDate, DateTime beginDate)
+        {
+            return (endDate.Subtract(beginDate).Days > 7) ||
+                  (WorkingCalendarDao.GetNotWorkingCountBetweenDates(beginDate, endDate) > 0);
         }
         protected string GetStringForList(List<string> list)
         {

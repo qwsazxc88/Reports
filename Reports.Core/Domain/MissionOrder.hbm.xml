@@ -27,6 +27,7 @@
 	<property name="UserSumCash"  not-null="false"/>
 	<property name="UserSumNotCash"  not-null="false"/>
 	<property name="NeedToAcceptByChief"  not-null="true"/>
+  <property name="LongTermReason" length="128" not-null="false"/>
 	<property name="NeedToAcceptByChiefAsManager"  not-null="true"/>
 
 	<property name="IsResidencePaid"  not-null="true"/>

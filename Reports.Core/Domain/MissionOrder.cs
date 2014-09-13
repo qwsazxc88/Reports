@@ -49,6 +49,7 @@ namespace Reports.Core.Domain
 
         public virtual bool NeedToAcceptByChief { get; set; }
         public virtual bool NeedToAcceptByChiefAsManager { get; set; }
+        public virtual string LongTermReason { get; set; }
 
 
         public virtual User User { get; set; }

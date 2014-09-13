@@ -45,7 +45,7 @@ namespace Reports.Core.Dao.Impl
                                 v.UserAllSum - v.AllSum as GradeIncrease,
                                 case when v.[AccountantDateAccept] is not null then
                                      isnull(AccountantAllSum,0) - isnull(PurchaseBookAllSum,0) 
-                                    - isnull(PurchaseBookAllSum,0)
+                                    - isnull([UserSumReceived],0)
                                      else null end as Saldo,
                                 case when v.DeleteDate is not null then N'Отклонен'
                                      when v.SendTo1C is not null then N'Выгружен в 1с' 

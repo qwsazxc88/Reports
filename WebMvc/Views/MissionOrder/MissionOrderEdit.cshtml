@@ -252,6 +252,14 @@
                 <input type="hidden" id="IsChiefApproveNeedHidden" name="IsChiefApproveNeedHidden" value="@Model.IsChiefApproveNeedHidden" />
             </td>
         </tr>
+         <tr>
+            <td colspan="2">
+                @Html.LabelFor(m => m.LongTermReason):&nbsp;&nbsp;
+            @*</td>
+            <td>*@
+                @Html.TextBoxFor(m => m.LongTermReason,Model.IsEditable ? (object)new { maxlength = 128, style="width:350px" } : (object)new { @readonly = "read-only", style="width:350px"  })
+            </td>
+        </tr>
         <tr>
             <td colspan="2">
                     Расходы утверждены функциональным руководителем
@@ -264,7 +272,7 @@
                     <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
             </td>
         </tr>
-         <tr>
+        <tr>
             <td colspan="2">@Html.LabelFor(m => m.ManagerFio):&nbsp;&nbsp;@Model.ManagerFio</td>
         </tr>
          <tr>
