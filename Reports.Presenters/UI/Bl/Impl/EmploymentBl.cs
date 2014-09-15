@@ -1194,7 +1194,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "MilitaryServiceModel":
                     SaveMilitaryServiceAttachments(viewModel as MilitaryServiceModel, candidateId);
                     break;
-                    
+                case "ExperienceModel":
+                    SaveExperienceAttachments(viewModel as ExperienceModel, candidateId);
+                    break;
                 case "ApplicationLetterModel":
                     SaveApplicationLetterAttachments(viewModel as ApplicationLetterModel, candidateId);
                     break;
@@ -1270,6 +1272,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SaveAttachment(candidateId, model.MobilizationTicketScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MobilizationTicketScan, out fileName);
             }
         }
+
+        protected void SaveExperienceAttachments(ExperienceModel model, int candidateId)
+        {
+            if (model.WorkBookScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookScan, out fileName);
+            }
+            if (model.WorkBookSupplementScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookSupplementScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookSupplementScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookSupplementScan, out fileName);
+            }
+        }
+
+
 
         protected void SaveApplicationLetterAttachments(ApplicationLetterModel model, int candidateId)
         {

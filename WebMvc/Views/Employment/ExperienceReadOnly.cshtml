@@ -90,6 +90,13 @@
                 </td>
             </tr>
         </table>
+        @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.WorkBookScanAttachmentFilename
+            </a>
+        }
     </fieldset>
 
     <br />
@@ -122,6 +129,13 @@
                 </td>
             </tr>
         </table>
+        @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.WorkBookSupplementScanAttachmentFilename
+            </a>
+        }
     </fieldset>
 
 </fieldset>
