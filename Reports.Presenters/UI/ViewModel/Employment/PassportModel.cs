@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -93,6 +94,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Кем выдан"),
             StringLength(150, ErrorMessage = "Не более 150 знаков.")]
         public string InternationalPassportIssuedBy { get; set; }
+
+        public HttpPostedFileBase InternalPassportScanFile { get; set; }
+
+        public string InternalPassportScanAttachmentFilename { get; set; }
+        public int InternalPassportScanAttachmentId { get; set; }
 
         public PassportModel()
         {

@@ -150,14 +150,22 @@
     </div>
 
     <div class="formfield clear">
-        Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name="files" />
+        Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name=".MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
     </div>
-    <div class="formfield">
-        <br /><a href="">Открыть</a>
-    </div>
-    <div class="formfield">
-        <br /><a href="">Удалить</a>
-    </div>
+
+    if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    {
+        <div class="formfield">
+            <br />Скан:
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.MarriageCertificateScanAttachmentFilename
+            </a>
+        </div>
+        <div class="formfield">
+            <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MarriageCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                        {<text>style="display:none"</text>}*@/>
+        </div>
+    }
     
     <div class="formfield clear">
         Выбрать для загрузки сканы свидетельств о рождении детей<br /><input type="file" name="files" />

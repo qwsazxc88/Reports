@@ -167,27 +167,23 @@
         </div>
 
     </fieldset>
-</div>
 
-@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
-{
-    @Html.HiddenFor(m => m.UserId)
-    <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
-        {        
-            @Html.LabelFor(m => m.ApprovalStatus)
-            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
-        }
-        @if (Model.ApprovalStatus != null)
-        {
-            <span class="fakeFormField">@Model.ApproverName</span>
-        }
-        @if (Model.IsApproveBySecurityAvailable)
-        {
-            <button>Применить</button>
-        }
-    </div>
-}
+    @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.PersonalDataProcessingScanAttachmentFilename
+        </a>
+    }
+    
+    @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.InfoValidityScanAttachmentFilename
+        </a>
+    }
+</div>
 
 <script type="text/javascript">
     $(document).ready(function () {

@@ -98,15 +98,25 @@
                     </td>
                 </tr>
             </table>
+            
             <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="files" />
+                Выбрать скан для загрузки<br /><input type="file" name="WorkBookScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookScanFile)
             </div>
-            <div class="formfield">
-                <br /><a href="">Открыть</a>
-            </div>
-            <div class="formfield">
-                <br /><a href="">Удалить</a>
-            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.WorkBookScanAttachmentFilename
+                    </a>
+                </div>
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
+
         </fieldset>
     
         <br />
@@ -139,15 +149,25 @@
                     </td>
                 </tr>
             </table>
+            
             <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="files" />
+                Выбрать скан для загрузки<br /><input type="file" name="WorkBookSupplementScanFile" /> @Html.ValidationMessageFor(m => m.WorkBookSupplementScanFile)
             </div>
-            <div class="formfield">
-                <br /><a href="">Открыть</a>
-            </div>
-            <div class="formfield">
-                <br /><a href="">Удалить</a>
-            </div>
+
+            @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.WorkBookSupplementScanAttachmentFilename
+                    </a>
+                </div>
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.WorkBookSupplementScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
+
         </fieldset>
 
     </fieldset>

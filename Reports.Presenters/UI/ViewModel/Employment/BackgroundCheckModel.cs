@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -91,6 +92,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool? ApprovalStatus { get; set; }
         public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
         public string ApproverName { get; set; }
+
+        public HttpPostedFileBase PersonalDataProcessingScanFile { get; set; }
+        public HttpPostedFileBase InfoValidityScanFile { get; set; }
+
+        public string PersonalDataProcessingScanAttachmentFilename { get; set; }
+        public int PersonalDataProcessingScanAttachmentId { get; set; }
+        public string InfoValidityScanAttachmentFilename { get; set; }
+        public int InfoValidityScanAttachmentId { get; set; }
 
         public BackgroundCheckModel()
         {

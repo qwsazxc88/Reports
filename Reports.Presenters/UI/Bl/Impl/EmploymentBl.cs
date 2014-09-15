@@ -1182,42 +1182,139 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (viewModel.GetType().Name)
             {
                 case "GeneralInfoModel":
-                    if ((viewModel as GeneralInfoModel).PhotoFile != null)
-                    {
-                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).PhotoFile);
-                        string fileName = string.Empty;
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
-                    }
-                    if ((viewModel as GeneralInfoModel).INNScanFile != null)
-                    {
-                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
-                        string fileName = string.Empty;
-                        //int? attachmentId = 
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).INNScanAttachmentId, fileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
-                    }
-                    if ((viewModel as GeneralInfoModel).SNILSScanFile != null)
-                    {
-                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
-                        string fileName = string.Empty;
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).SNILSScanAttachmentId, fileDto, RequestAttachmentTypeEnum.SNILSScan, out fileName);
-                    }
-                    if ((viewModel as GeneralInfoModel).DisabilityCertificateScanFile != null)
-                    {
-                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).DisabilityCertificateScanFile);
-                        string fileName = string.Empty;
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).DisabilityCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.DisabilityCertificateScan, out fileName);
-                    }
+                    SaveGeneralInfoAttachments(viewModel as GeneralInfoModel, candidateId);
+                    break;
+                case "PassportModel":
+                    SavePassportAttachments(viewModel as PassportModel, candidateId);
+                    break;
+                    
+                case "FamilyModel":
+                    SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
+                    break;
+                case "MilitaryServiceModel":
+                    SaveMilitaryServiceAttachments(viewModel as MilitaryServiceModel, candidateId);
+                    break;
+                case "ExperienceModel":
+                    SaveExperienceAttachments(viewModel as ExperienceModel, candidateId);
+                    break;
+                case "BackgroundCheckModel":
+                    SaveBackgroundCheckAttachments(viewModel as BackgroundCheckModel, candidateId);
                     break;
                 case "ApplicationLetterModel":
-                    if ((viewModel as ApplicationLetterModel).ApplicationLetterScanFile != null)
-                    {
-                        UploadFileDto ApplicationLetterScanFileDto = GetFileContext((viewModel as ApplicationLetterModel).ApplicationLetterScanFile);
-                        string fileName = string.Empty;
-                        SaveAttachment(candidateId, (viewModel as ApplicationLetterModel).ApplicationLetterScanAttachmentId, ApplicationLetterScanFileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
-                    }
+                    SaveApplicationLetterAttachments(viewModel as ApplicationLetterModel, candidateId);
                     break;
                 default:
                     break;
+            }
+        }        
+
+        protected void SaveGeneralInfoAttachments(GeneralInfoModel model, int candidateId)
+        {
+            if (model.PhotoFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PhotoFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
+            }
+            if (model.INNScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.INNScanFile);
+                string fileName = string.Empty;
+                //int? attachmentId = 
+                SaveAttachment(candidateId, model.INNScanAttachmentId, fileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+            }
+            if (model.SNILSScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.INNScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.SNILSScanAttachmentId, fileDto, RequestAttachmentTypeEnum.SNILSScan, out fileName);
+            }
+            if (model.DisabilityCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.DisabilityCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.DisabilityCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.DisabilityCertificateScan, out fileName);
+            }
+        }
+
+        protected void SavePassportAttachments(PassportModel model, int candidateId)
+        {
+            if (model.InternalPassportScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InternalPassportScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InternalPassportScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InternalPassportScan, out fileName);
+            }
+        }
+
+        // TODO: SaveEducationAttachments
+
+        protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
+        {
+            if (model.MarriageCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MarriageCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
+            }
+            // TODO: Upload Child Birth Certificates
+        }
+
+        protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
+        {
+            if (model.MilitaryCardScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MilitaryCardScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MilitaryCardScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MilitaryCardScan, out fileName);
+            }
+            if (model.MobilizationTicketScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MobilizationTicketScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MobilizationTicketScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MobilizationTicketScan, out fileName);
+            }
+        }
+
+        protected void SaveExperienceAttachments(ExperienceModel model, int candidateId)
+        {
+            if (model.WorkBookScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookScan, out fileName);
+            }
+            if (model.WorkBookSupplementScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookSupplementScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookSupplementScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookSupplementScan, out fileName);
+            }
+        }
+
+        protected void SaveBackgroundCheckAttachments(BackgroundCheckModel model, int candidateId)
+        {
+            if (model.PersonalDataProcessingScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PersonalDataProcessingScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PersonalDataProcessingScanAttachmentId, fileDto, RequestAttachmentTypeEnum.PersonalDataProcessingScan, out fileName);
+            }
+            if (model.InfoValidityScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InfoValidityScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InfoValidityScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InfoValidityScan, out fileName);
+            }
+        }
+
+        protected void SaveApplicationLetterAttachments(ApplicationLetterModel model, int candidateId)
+        {
+            if (model.ApplicationLetterScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
             }
         }
 
