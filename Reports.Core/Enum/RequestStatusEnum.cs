@@ -59,7 +59,7 @@
         SNILSScan = 203,
         DisabilityCertificateScan = 204,
 
-        PassportScan = 211,
+        InternalPassportScan = 211,
 
         HigherEducationDiplomaScan = 221,
         PostGraduateEducationDiplomaScan = 222,

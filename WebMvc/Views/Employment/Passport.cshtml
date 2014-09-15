@@ -16,9 +16,25 @@
             @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
             @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
         </div>
+
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="files" />
+            Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
         </div>
+
+        @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.InternalPassportScanAttachmentFilename
+                </a>
+            </div>
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InternalPassportScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
+            </div>
+        }
+
         <div class="formfield">
             <br /><a href="">Открыть</a>
         </div>
