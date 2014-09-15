@@ -18,6 +18,15 @@
                 <div style="width: 96px; height: 96px; background: gray;"></div>
                 <input type="file" name="PhotoFile" />
                 <br />@Html.ValidationMessageFor(m => m.PhotoFile)
+
+                @if (!string.IsNullOrEmpty(Model.PhotoAttachmentFilename))
+                {
+                    <div class="formfield">
+                        <br /><input type="button" value="Удалить фото" onclick="deleteAttachment(@Model.PhotoAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                                   {<text>style="display:none"</text>}*@/>
+                    </div>
+                }
+                
             </fieldset>            
         </div>
         <div class="formfield">
@@ -168,7 +177,7 @@
                 </a>
             </div>
             <div class="formfield">
-                <br /><input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.INNScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
                                                                                            {<text>style="display:none"</text>}*@/>
             </div>
         }
@@ -179,7 +188,7 @@
         </div>
 
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="files" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
+            Выбрать скан для загрузки<br /><input type="file" name="SNILSScanFile" /> @Html.ValidationMessageFor(m => m.SNILSScanFile)
         </div>
 
         @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
@@ -191,7 +200,8 @@
                 </a>
             </div>
             <div class="formfield">
-                <br /><a href="">Удалить</a>
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.SNILSScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
             </div>
         }
 
@@ -218,14 +228,23 @@
                 @Html.EditorFor(m => m.DisabilityCertificateExpirationDate)
             </div>
             <div class="formfield clear">
-                Выбрать скан для загрузки<br /><input type="file" name="files" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
+                Выбрать скан для загрузки<br /><input type="file" name="DisabilityCertificateScanFile" /> @Html.ValidationMessageFor(m => m.DisabilityCertificateScanFile)
             </div>
-            <div class="formfield">
-                <br /><a href="">Открыть</a>
-            </div>
-            <div class="formfield">
-                <br /><a href="">Удалить</a>
-            </div>
+            
+            @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.DisabilityCertificateScanAttachmentFilename
+                    </a>
+                </div>
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.DisabilityCertificateScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
+
         </fieldset>
 
         <div class="formfield clear">

@@ -146,6 +146,13 @@
     <div class="formfield">
         @Html.LabelFor(m => m.SNILS)<br />
         <span class="fakeFormField">@Model.SNILS&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.SNILSScanAttachmentFilename
+            </a>
+        }
     </div>
     <fieldset class="bordered nomargin clear">
     <legend class="level2">Инвалидность</legend>
@@ -169,6 +176,17 @@
             @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)<br />
             <span class="fakeFormField">@Html.DisplayFor(m => m.DisabilityCertificateExpirationDate)&nbsp;</span>            
         </div>
+
+        <div class="formfield">
+            @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+            {
+                <br />
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.DisabilityCertificateScanAttachmentFilename
+                </a>
+            }
+        </div>
+
     </fieldset>
     <div class="formfield clear">
         @Html.LabelFor(m => m.StatusId)<br />

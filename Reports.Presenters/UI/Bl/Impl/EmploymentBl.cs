@@ -1182,12 +1182,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             switch (viewModel.GetType().Name)
             {
                 case "GeneralInfoModel":
+                    if ((viewModel as GeneralInfoModel).PhotoFile != null)
+                    {
+                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).PhotoFile);
+                        string fileName = string.Empty;
+                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
+                    }
                     if ((viewModel as GeneralInfoModel).INNScanFile != null)
                     {
-                        UploadFileDto INNScanFileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
+                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
                         string fileName = string.Empty;
                         //int? attachmentId = 
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).INNScanAttachmentId, INNScanFileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).INNScanAttachmentId, fileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+                    }
+                    if ((viewModel as GeneralInfoModel).SNILSScanFile != null)
+                    {
+                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
+                        string fileName = string.Empty;
+                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).SNILSScanAttachmentId, fileDto, RequestAttachmentTypeEnum.SNILSScan, out fileName);
+                    }
+                    if ((viewModel as GeneralInfoModel).DisabilityCertificateScanFile != null)
+                    {
+                        UploadFileDto fileDto = GetFileContext((viewModel as GeneralInfoModel).DisabilityCertificateScanFile);
+                        string fileName = string.Empty;
+                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).DisabilityCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.DisabilityCertificateScan, out fileName);
                     }
                     break;
                 case "ApplicationLetterModel":
