@@ -1197,6 +1197,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "ExperienceModel":
                     SaveExperienceAttachments(viewModel as ExperienceModel, candidateId);
                     break;
+                case "BackgroundCheckModel":
+                    SaveBackgroundCheckAttachments(viewModel as BackgroundCheckModel, candidateId);
+                    break;
                 case "ApplicationLetterModel":
                     SaveApplicationLetterAttachments(viewModel as ApplicationLetterModel, candidateId);
                     break;
@@ -1289,7 +1292,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-
+        protected void SaveBackgroundCheckAttachments(BackgroundCheckModel model, int candidateId)
+        {
+            if (model.PersonalDataProcessingScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PersonalDataProcessingScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PersonalDataProcessingScanAttachmentId, fileDto, RequestAttachmentTypeEnum.PersonalDataProcessingScan, out fileName);
+            }
+            if (model.InfoValidityScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InfoValidityScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InfoValidityScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InfoValidityScan, out fileName);
+            }
+        }
 
         protected void SaveApplicationLetterAttachments(ApplicationLetterModel model, int candidateId)
         {
