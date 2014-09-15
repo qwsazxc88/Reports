@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -78,6 +79,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Призыв на военную службу")]
         public int? ConscriptionStatus { get; set; } //ok
         public IEnumerable<SelectListItem> ConscriptionStatusItems { get; set; }
+
+        public HttpPostedFileBase MilitaryCardScanFile { get; set; }
+        public HttpPostedFileBase MobilizationTicketScanFile { get; set; }
+
+        public string MilitaryCardScanAttachmentFilename { get; set; }
+        public int MilitaryCardScanAttachmentId { get; set; }
+        public string MobilizationTicketScanAttachmentFilename { get; set; }
+        public int MobilizationTicketScanAttachmentId { get; set; }
 
         public MilitaryServiceModel()
         {

@@ -23,15 +23,25 @@
             @Html.LabelFor(m => m.MilitaryCardDate)&nbsp;@Html.ValidationMessageFor(m => m.MilitaryCardDate)<br />
             @Html.EditorFor(m => m.MilitaryCardDate)
         </div>
+        
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScan" />
+            Выбрать скан для загрузки<br /><input type="file" name="MilitaryCardScanFile" /> @Html.ValidationMessageFor(m => m.MilitaryCardScanFile)
         </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
+
+        @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.MilitaryCardScanAttachmentFilename
+                </a>
+            </div>
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MilitaryCardScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
+            </div>
+        }
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.ReserveCategory)&nbsp;@Html.ValidationMessageFor(m => m.ReserveCategory)<br />
             @Html.EditorFor(m => m.ReserveCategory)
@@ -80,15 +90,25 @@
             @Html.LabelFor(m => m.MobilizationTicketNumber)&nbsp;@Html.ValidationMessageFor(m => m.MobilizationTicketNumber)<br />
             @Html.EditorFor(m => m.MobilizationTicketNumber)
         </div>
+        
         <div class="formfield">
-            Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScan" />
+            Выбрать скан для загрузки<br /><input type="file" name="MobilizationTicketScanFile" /> @Html.ValidationMessageFor(m => m.MobilizationTicketScanFile)
         </div>
-        <div class="formfield">
-            <br /><a href="">Открыть</a>
-        </div>
-        <div class="formfield">
-            <br /><a href="">Удалить</a>
-        </div>
+
+        @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.MobilizationTicketScanAttachmentFilename
+                </a>
+            </div>
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.MobilizationTicketScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
+            </div>
+        }
+
         <div class="formfield clear">
         <fieldset class="bordered nomargin">
         <legend class="level2">Для форм Ф-6 и Ф-18</legend>

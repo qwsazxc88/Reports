@@ -1188,13 +1188,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SavePassportAttachments(viewModel as PassportModel, candidateId);
                     break;
                     
+                case "FamilyModel":
+                    SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
+                    break;
+                case "MilitaryServiceModel":
+                    SaveMilitaryServiceAttachments(viewModel as MilitaryServiceModel, candidateId);
+                    break;
+                    
                 case "ApplicationLetterModel":
                     SaveApplicationLetterAttachments(viewModel as ApplicationLetterModel, candidateId);
                     break;
                 default:
                     break;
             }
-        }
+        }        
 
         protected void SaveGeneralInfoAttachments(GeneralInfoModel model, int candidateId)
         {
@@ -1235,15 +1242,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        // TODO: SaveEducationAttachments
 
+        protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
+        {
+            if (model.MarriageCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MarriageCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
+            }
+            // TODO: Upload Child Birth Certificates
+        }
+
+        protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
+        {
+            if (model.MilitaryCardScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MilitaryCardScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MilitaryCardScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MilitaryCardScan, out fileName);
+            }
+            if (model.MobilizationTicketScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MobilizationTicketScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MobilizationTicketScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MobilizationTicketScan, out fileName);
+            }
+        }
 
         protected void SaveApplicationLetterAttachments(ApplicationLetterModel model, int candidateId)
         {
             if (model.ApplicationLetterScanFile != null)
             {
-                UploadFileDto ApplicationLetterScanFileDto = GetFileContext(model.ApplicationLetterScanFile);
+                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
                 string fileName = string.Empty;
-                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, ApplicationLetterScanFileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
+                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
             }
         }
 
