@@ -166,6 +166,70 @@
             <span class="fakeFormField">@Html.DisplayFor(m => m.Smoking)&nbsp;</span>
         </div>
 
+        @* ---- *@
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
+            
+            @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.PersonalDataProcessingScanAttachmentFilename
+                    </a>
+                </div>
+            }
+
+            <div class="letter clear">
+                <p class="content">
+                    Я, _______________ даю свое согласие ООО ИКБ &laquo;Совкомбанк&raquo; на обработку как с использованием средств автоматизации,
+                    так и без использования таких средств, моих персональных данных, т.е. совершение в том числе следующих действий:
+                    сбор, систематизация, накопление, хранение, уточнение, использование, блокирование, уничтожение, а также право на передачу
+                    такой информации третьим лицам и получение информации и документов от третьих лиц для осуществления проверки достоверности
+                    и полноты информации обо мне, в иных случаях, установленных законодательством.
+                </p>
+                <p class="content">
+                    Согласие дается с целью проверки корректности предоставленных мной сведений, принятия решения о принятии меня на работу в Банк.
+                </p>
+                <p class="content">
+                    В том числе даю согласие на получение и обработку данных о моей частной жизни с целью оперативного сообщения мне необходимой информации
+                    и предупреждения чрезвычайных ситуаций.
+                </p>
+                <p class="content">
+                    &laquo;____&raquo; ______________________ 20____ г.
+                </p>
+            </div>
+        </fieldset>
+        @* ---- *@
+
+        @* ---- *@
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Рукописный текст о достоверности сведений</legend>
+            
+            @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.InfoValidityScanAttachmentFilename
+                    </a>
+                </div>
+            }
+
+            <div class="letter clear">                
+                <p class="content">
+                    Я, _______________ заверяю, что мои ответы на вопросы анкеты являются полными, достоверными.
+                    В дальнейшем обязуюсь сообщать обо всех изменениях в своем положении в отдел персонала для их внесения
+                    в личное дело. Данные о трудовой деятельности, учебе соответствуют документам, удостоверяющим личность,
+                    записям в трудовой книжке, документам об образовании, воинской службе.
+                </p>
+                <p class="content">
+                    &laquo;____&raquo; ______________________ 20____ г.
+                </p>
+            </div>
+        </fieldset>
+        @* ---- *@
+
     </fieldset>
 
     @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
