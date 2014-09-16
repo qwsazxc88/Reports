@@ -18,6 +18,23 @@ namespace Reports.Core.Dto
         public int Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class IdLongNameDto
+    {
+        public IdLongNameDto()
+        {
+        }
+
+        public IdLongNameDto(ulong id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public ulong Id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class IdNameReadonlyDto:IdNameDto
     {
         public bool IsReadOnly { get; set; }
