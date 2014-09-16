@@ -700,6 +700,7 @@
     <Content Include="Views\Employment\OnsiteTrainingReadOnly.cshtml" />
     <Content Include="Views\Employment\CreateCandidate.cshtml" />
     <Content Include="Views\Employment\PrintCreatedCandidate.cshtml" />
+    <Content Include="Views\Employment\PrintContractForm.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
