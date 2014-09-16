@@ -842,6 +842,18 @@ namespace WebMvc.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult GetPrintEmploymentOrder()
+        {
+            return GetPrintForm("PrintEmploymentOrder");
+        }
+
+        [HttpGet]
+        public ActionResult PrintEmploymentOrder()
+        {
+            return View();
+        }
+
         [NonAction]
         public ActionResult GetPrintForm(string actionName, bool isLandscape = false)
         {
@@ -882,7 +894,7 @@ namespace WebMvc.Controllers
                 };
                 serverSideProcess.Start();
                 serverSideProcess.WaitForExit();
-                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", "ContractForm.pdf");
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", actionName + ".pdf");
             }
             catch (Exception ex)
             {
