@@ -143,38 +143,41 @@ namespace Reports.Core.Dao.Impl
             User currentUser = UserDao.Load(currentId);
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", currentId));
-            switch (role)
+
+            if ((role & UserRole.Manager) == UserRole.Manager)
             {
-                case UserRole.Manager:
-                    // кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
-                    sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
-                    // кандидаты, которых текущий пользователь может согласовать как вышестоящий руководитель
-                    switch (currentUser.Level)
-                    {
-                        // руководитель 2 уровня видит кандидатов, заявки на подбор которых создавали руководители 3 уровня его ветки
-                        case 2:
-                            sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level = 3)
+                // кандидаты, которых текущий пользователь может согласовать как руководитель, создавший заявку на подбор
+                sqlQueryPart = @" candidate.AppointmentCreatorId = :currentId ";
+                // кандидаты, которых текущий пользователь может согласовать как вышестоящий руководитель
+                switch (currentUser.Level)
+                {
+                    // руководитель 2 уровня видит кандидатов, заявки на подбор которых создавали руководители 3 уровня его ветки
+                    case 2:
+                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level = 3)
                             ";
-                            break;
-                        // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
-                        case 3:
-                            sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > 3)
+                        break;
+                    // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
+                    case 3:
+                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > 3)
                             ";
-                            break;
-                        // руководители уровней ниже 3 не согласуют кандидатов как вышестоящие руководители -> не видят их
-                        default:
-                            break;
-                    }
-                    sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
-                    break;
-                // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация не производится
-                case UserRole.PersonnelManager:
-                case UserRole.Security:
-                case UserRole.Trainer:
-                case UserRole.OutsourcingManager:
-                    break;
-                default:
-                    throw new ArgumentException(string.Format("Invalid user role {0}", role));
+                        break;
+                    // руководители уровней ниже 3 не согласуют кандидатов как вышестоящие руководители -> не видят их
+                    default:
+                        break;
+                }
+                sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
+            }
+
+            else if ((role & (UserRole.PersonnelManager
+                | UserRole.Security
+                | UserRole.Trainer
+                | UserRole.OutsourcingManager)) > 0)
+            {
+                // для кадровиков, сотрудников СБ и тренеров дополнительная фильтрация сейчас не производится
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("Invalid user role {0}", role));
             }
 
             return sqlQueryPart;

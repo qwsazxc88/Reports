@@ -100,8 +100,8 @@ namespace Reports.Presenters.UI.ViewModel
     public class ChangeRoleModel
     {
         [Display(Name = "Доступные роли")]
-        public int RoleId { get; set; }
-        public IList<IdNameDto> Roles;
+        public ulong RoleId { get; set; }
+        public IList<IdLongNameDto> Roles;
     }
     #endregion
 
