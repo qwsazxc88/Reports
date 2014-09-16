@@ -129,10 +129,10 @@
     </fieldset>
 
     <div class="buttonpanel">
-        <button type="submit">Печать<br />трудового договора</button>
-        <button type="submit">Печать<br />приказа о приеме</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment")';">Печать<br />трудового договора</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment")';">Печать<br />приказа о приеме</button>
         <button type="submit">Печать<br />Т2</button>
-        <button type="submit">Печать<br />договораМат. ответственность</button>
+        <button type="submit">Печать<br />договора Мат. ответственность</button>
         <button type="submit">Печать<br />ДС Персональные данные</button>
         <button type="submit">Печать<br />Обязательство конфиденциальность</button>
         <button type="submit">Печать<br />реестра личного дела</button>

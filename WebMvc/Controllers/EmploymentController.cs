@@ -13,6 +13,10 @@ using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
 using Reports.Presenters.Services.Impl;
 using Reports.Core.Dto;
+using System.Configuration;
+using System.Text;
+using System.Web.Security;
+using System.Diagnostics;
 
 namespace WebMvc.Controllers
 {
@@ -820,6 +824,136 @@ namespace WebMvc.Controllers
                 saveResult = false;
             }
             return Json(new { Error = error, Result = saveResult });
+        }
+
+        #endregion
+
+        #region Print Forms
+
+        [HttpGet]
+        public ActionResult GetPrintContractForm()
+        {
+            return GetPrintForm("PrintContractForm");
+        }
+
+        [HttpGet]
+        public ActionResult PrintContractForm()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintEmploymentOrder()
+        {
+            return GetPrintForm("PrintEmploymentOrder");
+        }
+
+        [HttpGet]
+        public ActionResult PrintEmploymentOrder()
+        {
+            return View();
+        }
+
+        [NonAction]
+        public ActionResult GetPrintForm(string actionName, bool isLandscape = false)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var arguments = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                if (isLandscape)
+                    arguments.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
+                        GetConverterCommandParam(actionName), cookieName, authCookie.Value);
+                else
+                    arguments.AppendFormat("{0} --cookie {1} {2}",
+                        GetConverterCommandParam(actionName), cookieName, authCookie.Value);
+                arguments.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = arguments.ToString(),
+                        UseShellExecute = true,
+                    },
+                    EnableRaisingEvents = true,
+
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", actionName + ".pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetPrintForm", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+
+        [NonAction]
+        protected virtual string GetConverterCommandParam(string actionName)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+            string urlTemplate = string.Format("Employment/{0}", actionName);
+            return !string.IsNullOrEmpty(localhostUrl)
+                ? string.Format(@"{0}/{1}", localhostUrl, urlTemplate)
+                : Url.Content(string.Format(@"{0}", urlTemplate));
+        }
+
+        [NonAction]
+        protected static ActionResult GetFile(HttpResponseBase Response, HttpRequestBase Request, HttpServerUtilityBase Server,
+            string filePath, string fileName, string contentType, string userFileName)
+        {
+            byte[] value;
+            using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+            {
+                value = new byte[stream.Length];
+                stream.Read(value, 0, (int)stream.Length);
+            }
+
+            Response.Clear();
+            if (Request.Browser.Browser == "IE")
+            {
+                string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(userFileName));
+                Response.AddHeader("Content-Disposition", attachment);
+            }
+            else
+                Response.AddHeader("Content-Disposition", "attachment; filename=\"" + userFileName + "\"");
+
+            Response.ContentType = contentType;
+            Response.Charset = "utf-8";
+            Response.HeaderEncoding = Encoding.UTF8;
+            Response.ContentEncoding = Encoding.UTF8;
+            Response.BinaryWrite(value);
+            Response.End();
+            return null;
         }
 
         #endregion
