@@ -249,6 +249,26 @@
     }
 </div>
 
+@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <div class="clear">
+        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ApprovalStatus)
+            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApproverName</span>
+        }
+        @if (Model.IsApproveBySecurityAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empBackgroundCheck");        
