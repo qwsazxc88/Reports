@@ -173,7 +173,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                           <a href=""https://ruscount.com:8002"">Кадровый портал</a>",
                          (isAdditional ? entity.Number+"-изм" : entity.Number.ToString()), 
                          entity.EditDate.ToShortDateString(), entity.User.Name, entity.User.Department.Name, name);
-            return SendEmail(to, name, body);
+            //return SendEmail(to, name, body);
+            return new EmailDto();
         }
 
         protected IList<EmailDto> SendEmailForClearanceChecklistNeedToApprove(IList<User> addresseeList, Dismissal entity)
