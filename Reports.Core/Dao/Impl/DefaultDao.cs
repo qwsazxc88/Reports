@@ -494,6 +494,16 @@ namespace Reports.Core.Dao.Impl
             }
             return whereString;
         }
+        public virtual string GetNumberWhere(string whereString, string number)
+        {
+            if (!string.IsNullOrEmpty(number))
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += "cast(v.Number as nvarchar(10)) = :number";
+            }
+            return whereString;
+        }
         public virtual string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)

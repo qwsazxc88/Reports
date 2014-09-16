@@ -130,6 +130,10 @@
                
             </td>
         </tr>
+         <tr>
+            <td>ФИО руководителя</td>
+            <td>@Model.ManagerFio</td>
+        </tr>
         <tr>
             <td>@Html.LabelFor(model => model.AccountantFio)</td>
             <td>
@@ -173,10 +177,10 @@
             </td>
         </tr>
         <tr>
-            <td>
-                @Html.LabelFor(m => m.ArchiveNumber):
-            </td>
-            <td>
+            <td colspan="2">
+                @Html.LabelFor(m => m.ArchiveNumber):&nbsp;&nbsp;
+           @* </td>
+            <td>*@
                 @Html.TextBoxFor(model => model.ArchiveNumber, Model.IsArchivistEditable ? (object)new { maxlength = 100 } : (object)new { @readonly = "read-only" }) 
             </td>
         </tr>

@@ -53,6 +53,7 @@
                                 @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
                              </td>
                         </tr>
+                        
                           @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
                           {
                             <tr>
@@ -64,6 +65,14 @@
                                     </td>
                              </tr>
                           }
+                         <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
                          <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
@@ -165,6 +174,9 @@
                         <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
                      <th>
+                        <div id="sort17" style="min-width:130px"><a href="#" onclick = "SortChanged(17);">Должность</a></div>
+                    </th>
+                     <th>
                         <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
                     </th>
                     <th>
@@ -197,6 +209,9 @@
                     </th>
                     <th>
                         <div id="sort10" style="min-width:120px"><a href="#"  onclick = "SortChanged(10);">Превышение  <br/>по G</a></div>
+                    </th>
+                    <th>
+                        <div id="sort16" style="min-width:80px"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
                     </th>
                    @*  <th>
                         <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
@@ -237,6 +252,7 @@
                         <tr>
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
                              <td>@doc.Dep7Name</td>
                             <td>@doc.EditDate.ToShortDateString()</td>
                             <td style="text-align:left">
@@ -251,6 +267,7 @@
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.Saldo)</td>
                             
                           @*  <td>@doc.HasMission</td>
                             <td>@doc.NeedSecretary</td>*@
@@ -301,5 +318,6 @@
         //$("#TypeId").val('0');
          $("#StatusId").val('0');
          $("#UserName").val('');
+         $("#Number").val('');
     }
  </script>

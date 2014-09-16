@@ -7777,6 +7777,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.Number,
                 model.SortBy,
                 model.SortDescending);
         }        
@@ -7797,6 +7798,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(6, "Не одобрен членом правления"),
                                                            new IdNameDto(7, "Требует одобрения руководителем"),
                                                            new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           new IdNameDto(9, "Выгружен в 1С"),
                                                            //new IdNameDto(10, "Отклоненные"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
@@ -7871,6 +7873,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TrainTicketType = entity.TrainTicketType;
 
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+                model.LongTermReason = entity.LongTermReason;
                 model.DocumentNumber = entity.Number.ToString();
 
                 MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
@@ -7910,6 +7913,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             SetUserInfoModel(user, model);
             SetFlagsState(id,user,entity,model);
+            SetStaticFields(model, entity);
             LoadDictionaries(model);
             SetHiddenFields(model);
             return model;
@@ -7937,21 +7941,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            MissionOrder missionOrder = null;
             try
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                MissionOrder missionOrder = null;
                 if (model.Id != 0)
-                {
                     missionOrder = MissionOrderDao.Load(model.Id);
-                }
                 if (!CheckUserMoRights(user, current, model.Id, missionOrder, true))
                 {
                     error = "Редактирование заявки запрещено";
                     return false;
                 }
-               
                 if (model.Id == 0)
                 {
                     missionOrder = new MissionOrder
@@ -8038,6 +8039,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             finally
             {
                 SetUserInfoModel(user, model);
+                SetStaticFields(model, missionOrder);
                 LoadDictionaries(model);
                 SetHiddenFields(model);
             }
@@ -8066,6 +8068,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.UserSumNotCash = GetSum(model.UserSumNotCash);
                 entity.NeedToAcceptByChiefAsManager = isDirectorManager;
                 entity.NeedToAcceptByChief = IsMissionOrderLong(entity);
+                entity.LongTermReason = string.IsNullOrEmpty(model.LongTermReason) ? null : model.LongTermReason;
                 entity.IsResidencePaid = model.IsResidencePaid;
                 entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
                 entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
@@ -8297,8 +8300,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (!entity.BeginDate.HasValue || !entity.EndDate.HasValue)
                 return false;
-            return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
-                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);
+            /*return (entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days > 7) ||
+                   (WorkingCalendarDao.GetNotWorkingCountBetweenDates(entity.BeginDate.Value, entity.EndDate.Value) > 0);*/
+            return IsMissionOrderLong(entity.EndDate.Value, entity.BeginDate.Value);
+        }
+        public bool IsMissionOrderLong(DateTime endDate, DateTime beginDate)
+        {
+            return (endDate.Subtract(beginDate).Days > 7) ||
+                  (WorkingCalendarDao.GetNotWorkingCountBetweenDates(beginDate, endDate) > 0);
         }
         protected string GetStringForList(List<string> list)
         {
@@ -8880,7 +8889,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateCreated = missionOrder.CreateDate.ToShortDateString();
                 if (missionOrder.DeleteDate.HasValue)
                     model.IsDeleted = true;
+                SetStaticFields(model, missionOrder);
             }
+        }
+        protected void SetStaticFields(MissionOrderEditModel model, MissionOrder entity)
+        {
+            if(entity == null)
+            {
+                Log.Warn("SetStaticFields: entity == null");
+                return;
+            }
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName + " " +
+                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.AcceptChief != null && entity.ChiefDateAccept.HasValue)
+                model.ChiefFio = entity.AcceptChief.FullName + " " +
+                    entity.ChiefDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
         }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId,MissionOrder entity,DateTime gradeDate)
         {
@@ -9811,6 +9835,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(7, "Требует одобрения руководителем"),
                                                            new IdNameDto(8, "Требует одобрения бухгалтером"),
                                                            new IdNameDto(10, "Отклонен"),
+                                                           new IdNameDto(9, "Выгружен в 1С"),
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
@@ -9852,6 +9877,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.Number,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -9889,6 +9915,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             LoadDictionaries(model);
             SetFlagsState(id, user, entity, model);
             LoadCosts(model, entity);
+            SetStaticFields(model, entity);
             SetHiddenFields(model);
             return model;
         }
@@ -9998,6 +10025,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user,(UserInfoModel)model);
             model.UserFio ="Сотрудник " + user.FullName;
         }
+        protected void SetStaticFields(MissionReportEditModel model,MissionReport entity)
+        {
+            if (entity == null)
+            {
+                Log.Warn("MissionReportEdit setStaticFields: entity == null");
+                return;
+            }
+            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
+                model.ManagerFio = entity.AcceptManager.FullName + " " +
+                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
+                model.AccountantFio = entity.AcceptAccountant.FullName + " " +
+                    entity.AccountantDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
+            if (entity.Archivist != null)
+                model.ArchivistFio = entity.Archivist.FullName;
+        }
         protected void SetFlagsState(int id, User user, MissionReport entity, MissionReportEditModel model)
         {
             SetFlagsState(model, false);
@@ -10006,11 +10049,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue;
             model.IsAccountantApproved = entity.AccountantDateAccept.HasValue;
             model.IsDeleted = entity.DeleteDate.HasValue;
-            if (entity.AcceptAccountant != null && entity.AccountantDateAccept.HasValue)
-                model.AccountantFio = entity.AcceptAccountant.FullName;// +", " + entity.AcceptAccountant.Email;
-            if (entity.Archivist != null)
-                model.ArchivistFio = entity.Archivist.FullName;
-            
             switch (currentUserRole)
             {
                 case UserRole.Employee:
@@ -10198,11 +10236,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
             User user = null;
+            MissionReport missionReport = null;
             try
             {
                 user = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                MissionReport missionReport = MissionReportDao.Load(model.Id);
+                missionReport = MissionReportDao.Load(model.Id);
                 model.DocumentTitle = string.Format("Авансовый отчет № АО{0} о командировке к Приказу № {0} на командировку", missionReport.Number);
                 model.DocumentNumber =  missionReport.Number.ToString();
                 model.DateCreated = missionReport.CreateDate.ToShortDateString();
@@ -10239,6 +10278,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SetUserInfoModel(user, model);
                 LoadDictionaries(model);
+                SetStaticFields(model, missionReport);
                 SetHiddenFields(model);
             }
         }
@@ -11009,14 +11049,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<IdNameDto> result = new List<IdNameDto>();
             foreach (MissionReport report in reports)
             {
+                if (result.Any(x => x.Id == report.Id)) 
+                    continue;
                 string name = "AO" + report.Number;
-                name += " " + FormatDate(report.MissionOrder.BeginDate) + " - " +
-                        FormatDate(report.MissionOrder.EndDate);
-                /*report.MissionOrder.BeginDate.ToShortDateString() + " - " +
-                        report.MissionOrder.EndDate.ToShortDateString()*/;
+                name += " " + FormatDate(report.MissionOrder.BeginDate) + " - " + FormatDate(report.MissionOrder.EndDate);
                 if (report.MissionOrder.Targets.Count() > 0)
                     name += " " + report.MissionOrder.Targets.First().City;
-                result.Add(new IdNameDto{Id = report.Id,Name = name});
+                result.Add(new IdNameDto {Id = report.Id, Name = name});
             }
             return result;
         }

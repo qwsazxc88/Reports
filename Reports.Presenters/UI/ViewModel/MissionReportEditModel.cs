@@ -34,6 +34,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsManagerApprovedHidden { get; set; }
         public bool IsManagerRejectAvailable { get; set; }
         public bool IsManagerReject { get; set; }
+        public string ManagerFio { get; set; }
 
         [Display(Name = "Авансовый отчет проверен")]
         public bool IsAccountantApproved { get; set; }
@@ -44,6 +45,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Бухгалтер")]
         public string AccountantFio { get; set; }
+       
         //public string AccountantEmail { get; set; }
 
         public bool IsEditable { get; set; }

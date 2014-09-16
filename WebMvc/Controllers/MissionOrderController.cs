@@ -30,6 +30,7 @@ namespace WebMvc.Controllers
         public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
         public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
         public const string StrOrderIsInPast  = "Создание/редактирование приказа в прошлом невозможно";
+        public const string StrLongTermReasonIsRequired = "Причина командировки - обязательное поле,если она приходится на выходные/праздничные дни или её продолжительность более семи дней";
 
         public const string SessionMissionOrderFilterName = "MissionOrderFilter";
         public const string SessionMissionReportFilterName = "MissionReportFilter";
@@ -86,7 +87,8 @@ namespace WebMvc.Controllers
                                                           DepartmentId = model.DepartmentId,
                                                           EndDate = model.EndDate,
                                                           StatusId = model.StatusId,
-                                                          UserName = model.UserName
+                                                          UserName = model.UserName,
+                                                          Number = model.Number,
                                                       };
             System.Web.HttpContext.Current.Session[SessionMissionOrderFilterName] = filterModel;
         }
@@ -100,6 +102,7 @@ namespace WebMvc.Controllers
                 model.BeginDate = filterModel.BeginDate;
                 model.EndDate = filterModel.EndDate;
                 model.UserName = filterModel.UserName;
+                model.Number = filterModel.Number;
                 if(AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
                 {
                     Department dep = DepartmentDao.Load(filterModel.DepartmentId);
@@ -190,6 +193,26 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginMissionDate", StrOtherOrdersExists);*/
             if (!RequestBl.CheckOrderBeginDate(model.BeginMissionDate))
                 ModelState.AddModelError("BeginMissionDate", StrOrderIsInPast);
+            if(!string.IsNullOrEmpty(model.BeginMissionDate) && !string.IsNullOrEmpty(model.EndMissionDate)
+                && model.IsEditable)
+            {
+                if (RequestBl.IsMissionOrderLong(DateTime.Parse(model.EndMissionDate)
+                    ,DateTime.Parse(model.BeginMissionDate)))
+                {
+                    if(string.IsNullOrEmpty(model.LongTermReason))
+                        ModelState.AddModelError("LongTermReason", StrLongTermReasonIsRequired);
+                    model.IsChiefApproveNeed = true;
+                    model.IsChiefApproveNeedHidden = true;
+                }
+                else
+                {
+                    if (ModelState.ContainsKey("LongTermReason"))
+                        ModelState.Remove("LongTermReason");
+                    model.LongTermReason = string.Empty;
+                    model.IsChiefApproveNeed = false;
+                    model.IsChiefApproveNeedHidden = false;
+                }
+            }
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(MissionOrderEditModel model)
@@ -496,7 +519,8 @@ namespace WebMvc.Controllers
                 DepartmentId = model.DepartmentId,
                 EndDate = model.EndDate,
                 StatusId = model.StatusId,
-                UserName = model.UserName
+                UserName = model.UserName,
+                Number = model.Number,
             };
             System.Web.HttpContext.Current.Session[SessionMissionReportFilterName] = filterModel;
         }
@@ -510,6 +534,7 @@ namespace WebMvc.Controllers
                 model.BeginDate = filterModel.BeginDate;
                 model.EndDate = filterModel.EndDate;
                 model.UserName = filterModel.UserName;
+                model.Number = filterModel.Number;
                 if (AuthenticationService.CurrentUser.UserRole != UserRole.Employee && filterModel.DepartmentId != 0)
                 {
                     Department dep = DepartmentDao.Load(filterModel.DepartmentId);

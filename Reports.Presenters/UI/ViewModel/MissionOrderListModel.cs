@@ -31,6 +31,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО сотрудника")]
         public string UserName { get; set; }
 
+        [Display(Name = "Номер приказа")]
+        public string Number { get; set; }
+
         public bool IsAddAvailable { get; set; }
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
@@ -50,5 +53,6 @@ namespace Reports.Presenters.UI.ViewModel
         public DateTime? BeginDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string UserName { get; set; }
+        public string Number { get; set; }
     }
 }

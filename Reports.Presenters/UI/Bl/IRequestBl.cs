@@ -138,6 +138,7 @@ namespace Reports.Presenters.UI.Bl
         bool CheckOtherOrdersExists(MissionOrderEditModel model);
         bool CheckAnyOtherOrdersExists(MissionOrderEditModel model);
         bool CheckOrderBeginDate(string beginMissionDate);
+        bool IsMissionOrderLong(DateTime endDate, DateTime beginDate);
         bool SaveMissionOrderEditModel(MissionOrderEditModel model, out string error);
         PrintMissionOrderViewModel GetPrintMissionOrderModel(int id);
         UserInfoModel GetPrintMissionOrderDocumentModel(int id);

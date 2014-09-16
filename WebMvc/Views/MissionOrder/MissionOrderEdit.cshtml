@@ -202,7 +202,7 @@
             объеме из заработной платы. 
             </td>
         </tr>
-        <tr id="trUserSumCash">
+        <tr id="trUserSumCash" style="display:none">
             <td>
                 @Html.LabelFor(m => m.UserSumCash):
             </td>
@@ -252,6 +252,14 @@
                 <input type="hidden" id="IsChiefApproveNeedHidden" name="IsChiefApproveNeedHidden" value="@Model.IsChiefApproveNeedHidden" />
             </td>
         </tr>
+         <tr>
+            <td colspan="2">
+                @Html.LabelFor(m => m.LongTermReason):&nbsp;&nbsp;
+            @*</td>
+            <td>*@
+                @Html.TextBoxFor(m => m.LongTermReason,Model.IsEditable ? (object)new { maxlength = 128, style="width:350px" } : (object)new { @readonly = "read-only", style="width:350px"  })
+            </td>
+        </tr>
         <tr>
             <td colspan="2">
                     Расходы утверждены функциональным руководителем
@@ -264,9 +272,12 @@
                     <input type="hidden" id="IsManagerApproveAvailable" name="IsManagerApproveAvailable" value="@Model.IsManagerApproveAvailable" />
             </td>
         </tr>
+        <tr>
+            <td colspan="2">@Html.LabelFor(m => m.ManagerFio):&nbsp;&nbsp;@Model.ManagerFio</td>
+        </tr>
          <tr>
             <td colspan="2">
-                    Согласование Члена Розничного Правления/ Члена Правления, курирующего функциональное  направление
+                    Согласование Члена Розничного Правления/Члена Правления, курирующего функциональное  направление
                     @Html.RadioButtonFor(model => model.IsChiefApproved, true, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Да
                     @Html.RadioButtonFor(model => model.IsChiefApproved, false, Model.IsChiefApproveAvailable ? null : (object)new { disabled = "disabled" }) Нет
                     @if (!Model.IsChiefApproveAvailable)
@@ -275,6 +286,9 @@
                     }
                     <input type="hidden" id="IsChiefApproveAvailable" name="IsChiefApproveAvailable" value="@Model.IsChiefApproveAvailable" />
             </td>
+        </tr>
+         <tr>
+            <td colspan="2">@Html.LabelFor(m => m.ChiefFio):&nbsp;&nbsp;@Model.ChiefFio</td>
         </tr>
         <tr>
             <td colspan="2" style="font-weight:bold">Секретариат</td>
@@ -992,6 +1006,12 @@
         function CalcUserCashNotCashSums(){
             clearEditTargetErrors($("#trUserSumCash"));
             clearEditTargetErrors($("#trUserSumNotCash"));
+            if($("#UserSumNotCash").val() == '')
+            {
+                $("#UserAllSum").val('');
+                addEditTargetError($("#UserSumNotCash"),"Обязательное поле");
+                return false;
+            }
             var allCashSum = 0;
             var sum = ValidateSum($("#UserSumCash"));
             var sumCash = 0;
