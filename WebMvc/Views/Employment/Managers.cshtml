@@ -83,7 +83,7 @@
     <div class="clear">
         @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
         {        
-            @Html.LabelFor(m => m.ManagerApprovalStatus)
+            @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
             @Html.DropDownListFor(m => m.ManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByManagerAvailable ? null : new { disabled = "disabled" })
         }
         @if (Model.ManagerApprovalStatus != null)
@@ -103,7 +103,7 @@
     <div class="clear">
         @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
         {        
-            @Html.LabelFor(m => m.HigherManagerApprovalStatus)
+            @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>
             @Html.DropDownListFor(m => m.HigherManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByHigherManagerAvailable ? null : new { disabled = "disabled" })
         }
         @if (Model.HigherManagerApprovalStatus != null)

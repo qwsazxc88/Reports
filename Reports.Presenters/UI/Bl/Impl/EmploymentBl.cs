@@ -787,6 +787,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
                 | UserRole.Manager
+                | UserRole.PersonnelManager
                 | UserRole.OutsourcingManager)) > 0;
             model.IsPersonalManagersAvailable = (current.UserRole & (UserRole.Chief
                 | UserRole.Director
@@ -2009,10 +2010,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (viewModel.ManagerApprovalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                            entity.ManagerApprovalStatus = true;
                         }
                         else if (viewModel.ManagerApprovalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.ManagerApprovalStatus = false;
                         }
                         entity.ApprovingManager = entity.Candidate.AppointmentCreator;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
@@ -2067,10 +2070,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
+                            entity.HigherManagerApprovalStatus = true;
                         }
                         else if (approvalStatus == false)
                         {
                             entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.HigherManagerApprovalStatus = false;
                         }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
