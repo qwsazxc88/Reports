@@ -2243,6 +2243,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+        public bool IsUnlimitedEditAvailable()
+        {
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public string GetStartView()
         {
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;

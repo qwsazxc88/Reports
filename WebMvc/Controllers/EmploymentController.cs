@@ -90,11 +90,11 @@ namespace WebMvc.Controllers
         public ActionResult GeneralInfo(int? id)
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
-            return (model.IsFinal || id.HasValue) ? View("GeneralInfoReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
         
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfo(GeneralInfoModel model)
         {
             string error = String.Empty;
@@ -105,11 +105,11 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetGeneralInfoModel();
-            return model.IsFinal ? View("GeneralInfoReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfoAddNameChange(NameChangeDto itemToAdd)
         {
             string error = String.Empty;
@@ -124,7 +124,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd)
         {
             string error = String.Empty;
@@ -144,11 +144,11 @@ namespace WebMvc.Controllers
         public ActionResult Passport(int? id)
         {
             var model = EmploymentBl.GetPassportModel(id);
-            return (model.IsFinal || id.HasValue) ? View("PassportReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Passport(PassportModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -159,7 +159,7 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetPassportModel();
-            return model.IsFinal ? View("PassportReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
 
         // Education
@@ -168,11 +168,11 @@ namespace WebMvc.Controllers
         public ActionResult Education(int? id)
         {
             var model = EmploymentBl.GetEducationModel(id);
-            return (model.IsFinal || id.HasValue) ? View("EducationReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Education(EducationModel model)
         {
             string error = String.Empty;
@@ -183,11 +183,11 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetEducationModel();
-            return model.IsFinal ? View("EducationReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult EducationAddCertification(CertificationDto itemToAdd)
         {
             string error = String.Empty;
@@ -201,7 +201,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult EducationAddHigherEducationDiploma(HigherEducationDiplomaDto itemToAdd)
         {
             string error = String.Empty;
@@ -215,7 +215,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult EducationAddPostGraduateEducationDiploma(PostGraduateEducationDiplomaDto itemToAdd)
         {
             string error = String.Empty;
@@ -229,7 +229,7 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult EducationAddTraining(TrainingDto itemToAdd)
         {
             string error = String.Empty;
@@ -248,11 +248,11 @@ namespace WebMvc.Controllers
         public ActionResult Family(int? id)
         {
             var model = EmploymentBl.GetFamilyModel(id);
-            return (model.IsFinal || id.HasValue) ? View("FamilyReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -263,11 +263,11 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetFamilyModel();
-            return model.IsFinal ? View("FamilyReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult FamilyAddChild (FamilyMemberDto itemToAdd)
         {
             string error = String.Empty;
@@ -285,11 +285,11 @@ namespace WebMvc.Controllers
         public ActionResult MilitaryService(int? id)
         {
             var model = EmploymentBl.GetMilitaryServiceModel(id);
-            return (model.IsFinal || id.HasValue) ? View("MilitaryServiceReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult MilitaryService(MilitaryServiceModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -300,7 +300,7 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetMilitaryServiceModel();
-            return model.IsFinal ? View("MilitaryServiceReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
         // Experience
@@ -309,11 +309,11 @@ namespace WebMvc.Controllers
         public ActionResult Experience(int? id)
         {
             var model = EmploymentBl.GetExperienceModel(id);
-            return (model.IsFinal || id.HasValue) ? View("ExperienceReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Experience(ExperienceModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -324,11 +324,11 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetExperienceModel();
-            return model.IsFinal ? View("ExperienceReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult ExperienceAddExperienceItem(ExperienceItemDto itemToAdd)
         {
             string error = String.Empty;
@@ -347,11 +347,11 @@ namespace WebMvc.Controllers
         public ActionResult Contacts(int? id)
         {
             var model = EmploymentBl.GetContactsModel(id);
-            return (model.IsFinal || id.HasValue) ? View("ContactsReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Contacts(ContactsModel model)
         {
             string error = String.Empty;
@@ -362,7 +362,7 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetContactsModel();
-            return model.IsFinal ? View("ContactsReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
 
         // Background Check
@@ -371,11 +371,11 @@ namespace WebMvc.Controllers
         public ActionResult BackgroundCheck(int? id)
         {
             var model = EmploymentBl.GetBackgroundCheckModel(id);
-            return (model.IsFinal || id.HasValue) ? View("BackgroundCheckReadOnly", model) : View(model);
+            return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult BackgroundCheck(BackgroundCheckModel model, IEnumerable<HttpPostedFileBase> files)
         {
             string error = String.Empty;
@@ -386,11 +386,11 @@ namespace WebMvc.Controllers
                 ViewBag.Error = error;
             }
             model = EmploymentBl.GetBackgroundCheckModel();
-            return model.IsFinal ? View("BackgroundCheckReadOnly", model) : View(model);
+            return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult BackgroundCheckAddReference(ReferenceDto itemToAdd)
         {
             string error = String.Empty;
