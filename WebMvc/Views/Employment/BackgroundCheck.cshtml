@@ -264,25 +264,6 @@
 
 <hr />
 
-@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
-{
-    <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
-        {        
-            @Html.LabelFor(m => m.ApprovalStatus)
-            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
-        }
-        @if (Model.ApprovalStatus != null)
-        {
-            <span class="fakeFormField">@Model.ApproverName</span>
-        }
-        @if (Model.IsApproveBySecurityAvailable)
-        {
-            <button>Применить</button>
-        }
-    </div>
-}
-
 <div id="add-reference-dialog" title="Добавление рекомендации">
     @using (Html.BeginForm("BackgroundCheckAddReference", "Employment", FormMethod.Post))
     {

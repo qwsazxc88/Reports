@@ -2229,8 +2229,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
-                    if (creator.Level != 4)
-                        return false;
+                    /*if (creator.Level != 4)
+                        return false;*/
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
                 default:
