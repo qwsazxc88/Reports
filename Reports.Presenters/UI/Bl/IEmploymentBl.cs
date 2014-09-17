@@ -75,6 +75,8 @@ namespace Reports.Presenters.UI.Bl
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
+        bool IsUnlimitedEditAvailable();
+
         string GetStartView();
         AttachmentModel GetFileContext(int id);
         bool DeleteAttachment(DeleteAttacmentModel model);        
