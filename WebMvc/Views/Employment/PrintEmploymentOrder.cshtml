@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintEmploymentOrderModel
+@{
     Layout = null;
     ViewBag.Title = "Приказ о приеме";
 }
@@ -50,9 +51,10 @@
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 286.35pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=382>
 <P class=MsoNormal style="TEXT-ALIGN: right; MARGIN: 0cm 5.65pt 0pt 0cm" align=right><B><SPAN style="FONT-SIZE: 12pt">ПРИКАЗ<o:p></o:p></SPAN></B></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 92.1pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: windowtext 1pt solid; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt" vAlign=bottom width=123>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><B><SPAN style="FONT-SIZE: 12pt"><o:p>&nbsp;</o:p></SPAN></B></P></TD>
+
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><B><SPAN style="FONT-SIZE: 12pt"><o:p>@Model.OrderNumber</o:p></SPAN></B></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 92.15pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt; mso-border-left-alt: solid windowtext .5pt" vAlign=bottom width=123>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><B><SPAN style="FONT-SIZE: 12pt"><o:p>&nbsp;</o:p></SPAN></B></P></TD></TR></TBODY></TABLE>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><B><SPAN style="FONT-SIZE: 12pt"><o:p>@(Model.OrderDate.HasValue ? Model.OrderDate.Value.ToShortDateString() : string.Empty)</o:p></SPAN></B></P></TD></TR></TBODY></TABLE>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><B><SPAN style="FONT-SIZE: 12pt">(распоряжение)<o:p></o:p></SPAN></B></P>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 12pt" align=center><B><SPAN style="FONT-SIZE: 12pt">о приеме работника на работу<o:p></o:p></SPAN></B></P>
 <DIV align=right>
@@ -71,7 +73,7 @@
 <TD style="BORDER-TOP: windowtext 1pt solid; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 63.8pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: windowtext 1pt solid; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-alt: solid windowtext .5pt" vAlign=bottom width=85>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><FONT size=2>с</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 106.3pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt; mso-border-left-alt: solid windowtext .5pt" vAlign=bottom width=142>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@(Model.EmploymentDate.HasValue ? Model.EmploymentDate.Value.ToShortDateString() : string.Empty)</FONT></o:p></P></TD></TR>
 <TR style="mso-yfti-irow: 2; mso-yfti-lastrow: yes">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 134.7pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=180>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
@@ -89,7 +91,7 @@
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><FONT size=2>Табельный номер</FONT></P></TD></TR>
 <TR style="mso-yfti-irow: 1; mso-yfti-lastrow: yes">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 404pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt; mso-border-right-alt: solid windowtext .5pt" vAlign=bottom width=539>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN lang=EN-US style="mso-ansi-language: EN-US"><o:p><FONT size=2>&nbsp;</FONT></o:p></SPAN></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN lang=EN-US style="mso-ansi-language: EN-US"><o:p><FONT size=2>@Model.EmployeeName</FONT></o:p></SPAN></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: windowtext 1pt solid; WIDTH: 106.3pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt; mso-border-left-alt: solid windowtext .5pt" vAlign=bottom width=142>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN lang=EN-US style="mso-ansi-language: EN-US"><o:p><FONT size=2>&nbsp;</FONT></o:p></SPAN></P></TD></TR></TBODY></TABLE>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 106.3pt 12pt 0cm" align=center><SPAN style="FONT-SIZE: 8pt">(фамилия, имя, отчество)<o:p></o:p></SPAN></P>
@@ -99,7 +101,7 @@
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 14.2pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=19>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><FONT size=2>в</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 496.1pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=661>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@Model.Department</FONT></o:p></P></TD></TR>
 <TR style="PAGE-BREAK-INSIDE: avoid; mso-yfti-irow: 1">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 14.2pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=19>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN style="FONT-SIZE: 8pt"><o:p>&nbsp;</o:p></SPAN></P></TD>
@@ -107,7 +109,7 @@
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN style="FONT-SIZE: 8pt">(структурное подразделение)<o:p></o:p></SPAN></P></TD></TR>
 <TR style="PAGE-BREAK-INSIDE: avoid; mso-yfti-irow: 2">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 18cm; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=680 colSpan=2>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@Model.Position</FONT></o:p></P></TD></TR>
 <TR style="PAGE-BREAK-INSIDE: avoid; mso-yfti-irow: 3">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 18cm; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=680 colSpan=2>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN style="FONT-SIZE: 8pt">(должность (специальность, профессия), разряд, класс (категория) квалификации)<o:p></o:p></SPAN></P></TD></TR>
@@ -116,7 +118,7 @@
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR>
 <TR style="HEIGHT: 19.1pt; PAGE-BREAK-INSIDE: avoid; mso-yfti-irow: 5">
 <TD style="BORDER-TOP: #d4d0c8; HEIGHT: 19.1pt; BORDER-RIGHT: #d4d0c8; WIDTH: 18cm; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=680 colSpan=2>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@Model.Conditions</FONT></o:p></P></TD></TR>
 <TR style="PAGE-BREAK-INSIDE: avoid; mso-yfti-irow: 6; mso-yfti-lastrow: yes">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 18cm; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=680 colSpan=2>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><SPAN style="FONT-SIZE: 8pt">(условия приема на работу, характер работы)<o:p></o:p></SPAN></P></TD></TR></TBODY></TABLE>
@@ -177,9 +179,9 @@
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 127.6pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=170>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><FONT size=2>с испытанием на срок</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 328.85pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=438>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@Model.ProbationaryPeriod</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 53.85pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=72>
-<P class=MsoNormal style="TEXT-ALIGN: right; MARGIN: 0cm 0cm 0pt" align=right><FONT size=2>месяца(ев)</FONT></P></TD></TR></TBODY></TABLE>
+<P class=MsoNormal style="TEXT-ALIGN: right; MARGIN: 0cm 0cm 0pt" align=right><FONT size=2></FONT></P></TD></TR></TBODY></TABLE>
 <P class=MsoNormal style="MARGIN: 18pt 0cm 0pt"><o:p><FONT size=2>&nbsp;</FONT></o:p></P>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><SPAN style="FONT-SIZE: 11pt">Основание:</SPAN></P>
 <TABLE class=MsoNormalTable style="BORDER-COLLAPSE: collapse; MARGIN: auto auto auto 2.8pt; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 2.8pt 0cm 2.8pt" cellSpacing=0 cellPadding=0 border=0>
@@ -187,20 +189,23 @@
 <TR style="mso-yfti-irow: 0; mso-yfti-firstrow: yes; mso-yfti-lastrow: yes">
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 130.4pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=174>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt; TEXT-INDENT: 26.95pt"><FONT size=2>Трудовой договор от “</FONT></P></TD>
+@{
+    bool ContractDatePresent = Model.ContractDate.HasValue;
+}
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 19.85pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=26>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@(ContractDatePresent ? Model.ContractDate.Value.Day.ToString() : string.Empty)</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 11.35pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=15>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><FONT size=2>”</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 83.65pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=112>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@(ContractDatePresent ? (Model.ContractDate.Value.Month.ToString().Length == 2 ? Model.ContractDate.Value.Month.ToString() : "0" + Model.ContractDate.Value.Month.ToString()) : string.Empty)</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 18.45pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=25>
-<P class=MsoNormal style="TEXT-ALIGN: right; MARGIN: 0cm 0cm 0pt" align=right><FONT size=2>20</FONT></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: right; MARGIN: 0cm 0cm 0pt" align=right><FONT size=2></FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 17pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=23>
-<P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><o:p><FONT size=2>@(ContractDatePresent ? Model.ContractDate.Value.Year.ToString() : string.Empty)</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 31.2pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent" vAlign=bottom width=42>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><FONT size=2>г.<SPAN style="mso-spacerun: yes">&nbsp; </SPAN>№</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 63.8pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 2.8pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 2.8pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=bottom width=85>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD></TR></TBODY></TABLE>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@Model.ContractNumber</FONT></o:p></P></TD></TR></TBODY></TABLE>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><o:p><FONT size=2>&nbsp;</FONT></o:p></P>
 <TABLE class=MsoNormalTable style="BORDER-COLLAPSE: collapse; MARGIN: auto auto auto 1.4pt; mso-table-layout-alt: fixed; mso-padding-alt: 0cm 1.4pt 0cm 1.4pt" cellSpacing=0 cellPadding=0 border=0>
 <TBODY>

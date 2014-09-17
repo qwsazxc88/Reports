@@ -129,8 +129,8 @@
     </fieldset>
 
     <div class="buttonpanel">
-        <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment")';">Печать<br />трудового договора</button>
-        <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment")';">Печать<br />приказа о приеме</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
         <button type="submit">Печать<br />Т2</button>
         <button type="submit">Печать<br />договора Мат. ответственность</button>
         <button type="submit">Печать<br />ДС Персональные данные</button>

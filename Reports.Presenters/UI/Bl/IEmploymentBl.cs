@@ -26,6 +26,8 @@ namespace Reports.Presenters.UI.Bl
         CreateCandidateModel GetCreateCandidateModel();
         PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error);
         SignersModel GetSignersModel();
+        PrintContractFormModel GetPrintContractFormModel(int userId);
+        PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
         
         void LoadDictionaries(GeneralInfoModel model);
         void LoadDictionaries(PassportModel model);

@@ -830,32 +830,40 @@ namespace WebMvc.Controllers
 
         #region Print Forms
 
+        // Обработка запросов на печать кадровых документов
+
         [HttpGet]
-        public ActionResult GetPrintContractForm()
+        public ActionResult GetPrintContractForm(int userId)
         {
-            return GetPrintForm("PrintContractForm");
+            return GetPrintForm("PrintContractForm", userId);
         }
 
         [HttpGet]
-        public ActionResult PrintContractForm()
+        public ActionResult GetPrintEmploymentOrder(int userId)
         {
-            return View();
+            return GetPrintForm("PrintEmploymentOrder", userId);
         }
 
-        [HttpGet]
-        public ActionResult GetPrintEmploymentOrder()
-        {
-            return GetPrintForm("PrintEmploymentOrder");
-        }
+        // Обработка запросов от конвертера PDF
 
         [HttpGet]
-        public ActionResult PrintEmploymentOrder()
+        public ActionResult PrintContractForm(int userId)
         {
-            return View();
+            PrintContractFormModel model = EmploymentBl.GetPrintContractFormModel(userId);
+            return View(model);
         }
+        
+        [HttpGet]
+        public ActionResult PrintEmploymentOrder(int userId)
+        {
+            PrintEmploymentOrderModel model = EmploymentBl.GetPrintEmploymentOrderModel(userId);
+            return View(model);
+        }
+
+        // Создание PDF
 
         [NonAction]
-        public ActionResult GetPrintForm(string actionName, bool isLandscape = false)
+        public ActionResult GetPrintForm(string actionName, int userId, bool isLandscape = false)
         {
             string filePath = null;
             try
@@ -876,10 +884,10 @@ namespace WebMvc.Controllers
                     throw new ArgumentException("Ошибка авторизации.");
                 if (isLandscape)
                     arguments.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
-                        GetConverterCommandParam(actionName), cookieName, authCookie.Value);
+                        GetConverterCommandParam(actionName, userId), cookieName, authCookie.Value);
                 else
                     arguments.AppendFormat("{0} --cookie {1} {2}",
-                        GetConverterCommandParam(actionName), cookieName, authCookie.Value);
+                        GetConverterCommandParam(actionName, userId), cookieName, authCookie.Value);
                 arguments.AppendFormat(" \"{0}\"", filePath);
                 var serverSideProcess = new Process
                 {
@@ -918,14 +926,16 @@ namespace WebMvc.Controllers
         }
 
         [NonAction]
-        protected virtual string GetConverterCommandParam(string actionName)
+        protected virtual string GetConverterCommandParam(string actionName, int userId)
         {
             var localhostUrl = ConfigurationManager.AppSettings["localhost"];
-            string urlTemplate = string.Format("Employment/{0}", actionName);
+            string urlTemplate = string.Format("Employment/{0}?userId={1}", actionName, userId);
             return !string.IsNullOrEmpty(localhostUrl)
                 ? string.Format(@"{0}/{1}", localhostUrl, urlTemplate)
                 : Url.Content(string.Format(@"{0}", urlTemplate));
         }
+
+        // Получение созданного PDF
 
         [NonAction]
         protected static ActionResult GetFile(HttpResponseBase Response, HttpRequestBase Request, HttpServerUtilityBase Server,

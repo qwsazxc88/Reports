@@ -842,6 +842,50 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new SignersModel();
         }
 
+        public PrintContractFormModel GetPrintContractFormModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintContractFormModel model = new PrintContractFormModel
+            {
+                ContractDate = candidate.PersonnelManagers.ContractDate,
+                Department = candidate.Managers.Department.Name,
+                EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
+                    + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
+                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty,
+                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
+                EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + "."),
+                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
+                Number = candidate.PersonnelManagers.ContractNumber,
+                PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue,
+                PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy,
+                PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber,
+                Position = candidate.Managers.Position.Name,
+                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod,
+                WorkCity = candidate.Managers.WorkCity
+            };
+            return model;
+        }
+
+        public PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel
+            {
+                Conditions = candidate.Managers.EmploymentConditions,
+                ContractDate = candidate.PersonnelManagers.ContractDate,
+                ContractNumber = candidate.PersonnelManagers.ContractNumber,
+                Department = candidate.Managers.Department.Name,
+                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
+                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
+                OrderDate = candidate.PersonnelManagers.EmploymentOrderDate,
+                OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber,
+                Position = candidate.Managers.Position.Name,
+                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod
+            };
+            return model;
+        }
+
         #endregion        
 
         #region LoadDictionaries
