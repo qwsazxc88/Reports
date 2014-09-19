@@ -8329,7 +8329,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.Id == 0)
                     MissionOrderDao.SaveAndFlush(entity);
-
+            if(entity.IsAdditional)
+                throw new ArgumentException("Невозможно создать авансовый отчет для изменения приказа");
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
             IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
@@ -9211,6 +9212,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(report == null)
                 throw new ValidationException(string.Format("Не найден авансовый отчет (id {0}) в базе данных", missionReportId));
             MissionOrder order = report.MissionOrder;
+            if(MissionOrderDao.CheckAnyAdditionalOrdersExists(order.Id))
+                throw new ValidationException("Приказ на изменение уже существует для данного приказа");
             MissionOrder additionalOrder = new MissionOrder
                                                {
                                                    CreateDate = DateTime.Now,

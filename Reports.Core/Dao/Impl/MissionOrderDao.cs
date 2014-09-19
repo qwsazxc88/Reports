@@ -730,6 +730,14 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("id", id);
             return query.UniqueResult<int>() > 0;
         }
+        public virtual bool CheckAnyAdditionalOrdersExists(int id)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [MainOrderId] = :id";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id);
+            return query.UniqueResult<int>() > 0;
+        }
 
     }
 }
