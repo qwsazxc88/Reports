@@ -16,7 +16,10 @@
         </tr>
         <tr>
             <td colspan="2">
-                @{ViewBag.HidePersonnel = true;}
+                @{
+                    ViewBag.HidePersonnel = true;
+                    ViewBag.ShowManagers = true;                  
+                }
                 @Html.Partial("../UserInfoView", Model)
             </td>
         </tr>
@@ -106,7 +109,7 @@
                             Норма по грейду G<br />(расчетная)
                         </td>
                          <td>
-                            Сумма, запрашиваемая<br/> сотрудником
+                            @*Сумма, запрашиваемая<br/> сотрудником*@
                         </td>
                         <td>
                             Отметить поле, если оплата<br/> со счета организации
@@ -187,7 +190,7 @@
                             @Html.TextBoxFor(m => m.AllSum, new { @readonly = "read-only", @class = "fixedSize" })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.UserAllSum, new { @readonly = "read-only", @class = "fixedSize" }) 
+                            @Html.HiddenFor(model => model.UserAllSum, new { @readonly = "read-only", @class = "fixedSize" }) 
                         </td>
                         <td>
                         </td>
