@@ -11,5 +11,6 @@ namespace Reports.Core.Dao
         Department GetRootDepartment();
         IList<Department> GetDepartmentsTree(int departmentId);
         IList<Department> SearchByParentId(int parentId);
+        IList<User> GetDepartmentManagers(int departmentId, bool allLevels = false);
     }
 }

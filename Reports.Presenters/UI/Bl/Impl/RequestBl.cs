@@ -14,6 +14,7 @@ using Reports.Core.Enum;
 using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
+using System.Text;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
@@ -5160,6 +5161,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Department = user.Department == null?string.Empty:user.Department.Name ;
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
+
+            IList<User> managers = GetManagersForEmployee(user.Id)
+                .Where<User>(manager => manager.Level >= 3)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach(var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (managersBuilder.Length >= 2)
+            {
+                managersBuilder.Remove(managersBuilder.Length - 2, 2);
+            }
+
+            model.Managers = managersBuilder.ToString();
+
+
             /*if (user.PersonnelManager != null)
                 model.PersonnelName = user.PersonnelManager.FullName;*/
             if(user.Personnels.Count() > 0)
@@ -5172,6 +5193,48 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.UserNumber = user.Code;
             model.UserEmail = user.Email;
         }
+
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Словарь&lt;Уровень, Руководитель&gt;</returns>
+        public IList<User> GetManagersForEmployee(int userId)
+        {
+            IList<User> managers = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach(var mainManager in mainManagers)
+                {
+                    managers.Add(mainManager);
+                }                
+            }
+            
+            // Руководители вышележащих уровней для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Level ?? 0) > (manager.Level ?? 0))
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                managers.Add(mainManager);
+            }
+
+            return managers;
+        }
+
         protected bool IsAdditionalVacationTypeNecessary(VacationEditModel model)
         {
             IdNameDto currentVacationType = GetVacationTypes(false).Where(t => t.Id == model.VacationTypeId).FirstOrDefault();

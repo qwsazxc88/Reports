@@ -3,6 +3,8 @@ using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
+using System.Collections.Generic;
+using Reports.Core.Domain;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -190,5 +192,7 @@ namespace Reports.Presenters.UI.Bl
         int CreateAdditionalOrder(int missionReportId);
         AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id);
         bool SaveAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model, out string error);
+
+        IList<User> GetManagersForEmployee(int userId);
     }
 }
