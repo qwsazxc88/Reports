@@ -8,6 +8,7 @@ namespace Reports.Core.Dto
         public int UserId { get; set; }
         public int Number { get; set; }
         public string UserName { get; set; }
+        public string Position { get; set; }
         public string Dep7Name { get; set; }
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
@@ -15,6 +16,7 @@ namespace Reports.Core.Dto
         public string AdditionalOrderNumber { get; set; }
         public DateTime? AdditionalOrderEditDate { get; set; }
         public string MissionType { get; set; }
+        public string MissionGoal { get; set; }
         public string MissionKind { get; set; }
         public string Target { get; set; }
         public int Grade { get; set; }
@@ -42,6 +44,7 @@ namespace Reports.Core.Dto
         public int UserId { get; set; }
         public int Number { get; set; }
         public string UserName { get; set; }
+        public string Position { get; set; }
         public string Dep7Name { get; set; }
         public DateTime EditDate { get; set; }
         public int ReportNumber { get; set; }
@@ -51,6 +54,7 @@ namespace Reports.Core.Dto
         public decimal UserSum { get; set; }
         public decimal AccountantSum { get; set; }
         public Decimal? GradeIncrease { get; set; }
+        public Decimal? Saldo { get; set; }
         public string State { get; set; }
         public string AccountantName { get; set; }
         public string IsDocumentsSaveToArchive { get; set; }

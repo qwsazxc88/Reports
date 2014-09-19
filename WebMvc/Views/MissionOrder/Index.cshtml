@@ -63,6 +63,14 @@
                                     </td>
                              </tr>
                           }
+                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
                          <tr>
                             <td colspan="2">
                                 @Html.LabelFor(m => m.BeginDate):
@@ -188,6 +196,9 @@
                     <th>
                         <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                     </th>
+                    <th>
+                        <div id="sort22" style="min-width:130px"><a href="#" onclick = "SortChanged(22);">Должность</a></div>
+                    </th>
                      <th>
                         <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
                     </th>
@@ -202,6 +213,9 @@
                     </th>
                     <th>
                         <div id="sort19" style="min-width:70px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort23" style="min-width:130px"><a href="#" onclick = "SortChanged(23);">Цель <br/>командировки</a></div>
                     </th>
                     <th>
                         <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
@@ -263,6 +277,7 @@
                         <tr>
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
                              <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>
@@ -275,6 +290,7 @@
                                 }
                             </td>
                             <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>
+                            <td>@doc.MissionGoal</td>
                             <td>@doc.MissionType</td>
                             <td>@doc.MissionKind</td>
                             <td>@doc.Target</td>
@@ -341,6 +357,7 @@
         //$("#TypeId").val('0');
          $("#StatusId").val('0');
          $("#UserName").val('');
+         $("#Number").val('');
     }
     function setSelection()
     {

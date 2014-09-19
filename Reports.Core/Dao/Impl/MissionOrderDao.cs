@@ -29,12 +29,14 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
+                AddScalar("Position", NHibernateUtil.String).
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
                 AddScalar("AdditionalOrderId", NHibernateUtil.Int32).
                 AddScalar("AdditionalOrderNumber", NHibernateUtil.String).
                 AddScalar("AdditionalOrderEditDate", NHibernateUtil.DateTime).
+                AddScalar("MissionGoal", NHibernateUtil.String).
                 AddScalar("MissionType", NHibernateUtil.String).
                 AddScalar("MissionKind", NHibernateUtil.String).
                 AddScalar("Target", NHibernateUtil.String).
@@ -59,6 +61,7 @@ namespace Reports.Core.Dao.Impl
                                 @"select v.Id as Id,
                                 u.Id as UserId,
                                 u.Name as UserName,
+                                up.Name as Position,
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
                                 v.EditDate as EditDate,
@@ -66,6 +69,7 @@ namespace Reports.Core.Dao.Impl
                                 case when ao.Id is null then null 
                                      else cast(ao.Number as nvarchar(10))+N'-изм' end as AdditionalOrderNumber,
                                 ao.EditDate as AdditionalOrderEditDate,
+                                mg.Name as MissionGoal,
                                 t.Name as MissionType,  
                                 case when v.Kind = 1 then  N' Внутренняя'
                                      when v.Kind = 2 then  N' Внешняя'
@@ -154,6 +158,8 @@ namespace Reports.Core.Dao.Impl
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].[Position]  up on up.Id = u.PositionId
+                                left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
         public MissionOrderDao(ISessionManager sessionManager)
@@ -167,6 +173,7 @@ namespace Reports.Core.Dao.Impl
                 DateTime? beginDate,
                 DateTime? endDate,
                 string userName,
+                string number,
                 int sortBy,
                 bool? sortDescending)
         {
@@ -184,6 +191,7 @@ namespace Reports.Core.Dao.Impl
             //whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetNumberWhere(whereString, number);
             //
             // whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
             // whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
@@ -192,6 +200,8 @@ namespace Reports.Core.Dao.Impl
 
             IQuery query = CreateQuery(sqlQuery);
             AddDatesToQuery(query, beginDate, endDate, userName);
+            if (!string.IsNullOrEmpty(number))
+                query.SetString("number", number);
             IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
             /*
             sqlQuery = sqlSelectForMoList;
@@ -291,6 +301,12 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 21:
                     orderBy = @" order by AdditionalOrderBeginDate,AdditionalOrderEndDate";
+                    break;
+                case 22:
+                    orderBy = @" order by Position";
+                    break;
+                case 23:
+                    orderBy = @" order by MissionGoal";
                     break;
             }
             if (sortDescending.Value)
@@ -485,9 +501,9 @@ namespace Reports.Core.Dao.Impl
                     //case 10:
                     //    statusWhere = @"[DeleteDate] is not null";
                     //    break;
-                    //case 9:
-                    //    statusWhere = @"SendTo1C is not null";
-                    //    break;
+                    case 9:
+                        statusWhere = @"v.SendTo1C is not null";
+                        break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
                 }
