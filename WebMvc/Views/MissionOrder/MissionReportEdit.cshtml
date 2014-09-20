@@ -21,7 +21,10 @@
         </tr>
         <tr>
             <td colspan="2">
-                @{ViewBag.HidePersonnel = true;}
+                @{
+                    ViewBag.HidePersonnel = true;
+                    ViewBag.ShowManagers = true;                  
+                }
                 @Html.Partial("../UserInfoView", Model)
             </td>
         </tr>
