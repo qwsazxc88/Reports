@@ -8962,13 +8962,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Log.Warn("SetStaticFields: entity == null");
                 return;
-        }
-        protected void SetStaticFields(MissionOrderEditModel model, MissionOrder entity)
-        {
-            if(entity == null)
-            {
-                Log.Warn("SetStaticFields: entity == null");
-                return;
             }
             if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
                 model.ManagerFio = entity.AcceptManager.FullName + " " +
