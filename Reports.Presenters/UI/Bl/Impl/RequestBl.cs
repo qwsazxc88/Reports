@@ -14,6 +14,7 @@ using Reports.Core.Enum;
 using Reports.Core.Services;
 using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
+using System.Text;
 
 namespace Reports.Presenters.UI.Bl.Impl
 {
@@ -5160,6 +5161,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Department = user.Department == null?string.Empty:user.Department.Name ;
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
+
+            IList<User> managers = GetManagersForEmployee(user.Id)
+                .Where<User>(manager => manager.Level >= 3)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+
+            StringBuilder managersBuilder = new StringBuilder();
+            foreach(var manager in managers)
+            {
+                managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>": manager.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (managersBuilder.Length >= 2)
+            {
+                managersBuilder.Remove(managersBuilder.Length - 2, 2);
+            }
+
+            model.Managers = managersBuilder.ToString();
+
+
             /*if (user.PersonnelManager != null)
                 model.PersonnelName = user.PersonnelManager.FullName;*/
             if(user.Personnels.Count() > 0)
@@ -5172,6 +5193,48 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.UserNumber = user.Code;
             model.UserEmail = user.Email;
         }
+
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Словарь&lt;Уровень, Руководитель&gt;</returns>
+        public IList<User> GetManagersForEmployee(int userId)
+        {
+            IList<User> managers = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach(var mainManager in mainManagers)
+                {
+                    managers.Add(mainManager);
+                }                
+            }
+            
+            // Руководители вышележащих уровней для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0))
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                managers.Add(mainManager);
+            }
+
+            return managers;
+        }
+
         protected bool IsAdditionalVacationTypeNecessary(VacationEditModel model)
         {
             IdNameDto currentVacationType = GetVacationTypes(false).Where(t => t.Id == model.VacationTypeId).FirstOrDefault();
@@ -8212,7 +8275,7 @@ namespace Reports.Presenters.UI.Bl.Impl
            
             string to = string.Empty;
             string to1 = string.Empty;
-            if (isAdditional)
+            /*if (isAdditional)
             {
                 switch (receiverRole)
                 {
@@ -8224,7 +8287,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         break;
                 }
                 return SendEmailForMissionOrderNeedToApprove(to, entity, isAdditional);
-            }
+            }*/
             IList<IdNameDto> managers;
             IList<IdNameDto> managers1;
             switch(receiverRole)
@@ -8293,7 +8356,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     break;
             }
-            //return SendEmailForMissionOrderNeedToApprove(to, entity);
+            //return SendEmailForMissionOrderNeedToApprove(to, entity,isAdditional);
             return new EmailDto();
         }
         protected bool IsMissionOrderLong(MissionOrder entity)
@@ -8329,7 +8392,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 if (entity.Id == 0)
                     MissionOrderDao.SaveAndFlush(entity);
-
+            if(entity.IsAdditional)
+                throw new ArgumentException("Невозможно создать авансовый отчет для изменения приказа");
             if(MissionReportDao.IsReportForOrderExists(entity.Id))
                 throw new ArgumentException("Для приказа уже существует авансовый отчет");
             IList<MissionReportCostType> types = MissionReportCostTypeDao.LoadAll(); 
@@ -9211,6 +9275,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(report == null)
                 throw new ValidationException(string.Format("Не найден авансовый отчет (id {0}) в базе данных", missionReportId));
             MissionOrder order = report.MissionOrder;
+            if(MissionOrderDao.CheckAnyAdditionalOrdersExists(order.Id))
+                throw new ValidationException("Приказ на изменение уже существует для данного приказа");
             MissionOrder additionalOrder = new MissionOrder
                                                {
                                                    CreateDate = DateTime.Now,
@@ -9400,8 +9466,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    //bool canEdit = false;
-                    bool isUserManager = entity.MainOrder.AcceptManager.Id == AuthenticationService.CurrentUser.Id;
+                    bool canEdit = false;
+                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) 
+                        || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    //bool isUserManager = entity.MainOrder.AcceptManager.Id == AuthenticationService.CurrentUser.Id;
                     //IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
                     //canEdit = isUserManager;
                     /*if (entity.Creator.RoleId == (int)UserRole.Manager)
@@ -9435,20 +9503,25 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsSecritaryEditable = true;
                     break;*/
                 case UserRole.Director:
-                    if (entity.MainOrder.AcceptManager.Id == AuthenticationService.CurrentUser.Id/*IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser)*/)
+                    if (/*entity.MainOrder.AcceptManager.Id == AuthenticationService.CurrentUser.Id*/
+                        IsDirectorManagerForEmployee(user, AuthenticationService.CurrentUser))
                     {
                         if (!entity.ManagerDateAccept.HasValue &&
                             !entity.DeleteDate.HasValue && entity.UserDateAccept.HasValue)
                             model.IsManagerApproveAvailable = true;
                     }
-                    if ( ((entity.MainOrder.AcceptChief != null && entity.MainOrder.AcceptChief.Id == AuthenticationService.CurrentUser.Id) ||
+                    if (entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
+                            && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
+                            && entity.UserDateAccept.HasValue)
+                        model.IsChiefApproveAvailable = true;
+                    /*if ( ((entity.MainOrder.AcceptChief != null && entity.MainOrder.AcceptChief.Id == AuthenticationService.CurrentUser.Id) ||
                            entity.MainOrder.AcceptChief == null) &&
                                 entity.NeedToAcceptByChief && !entity.ChiefDateAccept.HasValue
                                 && !entity.DeleteDate.HasValue && entity.ManagerDateAccept.HasValue
                                 && entity.UserDateAccept.HasValue)
                     {
                             model.IsChiefApproveAvailable = true;
-                    }
+                    }*/
                 
                     break;
             }
@@ -9634,8 +9707,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.NeedToAcceptByChief = IsAdditionalMissionOrderLong(entity);
                 model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
             }
-            bool isDirectorManager = /*IsDirectorManagerForEmployee(user, current) &&*/ (entity.MainOrder.AcceptManager.Id == current.Id)
-                && current.UserRole == UserRole.Director;
+            bool isDirectorManager = IsDirectorManagerForEmployee(user, current); /*&& (entity.MainOrder.AcceptManager.Id == current.Id)
+                && current.UserRole == UserRole.Director*/
             //if (model.IsSecritaryEditable)
             //{
             //    if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
@@ -9663,14 +9736,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (isDirectorManager)
                 {
                     entity.NeedToAcceptByChiefAsManager = true;
-                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
+                    SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director,true);
                 }
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,true);
             }
-            //bool canEdit = false;
-            if (current.UserRole == UserRole.Manager && entity.MainOrder.AcceptManager.Id == current.Id
-                /*IsUserManagerForEmployee(user, current, out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit)*/)
+            bool canEdit = false;
+            if ((current.UserRole == UserRole.Manager && /*entity.MainOrder.AcceptManager.Id == current.Id*/
+                IsUserManagerForEmployee(user, current, out canEdit)) 
+                || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
             {
                 /*if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
@@ -9685,8 +9759,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
-                            /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
-                                entity.UserDateAccept = DateTime.Now;*/
                             if (!entity.NeedToAcceptByChief)
                             {
                                 UpdateMissionFlag(entity);
@@ -9694,7 +9766,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             }
                             else
                             {
-                                if (entity.MainOrder.AcceptChief != null)
+                                SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
+                                /*if (entity.MainOrder.AcceptChief != null)
                                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Director, true);
                                 else
                                 {
@@ -9702,7 +9775,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     string to = directors.Where(director => !string.IsNullOrEmpty(director.Email)).
                                         Aggregate(string.Empty, (current1, director) => current1 + (director.Email + ";"));
                                     SendEmailForMissionOrderNeedToApprove(to, entity, true);
-                                }
+                                }*/
                             }
                         }
                         else

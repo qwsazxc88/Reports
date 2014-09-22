@@ -65,14 +65,29 @@
             @Html.DisplayFor(m => m.Position)
         </td>
     </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.ManagerName)
-        </td>
-        <td>
-            @Html.DisplayFor(m => m.ManagerName)
-        </td>
-    </tr>
+    
+    @if (ViewBag.ShowManagers != null && ViewBag.ShowManagers)
+    {
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.Managers)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Managers)
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.ManagerName)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.ManagerName)
+            </td>
+        </tr>
+    }
 
     @if ((ViewBag.HidePersonnel == null) || !ViewBag.HidePersonnel)
     {
