@@ -34,9 +34,13 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Номер приказа")]
         public string Number { get; set; }
 
+        [Display(Name = "Режим просмотра изменений")]
+        public bool IsCorrectionsOnlyModeOn { get; set; }
+
         public bool IsAddAvailable { get; set; }
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
+        public bool IsCorrectionsOnlyModeAvailable { get; set; }
 
         public IList<MissionOrderDto> Documents { get; set; }
     
