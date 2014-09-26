@@ -47,6 +47,24 @@ namespace Reports.Core.Dao.Impl
                                 "v.[PersonalIncomeTax]",
                                 "v.[OKTMO]"
                 );
+            string relevanceFilter = @"
+                                -- с недостающими согласованиями
+								inner join [dbo].[ClearanceChecklistApproval] approval on v.Id = approval.DismissalId
+									and approval.ApprovedById is null
+								-- с ролями, по которым нет согласования текущим пользователем
+								inner join [dbo].[ClearanceChecklistRole] approvalRole on approval.RoleId = approvalRole.Id
+									and approvalRole.Id in
+									(select RoleId from [dbo].[ClearanceChecklistRoleRecord] where UserId = {0})";
+            relevanceFilter = string.Format(relevanceFilter, userId);
+
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+
+            // Фильтрация по релевантности производится для всех кроме суперпользователя и аутсорса
+            if (!(superPersonnelId.HasValue && superPersonnelId.Value == userId) && !(role == UserRole.OutsourcingManager))
+            {
+                sqlQuery += relevanceFilter;
+            }
+                        
             string whereString = GetWhereForUserRole(role, userId);
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
