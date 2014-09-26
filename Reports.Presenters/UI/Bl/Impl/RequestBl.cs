@@ -7683,7 +7683,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Director:
                     model.IsApproveAvailable = true;
-                    break;
+                    break;                
+            }
+
+            int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+            if ((superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id) || (CurrentUser.UserRole == UserRole.OutsourcingManager))
+            {
+                model.IsCorrectionsOnlyModeAvailable = true;
             }
         }
         public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
