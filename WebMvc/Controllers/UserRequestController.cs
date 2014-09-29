@@ -426,6 +426,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -434,7 +435,7 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -1124,6 +1125,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -1133,7 +1135,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveVacationEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
              {
                  
                  if (model.ReloadPage)
