@@ -314,6 +314,45 @@
                 }
             </td>
     </tr>
+        
+    <tr>
+             <td colspan="2" style="height:15px">
+                <hr />
+             </td>
+    </tr>
+
+    @* Ссылка для открытия скана приказа на подпись *@
+
+    <tr>
+        <td colspan="2">@Html.LabelFor(model => model.UnsignedOrderScanAttachment):
+            @if (!string.IsNullOrEmpty(Model.UnsignedOrderScanAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.UnsignedOrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.UnsignedOrderScanAttachment</a>
+                <input type="hidden" id="UnsignedOrderScanAttachment" name="UnsignedOrderScanAttachment" value="@Model.UnsignedOrderScanAttachment" />
+                <input type="hidden" id="UnsignedOrderScanAttachmentId" name="UnsignedOrderScanAttachmentId" value="@Model.UnsignedOrderScanAttachmentId" />
+            }
+            else
+            {
+                <span>-</span>
+            }
+        </td>
+    </tr>
+
+    @* Прикрепление скана приказа на подпись *@
+
+    @if (Model.IsUnsignedConfirmationAllowed)
+    {
+        <tr>    
+            <td colspan="2">Прикрепить скан приказа на подпись
+                <input id="UnsignedOrderScanFileContext" type="file" name="unsignedOrderScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>                
+            </td>
+        </tr>
+        <tr>    
+            <td colspan="2">
+                <input type="submit" value="Сохранить" onclick="return ValidateForm();" />
+            </td>
+        </tr>
+    }
 
     <tr>
              <td colspan="2" style="height:15px">

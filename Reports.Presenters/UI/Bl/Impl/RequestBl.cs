@@ -1848,6 +1848,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id,RequestAttachmentTypeEnum.Dismissal);
             SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.DismissalOrderScan);
+            SetUnsignedOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedDismissalOrderScan);
             Dismissal dismissal = null;
             if (id == 0)
             {
@@ -1966,6 +1967,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.PersonnelManager:
+                    model.IsUnsignedConfirmationAllowed = true;
                     if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
                     {
                         model.IsConfirmationAllowed = true;
@@ -2029,7 +2031,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
-        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error)
+        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -2076,6 +2078,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = fileName;
                     }
                     // ---------------------------------------
+                    int? unsignedOrderScanAttachmentId = SaveAttachment(dismissal.Id, model.UnsignedOrderScanAttachmentId, unsignedOrderScanFileDto, RequestAttachmentTypeEnum.UnsignedDismissalOrderScan, out fileName);
+                    if (unsignedOrderScanAttachmentId.HasValue)
+                    {
+                        model.UnsignedOrderScanAttachmentId = unsignedOrderScanAttachmentId.Value;
+                        model.UnsignedOrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
 
                     if (dismissal.Version != model.Version)
                     {
@@ -2091,10 +2100,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.OrderScanAttachmentId > 0)
                             RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
                         // ----------------------------
+                        if (model.UnsignedOrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.UnsignedOrderScanAttachmentId);
+                        // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
                         model.OrderScanAttachmentId = 0;
                         model.OrderScanAttachment = string.Empty;
+                        model.UnsignedOrderScanAttachmentId = 0;
+                        model.UnsignedOrderScanAttachment = string.Empty;
                         if (current.UserRole == UserRole.OutsourcingManager)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
@@ -3540,6 +3554,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.OrderScanAttachmentId = attach.Id;
             model.OrderScanAttachment = attach.FileName;
         }
+        protected void SetUnsignedOrderScanAttachmentToModel(IUnsignedOrderScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.UnsignedOrderScanAttachmentId = attach.Id;
+            model.UnsignedOrderScanAttachment = attach.FileName;
+        }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
         {
             error = string.Empty;
@@ -4662,6 +4686,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUserInfoModel(user, model);
             SetAttachmentToModel(model, id, RequestAttachmentTypeEnum.Vacation);
             SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.VacationOrderScan);
+            SetUnsignedOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedVacationOrderScan);
             model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.Vacation);
             model.TimesheetStatuses = GetTimesheetStatusesForVacation();
             model.VacationTypes = GetVacationTypes(false);
@@ -4701,7 +4726,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(id, user,vacation, model);
             return model;
         }
-        public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error)
+        public bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -4794,6 +4819,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = fileName;
                     }
                     // ---------------------------------------
+                    int? unsignedOrderScanAttachmentId = SaveAttachment(vacation.Id, model.UnsignedOrderScanAttachmentId, unsignedOrderScanFileDto, RequestAttachmentTypeEnum.UnsignedVacationOrderScan, out fileName);
+                    if (unsignedOrderScanAttachmentId.HasValue)
+                    {
+                        model.UnsignedOrderScanAttachmentId = unsignedOrderScanAttachmentId.Value;
+                        model.UnsignedOrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
                     if (vacation.Version != model.Version)
                     {
                         error = "Заявка была изменена другим пользователем.";
@@ -4808,10 +4840,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.OrderScanAttachmentId > 0)
                             RequestAttachmentDao.Delete(model.OrderScanAttachmentId);
                         // ----------------------------
+                        if (model.UnsignedOrderScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.UnsignedOrderScanAttachmentId);
+                        // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
                         model.OrderScanAttachmentId = 0;
                         model.OrderScanAttachment = string.Empty;
+                        model.UnsignedOrderScanAttachmentId = 0;
+                        model.UnsignedOrderScanAttachment = string.Empty;
                         if (current.UserRole == UserRole.OutsourcingManager)
                             vacation.DeleteAfterSendTo1C = true;
                         vacation.CreateDate = DateTime.Now;
@@ -5114,7 +5151,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                        }
                     }
                     break;
-                case UserRole.PersonnelManager:                    
+                case UserRole.PersonnelManager:
+                    model.IsUnsignedConfirmationAllowed = true;
                     if (!vacation.PersonnelManagerDateAccept.HasValue && (!superPersonnelId.HasValue || AuthenticationService.CurrentUser.Id != superPersonnelId.Value))
                     {
                         if (model.AttachmentId > 0)
