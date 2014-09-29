@@ -53,7 +53,8 @@
         MissionOrderScan = 118,
 
         UnsignedDismissalOrderScan = 153,
-        UnsignedVacationOrderScan = 154
+        UnsignedVacationOrderScan = 154,
+
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
