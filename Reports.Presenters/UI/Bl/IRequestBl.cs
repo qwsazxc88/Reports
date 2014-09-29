@@ -20,7 +20,7 @@ namespace Reports.Presenters.UI.Bl
         void SetAllRequestListModel(AllRequestListModel model, bool hasError);
 
         VacationEditModel GetVacationEditModel(int id, int userId);
-        bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
+        bool SaveVacationEditModel(VacationEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error);
         void ReloadDictionariesToModel(VacationEditModel model);
         bool ResetVacationApprovals(int id, out string error);
 
@@ -62,7 +62,7 @@ namespace Reports.Presenters.UI.Bl
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
-        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto orderScanFileDto, out string error);
+        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
                 
         ClearanceChecklistListModel GetClearanceChecklistListModel();
