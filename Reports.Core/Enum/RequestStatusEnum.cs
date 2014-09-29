@@ -53,7 +53,7 @@
         MissionOrderScan = 118,
 
         UnsignedDismissalOrderScan = 153,
-        UnsignedVacationOrderScan = 154
+        UnsignedVacationOrderScan = 154,
         
         // Employment documents
         
