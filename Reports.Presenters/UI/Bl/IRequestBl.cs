@@ -24,8 +24,8 @@ namespace Reports.Presenters.UI.Bl
         void ReloadDictionariesToModel(VacationEditModel model);
         bool ResetVacationApprovals(int id, out string error);
 
-        int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
-                                    DateTime endDate, int userId, int vacationId, bool isChildVacantion);
+        int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int vacationId, bool isChildVacantion);
+        int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId, RequestTypeEnum requestType);
 
         RequestCommentsModel GetCommentsModel(int id, int typeId);
         bool SaveComment(SaveCommentModel model);

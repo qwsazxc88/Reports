@@ -5,6 +5,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -134,5 +135,11 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<Sicklist>();
         }
+        
+        public int GetRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId)
+        {
+            return GetRequestsCountForType(beginDate, endDate, RequestTypeEnum.Sicklist, userId, UserRole.Employee, requestId);
+        }
+
     }
 }
