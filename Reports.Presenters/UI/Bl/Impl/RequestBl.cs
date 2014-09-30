@@ -5249,11 +5249,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 dtos.Insert(0,new IdNameDto(0,string.Empty));
             return dtos;
         }
+
         public int GetOtherRequestCountsForUserAndDates(DateTime beginDate,
             DateTime endDate,int userId,int vacationId, bool isChildVacantion)
         {
             return VacationDao.GetRequestCountsForUserAndDates(beginDate, endDate
                                                                , userId, vacationId,isChildVacantion);
+        }
+
+        public int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId, RequestTypeEnum requestType)
+        {
+            switch (requestType)
+            {
+                case RequestTypeEnum.Sicklist:
+                    return SicklistDao.GetRequestCountsForUserAndDates(beginDate, endDate, userId, requestId);
+                default:
+                    return -1;
+            }
         }
 
         public bool ResetVacationApprovals(int id, out string error)
