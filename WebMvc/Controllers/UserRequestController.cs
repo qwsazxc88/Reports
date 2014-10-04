@@ -426,6 +426,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -434,7 +435,7 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -887,6 +888,11 @@ namespace WebMvc.Controllers
                          (role == UserRole.Manager && model.IsApprovedByManager) ||
                          (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))*/)
                  {
+                     // Проверка на дубликаты
+                     int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates(model.BeginDate.Value, model.EndDate.Value, model.UserId, model.Id, RequestTypeEnum.Sicklist);
+                     if (requestCount > 0)
+                         ModelState.AddModelError("BeginDate", "Для данного пользователя существуют другие заявки в указанном интервале дат.");
+
                      DateTime beginDate = model.BeginDate.Value;
                      DateTime current = DateTime.Today;
                      DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
@@ -1124,6 +1130,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -1133,7 +1140,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveVacationEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
              {
                  
                  if (model.ReloadPage)
@@ -1988,13 +1995,14 @@ namespace WebMvc.Controllers
                 return;
             DateTime beginDate = date.Value;
             DateTime current = DateTime.Today;
+            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : 1;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
-            if ((current.Day != 1) && monthBegin > beginDate)
+            if ((current.Day > limitDate) && monthBegin > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;
             }
-            if ((current.Day == 1) && monthBegin.AddMonths(-1) > beginDate)
+            if ((current.Day <= limitDate) && monthBegin.AddMonths(-1) > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;

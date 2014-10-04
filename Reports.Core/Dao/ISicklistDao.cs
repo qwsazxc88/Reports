@@ -23,5 +23,6 @@ namespace Reports.Core.Dao
             );
         bool ResetApprovals(int id);
         IList<Sicklist> LoadForIdsList(List<int> ids);
+        int GetRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId);
     }
 }

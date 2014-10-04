@@ -52,6 +52,9 @@
         ChildVacationOrderScan = 105,
         MissionOrderScan = 118,
 
+        UnsignedDismissalOrderScan = 153,
+        UnsignedVacationOrderScan = 154,
+
         // Employment documents
 
         Photo = 201,
@@ -92,6 +95,7 @@
   //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
   //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
   //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
+
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,
