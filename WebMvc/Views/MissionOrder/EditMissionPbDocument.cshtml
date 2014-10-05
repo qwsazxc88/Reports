@@ -8,12 +8,6 @@
     <div class="doc-wrap">
         <table style="width:100%"> 
             <tr>
-                <td colspan="2">
-                    @Html.ValidationSummary(false)
-                    <div id="Error" style="color:Red;display:none;"></div>
-                </td>
-            </tr>
-            <tr>
                 <td>
                     @Html.LabelFor(m => m.CfNumber):
                 </td>
@@ -81,6 +75,12 @@
                 <td colspan="2">
                     <input type="submit" value="Записать" name="SaveBtn" id="SaveBtn" onclick="return Validate();" 
                     @if(!Model.IsEditable){<text>style="display:none"</text> } />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;font-weight:bold"></div>
                 </td>
             </tr>
             <tr>
@@ -328,7 +328,7 @@
                 result =  false;
             else
             { 
-                sum = ValidateSumC($("#AllSum")); 
+                sum = ValidateSumNotNegative($("#AllSum")); 
                 if(sum == undefined)
                     result = false;
             }
@@ -363,7 +363,7 @@
                 result =  false;
             else
             { 
-                sum = ValidateSumC($("#SumNds")); 
+                sum = ValidateSumNotNegative($("#SumNds")); 
                 if(sum == undefined)
                     result = false;
             }

@@ -10250,7 +10250,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 //model.IsAccountantRejectAvailable = true;
                                 if (model.IsAccountantApproveAvailable &&
                                     entity.Costs.Any(x => x.IsCostFromPurchaseBook &&
-                                                          (!x.BookOfPurchaseSum.HasValue || x.BookOfPurchaseSum == 0)))
+                                                          (!x.BookOfPurchaseSum.HasValue /*|| x.BookOfPurchaseSum == 0*/)))
                                     model.IsAccountantApproveAvailable = false;
 
                             }
@@ -11117,7 +11117,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.RequestNumber = entity.RequestNumber;
                 model.Sum = entity.Sum;
                 model.SumNds = entity.SumNds;
-                model.IsWithNds = entity.SumNds.HasValue && (entity.SumNds.Value != 0);
+                model.IsWithNds = entity.SumNds.HasValue /*&& (entity.SumNds.Value != 0)*/;
                 model.RecordUserId = entity.User.Id;
             }
             LoadDictionaries(model);
@@ -11300,7 +11300,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             List<MissionPurchaseBookRecord> costRecords = MissionPurchaseBookRecordDao.GetRecordsForCost(cost.Id).ToList();
             decimal? sum = costRecords.Sum(x => x.AllSum);
-            cost.BookOfPurchaseSum = sum == 0 ? null : sum;
+            cost.BookOfPurchaseSum = costRecords.Count == 0 ? null : sum;
             report.PurchaseBookAllSum = report.Costs.Sum(x => x.BookOfPurchaseSum).Value;
             MissionReportDao.SaveAndFlush(report);
             return documentVersion;
