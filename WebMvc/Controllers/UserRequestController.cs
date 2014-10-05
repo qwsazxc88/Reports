@@ -1995,13 +1995,14 @@ namespace WebMvc.Controllers
                 return;
             DateTime beginDate = date.Value;
             DateTime current = DateTime.Today;
+            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : 1;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
-            if ((current.Day != 1) && monthBegin > beginDate)
+            if ((current.Day > limitDate) && monthBegin > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;
             }
-            if ((current.Day == 1) && monthBegin.AddMonths(-1) > beginDate)
+            if ((current.Day <= limitDate) && monthBegin.AddMonths(-1) > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;
