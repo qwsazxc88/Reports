@@ -104,6 +104,7 @@
     <Compile Include="Controllers\EmploymentController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\GraphicsController.cs" />
+    <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InfoController.cs" />
     <Compile Include="Controllers\MissionOrderController.cs" />
@@ -697,6 +698,9 @@
     <Content Include="Views\Employment\ExperienceReadOnly.cshtml" />
     <Content Include="Views\Employment\ContactsReadOnly.cshtml" />
     <Content Include="Views\Employment\BackgroundCheckReadOnly.cshtml" />
+    <Content Include="Views\Help\Index.cshtml" />
+    <Content Include="Views\Shared\_HelpInfo.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

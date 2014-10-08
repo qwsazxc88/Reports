@@ -75,6 +75,14 @@
                 </div> 
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
+                @if ((dto.UserRole & UserRole.Manager) > 0
+                     ||(dto.UserRole & UserRole.Employee) > 0
+                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                      )
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")
+                    </div> 
+                 }
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
                  @if ((dto.UserRole & UserRole.Manager) > 0
