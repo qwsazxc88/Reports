@@ -1,0 +1,32 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpVersionsListModel
+<table id="VersionsTable" style="width: 100%;">
+        <tr>
+            <td>
+                <input type="button" value="Добавить запись о версии" @if (!Model.IsAddAvailable) { <text>style = "display:none"</text>; } id="AddVersion" onclick="OnAddVersion();"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="VersionError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Versions != null && Model.Versions.Count > 0)
+        {
+            foreach (var version in Model.Versions)
+            {
+                <tr>
+                    <td class="comment-author">@version.ReleaseDate</td>
+                </tr>
+                <tr>
+                    <td class="comment-text">@version.Comment</td>
+                </tr>
+                if (Model.IsAddAvailable)
+                {
+                 <tr>
+                    <input type="button" value="Редактировать" id="EditVersion" onclick="OnEditVersion(@version.Id);"/>
+                    <input type="button" value="Удалить" id="DeleteVersion" onclick="OnDeleteVersion(@version.Id);"/>
+                 </tr>
+                }
+            }
+        }
+</table>

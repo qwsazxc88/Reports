@@ -701,6 +701,8 @@
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Shared\_HelpInfo.cshtml" />
     <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />
+    <Content Include="Views\Help\Version.cshtml" />
+    <Content Include="Views\Help\VersionPartial.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

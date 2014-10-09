@@ -482,6 +482,11 @@ namespace Reports.Core
                   ImplementedBy(typeof(ScheduleDao)).
                   LifeStyle.Is(type));
 
+
+            Register(Component.For(typeof (IHelpVersionDao)).
+                         ImplementedBy(typeof (HelpVersionDao)).
+                         LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

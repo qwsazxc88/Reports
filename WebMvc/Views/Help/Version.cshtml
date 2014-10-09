@@ -1,0 +1,16 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpVersionsListModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "О программе";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Partial("VersionPartial", Model)
+}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        setActiveMenuItem("helpVersion");
+    });
+</script>

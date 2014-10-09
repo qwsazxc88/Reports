@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IHelpVersionDao.cs" />
     <Compile Include="Dao\IAccessGroupDao.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
     <Compile Include="Dao\IAppointmentCommentDao.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\HelpVersionDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
@@ -380,6 +382,7 @@
     <Compile Include="Domain\ExportImportAction.cs" />
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
+    <Compile Include="Domain\HelpVersion.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -480,6 +483,7 @@
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
+    <Compile Include="Dto\HelpVersionDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />
     <Compile Include="Dto\ItemUsedDto.cs" />
@@ -981,6 +985,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\HelpVersion.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
