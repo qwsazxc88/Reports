@@ -30,3 +30,97 @@
             }
         }
 </table>
+<script type="text/javascript">
+    function Render() {
+        var actionUrl="@Url.Action("RenderVersions", "Help")";
+        var url = actionUrl + "?dummy=" + new Date().getTime();
+        $("#VersionsModelContext").load(url);
+    }
+    function OnAddComment() {
+        createCommentDialog(0);
+    }
+    function createCommentDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divCommentDialog";
+        var newDiv = $(elem);
+        var documentId = $("#RequestId").val();
+        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Добавление нового комментария";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("AddCommentDialog", "Home")?id=" + documentId + "&typeId="+typeId + " #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 650,
+	        height: 240,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateComment())
+                        return;
+                    SaveComment();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateComment()
+    {
+        if(trimSpaces($("#Comment").val()) == "")
+        {
+            addCommentError("Комментарий - обязательное поле");
+            return false;
+        }
+        return true;
+    }
+    function SaveComment()
+    {
+        var url="@Url.Action("SaveComment", "Home")"+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+                +"&comment="+escapeJson($("#Comment").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addCommentError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addCommentError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearCommentErrors();
+                                                $("#divCommentDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addCommentError(value) {
+    $("#AddCommentError").text(value);
+    $("#AddCommentError").show();
+}
+function clearCommentErrors() {
+    $("#AddCommentError").text("");
+    $("#AddCommentError").hide();
+}
+    </script>

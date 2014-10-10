@@ -29,12 +29,15 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Version()
         {
-            HelpVersionsListModel model = new HelpVersionsListModel
-                                              {
-                                                  IsAddAvailable = true,
-                                                  Versions = new List<HelpVersionDto>()
-                                              };
+            HelpVersionsListModel model = HelpBl.GetVersionsModel();
             return View(model);
+        }
+        [HttpGet]
+        public ActionResult RenderVersions()
+        {
+            //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+            HelpVersionsListModel model = HelpBl.GetVersionsModel();
+            return PartialView("VersionPartial", model);
         }
     }
 }
