@@ -7,7 +7,7 @@
         </tr>
         <tr>
             <td>
-                <div id="VersionError" style="color:Red" visible="false"/>
+                <div id="ListVersionsError" style="color:Red" visible="false"/>
             </td>    
         </tr>    
         @if (Model != null && Model.Versions != null && Model.Versions.Count > 0)
@@ -36,21 +36,38 @@
         var url = actionUrl + "?dummy=" + new Date().getTime();
         $("#VersionsModelContext").load(url);
     }
-    function OnAddComment() {
-        createCommentDialog(0);
+    function OnAddVersion() {
+        createVersionDialog(0);
     }
-    function createCommentDialog(id) 
+    function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+    }
+    function createVersionDialog(id) 
     {
         var elem = document.createElement('div');
-        elem.id = "divCommentDialog";
+        elem.id = "divVersionDialog";
         var newDiv = $(elem);
-        var documentId = $("#RequestId").val();
-        var typeId = $("#RequestTypeId").val();
+//        var documentId = $("#RequestId").val();
+//        var typeId = $("#RequestTypeId").val();
 
-        var title =  "Добавление нового комментария";
+        var title =  "Редактирование информации о версии";
         $(newDiv).text('Подождите, идет загрузка данных ...'); 
         $.ajaxSetup({cache: false});
-        $(newDiv).load("@Url.Action("AddCommentDialog", "Home")?id=" + documentId + "&typeId="+typeId + " #DialogTable");
+        $(newDiv).load("@Url.Action("EditVersionDialog", "Help")?id=" + id  + " #VersionDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditVersionTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     else
+                     {
+                        $("#ReleaseDate").datepicker();
+                        $(".hasDatepicker").width("85px"); 
+                     }
+                 }
+             });
         $(newDiv).dialog(
         { // initialize dialog box
             autoOpen: true,
@@ -61,16 +78,16 @@
             draggable: false,
             resizable: false,
             width: 650,
-	        height: 240,
+	        height: 300,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },
             buttons:
             {
                 "Сохранить": function () {
-                    if (!ValidateComment())
+                    if (!ValidateVersion())
                         return;
-                    SaveComment();
+                    SaveVersion();
                 },
                 "Отмена": function () {
                     $(this).dialog("close");
@@ -78,18 +95,27 @@
             }
         });
     }
-    function ValidateComment()
+    function ValidateVersion()
     {
+        var result = true;
+        clearDlgErrors($("#VersionDialogTable"));
         if(trimSpaces($("#Comment").val()) == "")
         {
-            addCommentError("Комментарий - обязательное поле");
-            return false;
+            addDlgError($("#Comment"),"Комментарий - обязательное поле");
+            result = false;
+            //return false;
         }
-        return true;
+        if(trimSpaces($("#ReleaseDate").val()) == "")
+        {
+            addDlgError($("#ReleaseDate"),"Дата версии - обязательное поле");
+            result = false;
+            //return false;
+        }
+        return result;
     }
     function SaveComment()
     {
-        var url="@Url.Action("SaveComment", "Home")"+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+        var url="@Url.Action("SaveVersion", "Home")"+"?id="+ $("#Id").val() 
                 +"&comment="+escapeJson($("#Comment").val());
         var jqxhr = $.post(url,
                 function (jsonResult) {
@@ -98,29 +124,29 @@
                                             }
                                             if(jsonResult == "")
                                             {
-                                                addCommentError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                addVersionError("Ошибка асинхронного запроса - не был получен ответ.");
                                                 return;
                                             }
                                             var result = JSON.parse(jsonResult);  
                                             if(!result.Result)
                                             {
-                                                addCommentError(result.Error);
+                                                addVersionError(result.Error);
                                                 //Render();
                                             }
                                             else
                                             {
-                                                clearCommentErrors();
-                                                $("#divCommentDialog").dialog("close");
+                                                clearVersionErrors();
+                                                $("#divVersionDialog").dialog("close");
                                                 Render();
                                             }    
                                   });
     }
-    function addCommentError(value) {
-    $("#AddCommentError").text(value);
-    $("#AddCommentError").show();
+    function addVersionError(value) {
+    $("#VersionError").text(value);
+    $("#VersionError").show();
 }
 function clearCommentErrors() {
-    $("#AddCommentError").text("");
-    $("#AddCommentError").hide();
+    $("#VersionError").text("");
+    $("#VersionError").hide();
 }
     </script>

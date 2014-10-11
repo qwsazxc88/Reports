@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using Reports.Core;
 using Reports.Core.Dto;
@@ -20,12 +21,15 @@ namespace WebMvc.Controllers
             }
         }
 
+        public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
+
         [HttpGet]
         public ActionResult Index()
         {
             return View();
         }
 
+        #region Versions
         [HttpGet]
         public ActionResult Version()
         {
@@ -39,5 +43,22 @@ namespace WebMvc.Controllers
             HelpVersionsListModel model = HelpBl.GetVersionsModel();
             return PartialView("VersionPartial", model);
         }
+
+        [HttpGet]
+        public ActionResult EditVersionDialog(int id)
+        {
+            try
+            {
+                HelpEditVersionModel model = HelpBl.GetEditVersionModel(id);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = StrCommentsLoadError + ex.GetBaseException().Message;
+                return PartialView("VersionDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        #endregion
     }
 }

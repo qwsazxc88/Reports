@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Reports.Core;
 using Reports.Core.Dao;
+using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Presenters.UI.ViewModel;
 
@@ -30,6 +32,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                                          }
                            )
                        };
+        }
+        public HelpEditVersionModel GetEditVersionModel(int id)
+        {
+            HelpEditVersionModel model = new HelpEditVersionModel {Id = id};
+            if (id == 0)
+                model.ReleaseDate = DateTime.Today.ToShortDateString();
+            else
+            {
+                HelpVersion version = HelpVersionDao.Load(id);
+                model.ReleaseDate = version.ReleaseDate.ToShortDateString();
+                model.Comment = version.Comment;
+            }
+            return model;
         }
     }
 }
