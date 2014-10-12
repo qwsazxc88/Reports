@@ -1,12 +1,13 @@
-﻿@model Reports.Presenters.UI.ViewModel.HelpVersionsListModel
+﻿@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpVersionsListModel
 <table id="VersionsTable" style="width: 100%;">
         <tr>
-            <td>
+            <td colspan="3">
                 <input type="button" value="Добавить запись о версии" @if (!Model.IsAddAvailable) { <text>style = "display:none"</text>; } id="AddVersion" onclick="OnAddVersion();"/>
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="3">
                 <div id="ListVersionsError" style="color:Red" visible="false"/>
             </td>    
         </tr>    
@@ -15,138 +16,17 @@
             foreach (var version in Model.Versions)
             {
                 <tr>
-                    <td class="comment-author">@version.ReleaseDate</td>
-                </tr>
-                <tr>
-                    <td class="comment-text">@version.Comment</td>
-                </tr>
-                if (Model.IsAddAvailable)
+                    <td style="border:1px solid" class="comment-text">@RequestBl.FormatDate(version.ReleaseDate)</td>
+                    <td style="border:1px solid;width:70%" class="comment-text">@version.Comment</td>
+                @if (Model.IsAddAvailable)
                 {
-                 <tr>
-                    <input type="button" value="Редактировать" id="EditVersion" onclick="OnEditVersion(@version.Id);"/>
-                    <input type="button" value="Удалить" id="DeleteVersion" onclick="OnDeleteVersion(@version.Id);"/>
-                 </tr>
+                
+                    <td style="border:1px solid">
+                        <input type="button" value="Редактировать" id="EditVersion" onclick="OnEditVersion(@version.Id);"/>
+                        <input type="button" value="Удалить" id="DeleteVersion" onclick="OnDeleteVersion(@version.Id);"/>
+                    </td>
                 }
+                </tr>
             }
         }
 </table>
-<script type="text/javascript">
-    function Render() {
-        var actionUrl="@Url.Action("RenderVersions", "Help")";
-        var url = actionUrl + "?dummy=" + new Date().getTime();
-        $("#VersionsModelContext").load(url);
-    }
-    function OnAddVersion() {
-        createVersionDialog(0);
-    }
-    function disableSaveButton() {
-        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
-    }
-    function createVersionDialog(id) 
-    {
-        var elem = document.createElement('div');
-        elem.id = "divVersionDialog";
-        var newDiv = $(elem);
-//        var documentId = $("#RequestId").val();
-//        var typeId = $("#RequestTypeId").val();
-
-        var title =  "Редактирование информации о версии";
-        $(newDiv).text('Подождите, идет загрузка данных ...'); 
-        $.ajaxSetup({cache: false});
-        $(newDiv).load("@Url.Action("EditVersionDialog", "Help")?id=" + id  + " #VersionDialogTable",
-         function (response, status, xhr) {
-                 if (status == "error") {
-                     var msg = "Произошла ошибка: ";
-                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
-                 } else if (status == "success") {
-                     if ($('#EditVersionTableLoadError').val() != undefined)
-                         disableSaveButton();
-                     else
-                     {
-                        $("#ReleaseDate").datepicker();
-                        $(".hasDatepicker").width("85px"); 
-                     }
-                 }
-             });
-        $(newDiv).dialog(
-        { // initialize dialog box
-            autoOpen: true,
-            modal: true,
-            title: title,
-            // fix IE6  
-            bgiframe: true, 
-            draggable: false,
-            resizable: false,
-            width: 650,
-	        height: 300,
-            close: function (event, ui) {
-                $(this).dialog("destroy").remove();
-            },
-            buttons:
-            {
-                "Сохранить": function () {
-                    if (!ValidateVersion())
-                        return;
-                    SaveVersion();
-                },
-                "Отмена": function () {
-                    $(this).dialog("close");
-                }
-            }
-        });
-    }
-    function ValidateVersion()
-    {
-        var result = true;
-        clearDlgErrors($("#VersionDialogTable"));
-        if(trimSpaces($("#Comment").val()) == "")
-        {
-            addDlgError($("#Comment"),"Комментарий - обязательное поле");
-            result = false;
-            //return false;
-        }
-        if(trimSpaces($("#ReleaseDate").val()) == "")
-        {
-            addDlgError($("#ReleaseDate"),"Дата версии - обязательное поле");
-            result = false;
-            //return false;
-        }
-        return result;
-    }
-    function SaveComment()
-    {
-        var url="@Url.Action("SaveVersion", "Home")"+"?id="+ $("#Id").val() 
-                +"&comment="+escapeJson($("#Comment").val());
-        var jqxhr = $.post(url,
-                function (jsonResult) {
-                                            if (!this.JSON) {
-                                                    this.JSON = {};
-                                            }
-                                            if(jsonResult == "")
-                                            {
-                                                addVersionError("Ошибка асинхронного запроса - не был получен ответ.");
-                                                return;
-                                            }
-                                            var result = JSON.parse(jsonResult);  
-                                            if(!result.Result)
-                                            {
-                                                addVersionError(result.Error);
-                                                //Render();
-                                            }
-                                            else
-                                            {
-                                                clearVersionErrors();
-                                                $("#divVersionDialog").dialog("close");
-                                                Render();
-                                            }    
-                                  });
-    }
-    function addVersionError(value) {
-    $("#VersionError").text(value);
-    $("#VersionError").show();
-}
-function clearCommentErrors() {
-    $("#VersionError").text("");
-    $("#VersionError").hide();
-}
-    </script>

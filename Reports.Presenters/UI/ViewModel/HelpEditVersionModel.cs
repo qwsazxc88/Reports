@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Presenters.UI.ViewModel
 {
@@ -12,6 +13,14 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Комментарий")]
         public string Comment { get; set; }
 
+        public string Error { get; set; }
+    }
+
+    public class HelpSaveVersionModel
+    {
+        public int Id { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public string Comment { get; set; }
         public string Error { get; set; }
     }
 }

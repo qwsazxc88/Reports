@@ -987,7 +987,7 @@
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Domain\HelpVersion.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpVersion.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

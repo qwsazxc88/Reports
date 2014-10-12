@@ -13,4 +13,137 @@
     $(document).ready(function () {
         setActiveMenuItem("helpVersion");
     });
+@*</script>
+<script type="text/javascript">*@
+    function Render() {
+        var actionUrl="@Url.Action("RenderVersions", "Help")";
+        var url = actionUrl + "?dummy=" + new Date().getTime();
+        $("#VersionsModelContext").load(url);
+    }
+    function OnAddVersion() {
+        createVersionDialog(0);
+    }
+     function OnEditVersion(id) {
+        createVersionDialog(id);
+    }
+    function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+    }
+    function createVersionDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divVersionDialog";
+        var newDiv = $(elem);
+//        var documentId = $("#RequestId").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Редактирование информации о версии";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditVersionDialog", "Help")?id=" + id  + " #VersionDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditVersionTableLoadError').val() != undefined)
+                         disableSaveButton();
+                     else
+                     {
+                        $("#ReleaseDate").datepicker();
+                        $(".hasDatepicker").width("85px"); 
+                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 650,
+	        height: 300,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateVersion())
+                        return;
+                    SaveVersion();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateVersion()
+    {
+        var result = true;
+        clearDlgErrors($("#VersionDialogTable"));
+        if(trimSpaces($("#Comment").val()) == "")
+        {
+            addDlgError($("#Comment"),"Комментарий - обязательное поле");
+            result = false;
+            //return false;
+        }
+        if(trimSpaces($("#ReleaseDate").val()) == "")
+        {
+            addDlgError($("#ReleaseDate"),"Дата версии - обязательное поле");
+            result = false;
+        }
+        else
+        {
+            try {
+                    endDate = $.datepicker.parseDate("dd.mm.yy", $('#ReleaseDate').val());
+                }
+                catch (error) 
+                {
+                    addDlgError($("#ReleaseDate"),"Неправильная дата");
+                    result = false;
+                }
+        }
+        return result;
+    }
+    function SaveVersion()
+    {
+        var url='@Url.Action("SaveVersion", "Help")'+'?id='+ $("#Id").val() 
+                +'&comment='+escapeJson($("#Comment").val())+'&releaseDate='+$("#ReleaseDate").val() ;
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addVersionError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addVersionError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearVersionErrors();
+                                                $("#divVersionDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addVersionError(value) {
+    $("#VersionError").text(value);
+    $("#VersionError").show();
+}
+function clearVersionErrors() {
+    $("#VersionError").text("");
+    $("#VersionError").hide();
+}
 </script>

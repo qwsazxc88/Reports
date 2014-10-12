@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
@@ -10,6 +9,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class HelpBl : BaseBl, IHelpBl
     {
+
+        public const string StrCannotEditVersion = "Вам запрещено редактирование информации о версии";
+        public const string StrException = "Исключение:";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -45,6 +47,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Comment = version.Comment;
             }
             return model;
+        }
+        public bool SaveVersion(HelpSaveVersionModel model)
+        {
+            try
+            {
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+                {
+                    model.Error = StrCannotEditVersion;
+                    return false;
+                }
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                HelpVersion entity = new HelpVersion();                
+                if(model.Id > 0)
+                    entity = HelpVersionDao.Load(model.Id);
+                entity.Comment = model.Comment;
+                entity.DateCreated = DateTime.Now;
+                entity.User = user;
+                entity.ReleaseDate = model.ReleaseDate;
+                HelpVersionDao.SaveAndFlush(entity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                helpVersionDao.RollbackTran();
+                Log.Error("Exception", ex);
+                model.Error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
         }
     }
 }
