@@ -705,6 +705,8 @@
     <Content Include="Views\Help\VersionPartial.cshtml" />
     <Content Include="Views\Help\EditVersionDialog.cshtml" />
     <Content Include="Views\Help\VersionDialogError.cshtml" />
+    <Content Include="Views\Help\Faq.cshtml" />
+    <Content Include="Views\Help\FaqPartial.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

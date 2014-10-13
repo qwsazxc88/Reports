@@ -486,6 +486,9 @@ namespace Reports.Core
             Register(Component.For(typeof (IHelpVersionDao)).
                          ImplementedBy(typeof (HelpVersionDao)).
                          LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpFaqDao)).
+                       ImplementedBy(typeof(HelpFaqDao)).
+                       LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

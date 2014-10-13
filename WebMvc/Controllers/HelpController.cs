@@ -131,5 +131,20 @@ namespace WebMvc.Controllers
         }
        
         #endregion
+        #region Faq
+        [HttpGet]
+        public ActionResult Faq()
+        {
+            HelpFaqListModel model = HelpBl.GetFaqModel();
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult RenderQuestions()
+        {
+            //IContractRequest bo = Ioc.Resolve<IContractRequest>();
+            HelpFaqListModel model = HelpBl.GetFaqModel();
+            return PartialView("FaqPartial", model);
+        }
+        #endregion
     }
 }

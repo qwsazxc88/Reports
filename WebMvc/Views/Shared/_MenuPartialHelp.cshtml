@@ -103,6 +103,7 @@
                || (dto.UserRole & UserRole.OutsourcingManager) > 0 )
              {  
                 <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Реестр заявок", "Index", "Help")</div> 
+                <div class="menuitem" id="helpFaq">@Html.ActionLink("Часто задаваемые вопросы", "Faq", "Help")</div>
                 <div class="menuitem" id="helpVersion">@Html.ActionLink("О программе", "Version", "Help")</div>
              }
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>

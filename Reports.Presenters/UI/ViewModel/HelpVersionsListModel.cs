@@ -8,4 +8,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsAddAvailable { get; set; }
         public List<HelpVersionDto> Versions { get; set; }
     }
+    public class HelpFaqListModel
+    {
+        public bool IsAddAvailable { get; set; }
+        public List<HelpFaqDto> Questions { get; set; }
+    }
 }

@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IHelpFaqDao.cs" />
     <Compile Include="Dao\IHelpVersionDao.cs" />
     <Compile Include="Dao\IAccessGroupDao.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\HelpFaqDao.cs" />
     <Compile Include="Dao\Impl\HelpVersionDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
@@ -382,6 +384,7 @@
     <Compile Include="Domain\ExportImportAction.cs" />
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
+    <Compile Include="Domain\HelpFaq.cs" />
     <Compile Include="Domain\HelpVersion.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
@@ -988,6 +991,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpVersion.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpFaq.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

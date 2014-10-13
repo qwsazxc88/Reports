@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
@@ -20,7 +21,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpVersionDao); }
             set { helpVersionDao = value; }
         }
+        protected IHelpFaqDao helpFaqDao;
+        public IHelpFaqDao HelpFaqDao
+        {
+            get { return Validate.Dependency(helpFaqDao); }
+            set { helpFaqDao = value; }
+        }
         #endregion
+        #region Version
         public HelpVersionsListModel GetVersionsModel()
         {
             return new HelpVersionsListModel
@@ -87,5 +95,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             helpVersionDao.DeleteAndFlush(model.Id);
             return true;
         }
+        #endregion
+        #region Faq
+        public HelpFaqListModel GetFaqModel()
+        {
+            return new HelpFaqListModel
+            {
+                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
+                Questions = HelpFaqDao.LoadAllSortedByQuestion().ConvertAll(
+                     x => new HelpFaqDto
+                     {
+                         Id = x.Id,
+                         Question = x.Question,
+                         Answer = x.Answer
+                     }
+                )
+            };
+        }
+        #endregion
     }
 }

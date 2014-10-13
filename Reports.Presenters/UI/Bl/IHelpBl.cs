@@ -9,5 +9,7 @@ namespace Reports.Presenters.UI.Bl
         HelpEditVersionModel GetEditVersionModel(int id);
         bool SaveVersion(HelpSaveVersionModel model);
         bool DeleteVersion(DeleteAttacmentModel model);
+
+        HelpFaqListModel GetFaqModel();
     }
 }
