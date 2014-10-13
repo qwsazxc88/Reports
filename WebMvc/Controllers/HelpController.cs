@@ -106,6 +106,30 @@ namespace WebMvc.Controllers
             var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
             return Content(jsonString);
         }
+
+        [HttpGet]
+        public ContentResult DeleteVersion(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = HelpBl.DeleteVersion(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteVersion:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+       
         #endregion
     }
 }

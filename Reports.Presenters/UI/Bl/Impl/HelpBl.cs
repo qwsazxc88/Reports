@@ -11,6 +11,7 @@ namespace Reports.Presenters.UI.Bl.Impl
     {
 
         public const string StrCannotEditVersion = "Вам запрещено редактирование информации о версии";
+        public const string StrCannotDeleteVersion = "Вам запрещено удаление информации о версии";
         public const string StrException = "Исключение:";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
@@ -75,6 +76,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Error = StrException + ex.GetBaseException().Message;
                 return false;
             }
+        }
+        public bool DeleteVersion(DeleteAttacmentModel model)
+        {
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+            {
+                model.Error = StrCannotDeleteVersion;
+                return false;
+            }
+            helpVersionDao.DeleteAndFlush(model.Id);
+            return true;
         }
     }
 }

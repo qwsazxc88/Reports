@@ -141,9 +141,27 @@
     function addVersionError(value) {
     $("#VersionError").text(value);
     $("#VersionError").show();
-}
+    }
 function clearVersionErrors() {
     $("#VersionError").text("");
     $("#VersionError").hide();
 }
+ function OnDeleteVersion(id){
+        var actionUrl="@Url.Action("DeleteVersion", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#ListVersionsError").text(result.Error);
+                                $("#ListVersionsError").show(); 
+                            }
+                            else{
+                                $("#ListVersionsError").text("");
+                                $("#ListVersionsError").hide();                                 
+                           }
+                           Render();
+                       }
+                     );
+        return false;
+    }
 </script>

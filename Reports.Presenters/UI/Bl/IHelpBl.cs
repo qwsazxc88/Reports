@@ -8,5 +8,6 @@ namespace Reports.Presenters.UI.Bl
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);
         bool SaveVersion(HelpSaveVersionModel model);
+        bool DeleteVersion(DeleteAttacmentModel model);
     }
 }
