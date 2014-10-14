@@ -46,7 +46,7 @@
                      var msg = "Произошла ошибка: ";
                      $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
                  } else if (status == "success") {
-                     if ($('#EditQuestionTableLoadError').val() != undefined)
+                     if ($('#EditFaqLoadError').val() != undefined)
                          disableSaveButton();
 //                     else
 //                     {
@@ -64,17 +64,17 @@
             bgiframe: true, 
             draggable: false,
             resizable: false,
-            width: 650,
-	        height: 300,
+            width: 620,
+	        height: 380,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },
             buttons:
             {
                 "Сохранить": function () {
-                    if (!ValidateVersion())
+                    if (!ValidateQuestion())
                         return;
-                    SaveVersion();
+                    SaveQuestion();
                 },
                 "Отмена": function () {
                     $(this).dialog("close");
@@ -82,38 +82,27 @@
             }
         });
     }
-    function ValidateVersion()
+    function ValidateQuestion()
     {
         var result = true;
-        clearDlgErrors($("#VersionDialogTable"));
-        if(trimSpaces($("#Comment").val()) == "")
+        clearDlgErrors($("#QuestionDialogTable"));
+        if(trimSpaces($("#Question").val()) == "")
         {
-            addDlgError($("#Comment"),"Комментарий - обязательное поле");
+            addDlgError($("#Question"),"Вопрос - обязательное поле");
             result = false;
             //return false;
         }
-        if(trimSpaces($("#ReleaseDate").val()) == "")
+        if(trimSpaces($("#Answer").val()) == "")
         {
-            addDlgError($("#ReleaseDate"),"Дата версии - обязательное поле");
+            addDlgError($("#Answer"),"  Ответ - обязательное поле");
             result = false;
-        }
-        else
-        {
-            try {
-                    endDate = $.datepicker.parseDate("dd.mm.yy", $('#ReleaseDate').val());
-                }
-                catch (error) 
-                {
-                    addDlgError($("#ReleaseDate"),"Неправильная дата");
-                    result = false;
-                }
         }
         return result;
     }
-    function SaveVersion()
+    function SaveQuestion()
     {
-        var url='@Url.Action("SaveVersion", "Help")'+'?id='+ $("#Id").val() 
-                +'&comment='+escapeJson($("#Comment").val())+'&releaseDate='+$("#ReleaseDate").val() ;
+        var url='@Url.Action("SaveQuestion", "Help")'+'?id='+ $("#Id").val() 
+                +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
         var jqxhr = $.post(url,
                 function (jsonResult) {
                                             if (!this.JSON) {
@@ -121,43 +110,43 @@
                                             }
                                             if(jsonResult == "")
                                             {
-                                                addVersionError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                addFaqError("Ошибка асинхронного запроса - не был получен ответ.");
                                                 return;
                                             }
                                             var result = JSON.parse(jsonResult);  
                                             if(!result.Result)
                                             {
-                                                addVersionError(result.Error);
+                                                addFaqError(result.Error);
                                                 //Render();
                                             }
                                             else
                                             {
-                                                clearVersionErrors();
-                                                $("#divVersionDialog").dialog("close");
+                                                clearFaqErrors();
+                                                $("#divQuestionDialog").dialog("close");
                                                 Render();
                                             }    
                                   });
     }
-    function addVersionError(value) {
-    $("#VersionError").text(value);
-    $("#VersionError").show();
+    function addFaqError(value) {
+    $("#FaqError").text(value);
+    $("#FaqError").show();
     }
-function clearVersionErrors() {
-    $("#VersionError").text("");
-    $("#VersionError").hide();
+function clearFaqErrors() {
+    $("#FaqError").text("");
+    $("#FaqError").hide();
 }
- function OnDeleteVersion(id){
-        var actionUrl="@Url.Action("DeleteVersion", "Help")";
+ function OnDeleteQuestion(id){
+        var actionUrl="@Url.Action("DeleteQuestion", "Help")";
         var url = actionUrl + "?Id=" + id;
         $.getJSON(url,
                        function (result) {
                             if(!result.Result){
-                                $("#ListVersionsError").text(result.Error);
-                                $("#ListVersionsError").show(); 
+                                $("#ListQuestionsError").text(result.Error);
+                                $("#ListQuestionsError").show(); 
                             }
                             else{
-                                $("#ListVersionsError").text("");
-                                $("#ListVersionsError").hide();                                 
+                                $("#ListQuestionsError").text("");
+                                $("#ListQuestionsError").hide();                                 
                            }
                            Render();
                        }

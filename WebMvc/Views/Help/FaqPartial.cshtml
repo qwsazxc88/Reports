@@ -16,18 +16,18 @@
             foreach (var question in Model.Questions)
             {
                 <tr>
-                    <td style="border:1px solid;width:100%" class="comment-text">@question.Question</td>
+                    <td style="border:1px solid;border-bottom:1px solid darkgray;width:100%">@question.Question</td>
                 @if (Model.IsAddAvailable)
                 {
                 
-                    <td style="border:1px solid">
-                        <input type="button" value="Редактировать" id="EditVersion" onclick="OnEditQuestion(@question.Id);"/>
-                        <input type="button" value="Удалить" id="DeleteVersion" onclick="OnDeleteQuestion(@question.Id);"/>
+                    <td rowspan="2" style="border:1px solid;">
+                        <input type="button" value="Редактировать" id="EditQuestion" onclick="OnEditQuestion(@question.Id);"/>
+                        <input type="button" value="Удалить" id="DeleteQuestion" onclick="OnDeleteQuestion(@question.Id);"/>
                     </td>
                 }
                 </tr>
                 <tr>
-                    <td colspan="2" style="border:1px solid;" class="comment-text">@question.Answer</td>
+                    <td style="border:1px solid;border-top:1px solid darkgray;">@question.Answer</td>
                 </tr>
             }
         }

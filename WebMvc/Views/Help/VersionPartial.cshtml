@@ -16,8 +16,8 @@
             foreach (var version in Model.Versions)
             {
                 <tr>
-                    <td style="border:1px solid" class="comment-text">@RequestBl.FormatDate(version.ReleaseDate)</td>
-                    <td style="border:1px solid;width:70%" class="comment-text">@version.Comment</td>
+                    <td style="border:1px solid">@RequestBl.FormatDate(version.ReleaseDate)</td>
+                    <td style="border:1px solid;width:100%">@version.Comment</td>
                 @if (Model.IsAddAvailable)
                 {
                 

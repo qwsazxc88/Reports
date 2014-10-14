@@ -23,4 +23,21 @@ namespace Reports.Presenters.UI.ViewModel
         public string Comment { get; set; }
         public string Error { get; set; }
     }
+    public class HelpEditFaqModel
+    {
+        public int Id { get; set; }
+        [Display(Name = "Вопрос")]
+        public string Question { get; set; }
+        [Display(Name = "Ответ")]
+        public string Answer { get; set; }
+        public string Error { get; set; }
+    }
+
+    public class HelpSaveFaqModel
+    {
+        public int Id { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
+        public string Error { get; set; }
+    }
 }

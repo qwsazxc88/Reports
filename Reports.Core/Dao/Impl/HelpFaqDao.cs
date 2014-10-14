@@ -14,7 +14,7 @@ namespace Reports.Core.Dao.Impl
         }
         public virtual List<HelpFaq> LoadAllSortedByQuestion()
         {
-            return Session.Query<HelpFaq>().OrderByDescending(a => a.Question).ToList();
+            return Session.Query<HelpFaq>().OrderBy(a => a.Question).ToList();
         }
     }
 }

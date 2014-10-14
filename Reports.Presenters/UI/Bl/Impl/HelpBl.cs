@@ -14,6 +14,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrCannotEditVersion = "Вам запрещено редактирование информации о версии";
         public const string StrCannotDeleteVersion = "Вам запрещено удаление информации о версии";
         public const string StrException = "Исключение:";
+
+        public const string StrCannotEditFaq = "Вам запрещено редактирование информации";
+        public const string StrCannotDeleteFaq = "Вам запрещено удаление информации";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -111,6 +114,55 @@ namespace Reports.Presenters.UI.Bl.Impl
                      }
                 )
             };
+        }
+        public HelpEditFaqModel GetEditQuestionModel(int id)
+        {
+            HelpEditFaqModel model = new HelpEditFaqModel { Id = id };
+            if (id != 0)
+            {
+                HelpFaq entity = HelpFaqDao.Load(id);
+                model.Question = entity.Question;
+                model.Answer = entity.Answer;
+            }
+            return model;
+        }
+        public bool SaveFaq(HelpSaveFaqModel model)
+        {
+            try
+            {
+                if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+                {
+                    model.Error = StrCannotEditFaq;
+                    return false;
+                }
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                HelpFaq entity = new HelpFaq();
+                if (model.Id > 0)
+                    entity = HelpFaqDao.Load(model.Id);
+                entity.Question = model.Question;
+                entity.Answer = model.Answer;
+                entity.DateCreated = DateTime.Now;
+                entity.User = user;
+                HelpFaqDao.SaveAndFlush(entity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                helpFaqDao.RollbackTran();
+                Log.Error("Exception", ex);
+                model.Error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+        }
+        public bool DeleteFaq(DeleteAttacmentModel model)
+        {
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+            {
+                model.Error = StrCannotDeleteFaq;
+                return false;
+            }
+            helpFaqDao.DeleteAndFlush(model.Id);
+            return true;
         }
         #endregion
     }

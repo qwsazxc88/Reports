@@ -11,5 +11,8 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteVersion(DeleteAttacmentModel model);
 
         HelpFaqListModel GetFaqModel();
+        HelpEditFaqModel GetEditQuestionModel(int id);
+        bool SaveFaq(HelpSaveFaqModel model);
+        bool DeleteFaq(DeleteAttacmentModel model);
     }
 }
