@@ -143,6 +143,15 @@
             {
                 <div class="menuitem" id="empRoster">@Html.ActionLink("Реестр по приему", "Roster", "Employment")</div>
             }
+            
+            @if ((dto.UserRole & (UserRole.PersonnelManager
+                | UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager)) > 0)
+            {
+                <div class="menuitem" id="empSigners">@Html.ActionLink("Справочник подписантов", "Signers", "Employment")</div>
+            }
 
             @*
             <div class="menuitem" id="empSigners">@Html.ActionLink("Справочник подписантов", "Signers", "Employment")</div>

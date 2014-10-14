@@ -619,7 +619,10 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Signers()
         {
+            // Get the current signers list
             var model = new SignersModel();
+
+            // Output the signers list for viewing/editing
             return View(model);
         }
 
@@ -627,6 +630,7 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Candidate)]
         public ActionResult Signers(SignersModel model)
         {
+
             return View(model);
         }
 
