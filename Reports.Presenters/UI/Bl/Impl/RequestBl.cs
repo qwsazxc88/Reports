@@ -8050,6 +8050,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public bool CheckOrderBeginDate(string beginMissionDate)
         {
+            if (AuthenticationService.CurrentUser.UserRole == UserRole.Secretary)
+                return true;
             DateTime beginDate = DateTime.Parse(beginMissionDate);
             DateTime first = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             if (DateTime.Today.Day < 6)
