@@ -72,6 +72,7 @@ namespace Reports.Core.Dto
         public string FactPointName { get; set; }
         public string FactPointTitle { get; set; }
         public string IsCredits { get; set; }
+        public string IsFactCredits { get; set; }
         public bool isHoliday { get; set; }
         //public string Graphic { get; set; }
         public bool isStatRecord { get; set; }
