@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 
@@ -21,6 +22,15 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(helpBl);
             }
         }
+        protected IRequestBl requestBl;
+        public IRequestBl RequestBl
+        {
+            get
+            {
+                requestBl = Ioc.Resolve<IRequestBl>();
+                return Validate.Dependency(requestBl);
+            }
+        }
 
         public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
         public const string StrCommentIsRequired = "Комментарий - обязательное поле";
@@ -35,6 +45,8 @@ namespace WebMvc.Controllers
         public const string StrAnswerIsRequired = "Ответ - обязательное поле";
         public const string StrAnswerLengthError = "Длина поля 'Ответ' не может превышать {0} символов.";
         public const int MaxAnswerLength = 8192;
+
+        public const int MaxTemplateNameLength = 512;
 
         [HttpGet]
         public ActionResult Index()
@@ -265,6 +277,136 @@ namespace WebMvc.Controllers
                 return PartialView("EditTemplateDialogError", new DialogErrorModel { Error = error });
             }
         }
+
+        [HttpPost]
+        public ContentResult SaveTemplate(int id, string name, object qqFile)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                var length = Request.ContentLength;
+                var bytes = new byte[length];
+                Request.InputStream.Read(bytes, 0, length);
+
+                saveResult = true;
+                if (length > MaxFileSize)
+                {
+                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                }
+                else if (name == null || string.IsNullOrEmpty(name.Trim()))
+                {
+                    error = "Название - обязательное поле";
+                }
+                else if (name.Trim().Length > MaxTemplateNameLength)
+                {
+                    error = string.Format("Длина поля 'Название' не может превышать {0} символов.", MaxCommentLength);
+                }
+                else
+                {
+                    byte[] context;
+                    string fileName = MissionOrderController.GetFileName(qqFile, out context);
+                    if (context != null)
+                        bytes = context;
+                    var model = new SaveAttacmentModel
+                    {
+                        EntityId = 0,
+                        Id = id,
+                        EntityTypeId = RequestAttachmentTypeEnum.HelpTemplate,
+                        Description = name.Trim(),
+                        FileDto = new UploadFileDto
+                        {
+                            Context = bytes,
+                            FileName = fileName,
+                            //ContextType = Request.Content,
+                        }
+                    };
+                    saveResult = HelpBl.SaveTemplate(model);
+                    error = model.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        [HttpPost]
+        public ContentResult SaveTemplateName(int id, string name)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                saveResult = true;
+                if (name == null || string.IsNullOrEmpty(name.Trim()))
+                    error = "Название - обязательное поле";
+                else if (name.Trim().Length > MaxTemplateNameLength)
+                    error = string.Format("Длина поля 'Название' не может превышать {0} символов.", MaxCommentLength);
+                else
+                {
+                    var model = new SaveAttacmentModel
+                    {
+                        EntityId = 0,
+                        Id = id,
+                        EntityTypeId = RequestAttachmentTypeEnum.HelpTemplate,
+                        Description = name.Trim(),
+                    };
+                    saveResult = HelpBl.SaveTemplateName(model);
+                    error = model.Error;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on SaveAttachment:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+        [HttpGet]
+        public FileContentResult ViewTemplate(int id)
+        {
+            try
+            {
+                AttachmentModel model = RequestBl.GetFileContext(id);
+                return File(model.Context, model.ContextType, model.FileName);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Error on ViewTemplate:", ex);
+                throw;
+            }
+        }
+        [HttpGet]
+        public ContentResult DeleteTemplate(int id)
+        {
+            bool saveResult;
+            string error;
+            try
+            {
+                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+                saveResult = RequestBl.DeleteAttachment(model);
+                error = model.Error;
+
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on DeleteTemplate:", ex);
+                error = ex.GetBaseException().Message;
+                saveResult = false;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(new SaveTypeResult { Error = error, Result = saveResult });
+            return Content(jsonString);
+        }
+
         #endregion
 
     }

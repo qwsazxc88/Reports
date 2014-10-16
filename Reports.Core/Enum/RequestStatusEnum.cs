@@ -44,6 +44,7 @@
         MissionReport = 6,
         AppointmentReport = 7,
         MissionReportCost = 8,
+        HelpTemplate = 8,
 
         // Order Scans
 

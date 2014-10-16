@@ -25,7 +25,7 @@ namespace WebMvc.Controllers
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
     public class MissionOrderController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
         public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
@@ -934,7 +934,7 @@ namespace WebMvc.Controllers
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
         }
-        protected string  GetFileName(object qqFile,out byte[] context)
+        public static string  GetFileName(object qqFile,out byte[] context)
         {
             context = null;
             if (qqFile is string[])

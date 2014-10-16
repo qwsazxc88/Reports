@@ -10,6 +10,7 @@ namespace WebMvc.Controllers
     [HandleError(View = "Error")]
     public class BaseController : Controller
     {
+        public const int MaxFileSize = 2 * 1024 * 1024;
         #region Fields
 
         protected static ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

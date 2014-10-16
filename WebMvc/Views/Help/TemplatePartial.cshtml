@@ -16,11 +16,14 @@
             foreach (var doc in Model.Documents)
             {
                 <tr>
-                    <td style="border:1px solid;width:100%">@doc.Name</td>
+                   @* <td style="border:1px solid;width:100%">@doc.Name</td>*@
+                    <td>
+                            <a class="ui-notify-close" href='@Url.Action("ViewTemplate",new { Id = doc.Id })' style="cursor:hand" target="_blank" >@doc.Name</a>
+                    </td>         
                 @if (Model.IsAddAvailable)
                 {
                 
-                    <td style="border:1px solid;">
+                    <td>
                         <input type="button" value="Редактировать" id="EditTemplate" onclick="OnEditTemplate(@doc.Id);"/>
                         <input type="button" value="Удалить" id="DeleteTemplate" onclick="OnDeleteTemplate(@doc.Id);"/>
                     </td>

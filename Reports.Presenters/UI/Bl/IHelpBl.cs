@@ -1,5 +1,4 @@
-﻿using Reports.Core.Dto;
-using Reports.Presenters.UI.ViewModel;
+﻿using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -17,5 +16,7 @@ namespace Reports.Presenters.UI.Bl
 
         HelpTemplateListModel GetTemplateModel();
         HelpTemplateEditModel GetTemplateEditModel(int id);
+        bool SaveTemplate(SaveAttacmentModel model);
+        bool SaveTemplateName(SaveAttacmentModel model);
     }
 }

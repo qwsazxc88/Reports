@@ -27,7 +27,7 @@
         createTemplateDialog(id);
     }
     function disableSaveButton() {
-        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+        $(".ui-dialog-buttonpane button:contains('Сохранить название')").button("disable");
     }
     /*function createTemplateDialog(id) 
     {
@@ -176,6 +176,8 @@ function clearFaqErrors() {
                  } else if (status == "success") {
                      if ($('#EditTemplateLoadError').val() != undefined)
                          disableSaveButton();
+                     else if(id == 0)
+                        disableSaveButton();
                  }
              });
         $(newDiv).dialog(
@@ -197,11 +199,45 @@ function clearFaqErrors() {
             },
             buttons:
             {
+                "Сохранить название": function () {
+                    if (!ValidateTemplate())
+                        return;
+                    SaveTemplateName();
+                },
                 "Отмена": function () {
                     $(this).dialog("close");
                 }
             }
         });
+    }
+     function SaveTemplateName()
+    {
+        clearTemplateErrors();
+        var url='@Url.Action("SaveTemplateName", "Help")'+'?id='+ $("#Id").val() 
+                +'&name='+escapeJson($("#Name").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addTemplateError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addTemplateError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearTemplateErrors();
+                                                $("#divTemplateDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
     }
     function timedSetupUploader()
     {
@@ -253,7 +289,7 @@ function setupUploader()
             var id = $('#Id').val();
             uploader.setParams({
                 id: id
-                ,name: description
+                ,name: name
             });
         },
         onProgress: function (id, fileName, loaded, total) {

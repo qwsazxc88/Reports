@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -29,6 +30,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(helpFaqDao); }
             set { helpFaqDao = value; }
+        }
+        protected IRequestAttachmentDao requestAttachmentDao;
+        public IRequestAttachmentDao RequestAttachmentDao
+        {
+            get { return Validate.Dependency(requestAttachmentDao); }
+            set { requestAttachmentDao = value; }
+        }
+        protected IRoleDao roleDao;
+        public IRoleDao RoleDao
+        {
+            get { return Validate.Dependency(roleDao); }
+            set { roleDao = value; }
         }
         #endregion
         #region Version
@@ -171,28 +184,68 @@ namespace Reports.Presenters.UI.Bl.Impl
             return new HelpTemplateListModel
             {
                 IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
-                Documents = new List<HelpTemplateDto>(),
-                /*Questions = HelpFaqDao.LoadAllSortedByQuestion().ConvertAll(
-                     x => new HelpFaqDto
-                     {
-                         Id = x.Id,
-                         Question = x.Question,
-                         Answer = x.Answer
-                     }
-                )*/
+                Documents = RequestAttachmentDao.FindManyByRequestIdAndTypeId(0,RequestAttachmentTypeEnum.HelpTemplate).
+                            ToList().ConvertAll(x => new HelpTemplateDto
+                            {
+                                Id = x.Id,
+                                AttachmentId = x.Id,
+                                Name = x.Description,
+                            }).OrderBy(x => x.Name).ToList()
             };
         }
         public HelpTemplateEditModel GetTemplateEditModel(int id)
         {
             HelpTemplateEditModel model = new HelpTemplateEditModel { Id = id };
-            //if (id != 0)
-            //{
-            //    HelpFaq entity = HelpFaqDao.Load(id);
-            //    model.Question = entity.Question;
-            //    model.Answer = entity.Answer;
-            //}
+            if (id != 0)
+            {
+                RequestAttachment entity = RequestAttachmentDao.Load(id);
+                model.Id = entity.Id;
+                model.Name = entity.Description;
+            }
             return model;
         }
+
+        public bool SaveTemplate(SaveAttacmentModel model)
+        {
+            RequestAttachment attach;
+            if (model.Id == 0)
+            {
+                attach = new RequestAttachment
+                    {
+                        ContextType = RequestBl.GetFileContext(model.FileDto.FileName),
+                        DateCreated = DateTime.Now,
+                        Description = model.Description,
+                        FileName = model.FileDto.FileName,
+                        RequestId = 0,
+                        RequestType = (int) model.EntityTypeId,
+                        UncompressContext = model.FileDto.Context,
+                        CreatorRole = RoleDao.Load((int) CurrentUser.UserRole)
+                    };
+            }
+            else
+            {
+                attach = RequestAttachmentDao.Load(model.Id);
+                attach.ContextType = RequestBl.GetFileContext(model.FileDto.FileName);
+                attach.DateCreated = DateTime.Now;
+                attach.Description = model.Description;
+                attach.FileName = model.FileDto.FileName;
+                attach.UncompressContext = model.FileDto.Context;
+                attach.CreatorRole = RoleDao.Load((int) CurrentUser.UserRole);
+            }
+            RequestAttachmentDao.SaveAndFlush(attach);
+            model.Id = attach.Id;
+            return true;
+        }
+        public bool SaveTemplateName(SaveAttacmentModel model)
+        {
+            RequestAttachment attach = RequestAttachmentDao.Load(model.Id);
+            attach.DateCreated = DateTime.Now;
+            attach.Description = model.Description;
+            attach.CreatorRole = RoleDao.Load((int)CurrentUser.UserRole);
+            RequestAttachmentDao.SaveFileNotChangeAndFlush(attach);
+            return true;
+        }
+
         #endregion
     }
 }

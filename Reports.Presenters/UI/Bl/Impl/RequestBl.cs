@@ -6236,7 +6236,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return RequestAttachmentDao.FindManyByRequestIdAndTypeId(entityId, typeId).Count;
         }
-        public string GetFileContext(string fileName)
+        public static string GetFileContext(string fileName)
         {
             string extension = Path.GetExtension(fileName);
             //string contextType;
