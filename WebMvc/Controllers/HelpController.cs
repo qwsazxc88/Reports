@@ -231,5 +231,41 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         #endregion
+        #region Templates
+        [HttpGet]
+        public ActionResult Template()
+        {
+            HelpTemplateListModel model = HelpBl.GetTemplateModel();
+            return View(model);
+        }
+        [HttpGet]
+        public ActionResult RenderTemplates()
+        {
+            HelpTemplateListModel model = HelpBl.GetTemplateModel();
+            return PartialView("TemplatePartial", model);
+        }
+        [HttpGet]
+        public ActionResult EditTemplateDialog(int id)
+        {
+            try
+            {
+                //HelpTemplateEditModel model = new HelpTemplateEditModel
+                //{
+                //    DocumentId = id,
+                //    Description = name,
+                //    IsDescriptionDisabled = !string.IsNullOrEmpty(name)
+                //};
+                HelpTemplateEditModel model = HelpBl.GetTemplateEditModel(id);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("EditTemplateDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        #endregion
+
     }
 }

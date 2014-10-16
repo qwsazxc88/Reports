@@ -14,4 +14,10 @@ namespace Reports.Core.Dto
         public string Question { get; set; }
         public string Answer { get; set; }
     }
+    public class HelpTemplateDto
+    {
+        public int Id { get; set; }
+        public int AttachmentId { get; set; }
+        public string Name { get; set; }
+    }
 }

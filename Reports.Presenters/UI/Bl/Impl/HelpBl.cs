@@ -164,6 +164,35 @@ namespace Reports.Presenters.UI.Bl.Impl
             helpFaqDao.DeleteAndFlush(model.Id);
             return true;
         }
+        #region Template
+        #endregion
+        public HelpTemplateListModel GetTemplateModel()
+        {
+            return new HelpTemplateListModel
+            {
+                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
+                Documents = new List<HelpTemplateDto>(),
+                /*Questions = HelpFaqDao.LoadAllSortedByQuestion().ConvertAll(
+                     x => new HelpFaqDto
+                     {
+                         Id = x.Id,
+                         Question = x.Question,
+                         Answer = x.Answer
+                     }
+                )*/
+            };
+        }
+        public HelpTemplateEditModel GetTemplateEditModel(int id)
+        {
+            HelpTemplateEditModel model = new HelpTemplateEditModel { Id = id };
+            //if (id != 0)
+            //{
+            //    HelpFaq entity = HelpFaqDao.Load(id);
+            //    model.Question = entity.Question;
+            //    model.Answer = entity.Answer;
+            //}
+            return model;
+        }
         #endregion
     }
 }

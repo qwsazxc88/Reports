@@ -1,0 +1,31 @@
+﻿@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpTemplateListModel
+<table id="TemplatesTable" style="width: 100%;">
+        <tr>
+            <td colspan="3">
+                <input type="button" value="Добавить запись" @if (!Model.IsAddAvailable) { <text>style = "display:none"</text>; } id="AddTemplate" onclick="OnAddTemplate();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="ListTemplatesError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Documents!= null && Model.Documents.Count > 0)
+        {
+            foreach (var doc in Model.Documents)
+            {
+                <tr>
+                    <td style="border:1px solid;width:100%">@doc.Name</td>
+                @if (Model.IsAddAvailable)
+                {
+                
+                    <td style="border:1px solid;">
+                        <input type="button" value="Редактировать" id="EditTemplate" onclick="OnEditTemplate(@doc.Id);"/>
+                        <input type="button" value="Удалить" id="DeleteTemplate" onclick="OnDeleteTemplate(@doc.Id);"/>
+                    </td>
+                }
+                </tr>
+            }
+        }
+</table>

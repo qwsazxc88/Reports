@@ -14,5 +14,8 @@ namespace Reports.Presenters.UI.Bl
         HelpEditFaqModel GetEditQuestionModel(int id);
         bool SaveFaq(HelpSaveFaqModel model);
         bool DeleteFaq(DeleteAttacmentModel model);
+
+        HelpTemplateListModel GetTemplateModel();
+        HelpTemplateEditModel GetTemplateEditModel(int id);
     }
 }
