@@ -1,0 +1,1 @@
+ALTER TABLE TerraGraphic ADD IsFactCreditAvailable BIT null

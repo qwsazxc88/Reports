@@ -37,6 +37,9 @@ namespace Reports.Presenters.UI.ViewModel
         public List<IdNameDto> Credits { get; set; }
         public bool IsCreditsEditable { get; set; }
 
+        [Display(Name = "Кредиты факт")]
+        public int FactCredit { get; set; }
+
         [Display(Name = "План часы")]
         public string Hours { get; set; }
         public bool IsPlanEditable { get; set; }
