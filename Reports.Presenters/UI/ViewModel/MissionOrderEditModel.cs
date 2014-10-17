@@ -59,7 +59,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Сумма наличными в кассе")]
         public string UserSumCash { get; set; }
-        [Display(Name = "Сумма на зарплатную карту")]
+        [Display(Name = "Аванс на командировку")]
         public string UserSumNotCash { get; set; }
 
         [Display(Name = "Настоящим подтверждаю свое согласие на удержание из заработной платы неизрасходованных подотчетных сумм. С условиями настоящего Приказа ознакомлен (а)")]
