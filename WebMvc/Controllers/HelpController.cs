@@ -45,8 +45,9 @@ namespace WebMvc.Controllers
         public const string StrAnswerIsRequired = "Ответ - обязательное поле";
         public const string StrAnswerLengthError = "Длина поля 'Ответ' не может превышать {0} символов.";
         public const int MaxAnswerLength = 8192;
+        public const string StrCannotDeleteTemplate = "Вам запрещено удаление информации";
 
-        public const int MaxTemplateNameLength = 512;
+        public const int MaxTemplateNameLength = 256;
 
         [HttpGet]
         public ActionResult Index()
@@ -129,13 +130,18 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ContentResult DeleteVersion(int id)
         {
-            bool saveResult;
+            bool saveResult = false;
             string error;
             try
             {
-                DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
-                saveResult = HelpBl.DeleteVersion(model);
-                error = model.Error;
+                if (AuthenticationService.CurrentUser.UserRole == UserRole.Admin)
+                {
+                    DeleteAttacmentModel model = new DeleteAttacmentModel {Id = id};
+                    saveResult = HelpBl.DeleteVersion(model);
+                    error = model.Error;
+                }
+                else
+                    error = StrCannotDeleteTemplate;
 
             }
             catch (Exception ex)

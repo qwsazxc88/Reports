@@ -177,8 +177,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             helpFaqDao.DeleteAndFlush(model.Id);
             return true;
         }
-        #region Template
         #endregion
+        #region Template
         public HelpTemplateListModel GetTemplateModel()
         {
             return new HelpTemplateListModel
@@ -207,6 +207,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool SaveTemplate(SaveAttacmentModel model)
         {
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+            {
+                model.Error = StrCannotEditFaq;
+                return false;
+            }
             RequestAttachment attach;
             if (model.Id == 0)
             {
@@ -238,6 +243,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public bool SaveTemplateName(SaveAttacmentModel model)
         {
+            if (AuthenticationService.CurrentUser.UserRole != UserRole.Admin)
+            {
+                model.Error = StrCannotEditFaq;
+                return false;
+            }
             RequestAttachment attach = RequestAttachmentDao.Load(model.Id);
             attach.DateCreated = DateTime.Now;
             attach.Description = model.Description;
