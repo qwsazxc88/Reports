@@ -22,7 +22,7 @@ namespace WebMvc.Controllers
     public class UserRequestController : BaseController
     {
         
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;
         public IRequestBl RequestBl

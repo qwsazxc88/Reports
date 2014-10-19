@@ -13,7 +13,7 @@ namespace WebMvc.Controllers
     [Authorize]
     public class EmployeeController : BaseController
     {
-        public const int MaxFileSize = 2*1024*1024;
+        //public const int MaxFileSize = 2*1024*1024;
         protected IEmployeeBl employeeBl;
         public IEmployeeBl EmployeeBl
         {

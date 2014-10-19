@@ -20,7 +20,7 @@ namespace WebMvc.Controllers
     [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
     public class AppointmentController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
