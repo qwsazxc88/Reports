@@ -12,6 +12,7 @@ namespace Reports.Core.Dto
         public virtual decimal? FactHours { get; set; }
         public virtual int? FactPointId { get; set; }
         public virtual bool? IsCreditAvailable { get; set; }
+        public virtual bool? IsFactCreditAvailable { get; set; }
         public virtual string PointName { get; set; }
         public virtual string PointTitle { get; set; }
         public virtual string FactPointName { get; set; }
