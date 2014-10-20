@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -43,6 +44,83 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(roleDao); }
             set { roleDao = value; }
         }
+        #endregion
+
+        #region Service Requests List
+        public HelpServiceRequestsListModel GetServiceRequestsList()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            HelpServiceRequestsListModel model = new HelpServiceRequestsListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            SetIsAvailable(model);
+            return model;
+        }
+        protected void SetIsAvailable(HelpServiceRequestsListModel model)
+        {
+            model.IsAddAvailable = model.IsAddAvailable = (CurrentUser.UserRole == UserRole.Manager);
+            //|| (CurrentUser.UserRole == UserRole.Employee);
+        }
+        public void SetDictionariesToModel(HelpServiceRequestsListModel model)
+        {
+            model.Statuses = GetServiceRequestsStatuses();
+        }
+        public List<IdNameDto> GetServiceRequestsStatuses()
+        {
+            List<IdNameDto> moStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Услуга запрошена"),
+                                                           new IdNameDto(2, "Услуга формируется"),
+                                                           new IdNameDto(3, "Услуга оказана"),
+                                                           //new IdNameDto(4, "Не одобрен руководителем"),
+                                                           //new IdNameDto(5, "Одобрен членом правления"),
+                                                           //new IdNameDto(6, "Не одобрен членом правления"),
+                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
+                                                           //new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           //new IdNameDto(9, "Выгружен в 1С"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return moStatusesList;
+        }
+
+        public void SetServiceRequestsListModel(HelpServiceRequestsListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<HelpServiceRequestDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(HelpServiceRequestsListModel model, User user)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = new List<HelpServiceRequestDto>();
+            //model.Documents = MissionReportDao.GetDocuments(
+            //    user.Id,
+            //    role,
+            //    //GetDepartmentId(model.Department),
+            //    model.DepartmentId,
+            //    //model.PositionId,
+            //    //model.TypeId,
+            //    //0,
+            //    model.StatusId,
+            //    model.BeginDate,
+            //    model.EndDate,
+            //    model.UserName,
+            //    model.Number,
+            //    model.SortBy,
+            //    model.SortDescending);
+        }
+
         #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()

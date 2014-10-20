@@ -4,6 +4,10 @@ namespace Reports.Presenters.UI.Bl
 {
     public interface IHelpBl : IBaseBl
     {
+
+        HelpServiceRequestsListModel GetServiceRequestsList();
+        void SetServiceRequestsListModel(HelpServiceRequestsListModel model, bool hasError);
+
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);
         bool SaveVersion(HelpSaveVersionModel model);

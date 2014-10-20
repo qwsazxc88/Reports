@@ -52,7 +52,28 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            var model = HelpBl.GetServiceRequestsList();
+            //SetMissionOrderListModelFromSession(model);
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult Index(HelpServiceRequestsListModel model)
+        {
+            //ModelState.Clear();
+            bool hasError = !ValidateModel(model);
+            //if (!hasError)
+            //    SetMissionOrderFilterToSession(model);
+            HelpBl.SetServiceRequestsListModel(model, hasError);
+            //if (model.HasErrors)
+            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
+            return View(model);
+        }
+        protected bool ValidateModel(BeginEndCreateDate model)
+        {
+            if (model.BeginDate.HasValue && model.EndDate.HasValue &&
+                model.BeginDate.Value > model.EndDate.Value)
+                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+            return ModelState.IsValid;
         }
 
         #region Versions
