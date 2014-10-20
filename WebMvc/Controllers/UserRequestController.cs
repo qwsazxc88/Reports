@@ -881,6 +881,12 @@ namespace WebMvc.Controllers
              if (model.BeginDate.HasValue && model.EndDate.HasValue)
              {
                  UserRole role = AuthenticationService.CurrentUser.UserRole;
+
+                 // Проверка на дубликаты
+                 int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates(model.BeginDate.Value, model.EndDate.Value, model.UserId, model.Id, RequestTypeEnum.Sicklist);
+                 if (requestCount > 0)
+                     ModelState.AddModelError("BeginDate", "Для данного пользователя существуют другие заявки в указанном интервале дат.");
+
                  if(model.BeginDate > model.EndDate)
                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
                  else if (!model.IsDelete && model.IsApproved
@@ -888,11 +894,6 @@ namespace WebMvc.Controllers
                          (role == UserRole.Manager && model.IsApprovedByManager) ||
                          (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))*/)
                  {
-                     // Проверка на дубликаты
-                     int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates(model.BeginDate.Value, model.EndDate.Value, model.UserId, model.Id, RequestTypeEnum.Sicklist);
-                     if (requestCount > 0)
-                         ModelState.AddModelError("BeginDate", "Для данного пользователя существуют другие заявки в указанном интервале дат.");
-
                      DateTime beginDate = model.BeginDate.Value;
                      DateTime current = DateTime.Today;
                      DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
