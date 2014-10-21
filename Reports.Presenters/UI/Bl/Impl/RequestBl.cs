@@ -2138,11 +2138,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
-                // create CCL approvals if the Dismissal has been approved by the user and two managers
-                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                // create CCL approvals if the Dismissal has been approved by the user and two managers and CCL approvals have not been created before
+                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser && dismissal.ClearanceChecklistApprovals.Count == 0)
                 {
-                    var clearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles();
-                    foreach (var clearanceChecklistRole in clearanceChecklistRoles)
+                    var activeClearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles().Where<ClearanceChecklistRole>(role => role.DeleteDate.HasValue);
+                    foreach (var clearanceChecklistRole in activeClearanceChecklistRoles)
                     {
                         dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
                         {
