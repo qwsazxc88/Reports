@@ -112,7 +112,7 @@
                             @*Сумма, запрашиваемая<br/> сотрудником*@
                         </td>
                         <td>
-                            Отметить поле, если оплата<br/> со счета организации
+                            Заказ билетов/гостиницы<br/>через  секретариат
                         </td>
                     </tr>
                     <tr>
@@ -371,16 +371,18 @@
     </table>
     </div>
     <script type="template/html" id="targetTemplate">
-                    <table id="targetsTable">
+                    <table id="targetsTable" style="width:100%">
                             <tbody>
                                 {{#List}}
-                                <tr>
-                                    <td>
+                                <tr style="width:100%">
+                                    <td style="vertical-align:top;">
                                         Страна
                                     </td>
                                     <td style="width:100%">
                                         {{Country}} &nbsp;
-                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});" style="float:right;"/>
+                                        <button name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});" style="float:right;">Изменить<br />
+                                            (Только для изменения по факту<br />дат и маршрута)
+                                        </button>
                                         <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});"  style=""/>
                                     </td>
                                 </tr>    
