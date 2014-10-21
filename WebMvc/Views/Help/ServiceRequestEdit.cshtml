@@ -1,0 +1,222 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpServiceRequestEditModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Заказ услуги";
+}
+@using (Html.BeginForm())
+{
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Partial("UserInfoView", Model)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.TypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Requirements):
+                </td>
+                <td>
+                   @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.PeriodId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.PeriodId, new SelectList(Model.Periods, "ID", "Name"),Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PeriodIdHidden" name="PeriodIdHidden" value="@Model.PeriodIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductionTimeTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ProductionTimeTypeId, new SelectList(Model.ProductionTimeTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ProductionTimeTypeIdHidden" name="ProductionTimeTypeIdHidden" value="@Model.ProductionTimeTypeIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.TransferMethodTypeId):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                    <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                    <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td colspan="2">
+                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                  @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
+                   <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
+                   <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />*@
+                </td>
+                @*<td style="text-align:right">
+                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
+                </td>*@
+            </tr>
+        </table>
+    </div>
+   @* <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
+        </table>
+    </div>*@
+}
+<script type="text/javascript">
+ var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+ var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+  $(document).ready(function () {
+//    $("#BeginDate").datepicker();
+//    $("#DesirableBeginDate").datepicker();
+//    $("#ReasonBeginDate").datepicker();
+//    $(".hasDatepicker").width("75px");
+//    onReasonChange();
+   });
+//    function Delete() {
+//        $("#IsDelete").val("true");
+//        return true;
+//    }
+    function ValidateForm()
+    {
+        var result = true;
+        clearControlErrors($("#SelectDepartmentBtn"));
+        if($("#DepartmentId").val() == 0)
+        {
+            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
+            result = false;
+        }
+        if(!IsFieldNotEmpty($("#City")))
+            result = false;
+        if(!IsFieldNotEmpty($("#PositionName")))
+            result = false;
+        if(!IsFieldNotEmpty($("#VacationCount")))
+            result = false;
+        else if( ValidateInt($("#VacationCount")) == undefined)
+            result = false;
+        if(!jQuery($("#ReasonPosition")).is(':hidden') && jQuery($("#ReasonPosition")).css('display') != 'none')
+        {
+            if(!IsFieldNotEmpty($("#ReasonPosition")))
+                result = false;
+        }
+        if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
+        {
+            if(!IsFieldNotEmpty($("#ReasonBeginDate")))
+                result = false;
+//            else
+//            {
+//                var strDate = $("#ReasonBeginDate").val().split("T")[0];
+//                strDate = strDate.replace('.', '-')
+//                var date = jQuery.datepicker.parseDate( "dd-mm-yyyy", strDate);
+//            }
+        }
+//        if(!IsFieldNotEmpty($("#Period")))
+//            result = false;
+        if(!IsFieldNotEmpty($("#Schedule")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Salary")))
+            result = false;
+        else if (ValidateSumC($("#Salary")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Bonus")))
+            result = false;
+        else if (ValidateSumNotNegative($("#Bonus")) == undefined)
+            result = false;
+        if(!IsFieldNotEmpty($("#Compensation")))
+            result = false;
+        if(!IsFieldNotEmpty($("#EducationRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#ExperienceRequirements")))
+            result = false;
+        if(!IsFieldNotEmpty($("#Responsibility")))
+            result = false;
+        if(!IsFieldNotEmpty($("#DesirableBeginDate")))
+            result = false;
+        return result;
+    }
+    function ValidateFormApproveAll()
+    {
+        var result = ValidateForm();
+        if(!result)
+            return result;
+        $("#ApproveForAll").val('True');
+        return true;
+    }
+    function IsFieldNotEmpty(control)
+    {
+        clearControlErrors(control);
+        if(control.val() == '' )
+        {
+            addControlError(control,'Обязательное поле');
+            return false;
+        }
+        return true;
+    }
+    function onReasonChange()
+    {
+        var reasonId = $("#ReasonId").val();
+        switch(reasonId)
+        {
+            case '1':
+                //$("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+                $("#ReasonPositionTr").hide();
+            break
+            case '2':
+                //$("#ReasonPositionLabel").text('Должность:');
+                $("#ReasonDateLabel").text('С даты:');
+                $("#ReasonPositionTr").hide();
+            break
+            case '3':
+                $("#ReasonPositionLabel").text('');
+                $("#ReasonPositionTr").show();
+            break
+            case '4':
+                $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
+                $("#ReasonDateLabel").text('Дата ухода:');
+                $("#ReasonPositionTr").show();
+            break
+            case '5':
+                $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
+                $("#ReasonDateLabel").text('Дата увольнения:');
+                $("#ReasonPositionTr").show();
+            break
+        }
+        if(reasonId == 3)
+            $("#ReasonDateTr").hide();
+        else
+            $("#ReasonDateTr").show();
+            
+    }
+</script> 
