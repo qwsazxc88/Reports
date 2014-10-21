@@ -11,5 +11,6 @@ namespace Reports.Core.Domain
         public virtual decimal? FactHours { get; set; }
         public virtual int? FactPointId { get; set; }
         public virtual bool? IsCreditAvailable { get; set; }
+        public virtual bool? IsFactCreditAvailable { get; set; }
     }
 }

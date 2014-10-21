@@ -11,5 +11,6 @@
     <property name="FactPointId" not-null="false"/>
     <!--<property name="IsCreditAvailable" not-null="false"/>-->
     <property name="IsCreditAvailable" not-null="false"/>
+    <property name="IsFactCreditAvailable" not-null="false"/>
   </class>
 </hibernate-mapping>

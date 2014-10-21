@@ -2138,11 +2138,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
-                // create CCL approvals if the Dismissal has been approved by the user and two managers
-                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                // create CCL approvals if the Dismissal has been approved by the user and two managers and CCL approvals have not been created before
+                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser && dismissal.ClearanceChecklistApprovals.Count == 0)
                 {
-                    var clearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles();
-                    foreach (var clearanceChecklistRole in clearanceChecklistRoles)
+                    var activeClearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles().Where<ClearanceChecklistRole>(role => role.DeleteDate.HasValue);
+                    foreach (var clearanceChecklistRole in activeClearanceChecklistRoles)
                     {
                         dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
                         {
@@ -7416,6 +7416,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 tg.Hours = string.IsNullOrEmpty(model.Hours) ? new decimal?() : model.TpHours; //model.TpHours;
                 tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
+                tg.IsFactCreditAvailable = GetIsCreditAvailable(model.IsFactCreditAvailable);
                 tg.PointId = model.PointId == 0 ? new int?() : model.PointId;
                 tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
                 tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours;
@@ -7544,6 +7545,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 TerraGraphic tg = TerraGraphicDao.Load(model.Id);
                 model.Credit = GetCredits(tg.IsCreditAvailable);
+                // model.FactCredit = GetCredits(tg.IsFactCreditAvailable);
                 model.Day = tg.Day.ToString("dd.MM.yyyy");
                 model.IsEditable = true;
                 //model.UserId = tg.UserId;
