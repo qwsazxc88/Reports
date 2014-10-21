@@ -371,19 +371,17 @@
     </table>
     </div>
     <script type="template/html" id="targetTemplate">
-                    <table id="targetsTable" style="width:100%">
+                    <table id="targetsTable">
                             <tbody>
                                 {{#List}}
-                                <tr style="width:100%">
+                                <tr>
                                     <td style="vertical-align:top;">
                                         Страна
                                     </td>
-                                    <td style="width:100%">
+                                    <td>
                                         {{Country}} &nbsp;
-                                        <button name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});" style="float:right;">Изменить<br />
-                                            (Только для изменения по факту<br />дат и маршрута)
-                                        </button>
-                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});"  style=""/>
+                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});" />
+                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});" />
                                     </td>
                                 </tr>    
                                <tr>
