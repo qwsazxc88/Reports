@@ -10039,6 +10039,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.OrderDates = FormatDate(entity.MissionOrder.BeginDate) + " - " +
                                FormatDate(entity.MissionOrder.EndDate);
                 //entity.MissionOrder.BeginDate.ToShortDateString() + " - " + entity.MissionOrder.EndDate.ToShortDateString();
+            model.AdditionalOrderDates = entity.AdditionalMissionOrder != null
+                ? FormatDate(entity.AdditionalMissionOrder.BeginDate) + " - " + FormatDate(entity.AdditionalMissionOrder.EndDate)
+                : string.Empty;
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;
