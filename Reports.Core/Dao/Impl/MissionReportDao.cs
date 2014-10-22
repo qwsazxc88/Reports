@@ -41,6 +41,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 v.UserAllSum as UserSum,
+                                v.UserSumReceived as UserSumReceived,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
                                 case when v.[AccountantDateAccept] is not null then
@@ -426,6 +427,9 @@ namespace Reports.Core.Dao.Impl
                 case 17:
                     orderBy = @" order by Position";
                     break;
+                case 18:
+                    orderBy = @" order by UserSumReceived";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -475,6 +479,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Grade", NHibernateUtil.Int32).
                 AddScalar("GradeSum", NHibernateUtil.Decimal).
                 AddScalar("UserSum", NHibernateUtil.Decimal).
+                AddScalar("UserSumReceived", NHibernateUtil.Decimal).
                 AddScalar("AccountantSum", NHibernateUtil.Decimal).
                 AddScalar("GradeIncrease", NHibernateUtil.Decimal).
                 AddScalar("Saldo", NHibernateUtil.Decimal).
