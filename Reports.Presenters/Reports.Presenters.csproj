@@ -189,7 +189,9 @@
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />
+    <Compile Include="UI\ViewModel\HelpServiceRequestEditModel.cs" />
     <Compile Include="UI\ViewModel\HelpServiceRequestsListModel.cs" />
+    <Compile Include="UI\ViewModel\HelpUserInfoModel.cs" />
     <Compile Include="UI\ViewModel\HelpVersionsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkListModel.cs" />

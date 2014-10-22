@@ -713,6 +713,9 @@
     <Content Include="Views\Help\TemplatePartial.cshtml" />
     <Content Include="Views\Help\EditTemplateDialog.cshtml" />
     <Content Include="Views\Help\EditTemplateDialogError.cshtml" />
+    <Content Include="Views\Help\ServiceRequestEdit.cshtml" />
+    <Content Include="Views\Help\UserInfoView.cshtml" />
+    <Content Include="Views\Help\ServiceRequestTypeView.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

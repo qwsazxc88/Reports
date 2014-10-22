@@ -24,13 +24,23 @@
             <tr>
                 <td>
                     @Html.LabelFor(m => m.TypeId):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                    <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                    <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                    <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
+                    <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
+                    <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
+                    <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
-            <tr>
+            @Html.Partial("ServiceRequestTypeView", Model.TypeModel)
+            @*<tr>
                 <td>
                     @Html.LabelFor(m => m.Requirements):
                 </td>
@@ -59,31 +69,28 @@
              <tr>
                 <td>
                     @Html.LabelFor(m => m.TransferMethodTypeId):
-                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
-                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
-                    <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
-                    <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
                 </td>
-            </tr>
+            </tr>*@
              <tr>
                 <td colspan="2">
-                   <input type="submit" value="Сохранить" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
-                  @* <input type="submit" value="Согласовать за всех" onclick="return ValidateFormApproveAll();" @if (!Model.ApproveForAllAvailable) {<text>style="display:none"</text>}/>
-                   <input type="hidden" id="ApproveForAllAvailable" name="ApproveForAllAvailable" value="@Model.ApproveForAllAvailable" />
-                   <input type="hidden" id="ApproveForAll" name="ApproveForAll" value="@Model.ApproveForAll" />*@
+                   <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
+                                                                                                    {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Услуга оказана" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                                                                                                    {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
+                                                                                                         {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Услуга оказана" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
+                                                                                                         {<text>style="display:none"</text>}/>
                 </td>
-                @*<td style="text-align:right">
-                    <input type="submit" value="Отклонить" onclick="return Delete();" @if (!Model.IsManagerRejectAvailable) {<text>style="display:none"</text>}/>
-                </td>*@
             </tr>
         </table>
     </div>
-   @* <br />
+    <br />
     <div class="comment-wrap">
         <table style="width:100%">
              <tr>
@@ -92,7 +99,7 @@
                 </td>
             </tr>
         </table>
-    </div>*@
+    </div>
 }
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";

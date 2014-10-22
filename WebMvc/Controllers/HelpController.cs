@@ -76,6 +76,11 @@ namespace WebMvc.Controllers
             return ModelState.IsValid;
         }
 
+        public ActionResult ServiceRequestEdit(int id, int? userId)
+        {
+            HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);
+            return View(model);
+        }
         #region Versions
         [HttpGet]
         public ActionResult Version()

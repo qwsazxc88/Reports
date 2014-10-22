@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Reports.Core;
 using Reports.Core.Dao;
@@ -19,6 +20,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrCannotEditFaq = "Вам запрещено редактирование информации";
         public const string StrCannotDeleteFaq = "Вам запрещено удаление информации";
+        public const string StrNoUser = "Не указан сотрудник для заявки на услугу";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -120,7 +122,125 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    model.SortBy,
             //    model.SortDescending);
         }
+        public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
+        {
+            if (id == 0 && !userId.HasValue)
+            {
+                if (CurrentUser.UserRole == UserRole.Employee)
+                    userId = CurrentUser.Id;
+                else
+                    throw new ValidationException(StrNoUser);
+            }
+            HelpServiceRequestEditModel model = new HelpServiceRequestEditModel
+            {
+                Id = id,
+                UserId = id == 0 ? userId.Value : 0 //entity.User.Id
+            };
+            //MissionOrder entity = null;
+            //if (id != 0)
+            //{
+            //    entity = MissionOrderDao.Load(id);
+            //    if (entity == null)
+            //        throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных", id));
+            //    if (entity.IsAdditional)
+            //        throw new ValidationException("Редактирование изменения приказа на командировку невозможно через форму приказа.");
+            //}
+            //MissionOrderEditModel model = new MissionOrderEditModel
+            //{
+            //    Id = id,
+            //    UserId = id == 0 ? userId.Value : entity.User.Id
+            //};
+            //User user = UserDao.Load(model.UserId);
+            //if (!user.Grade.HasValue)
+            //    throw new ValidationException(string.Format("Не указан грейд для пользователя {0} в базе данных", user.Id));
+            //IUser current = AuthenticationService.CurrentUser;
 
+            //if (!CheckUserMoRights(user, current, id, entity, false))
+            //    throw new ArgumentException("Доступ запрещен.");
+            ////model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
+            //if (id != 0)
+            //{
+
+            //    LoadGraids(model, user.Grade.Value, entity, entity.CreateDate);
+            //    model.AllSum = FormatSum(entity.AllSum);
+            //    model.AllSumAir = FormatSum(entity.SumAir);
+            //    model.AllSumDaily = FormatSum(entity.SumDaily);
+            //    model.AllSumResidence = FormatSum(entity.SumResidence);
+            //    model.AllSumTrain = FormatSum(entity.SumTrain);
+            //    model.BeginMissionDate = FormatDate(entity.BeginDate);//entity.BeginDate.ToShortDateString();
+            //    model.EndMissionDate = FormatDate(entity.EndDate);//entity.EndDate.ToShortDateString();
+            //    model.GoalId = entity.Goal.Id;
+            //    model.Id = entity.Id;
+            //    model.TypeId = entity.Type.Id;
+            //    model.Kind = entity.Kind;
+            //    model.UserId = entity.User.Id;
+            //    model.UserAllSum = FormatSum(entity.UserAllSum);
+            //    model.UserAllSumAir = FormatSum(entity.UserSumAir);
+            //    model.UserAllSumDaily = FormatSum(entity.UserSumDaily);
+            //    model.UserAllSumResidence = FormatSum(entity.UserSumResidence);
+            //    model.UserAllSumTrain = FormatSum(entity.UserSumTrain);
+            //    model.DateCreated = entity.CreateDate.ToShortDateString();
+            //    model.Version = entity.Version;
+            //    model.UserSumCash = FormatSum(entity.UserSumCash);
+            //    model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
+
+            //    model.IsResidencePaid = entity.IsResidencePaid;
+            //    model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
+            //    model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;
+
+            //    model.ResidenceRequestNumber = entity.ResidenceRequestNumber;
+            //    model.AirTicketsRequestNumber = entity.AirTicketsRequestNumber;
+            //    model.TrainTicketsRequestNumber = entity.TrainTicketsRequestNumber;
+            //    model.SecretaryFio = entity.Secretary == null ? string.Empty : entity.Secretary.FullName;
+            //    model.AirTicketType = entity.AirTicketType;
+            //    model.TrainTicketType = entity.TrainTicketType;
+
+            //    model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+            //    model.LongTermReason = entity.LongTermReason;
+            //    model.DocumentNumber = entity.Number.ToString();
+
+            //    MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
+            //    {
+            //        AirTicketTypeId = x.AirTicketType == null ? 0 : x.AirTicketType.Id,
+            //        AirTicketTypeName = x.AirTicketType == null ? string.Empty : x.AirTicketType.Name,
+            //        AllDaysCount = x.DaysCount.ToString(),
+            //        City = x.City,
+            //        Country = x.Country.Name,
+            //        CountryId = x.Country.Id,
+            //        DailyAllowanceId = x.DailyAllowance == null ? 0 : x.DailyAllowance.Id,
+            //        DailyAllowanceName = x.DailyAllowance == null ? string.Empty : x.DailyAllowance.Name,
+            //        DateFrom = x.BeginDate.ToShortDateString(),
+            //        DateTo = x.EndDate.ToShortDateString(),
+            //        Organization = x.Organization,
+            //        ResidenceId = x.Residence == null ? 0 : x.Residence.Id,
+            //        ResidenceName = x.Residence == null ? string.Empty : x.Residence.Name,
+            //        TargetDaysCount = x.RealDaysCount.ToString(),
+            //        TargetId = x.Id,
+            //        TrainTicketTypeId = x.TrainTicketType == null ? 0 : x.TrainTicketType.Id,
+            //        TrainTicketTypeName = x.TrainTicketType == null ? string.Empty : x.TrainTicketType.Name,
+            //    }).ToArray();
+            //    JsonList list = new JsonList { List = targets };
+            //    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            //    model.Targets = jsonSerializer.Serialize(list);
+            //    if (entity.DeleteDate.HasValue)
+            //        model.IsDeleted = true;
+            //}
+            //else
+            //{
+            //    JsonList list = new JsonList { List = new MissionOrderTargetModel[0] };
+            //    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            //    model.Targets = jsonSerializer.Serialize(list);
+            //    model.DateCreated = DateTime.Today.ToShortDateString();
+            //    LoadGraids(model, user.Grade.Value, entity, DateTime.Today);
+            //    //model.IsEditable = true;
+            //}
+            //SetUserInfoModel(user, model);
+            //SetFlagsState(id, user, entity, model);
+            //SetStaticFields(model, entity);
+            //LoadDictionaries(model);
+            //SetHiddenFields(model);
+            return model;
+        }
         #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()

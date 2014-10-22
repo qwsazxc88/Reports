@@ -8,6 +8,8 @@ namespace Reports.Presenters.UI.Bl
         HelpServiceRequestsListModel GetServiceRequestsList();
         void SetServiceRequestsListModel(HelpServiceRequestsListModel model, bool hasError);
 
+        HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
+
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);
         bool SaveVersion(HelpSaveVersionModel model);

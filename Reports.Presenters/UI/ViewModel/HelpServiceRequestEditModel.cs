@@ -20,6 +20,19 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
 
+        public HelpServiceRequestTypeModel TypeModel { get; set; }
+
+        public CommentsModel CommentsModel { get; set; }
+
+        public bool IsSaveAvailable { get; set; }
+        public bool IsEditable { get; set; }
+        public bool IsSendAvailable { get; set; }
+        public bool IsEndAvailable { get; set; }
+        public bool IsBeginWorkAvailable { get; set; }
+        public bool IsEndWorkAvailable { get; set; }
+    }
+    public class HelpServiceRequestTypeModel
+    {
         [Display(Name = "Требования к справке")]
         public string Requirements { get; set; }
 
