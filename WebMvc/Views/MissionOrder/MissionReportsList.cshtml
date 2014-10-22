@@ -198,7 +198,7 @@
                     </th>
                     <th>
                         <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Сумма <br/>по G грейду</a></div>
-                    </th>
+                    </th>                    
                     <th>
                         <div id="sort8" style="min-width:120px"><a href="#"  onclick = "SortChanged(8);">Фактически  <br/>потраченная <br/>сумма</a></div>
                     </th>
@@ -207,6 +207,9 @@
                     </th>
                     <th>
                         <div id="sort10" style="min-width:120px"><a href="#"  onclick = "SortChanged(10);">Превышение  <br/>по G</a></div>
+                    </th>
+                    <th>
+                        <div id="sort18" style="min-width:120px"><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
                     </th>
                     <th>
                         <div id="sort16" style="min-width:80px"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
@@ -261,10 +264,11 @@
                             @*<td>@doc.MissionKind</td>
                             <td>@doc.Target</td>*@
                             <td>@doc.Grade</td>
-                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>                            
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
                             <td>@RequestBl.FormatSum(@doc.Saldo)</td>
                             
                           @*  <td>@doc.HasMission</td>
