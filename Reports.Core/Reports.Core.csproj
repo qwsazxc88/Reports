@@ -253,6 +253,7 @@
     <Compile Include="Dao\Impl\EmploymentManagersDao.cs" />
     <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\Impl\СlearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -303,6 +304,7 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\IСlearanceChecklistCommentDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -451,6 +453,7 @@
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
     <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Domain\AdditionalVacationType.cs" />
+    <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
     <Compile Include="Dto\AppointmentDto.cs" />
     <Compile Include="Dto\BeginEndDateDto.cs" />
@@ -976,6 +979,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\AppointmentReportComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

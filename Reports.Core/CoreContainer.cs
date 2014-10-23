@@ -253,6 +253,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IDismissalCommentDao)).
                          ImplementedBy(typeof(DismissalCommentDao)).
                          LifeStyle.Is(type));
+            Register(Component.For(typeof(IClearanceChecklistCommentDao)).
+                         ImplementedBy(typeof(ClearanceChecklistCommentDao)).
+                         LifeStyle.Is(type));
             Register(Component.For(typeof(IClearanceChecklistDao)).
                         ImplementedBy(typeof(ClearanceChecklistDao)).
                         LifeStyle.Is(type));

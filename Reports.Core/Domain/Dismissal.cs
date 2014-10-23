@@ -39,6 +39,7 @@ namespace Reports.Core.Domain
         public virtual bool IsPersonnelFileSentToArchive { get; set; }
 
         public virtual IList<DismissalComment> Comments { get; set; }
+        public virtual IList<ClearanceChecklistComment> ClearanceChecklistComments { get; set; }
 
         // Согласования обходного листа
         public virtual IList<ClearanceChecklistApproval> ClearanceChecklistApprovals { get; set; }
