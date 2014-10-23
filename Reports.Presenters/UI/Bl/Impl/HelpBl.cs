@@ -136,6 +136,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Id = id,
                 UserId = id == 0 ? userId.Value : 0 //entity.User.Id
             };
+            User user = UserDao.Load(model.UserId);
             //MissionOrder entity = null;
             //if (id != 0)
             //{
@@ -234,13 +235,128 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    LoadGraids(model, user.Grade.Value, entity, DateTime.Today);
             //    //model.IsEditable = true;
             //}
-            //SetUserInfoModel(user, model);
+            //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
+            SetUserInfoModel(user, model);
             //SetFlagsState(id, user, entity, model);
             //SetStaticFields(model, entity);
-            //LoadDictionaries(model);
+            LoadDictionaries(model);
             //SetHiddenFields(model);
             return model;
         }
+        protected void LoadDictionaries(HelpServiceRequestEditModel model)
+        {
+            model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
+        }
+        protected void SetUserInfoModel(User user, HelpUserInfoModel model)
+        {
+            if (user.Position != null)
+                model.Position = user.Position.Name;
+            model.UserName = user.FullName;
+            if(user.Department != null)
+            {
+                model.Department2 = user.Department.Name;
+                Department dep3 = DepartmentDao.GetParentDepartmentWithLevel(user.Department, 3);
+                if (dep3 != null)
+                    model.Department1 = dep3.Name;
+                string managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true)
+                                       .OrderByDescending(x => x.Level).
+                                       Aggregate(string.Empty, (current, x) => 
+                                       current + string.Format("{0} ({1}), ",x.FullName,x.Position == null ? "<не указана>": x.Position.Name));
+                if (managers.Length >= 2)
+                    managers = managers.Remove(managers.Length - 2);
+                model.ManagerName = managers;
+            }
+        }
+
+        #region Comments
+        public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
+        {
+            CommentsModel commentModel = new CommentsModel
+            {
+                RequestId = id,
+                RequestTypeId = (int)typeId,
+                Comments = new List<RequestCommentModel>(),
+                IsAddAvailable = id > 0,
+            };
+            if (id == 0)
+                return commentModel;
+            switch (typeId)
+            {
+                //case RequestTypeEnum.Appointment:
+                //    Appointment entity = AppointmentDao.Load(id);
+                //    if ((entity.Comments != null) && (entity.Comments.Count() > 0))
+                //    {
+                //        commentModel.Comments = entity.Comments.OrderBy(x => x.DateCreated).ToList().
+                //            ConvertAll(x => new RequestCommentModel
+                //            {
+                //                Comment = x.Comment,
+                //                CreatedDate = x.DateCreated.ToString(),
+                //                Creator = x.User.FullName,
+                //            });
+                //    }
+                //    break;
+                //case RequestTypeEnum.AppointmentReport:
+                //    AppointmentReport rep = AppointmentReportDao.Load(id);
+                //    if ((rep.Comments != null) && (rep.Comments.Count() > 0))
+                //    {
+                //        commentModel.Comments = rep.Comments.OrderBy(x => x.DateCreated).ToList().
+                //            ConvertAll(x => new RequestCommentModel
+                //            {
+                //                Comment = x.Comment,
+                //                CreatedDate = x.DateCreated.ToString(),
+                //                Creator = x.User.FullName,
+                //            });
+                //    }
+                //    break;
+                default:
+                    throw new ValidationException(string.Format(AppointmentBl.StrInvalidCommentType, (int)typeId));
+
+            }
+            return commentModel;
+        }
+        public bool SaveComment(SaveCommentModel model, RequestTypeEnum type)
+        {
+            try
+            {
+                User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+                switch (type)
+                {
+                    //case RequestTypeEnum.Appointment:
+                    //    Appointment entity = AppointmentDao.Load(model.DocumentId);
+                    //    AppointmentComment comment = new AppointmentComment
+                    //    {
+                    //        Comment = model.Comment,
+                    //        Appointment = entity,
+                    //        DateCreated = DateTime.Now,
+                    //        User = user,
+                    //    };
+                    //    AppointmentCommentDao.MergeAndFlush(comment);
+                    //    break;
+                    //case RequestTypeEnum.AppointmentReport:
+                    //    AppointmentReport rep = AppointmentReportDao.Load(model.DocumentId);
+                    //    AppointmentReportComment comm = new AppointmentReportComment
+                    //    {
+                    //        Comment = model.Comment,
+                    //        AppointmentReport = rep,
+                    //        DateCreated = DateTime.Now,
+                    //        User = user,
+                    //    };
+                    //    AppointmentReportCommentDao.MergeAndFlush(comm);
+                    //    break;
+                    default:
+                        throw new ValidationException(string.Format(AppointmentBl.StrInvalidCommentType, (int)type));
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //AppointmentCommentDao.RollbackTran();
+                Log.Error("Exception", ex);
+                model.Error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+        }
+        #endregion
         #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()

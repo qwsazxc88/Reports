@@ -69,7 +69,12 @@ namespace Reports.Core.Dao.Impl
                 SetResultTransformer(Transformers.AliasToBean(typeof(Department))).
                 List<Department>();
         }
-
+        public Department GetParentDepartmentWithLevel(Department dep,int level)
+        {
+            return Session.Query<Department>().
+                Where(x => x.ItemLevel == level && dep.Path.StartsWith(x.Path))
+                .FirstOrDefault();
+        }
         public IList<User> GetDepartmentManagers(int departmentId, bool allLevels = false)
         {
             IList<User> managers;
