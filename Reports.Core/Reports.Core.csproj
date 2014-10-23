@@ -255,6 +255,7 @@
     <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
+    <Compile Include="Dao\Impl\СlearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IСlearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IScheduleDao.cs" />
     <Compile Include="Domain\Absence.cs" />
@@ -453,6 +455,7 @@
     <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Domain\AdditionalVacationType.cs" />
     <Compile Include="Domain\AccessGroup.cs" />
+    <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Domain\Employment2\DisabilityDegree.cs" />
     <Compile Include="Domain\Schedule.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
@@ -893,9 +896,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Passport.hbm.xml" />
@@ -910,17 +911,13 @@
     <EmbeddedResource Include="Domain\Employment2\MilitaryService.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\OnsiteTraining.hbm.xml">
@@ -928,9 +925,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\PersonnelManagers.hbm.xml" />
@@ -960,9 +955,6 @@
     <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\ConscriptionStatus.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Domain\AdditionalVacationType.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -981,6 +973,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -25,6 +25,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public DateTime EndDate { get; set; }
 
+        public RequestCommentsModel CommentsModel { get; set; }
+
         public ClearanceChecklistEditModel()
         {
             this.ClearanceChecklistApprovals = new List<ClearanceChecklistApprovalDto>();

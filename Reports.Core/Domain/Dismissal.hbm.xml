@@ -39,6 +39,11 @@
       <one-to-many class="DismissalComment"/>
     </bag>
 
+    <bag name="ClearanceChecklistComments" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="ClearanceChecklistId" foreign-key="FK_ClearanceChecklistComment_ClearanceChecklist"/>
+      <one-to-many class="ClearanceChecklistComment"/>
+    </bag>
+
     <bag name="ClearanceChecklistApprovals" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="DismissalId" foreign-key="FK_ClearanceChecklistApproval_Dismissal"/>
       <one-to-many class="ClearanceChecklistApproval"/>
