@@ -88,8 +88,7 @@ namespace Reports.Core.Dao.Impl
             whereString += @" and v.DeleteDate is null
                               and v.UserDateAccept is not null
                               and v.ManagerDateAccept is not null
-                              and v.PersonnelManagerDateAccept is not null
-                              and v.SendTo1C is null ";
+                              and v.PersonnelManagerDateAccept is not null ";
             return whereString;
         }
 
