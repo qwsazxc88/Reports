@@ -200,6 +200,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.Security);
             if ((user.UserRole & UserRole.Trainer) > 0 && !roles.Contains(UserRole.Trainer))
                 roles.Add(UserRole.Trainer);
+            if ((user.UserRole & UserRole.ConsultantOutsourcing) > 0 && !roles.Contains(UserRole.ConsultantOutsourcing))
+                roles.Add(UserRole.ConsultantOutsourcing);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

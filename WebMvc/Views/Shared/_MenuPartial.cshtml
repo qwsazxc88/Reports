@@ -54,6 +54,7 @@
                 @if ((dto.UserRole & UserRole.Manager) > 0
                      ||(dto.UserRole & UserRole.Employee) > 0
                      || (dto.UserRole & UserRole.Admin) > 0
+                     || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
                       )
                  {

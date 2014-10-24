@@ -44,6 +44,8 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.Secretary;
                 if (IsInRole(ReportRoleConstants.Findep))
                     return UserRole.Findep;
+                if (IsInRole(ReportRoleConstants.ConsultantOutsourcing))
+                    return UserRole.ConsultantOutsourcing;
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))
