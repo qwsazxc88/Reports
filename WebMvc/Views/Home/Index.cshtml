@@ -107,8 +107,7 @@
                 </div>
                 }
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
-                {
+               
                 @if (UserDto.IsHelpServiceAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")</div> 
@@ -117,9 +116,11 @@
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                  }
+                 @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
+                 {
                     <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                     </div>               
-                }
+                 }
                 @if ((dto.UserRole & UserRole.Manager) > 0
                     //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0

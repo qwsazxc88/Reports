@@ -25,7 +25,8 @@
         MissionReport = 12,
         Appointment = 13,
         AppointmentReport = 14,
-        HelpServiceRequest = 15,
+        ClearanceChecklist = 15,
+        HelpServiceRequest = 16,
     }
     public enum RequestAttachmentTypeEnum
     {
