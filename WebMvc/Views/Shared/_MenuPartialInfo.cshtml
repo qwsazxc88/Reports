@@ -75,15 +75,13 @@
                 </div> 
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
-                @if ((dto.UserRole & UserRole.Manager) > 0
-                     ||(dto.UserRole & UserRole.Employee) > 0
-                     || (dto.UserRole & UserRole.Admin) > 0
-                     || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
-                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                      )
+                 @if (UserDto.IsHelpServiceAvailable(dto))
                  {
-                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")
-                    </div> 
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")</div> 
+                 }
+                 else
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                  }
                 <div id="liInfo" class="mainOn"><span>ИнфоЗарплата</span>
                 </div>

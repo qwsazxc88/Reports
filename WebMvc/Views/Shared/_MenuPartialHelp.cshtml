@@ -75,19 +75,13 @@
                 </div> 
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
-                @if ((dto.UserRole & UserRole.Manager) > 0
-                     ||(dto.UserRole & UserRole.Employee) > 0
-                     || (dto.UserRole & UserRole.Admin) > 0
-                     || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
-                     || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                      )
+                @if (UserDto.IsHelpServiceAvailable(dto))
                  {
-                    <div id="liHelp" class="mainOn">@Html.ActionLink("Помощь", "Index", "Help")
-                    </div> 
+                    <div id="liHelp" class="mainOn">@Html.ActionLink("Помощь", "Index", "Help")</div> 
                  }
                  else
                  {
-                    <div id="liHelp" class="mainOn">@Html.ActionLink("Шаблоны", "Template", "Help")</div> 
+                    <div id="liHelp" class="mainOn">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                  }
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div>
@@ -102,19 +96,15 @@
                  }  
         </div>  
          <div class="podmenu">    
-          @if ((dto.UserRole & UserRole.Manager) > 0
-              || (dto.UserRole & UserRole.Employee) > 0
-               || (dto.UserRole & UserRole.Admin) > 0
-               || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
-               || (dto.UserRole & UserRole.OutsourcingManager) > 0)
-          {  
+            @if (UserDto.IsHelpServiceAvailable(dto))
+            {  
                 <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Реестр услуг", "Index", "Help")</div> 
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
-          }
-          else
-          {
-            <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
-          }
+            }
+            else
+            {
+                <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
+            }
             <div class="menuitem" id="helpFaq">@Html.ActionLink("Часто задаваемые вопросы", "Faq", "Help")</div>
             <div class="menuitem" id="helpVersion">@Html.ActionLink("О программе", "Version", "Help")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>

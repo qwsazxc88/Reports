@@ -116,6 +116,14 @@ namespace Reports.Presenters.Services.Impl
                 throw new ArgumentException("Ошибка определения пользователя.");
             }
         }
+        public static bool IsHelpServiceAvailable(IUser dto)
+        {
+            return (dto.UserRole & UserRole.Manager) > 0
+                   || (dto.UserRole & UserRole.Employee) > 0
+                   || (dto.UserRole & UserRole.Admin) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
+                   || (dto.UserRole & UserRole.OutsourcingManager) > 0;
+        }
         public static string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
             ILoginBl bl = Ioc.Resolve<ILoginBl>();
