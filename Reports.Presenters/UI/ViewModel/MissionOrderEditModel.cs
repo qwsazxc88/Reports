@@ -105,11 +105,11 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsTrainTicketsPaid { get; set; }
         public bool IsTrainTicketsPaidHidden { get; set; }
 
-        [Display(Name = "Гостиница (номер ЭССЗ)")]
+        [Display(Name = "Гостиница (номер ЭССС)")]
         public string ResidenceRequestNumber { get; set; }
-        [Display(Name = "Билеты авиа (номер ЭССЗ)")]
+        [Display(Name = "Билеты авиа (номер ЭССС)")]
         public string AirTicketsRequestNumber { get; set; }
-        [Display(Name = "Билеты ж/д (номер ЭССЗ)")]
+        [Display(Name = "Билеты ж/д (номер ЭССС)")]
         public string TrainTicketsRequestNumber { get; set; }
         public bool IsSecritaryEditable { get; set; }
 
@@ -262,11 +262,11 @@ namespace Reports.Presenters.UI.ViewModel
         //public bool IsTrainTicketsPaid { get; set; }
         //public bool IsTrainTicketsPaidHidden { get; set; }
 
-        //[Display(Name = "Гостиница (номер ЭССЗ)")]
+        //[Display(Name = "Гостиница (номер ЭССС)")]
         //public string ResidenceRequestNumber { get; set; }
-        //[Display(Name = "Билеты авиа (номер ЭССЗ)")]
+        //[Display(Name = "Билеты авиа (номер ЭССС)")]
         //public string AirTicketsRequestNumber { get; set; }
-        //[Display(Name = "Билеты ж/д (номер ЭССЗ)")]
+        //[Display(Name = "Билеты ж/д (номер ЭССС)")]
         //public string TrainTicketsRequestNumber { get; set; }
         //public bool IsSecritaryEditable { get; set; }
 
