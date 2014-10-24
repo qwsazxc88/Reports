@@ -2141,7 +2141,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // create CCL approvals if the Dismissal has been approved by the user and two managers and CCL approvals have not been created before
                 if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser && dismissal.ClearanceChecklistApprovals.Count == 0)
                 {
-                    var activeClearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles().Where<ClearanceChecklistRole>(role => role.DeleteDate.HasValue);
+                    var activeClearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles().Where<ClearanceChecklistRole>(role => role.DeleteDate == null);
                     foreach (var clearanceChecklistRole in activeClearanceChecklistRoles)
                     {
                         dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
