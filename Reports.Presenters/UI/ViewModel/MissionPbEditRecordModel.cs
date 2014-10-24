@@ -35,7 +35,7 @@ namespace Reports.Presenters.UI.ViewModel
         //[Display(Name = "в т.ч. НДС")]
         public bool IsWithNds { get; set; }
 
-        [Display(Name = "Номер заявки в ЭССЗ")]
+        [Display(Name = "Номер заявки в ЭССС")]
         public string RequestNumber { get; set; }
     }
 }
