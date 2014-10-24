@@ -385,6 +385,10 @@
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
     <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpServicePeriod.cs" />
+    <Compile Include="Domain\HelpServiceProductionTime.cs" />
+    <Compile Include="Domain\HelpServiceTransferMethod.cs" />
+    <Compile Include="Domain\HelpServiceType.cs" />
     <Compile Include="Domain\HelpVersion.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
@@ -995,6 +999,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpFaq.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceProductionTime.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceTransferMethod.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\HelpServicePeriod.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

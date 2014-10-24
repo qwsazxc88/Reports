@@ -122,6 +122,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             //    model.SortBy,
             //    model.SortDescending);
         }
+        #endregion
+        #region Service Requests Edit
         public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
         {
             if (id == 0 && !userId.HasValue)
@@ -246,6 +248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadDictionaries(HelpServiceRequestEditModel model)
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
+            
         }
         protected void SetUserInfoModel(User user, HelpUserInfoModel model)
         {
