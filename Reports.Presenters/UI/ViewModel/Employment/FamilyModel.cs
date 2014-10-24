@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
@@ -26,6 +27,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(250, ErrorMessage = "Не более 250 знаков.")]
         public string Cohabitants { get; set; } //ok
 
+        public HttpPostedFileBase MarriageCertificateScanFile { get; set; }
+
+        public string MarriageCertificateScanAttachmentFilename { get; set; }
+        public int MarriageCertificateScanAttachmentId { get; set; }
+
         public FamilyModel()
         {
             this.Version = 0;
@@ -33,6 +39,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             this.Father = new FamilyMemberDto();
             this.Mother = new FamilyMemberDto();
             this.Spouse = new FamilyMemberDto();
-        }
+        }               
     }
 }

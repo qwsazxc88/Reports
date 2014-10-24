@@ -698,6 +698,11 @@
     <Content Include="Views\Employment\ExperienceReadOnly.cshtml" />
     <Content Include="Views\Employment\ContactsReadOnly.cshtml" />
     <Content Include="Views\Employment\BackgroundCheckReadOnly.cshtml" />
+    <Content Include="Views\Employment\OnsiteTrainingReadOnly.cshtml" />
+    <Content Include="Views\Employment\CreateCandidate.cshtml" />
+    <Content Include="Views\Employment\PrintCreatedCandidate.cshtml" />
+    <Content Include="Views\Employment\PrintContractForm.cshtml" />
+    <Content Include="Views\Employment\PrintEmploymentOrder.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Shared\_HelpInfo.cshtml" />
     <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />

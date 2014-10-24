@@ -45,7 +45,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         
         [Display(Name = "Дата рождения"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true),
-            Required(ErrorMessage = "*"),]
+            Required(ErrorMessage = "*")]
         public DateTime? DateOfBirth { get; set; } //ok
 
         [Display(Name = "Область"),

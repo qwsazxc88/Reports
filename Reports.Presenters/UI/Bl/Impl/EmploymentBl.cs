@@ -245,17 +245,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 GetAttachmentData(ref attachmentId, ref attachmentFilename, entity.Candidate.Id, RequestAttachmentTypeEnum.INNScan);
                 model.INNScanAttachmentId = attachmentId;
                 model.INNScanAttachmentFilename = attachmentFilename;
-
-                /*/---
-                int candidateId = entity.Candidate.Id;
-                RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Candidate.Id, type);
-                if (attach != null)
-                {
-                    model.INNScanAttachmentId = attach.Id;
-                    model.INNScanAttachmentFilename = attach.FileName;
-                }
-
-                //---*/
             }            
             return model;
         }
@@ -668,6 +657,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public ApplicationLetterModel GetApplicationLetterModel(int? userId = null)
+        {
+            userId = userId ?? AuthenticationService.CurrentUser.Id;
+            ApplicationLetterModel model = new ApplicationLetterModel { UserId = userId.Value };
+
+            int attachmentId = 0;
+            string attachmentFilename = string.Empty;
+            GetAttachmentData(ref attachmentId, ref attachmentFilename, GetCandidate(userId.Value).Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
+            model.ApplicationLetterScanAttachmentId = attachmentId;
+            model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
+
+            return model;
+        }
+
         public ManagersModel GetManagersModel(int? userId = null)
         {
             // TODO: EMPL заменить реализацией
@@ -679,12 +682,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 entity = EmploymentManagersDao.Get(id.Value);
             }
+
             if (entity != null)
             {
                 model.Bonus = entity.Bonus;
-                model.DirectorateId = entity.Directorate.Id;
                 model.DailySalaryBasis = entity.DailySalaryBasis;
                 model.DepartmentId = entity.Department.Id;
+                model.DepartmentName = entity.Department.Name;
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.HourlySalaryBasis = entity.HourlySalaryBasis;
                 model.IsFront = entity.IsFront;
@@ -698,20 +702,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
                 model.WorkCity = entity.WorkCity;
 
-                model.ApprovingManagerName = entity.ApprovingManager.Name;
-                model.ApprovingHigherManagerName = entity.ApprovingHigherManager.Name;
+                model.ApprovingManagerName = entity.ApprovingManager != null ? entity.ApprovingManager.Name : string.Empty;
+                model.ApprovingHigherManagerName = entity.ApprovingHigherManager != null ? entity.ApprovingHigherManager.Name : string.Empty;
                 model.ManagerRejectionReason = entity.ManagerRejectionReason;
 
                 model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
-
-                model.IsApproveByManagerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
-
-                model.IsApproveByHigherManagerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
             }
+
+            EmploymentCandidate candidate = GetCandidate(userId.Value);
+
+            model.IsApproveByManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_MANAGER)
+                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+
+            model.IsApproveByHigherManagerAvailable = (candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
+                && ((AuthenticationService.CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
+
             LoadDictionaries(model);
             return model;
         }
@@ -722,11 +729,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             PersonnelManagersModel model = new PersonnelManagersModel { UserId = userId.Value };
             PersonnelManagers entity = null;
-            int? id = EmploymentCommonDao.GetDocumentId<Managers>(userId.Value);
+            int? id = EmploymentCommonDao.GetDocumentId<PersonnelManagers>(userId.Value);
             if (id.HasValue)
             {
                 entity = EmploymentPersonnelManagersDao.Get(id.Value);
             }
+
             if (entity != null)
             {
                 model.AccessGroupId = entity.AccessGroup.Id;
@@ -752,6 +760,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PersonalAccountContractorId = entity.PersonalAccountContractor.Id;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
+
             LoadDictionaries(model);
             return model;
         }
@@ -760,6 +769,33 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
             RosterModel model = new RosterModel();
+
+            model.IsCandidateInfoAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.Security
+                | UserRole.StaffManager)) > 0;
+            model.IsBackgroundCheckAvailable = (current.UserRole & (UserRole.Security
+                | UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.StaffManager)) > 0;
+            model.IsManagersAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.PersonnelManager
+                | UserRole.OutsourcingManager)) > 0;
+            model.IsPersonalManagersAvailable = (current.UserRole & (UserRole.Chief
+                | UserRole.Director
+                | UserRole.Manager
+                | UserRole.OutsourcingManager
+                | UserRole.PersonnelManager
+                | UserRole.StaffManager)) > 0;
+
             if (filters == null)
             {                
                 model.Roster = new List<CandidateDto>();
@@ -785,10 +821,69 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public CreateCandidateModel GetCreateCandidateModel()
+        {
+            var model = new CreateCandidateModel();
+            model.IsOnBehalfOfManagerAvailable = (AuthenticationService.CurrentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director )) == 0 ? true : false;
+            return model;
+        }
+
+        public PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error)
+        {
+            error = string.Empty;
+            var user = userDao.Load(id);
+
+            return new PrintCreatedCandidateModel { Login = user.Login, Password = user.Password };
+        }
+
         public SignersModel GetSignersModel()
         {
             // TODO: EMPL заменить реализацией
             return new SignersModel();
+        }
+
+        public PrintContractFormModel GetPrintContractFormModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintContractFormModel model = new PrintContractFormModel
+            {
+                ContractDate = candidate.PersonnelManagers.ContractDate,
+                Department = candidate.Managers.Department.Name,
+                EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
+                    + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
+                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty,
+                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
+                EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + "."),
+                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
+                Number = candidate.PersonnelManagers.ContractNumber,
+                PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue,
+                PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy,
+                PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber,
+                Position = candidate.Managers.Position.Name,
+                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod,
+                WorkCity = candidate.Managers.WorkCity
+            };
+            return model;
+        }
+
+        public PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel
+            {
+                Conditions = candidate.Managers.EmploymentConditions,
+                ContractDate = candidate.PersonnelManagers.ContractDate,
+                ContractNumber = candidate.PersonnelManagers.ContractNumber,
+                Department = candidate.Managers.Department.Name,
+                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
+                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
+                OrderDate = candidate.PersonnelManagers.EmploymentOrderDate,
+                OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber,
+                Position = candidate.Managers.Position.Name,
+                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod
+            };
+            return model;
         }
 
         #endregion        
@@ -841,8 +936,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void LoadDictionaries(ManagersModel model)
         {
             model.PositionItems = GetPositions();
-            model.DirectorateItems = GetDirectorates();
-            model.DepartmentItems = GetDepartments();
             model.Schedules = GetSchedules();
 
             model.ApprovalStatuses = GetApprovalStatuses();
@@ -984,16 +1077,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             return PositionDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
-        public IEnumerable<SelectListItem> GetDirectorates()
-        {
-            return DepartmentDao.LoadAllSorted().Where(item => item.ItemLevel == 3).ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
-        }
-
-        public IEnumerable<SelectListItem> GetDepartments()
-        {
-            return DepartmentDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
-        }
-
         public IEnumerable<SelectListItem> GetSchedules()
         {
             return ScheduleDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => Int32.Parse(x.Value));
@@ -1045,6 +1128,49 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Process Saving
 
+        public int? CreateCandidate(CreateCandidateModel model, out string error)
+        {
+            error = string.Empty;
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
+
+            if ((current.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
+            {
+                error = "Необходимо выбрать руководителя, от имени которого Вы добавляете кандидата.";
+                return null;
+            }
+            
+            User newUser = new User
+            {
+                Login = string.Empty,
+                Password = AppointmentBl.CreatePassword(AppointmentBl.PasswordLength),
+                IsFirstTimeLogin = true,
+                IsActive = true,
+                IsNew = true,
+                Name = string.Empty,
+                RoleId = (int)UserRole.Candidate,
+                Department = DepartmentDao.Load(model.DepartmentId),
+                GivesCredit = false,
+                IsMainManager = false
+            };
+
+            EmploymentCandidate candidate = new EmploymentCandidate
+            {
+                User = newUser,
+                AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : current,
+                QuestionnaireDate = DateTime.Now
+            };
+
+            EmploymentCommonDao.SaveAndFlush(candidate);
+
+            candidate.User.Login = "c" + candidate.Id.ToString();
+            candidate.User.Name = candidate.User.Login;
+
+            EmploymentCommonDao.SaveAndFlush(candidate);
+
+            return candidate.User.Id;
+        }
+                
         public bool ProcessSaving<TVM, TE>(TVM model, out string error)
             where TVM : AbstractEmploymentModel
             where TE : new()
@@ -1064,13 +1190,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 user = UserDao.Load(model.UserId);
-                if (model.UserId == AuthenticationService.CurrentUser.Id)
-                {
                     SetEntity<TVM, TE>(entity, model);
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
-                    SaveAttachments<TVM>((entity as IEmploymentInfoSection).Candidate.Id, model);
-                    // EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
-                }
+                    SaveAttachments<TVM>(model);
             }
             catch (Exception exc)
             {
@@ -1084,21 +1206,160 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        protected void SaveAttachments<TVM>(int candidateId, TVM viewModel)
+        public bool ProcessSaving(ApplicationLetterModel model, out string error)
+        {            
+            SaveAttachments<ApplicationLetterModel>(model);
+            int userId = model.UserId != 0 ? model.UserId : AuthenticationService.CurrentUser.Id;
+
+            EmploymentCandidate candidate = GetCandidate(userId);
+            candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
+            EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
+
+            error = string.Empty;
+            return true;
+        }
+
+        public void SaveAttachments<TVM>(TVM viewModel)
+            where TVM : AbstractEmploymentModel
         {
+            int candidateId = GetCandidate(viewModel.UserId != 0 ? viewModel.UserId : AuthenticationService.CurrentUser.Id).Id;
+
             switch (viewModel.GetType().Name)
             {
                 case "GeneralInfoModel":
-                    if ((viewModel as GeneralInfoModel).INNScanFile != null)
-                    {
-                        UploadFileDto INNScanFileDto = GetFileContext((viewModel as GeneralInfoModel).INNScanFile);
-                        string fileName = string.Empty;
-                        //int? attachmentId = 
-                        SaveAttachment(candidateId, (viewModel as GeneralInfoModel).INNScanAttachmentId, INNScanFileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
-                    }
+                    SaveGeneralInfoAttachments(viewModel as GeneralInfoModel, candidateId);
+                    break;
+                case "PassportModel":
+                    SavePassportAttachments(viewModel as PassportModel, candidateId);
+                    break;
+                    
+                case "FamilyModel":
+                    SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
+                    break;
+                case "MilitaryServiceModel":
+                    SaveMilitaryServiceAttachments(viewModel as MilitaryServiceModel, candidateId);
+                    break;
+                case "ExperienceModel":
+                    SaveExperienceAttachments(viewModel as ExperienceModel, candidateId);
+                    break;
+                case "BackgroundCheckModel":
+                    SaveBackgroundCheckAttachments(viewModel as BackgroundCheckModel, candidateId);
+                    break;
+                case "ApplicationLetterModel":
+                    SaveApplicationLetterAttachments(viewModel as ApplicationLetterModel, candidateId);
                     break;
                 default:
                     break;
+            }
+        }        
+
+        protected void SaveGeneralInfoAttachments(GeneralInfoModel model, int candidateId)
+        {
+            if (model.PhotoFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PhotoFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PhotoAttachmentId, fileDto, RequestAttachmentTypeEnum.Photo, out fileName);
+            }
+            if (model.INNScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.INNScanFile);
+                string fileName = string.Empty;
+                //int? attachmentId = 
+                SaveAttachment(candidateId, model.INNScanAttachmentId, fileDto, RequestAttachmentTypeEnum.INNScan, out fileName);
+            }
+            if (model.SNILSScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.INNScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.SNILSScanAttachmentId, fileDto, RequestAttachmentTypeEnum.SNILSScan, out fileName);
+            }
+            if (model.DisabilityCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.DisabilityCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.DisabilityCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.DisabilityCertificateScan, out fileName);
+            }
+        }
+
+        protected void SavePassportAttachments(PassportModel model, int candidateId)
+        {
+            if (model.InternalPassportScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InternalPassportScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InternalPassportScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InternalPassportScan, out fileName);
+            }
+        }
+
+        // TODO: SaveEducationAttachments
+
+        protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
+        {
+            if (model.MarriageCertificateScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MarriageCertificateScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
+            }
+            // TODO: Upload Child Birth Certificates
+        }
+
+        protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
+        {
+            if (model.MilitaryCardScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MilitaryCardScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MilitaryCardScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MilitaryCardScan, out fileName);
+            }
+            if (model.MobilizationTicketScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.MobilizationTicketScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.MobilizationTicketScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MobilizationTicketScan, out fileName);
+            }
+        }
+
+        protected void SaveExperienceAttachments(ExperienceModel model, int candidateId)
+        {
+            if (model.WorkBookScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookScan, out fileName);
+            }
+            if (model.WorkBookSupplementScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.WorkBookSupplementScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.WorkBookSupplementScanAttachmentId, fileDto, RequestAttachmentTypeEnum.WorkbookSupplementScan, out fileName);
+            }
+        }
+
+        protected void SaveBackgroundCheckAttachments(BackgroundCheckModel model, int candidateId)
+        {
+            if (model.PersonalDataProcessingScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.PersonalDataProcessingScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.PersonalDataProcessingScanAttachmentId, fileDto, RequestAttachmentTypeEnum.PersonalDataProcessingScan, out fileName);
+            }
+            if (model.InfoValidityScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.InfoValidityScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.InfoValidityScanAttachmentId, fileDto, RequestAttachmentTypeEnum.InfoValidityScan, out fileName);
+            }
+        }
+
+        protected void SaveApplicationLetterAttachments(ApplicationLetterModel model, int candidateId)
+        {
+            if (model.ApplicationLetterScanFile != null)
+            {
+                UploadFileDto fileDto = GetFileContext(model.ApplicationLetterScanFile);
+                string fileName = string.Empty;
+                SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
             }
         }
 
@@ -1137,12 +1398,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //case "OnsiteTraining":
                 //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
                 //    break;
-                //case "Managers":
-                //    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
-                //    break;
-                //case "PersonnelManagers":
-                //    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
-                //    break;
+                case "Managers":
+                    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
+                    break;
+                case "PersonnelManagers":
+                    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
+                    break;
                 default:
                     break;
             }            
@@ -1518,9 +1779,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
             // TODO: Добавить проверку завершенности всех предыдущих документов
-            entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            if (entity.IsFinal)
+            {
+                entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
+            }
         }
 
+        #region Deleted
         /*
         protected void SetOnsiteTrainingEntity(OnsiteTraining entity, OnsiteTrainingModel viewModel)
         {
@@ -1536,8 +1801,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Type = viewModel.Type;
         }
         */
+        #endregion
 
-        /*
         protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
         {
             entity.Bonus = viewModel.Bonus;
@@ -1545,7 +1810,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate.Managers = entity;
             entity.DailySalaryBasis = viewModel.DailySalaryBasis;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-            entity.Directorate = DepartmentDao.Load(viewModel.DirectorateId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
             entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
             entity.IsFront = viewModel.IsFront;
@@ -1556,12 +1820,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
-            entity.Schedule = viewModel.Schedule;
+            if (viewModel.ScheduleId.HasValue)
+            {
+                entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
+            }
             entity.WorkCity = viewModel.WorkCity;
         }
-        */
+        
 
-        /*
+        
         protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
         {
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
@@ -1589,8 +1856,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
         }
-        */
-
+        
         protected EmploymentCandidate GetCandidate(int userId)
         {
             return EmploymentCommonDao.GetCandidateByUserId(userId);
@@ -1609,7 +1875,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
         }
 
-        public AttachmentModel GetFileContext(int id)
+        public new AttachmentModel GetFileContext(int id)
         {
             RequestAttachment attachment = RequestAttachmentDao.Load(id);
             return new AttachmentModel
@@ -1632,7 +1898,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Approve
 
-        public bool ApproveBackgroundCheck(int userId, out string error)
+        public bool ApproveBackgroundCheck(int userId, bool? approvalStatus, out string error)
         {
             error = string.Empty;
 
@@ -1648,10 +1914,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity != null)
                 {
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
-                    {                        
-                        entity.ApprovalStatus = true;
+                    {
+                        entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
-                        entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                        if (approvalStatus == true)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                        }
+                        else if (approvalStatus == false)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.REJECTED;
+                        }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка согласования.";
@@ -1708,7 +1981,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Type = viewModel.Type;
 
                     entity.Approver = UserDao.Get(current.Id);
-                    entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_MANAGER;
+                    if (viewModel.IsComplete == true)
+                    {
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                    }
+                    else if (viewModel.IsComplete == false)
+                    {
+                        entity.Candidate.Status = EmploymentStatus.REJECTED;
+                    }
                     if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
                     {
                         error = "Ошибка сохранения.";
@@ -1757,7 +2037,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Candidate.Managers = entity;
                         entity.DailySalaryBasis = viewModel.DailySalaryBasis;
                         entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
-                        entity.Directorate = DepartmentDao.Load(viewModel.DirectorateId);
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
                         entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
                         entity.IsFront = viewModel.IsFront;
@@ -1772,7 +2051,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.WorkCity = viewModel.WorkCity;
 
                         //entity.Approver = UserDao.Get(current.Id);
-                        entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                        if (viewModel.ManagerApprovalStatus == true)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
+                            entity.ManagerApprovalStatus = true;
+                        }
+                        else if (viewModel.ManagerApprovalStatus == false)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.ManagerApprovalStatus = false;
+                        }
                         entity.ApprovingManager = entity.Candidate.AppointmentCreator;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
@@ -1799,7 +2087,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return false;
         }
 
-        public bool ApproveCandidateByHigherManager(int userId, out string error)
+        public bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error)
         {
             error = string.Empty;
 
@@ -1821,9 +2109,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
-                    {
-                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                    {                        
                         entity.ApprovingHigherManager = current;
+                        if (approvalStatus == true)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
+                            entity.HigherManagerApprovalStatus = true;
+                        }
+                        else if (approvalStatus == false)
+                        {
+                            entity.Candidate.Status = EmploymentStatus.REJECTED;
+                            entity.HigherManagerApprovalStatus = false;
+                        }
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
                             error = "Ошибка сохранения.";
@@ -1862,53 +2159,52 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     entity = EmploymentPersonnelManagersDao.Get(id.Value);
                 }
-                if (entity != null)
+                if (entity == null)
                 {
-                    if (entity.Candidate.Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
-                    {
-                        entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
-                        //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
-                        entity.AreaAddition = viewModel.AreaAddition;
-                        entity.AreaMultiplier = viewModel.AreaMultiplier;
-                        entity.Candidate = GetCandidate(viewModel.UserId);
-                        entity.Candidate.PersonnelManagers = entity;
-                        entity.Candidate.User.Grade = viewModel.Grade;
-                        entity.CompetenceAddition = viewModel.CompetenceAddition;
-                        entity.ContractDate = viewModel.ContractDate;
-                        entity.ContractNumber = viewModel.ContractNumber;
-                        entity.EmploymentDate = viewModel.EmploymentDate;
-                        entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
-                        entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
-                        entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
-                        entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
-                        entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
-                        entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
-                        entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
-                        entity.OverallExperienceDays = viewModel.OverallExperienceDays;
-                        entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
-                        entity.OverallExperienceYears = viewModel.OverallExperienceYears;
-                        entity.PersonalAccount = viewModel.PersonalAccount;
-                        entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
-                        entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+                    entity = new PersonnelManagers();
+                }
 
-                        //entity.Approver = UserDao.Get(current.Id);
-                        entity.Candidate.Status = EmploymentStatus.COMPLETE;
-                        if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
-                        {
-                            error = "Ошибка сохранения.";
-                            return false;
-                        }
-                        return true;
-                    }
-                    else
+                if (GetCandidate(viewModel.UserId).Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                {
+                    entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
+                    //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
+                    entity.AreaAddition = viewModel.AreaAddition;
+                    entity.AreaMultiplier = viewModel.AreaMultiplier;
+                    entity.Candidate = GetCandidate(viewModel.UserId);
+                    entity.Candidate.PersonnelManagers = entity;
+                    entity.Candidate.User.Grade = viewModel.Grade;
+                    entity.CompetenceAddition = viewModel.CompetenceAddition;
+                    entity.ContractDate = viewModel.ContractDate;
+                    entity.ContractNumber = viewModel.ContractNumber;
+                    entity.EmploymentDate = viewModel.EmploymentDate;
+                    entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
+                    entity.EmploymentOrderNumber = viewModel.EmploymentOrderNumber;
+                    entity.FrontOfficeExperienceAddition = viewModel.FrontOfficeExperienceAddition;
+                    entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
+                    entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
+                    entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+                    entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
+                    entity.OverallExperienceDays = viewModel.OverallExperienceDays;
+                    entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
+                    entity.OverallExperienceYears = viewModel.OverallExperienceYears;
+                    entity.PersonalAccount = viewModel.PersonalAccount;
+                    entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+                    entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+
+                    //entity.Approver = UserDao.Get(current.Id);
+                    entity.Candidate.Status = EmploymentStatus.COMPLETE;
+                    if (!EmploymentCommonDao.SaveOrUpdateDocument<PersonnelManagers>(entity))
                     {
-                        error = "Невозможно сохранить документ на данном этапе.";
+                        error = "Ошибка сохранения.";
+                        return false;
                     }
+                    return true;
                 }
                 else
                 {
-                    error = "Документ не найден.";
+                    error = "Невозможно сохранить документ на данном этапе.";
                 }
+
             }
             else
             {
@@ -1982,12 +2278,24 @@ namespace Reports.Presenters.UI.Bl.Impl
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
-                    if (creator.Level != 4)
-                        return false;
+                    /*if (creator.Level != 4)
+                        return false;*/
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
                 default:
                     return false;
+            }
+        }
+
+        public bool IsUnlimitedEditAvailable()
+        {
+            if ((AuthenticationService.CurrentUser.UserRole & UserRole.PersonnelManager) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

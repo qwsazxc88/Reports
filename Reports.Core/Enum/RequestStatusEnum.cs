@@ -58,13 +58,13 @@
         UnsignedVacationOrderScan = 154,
 
         // Employment documents
-
+        
         Photo = 201,
         INNScan = 202,
         SNILSScan = 203,
         DisabilityCertificateScan = 204,
 
-        PassportScan = 211,
+        InternalPassportScan = 211,
 
         HigherEducationDiplomaScan = 221,
         PostGraduateEducationDiplomaScan = 222,

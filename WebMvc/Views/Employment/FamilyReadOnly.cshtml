@@ -136,6 +136,15 @@
         }
     </tbody>
     </table>
+
+    @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.MarriageCertificateScanAttachmentFilename
+        </a>
+    }
+    
 </fieldset>
 
 <script type="text/javascript">

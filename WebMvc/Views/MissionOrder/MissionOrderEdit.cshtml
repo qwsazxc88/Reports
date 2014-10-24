@@ -90,7 +90,7 @@
         <tr>
             <td colspan="2">
                <input type="hidden" id="Targets" name="Targets" value="@Model.Targets" />
-                <table id="targetsTable"></table>
+               <table id="targetsTable"></table>
             </td>
         </tr>
          <tr>
@@ -112,7 +112,7 @@
                             @*Сумма, запрашиваемая<br/> сотрудником*@
                         </td>
                         <td>
-                            Отметить поле, если оплата<br/> со счета организации
+                            Заказ билетов/гостиницы<br/>через  секретариат
                         </td>
                     </tr>
                     <tr>
@@ -375,13 +375,13 @@
                             <tbody>
                                 {{#List}}
                                 <tr>
-                                    <td>
+                                    <td style="vertical-align:top;">
                                         Страна
                                     </td>
                                     <td>
                                         {{Country}} &nbsp;
-                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});"/>
-                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});"/>
+                                        <input type="button" value="Изменить" name="ChangeTargetBtn" class="targetBtn" onclick="editTarget({{TargetId}});" />
+                                        <input type="button" value="Удалить" name="DeleteTargetBtn" class="targetBtn" onclick="deleteTarget({{TargetId}});" />
                                     </td>
                                 </tr>    
                                <tr>

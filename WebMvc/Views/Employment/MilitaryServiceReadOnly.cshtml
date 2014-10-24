@@ -15,6 +15,13 @@
     <div class="formfield">
         @Html.LabelFor(m => m.MilitaryCardDate)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryCardDate)&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.MilitaryCardScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MilitaryCardScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.MilitaryCardScanAttachmentFilename
+            </a>
+        }
     </div>
     <div class="formfield clear">
         @Html.LabelFor(m => m.ReserveCategory)<br />
@@ -64,7 +71,15 @@
     <div class="formfield">
         @Html.LabelFor(m => m.MobilizationTicketNumber)<br />
         <span class="fakeFormField">@Html.DisplayFor(m => m.MobilizationTicketNumber)&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.MobilizationTicketScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MobilizationTicketScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.MobilizationTicketScanAttachmentFilename
+            </a>
+        }
     </div>
+    
     <fieldset class="bordered nomargin">
     <legend class="level2">Для форм Ф-6 и Ф-18</legend>
         <div class="formfield clear">

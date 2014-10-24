@@ -1,0 +1,1 @@
+ALTER TABLE ClearanceChecklistRole ADD DeleteDate DATETIME NULL

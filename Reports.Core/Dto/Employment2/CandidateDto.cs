@@ -14,8 +14,6 @@ namespace Reports.Core.Dto.Employment2
 
         public string Name { get; set; }
 
-        public string Directorate { get; set; }
-
         public string WorkCity { get; set; }
 
         public string Department { get; set; }
@@ -44,7 +42,7 @@ namespace Reports.Core.Dto.Employment2
 
         public string Disabilities { get; set; }
 
-        public int? Grade { get; set; }
+        public Int32 Grade { get; set; }
 
         public string Status { get; set; }
 

@@ -186,6 +186,10 @@
     <Compile Include="UI\ViewModel\Employment\AbstractEmploymentModel.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterFiltersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterInputModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\CreateCandidateModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintCreatedCandidateModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintContractFormModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintEmploymentOrderModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />

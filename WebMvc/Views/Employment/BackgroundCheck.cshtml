@@ -176,15 +176,25 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
+            
             <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="files" />
+                Выбрать скан для загрузки<br /><input type="file" name="PersonalDataProcessingScanFile" /> @Html.ValidationMessageFor(m => m.PersonalDataProcessingScanFile)
             </div>
-            <div class="formfield">
-                <br /><a href="">Открыть</a>
-            </div>
-            <div class="formfield">
-                <br /><a href="">Удалить</a>
-            </div>
+
+            @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.PersonalDataProcessingScanAttachmentFilename
+                    </a>
+                </div>
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.PersonalDataProcessingScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
+
             <div class="letter clear">
                 <p class="content">
                     Я, _______________ даю свое согласие ООО ИКБ &laquo;Совкомбанк&raquo; на обработку как с использованием средств автоматизации,
@@ -210,15 +220,25 @@
         @* ---- *@
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Рукописный текст о достоверности сведений</legend>
+            
             <div class="formfield">
-                Выбрать скан для загрузки<br /><input type="file" name="files" />
+                Выбрать скан для загрузки<br /><input type="file" name="InfoValidityScanFile" /> @Html.ValidationMessageFor(m => m.InfoValidityScanFile)
             </div>
-            <div class="formfield">
-                <br /><a href="">Открыть</a>
-            </div>
-            <div class="formfield">
-                <br /><a href="">Удалить</a>
-            </div>
+
+            @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.InfoValidityScanAttachmentFilename
+                    </a>
+                </div>
+                <div class="formfield">
+                    <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InfoValidityScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                               {<text>style="display:none"</text>}*@/>
+                </div>
+            }
+
             <div class="letter clear">                
                 <p class="content">
                     Я, _______________ заверяю, что мои ответы на вопросы анкеты являются полными, достоверными.
@@ -243,25 +263,6 @@
 }
 
 <hr />
-
-@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
-{
-    <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
-        {        
-            @Html.LabelFor(m => m.ApprovalStatus)
-            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
-        }
-        @if (Model.ApprovalStatus != null)
-        {
-            <span class="fakeFormField">@Model.ApproverName</span>
-        }
-        @if (Model.IsApproveBySecurityAvailable)
-        {
-            <button>Применить</button>
-        }
-    </div>
-}
 
 <div id="add-reference-dialog" title="Добавление рекомендации">
     @using (Html.BeginForm("BackgroundCheckAddReference", "Employment", FormMethod.Post))

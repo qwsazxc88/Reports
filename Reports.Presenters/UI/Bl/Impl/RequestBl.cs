@@ -71,6 +71,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDismissalDao dismissalDao;
         protected IDismissalCommentDao dismissalCommentDao;
 
+        protected IClearanceChecklistCommentDao clearanceChecklistCommentDao;
+
         protected ITimesheetCorrectionTypeDao timesheetCorrectionTypeDao;
         protected ITimesheetCorrectionDao timesheetCorrectionDao;
         protected ITimesheetCorrectionCommentDao timesheetCorrectionCommentDao;
@@ -241,6 +243,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(dismissalCommentDao); }
             set { dismissalCommentDao = value; }
+        }
+
+        public IClearanceChecklistCommentDao ClearanceChecklistCommentDao
+        {
+            get { return Validate.Dependency(clearanceChecklistCommentDao); }
+            set { clearanceChecklistCommentDao = value; }
         }
 
         protected IClearanceChecklistDao clearanceChecklistDao;
@@ -2138,11 +2146,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CreatorLogin = dismissal.Creator.Name;
                 model.DateCreated = dismissal.CreateDate.ToShortDateString();
                 SetFlagsState(dismissal.Id, user, dismissal, model);
-                // create CCL approvals if the Dismissal has been approved by the user and two managers
-                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser)
+                // create CCL approvals if the Dismissal has been approved by the user and two managers and CCL approvals have not been created before
+                if (model.IsApprovedByManager && model.IsApprovedByPersonnelManager && model.IsApprovedByUser && dismissal.ClearanceChecklistApprovals.Count == 0)
                 {
-                    var clearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles();
-                    foreach (var clearanceChecklistRole in clearanceChecklistRoles)
+                    var activeClearanceChecklistRoles = ClearanceChecklistDao.GetClearanceChecklistRoles().Where<ClearanceChecklistRole>(role => role.DeleteDate.HasValue);
+                    foreach (var clearanceChecklistRole in activeClearanceChecklistRoles)
                     {
                         dismissal.ClearanceChecklistApprovals.Add(new ClearanceChecklistApproval
                         {
@@ -2372,6 +2380,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
             model.EndDate = clearanceChecklist.EndDate;
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.ClearanceChecklist);
             SetUserInfoModel(user, model);
 
             return model;
@@ -5926,6 +5935,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.ClearanceChecklist:
+                    Dismissal clearanceChecklist = DismissalDao.Load(id);
+                    if ((clearanceChecklist.Comments != null) && (clearanceChecklist.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = clearanceChecklist.ClearanceChecklistComments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                     case (int)RequestTypeEnum.TimesheetCorrection:
                     TimesheetCorrection timesheetCorrection = TimesheetCorrectionDao.Load(id);
                     if ((timesheetCorrection.Comments != null) && (timesheetCorrection.Comments.Count() > 0))
@@ -6073,6 +6095,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         DismissalCommentDao.MergeAndFlush(dismissalComment);
+                        break;
+                    case (int)RequestTypeEnum.ClearanceChecklist:
+                        Dismissal clearanceChecklist = DismissalDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        ClearanceChecklistComment clearanceChecklistComment = new ClearanceChecklistComment
+                        {
+                            Comment = model.Comment,
+                            ClearanceChecklist = clearanceChecklist,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        ClearanceChecklistCommentDao.MergeAndFlush(clearanceChecklistComment);
                         break;
                     case (int)RequestTypeEnum.TimesheetCorrection:
                         TimesheetCorrection timesheetCorrection = TimesheetCorrectionDao.Load(model.DocumentId);
@@ -10039,6 +10073,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.OrderDates = FormatDate(entity.MissionOrder.BeginDate) + " - " +
                                FormatDate(entity.MissionOrder.EndDate);
                 //entity.MissionOrder.BeginDate.ToShortDateString() + " - " + entity.MissionOrder.EndDate.ToShortDateString();
+            model.AdditionalOrderDates = entity.AdditionalMissionOrder != null
+                ? FormatDate(entity.AdditionalMissionOrder.BeginDate) + " - " + FormatDate(entity.AdditionalMissionOrder.EndDate)
+                : string.Empty;
             model.DocumentNumber = entity.Number.ToString();
             model.DateCreated = entity.CreateDate.ToShortDateString();
             model.Hotels = entity.Hotels;

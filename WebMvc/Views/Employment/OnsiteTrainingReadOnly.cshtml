@@ -66,14 +66,9 @@
         
     <tr>
         <td colspan="2">
-            @if (Model.IsApproveByTrainerAvailable || Model.ApprovalStatus != null)
-            {        
-                @Html.LabelFor(m => m.ApprovalStatus)
-                @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, new { disabled = "disabled" })
-            }
             @if (Model.ApprovalStatus != null)
             {
-                <span class="fakeFormField">@Model.ApproverName</span>
+                <text>Тренер: </text><span class="fakeFormField">@Model.ApproverName</span>
             }
         </td>
     </tr>

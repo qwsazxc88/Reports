@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Reports.Core.Dto.Employment2;
+using System.Web;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
@@ -33,6 +34,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Дата выдачи"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
+
+        public HttpPostedFileBase WorkBookScanFile { get; set; }
+        public HttpPostedFileBase WorkBookSupplementScanFile { get; set; }
+        
+        public string WorkBookScanAttachmentFilename { get; set; }
+        public int WorkBookScanAttachmentId { get; set; }
+        public string WorkBookSupplementScanAttachmentFilename { get; set; }
+        public int WorkBookSupplementScanAttachmentId { get; set; }
 
         public ExperienceModel()
         {

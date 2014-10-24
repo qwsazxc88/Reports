@@ -11,7 +11,6 @@ namespace Reports.Core.Domain
         #region Properties
         public virtual EmploymentCandidate Candidate { get; set; }
         public virtual Position Position { get; set; } //ok
-        public virtual Department Directorate { get; set; } //ok
         public virtual Department Department { get; set; } //ok
         public virtual string EmploymentConditions { get; set; } //ok
         public virtual Schedule Schedule { get; set; } // OK?

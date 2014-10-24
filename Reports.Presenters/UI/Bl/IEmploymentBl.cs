@@ -19,11 +19,16 @@ namespace Reports.Presenters.UI.Bl
         ContactsModel GetContactsModel(int? userId = null);
         BackgroundCheckModel GetBackgroundCheckModel(int? userId = null);
         OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null);
+        ApplicationLetterModel GetApplicationLetterModel(int? userId = null);
         ManagersModel GetManagersModel(int? userId = null);
         PersonnelManagersModel GetPersonnelManagersModel(int? userId = null);
         RosterModel GetRosterModel(RosterFiltersModel filters);
+        CreateCandidateModel GetCreateCandidateModel();
+        PrintCreatedCandidateModel GetPrintCreatedCandidateModel(int id, out string error);
         SignersModel GetSignersModel();
-
+        PrintContractFormModel GetPrintContractFormModel(int userId);
+        PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        
         void LoadDictionaries(GeneralInfoModel model);
         void LoadDictionaries(PassportModel model);
         void LoadDictionaries(EducationModel model);
@@ -49,8 +54,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetPersonnelTypes();
         IEnumerable<SelectListItem> GetConscriptionStatuses();
         IEnumerable<SelectListItem> GetPositions();
-        IEnumerable<SelectListItem> GetDirectorates();
-        IEnumerable<SelectListItem> GetDepartments();
         IEnumerable<SelectListItem> GetSchedules();
         IEnumerable<SelectListItem> GetPersonalAccountContractors();
         IEnumerable<SelectListItem> GetAccessGroups();
@@ -58,20 +61,26 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetApprovalStatuses();
         IEnumerable<SelectListItem> GetOnsiteTrainingStatuses();
 
+        int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
             where TVM : AbstractEmploymentModel
             where TE : new();
+        bool ProcessSaving(ApplicationLetterModel model, out string error);
+        void SaveAttachments<TVM>(TVM viewModel)
+            where TVM : AbstractEmploymentModel;
 
-        bool ApproveBackgroundCheck (int userId, out string error);
+        bool ApproveBackgroundCheck (int userId, bool? approvalStatus, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
-        bool ApproveCandidateByHigherManager(int userId, out string error);
+        bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
+        bool IsUnlimitedEditAvailable();
+
         string GetStartView();
         AttachmentModel GetFileContext(int id);
-        bool DeleteAttachment(DeleteAttacmentModel model);
+        bool DeleteAttachment(DeleteAttacmentModel model);        
     }
 }

@@ -1,0 +1,26 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintCreatedCandidateModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Учетные данные кандидата</title>
+
+</head>
+<body>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.Login)
+        @Html.DisplayFor(m => m.Login)
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.Password)
+        @Html.DisplayFor(m => m.Password)
+    </div>
+    <script type="text/javascript">
+        print();
+    </script>
+</body>
+</html>
