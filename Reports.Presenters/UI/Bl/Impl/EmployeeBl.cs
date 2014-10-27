@@ -1579,6 +1579,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     bool? isCredit = new bool?();
                     if (graphicEntity != null)
                         isCredit = graphicEntity.IsCreditAvailable;
+
+                    bool? isFactCredit = new bool?();
+                    if (graphicEntity != null)
+                        isFactCredit = graphicEntity.IsFactCreditAvailable;
+
                     userDayList.Add(new TerraGraphicDayDto
                                         {
                                             Number = dayRequestsDto.Day.Day,
@@ -1587,6 +1592,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             Hours = hours,
                                             Id = graphicEntity == null ? 0 : graphicEntity.Id,
                                             IsCredits = isCredit.HasValue?isCredit.Value?"Да":"Нет":string.Empty,
+                                            IsFactCredits = isFactCredit.HasValue ? isFactCredit.Value ? "Да" : "Нет" : string.Empty,
                                             TerraPointId = graphicEntity == null || !graphicEntity.PointId.HasValue ? 0 : graphicEntity.PointId,
                                             TerraPointName = graphicEntity == null || !graphicEntity.PointId.HasValue ? string.Empty
                                                                  : (string.IsNullOrEmpty(graphicEntity.PointName)
@@ -1611,6 +1617,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     isHoliday = false,
                     StatCode = string.Empty,
                     IsCredits = "Кредиты",
+                    IsFactCredits = "Кредиты факт",
                     TerraPointName = "Точка план",
                     FactPointName = "Точка факт",
                     //TabelStatus = "Табель",

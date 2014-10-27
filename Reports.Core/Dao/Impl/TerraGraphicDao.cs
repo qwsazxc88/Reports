@@ -47,6 +47,7 @@ namespace Reports.Core.Dao.Impl
                                 ,FactHours
                                 ,FactPointId
                                 ,IsCreditAvailable
+                                ,IsFactCreditAvailable
                                 ,case when tp.Id is not null then tp.ShortName else N'' end  as PointName
                                 ,case when tp.Id is not null then tp.Name else N'' end  as PointTitle
                                 ,case when tpf.Id is not null then tpf.ShortName else N'' end  as FactPointName
@@ -66,6 +67,7 @@ namespace Reports.Core.Dao.Impl
               AddScalar("FactHours", NHibernateUtil.Decimal).
               AddScalar("FactPointId", NHibernateUtil.Int32).
               AddScalar("IsCreditAvailable", NHibernateUtil.Boolean).
+              AddScalar("IsFactCreditAvailable", NHibernateUtil.Boolean).
               AddScalar("PointName", NHibernateUtil.String).
               AddScalar("PointTitle", NHibernateUtil.String).
               AddScalar("FactPointName", NHibernateUtil.String).

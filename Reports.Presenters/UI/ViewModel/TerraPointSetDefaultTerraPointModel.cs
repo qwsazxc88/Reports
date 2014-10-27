@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Day { get; set; }
         public string Hours { get; set; }
         public int IsCreditAvailable { get; set; }
+        public int IsFactCreditAvailable { get; set; }
         public int FactPointId { get; set; }
         public string FactHours { get; set; }
 

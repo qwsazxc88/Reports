@@ -31,7 +31,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:100px">
+                    <td style="width:130px">
                         @Html.LabelFor(m => m.Credit):
                         <input type="hidden" id="IsCreditsEditable" name="IsCreditsEditable" value="@Model.IsCreditsEditable" />
                     </td>
@@ -67,6 +67,18 @@
                         @Html.DropDownListFor(model => model.FactEpLevel3ID, new SelectList(Model.FactEpLevel3, "ID", "Name"), new { style = "width:95%", onchange = "TerraGraphicsFactEpLevel3IDChange();" }) 
                     </td>
                 </tr>
+
+                @**@
+                <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
+                    <td style="width:100px">
+                        @Html.LabelFor(m => m.FactCredit):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.FactCredit, new SelectList(Model.Credits, "ID", "Name"), Model.IsCreditsEditable ? null : (object)new { disabled = "disabled" })
+                    </td>
+                </tr>
+                @**@
+
                 <tr @if (!Model.IsFactVisible) {<text>style="display:none"</text>}>
                     <td>
                         @Html.LabelFor(m => m.FactHours):
@@ -85,7 +97,7 @@
                          <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
                          <input type="hidden" id="IsDeleteEnable" name="IsDeleteEnable" value="@Model.IsDeleteEnable" />
                          <input type="hidden" id="IsPlanEditable" name="IsPlanEditable" value="@Model.IsPlanEditable" />
-                          <input type="hidden" id="IsPlanHoliday" name="IsPlanHoliday" value="@Model.IsPlanHoliday" />
+                         <input type="hidden" id="IsPlanHoliday" name="IsPlanHoliday" value="@Model.IsPlanHoliday" />
                          <input type="hidden" id="IsFactHoliday" name="IsFactHoliday" value="@Model.IsFactHoliday" />
                          <input type="hidden" id="IsFactVisible" name="IsFactVisible" value="@Model.IsFactVisible" />
                      </td>

@@ -7450,6 +7450,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 tg.Hours = string.IsNullOrEmpty(model.Hours) ? new decimal?() : model.TpHours; //model.TpHours;
                 tg.IsCreditAvailable = GetIsCreditAvailable(model.IsCreditAvailable);
+                tg.IsFactCreditAvailable = GetIsCreditAvailable(model.IsFactCreditAvailable);
                 tg.PointId = model.PointId == 0 ? new int?() : model.PointId;
                 tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
                 tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours;
@@ -7578,6 +7579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 TerraGraphic tg = TerraGraphicDao.Load(model.Id);
                 model.Credit = GetCredits(tg.IsCreditAvailable);
+                // model.FactCredit = GetCredits(tg.IsFactCreditAvailable);
                 model.Day = tg.Day.ToString("dd.MM.yyyy");
                 model.IsEditable = true;
                 //model.UserId = tg.UserId;
