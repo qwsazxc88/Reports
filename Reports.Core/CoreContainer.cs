@@ -492,6 +492,18 @@ namespace Reports.Core
             Register(Component.For(typeof(IHelpFaqDao)).
                        ImplementedBy(typeof(HelpFaqDao)).
                        LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServicePeriodDao)).
+                       ImplementedBy(typeof(HelpServicePeriodDao)).
+                       LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceProductionTimeDao)).
+                      ImplementedBy(typeof(HelpServiceProductionTimeDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceTransferMethodDao)).
+                      ImplementedBy(typeof(HelpServiceTransferMethodDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceTypeDao)).
+                      ImplementedBy(typeof(HelpServiceTypeDao)).
+                      LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

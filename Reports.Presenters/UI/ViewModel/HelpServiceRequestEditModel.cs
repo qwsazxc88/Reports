@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
@@ -20,26 +17,20 @@ namespace Reports.Presenters.UI.ViewModel
         public int TypeIdHidden { get; set; }
         public IList<IdNameDto> Types;
 
-        public HelpServiceRequestTypeModel TypeModel { get; set; }
+        [Display(Name = "Скан образца")]
+        public string Attachment { get; set; }
+        public int AttachmentId { get; set; }
+        public bool IsAttachmentVisible { get; set; }
 
-        public CommentsModel CommentsModel { get; set; }
-
-        public bool IsSaveAvailable { get; set; }
-        public bool IsEditable { get; set; }
-        public bool IsSendAvailable { get; set; }
-        public bool IsEndAvailable { get; set; }
-        public bool IsBeginWorkAvailable { get; set; }
-        public bool IsEndWorkAvailable { get; set; }
-    }
-    public class HelpServiceRequestTypeModel
-    {
         [Display(Name = "Требования к справке")]
         public string Requirements { get; set; }
+        public bool IsRequirementsVisible { get; set; }
 
         [Display(Name = "Период")]
         public int PeriodId { get; set; }
         public int PeriodIdHidden { get; set; }
         public IList<IdNameDto> Periods;
+        public bool IsPeriodVisible { get; set; }
 
         [Display(Name = "Срок изготовления")]
         public int ProductionTimeTypeId { get; set; }
@@ -50,5 +41,19 @@ namespace Reports.Presenters.UI.ViewModel
         public int TransferMethodTypeId { get; set; }
         public int TransferMethodTypeIdHidden { get; set; }
         public IList<IdNameDto> TransferMethodTypes;
+
+        [Display(Name = "Скан")]
+        public string ServiceAttachment { get; set; }
+        public int ServiceAttachmentId { get; set; }
+        public bool IsServiceAttachmentVisible { get; set; }
+
+        public CommentsModel CommentsModel { get; set; }
+
+        public bool IsSaveAvailable { get; set; }
+        public bool IsEditable { get; set; }
+        public bool IsSendAvailable { get; set; }
+        public bool IsEndAvailable { get; set; }
+        public bool IsBeginWorkAvailable { get; set; }
+        public bool IsEndWorkAvailable { get; set; }
     }
 }

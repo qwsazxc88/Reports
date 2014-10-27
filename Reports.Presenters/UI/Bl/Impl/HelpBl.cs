@@ -46,6 +46,30 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(roleDao); }
             set { roleDao = value; }
         }
+        protected IHelpServicePeriodDao helpServicePeriodDao;
+        public IHelpServicePeriodDao HelpServicePeriodDao
+        {
+            get { return Validate.Dependency(helpServicePeriodDao); }
+            set { helpServicePeriodDao = value; }
+        }
+        protected IHelpServiceProductionTimeDao helpServiceProductionTimeDao;
+        public IHelpServiceProductionTimeDao HelpServiceProductionTimeDao
+        {
+            get { return Validate.Dependency(helpServiceProductionTimeDao); }
+            set { helpServiceProductionTimeDao = value; }
+        }
+        protected IHelpServiceTransferMethodDao helpServiceTransferMethodDao;
+        public IHelpServiceTransferMethodDao HelpServiceTransferMethodDao
+        {
+            get { return Validate.Dependency(helpServiceTransferMethodDao); }
+            set { helpServiceTransferMethodDao = value; }
+        }
+        protected IHelpServiceTypeDao helpServiceTypeDao;
+        public IHelpServiceTypeDao HelpServiceTypeDao
+        {
+            get { return Validate.Dependency(helpServiceTypeDao); }
+            set { helpServiceTypeDao = value; }
+        }
         #endregion
 
         #region Service Requests List
@@ -248,7 +272,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void LoadDictionaries(HelpServiceRequestEditModel model)
         {
             model.CommentsModel = GetCommentsModel(model.Id, RequestTypeEnum.HelpServiceRequest);
-            
+            List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
+            model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
+            model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
+                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
+               ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+
+
         }
         protected void SetUserInfoModel(User user, HelpUserInfoModel model)
         {

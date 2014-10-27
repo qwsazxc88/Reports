@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
 using NHibernate;
 using System.Collections;
 using NHibernate.Criterion;
+using NHibernate.Linq;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
@@ -1092,4 +1094,17 @@ namespace Reports.Core.Dao.Impl
     //    }
 
     //}
+
+    public class DefaultDaoSorted<TEntity> : DefaultDao<TEntity>
+        where TEntity : IEntity<int>,ISortOrder
+    {
+        public DefaultDaoSorted(ISessionManager sessionManager)
+            : base(sessionManager)
+        {
+        }
+        public virtual List<TEntity> LoadAllSortedByOrder()
+        {
+            return Session.Query<TEntity>().OrderBy(a => a.SortOrder).ToList();
+        }
+    }
 }

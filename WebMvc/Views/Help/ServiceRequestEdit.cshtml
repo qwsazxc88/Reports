@@ -33,14 +33,33 @@
                     <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
                     <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
                     <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
+
+                    <input type="hidden" id="IsAttachmentVisible" name="IsAttachmentVisible" value="@Model.IsAttachmentVisible" />
+                    <input type="hidden" id="IsRequirementsVisible" name="IsRequirementsVisible" value="@Model.IsRequirementsVisible" />
+                    <input type="hidden" id="IsPeriodVisible" name="IsPeriodVisible" value="@Model.IsPeriodVisible" />
+                    <input type="hidden" id="IsServiceAttachmentVisible" name="IsServiceAttachmentVisible" value="@Model.IsServiceAttachmentVisible" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
                 </td>
             </tr>
-            @Html.Partial("ServiceRequestTypeView", Model.TypeModel)
-            @*<tr>
+             <tr id="ViewAttachmentTrId">
+                <td>@Html.LabelFor(model => model.Attachment):</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.Attachment))
+                    {
+                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                        <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                        <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                    }
+                </td>
+            </tr>
+            <tr id="AttachmentTrId">    
+                <td>Прикрепить скан образца</td>
+                <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            </tr>
+            <tr id="RequirementsTrId">
                 <td>
                     @Html.LabelFor(m => m.Requirements):
                 </td>
@@ -48,7 +67,7 @@
                    @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256 } : (object)new { @readonly = "read-only" }) 
                 </td>
             </tr>
-             <tr>
+             <tr  id="PeriodTrId">
                 <td>
                     @Html.LabelFor(m => m.PeriodId):
                 </td>
@@ -74,7 +93,22 @@
                     @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
                 </td>
-            </tr>*@
+            </tr>
+            <tr id="ViewServiceAttachmentTrId">
+                <td>@Html.LabelFor(model => model.ServiceAttachment):</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
+                    {
+                        <a class="ui-notify-close" href='@Url.Action("ViewServiceAttachment", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
+                        <input type="hidden" id="ServiceAttachment" name="ServiceAttachment" value="@Model.ServiceAttachment" />
+                        <input type="hidden" id="ServiceAttachmentId" name="ServiceAttachmentId" value="@Model.ServiceAttachmentId" />
+                    }
+                </td>
+            </tr>
+            <tr id="ServiceAttachmentTrId">    
+                <td>Прикрепить скан</td>
+                <td><input id="ServiceFileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            </tr>
              <tr>
                 <td colspan="2">
                    <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>

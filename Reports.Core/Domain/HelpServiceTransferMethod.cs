@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class HelpServiceTransferMethod : AbstractEntity //AbstractUsedEntity
+    public class HelpServiceTransferMethod : AbstractEntity, ISortOrder //AbstractUsedEntity
     {
         #region Constants
 

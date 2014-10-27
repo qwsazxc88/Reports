@@ -89,6 +89,10 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IHelpFaqDao.cs" />
+    <Compile Include="Dao\IHelpServicePeriodDao.cs" />
+    <Compile Include="Dao\IHelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\IHelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\IHelpServiceTypeDao.cs" />
     <Compile Include="Dao\IHelpVersionDao.cs" />
     <Compile Include="Dao\IAccessGroupDao.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
@@ -166,6 +170,10 @@
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
+    <Compile Include="Dao\Impl\HelpServicePeriodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTypeDao.cs" />
     <Compile Include="Dao\Impl\HelpVersionDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
@@ -1003,7 +1011,7 @@
     <EmbeddedResource Include="Domain\HelpServiceTransferMethod.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Domain\HelpServicePeriod.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpServicePeriod.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

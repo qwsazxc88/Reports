@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class HelpServicePeriod : AbstractEntity //AbstractUsedEntity
+    public class HelpServicePeriod : AbstractEntity, ISortOrder //AbstractUsedEntity
     {
         #region Constants
 
