@@ -278,8 +278,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
-
-
+            if(model.TypeId == 0)
+                model.TypeId = types.First().Id;
+            HelpServiceType type = types.Where(x => x.Id == model.TypeId).First();
+            SetDistionariesFlag(model,type);
+        }
+        protected void SetDistionariesFlag(HelpServiceRequestEditModel model,HelpServiceType type)
+        {
+            model.IsAttachmentVisible = type.IsAttachmentAvailable;
+            model.IsPeriodVisible = type.IsPeriodAvailable;
+            model.IsRequirementsVisible = type.IsRequirementsAvailable;
         }
         protected void SetUserInfoModel(User user, HelpUserInfoModel model)
         {
