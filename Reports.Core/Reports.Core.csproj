@@ -98,8 +98,10 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
@@ -159,6 +161,7 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
@@ -255,9 +258,9 @@
     <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
-    <Compile Include="Dao\Impl\СlearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
+    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -266,6 +269,7 @@
     <Compile Include="Dao\IRequestPrintFormDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
+    <Compile Include="Dao\IScheduleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
     <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
     <Compile Include="Dao\ISicklistCommentDao.cs" />
@@ -358,17 +362,12 @@
     <Compile Include="Domain\Employment2\OnsiteTraining.cs" />
     <Compile Include="Domain\Employment2\Managers.cs" />
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
-    <Compile Include="Domain\Employment2\FamilyRelationship.cs" />
-    <Compile Include="Domain\Employment2\MilitaryServiceRegistrationExpiration.cs" />
-    <Compile Include="Domain\Employment2\MilitaryPersonnelCategory.cs" />
-    <Compile Include="Domain\Employment2\MilitaryPersonnelType.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
     <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
     <Compile Include="Domain\EmploymentType.cs" />
-    <Compile Include="Domain\Employment2\Disability.cs" />
     <Compile Include="Domain\Employment2\FamilyMember.cs" />
     <Compile Include="Domain\Employment2\ForeignLanguage.cs" />
     <Compile Include="Domain\Employment2\NameChange.cs" />
@@ -974,9 +973,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
