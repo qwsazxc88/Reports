@@ -552,7 +552,7 @@ namespace WebMvc.Controllers
              else
              {
                  var model = RequestBl.GetClearanceChecklistEditModelByParentId((int)parentId, userId);
-                 return PartialView(model);
+                 return PartialView("ClearanceChecklistEditPartial", model);
              }
          }
 
@@ -1451,10 +1451,10 @@ namespace WebMvc.Controllers
 
          #region Comments
          [HttpGet]
-         public ActionResult RenderComments(int id,int typeId)
+         public ActionResult RenderComments(int id, int typeId, string addCommentText = null, bool hasParent = false)
          {
              //IContractRequest bo = Ioc.Resolve<IContractRequest>();
-             RequestCommentsModel model = RequestBl.GetCommentsModel(id,typeId);
+             RequestCommentsModel model = RequestBl.GetCommentsModel(id, typeId, null, hasParent);
              return PartialView("RequestCommentPartial", model);
          }
         

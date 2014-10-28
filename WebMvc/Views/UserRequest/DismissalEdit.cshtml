@@ -20,11 +20,11 @@
         </td>
     </tr>
      @if (Model.IsDeleted)
-    { 
+     { 
         <tr>
             <td colspan="2" style="color:Red">Заявка отклонена</td>
         </tr>
-    }
+     }
      <tr>
         <td style="width:205px">
             @Html.LabelFor(m => m.EndDate):
@@ -143,9 +143,9 @@
      <tr>
         <td colspan="2">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                              {<text>style="display:none"</text>}/>
             <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
-                                                                                    {<text>style="display:none"</text>}/>
+                                                                                                                     {<text>style="display:none"</text>}/>
             </div>
             <input type="button" value="Печать" name="PrintButton" onclick="window.location.href='@Url.Action("GetPrintForm", "UserRequest", new { id = Model.Id, typeId = 2 })';" 
                                                                 @if (!Model.IsPrintAvailable)
@@ -162,18 +162,19 @@
                         <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
                         <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
                         <input type="submit" value="Отправить на согласование" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
-                                                                        {<text>style="display:none"</text>}/>         
+                                                                                                                              {<text>style="display:none"</text>}/>         
                         <input type="hidden" id="IsApprovedForAll" name="IsApprovedForAll" value="@Model.IsApprovedForAll" />
                         <input type="hidden" id="IsApprovedForAllEnable" name="IsApprovedForAllEnable" value="@Model.IsApprovedForAllEnable" />
                         <input type="submit" value="За всех" onclick="return SetApprovedForAllAndValidateForm();" @if (!Model.IsApprovedForAllEnable)
-                                                                        {<text>style="display:none"</text>}/>             
+                                                                                                                  {<text>style="display:none"</text>}/>             
             </td>
     </tr>
     <tr>
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
                 @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser)
+                                                                                                           {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByUser)
                 @if (!Model.IsApprovedByUserEnable)
                 {
@@ -185,7 +186,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
                 @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager)
+                                                                                                                 {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByManager)
                 @if (!Model.IsApprovedByManagerEnable)
                 {
@@ -197,7 +199,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
                 @*@Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager)
+                                                                                                                                   {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsApprovedByPersonnelManager)
                 @if (!Model.IsApprovedByPersonnelManagerEnable)
                 {
@@ -209,7 +212,8 @@
             <td colspan="2">
                 <input type="hidden" id="IsPostedTo1CEnable" name="IsPostedTo1CEnable" value="@Model.IsPostedTo1CEnable" />
                 @*@Html.CheckBox("IsPostedTo1C", Model.IsPostedTo1C, Model.IsPostedTo1CEnable ? null : (object)new { disabled = "disabled" }) *@
-                <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C) {<text>checked="checked"</text>} />
+                <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C)
+                                                                                                   {<text>checked="checked"</text>} />
                 @Html.LabelFor(model => model.IsPostedTo1C)
                 @if (!Model.IsPostedTo1CEnable)
                 {

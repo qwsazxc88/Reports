@@ -121,7 +121,7 @@
                         <label>ОКТМО<br /><input type="text" id="oktmo" value="@Model.OKTMO" @(Model.IsBottomEnabled ? "" : "disabled")/></label>
                     </td>
                     <td style="vertical-align: bottom;">
-                        @if(Model.IsBottomEnabled)
+                        @if (Model.IsBottomEnabled)
                         {
                             <a class="save-bottom-fields-link" data-clearance-checklist-id="@Model.Id" href="">Сохранить</a>
                         }
@@ -136,8 +136,9 @@
                     <td colspan="2">
                         @{
                             ViewBag.AddCommentText = "Добавить замечание";
+                            ViewBag.HasParent = true;
                         }
-                        <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+                        <div id="ChildCommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
                     </td>
                 </tr>
             </table>
@@ -145,16 +146,6 @@
 
     </form>            
 }
-
-<div class="comment-wrap">
-    <table style="width:100%">
-        <tr>
-            <td colspan="2">
-                <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
-            </td>
-        </tr>
-    </table>
-</div>
 
 <script type="text/javascript">
     

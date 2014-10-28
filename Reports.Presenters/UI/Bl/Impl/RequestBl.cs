@@ -5829,17 +5829,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         #endregion
 
         #region Comments
-        public  RequestCommentsModel GetCommentsModel(int id,int typeId)
+        public  RequestCommentsModel GetCommentsModel(int id,int typeId, string addCommentText = null, bool hasParent = false)
         {
-            return SetCommentsModel(id,typeId);
+            return SetCommentsModel(id,typeId, hasParent:hasParent);
         }
-        protected RequestCommentsModel SetCommentsModel(int id,int typeId)
+        protected RequestCommentsModel SetCommentsModel(int id, int typeId, bool hasParent = false)
         {
             RequestCommentsModel commentModel = new RequestCommentsModel 
             { 
                 RequestId = id 
-                ,RequestTypeId = typeId 
-                ,Comments = new List<RequestCommentModel>() };
+                , RequestTypeId = typeId
+                , HasParent = hasParent
+                , Comments = new List<RequestCommentModel>() };
             if (id > 0)
             {
                 switch(typeId)
