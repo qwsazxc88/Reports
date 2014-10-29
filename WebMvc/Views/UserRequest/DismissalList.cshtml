@@ -9,7 +9,7 @@
 {
     <table style="width:100%">
     <tr>
-        <td colspan="2">
+        <td>
           <div class="filter-wrap">
             <table style="width:100%">
                 <tr>
@@ -103,6 +103,22 @@
             </table>
         </div>                          
         </td>
+        <td style="vertical-align: top; width: 25%;">
+            <div class="announcement" style="width: 100%;">
+                Пакет документов при увольнении:
+                <ol>
+                    <li>Заявление на увольнение</li>
+                    <li>Заявление на выдачу трудовой книжки (при необходимости)</li>
+                    <li>Приказ на увольнение</li>
+                    <li>Соглашение сторон (при необходимости)</li>
+                    <li>Карточка Т-2</li>
+                </ol>
+            </div>
+            <div class="announcement" style="width: 100%;">
+                Документы на увольнение для распечатывания, подписи и прикрепления сканов подписанных документов
+                будут доступны в день увольнения и на следующий день после увольнения до 14-00 Мск.
+            </div>
+        </td>
     </tr>
     <tr>
         <td colspan="2">
@@ -166,21 +182,22 @@
                     </th>
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
-                    </th>
-                    @if (Model.IsOriginalReceivedEditable)
-                    {
-                        <th>
-                            <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
+                    </th>                    
+                    <th>
+                        <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
+                        @if (Model.IsOriginalReceivedEditable)
+                        {
                             <input type="checkbox" id="setAll1" />
-                        </th>
-                    }
-                    @if (Model.IsPersonnelFileSentToArchiveEditable)
-                    {
-                        <th>
-                            <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
+                        }
+                    </th>
+                    
+                    <th>
+                        <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
+                        @if (Model.IsPersonnelFileSentToArchiveEditable)
+                        {
                             <input type="checkbox" id="setAll2" />
-                        </th>
-                    }
+                        }
+                    </th>
                    @* <th>
                         Дата окончания
                     </th>*@
@@ -203,23 +220,34 @@
                              <td>@doc.Number</td>
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
-                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>                            
-                            @if (Model.IsOriginalReceivedEditable)
-                            {
-                                <td style="text-align: center">
-                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })                                    
-                                </td>
-                            }
-                            @if (Model.IsPersonnelFileSentToArchiveEditable)
-                            {
-                                <td style="text-align: center">
+                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+
+                            <td style="text-align: center">
+                                @if(Model.IsOriginalReceivedEditable)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1", disabled = "disabled" })
+                                }
+                            </td>
+
+                            <td style="text-align: center">
+                                @if (Model.IsPersonnelFileSentToArchiveEditable)
+                                {
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2" })
-                                </td>
-                            }
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2", disabled = "disabled" })
+                                }
+                            </td>
+                            
                             @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
-                            i++;
+                                i++;
                     }
                 }
             </table>
