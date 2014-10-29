@@ -44,6 +44,7 @@ create table HelpServicePeriod (
   Name NVARCHAR(128) not null,
   TypeId INT not null,
   SortOrder INT not null,
+  PeriodMonth INT not null,
   constraint PK_HelpServicePeriod  primary key (Id)
 )
 

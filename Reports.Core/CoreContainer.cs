@@ -504,6 +504,12 @@ namespace Reports.Core
             Register(Component.For(typeof(IHelpServiceTypeDao)).
                       ImplementedBy(typeof(HelpServiceTypeDao)).
                       LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceRequestDao)).
+                     ImplementedBy(typeof(HelpServiceRequestDao)).
+                     LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceRequestCommentDao)).
+                    ImplementedBy(typeof(HelpServiceRequestCommentDao)).
+                    LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

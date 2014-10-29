@@ -70,6 +70,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpServiceTypeDao); }
             set { helpServiceTypeDao = value; }
         }
+        protected IHelpServiceRequestDao helpServiceRequestDao;
+        public IHelpServiceRequestDao HelpServiceRequestDao
+        {
+            get { return Validate.Dependency(helpServiceRequestDao); }
+            set { helpServiceRequestDao = value; }
+        }
+        protected IHelpServiceRequestCommentDao helpServiceRequestCommentDao;
+        public IHelpServiceRequestCommentDao HelpServiceRequestCommentDao
+        {
+            get { return Validate.Dependency(helpServiceRequestCommentDao); }
+            set { helpServiceRequestCommentDao = value; }
+        }
         #endregion
 
         #region Service Requests List
@@ -157,21 +169,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     throw new ValidationException(StrNoUser);
             }
+            HelpServiceRequest entity = null;
+            if (id != 0)
+                entity = HelpServiceRequestDao.Load(id);
             HelpServiceRequestEditModel model = new HelpServiceRequestEditModel
             {
                 Id = id,
-                UserId = id == 0 ? userId.Value : 0 //entity.User.Id
+                UserId = id == 0 ? userId.Value : entity.User.Id
             };
             User user = UserDao.Load(model.UserId);
-            //MissionOrder entity = null;
-            //if (id != 0)
-            //{
-            //    entity = MissionOrderDao.Load(id);
-            //    if (entity == null)
-            //        throw new ValidationException(string.Format("Не найден приказ на командировку (id {0}) в базе данных", id));
-            //    if (entity.IsAdditional)
-            //        throw new ValidationException("Редактирование изменения приказа на командировку невозможно через форму приказа.");
-            //}
+            
             //MissionOrderEditModel model = new MissionOrderEditModel
             //{
             //    Id = id,
@@ -288,6 +295,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsAttachmentVisible = type.IsAttachmentAvailable;
             model.IsPeriodVisible = type.IsPeriodAvailable;
             model.IsRequirementsVisible = type.IsRequirementsAvailable;
+            if (type.IsPeriodAvailable)
+                model.Periods = HelpServicePeriodDao.LoadForPeriodSortedByOrder(type.Id).
+                    ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            else
+                model.Periods = new List<IdNameDto>();
         }
         protected void SetUserInfoModel(User user, HelpUserInfoModel model)
         {
@@ -324,19 +336,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return commentModel;
             switch (typeId)
             {
-                //case RequestTypeEnum.Appointment:
-                //    Appointment entity = AppointmentDao.Load(id);
-                //    if ((entity.Comments != null) && (entity.Comments.Count() > 0))
-                //    {
-                //        commentModel.Comments = entity.Comments.OrderBy(x => x.DateCreated).ToList().
-                //            ConvertAll(x => new RequestCommentModel
-                //            {
-                //                Comment = x.Comment,
-                //                CreatedDate = x.DateCreated.ToString(),
-                //                Creator = x.User.FullName,
-                //            });
-                //    }
-                //    break;
+                case RequestTypeEnum.HelpServiceRequest:
+                    HelpServiceRequest entity = HelpServiceRequestDao.Load(id);
+                    if ((entity.Comments != null) && (entity.Comments.Count() > 0))
+                    {
+                        commentModel.Comments = entity.Comments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                 //case RequestTypeEnum.AppointmentReport:
                 //    AppointmentReport rep = AppointmentReportDao.Load(id);
                 //    if ((rep.Comments != null) && (rep.Comments.Count() > 0))
@@ -363,17 +375,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
                 switch (type)
                 {
-                    //case RequestTypeEnum.Appointment:
-                    //    Appointment entity = AppointmentDao.Load(model.DocumentId);
-                    //    AppointmentComment comment = new AppointmentComment
-                    //    {
-                    //        Comment = model.Comment,
-                    //        Appointment = entity,
-                    //        DateCreated = DateTime.Now,
-                    //        User = user,
-                    //    };
-                    //    AppointmentCommentDao.MergeAndFlush(comment);
-                    //    break;
+                    case RequestTypeEnum.HelpServiceRequest:
+                        HelpServiceRequest entity = HelpServiceRequestDao.Load(model.DocumentId);
+                        HelpServiceRequestComment comment = new HelpServiceRequestComment
+                        {
+                            Comment = model.Comment,
+                            Request = entity,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        HelpServiceRequestCommentDao.MergeAndFlush(comment);
+                        break;
                     //case RequestTypeEnum.AppointmentReport:
                     //    AppointmentReport rep = AppointmentReportDao.Load(model.DocumentId);
                     //    AppointmentReportComment comm = new AppointmentReportComment

@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         public virtual string Name { get; set; }
         public virtual int SortOrder { get; set; }
         public virtual HelpServiceType Type { get; set; }
+        public virtual int PeriodMonth { get; set; }
 
         #endregion
 
