@@ -7,17 +7,17 @@
     <version name="Version" column= "Version"/>
 
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_Candidate_User" index="Candidate_User"  not-null="false" cascade="save-update" />
-    <many-to-one name="GeneralInfo" class="GeneralInfo" column="GeneralInfoId" foreign-key="FK_Candidate_GeneralInfo" index="Candidate_GeneralInfo"  not-null="false"/>
-    <many-to-one name="Passport" class="Passport" column="PassportId" foreign-key="FK_Candidate_Passport" index="Candidate_Passport"  not-null="false"/>
-    <many-to-one name="Education" class="Education" column="EducationId" foreign-key="FK_Candidate_Education" index="Candidate_Education"  not-null="false"/>
-    <many-to-one name="Family" class="Family" column="FamilyId" foreign-key="FK_Candidate_Family" index="Candidate_Family"  not-null="false"/>
-    <many-to-one name="MilitaryService" class="MilitaryService" column="MilitaryServiceId" foreign-key="FK_Candidate_MilitaryService" index="Candidate_MilitaryService"  not-null="false"/>
-    <many-to-one name="Experience" class="Experience" column="ExperienceId" foreign-key="FK_Candidate_Experience" index="Candidate_Experience"  not-null="false"/>
-    <many-to-one name="Contacts" class="Contacts" column="ContactsId" foreign-key="FK_Candidate_Contacts" index="Candidate_Contacts"  not-null="false"/>
-    <many-to-one name="BackgroundCheck" class="BackgroundCheck" column="BackgroundCheckId" foreign-key="FK_Candidate_BackgroundCheck" index="Candidate_BackgroundCheck"  not-null="false"/>
-    <many-to-one name="OnsiteTraining" class="OnsiteTraining" column="OnsiteTrainingId" foreign-key="FK_Candidate_OnsiteTraining" index="Candidate_OnsiteTraining"  not-null="false"/>
-    <many-to-one name="Managers" class="Managers" column="ManagersId" foreign-key="FK_Candidate_Managers" index="Candidate_Managers"  not-null="false"/>
-    <many-to-one name="PersonnelManagers" class="PersonnelManagers" column="PersonnelManagersId" foreign-key="FK_Candidate_PersonnelManagers" index="Candidate_PersonnelManagers"  not-null="false"/>
+    <many-to-one name="GeneralInfo" class="GeneralInfo" column="GeneralInfoId" foreign-key="FK_Candidate_GeneralInfo" index="Candidate_GeneralInfo"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Passport" class="Passport" column="PassportId" foreign-key="FK_Candidate_Passport" index="Candidate_Passport"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Education" class="Education" column="EducationId" foreign-key="FK_Candidate_Education" index="Candidate_Education"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Family" class="Family" column="FamilyId" foreign-key="FK_Candidate_Family" index="Candidate_Family"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="MilitaryService" class="MilitaryService" column="MilitaryServiceId" foreign-key="FK_Candidate_MilitaryService" index="Candidate_MilitaryService"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Experience" class="Experience" column="ExperienceId" foreign-key="FK_Candidate_Experience" index="Candidate_Experience"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Contacts" class="Contacts" column="ContactsId" foreign-key="FK_Candidate_Contacts" index="Candidate_Contacts"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="BackgroundCheck" class="BackgroundCheck" column="BackgroundCheckId" foreign-key="FK_Candidate_BackgroundCheck" index="Candidate_BackgroundCheck"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="OnsiteTraining" class="OnsiteTraining" column="OnsiteTrainingId" foreign-key="FK_Candidate_OnsiteTraining" index="Candidate_OnsiteTraining"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="Managers" class="Managers" column="ManagersId" foreign-key="FK_Candidate_Managers" index="Candidate_Managers"  not-null="false" cascade="all-delete-orphan" />
+    <many-to-one name="PersonnelManagers" class="PersonnelManagers" column="PersonnelManagersId" foreign-key="FK_Candidate_PersonnelManagers" index="Candidate_PersonnelManagers"  not-null="false" cascade="all-delete-orphan" />
     <property name="Status" not-null="false"/>
     <property name="QuestionnaireDate" not-null="false"/>
     <many-to-one name="AppointmentCreator" class="User" column="AppointmentCreatorId" foreign-key="FK_Candidate_AppointmentCreator" index="Candidate_AppointmentCreator"  not-null="false"/>
