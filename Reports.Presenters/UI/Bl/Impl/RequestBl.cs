@@ -9030,20 +9030,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ChiefFio = entity.AcceptChief.FullName + " " +
                     entity.ChiefDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
         }
-        protected void SetStaticFields(MissionOrderEditModel model, MissionOrder entity)
-        {
-            if(entity == null)
-            {
-                Log.Warn("SetStaticFields: entity == null");
-                return;
-            }
-            if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
-                model.ManagerFio = entity.AcceptManager.FullName + " " +
-                    entity.ManagerDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
-            if (entity.AcceptChief != null && entity.ChiefDateAccept.HasValue)
-                model.ChiefFio = entity.AcceptChief.FullName + " " +
-                    entity.ChiefDateAccept.Value.ToShortDateString();// +", " + entity.AcceptAccountant.Email;
-        }
         protected void LoadGraids(MissionOrderEditModel model, int gradeId,MissionOrder entity,DateTime gradeDate)
         {
             //DateTime gradeDate = DateTime.Parse(model.DateCreated);
