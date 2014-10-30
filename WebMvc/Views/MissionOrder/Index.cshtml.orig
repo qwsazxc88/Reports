@@ -266,6 +266,42 @@
                         </th>
                     }
                     <th>
+<<<<<<< HEAD
+                        <div id="sort19" style="min-width:70px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort23" style="min-width:130px"><a href="#" onclick = "SortChanged(23);">Цель <br/>командировки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                    </th>
+                     <th>
+                        <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                    </th>
+                     <th>
+                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                    </th>
+                    <th>
+                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                    </th>
+                     <th>
+=======
+>>>>>>> master
                         <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
                     </th>                    
                     <th>
@@ -329,6 +365,20 @@
                                     <a class="ui-notify-close" href='@Url.Action("AdditionalMissionOrderEdit", new { id = doc.AdditionalOrderId })' style="cursor:hand">@doc.AdditionalOrderNumber</a>
                                 }
                             </td>
+<<<<<<< HEAD
+                            <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>
+                            <td>@doc.MissionGoal</td>
+                            <td>@doc.MissionType</td>
+                            <td>@doc.MissionKind</td>
+                            <td>@doc.Target</td>
+                            <td>@doc.Grade</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@doc.HasMission</td>
+                            <td>@doc.NeedSecretary</td>
+                            <td>@doc.State</td>
+=======
                             @if (!Model.IsCorrectionsOnlyModeOn)
                             {
                                 <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>                            
@@ -344,6 +394,7 @@
                                 <td>@doc.NeedSecretary</td>
                             }
                             <td>@doc.State</td>                            
+>>>>>>> master
                             <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
                             <td>
                                 @if (doc.AdditionalOrderId != null)

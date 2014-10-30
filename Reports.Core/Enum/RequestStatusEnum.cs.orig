@@ -52,9 +52,7 @@
         ChildVacationOrderScan = 105,
         MissionOrderScan = 118,
 
-        UnsignedDismissalOrderScan = 153,
-        UnsignedVacationOrderScan = 154,
-
+<<<<<<< HEAD
         // Employment documents
 
         Photo = 201,
@@ -86,6 +84,10 @@
 
         // ? = 281,
         // ? = 282,
+=======
+        UnsignedDismissalOrderScan = 153,
+        UnsignedVacationOrderScan = 154,
+>>>>>>> master
 
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)

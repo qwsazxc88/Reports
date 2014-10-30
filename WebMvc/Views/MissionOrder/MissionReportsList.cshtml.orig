@@ -215,9 +215,12 @@
                         <div id="sort10" style="min-width:120px"><a href="#"  onclick = "SortChanged(10);">Превышение  <br/>по G</a></div>
                     </th>
                     <th>
+<<<<<<< HEAD
+=======
                         <div id="sort18" style="min-width:120px"><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
                     </th>
                     <th>
+>>>>>>> master
                         <div id="sort16" style="min-width:80px"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
                     </th>
                    @*  <th>
@@ -274,7 +277,10 @@
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+<<<<<<< HEAD
+=======
                             <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
+>>>>>>> master
                             <td>@RequestBl.FormatSum(@doc.Saldo)</td>
                             
                           @*  <td>@doc.HasMission</td>

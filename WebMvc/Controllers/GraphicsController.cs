@@ -143,13 +143,14 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Manager)]
-        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits,
+        public ContentResult SaveTerraPoint(int pointId, int id, int userId, string day, string hours, int credits, int factCredits,
             int factPointId, string factHours)
         {
             TerraPointSaveModel model = new TerraPointSaveModel
                                             {
                                                 Id = id,
                                                 IsCreditAvailable = credits,
+                                                IsFactCreditAvailable = factCredits,
                                                 Day = day,
                                                 Hours = hours,
                                                 PointId = pointId,

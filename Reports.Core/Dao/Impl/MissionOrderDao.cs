@@ -332,7 +332,7 @@ namespace Reports.Core.Dao.Impl
 
                     string sqlQueryPartTemplate =
                         @" select distinct emp.Id from dbo.Users emp
-                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
+                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 and manU.IsActive = 1
                                              inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
                                              ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
                                              inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
@@ -384,7 +384,7 @@ namespace Reports.Core.Dao.Impl
                              inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
                              inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}
                              where not exists (select Id from dbo.Users empMan1 where
-                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R')";
+                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R' and empMan1.IsActive = 1)";
                             if (currentUser.Level == 5)
                             {
                                 sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);                                
@@ -726,6 +726,14 @@ namespace Reports.Core.Dao.Impl
             const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
                                     where [MainOrderId] = :id and [NeedToAcceptByChief] = 1
                                     ";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                SetInt32("id", id);
+            return query.UniqueResult<int>() > 0;
+        }
+        public virtual bool CheckAnyAdditionalOrdersExists(int id)
+        {
+            const string sqlQuery = @" select count(Id) from [dbo].[MissionOrder]
+                                    where [MainOrderId] = :id";
             IQuery query = Session.CreateSQLQuery(sqlQuery).
                 SetInt32("id", id);
             return query.UniqueResult<int>() > 0;

@@ -427,9 +427,12 @@ namespace Reports.Core.Dao.Impl
                 case 17:
                     orderBy = @" order by Position";
                     break;
+<<<<<<< HEAD
+=======
                 case 18:
                     orderBy = @" order by UserSumReceived";
                     break;
+>>>>>>> master
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;

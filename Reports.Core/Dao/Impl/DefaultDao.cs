@@ -790,7 +790,7 @@ namespace Reports.Core.Dao.Impl
         }
 
         protected virtual int GetRequestsCountForType(DateTime beginDate, DateTime endDate, RequestTypeEnum type,
-                int userId, UserRole userRole,int vacationId)
+                int userId, UserRole userRole, int requestId)
         {
             string sqlQuery =
                 @"select count(Id)";
@@ -821,8 +821,8 @@ namespace Reports.Core.Dao.Impl
                                  (:beginDate between v.BeginDate and v.EndDate) or
                                  (:endDate between v.BeginDate and v.EndDate))
                           and v.DeleteDate is null";
-            if (type == RequestTypeEnum.Vacation || type == RequestTypeEnum.ChildVacation)
-                sqlQuery += string.Format(" and v.Id != {0} ",vacationId);
+            if (type == RequestTypeEnum.Vacation || type == RequestTypeEnum.ChildVacation || type == RequestTypeEnum.Sicklist)
+                sqlQuery += string.Format(" and v.Id != {0} ", requestId);
             switch (userRole)
             {
                 case UserRole.Employee:

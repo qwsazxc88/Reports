@@ -9014,6 +9014,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (missionOrder.DeleteDate.HasValue)
                     model.IsDeleted = true;
                 SetStaticFields(model, missionOrder);
+<<<<<<< HEAD
+=======
             }
         }
         protected void SetStaticFields(MissionOrderEditModel model, MissionOrder entity)
@@ -9022,6 +9024,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Log.Warn("SetStaticFields: entity == null");
                 return;
+>>>>>>> master
             }
             if (entity.AcceptManager != null && entity.ManagerDateAccept.HasValue)
                 model.ManagerFio = entity.AcceptManager.FullName + " " +

@@ -34,9 +34,12 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Номер приказа")]
         public string Number { get; set; }
 
+<<<<<<< HEAD
+=======
         [Display(Name = "Режим просмотра изменений")]
         public bool IsCorrectionsOnlyModeOn { get; set; }
 
+>>>>>>> master
         public bool IsAddAvailable { get; set; }
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
