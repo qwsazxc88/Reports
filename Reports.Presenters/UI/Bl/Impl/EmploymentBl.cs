@@ -408,10 +408,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                if (model.Father == null)
+                /*if (model.Father == null)
                 {
                     model.Father = new FamilyMemberDto();
-                }
+                }*/
 
                 model.Mother = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
                     .ToList<FamilyMember>()
@@ -425,10 +425,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                if (model.Mother == null)
+                /*if (model.Mother == null)
                 {
                     model.Mother = new FamilyMemberDto();
-                }
+                }*/
 
                 model.Spouse = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
                     .ToList<FamilyMember>()
@@ -445,7 +445,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.Spouse == null)
                 {
                     model.IsMarried = false;
-                    model.Spouse = new FamilyMemberDto();
+                    //model.Spouse = new FamilyMemberDto();
                 }
                 else
                 {
@@ -1662,42 +1662,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Если информация об отце заносится в БД впервые
             if (viewModel.Father != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER))
             {
-                FamilyMember father = SetFamilyMember(new FamilyMember(), viewModel.Father);
+                FamilyMember father = SetFamilyMember(new FamilyMember(), FamilyRelationship.FATHER, viewModel.Father);
                 entity.FamilyMembers.Add(father);
             }
             // Если требуется обновление информации об отце
             else if (viewModel.Father != null)
             {
                 FamilyMember father = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.FATHER);
-                SetFamilyMember(father, viewModel.Father);
+                SetFamilyMember(father, FamilyRelationship.FATHER, viewModel.Father);
             }
 
             if (viewModel.Mother != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER))
             {
-                FamilyMember mother = SetFamilyMember(new FamilyMember(), viewModel.Mother);
+                FamilyMember mother = SetFamilyMember(new FamilyMember(), FamilyRelationship.MOTHER, viewModel.Mother);
                 entity.FamilyMembers.Add(mother);
             }
             else if (viewModel.Mother != null)
             {
                 FamilyMember mother = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.MOTHER);
-                SetFamilyMember(mother, viewModel.Mother);
+                SetFamilyMember(mother, FamilyRelationship.MOTHER, viewModel.Mother);
             }
 
             if (viewModel.IsMarried && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE))
             {
-                FamilyMember spouse = SetFamilyMember(new FamilyMember(), viewModel.Spouse);
+                FamilyMember spouse = SetFamilyMember(new FamilyMember(), FamilyRelationship.SPOUSE, viewModel.Spouse);
                 entity.FamilyMembers.Add(spouse);
             }
-            else if (viewModel.Mother != null)
+            else if (viewModel.Spouse != null)
             {
                 FamilyMember spouse = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.SPOUSE);
-                SetFamilyMember(spouse, viewModel.Spouse);
+                SetFamilyMember(spouse, FamilyRelationship.SPOUSE, viewModel.Spouse);
             }
 
             if (viewModel.Children != null && viewModel.Children.Count > entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD).Count())
             {
                 int lastIndex = viewModel.Children.Count - 1;
-                entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), viewModel.Children[lastIndex]));
+                entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), FamilyRelationship.CHILD, viewModel.Children[lastIndex]));
             }
 
             entity.IsFinal = !viewModel.IsDraft;
@@ -1717,7 +1717,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return result;
         }
 
-        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyMemberDto data)
+        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
         {
             familyMember.Contacts = data.Contacts;
             familyMember.DateOfBirth = data.DateOfBirth;
@@ -1725,6 +1725,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             familyMember.PassportData = data.PassportData;
             familyMember.PlaceOfBirth = data.PlaceOfBirth;
             familyMember.WorksAt = data.WorksAt;
+            familyMember.RelationshipId = relationship;
             return familyMember;
         }
 

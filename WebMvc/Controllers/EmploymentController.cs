@@ -277,7 +277,7 @@ namespace WebMvc.Controllers
             EmploymentBl.ProcessSaving<FamilyModel, Family>(model, out error);
 
             model = EmploymentBl.GetFamilyModel();
-            return View("Family", model);
+            return Json(model.Children);
         }
 
         // Military Service
@@ -338,7 +338,7 @@ namespace WebMvc.Controllers
             EmploymentBl.ProcessSaving<ExperienceModel, Experience>(model, out error);
 
             model = EmploymentBl.GetExperienceModel();
-            return View("Experience", model);
+            return Json(model.ExperienceItems);
         }
 
         // Contacts
@@ -400,7 +400,7 @@ namespace WebMvc.Controllers
             EmploymentBl.ProcessSaving<BackgroundCheckModel, BackgroundCheck>(model, out error);
 
             model = EmploymentBl.GetBackgroundCheckModel();
-            return View("BackgroundCheck", model);
+            return Json(model.References);
         }
 
         [HttpPost]

@@ -15,56 +15,55 @@
         
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.ExperienceItems)</legend>
-            @if (Model.ExperienceItems.Count > 0)
-            {
                 <div id="experience-items-container">
                     <table class="grid">
-                    
-                        <tr>
-                            <th>
-                                @Html.LabelFor(m => m.ExperienceItems[0].BeginningDate)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.ExperienceItems[0].EndDate)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.ExperienceItems[0].Company)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.ExperienceItems[0].Position)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
-                            </th> 
-                        </tr>
-                    
-                        @for (var i = 0; i < Model.ExperienceItems.Count; i++)
-                        {
+                        <thead>
                             <tr>
-                                <td>
-                                    @(Model.ExperienceItems[i].BeginningDate.HasValue ? @Model.ExperienceItems[i].BeginningDate.Value.ToShortDateString() : string.Empty)
-                                </td>
-                                <td>
-                                    @(Model.ExperienceItems[i].EndDate.HasValue ? @Model.ExperienceItems[i].EndDate.Value.ToShortDateString() : string.Empty)
-                                </td>
-                                <td>
-                                    @Model.ExperienceItems[i].Company
-                                </td>
-                                <td>
-                                    @Model.ExperienceItems[i].Position
-                                </td>
-                                <td>
-                                    @Model.ExperienceItems[i].CompanyContacts
-                                </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <th>
+                                    @Html.LabelFor(m => m.ExperienceItems[0].BeginningDate)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.ExperienceItems[0].EndDate)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.ExperienceItems[0].Company)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.ExperienceItems[0].Position)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
+                                </th> 
                             </tr>
-                        }                    
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.ExperienceItems.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @(Model.ExperienceItems[i].BeginningDate.HasValue ? @Model.ExperienceItems[i].BeginningDate.Value.ToShortDateString() : string.Empty)
+                                    </td>
+                                    <td>
+                                        @(Model.ExperienceItems[i].EndDate.HasValue ? @Model.ExperienceItems[i].EndDate.Value.ToShortDateString() : string.Empty)
+                                    </td>
+                                    <td>
+                                        @Model.ExperienceItems[i].Company
+                                    </td>
+                                    <td>
+                                        @Model.ExperienceItems[i].Position
+                                    </td>
+                                    <td>
+                                        @Model.ExperienceItems[i].CompanyContacts
+                                    </td>
+                                    @*<td id="delete-foreign-language">
+                                        <a href="" data-index=@i>Удалить</a>
+                                    </td>*@
+                                </tr>
+                            }
+                        </tbody>
 
                     </table>
                 </div>
-            }
             <a href="" id="add-experience-item">Добавить новую запись</a>
         </fieldset>
 
@@ -213,7 +212,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-experience-item-dialog form').submit();
+                    processAddExperienceItem();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -221,6 +220,28 @@
                 }
             }
         });
+
+        var processAddExperienceItem = function()
+        {
+            var url = "@Url.Action("ExperienceAddExperienceItem", "Employment")";
+            var dataToSend = $("#add-experience-item-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $tbody = $("#experience-items-container>table>tbody")
+                $tbody.empty();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $tbody.append(
+                        "<tr><td>" +
+                        convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+                        convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+                        dataReceived[i].Company + "</td><td>" +
+                        dataReceived[i].Position + "</td><td>" +
+                        dataReceived[i].CompanyContacts + 
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
 
         $("#add-experience-item").click(function (e) {
             $addExperienceItemDialog.dialog("open");
