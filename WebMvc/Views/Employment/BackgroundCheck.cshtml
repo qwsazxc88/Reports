@@ -91,60 +91,62 @@
             {
                 <div id="reference-container">
                     <table class="grid">
-                    
-                        <tr>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].LastName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].FirstName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Patronymic)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].WorksAt)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Position)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Phone)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Relation)
-                            </th>
-                        </tr>
-                    
-                        @for (var i = 0; i < Model.References.Count; i++)
-                        {
+                        <thead>
                             <tr>
-                                <td>
-                                    @Model.References[i].LastName
-                                </td>
-                                <td>
-                                    @Model.References[i].FirstName
-                                </td>
-                                <td>
-                                    @Model.References[i].Patronymic
-                                </td>
-                                <td>
-                                    @Model.References[i].WorksAt
-                                </td>
-                                <td>
-                                    @Model.References[i].Position
-                                </td>
-                                <td>
-                                    @Model.References[i].Phone
-                                </td>
-                                <td>
-                                    @Model.References[i].Relation
-                                </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].LastName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].FirstName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Patronymic)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].WorksAt)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Position)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Phone)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Relation)
+                                </th>
                             </tr>
-                        }                    
+                        </thead>  
+                        <tbody>                 
+                            @for (var i = 0; i < Model.References.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.References[i].LastName
+                                    </td>
+                                    <td>
+                                        @Model.References[i].FirstName
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Patronymic
+                                    </td>
+                                    <td>
+                                        @Model.References[i].WorksAt
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Position
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Phone
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Relation
+                                    </td>
+                                    @*<td id="delete-foreign-language">
+                                        <a href="" data-index=@i>Удалить</a>
+                                    </td>*@
+                                </tr>
+                            } 
+                        </tbody>                    
 
                     </table>
                 </div>
@@ -297,7 +299,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-reference-dialog form').submit();
+                    processAddNameChange();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -305,6 +307,30 @@
                 }
             }
         });
+
+        var processAddNameChange = function()
+        {
+            var url = "@Url.Action("BackgroundCheckAddReference", "Employment")";
+            var dataToSend = $("#add-reference-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $tbody = $("#reference-container>table>tbody")
+                $tbody.empty();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $tbody.append(
+                        "<tr><td>" +
+                        dataReceived[i].LastName + "</td><td>" +
+                        dataReceived[i].FirstName + "</td><td>" +
+                        dataReceived[i].Patronymic + "</td><td>" +
+                        dataReceived[i].WorksAt + "</td><td>" +
+                        dataReceived[i].Position + "</td><td>" +
+                        dataReceived[i].Phone + "</td><td>" +
+                        dataReceived[i].Relation + 
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
 
         $("#add-reference").click(function (e) {
             $addReferenceDialog.dialog("open");

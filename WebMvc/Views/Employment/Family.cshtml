@@ -16,7 +16,7 @@
         <div class="formfield clear">
             @Html.LabelFor(m => m.IsMarried) @Html.EditorFor(m => m.IsMarried)
         </div>            
-        <table class="grid centered clear">
+        <table class="grid centered clear" id="family-members-table">
         <thead>
             <tr>
                 <th>
@@ -115,7 +115,7 @@
 
             @for (var i = 0; i < Model.Children.Count; i++)
             {
-                <tr>
+                <tr class="child-row">
                     <td>
                         Ребенок
                     </td>
@@ -233,7 +233,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-child-dialog form').submit();
+                    processAddChild();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -242,9 +242,32 @@
             }
         });
 
-            $("#add-child").click(function (e) {
-                $addChildDialog.dialog("open");
-                e.preventDefault();
-            });
+        var processAddChild = function()
+        {
+            var url = "@Url.Action("FamilyAddChild", "Employment")";
+            var dataToSend = $("#add-child-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $tbody = $("table#family-members-table>tbody")
+                $("table#family-members-table>tbody>.child-row").remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $tbody.append(
+                        "<tr><td>Ребенок</td><td>" +
+                        dataReceived[i].Name + "</td><td>" +
+                        dataReceived[i].PassportData + "</td><td>" +
+                        convertMSJsonDateToShortDateString(dataReceived[i].DateOfBirth) + "</td><td>" +
+                        dataReceived[i].PlaceOfBirth + "</td><td>" +
+                        dataReceived[i].WorksAt + "</td><td>" +
+                        dataReceived[i].Contacts + 
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
+
+        $("#add-child").click(function (e) {
+            $addChildDialog.dialog("open");
+            e.preventDefault();
+        });
     });
 </script>

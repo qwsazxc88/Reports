@@ -48,43 +48,44 @@
             {
                 <div id="name-changes-container">
                     <table class="grid">
-                    
-                        <tr>
-                            <th>
-                                @Html.LabelFor(m => m.NameChanges[0].PreviousName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.NameChanges[0].Date)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.NameChanges[0].Place)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.NameChanges[0].Reason)
-                            </th>
-                        </tr>
-                    
-                        @for (var i = 0; i < Model.NameChanges.Count; i++)
-                        {
+                        <thead>
                             <tr>
-                                <td>
-                                    @Model.NameChanges[i].PreviousName
-                                </td>
-                                <td>
-                                    @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : @String.Empty)
-                                </td>
-                                <td>
-                                    @Model.NameChanges[i].Place
-                                </td>
-                                <td>
-                                    @Model.NameChanges[i].Reason
-                                </td>
-                                @*<td id="delete-name-change">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <th>
+                                    @Html.LabelFor(m => m.NameChanges[0].PreviousName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.NameChanges[0].Date)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.NameChanges[0].Place)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.NameChanges[0].Reason)
+                                </th>
                             </tr>
-                        }                    
-
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.NameChanges.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.NameChanges[i].PreviousName
+                                    </td>
+                                    <td>
+                                        @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : @String.Empty)
+                                    </td>
+                                    <td>
+                                        @Model.NameChanges[i].Place
+                                    </td>
+                                    <td>
+                                        @Model.NameChanges[i].Reason
+                                    </td>
+                                    @*<td id="delete-name-change">
+                                        <a href="" data-index=@i>Удалить</a>
+                                    </td>*@
+                                </tr>
+                            }
+                        </tbody>
                     </table>
                 </div>
             }
@@ -128,30 +129,32 @@
             {
                 <div id="foreign-languages-container">
                     <table class="grid">
-                    
-                        <tr>
-                            <th>
-                                @Html.LabelFor(m => m.ForeignLanguages[0].LanguageName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.ForeignLanguages[0].Level)
-                            </th>
-                        </tr>
-                    
-                        @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
-                        {
+                        <thead>
                             <tr>
-                                <td>
-                                    @Model.ForeignLanguages[i].LanguageName
-                                </td>
-                                <td>
-                                    @Model.ForeignLanguages[i].Level
-                                </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <th>
+                                    @Html.LabelFor(m => m.ForeignLanguages[0].LanguageName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.ForeignLanguages[0].Level)
+                                </th>
                             </tr>
-                        }                    
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        @Model.ForeignLanguages[i].LanguageName
+                                    </td>
+                                    <td>
+                                        @Model.ForeignLanguages[i].Level
+                                    </td>
+                                    @*<td id="delete-foreign-language">
+                                        <a href="" data-index=@i>Удалить</a>
+                                    </td>*@
+                                </tr>
+                            }
+                        </tbody>
 
                     </table>
                 </div>
@@ -311,6 +314,8 @@
         return false;
     }
 
+    // BEGIN Add Name Change
+
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
         attachDatepickerToInputs($('#DateOfBirth, #DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-80:+0", true);
@@ -327,7 +332,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-name-change-dialog form').submit();
+                    processAddNameChange();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -335,6 +340,31 @@
                 }
             }
         });
+
+        var processAddNameChange = function()
+        {
+            var url = "@Url.Action("GeneralInfoAddNameChange", "Employment")";
+            var dataToSend = $("#add-name-change-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $tbody = $("#name-changes-container>table>tbody")
+                $tbody.empty();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $tbody.append(
+                        "<tr><td>" +
+                        dataReceived[i].PreviousName + "</td><td>" +
+                        convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        dataReceived[i].Place + "</td><td>" +
+                        dataReceived[i].Reason + 
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
+
+        // END Add Name Change
+
+        // BEGIN Add Foreign Language
 
         var $addForeignLanguageDialog = $('#add-foreign-language-dialog').dialog(
         {
@@ -346,7 +376,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-foreign-language-dialog form').submit();
+                    processAddForeignLanguage();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -354,6 +384,27 @@
                 }
             }
         });
+
+        var processAddForeignLanguage = function()
+        {
+            var url = "@Url.Action("GeneralInfoAddForeignLanguage", "Employment")";
+            var dataToSend = $("#add-foreign-language-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $tbody = $("#foreign-languages-container>table>tbody")
+                $tbody.empty();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $tbody.append(
+                        "<tr><td>" +
+                        dataReceived[i].LanguageName + "</td><td>" +
+                        dataReceived[i].Level + 
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
+
+        // END Add Foreign Language
 
         $("#add-name-change").click(function (e) {
             $addNameChangeDialog.dialog("open");

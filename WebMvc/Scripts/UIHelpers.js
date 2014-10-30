@@ -37,4 +37,13 @@ function showInputActionResult(inputs, isOk) {
             inputs[i].css("background-color", "white");
         }
     }, 700);
-}
+};
+
+var convertDateToShortDateString = function (date) {
+    return ('0' + date.getDate()).slice(-2) + "." + ('0' + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear();
+};
+
+var convertMSJsonDateToShortDateString = function (mSJsonDate) {
+    var date = new Date(parseInt(mSJsonDate.substr(6)));
+    return ('0' + date.getDate()).slice(-2) + "." + ('0' + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear();
+};
