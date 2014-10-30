@@ -154,11 +154,11 @@
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 177.2pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=236>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt 83.65pt"><FONT size=2>надбавкой</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 134.65pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=top width=180>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@(Model.Addition.HasValue ? decimal.Truncate(Model.Addition.Value).ToString() : string.Empty)</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 1cm; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=38>
 <P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><FONT size=2>руб.</FONT></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 21.3pt; BORDER-BOTTOM: windowtext 1pt solid; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent; mso-border-bottom-alt: solid windowtext .5pt" vAlign=top width=28>
-<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>&nbsp;</FONT></o:p></P></TD>
+<P class=MsoNormal style="TEXT-ALIGN: center; MARGIN: 0cm 0cm 0pt" align=center><o:p><FONT size=2>@(Model.Addition.HasValue ? decimal.Truncate((Model.Addition.Value - decimal.Truncate(Model.Addition.Value)) * 100).ToString() : string.Empty)</FONT></o:p></P></TD>
 <TD style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 148.8pt; BORDER-BOTTOM: #d4d0c8; PADDING-BOTTOM: 0cm; PADDING-TOP: 0cm; PADDING-LEFT: 1.4pt; BORDER-LEFT: #d4d0c8; PADDING-RIGHT: 1.4pt; BACKGROUND-COLOR: transparent" vAlign=top width=198>
 <P class=MsoNormal style="MARGIN: 0cm 0cm 0pt"><FONT size=2>коп.</FONT></P></TD></TR>
 <TR style="mso-yfti-irow: 1; mso-yfti-lastrow: yes">

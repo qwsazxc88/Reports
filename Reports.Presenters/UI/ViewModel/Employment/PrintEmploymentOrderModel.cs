@@ -15,7 +15,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string Position { get; set; }
         public string Conditions { get; set; }
         // тарифная ставка
-        // надбавка
+        public decimal? Addition { get; set; }
         public string ProbationaryPeriod { get; set; }
         public string ContractNumber { get; set; }
         public DateTime? ContractDate { get; set; }

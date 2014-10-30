@@ -55,7 +55,11 @@
 
         UnsignedDismissalOrderScan = 153,
         UnsignedVacationOrderScan = 154,
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> Employment
         // Employment documents
         
         Photo = 201,

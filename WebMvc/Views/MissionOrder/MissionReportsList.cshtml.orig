@@ -1,0 +1,337 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.MissionReportsListModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Авансовый отчет - реестр";
+}
+
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+      <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                        
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName)
+                                    </td>
+                             </tr>
+                          }
+                         <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            
+            @* BEGIN DELETE
+
+            <div class="announcement">
+                Уважаемые Пользователи!<br />
+                Обращаем ваше внимание:<br />
+                <ol>
+                    <li>С 1 августа действует новый порядок согласования Командировок (получения денег в подотчет) и предоставления Авансовых отчетов по произведенным расходам.</li>
+                    <li>Краткий порядок пользования подпрограммой "Авансовый отчет".
+                        <ol type="a">
+                            <li>
+                                По   возвращении из командировки Сотрудник (роль - сотрудник) должен зайти во вкладку "Авансовый отчет - реестр"<br />
+                                и выбрать из  списка  нужный авансовый отчет , через номер авансового отчета войти в документ и заполнить авансовый  отчет;
+                            </li>
+                            <li>
+                                <span style="color: blue">Если даты и/или маршрут командировки по факту оказались измененными, сотрудник  при заполнении авансового отчета может создать дополнительный приказ,
+                                нажав на кнопку &laquo;Создать изменение приказа на командировку&raquo; в самом авансовом отчете.
+                                После появления формы дополнительного приказа, сотрудник может поменять даты и/или маршрут командировки.
+                                Посмотреть дополнительный приказ можно из вкладки &laquo;Приказ-реестр&raquo;, нажав на номер дополнительного приказа в колонке &laquo;Номер изм.приказа&raquo;.</span>
+                            </li>
+                            <li>
+                                <span style="color:Red;">Обращаем ваше внимание:</span> <span style="color: blue">в случае создания сотрудником дополнительного приказа,
+                                он должен быть согласован руководителем и членом правления (при необходимости).
+                                Без согласования дополнительного приказа в случае его создания заполнение авансового отчета будет недоступно.</span>
+                            </li>
+                            <li>
+                                Колонка "Норма по грейду" не корректируется, данная колонка заполняется автоматически программой;
+                            </li>
+                            <li>
+                                Сотрудником заполняется колонка "Оплачено фактически сотрудником".<br />
+                                Для этого необходимо через кнопку "Добавить расход" войти в справочник расходов, выбрать нужный расход, ввести сумму расхода и нажать "Сохранить".<br />
+                                После сохранения программой суммы необходимо прикрепить скан подтверждающего расход документа, нажав на кнопку "Прикрепить".<br />
+                                Данные  действия необходимо повторить для каждой статьи расходов.<br />
+                                Обращаем ваше внимание:<br />
+                                если вы ошиблись при совершении любого из действий по заполнения авансового отчета,
+                                вам нужно нажать кнопку "Удалить", запись удалится, и вы сможете заново внести верные данные.
+                            </li>
+                            <li>
+                                По окончании  заполнения авансового отчета вам необходимо подтвердить внесенные данные, нажав "галку" в окошке напротив своей фамилии и нажав кнопку "Сохранить".<br />
+                                Авансовый  отчет уйдет на согласование.
+                            </li>
+                            <li>
+                                Согласовывает: Руководитель (6), Руководитель БГ (5), Руководитель Управления АУПа (5), Региональный директор, Заместитель (3), Руководитель департаментов АУПа, Заместитель (3).
+                            </li>
+                            <li>
+                                Если Руководитель отклонит авансовый отчет, у сотрудника авансовый отчет возвращается в статус "Черновик".<br />
+                                <span style="color: blue">Если Бухгалтер отклонит авансовый отчет, у сотрудника авансовый отчет возвращается в статус "Черновик",
+                                сотрудник может внести правки в авансовый отчет, при этом сотруднику после внесения правок в авансовый отчет
+                                нужно будет еще раз отправить его на согласование руководителю.
+                                Функция &laquo;Отклонить авансовый отчет&raquo; доступна бухгалтеру до согласования авансового отчета.</span><br />
+                            </li>
+                            <li>
+                                <span style="color:Red;">Обращаем ваше внимание:</span> <span style="color: blue">после согласование бухгалтером авансового отчета, отклонить авансовый отчет будет нельзя.</span>
+                            </li>
+                            <li>
+                                Комментарии участники процесса могут оставлять в разделе "Комментарии" в самом авансовом отчете.
+                            </li>
+                            <li>
+                                Сотрудник может проверить состояние авансового отчета во вкладке "Авансовый отчет - реестр" в колонке "Состояние".<br />
+                                Расчет остатков по подотчетной сумме сотруднику будет произведен программой после проверки и согласования бухгалтерией банка.<br />
+                                После выгрузки в 1С с сотрудника будет произведено либо удержание "долга за сотрудником", либо доначисление сотруднику "долга за организацией".
+                            </li>
+                        </ol>
+                    </li>
+                </ol>
+            </div>
+
+            END DELETE *@
+
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        @*<div id="sort1"><a href="#" onclick = "SortChanged(1);">*@
+                        № п/п
+                        @*</a></div>*@
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                    </th>
+                     <th>
+                        <div id="sort17" style="min-width:130px"><a href="#" onclick = "SortChanged(17);">Должность</a></div>
+                    </th>
+                     <th>
+                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3" style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"  style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Номер <br/>отчета</a></div>
+                    </th>
+                  
+                    <th>
+                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Номер <br/>приказа</a></div>
+                    </th>
+                   @*  <th>
+                        <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                    </th>*@
+                   @* <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
+                    </th>*@
+                    <th>
+                        <div id="sort6" style="min-width:80px"><a href="#"  onclick = "SortChanged(6);">G грейд</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Сумма <br/>по G грейду</a></div>
+                    </th>                    
+                    <th>
+                        <div id="sort8" style="min-width:120px"><a href="#"  onclick = "SortChanged(8);">Фактически  <br/>потраченная <br/>сумма</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:143px"><a href="#"  onclick = "SortChanged(9);">Сумма  расходов, <br/> подтв. Бухг.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10" style="min-width:120px"><a href="#"  onclick = "SortChanged(10);">Превышение  <br/>по G</a></div>
+                    </th>
+                    <th>
+<<<<<<< HEAD
+=======
+                        <div id="sort18" style="min-width:120px"><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
+                    </th>
+                    <th>
+>>>>>>> master
+                        <div id="sort16" style="min-width:80px"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
+                    </th>
+                   @*  <th>
+                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                    </th>*@
+                    @*<th>
+                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                    </th>*@
+                     <th>
+                        <div id="sort11"  style="min-width:100px"><a href="#"  onclick = "SortChanged(11);">Состояние</a></div>
+                    </th>
+                     <th>
+                        <div id="sort12"  style="min-width:120px"><a href="#"  onclick = "SortChanged(12);">ФИО <br/>бухгалтера</a></div>
+                    </th>
+                    <th>
+                        <div id="sort13"  style="min-width:120px"><a href="#"  onclick = "SortChanged(13);">Оригиналы <br/>переданы в архив</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:120px"><a href="#"  onclick = "SortChanged(14);">Оригиналы <br/>получены  <br/>архивариусом </a></div>
+                    </th>
+                    <th>
+                        <div id="sort15"  style="min-width:120px"><a href="#"  onclick = "SortChanged(15);">№ коробки <br/>(полки, места)</a></div>
+                    </th>
+                  @*   @if (Model.IsApproveAvailable)
+                     {
+                        <th>
+                             <input type="checkbox" id="setAll" onclick="setSelection();" />
+                        </th>
+                     }*@
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    int i = 0;
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                             <td>@doc.Dep7Name</td>
+                            <td>@doc.EditDate.ToShortDateString()</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("MissionReportEdit", new { id = doc.Id })' style="cursor:hand">@doc.ReportNumber</a>
+                            </td>
+                           
+                            <td>@doc.OrderNumber</td>
+                            @*<td>@doc.MissionKind</td>
+                            <td>@doc.Target</td>*@
+                            <td>@doc.Grade</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>                            
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+<<<<<<< HEAD
+=======
+                            <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
+>>>>>>> master
+                            <td>@RequestBl.FormatSum(@doc.Saldo)</td>
+                            
+                          @*  <td>@doc.HasMission</td>
+                            <td>@doc.NeedSecretary</td>*@
+                            <td>@doc.State</td>
+                            <td>@doc.AccountantName</td>
+                            <td>@doc.IsDocumentsSaveToArchive</td>
+                            <td>@BaseBl.FormatDate(doc.ArchiveDate)</td>
+                            <td>@doc.ArchiveNumber</td>
+                           @* <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>*@
+                           @* @if (Model.IsApproveAvailable)
+                            {
+                                <td>@if(doc.Flag)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
+                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
+                                        i++;
+                                    }
+                                </td>
+                            }*@
+                        </tr>
+                       
+                    }
+                }
+            </table>    
+          </td>
+        </tr>
+     </table> 
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("moAllReports");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+ </script>

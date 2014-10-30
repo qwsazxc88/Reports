@@ -872,6 +872,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = GetCandidate(userId);
             PrintEmploymentOrderModel model = new PrintEmploymentOrderModel
             {
+                Addition = candidate.Managers.PositionAddition,
                 Conditions = candidate.Managers.EmploymentConditions,
                 ContractDate = candidate.PersonnelManagers.ContractDate,
                 ContractNumber = candidate.PersonnelManagers.ContractNumber,
