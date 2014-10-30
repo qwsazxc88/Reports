@@ -120,7 +120,7 @@ namespace WebMvc.Controllers
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
-            return View("GeneralInfo", model);
+            return Json(model.NameChanges);
         }
 
         [HttpPost]
@@ -135,7 +135,7 @@ namespace WebMvc.Controllers
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
-            return View("GeneralInfo", model);
+            return Json(model.ForeignLanguages);
         }
 
         // Passport
