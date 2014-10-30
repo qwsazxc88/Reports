@@ -35,7 +35,7 @@ namespace Reports.Core.Domain
         public virtual DisabilityDegree DisabilityDegree { get; set; }
         public virtual DateTime? DisabilityCertificateExpirationDate { get; set; }
 
-        public virtual int Status { get; set; } // - статус налогоплательщика по НДФЛ
+        public virtual int? Status { get; set; } // - статус налогоплательщика по НДФЛ
         public virtual bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         public virtual bool IsFinal { get; set; }

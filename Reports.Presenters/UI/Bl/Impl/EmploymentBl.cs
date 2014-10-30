@@ -27,6 +27,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
+        public int RUSSIAN_FEDERATION = 643;
+
         #region Dependencies
 
         protected IEmploymentCandidateDao employmentCandidateDao;
@@ -196,7 +198,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.AgreedToPersonalDataProcessing = entity.AgreedToPersonalDataProcessing;
-                model.CitizenshipId = entity.Citizenship.Id;
+                model.CitizenshipId = entity.Citizenship != null ? entity.Citizenship.Id : RUSSIAN_FEDERATION;
                 model.CityOfBirth = entity.CityOfBirth;
                 model.DateOfBirth = entity.DateOfBirth;
 
@@ -235,7 +237,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Patronymic = entity.Patronymic;
                 model.RegionOfBirth = entity.RegionOfBirth;
                 model.SNILS = entity.SNILS;
-                model.StatusId = entity.Status;
+                model.StatusId = entity.Status ?? 0;
                 model.Version = entity.Version;
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
@@ -277,7 +279,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Building = entity.Building;
                 model.City = entity.City;
                 model.District = entity.District;
-                model.DocumentTypeId = entity.DocumentType.Id;
+                model.DocumentTypeId = entity.DocumentType != null ? entity.DocumentType.Id : 0;
                 model.InternalPassportDateOfIssue = entity.InternalPassportDateOfIssue;
                 model.InternalPassportIssuedBy = entity.InternalPassportIssuedBy;
                 model.InternalPassportNumber = entity.InternalPassportNumber;
@@ -757,7 +759,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
                 model.OverallExperienceYears = entity.OverallExperienceYears;
                 model.PersonalAccount = entity.PersonalAccount;
-                model.PersonalAccountContractorId = entity.PersonalAccountContractor.Id;
+                model.PersonalAccountContractorId = entity.PersonalAccountContractor != null ? entity.PersonalAccountContractor.Id : 0;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
 
@@ -1159,13 +1161,81 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 User = newUser,
                 AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : current,
-                QuestionnaireDate = DateTime.Now
+                QuestionnaireDate = DateTime.Now                
             };
-
+            
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             candidate.User.Login = "c" + candidate.Id.ToString();
             candidate.User.Name = candidate.User.Login;
+
+            // Create blank employment pages
+            candidate.GeneralInfo = new GeneralInfo
+            {
+                AgreedToPersonalDataProcessing = false,
+                Candidate = candidate,
+                IsPatronymicAbsent = false,
+                IsFinal = false
+            };
+            candidate.Passport = new Passport
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.Education = new Education
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.Family = new Family
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.MilitaryService = new MilitaryService
+            {
+                Candidate = candidate,
+                IsAssigned = false,
+                IsLiableForMilitaryService = false,
+                IsReserved = false,
+                IsFinal = false
+            };
+
+            candidate.Experience = new Experience
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+
+            candidate.Contacts = new Contacts
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+
+            candidate.BackgroundCheck = new BackgroundCheck
+            {
+                Candidate = candidate,
+                IsReadyForBusinessTrips = false,
+                IsFinal = false
+            };
+
+            candidate.OnsiteTraining = new OnsiteTraining
+            {
+                Candidate = candidate
+            };
+
+            candidate.Managers = new Managers
+            {
+                Candidate = candidate,
+                IsFront = false,
+                IsLiable = false
+            };
+
+            candidate.PersonnelManagers = new PersonnelManagers
+            {
+                Candidate = candidate
+            };
 
             EmploymentCommonDao.SaveAndFlush(candidate);
 

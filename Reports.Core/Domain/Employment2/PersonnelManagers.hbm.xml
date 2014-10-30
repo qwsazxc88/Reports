@@ -8,10 +8,10 @@
 
     <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_PersonnelManagers_Candidate" index="PersonnelManagers_Candidate" not-null="true"/>
     <property name="EmploymentOrderDate" not-null="false"/>
-    <property name="EmploymentOrderNumber" length="20" not-null="true"/>
+    <property name="EmploymentOrderNumber" length="20" not-null="false"/>
     <property name="EmploymentDate" not-null="false"/>
     <property name="ContractDate" not-null="false"/>
-    <property name="ContractNumber" length="20" not-null="true"/>
+    <property name="ContractNumber" length="20" not-null="false"/>
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
@@ -19,15 +19,15 @@
     <property name="CompetenceAddition" precision="15" scale="2" not-null="false"/>
     <property name="FrontOfficeExperienceAddition" precision="15" scale="2" not-null="false"/>
     <!--property name="Grade" not-null="false"/-->
-    <property name="OverallExperienceYears" not-null="true"/>
-    <property name="OverallExperienceMonths" not-null="true"/>
-    <property name="OverallExperienceDays" not-null="true"/>
-    <property name="InsurableExperienceYears" not-null="true"/>
-    <property name="InsurableExperienceMonths" not-null="true"/>
-    <property name="InsurableExperienceDays" not-null="true"/>
+    <property name="OverallExperienceYears" not-null="false"/>
+    <property name="OverallExperienceMonths" not-null="false"/>
+    <property name="OverallExperienceDays" not-null="false"/>
+    <property name="InsurableExperienceYears" not-null="false"/>
+    <property name="InsurableExperienceMonths" not-null="false"/>
+    <property name="InsurableExperienceDays" not-null="false"/>
     <!-- Ознакомлен с регламентными документами -->
-    <property name="PersonalAccount" length="23" not-null="true"/>
-    <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="true"/>
+    <property name="PersonalAccount" length="23" not-null="false"/>
+    <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="false"/>
     <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     
