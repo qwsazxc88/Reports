@@ -87,12 +87,10 @@
 
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.References)</legend>
-            @if (Model.References.Count > 0)
-            {
                 <div id="reference-container">
                     <table class="grid">
                         <thead>
-                            <tr>
+                            <tr class="reference-row">
                                 <th>
                                     @Html.LabelFor(m => m.References[0].LastName)
                                 </th>
@@ -150,7 +148,6 @@
 
                     </table>
                 </div>
-            }
             <a href="" id="add-reference">Добавить новую запись</a>
         </fieldset>
 
@@ -313,12 +310,13 @@
             var url = "@Url.Action("BackgroundCheckAddReference", "Employment")";
             var dataToSend = $("#add-reference-dialog form").serialize();
             $.post(url, dataToSend, function(dataReceived){
-                var $tbody = $("#reference-container>table>tbody")
-                $tbody.empty();
+                var $table = $("#reference-container>table");
+                var $rows = $("#reference-container>table .reference-row");
+                $rows.remove();
                 for (var i = 0; i < dataReceived.length; i++)
                 {
-                    $tbody.append(
-                        "<tr><td>" +
+                    $table.append(
+                        "<tr class=\"reference-row\"><td>" +
                         dataReceived[i].LastName + "</td><td>" +
                         dataReceived[i].FirstName + "</td><td>" +
                         dataReceived[i].Patronymic + "</td><td>" +

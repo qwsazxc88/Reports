@@ -85,18 +85,18 @@ namespace Reports.Core.Dao.Impl
 					else 0
 					end IsApproveByHigherManagerAvailable
               from dbo.EmploymentCandidate candidate
-                left join dbo.GeneralInfo generalInfo on generalInfo.Id = candidate.GeneralInfoId
-                left join dbo.Managers managers on managers.Id = candidate.ManagersId
-                left join dbo.PersonnelManagers personnelManagers on personnelManagers.Id = candidate.PersonnelManagersId
-                left join dbo.Department department on department.Id = managers.DepartmentId
-                left join dbo.Position position on position.Id = managers.PositionId
-                left join dbo.Schedule schedule on schedule.Id = managers.ScheduleId
+                left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
+                left join dbo.Managers managers on candidate.ManagersId = managers.Id
+                left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
+                left join dbo.Department department on managers.DepartmentId = department.Id
+                left join dbo.Position position on managers.PositionId = position.Id
+                left join dbo.Schedule schedule on managers.ScheduleId = schedule.Id
                 left join dbo.Users candidateUser on candidate.UserId = candidateUser.Id
                 left join dbo.DisabilityDegree disabilityDegree on generalInfo.DisabilityDegreeId = disabilityDegree.Id
-                inner join dbo.Users currentUser on currentUser.Id = :currentId
-                left join dbo.Department currentDepartment on currentDepartment.Id = currentUser.DepartmentId
-                inner join dbo.Users appointmentCreator on appointmentCreator.Id = candidate.AppointmentCreatorId
-                inner join dbo.Department appointmentCreatorDepartment on appointmentCreatorDepartment.Id = appointmentCreator.DepartmentId
+                inner join dbo.Users currentUser on :currentId = currentUser.Id
+                left join dbo.Department currentDepartment on currentUser.DepartmentId = currentDepartment.Id
+                left join dbo.Users appointmentCreator on candidate.AppointmentCreatorId = appointmentCreator.Id
+                inner join dbo.Department appointmentCreatorDepartment on appointmentCreator.DepartmentId = appointmentCreatorDepartment.Id
             ";
 
         #endregion

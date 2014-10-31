@@ -67,7 +67,7 @@
                         <tbody>
                             @for (var i = 0; i < Model.NameChanges.Count; i++)
                             {
-                                <tr>
+                                <tr class="name-change-row">
                                     <td>
                                         @Model.NameChanges[i].PreviousName
                                     </td>
@@ -142,7 +142,7 @@
                         <tbody>
                             @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
                             {
-                                <tr>
+                                <tr class="foreign-language-row">
                                     <td>
                                         @Model.ForeignLanguages[i].LanguageName
                                     </td>
@@ -346,12 +346,13 @@
             var url = "@Url.Action("GeneralInfoAddNameChange", "Employment")";
             var dataToSend = $("#add-name-change-dialog form").serialize();
             $.post(url, dataToSend, function(dataReceived){
-                var $tbody = $("#name-changes-container>table>tbody")
-                $tbody.empty();
+                var $table = $("#name-changes-container>table");
+                var $rows = $("#name-changes-container>table .name-change-row");
+                $rows.remove();
                 for (var i = 0; i < dataReceived.length; i++)
                 {
-                    $tbody.append(
-                        "<tr><td>" +
+                    $table.append(
+                        "<tr class=\"name-change-row\"><td>" +
                         dataReceived[i].PreviousName + "</td><td>" +
                         convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
                         dataReceived[i].Place + "</td><td>" +
@@ -390,12 +391,13 @@
             var url = "@Url.Action("GeneralInfoAddForeignLanguage", "Employment")";
             var dataToSend = $("#add-foreign-language-dialog form").serialize();
             $.post(url, dataToSend, function(dataReceived){
-                var $tbody = $("#foreign-languages-container>table>tbody")
-                $tbody.empty();
+                var $table = $("#foreign-languages-container>table");
+                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                $rows.remove();
                 for (var i = 0; i < dataReceived.length; i++)
                 {
-                    $tbody.append(
-                        "<tr><td>" +
+                    $table.append(
+                        "<tr class=\"foreign-language-row\"><td>" +
                         dataReceived[i].LanguageName + "</td><td>" +
                         dataReceived[i].Level + 
                         "</td></tr>"
