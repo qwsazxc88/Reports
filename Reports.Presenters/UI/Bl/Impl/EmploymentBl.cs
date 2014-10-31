@@ -650,7 +650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Results = entity.Results;
                 model.Type = entity.Type;
 
-                model.ApproverName = entity.Approver.Name;
+                model.ApproverName = entity.Approver != null ? entity.Approver.Name : string.Empty;
                 model.ApprovalStatus = entity.IsComplete;
                 model.IsApproveByTrainerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer);
