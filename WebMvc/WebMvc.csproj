@@ -120,6 +120,7 @@
   <ItemGroup>
     <Content Include="Content\Default.css" />
     <Content Include="Content\favicon.ico" />
+    <Content Include="Content\files\Образец заявления о приеме.jpg" />
     <Content Include="Content\fileuploader.css" />
     <Content Include="Content\fileuploader.js" />
     <Content Include="Content\icon_down_sort_arrow.png" />
