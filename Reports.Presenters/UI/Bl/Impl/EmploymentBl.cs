@@ -739,7 +739,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity != null)
             {
-                model.AccessGroupId = entity.AccessGroup.Id;
+                model.AccessGroupId = entity.AccessGroup != null ? entity.AccessGroup.Id : 0;
                 //model.ApprovedByPersonnelManager = entity.ApprovedByPersonnelManager;
                 model.AreaAddition = entity.AreaAddition;
                 model.AreaMultiplier = entity.AreaMultiplier;
