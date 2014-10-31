@@ -44,8 +44,6 @@
 
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.NameChanges)</legend>
-            @if (Model.NameChanges.Count > 0)
-            {
                 <div id="name-changes-container">
                     <table class="grid">
                         <thead>
@@ -88,7 +86,6 @@
                         </tbody>
                     </table>
                 </div>
-            }
             <a href="" id="add-name-change">Добавить новую запись</a>
         </fieldset>
 
@@ -125,8 +122,6 @@
 
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.ForeignLanguages)</legend>
-            @if (Model.ForeignLanguages.Count > 0)
-            {
                 <div id="foreign-languages-container">
                     <table class="grid">
                         <thead>
@@ -158,7 +153,6 @@
 
                     </table>
                 </div>
-            }
             <a href="" id="add-foreign-language">Добавить новую запись</a>
         </fieldset>
 
