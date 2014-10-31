@@ -689,15 +689,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Bonus = entity.Bonus;
                 model.DailySalaryBasis = entity.DailySalaryBasis;
-                model.DepartmentId = entity.Department.Id;
-                model.DepartmentName = entity.Department.Name;
+                model.DepartmentId = entity.Department != null ? entity.Department.Id : -1;
+                model.DepartmentName = entity.Department != null ? entity.Department.Name : string.Empty;
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.HourlySalaryBasis = entity.HourlySalaryBasis;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
-                model.PositionId = entity.Position.Id;
+                model.PositionId = entity.Position != null ? entity.Position.Id : -1;
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
