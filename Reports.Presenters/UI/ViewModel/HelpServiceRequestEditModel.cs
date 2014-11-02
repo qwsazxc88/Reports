@@ -4,7 +4,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class HelpServiceRequestEditModel:HelpUserInfoModel,IContainId
+    public class HelpServiceRequestEditModel : HelpUserInfoModel, IContainId, IHelpServiceDictionariesStates
     {
         #region IContainId Members
         public int Id { get; set; }
@@ -29,7 +29,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Период")]
         public int PeriodId { get; set; }
         public int PeriodIdHidden { get; set; }
-        public IList<IdNameDto> Periods;
+        public IList<IdNameDto> Periods { get; set; }
         public bool IsPeriodVisible { get; set; }
 
         [Display(Name = "Срок изготовления")]
@@ -45,7 +45,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан")]
         public string ServiceAttachment { get; set; }
         public int ServiceAttachmentId { get; set; }
-        public bool IsServiceAttachmentVisible { get; set; }
+        //public bool IsServiceAttachmentVisible { get; set; }
 
         public CommentsModel CommentsModel { get; set; }
 
@@ -54,6 +54,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsSendAvailable { get; set; }
         public bool IsEndAvailable { get; set; }
         public bool IsBeginWorkAvailable { get; set; }
+        public bool IsConsultantOutsourcingEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
     }
 }

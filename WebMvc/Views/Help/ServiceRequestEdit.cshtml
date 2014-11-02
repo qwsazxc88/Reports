@@ -22,7 +22,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
+                <td style="width:200px">
                     @Html.LabelFor(m => m.TypeId):
                     <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                     <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
@@ -33,11 +33,12 @@
                     <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
                     <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
                     <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
+                    <input type="hidden" id="IsConsultantOutsourcingEditable" name="IsConsultantOutsourcingEditable" value="@Model.IsConsultantOutsourcingEditable" />
 
                     <input type="hidden" id="IsAttachmentVisible" name="IsAttachmentVisible" value="@Model.IsAttachmentVisible" />
                     <input type="hidden" id="IsRequirementsVisible" name="IsRequirementsVisible" value="@Model.IsRequirementsVisible" />
                     <input type="hidden" id="IsPeriodVisible" name="IsPeriodVisible" value="@Model.IsPeriodVisible" />
-                    <input type="hidden" id="IsServiceAttachmentVisible" name="IsServiceAttachmentVisible" value="@Model.IsServiceAttachmentVisible" />
+                    @*<input type="hidden" id="IsServiceAttachmentVisible" name="IsServiceAttachmentVisible" value="@Model.IsServiceAttachmentVisible" />*@
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
@@ -47,11 +48,13 @@
              <tr id="ViewAttachmentTrId">
                 <td>@Html.LabelFor(model => model.Attachment):</td>
                 <td>
-                    @if (!string.IsNullOrEmpty(Model.Attachment))
+                    @if (Model.AttachmentId > 0)
                     {
-                        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                        <a id="ViewAttachmentId" class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
                         <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
                         <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                        if (Model.IsEditable && Model.AttachmentId > 0)
+                        {<text><a class="ui-notify-close" id="DeleteAttachmentId" onclick="return deleteAttachment(@Model.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                     }
                 </td>
             </tr>
@@ -64,7 +67,7 @@
                     @Html.LabelFor(m => m.Requirements):
                 </td>
                 <td>
-                   @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256 } : (object)new { @readonly = "read-only" }) 
+                   @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
                 </td>
             </tr>
              <tr  id="PeriodTrId">
@@ -72,7 +75,7 @@
                     @Html.LabelFor(m => m.PeriodId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.PeriodId, new SelectList(Model.Periods, "ID", "Name"),Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.PeriodId, new SelectList(Model.Periods, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
                     <input type="hidden" id="PeriodIdHidden" name="PeriodIdHidden" value="@Model.PeriodIdHidden" />
                 </td>
             </tr>
@@ -102,24 +105,30 @@
                         <a class="ui-notify-close" href='@Url.Action("ViewServiceAttachment", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
                         <input type="hidden" id="ServiceAttachment" name="ServiceAttachment" value="@Model.ServiceAttachment" />
                         <input type="hidden" id="ServiceAttachmentId" name="ServiceAttachmentId" value="@Model.ServiceAttachmentId" />
+                        if (Model.IsConsultantOutsourcingEditable)
+                        {<text><a class="ui-notify-close" onclick="return deleteServiceAttachment(@Model.ServiceAttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                     }
                 </td>
             </tr>
-            <tr id="ServiceAttachmentTrId">    
+            @if (Model.IsConsultantOutsourcingEditable)
+            {
+            <tr>    
                 <td>Прикрепить скан</td>
                 <td><input id="ServiceFileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
             </tr>
+            }
              <tr>
                 <td colspan="2">
-                   <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable) {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                                    {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
-                                                                                                    {<text>style="display:none"</text>}/>
+                                                                                                 {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга оказана" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
-                                                                                                    {<text>style="display:none"</text>}/>
+                                                                                              {<text>style="display:none"</text>}/>
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
-                                                                                                         {<text>style="display:none"</text>}/>
+                                                                                                      {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга оказана" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
-                                                                                                         {<text>style="display:none"</text>}/>
+                                                                                           {<text>style="display:none"</text>}/>
                 </td>
             </tr>
         </table>
@@ -144,6 +153,7 @@
 //    $("#ReasonBeginDate").datepicker();
 //    $(".hasDatepicker").width("75px");
 //    onReasonChange();
+      SetControlStates();
    });
 //    function Delete() {
 //        $("#IsDelete").val("true");
@@ -224,40 +234,96 @@
         }
         return true;
     }
-    function onReasonChange()
+    function SetControlStates()
     {
-        var reasonId = $("#ReasonId").val();
-        switch(reasonId)
-        {
-            case '1':
-                //$("#ReasonPositionLabel").text('Должность:');
-                $("#ReasonDateLabel").text('С даты:');
-                $("#ReasonPositionTr").hide();
-            break
-            case '2':
-                //$("#ReasonPositionLabel").text('Должность:');
-                $("#ReasonDateLabel").text('С даты:');
-                $("#ReasonPositionTr").hide();
-            break
-            case '3':
-                $("#ReasonPositionLabel").text('');
-                $("#ReasonPositionTr").show();
-            break
-            case '4':
-                $("#ReasonPositionLabel").text('ФИО сотрудника, уходящего в декрет:');
-                $("#ReasonDateLabel").text('Дата ухода:');
-                $("#ReasonPositionTr").show();
-            break
-            case '5':
-                $("#ReasonPositionLabel").text('ФИО увольняющегося сотрудника:');
-                $("#ReasonDateLabel").text('Дата увольнения:');
-                $("#ReasonPositionTr").show();
-            break
+        SetControlStatesInternal($("#IsAttachmentVisible").val(),
+        $("#IsRequirementsVisible").val(),$("#IsPeriodVisible").val());
+    }
+    function onTypeChange()
+    {
+       getDictionariesStates();
+    }
+    function setValuesToDropdown(controlName,data)
+    {
+            var optionsValues = '<select id="' + controlName + '" name="' + controlName + '">';
+            $.each(data, function (item, data) {
+                optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+            })
+            optionsValues += '</select>';
+            var options = $('#' + controlName );
+            options.replaceWith(optionsValues);
         }
-        if(reasonId == 3)
-            $("#ReasonDateTr").hide();
+    function getDictionariesStates(){
+        var actionUrl="@Url.Action("GetDictionariesStates", "Help")";
+        var url = actionUrl + "?TypeId=" +  $('#TypeId').val();
+        $.getJSON(url,
+                       function (result) {
+                            if(result.Error != ''){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide(); 
+                                $('#IsAttachmentVisible').val(result.IsAttachmentVisible);  
+                                $('#IsRequirementsVisible').val(result.IsRequirementsVisible);
+                                $('#IsPeriodVisible').val(result.IsPeriodVisible);
+                                SetControlStates();
+                                setValuesToDropdown('PeriodId',result.Periods);
+                                if((result.PeriodId != 0) /*&& ($('#PeriodId').val() == 0)*/)
+                                    $('#PeriodId').val(result.PeriodId);
+                           }
+                       }
+                     );
+        return false;
+    }
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteAttachment", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide();   
+                                $('#ViewAttachmentId').hide();                    
+                                $('#DeleteAttachmentId').hide();        
+                           }
+                       }
+                     );
+        return false;
+    }
+
+    function SetControlStatesInternal(isAttachmentVisible,isRequirementsVisible,isPeriodVisible)
+    {
+        if(isAttachmentVisible == 'true')
+        {
+            $('#ViewAttachmentTrId').show();
+            $('#AttachmentTrId').show();
+        }
         else
-            $("#ReasonDateTr").show();
-            
+        {
+            $('#ViewAttachmentTrId').hide();
+             $('#AttachmentTrId').hide();
+        }
+        if(isRequirementsVisible == 'true')
+        {
+            $('#RequirementsTrId').show();
+        }
+        else
+        {
+            $('#RequirementsTrId').hide();
+        }
+        if(isPeriodVisible == 'true')
+        {
+            $('#PeriodTrId').show();
+        }
+        else
+        {
+            $('#PeriodTrId').hide();
+        }
     }
 </script> 

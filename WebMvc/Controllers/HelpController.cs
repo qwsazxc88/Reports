@@ -81,6 +81,24 @@ namespace WebMvc.Controllers
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);
             return View(model);
         }
+        public ContentResult GetDictionariesStates(int typeId)
+        {
+            //bool saveResult;
+            //string error = string.Empty;
+            HelpServiceDictionariesStatesModel model = new HelpServiceDictionariesStatesModel {Error = string.Empty};
+            try
+            {
+                    HelpBl.GetDictionariesStates(typeId,model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetDictionariesStates:", ex);
+                model.Error = ex.GetBaseException().Message;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
         #region Versions
         [HttpGet]
         public ActionResult Version()

@@ -24,5 +24,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Руководитель")]
         public string ManagerName { get; set; }
+
+        [Display(Name = "Заявку создал")]
+        public string Creator { get; set; }
+
+        //[Display(Name = "Заявку обработал")]
+        //public string Worker { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Reports.Core.Dao;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
+using Reports.Presenters.Services;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl.Impl
@@ -21,6 +22,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrCannotEditFaq = "Вам запрещено редактирование информации";
         public const string StrCannotDeleteFaq = "Вам запрещено удаление информации";
         public const string StrNoUser = "Не указан сотрудник для заявки на услугу";
+        public const string StrUserNotManager = "Вы (пользователь {0}) не являетесь руководителем или сотрудником - создание заявки запрещено";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -162,10 +164,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Service Requests Edit
         public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
         {
+            IUser current = AuthenticationService.CurrentUser;
             if (id == 0 && !userId.HasValue)
             {
-                if (CurrentUser.UserRole == UserRole.Employee)
-                    userId = CurrentUser.Id;
+                if (current.UserRole == UserRole.Employee)
+                    userId = current.Id;
                 else
                     throw new ValidationException(StrNoUser);
             }
@@ -178,103 +181,69 @@ namespace Reports.Presenters.UI.Bl.Impl
                 UserId = id == 0 ? userId.Value : entity.User.Id
             };
             User user = UserDao.Load(model.UserId);
-            
-            //MissionOrderEditModel model = new MissionOrderEditModel
-            //{
-            //    Id = id,
-            //    UserId = id == 0 ? userId.Value : entity.User.Id
-            //};
-            //User user = UserDao.Load(model.UserId);
-            //if (!user.Grade.HasValue)
-            //    throw new ValidationException(string.Format("Не указан грейд для пользователя {0} в базе данных", user.Id));
-            //IUser current = AuthenticationService.CurrentUser;
-
-            //if (!CheckUserMoRights(user, current, id, entity, false))
-            //    throw new ArgumentException("Доступ запрещен.");
-            ////model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
-            //if (id != 0)
-            //{
-
-            //    LoadGraids(model, user.Grade.Value, entity, entity.CreateDate);
-            //    model.AllSum = FormatSum(entity.AllSum);
-            //    model.AllSumAir = FormatSum(entity.SumAir);
-            //    model.AllSumDaily = FormatSum(entity.SumDaily);
-            //    model.AllSumResidence = FormatSum(entity.SumResidence);
-            //    model.AllSumTrain = FormatSum(entity.SumTrain);
-            //    model.BeginMissionDate = FormatDate(entity.BeginDate);//entity.BeginDate.ToShortDateString();
-            //    model.EndMissionDate = FormatDate(entity.EndDate);//entity.EndDate.ToShortDateString();
-            //    model.GoalId = entity.Goal.Id;
-            //    model.Id = entity.Id;
-            //    model.TypeId = entity.Type.Id;
-            //    model.Kind = entity.Kind;
-            //    model.UserId = entity.User.Id;
-            //    model.UserAllSum = FormatSum(entity.UserAllSum);
-            //    model.UserAllSumAir = FormatSum(entity.UserSumAir);
-            //    model.UserAllSumDaily = FormatSum(entity.UserSumDaily);
-            //    model.UserAllSumResidence = FormatSum(entity.UserSumResidence);
-            //    model.UserAllSumTrain = FormatSum(entity.UserSumTrain);
-            //    model.DateCreated = entity.CreateDate.ToShortDateString();
-            //    model.Version = entity.Version;
-            //    model.UserSumCash = FormatSum(entity.UserSumCash);
-            //    model.UserSumNotCash = FormatSum(entity.UserSumNotCash);
-
-            //    model.IsResidencePaid = entity.IsResidencePaid;
-            //    model.IsAirTicketsPaid = entity.IsAirTicketsPaid;
-            //    model.IsTrainTicketsPaid = entity.IsTrainTicketsPaid;
-
-            //    model.ResidenceRequestNumber = entity.ResidenceRequestNumber;
-            //    model.AirTicketsRequestNumber = entity.AirTicketsRequestNumber;
-            //    model.TrainTicketsRequestNumber = entity.TrainTicketsRequestNumber;
-            //    model.SecretaryFio = entity.Secretary == null ? string.Empty : entity.Secretary.FullName;
-            //    model.AirTicketType = entity.AirTicketType;
-            //    model.TrainTicketType = entity.TrainTicketType;
-
-            //    model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
-            //    model.LongTermReason = entity.LongTermReason;
-            //    model.DocumentNumber = entity.Number.ToString();
-
-            //    MissionOrderTargetModel[] targets = entity.Targets.ToList().ConvertAll(x => new MissionOrderTargetModel
-            //    {
-            //        AirTicketTypeId = x.AirTicketType == null ? 0 : x.AirTicketType.Id,
-            //        AirTicketTypeName = x.AirTicketType == null ? string.Empty : x.AirTicketType.Name,
-            //        AllDaysCount = x.DaysCount.ToString(),
-            //        City = x.City,
-            //        Country = x.Country.Name,
-            //        CountryId = x.Country.Id,
-            //        DailyAllowanceId = x.DailyAllowance == null ? 0 : x.DailyAllowance.Id,
-            //        DailyAllowanceName = x.DailyAllowance == null ? string.Empty : x.DailyAllowance.Name,
-            //        DateFrom = x.BeginDate.ToShortDateString(),
-            //        DateTo = x.EndDate.ToShortDateString(),
-            //        Organization = x.Organization,
-            //        ResidenceId = x.Residence == null ? 0 : x.Residence.Id,
-            //        ResidenceName = x.Residence == null ? string.Empty : x.Residence.Name,
-            //        TargetDaysCount = x.RealDaysCount.ToString(),
-            //        TargetId = x.Id,
-            //        TrainTicketTypeId = x.TrainTicketType == null ? 0 : x.TrainTicketType.Id,
-            //        TrainTicketTypeName = x.TrainTicketType == null ? string.Empty : x.TrainTicketType.Name,
-            //    }).ToArray();
-            //    JsonList list = new JsonList { List = targets };
-            //    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-            //    model.Targets = jsonSerializer.Serialize(list);
-            //    if (entity.DeleteDate.HasValue)
-            //        model.IsDeleted = true;
-            //}
-            //else
-            //{
-            //    JsonList list = new JsonList { List = new MissionOrderTargetModel[0] };
-            //    JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-            //    model.Targets = jsonSerializer.Serialize(list);
-            //    model.DateCreated = DateTime.Today.ToShortDateString();
-            //    LoadGraids(model, user.Grade.Value, entity, DateTime.Today);
-            //    //model.IsEditable = true;
-            //}
-            //model.CommentsModel = GetCommentsModel(id, (int)RequestTypeEnum.MissionOrder);
+            User currUser = UserDao.Load(current.Id);
+            if(id == 0)
+            {
+                entity = new HelpServiceRequest
+                             {
+                                 User = user,
+                                 Creator = currUser,
+                                 CreateDate = DateTime.Now,
+                                 EditDate = DateTime.Now,
+                             };
+            }
+            else
+            {
+                model.ProductionTimeTypeId = entity.ProductionTime.Id;
+                model.TransferMethodTypeId = entity.TransferMethod.Id;
+                model.PeriodId = entity.Period == null? 0 :entity.Period.Id;
+                model.Requirements = entity.Requirements;
+                model.Version = entity.Version;
+                model.DocumentNumber = entity.Number.ToString();
+                model.DateCreated = FormatDate(entity.CreateDate);
+                model.Creator = entity.Creator.FullName;
+               
+            }
             SetUserInfoModel(user, model);
-            //SetFlagsState(id, user, entity, model);
-            //SetStaticFields(model, entity);
             LoadDictionaries(model);
-            //SetHiddenFields(model);
+            SetFlagsState(id, currUser, entity, model);
+            //SetStaticFields(model, entity);
+            
+            SetHiddenFields(model);
             return model;
+        }
+        protected void SetHiddenFields(HelpServiceRequestEditModel model)
+        {
+            model.TransferMethodTypeIdHidden = model.TransferMethodTypeId;
+            model.ProductionTimeTypeIdHidden = model.ProductionTimeTypeIdHidden;
+            model.TypeIdHidden = model.TypeId;
+            model.PeriodIdHidden = model.PeriodId;
+
+        }
+        protected void SetFlagsState(int id, User current, HelpServiceRequest entity, HelpServiceRequestEditModel model)
+        {
+            UserRole currentRole = AuthenticationService.CurrentUser.UserRole;
+            SetFlagsState(model, false);
+            if (model.Id == 0)
+            {
+                if (currentRole != UserRole.Manager && currentRole != UserRole.Employee)
+                    throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
+                model.IsEditable = true;
+                model.IsSaveAvailable = true;
+                return;
+            }
+        }
+
+        protected void SetFlagsState(HelpServiceRequestEditModel model, bool state)
+        {
+            model.IsBeginWorkAvailable = state;
+            model.IsEditable = state;
+            model.IsEndAvailable = state;
+            model.IsEndWorkAvailable = state;
+            model.IsSaveAvailable = state;
+            model.IsSendAvailable = state;
+            model.IsConsultantOutsourcingEditable = state;
+            //model.IsServiceAttachmentVisible = state;
         }
         protected void LoadDictionaries(HelpServiceRequestEditModel model)
         {
@@ -290,14 +259,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             HelpServiceType type = types.Where(x => x.Id == model.TypeId).First();
             SetDistionariesFlag(model,type);
         }
-        protected void SetDistionariesFlag(HelpServiceRequestEditModel model,HelpServiceType type)
+        protected void SetDistionariesFlag(IHelpServiceDictionariesStates model, HelpServiceType type)
         {
             model.IsAttachmentVisible = type.IsAttachmentAvailable;
             model.IsPeriodVisible = type.IsPeriodAvailable;
             model.IsRequirementsVisible = type.IsRequirementsAvailable;
             if (type.IsPeriodAvailable)
-                model.Periods = HelpServicePeriodDao.LoadForPeriodSortedByOrder(type.Id).
-                    ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            {
+                List<HelpServicePeriod> periods = HelpServicePeriodDao.LoadForPeriodSortedByOrder(type.Id);
+                model.Periods = periods.ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
+                if(model.PeriodId == 0)
+                {
+                    int currMonth = DateTime.Today.Year * 100 + DateTime.Today.Month;
+                    //if(type.Id == 4) //todo hardcode from DB
+                    //    currMonth = DateTime.Today.Year*100 + DateTime.Today.Month;
+                    //else
+                    //    currMonth = DateTime.Today.Year*100 + 1;
+                    HelpServicePeriod currPeriod = periods.OrderByDescending(x => x.PeriodMonth).
+                        Where(x => x.PeriodMonth <= currMonth).FirstOrDefault();
+                    if (currPeriod != null)
+                        model.PeriodId = currPeriod.Id;
+                }
+            }
             else
                 model.Periods = new List<IdNameDto>();
         }
@@ -313,6 +296,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (dep3 != null)
                     model.Department1 = dep3.Name;
                 string managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true)
+                                       .Where(x => x.Email != user.Email)
                                        .OrderByDescending(x => x.Level).
                                        Aggregate(string.Empty, (current, x) => 
                                        current + string.Format("{0} ({1}), ",x.FullName,x.Position == null ? "<не указана>": x.Position.Name));
@@ -322,6 +306,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
+
+        public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
+        {
+            HelpServiceType type = HelpServiceTypeDao.Load(typeId);
+            SetDistionariesFlag(model, type);
+        }
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
         {

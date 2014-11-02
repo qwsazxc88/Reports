@@ -1,4 +1,5 @@
-﻿using Reports.Presenters.UI.ViewModel;
+﻿using Reports.Core.Dto;
+using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
 {
@@ -9,6 +10,7 @@ namespace Reports.Presenters.UI.Bl
         void SetServiceRequestsListModel(HelpServiceRequestsListModel model, bool hasError);
 
         HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
+        void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
 
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);

@@ -69,6 +69,24 @@
             <input type="hidden" id="ManagerName" name="ManagerName" value="@Model.ManagerName" />
         </td>
     </tr>
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.Creator)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Creator)
+            <input type="hidden" id="Creator" name="Creator" value="@Model.Creator" />
+        </td>
+    </tr>
+    @* <tr>
+        <td>
+            @Html.LabelFor(m => m.Worker)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.Worker)
+            <input type="hidden" id="Worker" name="Worker" value="@Model.Worker" />
+        </td>
+    </tr>*@
     <tr>
        <td colspan="2"/>
     </tr>
