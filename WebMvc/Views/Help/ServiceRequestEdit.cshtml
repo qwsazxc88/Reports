@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
     ViewBag.Title = "Заказ услуги";
 }
-@using (Html.BeginForm())
+@using (Html.BeginForm("ServiceRequestEdit", "Help", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="doc-wrap">
         <table style="width:100%">
@@ -39,6 +39,7 @@
                     <input type="hidden" id="IsRequirementsVisible" name="IsRequirementsVisible" value="@Model.IsRequirementsVisible" />
                     <input type="hidden" id="IsPeriodVisible" name="IsPeriodVisible" value="@Model.IsPeriodVisible" />
                     @*<input type="hidden" id="IsServiceAttachmentVisible" name="IsServiceAttachmentVisible" value="@Model.IsServiceAttachmentVisible" />*@
+                    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
@@ -50,11 +51,13 @@
                 <td>
                     @if (Model.AttachmentId > 0)
                     {
-                        <a id="ViewAttachmentId" class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                        <a id="ViewAttachmentId" class="ui-notify-close" href='@Url.Action("ViewTemplate", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
                         <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
                         <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
                         if (Model.IsEditable && Model.AttachmentId > 0)
-                        {<text><a class="ui-notify-close" id="DeleteAttachmentId" onclick="return deleteAttachment(@Model.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                        {
+                            <text>&nbsp; &nbsp; &nbsp;<a class="ui-notify-close" id="DeleteAttachmentId" onclick="return deleteAttachment(@Model.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>
+                        }
                     }
                 </td>
             </tr>
@@ -148,11 +151,6 @@
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
-//    $("#BeginDate").datepicker();
-//    $("#DesirableBeginDate").datepicker();
-//    $("#ReasonBeginDate").datepicker();
-//    $(".hasDatepicker").width("75px");
-//    onReasonChange();
       SetControlStates();
    });
 //    function Delete() {
@@ -162,66 +160,16 @@
     function ValidateForm()
     {
         var result = true;
-        clearControlErrors($("#SelectDepartmentBtn"));
-        if($("#DepartmentId").val() == 0)
-        {
-            addControlError($("#SelectDepartmentBtn"),'Необходимо выбрать структурное подразделение');
-            result = false;
-        }
-        if(!IsFieldNotEmpty($("#City")))
-            result = false;
-        if(!IsFieldNotEmpty($("#PositionName")))
-            result = false;
-        if(!IsFieldNotEmpty($("#VacationCount")))
-            result = false;
-        else if( ValidateInt($("#VacationCount")) == undefined)
-            result = false;
-        if(!jQuery($("#ReasonPosition")).is(':hidden') && jQuery($("#ReasonPosition")).css('display') != 'none')
-        {
-            if(!IsFieldNotEmpty($("#ReasonPosition")))
-                result = false;
-        }
-        if(!jQuery($("#ReasonBeginDate")).is(':hidden') && jQuery($("#ReasonBeginDate")).css('display') != 'none')
-        {
-            if(!IsFieldNotEmpty($("#ReasonBeginDate")))
-                result = false;
-//            else
-//            {
-//                var strDate = $("#ReasonBeginDate").val().split("T")[0];
-//                strDate = strDate.replace('.', '-')
-//                var date = jQuery.datepicker.parseDate( "dd-mm-yyyy", strDate);
-//            }
-        }
-//        if(!IsFieldNotEmpty($("#Period")))
-//            result = false;
-        if(!IsFieldNotEmpty($("#Schedule")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Salary")))
-            result = false;
-        else if (ValidateSumC($("#Salary")) == undefined)
-            result = false;
-        if(!IsFieldNotEmpty($("#Bonus")))
-            result = false;
-        else if (ValidateSumNotNegative($("#Bonus")) == undefined)
-            result = false;
-        if(!IsFieldNotEmpty($("#Compensation")))
-            result = false;
-        if(!IsFieldNotEmpty($("#EducationRequirements")))
-            result = false;
-        if(!IsFieldNotEmpty($("#ExperienceRequirements")))
-            result = false;
-        if(!IsFieldNotEmpty($("#Responsibility")))
-            result = false;
-        if(!IsFieldNotEmpty($("#DesirableBeginDate")))
+        if(($("#IsRequirementsVisible").val() == 'true') && !IsFieldNotEmpty($('#Requirements')))
             result = false;
         return result;
     }
-    function ValidateFormApproveAll()
+    function SendRequest()
     {
         var result = ValidateForm();
         if(!result)
             return result;
-        $("#ApproveForAll").val('True');
+        $("#Operation").val(1);
         return true;
     }
     function IsFieldNotEmpty(control)
@@ -241,6 +189,7 @@
     }
     function onTypeChange()
     {
+        clearControlErrors($('#Requirements'));
        getDictionariesStates();
     }
     function setValuesToDropdown(controlName,data)
@@ -278,7 +227,7 @@
         return false;
     }
     function deleteAttachment(id){
-        var actionUrl="@Url.Action("DeleteAttachment", "Help")";
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
         var url = actionUrl + "?Id=" + id;
         $.getJSON(url,
                        function (result) {
@@ -290,7 +239,9 @@
                                 $('#Error').text("");
                                 $('#Error').hide();   
                                 $('#ViewAttachmentId').hide();                    
-                                $('#DeleteAttachmentId').hide();        
+                                $('#DeleteAttachmentId').hide();   
+                                $('#AttachmentId').val(0);     
+                                $('#Attachment').val('');             
                            }
                        }
                      );
@@ -299,7 +250,7 @@
 
     function SetControlStatesInternal(isAttachmentVisible,isRequirementsVisible,isPeriodVisible)
     {
-        if(isAttachmentVisible == 'true')
+        if(isAttachmentVisible == 'true' || isAttachmentVisible == 'True')
         {
             $('#ViewAttachmentTrId').show();
             $('#AttachmentTrId').show();
@@ -309,7 +260,7 @@
             $('#ViewAttachmentTrId').hide();
              $('#AttachmentTrId').hide();
         }
-        if(isRequirementsVisible == 'true')
+        if(isRequirementsVisible == 'true' || isRequirementsVisible == 'True')
         {
             $('#RequirementsTrId').show();
         }
@@ -317,7 +268,7 @@
         {
             $('#RequirementsTrId').hide();
         }
-        if(isPeriodVisible == 'true')
+        if(isPeriodVisible == 'true' || isPeriodVisible == 'True')
         {
             $('#PeriodTrId').show();
         }

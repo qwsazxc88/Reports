@@ -899,7 +899,7 @@ namespace WebMvc.Controllers
                 return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
             }
         }
-        protected UploadFileDto GetFileContext()
+        /*protected UploadFileDto GetFileContext()
         {
             if (Request.Files.Count == 0)
                 return null;
@@ -933,7 +933,7 @@ namespace WebMvc.Controllers
             var fileContent = new byte[length];
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
-        }
+        }*/
         public static string  GetFileName(object qqFile,out byte[] context)
         {
             context = null;

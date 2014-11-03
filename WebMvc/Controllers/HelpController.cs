@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using Reports.Core;
@@ -32,7 +31,7 @@ namespace WebMvc.Controllers
             }
         }
 
-        public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
+        //public const string StrCommentsLoadError = "Ошибка при загрузке данных:";
         public const string StrCommentIsRequired = "Комментарий - обязательное поле";
         public const string StrReleaseDateIsRequired = "Дата версии - обязательное поле";
         public const string StrReleaseDateIsInvalid = "Дата версии - неправильная дата";
@@ -46,6 +45,13 @@ namespace WebMvc.Controllers
         public const string StrAnswerLengthError = "Длина поля 'Ответ' не может превышать {0} символов.";
         public const int MaxAnswerLength = 8192;
         public const string StrCannotDeleteTemplate = "Вам запрещено удаление информации";
+        public const string StrCannotSendRequestWithoutTemplate = "Заявка не может быть согласована без прикрепленого скана образца.";
+
+        public const string StrNameIsRequired = "Название - обязательное поле";
+        public const string StrNameIsTooLong = "Длина поля 'Название' не может превышать {0} символов.";
+        public const string StrInvalidFileSize = "Размер прикрепленного файла > {0} байт.";
+        public const string StrErrorOnDataLoad = "Ошибка при загрузке данных: ";
+        public const string StrDateRangeIsInvalid = "Дата в поле <Период с> не может быть больше даты в поле <по>.";
 
         public const int MaxTemplateNameLength = 256;
 
@@ -72,15 +78,16 @@ namespace WebMvc.Controllers
         {
             if (model.BeginDate.HasValue && model.EndDate.HasValue &&
                 model.BeginDate.Value > model.EndDate.Value)
-                ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
+                ModelState.AddModelError("BeginDate",StrDateRangeIsInvalid);
             return ModelState.IsValid;
         }
-
+        [HttpGet]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);
             return View(model);
         }
+        [HttpGet]
         public ContentResult GetDictionariesStates(int typeId)
         {
             //bool saveResult;
@@ -98,6 +105,57 @@ namespace WebMvc.Controllers
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             var jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
+        }
+        [HttpPost]
+        public ActionResult ServiceRequestEdit(HelpServiceRequestEditModel model)
+        {
+            //CorrectCheckboxes(model);
+            CorrectDropdowns(model);
+            UploadFileDto fileDto = GetFileContext();
+            //bool needToReload;
+            //string error;
+            if (!ValidateServiceRequestEditModel(model, fileDto))
+            {
+                model.Operation = 0;
+                HelpBl.ReloadDictionariesToModel(model);
+                return View(model);
+            }
+            string error;
+            if (!HelpBl.SaveServiceRequestEditModel(model, fileDto, out error))
+            {
+                //HttpContext.AddError(new Exception(error));
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(HelpBl.GetServiceRequestEditModel(model.Id, model.UserId));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto)
+        {
+            if (model.Id > 0 && fileDto == null && model.AttachmentId == 0)
+            {
+                //int attachmentCount = RequestBl.GetAttachmentsCount(model.Id, RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
+                if (model.Operation == 1)
+                    ModelState.AddModelError(string.Empty,StrCannotSendRequestWithoutTemplate);
+            }
+            return ModelState.IsValid;
+        }
+
+        protected void CorrectDropdowns(HelpServiceRequestEditModel model)
+        {
+            if (!model.IsEditable)
+            {
+                model.TypeId = model.TypeIdHidden;
+                model.ProductionTimeTypeId = model.ProductionTimeTypeIdHidden;
+                model.PeriodId = model.PeriodIdHidden;
+                model.TransferMethodTypeId = model.TransferMethodTypeIdHidden;
+            }
         }
         #region Versions
         [HttpGet]
@@ -125,7 +183,7 @@ namespace WebMvc.Controllers
             catch (Exception ex)
             {
                 Log.Error("Exception", ex);
-                string error = StrCommentsLoadError + ex.GetBaseException().Message;
+                string error = StrErrorOnDataLoad + ex.GetBaseException().Message;
                 return PartialView("VersionDialogError", new DialogErrorModel { Error = error });
             }
         }
@@ -224,7 +282,7 @@ namespace WebMvc.Controllers
             catch (Exception ex)
             {
                 Log.Error("Exception", ex);
-                string error = StrCommentsLoadError + ex.GetBaseException().Message;
+                string error = StrErrorOnDataLoad + ex.GetBaseException().Message;
                 return PartialView("FaqDialogError", new DialogErrorModel { Error = error });
             }
         }
@@ -323,7 +381,7 @@ namespace WebMvc.Controllers
             catch (Exception ex)
             {
                 Log.Error("Exception", ex);
-                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                string error = StrErrorOnDataLoad + ex.GetBaseException().Message;
                 return PartialView("EditTemplateDialogError", new DialogErrorModel { Error = error });
             }
         }
@@ -342,15 +400,15 @@ namespace WebMvc.Controllers
                 saveResult = true;
                 if (length > MaxFileSize)
                 {
-                    error = string.Format("Размер прикрепленного файла > {0} байт.", MaxFileSize);
+                    error = string.Format(StrInvalidFileSize, MaxFileSize);
                 }
                 else if (name == null || string.IsNullOrEmpty(name.Trim()))
                 {
-                    error = "Название - обязательное поле";
+                    error = StrNameIsRequired;
                 }
                 else if (name.Trim().Length > MaxTemplateNameLength)
                 {
-                    error = string.Format("Длина поля 'Название' не может превышать {0} символов.", MaxCommentLength);
+                    error = string.Format(StrNameIsTooLong, MaxCommentLength);
                 }
                 else
                 {
@@ -394,9 +452,9 @@ namespace WebMvc.Controllers
             {
                 saveResult = true;
                 if (name == null || string.IsNullOrEmpty(name.Trim()))
-                    error = "Название - обязательное поле";
+                    error = StrNameIsRequired;
                 else if (name.Trim().Length > MaxTemplateNameLength)
-                    error = string.Format("Длина поля 'Название' не может превышать {0} символов.", MaxCommentLength);
+                    error = string.Format(StrNameIsTooLong, MaxCommentLength);
                 else
                 {
                     var model = new SaveAttacmentModel

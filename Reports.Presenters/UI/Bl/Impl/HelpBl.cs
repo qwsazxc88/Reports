@@ -23,6 +23,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrCannotDeleteFaq = "Вам запрещено удаление информации";
         public const string StrNoUser = "Не указан сотрудник для заявки на услугу";
         public const string StrUserNotManager = "Вы (пользователь {0}) не являетесь руководителем или сотрудником - создание заявки запрещено";
+
+        public const string StrServiceRequestNotFound = "Не найдена заявка на услугу (id {0}) в базе данных";
+        public const string StrServiceRequestWasChanged = "Заявка была изменена другим пользователем.";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -194,15 +197,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
+                model.TypeId = entity.Type.Id;
                 model.ProductionTimeTypeId = entity.ProductionTime.Id;
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
-                model.PeriodId = entity.Period == null? 0 :entity.Period.Id;
+                model.PeriodId = entity.Period == null? new int?() : entity.Period.Id;
                 model.Requirements = entity.Requirements;
                 model.Version = entity.Version;
                 model.DocumentNumber = entity.Number.ToString();
                 model.DateCreated = FormatDate(entity.CreateDate);
                 model.Creator = entity.Creator.FullName;
-               
+                RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                    RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
+                if(attachment != null)
+                {
+                    model.AttachmentId = attachment.Id;
+                    model.Attachment = attachment.FileName;
+                }
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
@@ -231,6 +241,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
                 return;
+            }
+            switch (currentRole)
+            {
+                    case UserRole.Employee:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if(!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                                model.IsSendAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsEditable = true;
+                            model.IsSaveAvailable = true;
+                            if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                                model.IsSendAvailable = true;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -268,7 +305,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 List<HelpServicePeriod> periods = HelpServicePeriodDao.LoadForPeriodSortedByOrder(type.Id);
                 model.Periods = periods.ConvertAll(x => new IdNameDto {Id = x.Id, Name = x.Name});
-                if(model.PeriodId == 0)
+                if(!model.PeriodId.HasValue)
                 {
                     int currMonth = DateTime.Today.Year * 100 + DateTime.Today.Month;
                     //if(type.Id == 4) //todo hardcode from DB
@@ -286,6 +323,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetUserInfoModel(User user, HelpUserInfoModel model)
         {
+            if (user == null)
+                return;
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
@@ -305,8 +344,141 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerName = managers;
             }
         }
+        public void ReloadDictionariesToModel(HelpServiceRequestEditModel model)
+        {
+            LoadDictionaries(model);
+        }
+        public bool SaveServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto, out string error)
+        {
+            error = string.Empty;
+            User currUser = null;
+            User user = null;
+            HelpServiceRequest entity = null;
+            try
+            {
+                
+                IUser current = AuthenticationService.CurrentUser;
+                currUser = UserDao.Load(current.Id);
+                user = UserDao.Load(model.UserId);
+               
+                /*if (model.Id != 0)
+                    entity = AppointmentDao.Get(model.Id);*/
+                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }*/
 
+                if (model.Id == 0)
+                {
+                    entity = new HelpServiceRequest
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = currUser,//UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpServiceRequest),
+                        EditDate = DateTime.Now,
+                        User = user,
+                    };
+                    ChangeEntityProperties(entity, model,fileDto,currUser,out error);
+                    HelpServiceRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    model.DocumentNumber = entity.Number.ToString();
+                    model.DateCreated = entity.CreateDate.ToShortDateString();
+                    model.Creator = entity.Creator.FullName;
+                }
+                else
+                {
+                    entity = HelpServiceRequestDao.Get(model.Id);
+                    if (entity == null)
+                        throw new ValidationException(string.Format(StrServiceRequestNotFound, model.Id));
+                    if (entity.Version != model.Version)
+                    {
+                        error = StrServiceRequestWasChanged;
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    ChangeEntityProperties(entity, model, fileDto, currUser, out error);
+                    HelpServiceRequestDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
+                        HelpServiceRequestDao.SaveAndFlush(entity);
+                    }
+                }
+                    //if (entity.DeleteDate.HasValue)
+                    //    model.IsDeleted = true;
+                //}
+                model.Version = entity.Version;
+                SetFlagsState(entity.Id, currUser,entity, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HelpServiceRequestDao.RollbackTran();
+                Log.Error("Error on SaveServiceRequestEditModel:", ex);
+                error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+            finally
+            {
+                //SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void  ChangeEntityProperties(HelpServiceRequest entity,HelpServiceRequestEditModel model,
+            UploadFileDto fileDto, User currUser,out string error)
+        {
+            error = string.Empty;
+            UserRole currRole = AuthenticationService.CurrentUser.UserRole;
+            if (model.IsEditable)
+            {
+                HelpServiceType type = HelpServiceTypeDao.Load(model.TypeId);
+                if (fileDto != null && entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
+                    RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+                entity.Type = type;
+                entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
+                entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
+                entity.Requirements = type.IsRequirementsAvailable ? model.Requirements : null;
+                entity.Period = type.IsPeriodAvailable
+                                    ? model.PeriodId.HasValue ? helpServicePeriodDao.Load(model.PeriodId.Value) : null
+                                    : null;
+                if(fileDto != null && entity.Type.IsAttachmentAvailable)
+                {
+                    RequestAttachment attachment = new RequestAttachment
+                                                       {
+                                                           UncompressContext = fileDto.Context,
+                                                           ContextType = fileDto.ContextType,
+                                                           CreatorRole = RoleDao.Load((int)currRole),
+                                                           DateCreated = DateTime.Now,
+                                                           FileName = fileDto.FileName,
+                                                           RequestId = entity.Id,
+                                                           RequestType = (int)RequestAttachmentTypeEnum.HelpServiceRequestTemplate,
+                                                       };
+                    RequestAttachmentDao.SaveAndFlush(attachment);
+                    model.AttachmentId = attachment.Id;
+                    model.Attachment = attachment.FileName;
+                }
+            }
+            switch (currRole)
+            {
+                case UserRole.Employee:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if(model.Operation == 1)
+                            entity.SendDate = DateTime.Now;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (model.Operation == 1)
+                            entity.SendDate = DateTime.Now;
+                    }
+                    break;
+            }
 
+        }
         public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
         {
             HelpServiceType type = HelpServiceTypeDao.Load(typeId);

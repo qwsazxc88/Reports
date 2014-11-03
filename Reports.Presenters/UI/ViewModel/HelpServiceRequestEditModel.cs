@@ -27,8 +27,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsRequirementsVisible { get; set; }
 
         [Display(Name = "Период")]
-        public int PeriodId { get; set; }
-        public int PeriodIdHidden { get; set; }
+        public int? PeriodId { get; set; }
+        public int? PeriodIdHidden { get; set; }
         public IList<IdNameDto> Periods { get; set; }
         public bool IsPeriodVisible { get; set; }
 
@@ -56,5 +56,9 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsBeginWorkAvailable { get; set; }
         public bool IsConsultantOutsourcingEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
+
+        public int Operation { get; set; }
+
+        public bool ReloadPage { get; set; }
     }
 }

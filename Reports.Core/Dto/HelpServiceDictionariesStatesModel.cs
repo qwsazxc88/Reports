@@ -8,7 +8,7 @@ namespace Reports.Core.Dto
         bool IsRequirementsVisible { get; set; }
         bool IsPeriodVisible { get; set; }
         IList<IdNameDto> Periods { get; set; }
-        int PeriodId { get; set; }
+        int? PeriodId { get; set; }
     }
 
     public class HelpServiceDictionariesStatesModel : IHelpServiceDictionariesStates
@@ -21,7 +21,7 @@ namespace Reports.Core.Dto
         public bool IsRequirementsVisible { get; set; }
         public bool IsPeriodVisible { get; set; }
         public IList<IdNameDto> Periods { get; set; }
-        public int PeriodId { get; set; }
+        public int? PeriodId { get; set; }
         #endregion
     }
 }

@@ -11,6 +11,9 @@ namespace Reports.Presenters.UI.Bl
 
         HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
         void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
+        void ReloadDictionariesToModel(HelpServiceRequestEditModel model);
+        bool SaveServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto, out string error);
+
 
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);
