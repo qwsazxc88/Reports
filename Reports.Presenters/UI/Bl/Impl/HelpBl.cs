@@ -213,6 +213,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.AttachmentId = attachment.Id;
                     model.Attachment = attachment.FileName;
                 }
+                RequestAttachment serviceAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                    RequestAttachmentTypeEnum.HelpServiceRequest);
+                if (serviceAttach != null)
+                {
+                    model.ServiceAttachmentId = serviceAttach.Id;
+                    model.ServiceAttachment = serviceAttach.FileName;
+                }
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
@@ -254,6 +261,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
                                 model.IsSendAvailable = true;
                         }
+                        if (entity.EndWorkDate.HasValue)
+                            model.IsEndAvailable = true;
                     }
                     break;
                 case UserRole.Manager:
@@ -266,6 +275,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
                                 model.IsSendAvailable = true;
                         }
+                        if(entity.EndWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
+                    {
+                        if (entity.Consultant != null && entity.Consultant.Id == current.Id 
+                            && entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsConsultantOutsourcingEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                            model.IsBeginWorkAvailable = true;
                     }
                     break;
             }
@@ -459,6 +484,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.AttachmentId = attachment.Id;
                     model.Attachment = attachment.FileName;
                 }
+                if (!entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
+                    RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+            }
+            if (model.IsConsultantOutsourcingEditable)
+            {
+                if (fileDto != null && model.ServiceAttachmentId != 0)
+                    RequestAttachmentDao.DeleteAndFlush(model.ServiceAttachmentId);
+                if (fileDto != null)
+                {
+                    RequestAttachment attachment = new RequestAttachment
+                    {
+                        UncompressContext = fileDto.Context,
+                        ContextType = fileDto.ContextType,
+                        CreatorRole = RoleDao.Load((int)currRole),
+                        DateCreated = DateTime.Now,
+                        FileName = fileDto.FileName,
+                        RequestId = entity.Id,
+                        RequestType = (int)RequestAttachmentTypeEnum.HelpServiceRequest,
+                    };
+                    RequestAttachmentDao.SaveAndFlush(attachment);
+                    model.ServiceAttachmentId = attachment.Id;
+                    model.ServiceAttachment = attachment.FileName;
+                }
             }
             switch (currRole)
             {
@@ -476,8 +524,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.SendDate = DateTime.Now;
                     }
                     break;
+                case UserRole.ConsultantOutsourcing:
+                    if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.Consultant = currUser;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id 
+                            && model.Operation == 3)
+                            entity.EndWorkDate = DateTime.Now;
+                    }
+                    break;
             }
-
         }
         public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
         {
@@ -487,12 +547,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         #region Comments
         public CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId)
         {
+            bool isAddAvailable = id > 0;
+            if (isAddAvailable)
+            {
+                if (typeId == RequestTypeEnum.HelpServiceRequest)
+                {
+                    HelpServiceRequest request = HelpServiceRequestDao.Load(id);
+                    isAddAvailable =  ((CurrentUser.Id == request.Creator.Id) ||
+                                      (request.Consultant != null && CurrentUser.Id == request.Consultant.Id));
+                }
+            }
             CommentsModel commentModel = new CommentsModel
             {
                 RequestId = id,
                 RequestTypeId = (int)typeId,
                 Comments = new List<RequestCommentModel>(),
-                IsAddAvailable = id > 0,
+                IsAddAvailable = isAddAvailable ,
             };
             if (id == 0)
                 return commentModel;
@@ -511,19 +581,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
-                //case RequestTypeEnum.AppointmentReport:
-                //    AppointmentReport rep = AppointmentReportDao.Load(id);
-                //    if ((rep.Comments != null) && (rep.Comments.Count() > 0))
-                //    {
-                //        commentModel.Comments = rep.Comments.OrderBy(x => x.DateCreated).ToList().
-                //            ConvertAll(x => new RequestCommentModel
-                //            {
-                //                Comment = x.Comment,
-                //                CreatedDate = x.DateCreated.ToString(),
-                //                Creator = x.User.FullName,
-                //            });
-                //    }
-                //    break;
                 default:
                     throw new ValidationException(string.Format(AppointmentBl.StrInvalidCommentType, (int)typeId));
 
@@ -574,6 +631,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #endregion
+
         #region Version
         public HelpVersionsListModel GetVersionsModel()
         {

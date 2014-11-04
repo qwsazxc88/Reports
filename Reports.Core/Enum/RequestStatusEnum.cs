@@ -48,6 +48,7 @@
         MissionReportCost = 8,
         HelpTemplate = 9,
         HelpServiceRequestTemplate = 10,
+        HelpServiceRequest = 11,
 
         // Order Scans
 

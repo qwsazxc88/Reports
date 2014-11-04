@@ -1,4 +1,5 @@
 ﻿using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Presenters.UI.ViewModel;
 
 namespace Reports.Presenters.UI.Bl
@@ -13,6 +14,9 @@ namespace Reports.Presenters.UI.Bl
         void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
         void ReloadDictionariesToModel(HelpServiceRequestEditModel model);
         bool SaveServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto, out string error);
+
+        CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
+        bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
 
         HelpVersionsListModel GetVersionsModel();

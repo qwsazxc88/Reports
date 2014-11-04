@@ -61,10 +61,15 @@
                     }
                 </td>
             </tr>
-            <tr id="AttachmentTrId">    
-                <td>Прикрепить скан образца</td>
-                <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
-            </tr>
+             @if (Model.IsEditable)
+             {
+                <tr id="AttachmentTrId">    
+                    <td>Прикрепить скан образца</td>
+                    <td>
+                        <input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>
+                    </td>
+                </tr>
+            }
             <tr id="RequirementsTrId">
                 <td>
                     @Html.LabelFor(m => m.Requirements):
@@ -105,11 +110,11 @@
                 <td>
                     @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
                     {
-                        <a class="ui-notify-close" href='@Url.Action("ViewServiceAttachment", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
+                        <a class="ui-notify-close" id="ViewServiceAttachmentId"  href='@Url.Action("ViewTemplate", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
                         <input type="hidden" id="ServiceAttachment" name="ServiceAttachment" value="@Model.ServiceAttachment" />
                         <input type="hidden" id="ServiceAttachmentId" name="ServiceAttachmentId" value="@Model.ServiceAttachmentId" />
                         if (Model.IsConsultantOutsourcingEditable)
-                        {<text><a class="ui-notify-close" onclick="return deleteServiceAttachment(@Model.ServiceAttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                        {<text>&nbsp; &nbsp; &nbsp;<a class="ui-notify-close" id="DeleteServiceAttachmentId"  onclick="return deleteServiceAttachment(@Model.ServiceAttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
                     }
                 </td>
             </tr>
@@ -170,6 +175,11 @@
         if(!result)
             return result;
         $("#Operation").val(1);
+        return true;
+    }
+    function BeginWork()
+    {
+        $("#Operation").val(2);
         return true;
     }
     function IsFieldNotEmpty(control)
@@ -247,18 +257,41 @@
                      );
         return false;
     }
+    function deleteServiceAttachment(id){
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide();   
+                                $('#ViewServiceAttachmentId').hide();                    
+                                $('#DeleteServiceAttachmentId').hide();   
+                                $('#ServiceAttachmentId').val(0);     
+                                $('#ServiceAttachment').val('');             
+                           }
+                       }
+                     );
+        return false;
+    }
 
     function SetControlStatesInternal(isAttachmentVisible,isRequirementsVisible,isPeriodVisible)
     {
         if(isAttachmentVisible == 'true' || isAttachmentVisible == 'True')
         {
             $('#ViewAttachmentTrId').show();
-            $('#AttachmentTrId').show();
+            if($('#AttachmentTrId'))
+                $('#AttachmentTrId').show();
         }
         else
         {
             $('#ViewAttachmentTrId').hide();
-             $('#AttachmentTrId').hide();
+            if($('#AttachmentTrId'))
+                $('#AttachmentTrId').hide();
         }
         if(isRequirementsVisible == 'true' || isRequirementsVisible == 'True')
         {
