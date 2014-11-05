@@ -39,6 +39,8 @@ create table HelpServiceRequest (
   SendDate DATETIME null,
   BeginWorkDate DATETIME null,
   EndWorkDate DATETIME null,
+  ConfirmWorkDate DATETIME null,
+  RejectWorkDate DATETIME null,
   Number INT not null,
   TypeId INT not null,
   ProductionTimeId INT not null,

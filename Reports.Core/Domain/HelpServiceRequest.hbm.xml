@@ -9,6 +9,8 @@
     <property name="SendDate" not-null="false"/>
     <property name="BeginWorkDate" not-null="false"/>
     <property name="EndWorkDate" not-null="false"/>
+    <property name="ConfirmWorkDate" not-null="false"/>
+    <property name="RejectWorkDate" not-null="false"/>
     <property name="Number"  not-null="true"/>
 	  
 	<many-to-one name="Type" class="HelpServiceType" column="TypeId" foreign-key="FK_HelpServiceRequest_HelpServiceType" index="HelpServiceRequest_HelpServiceType"  not-null="true"/>

@@ -10,6 +10,7 @@ namespace Reports.Presenters.UI.Bl
         HelpServiceRequestsListModel GetServiceRequestsList();
         void SetServiceRequestsListModel(HelpServiceRequestsListModel model, bool hasError);
 
+        CreateHelpServiceRequestModel GetCreateHelpServiceRequestModel();
         HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId);
         void GetDictionariesStates(int typeId, HelpServiceDictionariesStatesModel model);
         void ReloadDictionariesToModel(HelpServiceRequestEditModel model);

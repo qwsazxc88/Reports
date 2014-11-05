@@ -26,6 +26,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrServiceRequestNotFound = "Не найдена заявка на услугу (id {0}) в базе данных";
         public const string StrServiceRequestWasChanged = "Заявка была изменена другим пользователем.";
+
+        public const string StrNoDepartmentForUser = "Не задано структурное подразделение для руководителя (id {0})";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -165,6 +167,31 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #region Service Requests Edit
+        public CreateHelpServiceRequestModel GetCreateHelpServiceRequestModel()
+        {
+            CreateHelpServiceRequestModel model = new CreateHelpServiceRequestModel();
+            User currentUser = UserDao.Load(CurrentUser.Id);
+            
+            //if (currentUser == null)
+            //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
+            //        CurrentUser.Id));
+            IList<IdNameDto> list;
+            switch (currentUser.Level)
+            {
+                case 2:
+                case 3:
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    if (currentUser.Department == null)
+                        throw new ValidationException(string.Format(StrNoDepartmentForUser,currentUser.Id));
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(new List<int> {currentUser.Department.Id});
+                    model.Users = list;
+                    break;
+            }
+            return model;
+        }
         public HelpServiceRequestEditModel GetServiceRequestEditModel(int id, int? userId)
         {
             IUser current = AuthenticationService.CurrentUser;
@@ -261,7 +288,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
                                 model.IsSendAvailable = true;
                         }
-                        if (entity.EndWorkDate.HasValue)
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
                             model.IsEndAvailable = true;
                     }
                     break;
@@ -275,15 +302,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
                                 model.IsSendAvailable = true;
                         }
-                        if(entity.EndWorkDate.HasValue)
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
                             model.IsEndAvailable = true;
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
                     {
-                        if (entity.Consultant != null && entity.Consultant.Id == current.Id 
-                            && entity.BeginWorkDate.HasValue)
+                        if (entity.Consultant != null && entity.Consultant.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
@@ -513,27 +540,49 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Employee:
                     if (entity.Creator.Id == currUser.Id)
                     {
-                        if(model.Operation == 1)
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
                             entity.SendDate = DateTime.Now;
+                        if(entity.EndWorkDate.HasValue)
+                        {
+                            if(model.Operation == 4)
+                                entity.ConfirmWorkDate = DateTime.Now;
+                            else if(model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                            }
+                        }
                     }
                     break;
                 case UserRole.Manager:
                     if (entity.Creator.Id == currUser.Id)
                     {
-                        if (model.Operation == 1)
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
                             entity.SendDate = DateTime.Now;
+                        if (entity.EndWorkDate.HasValue)
+                        {
+                            if (model.Operation == 4)
+                                entity.ConfirmWorkDate = DateTime.Now;
+                            else if (model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                            }
+                        }
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
                     if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
                     {
-                        if (model.Operation == 2)
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.Consultant = currUser;
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id 
-                            && model.Operation == 3)
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
                     }
                     break;

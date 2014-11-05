@@ -131,12 +131,16 @@
                                                                                                     {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Услуга оказана" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
                                                                                               {<text>style="display:none"</text>}/>
+                 
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга оказана" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
                                                                                            {<text>style="display:none"</text>}/>
+              
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
                 </td>
             </tr>
         </table>
@@ -180,6 +184,21 @@
     function BeginWork()
     {
         $("#Operation").val(2);
+        return true;
+    }
+    function EndWork()
+    {
+        $("#Operation").val(3);
+        return true;
+    }
+    function EndRequest()
+    {
+        $("#Operation").val(4);
+        return true;
+    }
+     function RejectRequest()
+    {
+        $("#Operation").val(5);
         return true;
     }
     function IsFieldNotEmpty(control)

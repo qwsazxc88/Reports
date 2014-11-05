@@ -142,6 +142,7 @@
     <Compile Include="UI\ViewModel\ClearanceChecklistListModel.cs" />
     <Compile Include="UI\ViewModel\ConstantEditModel.cs" />
     <Compile Include="UI\ViewModel\ConstantListModel.cs" />
+    <Compile Include="UI\ViewModel\CreateHelpServiceRequestModel.cs" />
     <Compile Include="UI\ViewModel\CreateMissionOrderModel.cs" />
     <Compile Include="UI\ViewModel\CreateRequestModel.cs" />
     <Compile Include="UI\ViewModel\DeductionEditModel.cs" />

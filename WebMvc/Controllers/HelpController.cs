@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Script.Serialization;
 using Reports.Core;
 using Reports.Core.Dto;
 using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
+using WebMvc.Attributes;
 
 namespace WebMvc.Controllers
 {
@@ -81,6 +83,24 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate",StrDateRangeIsInvalid);
             return ModelState.IsValid;
         }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager)]
+        public ActionResult CreateServiceRequest()
+        {
+            CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult CreateServiceRequest(CreateHelpServiceRequestModel model)
+        {
+            return RedirectToAction("ServiceRequestEdit",
+                                             new RouteValueDictionary {
+                                                                        {"id", 0}, 
+                                                                        {"userId", model.UserId}
+                                                                       });
+        }
+
         [HttpGet]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
@@ -146,7 +166,6 @@ namespace WebMvc.Controllers
             }
             return ModelState.IsValid;
         }
-
         protected void CorrectDropdowns(HelpServiceRequestEditModel model)
         {
             if (!model.IsEditable)

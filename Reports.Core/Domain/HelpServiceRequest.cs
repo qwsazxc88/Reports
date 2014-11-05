@@ -14,6 +14,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? SendDate { get; set; }
         public virtual DateTime? BeginWorkDate { get; set; }
         public virtual DateTime? EndWorkDate { get; set; }
+        public virtual DateTime? ConfirmWorkDate { get; set; }
+        public virtual DateTime? RejectWorkDate { get; set; }
         
         public virtual int Number { get; set; }
 

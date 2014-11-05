@@ -1017,5 +1017,20 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Address", NHibernateUtil.String);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameAddressDto))).List<IdNameAddressDto>();
         }
+        public virtual IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments)
+        {
+            const string sqlQuery = @"select emp.Id,emp.Name from Users emp
+                    inner join dbo.Department d on emp.DepartmentId = d.Id
+                    inner join dbo.Department dm on d.Path like dm.Path+N'%'
+                    where ((emp.RoleId & 2) > 0) 
+                    and dm.Id in (:departmentIds)
+                    and emp.IsActive = 1 
+                    order by Name";
+            IQuery query = Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                SetParameterList("departmentIds", departments);
+            return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDto))).List<IdNameDto>();
+        }
     }
 }

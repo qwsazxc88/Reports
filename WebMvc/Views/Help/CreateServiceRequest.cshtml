@@ -1,0 +1,123 @@
+﻿@model Reports.Presenters.UI.ViewModel.CreateHelpServiceRequestModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Создание заявки на услугу";
+}
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+    <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table>
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                        </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    @Html.ValidationSummary(false, "")
+                    <div id="Error" visible="false" style="color:Red"/>
+                    </td>
+                </tr>
+        @*<tr>
+            <td>
+                @Html.LabelFor(m => m.DepartmentName):
+            </td>
+            <td>
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                @if (!Model.DepartmentReadOnly)
+                {
+                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                }            
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(m => m.RequestTypeId):
+            </td>
+            <td>
+               @Html.DropDownListFor(model => model.RequestTypeId, new SelectList(Model.RequestTypes, "ID", "Name")) 
+            </td>
+        </tr>*@
+            <tr @*@if (!Model.IsUserVisible) {<text>style="display:none"</text>}*@>
+                <td>
+                    @Html.LabelFor(m => m.UserId):
+                </td>
+                <td>
+                   @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 
+                </td>
+            </tr>
+        </table>
+        </div>                          
+      </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <div class="action-wrap">
+                <table>
+                     <tr>
+                        <td colspan="2">
+                            <input type="submit"  onclick="return ValidateForm();" value="Создать"/>
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </td>
+    </tr> 
+    </table>
+}
+
+<script type="text/javascript">
+    /*var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    function ChangeMonth() {
+    GetUsersForDepartment("UserId",$("#DepartmentId").val())
+    }
+    function GetUsersForDepartment(controlName,departmentId) {
+    clearUsersSelErrors();
+    var url = "@Url.Action("GetUsersForDepartment", "UserRequest")?departmentId="+ departmentId;
+    $.getJSON(url,
+    function (result) {
+    if (result.Error != "") {
+    addUsersSelError(result.Error);
+    }
+    else {
+    setUserValuesToDropdown(controlName, result.Children);
+    }
+    });
+    }
+    function setUserValuesToDropdown(controlName,data)
+    {
+    var optionsValues = '<select id="' + controlName + '" name="' + controlName + '">';
+    $.each(data, function (item, data) {
+    optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+    })
+    optionsValues += '</select>';
+    var options = $('#' + controlName );
+    options.replaceWith(optionsValues);
+    }*/
+    function addUsersSelError(value) {
+        $("#Error").text(value);
+        $("#Error").show();
+    }
+    function clearUsersSelErrors() {
+        $("#Error").text("");
+        $("#Error").hide();
+    }
+    function ValidateForm() {
+        if ($("#UserId").val() == undefined) {
+            addUsersSelError("Не выбран пользователь");
+            return false;
+        }
+        return true;
+    }
+ </script>
