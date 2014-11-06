@@ -90,7 +90,7 @@
                 <div id="reference-container">
                     <table class="grid">
                         <thead>
-                            <tr class="reference-row">
+                            <tr>
                                 <th>
                                     @Html.LabelFor(m => m.References[0].LastName)
                                 </th>
@@ -117,7 +117,7 @@
                         <tbody>                 
                             @for (var i = 0; i < Model.References.Count; i++)
                             {
-                                <tr>
+                                <tr class="reference-row">
                                     <td>
                                         @Model.References[i].LastName
                                     </td>
@@ -317,13 +317,13 @@
                 {
                     $table.append(
                         "<tr class=\"reference-row\"><td>" +
-                        dataReceived[i].LastName + "</td><td>" +
-                        dataReceived[i].FirstName + "</td><td>" +
-                        dataReceived[i].Patronymic + "</td><td>" +
-                        dataReceived[i].WorksAt + "</td><td>" +
-                        dataReceived[i].Position + "</td><td>" +
-                        dataReceived[i].Phone + "</td><td>" +
-                        dataReceived[i].Relation + 
+                        (dataReceived[i].LastName ? dataReceived[i].LastName : "") + "</td><td>" +
+                        (dataReceived[i].FirstName ? dataReceived[i].FirstName : "") + "</td><td>" +
+                        (dataReceived[i].Patronymic ? dataReceived[i].Patronymic : "") + "</td><td>" +
+                        (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
+                        (dataReceived[i].Position ? dataReceived[i].Position : "") + "</td><td>" +
+                        (dataReceived[i].Phone ? dataReceived[i].Phone : "") + "</td><td>" +
+                        (dataReceived[i].Relation ? dataReceived[i].Relation : "") +
                         "</td></tr>"
                     );
                 }

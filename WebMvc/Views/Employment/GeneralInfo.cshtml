@@ -70,7 +70,7 @@
                                         @Model.NameChanges[i].PreviousName
                                     </td>
                                     <td>
-                                        @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : @String.Empty)
+                                        @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : "__.__.____")
                                     </td>
                                     <td>
                                         @Model.NameChanges[i].Place
@@ -312,7 +312,8 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
-        attachDatepickerToInputs($('#DateOfBirth, #DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-80:+0", true);
+        attachDatepickerToInputs($('#DateOfBirth'), "-100:-14", true);
+        attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
         attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
         $('#gender').buttonset();
 
@@ -347,10 +348,10 @@
                 {
                     $table.append(
                         "<tr class=\"name-change-row\"><td>" +
-                        dataReceived[i].PreviousName + "</td><td>" +
+                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
                         convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
-                        dataReceived[i].Place + "</td><td>" +
-                        dataReceived[i].Reason + 
+                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                        (dataReceived[i].Reason ? dataReceived[i].Place : "") + 
                         "</td></tr>"
                     );
                 }
@@ -392,8 +393,8 @@
                 {
                     $table.append(
                         "<tr class=\"foreign-language-row\"><td>" +
-                        dataReceived[i].LanguageName + "</td><td>" +
-                        dataReceived[i].Level + 
+                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") + 
                         "</td></tr>"
                     );
                 }

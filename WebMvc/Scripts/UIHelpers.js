@@ -40,10 +40,16 @@ function showInputActionResult(inputs, isOk) {
 };
 
 var convertDateToShortDateString = function (date) {
+    if (!date) {
+        return "__.__.____"
+    }
     return ('0' + date.getDate()).slice(-2) + "." + ('0' + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear();
 };
 
 var convertMSJsonDateToShortDateString = function (mSJsonDate) {
+    if (!mSJsonDate) {
+        return "__.__.____"
+    }
     var date = new Date(parseInt(mSJsonDate.substr(6)));
     return ('0' + date.getDate()).slice(-2) + "." + ('0' + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear();
 };
