@@ -126,7 +126,7 @@
                         @Model.Children[i].PassportData
                     </td>
                     <td>
-                        @(@Model.Children[i].DateOfBirth.HasValue ? @Model.Children[i].DateOfBirth.Value.ToShortDateString() : @String.Empty)
+                        @(@Model.Children[i].DateOfBirth.HasValue ? @Model.Children[i].DateOfBirth.Value.ToShortDateString() : "__.__.____")
                     </td>
                     <td>
                         @Model.Children[i].PlaceOfBirth
@@ -253,12 +253,12 @@
                 {
                     $tbody.append(
                         "<tr><td>Ребенок</td><td>" +
-                        dataReceived[i].Name + "</td><td>" +
-                        dataReceived[i].PassportData + "</td><td>" +
+                        (dataReceived[i].Name ? dataReceived[i].Name : "") + "</td><td>" +
+                        (dataReceived[i].PassportData ? dataReceived[i].PassportData : "") + "</td><td>" +
                         convertMSJsonDateToShortDateString(dataReceived[i].DateOfBirth) + "</td><td>" +
-                        dataReceived[i].PlaceOfBirth + "</td><td>" +
-                        dataReceived[i].WorksAt + "</td><td>" +
-                        dataReceived[i].Contacts + 
+                        (dataReceived[i].PlaceOfBirth ? dataReceived[i].PlaceOfBirth : "") + "</td><td>" +
+                        (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
+                        (dataReceived[i].Contacts ? dataReceived[i].Contacts : "") + 
                         "</td></tr>"
                     );
                 }
