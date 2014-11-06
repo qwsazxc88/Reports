@@ -16,12 +16,15 @@ namespace Reports.Core.Dao.Impl
 
         public IList<MissionOrderRoleRecord> GetRoleRecords(User user = null, string roleCode = null, User targetUser = null, Department targetDepartment = null)
         {
-            return Session.Query<MissionOrderRoleRecord>().Where(morr => true
+            var result = Session.Query<MissionOrderRoleRecord>().ToList<MissionOrderRoleRecord>();
+            result = result.Where(morr => true
                 && (user != null ? user.Id == morr.User.Id : true)
                 && (roleCode != null ? roleCode == morr.Role.Code : true)
-                && (targetUser != null ? targetUser.Id == morr.TargetUser.Id : true)
-                && (targetDepartment != null ? targetDepartment.Id == morr.TargetDepartment.Id : true)
+                && (targetUser != null && morr.TargetUser != null ? targetUser.Id == morr.TargetUser.Id : true)
+                && (targetDepartment != null && morr.TargetDepartment != null ? targetDepartment.Id == morr.TargetDepartment.Id : true)
                 ).ToList<MissionOrderRoleRecord>();
+
+            return result;
         }
     }
 }
