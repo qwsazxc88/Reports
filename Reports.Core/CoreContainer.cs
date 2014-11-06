@@ -484,6 +484,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IScheduleDao)).
                   ImplementedBy(typeof(ScheduleDao)).
                   LifeStyle.Is(type));
+            Register(Component.For(typeof(IMissionOrderRoleRecordDao)).
+                  ImplementedBy(typeof(MissionOrderRoleRecordDao)).
+                  LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

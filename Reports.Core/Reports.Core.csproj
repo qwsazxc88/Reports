@@ -261,6 +261,7 @@
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
+    <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -311,6 +312,7 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />

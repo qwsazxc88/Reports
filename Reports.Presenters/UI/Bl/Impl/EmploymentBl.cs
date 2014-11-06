@@ -178,6 +178,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { scheduleDao = value; }
         }
 
+        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
+        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        {
+            get { return Validate.Dependency(missionOrderRoleRecordDao); }
+            set { missionOrderRoleRecordDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -2330,33 +2337,37 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
-
-            if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+            // Контроль уровня вышестоящего руководителя
+            if (!IsManagerLevelValid(current))
+            {
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
-            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+            }
+            // Контроль уровня руководителя-инициатора
+            if (!IsManagerLevelValid(creator))
+            {
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
-            List<DepartmentDto> departments;
+            }
+
             switch (current.Level)
             {
-                case 2:
-                    IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
-                    if (managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
-                        return true;
-                    IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    if (managers.Any(x => x == creator.Id && creator.Level.Value == 3))
-                        return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
-                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
-                    /*if (creator.Level != 4)
-                        return false;*/
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
-                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
+                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                        .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
+                case 4:
+                case 5:
+                    return creator.Department.Path.StartsWith(current.Department.Path)
+                        && creator.Department.Path.Length > current.Department.Path.Length;
                 default:
                     return false;
             }
+        }
+
+        protected bool IsManagerLevelValid(User manager)
+        {
+            return (manager.Level.HasValue && manager.Level >= MinManagerLevel && manager.Level <= MaxManagerLevel);
         }
 
         public bool IsUnlimitedEditAvailable()
