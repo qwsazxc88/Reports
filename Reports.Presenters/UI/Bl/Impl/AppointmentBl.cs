@@ -125,6 +125,14 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(employmentCommonDao); }
             set { employmentCommonDao = value; }
+        	
+        }
+
+        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
+        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao        
+        {
+            get { return Validate.Dependency(missionOrderRoleRecordDao); }
+            set { missionOrderRoleRecordDao = value; }            
         }
 
         #endregion
@@ -414,40 +422,50 @@ namespace Reports.Presenters.UI.Bl.Impl
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             return (creator.Level.Value == 2);
         }*/
+
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
-            if( !current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+            if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
-                        current.Level.HasValue? current.Level.Value.ToString():"<не указан>" ,current.Id)); 
-            if( !creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+                        current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
+            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
-                        creator.Level.HasValue?creator.Level.Value.ToString():"<не указан>",creator.Id));
+                        creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             List<DepartmentDto> departments;
             switch (current.Level)
             {
                 case 2:
                     IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
-                    if(managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
+                    if (managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
                         return true;
                     IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    if(managers.Any(x => x == creator.Id && creator.Level.Value == 3))
+                    if (managers.Any(x => x == creator.Id && creator.Level.Value == 3))
                         return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2 , true).ToList();
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
-                case 3:
+                /*case 3:
                     if (creator.Level != 4)
                         return false;
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
+                */
+                case 3:
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
+                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                        .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
+                case 4:
+                case 5:
+                    return creator.Department.Path.StartsWith(current.Department.Path)
+                        && creator.Department.Path.Length > current.Department.Path.Length;
                 default:
-                    if(creator.Department == null)
+                    if (creator.Department == null)
                         throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
                     if (current.Department == null)
                         throw new ValidationException(string.Format(StrNoDepartmentForManager, current.Id));
-                    return current.Level + 1 == creator.Level &&
-                           creator.Department.Path.StartsWith(current.Department.Path);
+                    return false;
             }
         }
+
         protected void SetFlagsState(AppointmentEditModel model, bool state)
         {
             model.IsEditable = state;
