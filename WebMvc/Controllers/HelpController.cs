@@ -158,12 +158,11 @@ namespace WebMvc.Controllers
         }
         protected bool ValidateServiceRequestEditModel(HelpServiceRequestEditModel model, UploadFileDto fileDto)
         {
-            if (model.Id > 0 && fileDto == null && model.AttachmentId == 0)
+            /*if (model.Id > 0 && fileDto == null && model.AttachmentId == 0)
             {
-                //int attachmentCount = RequestBl.GetAttachmentsCount(model.Id, RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
                 if (model.Operation == 1)
                     ModelState.AddModelError(string.Empty,StrCannotSendRequestWithoutTemplate);
-            }
+            }*/
             return ModelState.IsValid;
         }
         protected void CorrectDropdowns(HelpServiceRequestEditModel model)

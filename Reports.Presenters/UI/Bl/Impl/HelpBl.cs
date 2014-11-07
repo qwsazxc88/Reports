@@ -122,9 +122,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Услуга запрошена"),
-                                                           new IdNameDto(2, "Услуга формируется"),
-                                                           new IdNameDto(3, "Услуга оказана"),
+                                                           new IdNameDto(1, "Черновик сотрудника"),
+                                                           new IdNameDto(2, "Услуга запрошена"),
+                                                           new IdNameDto(3, "Услуга формируется"),
+                                                           new IdNameDto(4, "Услуга сформирована"),
+                                                           new IdNameDto(5, "Услуга оказана")
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(5, "Одобрен членом правления"),
                                                            //new IdNameDto(6, "Не одобрен членом правления"),
@@ -148,22 +150,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDocumentsToModel(HelpServiceRequestsListModel model, User user)
         {
             UserRole role = CurrentUser.UserRole;
-            model.Documents = new List<HelpServiceRequestDto>();
-            //model.Documents = MissionReportDao.GetDocuments(
-            //    user.Id,
-            //    role,
-            //    //GetDepartmentId(model.Department),
-            //    model.DepartmentId,
-            //    //model.PositionId,
-            //    //model.TypeId,
-            //    //0,
-            //    model.StatusId,
-            //    model.BeginDate,
-            //    model.EndDate,
-            //    model.UserName,
-            //    model.Number,
-            //    model.SortBy,
-            //    model.SortDescending);
+            //model.Documents = new List<HelpServiceRequestDto>();
+            model.Documents = HelpServiceRequestDao.GetDocuments(
+                user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.Number,
+                model.SortBy,
+                model.SortDescending);
         }
         #endregion
         #region Service Requests Edit
@@ -285,8 +283,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsEditable = true;
                             model.IsSaveAvailable = true;
-                            if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
-                                model.IsSendAvailable = true;
+                            //if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                            model.IsSendAvailable = true;
                         }
                         if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
                             model.IsEndAvailable = true;
@@ -299,8 +297,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             model.IsEditable = true;
                             model.IsSaveAvailable = true;
-                            if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
-                                model.IsSendAvailable = true;
+                            //if (model.AttachmentId > 0 || !model.IsAttachmentVisible)
+                            model.IsSendAvailable = true;
                         }
                         if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
                             model.IsEndAvailable = true;
