@@ -6,19 +6,27 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
+using Reports.Core.Utils;
 
 namespace Reports.Core.Dao.Impl
 {
     public class HelpServiceRequestDao : DefaultDao<HelpServiceRequest>, IHelpServiceRequestDao
     {
         public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
-        public const string StrInvalidManagerDepartment = "Не указан департамент для руководителя (id {0}) в базе даннных.";
+        public const string StrInvalidManagerDepartment = "Не указано структурное подразделение для руководителя (id {0}) в базе даннных.";
+        public const string StrNoManagerDepartments = "Не найдено структурных подразделений для руководителя (id {0}) в базе даннных.";
 
         protected IUserDao userDao;
         public IUserDao UserDao
         {
             get { return Validate.Dependency(userDao); }
             set { userDao = value; }
+        }
+        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
+        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        {
+            get { return Validate.Dependency(missionOrderRoleRecordDao); }
+            set { missionOrderRoleRecordDao = value; }
         }
 
         public HelpServiceRequestDao(ISessionManager sessionManager)
@@ -183,7 +191,12 @@ namespace Reports.Core.Dao.Impl
 //                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2", currentUser.Id);
 //                            sqlFlag = @"case when v.UserDateAccept is not null 
 //                                        and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            break;
+                            List<Department> depList =  MissionOrderRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                            if(depList == null || depList.Count() == 0)
+                                throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                            sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
+                            sqlQuery = string.Format(sqlQuery, sqlQueryPart);
+                            return string.Format(@" depM.Id in {0}", CoreUtils.CreateIn("(",depList));
                         case 4:
                         case 5:
                         case 6:
@@ -196,7 +209,7 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id, 
                                 currentUser.Level));
                     }
-                    return sqlQueryPart;
+                    //return sqlQueryPart;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:

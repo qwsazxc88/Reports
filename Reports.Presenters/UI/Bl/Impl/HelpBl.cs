@@ -28,6 +28,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrServiceRequestWasChanged = "Заявка была изменена другим пользователем.";
 
         public const string StrNoDepartmentForUser = "Не задано структурное подразделение для руководителя (id {0})";
+        public const string StrNoManagerDepartments = "Не найдено структурных подразделений для руководителя (id {0}) в базе даннных.";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -88,6 +89,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(helpServiceRequestCommentDao); }
             set { helpServiceRequestCommentDao = value; }
+        }
+        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
+        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        {
+            get { return Validate.Dependency(missionOrderRoleRecordDao); }
+            set { missionOrderRoleRecordDao = value; }
         }
         #endregion
 
@@ -178,6 +185,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case 2:
                 case 3:
+                    List<Department> depList =  MissionOrderRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                    if(depList == null || depList.Count() == 0)
+                            throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
+                    list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList());
+                    model.Users = list;
                     break;
                 case 4:
                 case 5:
