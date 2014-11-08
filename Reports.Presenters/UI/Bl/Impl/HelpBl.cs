@@ -257,6 +257,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.ServiceAttachmentId = serviceAttach.Id;
                     model.ServiceAttachment = serviceAttach.FileName;
                 }
+                if (entity.Consultant != null)
+                    model.Worker = entity.Consultant.FullName;
+                if (entity.EndWorkDate.HasValue)
+                    model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
+                if (entity.ConfirmWorkDate.HasValue)
+                    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
             }
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
@@ -471,6 +477,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //    model.IsDeleted = true;
                 //}
                 model.Version = entity.Version;
+                model.Worker = entity.Consultant != null ? entity.Consultant.FullName : string.Empty;
+                model.WorkerEndDate = entity.EndWorkDate.HasValue ? 
+                                      entity.EndWorkDate.Value.ToShortDateString() : string.Empty;
+                model.ConfirmDate = entity.ConfirmWorkDate.HasValue ?
+                                     entity.ConfirmWorkDate.Value.ToShortDateString() : string.Empty;
+
                 SetFlagsState(entity.Id, currUser,entity, model);
                 return true;
             }

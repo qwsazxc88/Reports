@@ -28,7 +28,13 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Заявку создал(а)")]
         public string Creator { get; set; }
 
-        //[Display(Name = "Заявку обработал")]
-        //public string Worker { get; set; }
+        [Display(Name = "Исполнитель")]
+        public string Worker { get; set; }
+
+        [Display(Name = "Услуга сформирована")]
+        public string WorkerEndDate { get; set; }
+
+        [Display(Name = "Услуга оказана")]
+        public string ConfirmDate { get; set; }
     }
 }

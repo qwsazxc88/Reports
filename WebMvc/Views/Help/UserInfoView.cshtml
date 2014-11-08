@@ -78,7 +78,7 @@
             <input type="hidden" id="Creator" name="Creator" value="@Model.Creator" />
         </td>
     </tr>
-    @* <tr>
+    <tr>
         <td>
             @Html.LabelFor(m => m.Worker)
         </td>
@@ -86,7 +86,25 @@
             @Html.DisplayFor(m => m.Worker)
             <input type="hidden" id="Worker" name="Worker" value="@Model.Worker" />
         </td>
-    </tr>*@
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.WorkerEndDate)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.WorkerEndDate)
+            <input type="hidden" id="WorkerEndDate" name="WorkerEndDate" value="@Model.WorkerEndDate" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ConfirmDate)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.ConfirmDate)
+            <input type="hidden" id="ConfirmDate" name="ConfirmDate" value="@Model.ConfirmDate" />
+        </td>
+    </tr>
     <tr>
        <td colspan="2"/>
     </tr>

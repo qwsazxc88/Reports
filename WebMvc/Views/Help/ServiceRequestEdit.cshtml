@@ -136,7 +136,7 @@
                  
                    <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Услуга оказана" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
+                   <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
                                                                                            {<text>style="display:none"</text>}/>
               
                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
