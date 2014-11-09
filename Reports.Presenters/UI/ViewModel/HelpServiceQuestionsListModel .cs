@@ -5,7 +5,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class HelpServiceRequestsListModel : BeginEndCreateDate
+    public class HelpServiceQuestionsListModel : BeginEndCreateDate
     {
         public IList<IdNameDto> Statuses;
         public int UserId { get; set; }
@@ -34,15 +34,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Номер заявки")]
         public string Number { get; set; }
 
-        //[Display(Name = "Режим просмотра изменений")]
-        //public bool IsCorrectionsOnlyModeOn { get; set; }
-
         public bool IsAddAvailable { get; set; }
-        //public bool IsApproveAvailable { get; set; }
-        //public bool IsApproveClick { get; set; }
-        //public bool IsCorrectionsOnlyModeAvailable { get; set; }
 
-        public IList<HelpServiceRequestDto> Documents { get; set; }
+        //public IList<HelpServiceRequestDto> Documents { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

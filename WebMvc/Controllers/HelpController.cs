@@ -57,6 +57,7 @@ namespace WebMvc.Controllers
 
         public const int MaxTemplateNameLength = 256;
 
+        #region Service Requests
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
             | UserRole.Admin | UserRole.ConsultantOutsourcing)]
@@ -179,6 +180,16 @@ namespace WebMvc.Controllers
                 model.TransferMethodTypeId = model.TransferMethodTypeIdHidden;
             }
         }
+        #endregion
+        #region Service Questions
+        [HttpGet]
+        public ActionResult ServiceQuestionsList()
+        {
+            var model = HelpBl.GetServiceQuestionsListModel();
+            //SetMissionOrderListModelFromSession(model);
+            return View(model);
+        }
+        #endregion
         #region Versions
         [HttpGet]
         public ActionResult Version()

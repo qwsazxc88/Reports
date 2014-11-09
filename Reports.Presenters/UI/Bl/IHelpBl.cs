@@ -19,6 +19,8 @@ namespace Reports.Presenters.UI.Bl
         CommentsModel GetCommentsModel(int id, RequestTypeEnum typeId);
         bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
+        HelpServiceQuestionsListModel GetServiceQuestionsListModel();
+
 
         HelpVersionsListModel GetVersionsModel();
         HelpEditVersionModel GetEditVersionModel(int id);

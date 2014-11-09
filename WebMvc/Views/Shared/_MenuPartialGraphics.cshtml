@@ -79,6 +79,10 @@
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")</div> 
                  }
+                 else if (UserDto.IsHelpQuestionAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
+                }
                  else
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 

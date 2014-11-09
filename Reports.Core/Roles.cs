@@ -25,7 +25,9 @@ namespace Reports.Core
         Candidate = 16384,
         Security = 32768,
         Trainer = 65536,
-        ConsultantOutsourcing = 131072
+        ConsultantOutsourcing = 131072,
+        ConsultantPersonnel = 262144,
+        ConsultantAccountant = 524288,
     }
     public class ReportRoleConstants
     {
@@ -46,6 +48,8 @@ namespace Reports.Core
         public const string Security = "32768";
         public const string Trainer = "65536";
         public const string ConsultantOutsourcing = "131072";
+        public const string ConsultantPersonnel = "262144";
+        public const string ConsultantAccountant = "524288";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -72,7 +76,9 @@ namespace Reports.Core
                              {UserRole.Candidate, Candidate},
                              {UserRole.Security, Security},
                              {UserRole.Trainer, Trainer},
-                             {UserRole.ConsultantOutsourcing, ConsultantOutsourcing}
+                             {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
+                             {UserRole.ConsultantPersonnel, ConsultantPersonnel},
+                             {UserRole.ConsultantAccountant, ConsultantAccountant},
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}

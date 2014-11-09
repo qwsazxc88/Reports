@@ -706,6 +706,53 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
         #endregion
+        #region Service Questions List
+        public HelpServiceQuestionsListModel GetServiceQuestionsListModel()
+        {
+            User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IdNameReadonlyDto dep = GetDepartmentDto(user);
+            HelpServiceQuestionsListModel model = new HelpServiceQuestionsListModel
+            {
+                UserId = AuthenticationService.CurrentUser.Id,
+                DepartmentName = dep.Name,
+                DepartmentId = dep.Id,
+                DepartmentReadOnly = dep.IsReadOnly,
+            };
+            SetInitialDates(model);
+            SetDictionariesToModel(model);
+            //SetInitialStatus(model);
+            SetIsAvailable(model);
+            return model;
+        }
+        protected void SetIsAvailable(HelpServiceQuestionsListModel model)
+        {
+            model.IsAddAvailable = model.IsAddAvailable = (CurrentUser.UserRole == UserRole.Manager);
+        }
+        public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
+        {
+            model.Statuses = GetServiceQuestionsStatuses();
+        }
+        public List<IdNameDto> GetServiceQuestionsStatuses()
+        {
+            List<IdNameDto> moStatusesList = new List<IdNameDto>
+                                                       {
+                                                           new IdNameDto(1, "Черновик сотрудника"),
+                                                           new IdNameDto(2, "Вопрос задан"),
+                                                           new IdNameDto(3, "Вопрос ожидает ответа"),
+                                                           new IdNameDto(4, "Ответ на вопрос получен")
+                                                           //new IdNameDto(5, "Услуга оказана")
+                                                           //new IdNameDto(4, "Не одобрен руководителем"),
+                                                           //new IdNameDto(5, "Одобрен членом правления"),
+                                                           //new IdNameDto(6, "Не одобрен членом правления"),
+                                                           //new IdNameDto(7, "Требует одобрения руководителем"),
+                                                           //new IdNameDto(8, "Требует одобрения членом правления"),
+                                                           //new IdNameDto(9, "Выгружен в 1С"),
+                                                       }.OrderBy(x => x.Name).ToList();
+            moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+            return moStatusesList;
+        }
+        #endregion
+        
 
         #region Version
         public HelpVersionsListModel GetVersionsModel()
