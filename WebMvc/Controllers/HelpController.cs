@@ -58,6 +58,8 @@ namespace WebMvc.Controllers
         public const int MaxTemplateNameLength = 256;
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
+            | UserRole.Admin | UserRole.ConsultantOutsourcing)]
         public ActionResult Index()
         {
             var model = HelpBl.GetServiceRequestsList();
@@ -102,6 +104,8 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.OutsourcingManager
+         | UserRole.Admin | UserRole.ConsultantOutsourcing)]
         public ActionResult ServiceRequestEdit(int id, int? userId)
         {
             HelpServiceRequestEditModel model = HelpBl.GetServiceRequestEditModel(id, userId);

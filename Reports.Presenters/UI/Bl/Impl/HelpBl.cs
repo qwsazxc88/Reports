@@ -624,8 +624,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (typeId == RequestTypeEnum.HelpServiceRequest)
                 {
                     HelpServiceRequest request = HelpServiceRequestDao.Load(id);
-                    isAddAvailable =  ((CurrentUser.Id == request.Creator.Id) ||
-                                      (request.Consultant != null && CurrentUser.Id == request.Consultant.Id));
+                    isAddAvailable =  (((CurrentUser.Id == request.Creator.Id) &&
+                                        (CurrentUser.UserRole == UserRole.Manager || CurrentUser.UserRole == UserRole.Employee)) ||
+                                        (request.Consultant != null && 
+                                            CurrentUser.Id == request.Consultant.Id && 
+                                            CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                                        );
                 }
             }
             CommentsModel commentModel = new CommentsModel
