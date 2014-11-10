@@ -5,7 +5,19 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class DismissalEditModel : UserInfoModel, ICheckBoxes, IAttachment, IOrderScanAttachment, IUnsignedOrderScanAttachment, ICheckForEntityEndDate, IContainId
+    public class DismissalEditModel : UserInfoModel,
+        ICheckBoxes,
+        IAttachment,
+        IOrderScanAttachment,
+        IUnsignedOrderScanAttachment,
+        IT2ScanAttachment,
+        IUnsignedT2ScanAttachment,
+        IDismissalAgreementScanAttachment,
+        IUnsignedDismissalAgreementScanAttachment,
+        IF182NScanAttachment,
+        IF2NDFLScanAttachment,
+        ICheckForEntityEndDate,
+        IContainId
     {
         public int Id { get; set; }
         public int Version { get; set; }
@@ -66,6 +78,28 @@ namespace Reports.Presenters.UI.ViewModel
         // Прикрепление скана подтверждающего документа
         public bool IsConfirmationAllowed { get; set; }
 
+        // Прикрепление скана Т2 на подпись
+        public bool IsUnsignedT2Allowed { get; set; }
+        // Прикрепление скана Т2
+        public bool IsT2Allowed { get; set; }
+
+        // Просмотр скана соглашения
+        public bool IsViewDismissalAgreementAllowed { get; set; }
+        // Прикрепление скана соглашения на подпись
+        public bool IsUnsignedDismissalAgreementAllowed { get; set; }
+        // Прикрепление скана соглашения
+        public bool IsDismissalAgreementAllowed { get; set; }
+
+        // Просмотр скана 182-Н
+        public bool IsViewF182NAllowed { get; set; }
+        // Прикрепление скана 182-Н
+        public bool IsF182NAllowed { get; set; }
+
+        // Просмотр скана 2-НДФЛ
+        public bool IsViewF2NDFLAllowed { get; set; }
+        // Прикрепление скана 2-НДФЛ
+        public bool IsF2NDFLAllowed { get; set; }
+
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
 
@@ -80,6 +114,30 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан подписанного приказа")]
         public string OrderScanAttachment { get; set; }
         public int OrderScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан Т2 на подпись")]
+        public string UnsignedT2ScanAttachment { get; set; }
+        public int UnsignedT2ScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан Т2")]
+        public string T2ScanAttachment { get; set; }
+        public int T2ScanAttachmentId { get; set; }
+        
+        [Display(Name = "Скан соглашения на подпись")]
+        public string UnsignedDismissalAgreementScanAttachment { get; set; }
+        public int UnsignedDismissalAgreementScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан соглашения")]
+        public string DismissalAgreementScanAttachment { get; set; }
+        public int DismissalAgreementScanAttachmentId { get; set; }
+        
+        [Display(Name = "Скан 182-Н")]
+        public string F182NScanAttachment { get; set; }
+        public int F182NScanAttachmentId { get; set; }
+
+        [Display(Name = "Скан 2-НДФЛ")]
+        public string F2NDFLScanAttachment { get; set; }
+        public int F2NDFLScanAttachmentId { get; set; }
 
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }
