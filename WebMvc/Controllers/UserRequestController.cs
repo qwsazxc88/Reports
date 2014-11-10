@@ -427,6 +427,13 @@ namespace WebMvc.Controllers
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
              UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
+             UploadFileDto t2ScanFileDto = GetFileContext("t2ScanFile");
+             UploadFileDto dismissalAgreementScanFileDto = GetFileContext("dismissalAgreementScanFile");
+             UploadFileDto f182ScanFileDto = GetFileContext("f182ScanFile");
+             UploadFileDto f2NDFLScanFileDto = GetFileContext("f2NDFLScanFile");
+             UploadFileDto unsignedT2ScanFileDto = GetFileContext("unsignedT2ScanFile");
+             UploadFileDto unsignedDismissalAgreementScanFileDto = GetFileContext("unsignedDismissalAgreementScanFile");
+
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -435,7 +442,17 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, new Dictionary<RequestAttachmentTypeEnum, UploadFileDto> {
+                    { RequestAttachmentTypeEnum.Dismissal, fileDto},
+                    { RequestAttachmentTypeEnum.UnsignedDismissalOrderScan, unsignedOrderScanFileDto},
+                    { RequestAttachmentTypeEnum.DismissalOrderScan, orderScanFileDto},
+                    { RequestAttachmentTypeEnum.T2Scan, t2ScanFileDto },
+                    { RequestAttachmentTypeEnum.DismissalAgreementScan, dismissalAgreementScanFileDto },
+                    { RequestAttachmentTypeEnum.F182NScan, f182ScanFileDto },
+                    { RequestAttachmentTypeEnum.F2NDFLScan, f2NDFLScanFileDto },
+                    { RequestAttachmentTypeEnum.UnsignedT2Scan, unsignedT2ScanFileDto },
+                    { RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan, unsignedDismissalAgreementScanFileDto }
+                }, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)

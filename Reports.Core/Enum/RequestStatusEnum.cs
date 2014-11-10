@@ -88,6 +88,15 @@
         // ? = 281,
         // ? = 282,
 
+        // Dismissal Additional Documents Scans
+
+        T2Scan = 201,        
+        DismissalAgreementScan = 202,
+        F182NScan = 203,
+        F2NDFLScan = 204,
+
+        UnsignedT2Scan = 251,        
+        UnsignedDismissalAgreementScan = 252
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)

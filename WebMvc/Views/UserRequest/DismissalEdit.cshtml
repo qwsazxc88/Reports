@@ -8,7 +8,7 @@
     <div class="doc-wrap">
     <table style="width:100%">
     <tr>
-        <td colspan="2">
+        <td colspan="3">
             @Html.ValidationSummary(false)
             <div id="Error" style="color:Red;display:none;"></div>
             @*<div id="Success" style="color:Green;display:none;">Письмо успешно отправлено в биллинг.</div>*@
@@ -18,11 +18,18 @@
         <td colspan="2">
             @Html.Partial("../UserInfoView", Model);
         </td>
+        
+        <td style="vertical-align: top; width: 25%;">
+            <div class="announcement" style="width: 100%;">
+                Документы на увольнение для распечатывания, подписи и прикрепления сканов подписанных документов
+                будут доступны в день увольнения и на следующий день после увольнения до 14&#8209;00 Мск.
+            </div>
+        </td>
     </tr>
      @if (Model.IsDeleted)
      { 
         <tr>
-            <td colspan="2" style="color:Red">Заявка отклонена</td>
+            <td colspan="3" style="color:Red">Заявка отклонена</td>
         </tr>
      }
      <tr>
@@ -109,18 +116,18 @@
         </td>
     </tr>*@
     <tr>
-        <td colspan="2">
+        <td colspan="3">
            
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="3">
             @Html.LabelFor(m => m.CreatorLogin):
             @Html.DisplayFor(model => model.CreatorLogin) 
          </td>
     </tr>
     <tr>
-        <td colspan="2" style="height:5px">
+        <td colspan="3" style="height:5px">
         </td>
     </tr>
     <tr>
@@ -141,7 +148,7 @@
         <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
     </tr>
      <tr>
-        <td colspan="2">
+        <td colspan="3">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                               {<text>style="display:none"</text>}/>
             <div style="text-align: right;"><input type="submit" value="Отклонить заявку" onclick="return Delete();" @if (!Model.IsDeleteAvailable)
@@ -154,11 +161,11 @@
          </td>
     </tr>
     <tr>
-             <td colspan="2" style="height:15px">
+             <td colspan="3" style="height:15px">
              </td>
     </tr>
     <tr>
-             <td colspan="2">
+             <td colspan="3">
                         <input type="hidden" id="IsApproved" name="IsApproved" value="@Model.IsApproved" />
                         <input type="hidden" id="IsApprovedEnable" name="IsApprovedEnable" value="@Model.IsApprovedEnable" />
                         <input type="submit" value="Отправить на согласование" onclick="return SetApprovedAndValidateForm();" @if (!Model.IsApprovedEnable)
@@ -170,7 +177,7 @@
             </td>
     </tr>
     <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <input type="hidden" id="IsApprovedByUserEnable" name="IsApprovedByUserEnable" value="@Model.IsApprovedByUserEnable" />
                 @*@Html.CheckBox("IsApprovedByUser", Model.IsApprovedByUser, Model.IsApprovedByUserEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsApprovedByUser" disabled = "disabled" name="IsApprovedByUser" @if (Model.IsApprovedByUser)
@@ -183,7 +190,7 @@
             </td>
     </tr>
     <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <input type="hidden" id="IsApprovedByManagerEnable" name="IsApprovedByManagerEnable" value="@Model.IsApprovedByManagerEnable" />
                 @*@Html.CheckBox("IsApprovedByManager", Model.IsApprovedByManager, Model.IsApprovedByManagerEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsApprovedByManager" disabled = "disabled" name="IsApprovedByManager" @if (Model.IsApprovedByManager)
@@ -196,7 +203,7 @@
             </td>
     </tr>
     <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <input type="hidden" id="IsApprovedByPersonnelManagerEnable" name="IsApprovedByPersonnelManagerEnable" value="@Model.IsApprovedByPersonnelManagerEnable" />
                 @*@Html.CheckBoxFor(model => model.IsApprovedByPersonnelManager, Model.IsApprovedByPersonnelManagerEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsApprovedByPersonnelManager" disabled = "disabled" name="IsApprovedByPersonnelManager" @if (Model.IsApprovedByPersonnelManager)
@@ -209,7 +216,7 @@
             </td>
     </tr>
      <tr>
-            <td colspan="2">
+            <td colspan="3">
                 <input type="hidden" id="IsPostedTo1CEnable" name="IsPostedTo1CEnable" value="@Model.IsPostedTo1CEnable" />
                 @*@Html.CheckBox("IsPostedTo1C", Model.IsPostedTo1C, Model.IsPostedTo1CEnable ? null : (object)new { disabled = "disabled" }) *@
                 <input type="checkbox" id="IsPostedTo1C" disabled = "disabled" name="IsPostedTo1C" @if (Model.IsPostedTo1C)
@@ -223,82 +230,295 @@
     </tr>
 
     <tr>
-             <td colspan="2" style="height:15px">
+             <td colspan="3" style="height:15px">
                 <hr />
              </td>
     </tr>
 
-    @* Ссылка для открытия скана приказа на подпись *@
+    @* BEGIN Документы от кадровика *@
 
     <tr>
-        <td colspan="2">@Html.LabelFor(model => model.UnsignedOrderScanAttachment):
-            @if (!string.IsNullOrEmpty(Model.UnsignedOrderScanAttachment))
-            {
-                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.UnsignedOrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.UnsignedOrderScanAttachment</a>
-                <input type="hidden" id="UnsignedOrderScanAttachment" name="UnsignedOrderScanAttachment" value="@Model.UnsignedOrderScanAttachment" />
-                <input type="hidden" id="UnsignedOrderScanAttachmentId" name="UnsignedOrderScanAttachmentId" value="@Model.UnsignedOrderScanAttachmentId" />
-            }
-            else
-            {
-                <span>-</span>
-            }
+        <td style="border: 1px solid black; text-align: center;">Документы от кадровика</td>
+        <td colspan="2">
+            <table>
+
+                @* Ссылки для просмотра документов *@
+                <tr>
+                    @* Ссылка для открытия скана приказа на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.UnsignedOrderScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.UnsignedOrderScanAttachment))
+                        {
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.UnsignedOrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.UnsignedOrderScanAttachment</a>
+                            <input type="hidden" id="UnsignedOrderScanAttachment" name="UnsignedOrderScanAttachment" value="@Model.UnsignedOrderScanAttachment" />
+                            <input type="hidden" id="UnsignedOrderScanAttachmentId" name="UnsignedOrderScanAttachmentId" value="@Model.UnsignedOrderScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана Т2 на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.UnsignedT2ScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.UnsignedT2ScanAttachment))
+                        {
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.UnsignedT2ScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.UnsignedT2ScanAttachment</a>
+                            <input type="hidden" id="UnsignedT2ScanAttachment" name="UnsignedT2ScanAttachment" value="@Model.UnsignedT2ScanAttachment" />
+                            <input type="hidden" id="UnsignedT2ScanAttachmentId" name="UnsignedT2ScanAttachmentId" value="@Model.UnsignedT2ScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана соглашения на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.UnsignedDismissalAgreementScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.UnsignedDismissalAgreementScanAttachment))
+                        {
+                            if (Model.IsViewDismissalAgreementAllowed)
+                            {
+                                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.UnsignedDismissalAgreementScanAttachmentId })' style="cursor:hand" target="_blank" >
+                                    @Model.UnsignedDismissalAgreementScanAttachment
+                                </a>
+                            }
+                            else
+                            {
+                                @Model.UnsignedDismissalAgreementScanAttachment
+                            }
+                            <input type="hidden" id="UnsignedDismissalAgreementScanAttachment" name="UnsignedDismissalAgreementScanAttachment" value="@Model.UnsignedDismissalAgreementScanAttachment" />
+                            <input type="hidden" id="UnsignedDismissalAgreementScanAttachmentId" name="UnsignedDismissalAgreementScanAttachmentId" value="@Model.UnsignedDismissalAgreementScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана 182-Н *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.F182NScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.F182NScanAttachment))
+                        {
+                            if (Model.IsViewF182NAllowed)
+                            {
+                                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.F182NScanAttachmentId })' style="cursor:hand" target="_blank" >
+                                    @Model.F182NScanAttachment
+                                </a>
+                            }
+                            else
+                            {
+                                @Model.F182NScanAttachment
+                            }
+                            <input type="hidden" id="F182NScanAttachment" name="F182NScanAttachment" value="@Model.F182NScanAttachment" />
+                            <input type="hidden" id="F182NScanAttachmentId" name="F182NScanAttachmentId" value="@Model.F182NScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана 2-НДФЛ *@
+                    <td>
+                        @Html.LabelFor(model => model.F2NDFLScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.F2NDFLScanAttachment))
+                        {
+                            if (Model.IsViewF2NDFLAllowed)
+                            {
+                                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.F2NDFLScanAttachmentId })' style="cursor:hand" target="_blank" >
+                                    @Model.F2NDFLScanAttachment
+                                </a>
+                            }
+                            else
+                            {
+                                @Model.F2NDFLScanAttachment
+                            }
+                            <input type="hidden" id="F2NDFLScanAttachment" name="F2NDFLScanAttachment" value="@Model.F2NDFLScanAttachment" />
+                            <input type="hidden" id="F2NDFLScanAttachmentId" name="F2NDFLScanAttachmentId" value="@Model.F2NDFLScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                </tr>
+
+                @* Прикрепление документов *@                
+                <tr>
+                    @* Прикрепление скана приказа на подпись *@                        
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsUnsignedConfirmationAllowed)
+                        {
+                            <text>Прикрепить скан приказа на подпись</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="UnsignedOrderScanFileContext" type="file" name="unsignedOrderScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                    
+                    @* Прикрепление скана Т2 на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsUnsignedT2Allowed)
+                        {
+                            <text>Прикрепить скан Т-2 на подпись</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="UnsignedT2ScanFileContext" type="file" name="unsignedT2ScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                    @* Прикрепление скана соглашения на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsUnsignedDismissalAgreementAllowed)
+                        {
+                            <text>Прикрепить скан соглашения на подпись</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="UnsignedDismissalAgreementScanFileContext" type="file" name="unsignedDismissalAgreementScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                    @* Прикрепление скана 182-Н на подпись *@
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsF182NAllowed)
+                        {
+                            <text>Прикрепить скан 182-Н</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="F182NScanFileContext" type="file" name="f182NScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                    @* Прикрепление скана 2-НДФЛ на подпись *@
+                    <td>
+                        @if (Model.IsF2NDFLAllowed)
+                        {
+                            <text>Прикрепить скан 2-НДФЛ</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="F2NDFLScanFileContext" type="file" name="f2NDFLScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+
+    @* END Документы от кадровика *@
+    
+    <tr>
+             <td colspan="3" style="height:15px">
+                <hr />
+             </td>
+    </tr>
+
+    @* BEGIN Документы от сотрудника *@
+
+    <tr>
+        <td style="border: 1px solid black; text-align: center;">Документы от сотрудника</td>
+        <td colspan="2">
+            <table>
+                
+                @* Ссылки для просмотра документов *@
+                <tr>
+                    @* Ссылка для открытия скана подписанного приказа *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.OrderScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.OrderScanAttachment))
+                        {
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.OrderScanAttachment</a>
+                            <input type="hidden" id="OrderScanAttachment" name="OrderScanAttachment" value="@Model.OrderScanAttachment" />
+                            <input type="hidden" id="OrderScanAttachmentId" name="OrderScanAttachmentId" value="@Model.OrderScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана подписанной Т2 *@
+                    <td style="border-right: 1px solid black;">
+                        @Html.LabelFor(model => model.T2ScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.T2ScanAttachment))
+                        {
+                            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.T2ScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.T2ScanAttachment</a>
+                            <input type="hidden" id="T2ScanAttachment" name="T2ScanAttachment" value="@Model.T2ScanAttachment" />
+                            <input type="hidden" id="T2ScanAttachmentId" name="T2ScanAttachmentId" value="@Model.T2ScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+
+                    @* Ссылка для открытия скана подписанного соглашения *@
+                    <td>
+                        @Html.LabelFor(model => model.DismissalAgreementScanAttachment):
+                        @if (!string.IsNullOrEmpty(Model.DismissalAgreementScanAttachment))
+                        {
+                            if (Model.IsViewDismissalAgreementAllowed)
+                            {
+                                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DismissalAgreementScanAttachmentId })' style="cursor:hand" target="_blank" >
+                                    @Model.DismissalAgreementScanAttachment
+                                </a>
+                            }
+                            else
+                            {
+                                @Model.DismissalAgreementScanAttachment
+                            }
+                            <input type="hidden" id="DismissalAgreementScanAttachment" name="DismissalAgreementScanAttachment" value="@Model.DismissalAgreementScanAttachment" />
+                            <input type="hidden" id="DismissalAgreementScanAttachmentId" name="DismissalAgreementScanAttachmentId" value="@Model.DismissalAgreementScanAttachmentId" />
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </td>
+                </tr>
+
+                @* Прикрепление документов *@
+                <tr>
+                    @* Прикрепление скана подписанного приказа *@                    
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsConfirmationAllowed)
+                        {
+                            <text>Прикрепить скан подписанного приказа</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="OrderScanFileContext" type="file" name="orderScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>                    
+                    
+                    @* Прикрепление скана подписанной Т2 *@
+                    <td style="border-right: 1px solid black;">
+                        @if (Model.IsT2Allowed)
+                        {
+                            <text>Прикрепить скан подписанной Т-2</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="T2ScanFileContext" type="file" name="t2ScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+
+                    @* Прикрепление скана подписанного соглашения *@
+                    <td>
+                        @if (Model.IsDismissalAgreementAllowed)
+                        {
+                            <text>Прикрепить скан подписанного соглашения</text><br />
+                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <input id="DismissalAgreementScanFileContext" type="file" name="dismissalAgreementScanFile"/>
+                            <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
+                        }
+                    </td>
+                </tr>
+
+            </table>
         </td>
     </tr>
     
-    @* Прикрепление скана приказа на подпись *@
-
-    @if (Model.IsUnsignedConfirmationAllowed)
-    {
-        <tr>    
-            <td colspan="2">Прикрепить скан приказа на подпись
-                <input id="UnsignedOrderScanFileContext" type="file" name="unsignedOrderScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>                
-            </td>
-        </tr>
-        <tr>    
-            <td colspan="2">
-                <input type="submit" value="Сохранить" onclick="return ValidateForm();" />
-            </td>
-        </tr>
-    }
-
-    <tr>
-             <td colspan="2" style="height:15px">
-                <hr />
-             </td>
-    </tr>
-
-    @* Ссылка для открытия скана подписанного приказа *@
-
-    <tr>
-        <td colspan="2">@Html.LabelFor(model => model.OrderScanAttachment):
-            @if (!string.IsNullOrEmpty(Model.OrderScanAttachment))
-            {
-                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.OrderScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.OrderScanAttachment</a>
-                <input type="hidden" id="OrderScanAttachment" name="OrderScanAttachment" value="@Model.OrderScanAttachment" />
-                <input type="hidden" id="OrderScanAttachmentId" name="OrderScanAttachmentId" value="@Model.OrderScanAttachmentId" />
-            }
-            else
-            {
-                <span>-</span>
-            }
-        </td>
-    </tr>
-
-    @* Прикрепление скана подписанного приказа *@
-
-    @if (Model.IsConfirmationAllowed)
-    {
-        <tr>    
-            <td colspan="2">Прикрепить скан подписанного приказа
-                <input id="OrderScanFileContext" type="file" name="orderScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>                
-            </td>
-        </tr>
-        <tr>    
-            <td colspan="2">
-                <input type="submit" value="Сохранить" onclick="return ValidateForm();" />
-            </td>
-        </tr>
-    }
+    @* END Документы от сотрудника *@
 
     </table>
     </div>
@@ -307,7 +527,7 @@
     <div class="comment-wrap">
     <table style="width:100%">
      <tr>
-        <td colspan="2">
+        <td colspan="3">
             <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
         </td>
     </tr>
