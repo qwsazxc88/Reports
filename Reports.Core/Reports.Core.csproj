@@ -401,6 +401,8 @@
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
     <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpQuestionSubtype.cs" />
+    <Compile Include="Domain\HelpQuestionType.cs" />
     <Compile Include="Domain\HelpServicePeriod.cs" />
     <Compile Include="Domain\HelpServiceProductionTime.cs" />
     <Compile Include="Domain\HelpServiceRequest.cs" />
@@ -1025,6 +1027,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml" />
     <EmbeddedResource Include="Domain\HelpServiceRequestComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionSubtype.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
