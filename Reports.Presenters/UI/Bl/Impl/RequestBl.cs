@@ -1995,12 +1995,17 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     if (model.IsPostedTo1C)
                     {
-                        model.IsUnsignedT2Allowed = true;
-                        model.IsUnsignedDismissalAgreementAllowed = true;
-                        model.IsT2Allowed = true;
-                        model.IsDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
-                        model.IsF182NAllowed = !(model.F182NScanAttachmentId > 0);
-                        model.IsF2NDFLAllowed = !(model.F2NDFLScanAttachmentId > 0);
+                        // Кадровик загружает сканы на подпись сотруднику,
+                        model.IsUnsignedT2Allowed = !(model.T2ScanAttachmentId > 0);
+                        model.IsUnsignedDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
+                        // а также 182-Н и 2-НДФЛ для ознакомления сотрудником
+                        model.IsF182NAllowed = true;
+                        model.IsF2NDFLAllowed = true;
+
+                        // model.IsT2Allowed = !(model.T2ScanAttachmentId > 0);
+                        // model.IsDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
+
+                        // Кадровик имеет право на просмотр документов с ограничениями просмотра
                         model.IsViewDismissalAgreementAllowed = true;
                         model.IsViewF182NAllowed = true;
                         model.IsViewF2NDFLAllowed = true;
