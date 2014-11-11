@@ -1990,6 +1990,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsWorkbookRequestAllowed = true;
                     }
 
+                    if (model.IsPostedTo1C)
+                    {
+                        // Руководитель может прикрепить подписанный приказ и Т-2 за сотрудника после выгрузки в 1С
+                        model.IsConfirmationAllowed = true;
+                        model.IsT2Allowed = true;
+                    }
+
                     break;
                 case UserRole.PersonnelManager:
                     model.IsUnsignedConfirmationAllowed = true;
