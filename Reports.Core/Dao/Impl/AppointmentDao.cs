@@ -410,10 +410,10 @@ namespace Reports.Core.Dao.Impl
                                 @" exists 
                                 ( 
                                     select uC.Id from dbo.Users uC
-                                    inner join  dbo.AppointmentManager23ToDepartment3 dmtod on  dmtod.ManagerId = uC.[Id]
-                                    inner join dbo.Department dc on dc.Id = dmtod.DepartmentId
+                                    inner join  dbo.MissionOrderRoleRecord morr on  (morr.UserId = uC.[Id] and morr.TargetDepartmentId > 0)
+                                    inner join dbo.Department dc on dc.Id = morr.TargetDepartmentId
                                     where uC.Id = {0}
-                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dc.ItemLevel < crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         case 4:
@@ -425,7 +425,7 @@ namespace Reports.Core.Dao.Impl
                                     select uC.Id from dbo.Users uC
                                     inner join [dbo].[Department] dC on  dC.Id = uC.[DepartmentId]
                                     where uC.Id = {0}
-                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel + 1 = crDep.ItemLevel
+                                    and crDep.Path like dC.Path + N'%' and dC.ItemLevel < crDep.ItemLevel
                                 )", currentUser.Id);
                             break;
                         default:
