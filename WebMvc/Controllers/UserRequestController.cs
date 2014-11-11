@@ -433,6 +433,7 @@ namespace WebMvc.Controllers
              UploadFileDto f2NDFLScanFileDto = GetFileContext("f2NDFLScanFile");
              UploadFileDto unsignedT2ScanFileDto = GetFileContext("unsignedT2ScanFile");
              UploadFileDto unsignedDismissalAgreementScanFileDto = GetFileContext("unsignedDismissalAgreementScanFile");
+             UploadFileDto workbookRequestScanFileDto = GetFileContext("workbookRequestScanFile");
 
              if (!ValidateDismissalEditModel(model,fileDto))
              {
@@ -451,7 +452,8 @@ namespace WebMvc.Controllers
                     { RequestAttachmentTypeEnum.F182NScan, f182NScanFileDto },
                     { RequestAttachmentTypeEnum.F2NDFLScan, f2NDFLScanFileDto },
                     { RequestAttachmentTypeEnum.UnsignedT2Scan, unsignedT2ScanFileDto },
-                    { RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan, unsignedDismissalAgreementScanFileDto }
+                    { RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan, unsignedDismissalAgreementScanFileDto },
+                    { RequestAttachmentTypeEnum.WorkbookRequestScan, workbookRequestScanFileDto}
                 }, out error))
              {
                  //HttpContext.AddError(new Exception(error));

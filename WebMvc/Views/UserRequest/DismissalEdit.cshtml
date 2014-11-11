@@ -45,7 +45,7 @@
             {
                 @Html.DisplayFor(model => model.EndDate)
                 @Html.HiddenFor(model => model.EndDate)
-            } 
+            }
          </td>
     </tr>
     <tr>
@@ -147,7 +147,31 @@
         <td>Прикрепить скан документа</td>
         <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
     </tr>
-     <tr>
+
+    @* BEGIN Скан заявления на выдачу трудовой книжки *@
+
+    <tr>
+        <td>@Html.LabelFor(model => model.WorkbookRequestScanAttachment):</td>
+        <td>
+            @if (!string.IsNullOrEmpty(Model.WorkbookRequestScanAttachment))
+            {
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkbookRequestScanAttachmentId })' style="cursor:hand" target="_blank" >@Model.WorkbookRequestScanAttachment</a>
+                <input type="hidden" id="WorkbookRequestScanAttachment" name="WorkbookRequestScanAttachment" value="@Model.WorkbookRequestScanAttachment" />
+                <input type="hidden" id="WorkbookRequestScanAttachmentId" name="WorkbookRequestScanAttachmentId" value="@Model.WorkbookRequestScanAttachmentId" />
+            }
+        </td>
+    </tr>
+    @if (Model.IsWorkbookRequestAllowed)
+    {
+        <tr>    
+            <td>Прикрепить скан заявления на выдачу трудовой книжки</td>
+            <td><input id="WorkbookRequestScanFileContext" type="file" name="workbookRequestScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+        </tr>
+    }
+
+    @* END Скан заявления на выдачу трудовой книжки *@
+
+    <tr>
         <td colspan="3">
             <input type="submit" value="Записать (черновик)" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
                                                                                               {<text>style="display:none"</text>}/>
