@@ -16,6 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         IUnsignedDismissalAgreementScanAttachment,
         IF182NScanAttachment,
         IF2NDFLScanAttachment,
+        IWorkbookRequestScanAttachment,
         ICheckForEntityEndDate,
         IContainId
     {
@@ -90,6 +91,9 @@ namespace Reports.Presenters.UI.ViewModel
         // Прикрепление скана соглашения
         public bool IsDismissalAgreementAllowed { get; set; }
 
+        // Прикрепление скана заявления на выдачу ТК
+        public bool IsWorkbookRequestAllowed { get; set; }
+
         // Просмотр скана 182-Н
         public bool IsViewF182NAllowed { get; set; }
         // Прикрепление скана 182-Н
@@ -138,6 +142,10 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Скан 2-НДФЛ")]
         public string F2NDFLScanAttachment { get; set; }
         public int F2NDFLScanAttachmentId { get; set; }
+                
+        [Display(Name = "Скан заявления на выдачу трудовой книжки")]
+        public string WorkbookRequestScanAttachment { get; set; }
+        public int WorkbookRequestScanAttachmentId { get; set; }
 
         public bool IsSaveAvailable { get; set; }
         public bool IsDeleteAvailable { get; set; }

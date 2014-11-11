@@ -61,6 +61,7 @@
         DismissalAgreementScan = 202,
         F182NScan = 203,
         F2NDFLScan = 204,
+        WorkbookRequestScan = 205,
 
         UnsignedT2Scan = 251,        
         UnsignedDismissalAgreementScan = 252

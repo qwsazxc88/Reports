@@ -69,6 +69,11 @@ namespace Reports.Presenters.UI.ViewModel
         string F2NDFLScanAttachment { get; set; }
         int F2NDFLScanAttachmentId { get; set; }
     }
+    public interface IWorkbookRequestScanAttachment
+    {
+        string WorkbookRequestScanAttachment { get; set; }
+        int WorkbookRequestScanAttachmentId { get; set; }
+    }
     public interface ICheckForEntity
     {
         bool IsDeleteAvailable { get; set; }

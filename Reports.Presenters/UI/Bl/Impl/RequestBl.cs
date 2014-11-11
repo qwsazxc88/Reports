@@ -1855,6 +1855,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetUnsignedDismissalAgreementScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan);
             SetF182NScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.F182NScan);
             SetF2NDFLScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.F2NDFLScan);
+            SetWorkbookRequestScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.WorkbookRequestScan);
             Dismissal dismissal = null;
             if (id == 0)
             {
@@ -1956,6 +1957,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsApprovedEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsTypeEditable = true;
+                        // Сотрудник может прикрепить заявление на выдачу ТК при статусе "Черновик"
+                        model.IsWorkbookRequestAllowed = true;
                     }
 
                     if (model.IsPostedTo1C)
@@ -1983,6 +1986,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsTypeEditable = true;
                             //model.IsStatusEditable = true;
                         }
+                        // Руководитель может прикрепить заявление на выдачу ТК до согласования
+                        model.IsWorkbookRequestAllowed = true;
                     }
 
                     break;
@@ -2024,6 +2029,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //model.IsStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
                         }
+
+                        // Кадровик может прикрепить заявление на выдачу ТК до согласования
+                        model.IsWorkbookRequestAllowed = true;
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
@@ -2207,6 +2215,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.F2NDFLScanAttachment = fileName;
                     }
                     // ---------------------------------------
+                    int? workbookRequestScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.WorkbookRequestScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.WorkbookRequestScan],
+                        RequestAttachmentTypeEnum.WorkbookRequestScan,
+                        out fileName);
+                    if (workbookRequestScanAttachmentId.HasValue)
+                    {
+                        model.WorkbookRequestScanAttachmentId = workbookRequestScanAttachmentId.Value;
+                        model.WorkbookRequestScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
 
                     if (dismissal.Version != model.Version)
                     {
@@ -2241,6 +2260,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.F182NScanAttachmentId);
                         // ----------------------------
                         if (model.F2NDFLScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
+                        // ----------------------------
+                        if (model.WorkbookRequestScanAttachmentId > 0)
                             RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
                         // ----------------------------
                         model.AttachmentId = 0;
@@ -3763,6 +3785,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             model.F2NDFLScanAttachmentId = attach.Id;
             model.F2NDFLScanAttachment = attach.FileName;
+        }
+        protected void SetWorkbookRequestScanAttachmentToModel(IWorkbookRequestScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.WorkbookRequestScanAttachmentId = attach.Id;
+            model.WorkbookRequestScanAttachment = attach.FileName;
         }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
         {
