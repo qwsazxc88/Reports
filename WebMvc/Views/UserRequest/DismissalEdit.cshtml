@@ -21,8 +21,7 @@
         
         <td style="vertical-align: top; width: 25%;">
             <div class="announcement" style="width: 100%;">
-                Документы на увольнение для распечатывания, подписи и прикрепления сканов подписанных документов
-                будут доступны в день увольнения и на следующий день после увольнения до 14&#8209;00 Мск.
+                Документы для печати, подписи, прикрепления сканированных документов сотрудником доступны со дня увольнения до 14&#8209;00 следующего дня после увольнения.
             </div>
         </td>
     </tr>
@@ -144,7 +143,7 @@
     </tr>
     <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsTypeEditable) || (Model.Id == 0))
         {<text>style="display:none"</text>}>    
-        <td>Прикрепить скан документа</td>
+        <td>Прикрепить скан заявления</td>
         <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
     </tr>
 
@@ -438,10 +437,10 @@
              </td>
     </tr>
 
-    @* BEGIN Документы от сотрудника *@
+    @* BEGIN Документы с подписью сотрудника *@
 
     <tr>
-        <td style="border: 1px solid black; text-align: center;">Документы от сотрудника</td>
+        <td style="border: 1px solid black; text-align: center;">Документы с подписью сотрудника</td>
         <td colspan="2">
             <table>
                 
@@ -542,7 +541,7 @@
         </td>
     </tr>
     
-    @* END Документы от сотрудника *@
+    @* END Документы с подписью сотрудника *@
 
     </table>
     </div>
