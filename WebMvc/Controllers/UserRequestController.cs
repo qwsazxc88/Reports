@@ -1814,7 +1814,7 @@ namespace WebMvc.Controllers
                  value = new byte[stream.Length];
                  stream.Read(value, 0, (int)stream.Length);
              }
-             const string userFileName = "Deduction.pdf";
+             const string userFileName = "PrintOut.pdf";
              //const string contentType = "application/pdf";
              Response.Clear();
              if (Request.Browser.Browser == "IE")
@@ -1832,6 +1832,35 @@ namespace WebMvc.Controllers
              Response.BinaryWrite(value);
              Response.End();
              return null;
+         }
+
+         [HttpGet]
+         public ActionResult PrintDismissalList(string beginDate, string endDate, int? departmentId,
+                     int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
+         {
+             DismissalListModel model = new DismissalListModel
+             {
+                 BeginDate = parseDateTime(beginDate),
+                 EndDate = parseDateTime(endDate),
+                 DepartmentId = departmentId.HasValue ? departmentId.Value : 0,
+                 StatusId = requestStatusId.HasValue ? requestStatusId.Value : 0,
+                 TypeId = typeId.HasValue ? typeId.Value : 0,
+                 UserName = string.IsNullOrEmpty(userName) ? string.Empty : Server.UrlDecode(userName),
+                 SortBy = sortBy.HasValue ? sortBy.Value : 0,
+                 SortDescending = sortDescending.HasValue ? sortDescending.Value : new bool?(),
+             };
+             RequestBl.SetDismissalListModel(model, !ValidateModel(model));
+             return View(model);
+         }
+
+         protected DateTime? parseDateTime(string value)
+         {
+             if (string.IsNullOrEmpty(value))
+                 return new DateTime?();
+             DateTime result;
+             if (!DateTime.TryParse(value, out result))
+                 return new DateTime?();
+             return result;
          }
 
          /*[HttpGet]

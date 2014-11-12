@@ -313,7 +313,7 @@
     }
     function onPrintClick() {
 
-        window.location.href = '@Url.Action("RenderToPdf", "UserRequest")?urlTemplate=' + 'UserRequest/PrintDismissalList' + 'beginDate='+
+        window.location.href = '@Url.Action("RenderToPdf", "UserRequest")?urlTemplate=' + 'UserRequest/PrintDismissalList' + '&beginDate='+
         SetLocale($("#BeginDate").val()) +'&endDate=' + SetLocale($("#EndDate").val()) + '&departmentId=' + $("#DepartmentId").val()+
         '&requestStatusId='+ $("#RequestStatusId").val() +'&typeId=' + $("#TypeId").val() +
         '&userName=' + escapeJson($("#UserName").val()) +
