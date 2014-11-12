@@ -138,10 +138,10 @@
                             }
                         }
                         
-                        @*@if (Model.Documents != null && Model.Documents.Count > 0)
+                        @if (Model.Documents != null && Model.Documents.Count > 0)
                         {
                             <input type="button" value="Печать" onclick="return onPrintClick();"/>                                                                                   
-                        }*@
+                        }
                         
                     </td>
                     <td style = "text-align:right">
@@ -313,13 +313,19 @@
     }
     function onPrintClick() {
 
-        window.location.href = '@Url.Action("RenderToPdf", "Dismissal")?beginDate='+
+        window.location.href = '@Url.Action("RenderToPdf", "UserRequest")?urlTemplate=' + 'UserRequest/PrintDismissalList' + 'beginDate='+
         SetLocale($("#BeginDate").val()) +'&endDate=' + SetLocale($("#EndDate").val()) + '&departmentId=' + $("#DepartmentId").val()+
         '&requestStatusId='+ $("#RequestStatusId").val() +'&typeId=' + $("#TypeId").val() +
         '&userName=' + escapeJson($("#UserName").val()) +
         '&sortBy=' + $("#SortBy").val() +
         '&sortDescending=' + $("#SortDescending").val();
         return false;
+    }
+    function SetLocale(changeformat)
+    {
+        var arraydates = changeformat.split(".");
+        var newdate =  arraydates[1]+"."+arraydates[0]+"."+arraydates[2];
+        return newdate;
     }
  </script>   
 }
