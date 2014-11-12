@@ -690,6 +690,7 @@
     <Content Include="Views\MissionOrder\PrintAdditionalOrder.cshtml" />
     <Content Include="Views\Appointment\SelectManagerDialog.cshtml" />
     <Content Include="Views\Appointment\SelectManagerDialogError.cshtml" />
+    <Content Include="Views\UserRequest\PrintDismissalList.cshtml" />
     <Content Include="Views\Employment\GeneralInfoReadOnly.cshtml" />
     <Content Include="Views\Employment\PassportReadOnly.cshtml" />
     <Content Include="Views\Employment\EducationReadOnly.cshtml" />
