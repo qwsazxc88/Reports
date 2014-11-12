@@ -1957,17 +1957,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsApprovedEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsTypeEditable = true;
-                        // Сотрудник может прикрепить заявление на выдачу ТК при статусе "Черновик"
+
+                        // Сотрудник может прикрепить заявление на выдачу ТК при статусе "Черновик"                        
                         model.IsWorkbookRequestAllowed = true;
                     }
 
                     if (model.IsPostedTo1C)
                     {
+                        // Сотрудник может прикрепить сканы подписанных приказа, Т2 и соглашения
                         model.IsConfirmationAllowed = true;
                         model.IsT2Allowed = true;
                         model.IsDismissalAgreementAllowed = true;
-                        model.IsF182NAllowed = true;
-                        model.IsF2NDFLAllowed = true;
+
                         model.IsViewDismissalAgreementAllowed = true;
                         model.IsViewF182NAllowed = true;
                         model.IsViewF2NDFLAllowed = true;
@@ -1986,20 +1987,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsTypeEditable = true;
                             //model.IsStatusEditable = true;
                         }
-                        // Руководитель может прикрепить заявление на выдачу ТК до согласования
+                        // Руководитель может прикрепить за сотрудника заявление на выдачу ТК до согласования                        
                         model.IsWorkbookRequestAllowed = true;
                     }
 
                     if (model.IsPostedTo1C)
                     {
-                        // Руководитель может прикрепить подписанный приказ и Т-2 за сотрудника после выгрузки в 1С
+                        // Руководитель может прикрепить сканы подписанных приказа и Т-2 за сотрудника после выгрузки в 1С
                         model.IsConfirmationAllowed = true;
                         model.IsT2Allowed = true;
                     }
 
                     break;
                 case UserRole.PersonnelManager:
-                    model.IsUnsignedConfirmationAllowed = true;
+                    // Кадровик может за сотрудника прикрепить скан подписанного приказа
                     if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
                     {
                         model.IsConfirmationAllowed = true;
@@ -2007,15 +2008,13 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     if (model.IsPostedTo1C)
                     {
-                        // Кадровик загружает сканы на подпись сотруднику,
+                        // Кадровик загружает сканы на подпись сотруднику, если еще нет сканов подписанных документов
+                        model.IsUnsignedConfirmationAllowed = !(model.OrderScanAttachmentId > 0);
                         model.IsUnsignedT2Allowed = !(model.T2ScanAttachmentId > 0);
                         model.IsUnsignedDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
                         // а также 182-Н и 2-НДФЛ для ознакомления сотрудником
                         model.IsF182NAllowed = true;
                         model.IsF2NDFLAllowed = true;
-
-                        // model.IsT2Allowed = !(model.T2ScanAttachmentId > 0);
-                        // model.IsDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
 
                         // Кадровик имеет право на просмотр документов с ограничениями просмотра
                         model.IsViewDismissalAgreementAllowed = true;
