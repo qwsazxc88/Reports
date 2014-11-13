@@ -6176,7 +6176,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                     case (int)RequestTypeEnum.ClearanceChecklist:
                     Dismissal clearanceChecklist = DismissalDao.Load(id);
-                    if ((clearanceChecklist.Comments != null) && (clearanceChecklist.Comments.Count() > 0))
+                    if ((clearanceChecklist.ClearanceChecklistComments != null) && (clearanceChecklist.ClearanceChecklistComments.Count() > 0))
                     {
                         commentModel.Comments = clearanceChecklist.ClearanceChecklistComments.OrderBy(x => x.DateCreated).ToList().
                             ConvertAll(x => new RequestCommentModel

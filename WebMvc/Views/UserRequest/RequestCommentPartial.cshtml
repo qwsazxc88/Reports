@@ -1,25 +1,12 @@
 ﻿@model Reports.Presenters.UI.ViewModel.RequestCommentsModel
 @*<script src="@Url.Content("~/Scripts/jquery.upload-1.0.2.min.js")" type="text/javascript"></script>*@
 
-@if ((ViewBag.HasParent == null || !ViewBag.HasParent) && !Model.HasParent)
-{
-    @Html.HiddenFor(model => model.RequestId);
-    @Html.HiddenFor(model => model.RequestTypeId);
-}
-else
-{
-    <input type="hidden" id="ChildRequestId" value="@Model.RequestId" />
-    <input type="hidden" id="ChildRequestTypeId" value="@Model.RequestTypeId" />
-}
-
-<table @*id="@(ViewBag.HasParent == null || !ViewBag.HasParent ? "CommentsTable" : "ChildCommentsTable")"*@ style="width: 100%;">
+@Html.HiddenFor(model => model.RequestId)      
+@Html.HiddenFor(model => model.RequestTypeId)          
+<table id="CommentsTable" style="width: 100%;">
         <tr>
             <td>
-                <input type="button" value="@(ViewBag.AddCommentText != null ? ViewBag.AddCommentText : "Добавить комментарий")" @if (Model.RequestId == 0)
-                                                                                                 { <text>style = "display:none"</text>;
-                                                                                                 } @((ViewBag.HasParent == null || !ViewBag.HasParent) && !Model.HasParent
-                                                                                                    ? "id=AddComment onclick=OnAddComment();"
-                                                                                                    : "id=AddChildComment onclick=OnAddChildComment();") />
+                <input type="button" value="Добавить комментарий" @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } id="AddComment" onclick="OnAddComment();"/>
             </td>
         </tr>
         <tr>
@@ -27,7 +14,7 @@ else
         </tr>
         <tr>
             <td>
-                <div id=@((ViewBag.HasParent == null || !ViewBag.HasParent) && !Model.HasParent ? "\"CommentError\"" : "\"ChildCommentError\"") style="color:Red" visible="false"/>
+                <div id="CommentError" style="color:Red" visible="false"/>
             </td>    
         </tr>    
         @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
@@ -46,105 +33,103 @@ else
 
 @*<input  type="button"  id="btnRender" value="Срендерить" onclick="Render();"/>*@
 
-@if (ViewBag.HasParent == null || !ViewBag.HasParent)
-{
-    <script type="text/javascript">
-        function Render(isChild) {
-            var actionUrl="@Url.Action("RenderComments", "UserRequest")";
-            var documentId = isChild ? $("#ChildRequestId").val() : $("#RequestId").val();
-            var typeId = isChild ? $("#ChildRequestTypeId").val() : $("#RequestTypeId").val();
-            var url = actionUrl + "?id=" + documentId+"&typeId="+typeId+"&dummy=" + new Date().getTime()+"&hasParent="+isChild;
-            $(isChild ? "#ChildCommentModelContext" : "#CommentModelContext").load(url);
-        }
-        function OnAddComment() {
-            createCommentDialog(0, false);
-        }
-        function OnAddChildComment() {
-            createCommentDialog(0, true);
-        }
-        function createCommentDialog(id, isChild) 
-        {
-            var elem = document.createElement('div');
-            elem.id = "divCommentDialog";
-            var newDiv = $(elem);
-            var documentId = isChild ? $("#ChildRequestId").val() : $("#RequestId").val();
-            var typeId = isChild ? $("#ChildRequestTypeId").val() : $("#RequestTypeId").val();
+<script type="text/javascript">
+    
+    // Вывод комментариев
+    function Render() {
+        var actionUrl="@Url.Action("RenderComments", "UserRequest")";
+        var documentId = $("#RequestId").val();
+        var typeId = $("#RequestTypeId").val();
+        var url = actionUrl + "?id=" + documentId+"&typeId="+typeId+"&dummy=" + new Date().getTime();
+        $("#CommentModelContext").load(url);
+    }
+    function OnAddComment() {
+        createCommentDialog(0);
+    }
+    function createCommentDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divCommentDialog";
+        var newDiv = $(elem);
+        var documentId = $("#RequestId").val();
+        var typeId = $("#RequestTypeId").val();
 
-            var title =  "Добавление нового комментария";
-            $(newDiv).text('Подождите, идет загрузка данных ...'); 
-            $.ajaxSetup({cache: false});
-            $(newDiv).load("@Url.Action("AddCommentDialog", "UserRequest")?id=" + documentId + "&typeId="+typeId + " #DialogTable");
-            $(newDiv).dialog(
-            { // initialize dialog box
-                autoOpen: true,
-                modal: true,
-                title: title,
-                // fix IE6  
-                bgiframe: true, 
-                draggable: false,
-                resizable: false,
-                width: 550,
-	            height: 220,
-                close: function (event, ui) {
-                    $(this).dialog("destroy").remove();
-                },
-                buttons:
-                {
-                    "Сохранить": function () {
-                        if (!ValidateComment())
-                            return;
-                        SaveComment(isChild);
-                    },
-                    "Отмена": function () {
-                        $(this).dialog("close");
-                    }
-                }
-            });
-        }
-        function ValidateComment()
-        {
-            if(trimSpaces($("#Comment").val()) == "")
+        var title =  "Добавление нового комментария";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("AddCommentDialog", "UserRequest")?id=" + documentId + "&typeId="+typeId + " #DialogTable");
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 550,
+	        height: 220,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
             {
-                addCommentError("Комментарий - обязательное поле");
-                return false;
+                "Сохранить": function () {
+                    if (!ValidateComment())
+                        return;
+                    SaveComment();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
             }
-            return true;
-        }
-        function SaveComment(isChild)
+        });
+    }
+    function ValidateComment()
+    {
+        if(trimSpaces($("#Comment").val()) == "")
         {
-            var url="@Url.Action("SaveComment", "UserRequest")"+"?id="+ (isChild ? $("#ChildRequestId").val() : $("#RequestId").val()) + "&typeId="+ (isChild ? $("#ChildRequestTypeId").val() : $("#RequestTypeId").val())
-                    +"&comment="+escapeJson($("#Comment").val());
-            var jqxhr = $.post(url,
-                    function (jsonResult) {
-                                                if (!this.JSON) {
-                                                        this.JSON = {};
-                                                }
-                                                if(jsonResult == "")
-                                                {
-                                                    addCommentError("Ошибка асинхронного запроса - не был получен ответ.");
-                                                    return;
-                                                }
-                                                var result = JSON.parse(jsonResult);  
-                                                if(!result.Result)
-                                                {
-                                                    addCommentError(result.Error);
-                                                    //Render();
-                                                }
-                                                else
-                                                {
-                                                    clearCommentErrors();
-                                                    $("#divCommentDialog").dialog("close");
-                                                    Render(isChild);
-                                                }    
-                                      });
+            addCommentError("Комментарий - обязательное поле");
+            return false;
         }
-        function addCommentError(value) {
-            $("#AddCommentError").text(value);
-            $("#AddCommentError").show();
-        }
-        function clearCommentErrors() {
-            $("#AddCommentError").text("");
-            $("#AddCommentError").hide();
-        }
-    </script>
+        return true;
+    }
+
+    // Отправка комментария на сервер
+    function SaveComment()
+    {
+        var url="@Url.Action("SaveComment", "UserRequest")"+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()
+                +"&comment="+escapeJson($("#Comment").val());
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addCommentError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addCommentError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearCommentErrors();
+                                                $("#divCommentDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addCommentError(value) {
+    $("#AddCommentError").text(value);
+    $("#AddCommentError").show();
 }
+function clearCommentErrors() {
+    $("#AddCommentError").text("");
+    $("#AddCommentError").hide();
+}
+    </script>
