@@ -107,7 +107,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Автор")]
         public string CreatorLogin { get; set; }
 
-        [Display(Name = "Скан заявления")]
+        [Display(Name = "Скан заявления на увольнение")]
         public string Attachment { get; set; }
         public int AttachmentId { get; set; }
 
