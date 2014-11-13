@@ -62,7 +62,7 @@ namespace Reports.Presenters.UI.Bl
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
-        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error);
+        bool SaveDismissalEditModel(DismissalEditModel model, IDictionary<RequestAttachmentTypeEnum, UploadFileDto> fileDtos, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
                 
         ClearanceChecklistListModel GetClearanceChecklistListModel();
