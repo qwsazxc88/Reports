@@ -9,7 +9,7 @@
 {
     <table style="width:100%">
     <tr>
-        <td colspan="2">
+        <td>
           <div class="filter-wrap">
             <table style="width:100%">
                 <tr>
@@ -103,6 +103,18 @@
             </table>
         </div>                          
         </td>
+        <td style="vertical-align: top; width: 25%;">
+            <div class="announcement" style="width: 100%;">
+                Пакет документов при увольнении:
+                <ol>
+                    <li>Заявление на увольнение</li>
+                    <li>Заявление на выдачу трудовой книжки (при необходимости)</li>
+                    <li>Приказ на увольнение</li>
+                    <li>Соглашение сторон (при необходимости)</li>
+                    <li>Карточка Т-2</li>
+                </ol>
+            </div>            
+        </td>
     </tr>
     <tr>
         <td colspan="2">
@@ -110,31 +122,37 @@
             <table style="width:100%">
                  <tr>
                     <td colspan="2">
-                            @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
-                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
-                                 ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
+                        @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Inspector &&
+                            ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.OutsourcingManager &&
+                                ((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Chief)
+                        {
+                            if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
                             {
-                                if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-                                {
-                                @*    @Html.ActionLink("Создать новую заявку", "DismissalEdit", new { id = 0, userId = Model.UserId })*@
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DismissalEdit", "UserRequest", new { id = 0, userId = Model.UserId })'"/>   
-                                }
-                                else
-                                {
-                                   @* @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
-                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "UserRequest")'"/>
-                                }
+                            @*    @Html.ActionLink("Создать новую заявку", "DismissalEdit", new { id = 0, userId = Model.UserId })*@
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("DismissalEdit", "UserRequest", new { id = 0, userId = Model.UserId })'"/>   
                             }
-                            </td>
-                            <td style = "text-align:right">
-                                @if (Model.IsOriginalReceivedEditable)
-                                {
-                                    <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
-                                    <input type="hidden" id="IsPersonnelFileSentToArchiveModified" name="isPersonnelFileSentToArchiveModified" value="false" />
-                                    <button type="submit" id="SaveFlags">Записать</button>
-                                }
-                            </td>
-                        </tr>
+                            else
+                            {
+                                @* @Html.ActionLink("Создать новую заявку", "CreateRequest") *@
+                                <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateRequest", "UserRequest")'"/>
+                            }
+                        }
+                        
+                        @if (Model.Documents != null && Model.Documents.Count > 0)
+                        {
+                            <input type="button" value="Печать" onclick="return onPrintClick();"/>                                                                                   
+                        }
+                        
+                    </td>
+                    <td style = "text-align:right">
+                        @if (Model.IsOriginalReceivedEditable)
+                        {
+                            <input type="hidden" id="IsOriginalReceivedModified" name="isOriginalReceivedModified" value="false" />
+                            <input type="hidden" id="IsPersonnelFileSentToArchiveModified" name="isPersonnelFileSentToArchiveModified" value="false" />
+                            <button type="submit" id="SaveFlags">Записать</button>
+                        }
+                    </td>
+                </tr>
              </table>
             </div>                           
         </td>
@@ -166,21 +184,22 @@
                     </th>
                     <th>
                         <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
-                    </th>
-                    @if (Model.IsOriginalReceivedEditable)
-                    {
-                        <th>
-                            <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
+                    </th>                    
+                    <th>
+                        <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
+                        @if (Model.IsOriginalReceivedEditable)
+                        {
                             <input type="checkbox" id="setAll1" />
-                        </th>
-                    }
-                    @if (Model.IsPersonnelFileSentToArchiveEditable)
-                    {
-                        <th>
-                            <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
+                        }
+                    </th>
+                    
+                    <th>
+                        <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
+                        @if (Model.IsPersonnelFileSentToArchiveEditable)
+                        {
                             <input type="checkbox" id="setAll2" />
-                        </th>
-                    }
+                        }
+                    </th>
                    @* <th>
                         Дата окончания
                     </th>*@
@@ -203,23 +222,34 @@
                              <td>@doc.Number</td>
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
-                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>                            
-                            @if (Model.IsOriginalReceivedEditable)
-                            {
-                                <td style="text-align: center">
-                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })                                    
-                                </td>
-                            }
-                            @if (Model.IsPersonnelFileSentToArchiveEditable)
-                            {
-                                <td style="text-align: center">
+                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+
+                            <td style="text-align: center">
+                                @if(Model.IsOriginalReceivedEditable)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1", disabled = "disabled" })
+                                }
+                            </td>
+
+                            <td style="text-align: center">
+                                @if (Model.IsPersonnelFileSentToArchiveEditable)
+                                {
                                     @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2" })
-                                </td>
-                            }
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2", disabled = "disabled" })
+                                }
+                            </td>
+                            
                             @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
-                            i++;
+                                i++;
                     }
                 }
             </table>
@@ -280,6 +310,22 @@
         $("#TypeId").val('0');
         $("#StatusId").val('0');
          $("#UserName").val('');
+    }
+    function onPrintClick() {
+
+        window.location.href = '@Url.Action("RenderToPdf", "UserRequest")?urlTemplate=' + 'UserRequest/PrintDismissalList' + '&beginDate='+
+        SetLocale($("#BeginDate").val()) +'&endDate=' + SetLocale($("#EndDate").val()) + '&departmentId=' + $("#DepartmentId").val()+
+        '&requestStatusId='+ $("#RequestStatusId").val() +'&typeId=' + $("#TypeId").val() +
+        '&userName=' + escapeJson($("#UserName").val()) +
+        '&sortBy=' + $("#SortBy").val() +
+        '&sortDescending=' + $("#SortDescending").val();
+        return false;
+    }
+    function SetLocale(changeformat)
+    {
+        var arraydates = changeformat.split(".");
+        var newdate =  arraydates[1]+"."+arraydates[0]+"."+arraydates[2];
+        return newdate;
     }
  </script>   
 }

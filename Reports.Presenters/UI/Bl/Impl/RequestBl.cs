@@ -1849,6 +1849,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetAttachmentToModel(model, id,RequestAttachmentTypeEnum.Dismissal);
             SetOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.DismissalOrderScan);
             SetUnsignedOrderScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedDismissalOrderScan);
+            SetT2ScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.T2Scan);
+            SetUnsignedT2ScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedT2Scan);
+            SetDismissalAgreementScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.DismissalAgreementScan);
+            SetUnsignedDismissalAgreementScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan);
+            SetF182NScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.F182NScan);
+            SetF2NDFLScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.F2NDFLScan);
+            SetWorkbookRequestScanAttachmentToModel(model, id, RequestAttachmentTypeEnum.WorkbookRequestScan);
             Dismissal dismissal = null;
             if (id == 0)
             {
@@ -1950,7 +1957,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsApprovedEnable = true;
                         if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
                             model.IsTypeEditable = true;
+
+                        // Сотрудник может прикрепить заявление на выдачу ТК при статусе "Черновик"                        
+                        model.IsWorkbookRequestAllowed = true;
                     }
+
+                    if (model.IsPostedTo1C)
+                    {
+                        // Сотрудник может прикрепить сканы подписанных приказа, Т2 и соглашения
+                        model.IsConfirmationAllowed = true;
+                        model.IsT2Allowed = true;
+                        model.IsDismissalAgreementAllowed = true;
+
+                        model.IsViewDismissalAgreementAllowed = true;
+                        model.IsViewF182NAllowed = true;
+                        model.IsViewF2NDFLAllowed = true;
+                    }
+
                     break;
                 case UserRole.Manager:
                     //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
@@ -1964,14 +1987,41 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsTypeEditable = true;
                             //model.IsStatusEditable = true;
                         }
+                        // Руководитель может прикрепить за сотрудника заявление на выдачу ТК до согласования                        
+                        model.IsWorkbookRequestAllowed = true;
                     }
+
+                    if (model.IsPostedTo1C)
+                    {
+                        // Руководитель может прикрепить сканы подписанных приказа и Т-2 за сотрудника после выгрузки в 1С
+                        model.IsConfirmationAllowed = true;
+                        model.IsT2Allowed = true;
+                    }
+
                     break;
                 case UserRole.PersonnelManager:
-                    model.IsUnsignedConfirmationAllowed = true;
+                    // Кадровик может за сотрудника прикрепить скан подписанного приказа
                     if (model.IsPostedTo1C && model.OrderScanAttachmentId <= 0)
                     {
                         model.IsConfirmationAllowed = true;
                     }
+
+                    if (model.IsPostedTo1C)
+                    {
+                        // Кадровик загружает сканы на подпись сотруднику, если еще нет сканов подписанных документов
+                        model.IsUnsignedConfirmationAllowed = !(model.OrderScanAttachmentId > 0);
+                        model.IsUnsignedT2Allowed = !(model.T2ScanAttachmentId > 0);
+                        model.IsUnsignedDismissalAgreementAllowed = !(model.DismissalAgreementScanAttachmentId > 0);
+                        // а также 182-Н и 2-НДФЛ для ознакомления сотрудником
+                        model.IsF182NAllowed = true;
+                        model.IsF2NDFLAllowed = true;
+
+                        // Кадровик имеет право на просмотр документов с ограничениями просмотра
+                        model.IsViewDismissalAgreementAllowed = true;
+                        model.IsViewF182NAllowed = true;
+                        model.IsViewF2NDFLAllowed = true;
+                    }
+
                     if (!entity.PersonnelManagerDateAccept.HasValue)
                     {
                         if (model.AttachmentId > 0)
@@ -1985,13 +2035,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                             //model.IsStatusEditable = true;
                             model.IsPersonnelFieldsEditable = true;
                         }
+
+                        // Кадровик может прикрепить заявление на выдачу ТК до согласования
+                        model.IsWorkbookRequestAllowed = true;
                     }
                     else if (!entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
                         model.IsDeleteAvailable = true;
                     break;
                 case UserRole.OutsourcingManager:
                     if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
+                    {
                         model.IsDeleteAvailable = true;
+                        model.IsViewDismissalAgreementAllowed = true;
+                        model.IsViewF182NAllowed = true;
+                        model.IsViewF2NDFLAllowed = true;
+                    }
                     break;
             }
             model.IsSaveAvailable = model.IsTypeEditable /*|| model.IsStatusEditable*/|| model.IsPersonnelFieldsEditable;
@@ -2031,7 +2089,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
-        public bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error)
+        public bool SaveDismissalEditModel(DismissalEditModel model, IDictionary<RequestAttachmentTypeEnum, UploadFileDto> fileDtos, out string error)
         {
             error = string.Empty;
             User user = null;
@@ -2063,7 +2121,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {                    
                     dismissal = DismissalDao.Load(model.Id);
                     string fileName;
-                    int? attachmentId = SaveAttachment(dismissal.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Dismissal, out fileName);
+                    int? attachmentId = SaveAttachment(dismissal.Id,
+                        model.AttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.Dismissal],
+                        RequestAttachmentTypeEnum.Dismissal,
+                        out fileName);
                     if (attachmentId.HasValue)
                     {
                         model.AttachmentId = attachmentId.Value;
@@ -2071,18 +2133,103 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     // ---------------------------------------
-                    int? orderScanAttachmentId = SaveAttachment(dismissal.Id, model.OrderScanAttachmentId, orderScanFileDto, RequestAttachmentTypeEnum.DismissalOrderScan, out fileName);
+                    int? orderScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.OrderScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.DismissalOrderScan],
+                        RequestAttachmentTypeEnum.DismissalOrderScan,
+                        out fileName);
                     if (orderScanAttachmentId.HasValue)
                     {
                         model.OrderScanAttachmentId = orderScanAttachmentId.Value;
                         model.OrderScanAttachment = fileName;
                     }
                     // ---------------------------------------
-                    int? unsignedOrderScanAttachmentId = SaveAttachment(dismissal.Id, model.UnsignedOrderScanAttachmentId, unsignedOrderScanFileDto, RequestAttachmentTypeEnum.UnsignedDismissalOrderScan, out fileName);
+                    int? unsignedOrderScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.UnsignedOrderScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.UnsignedDismissalOrderScan],
+                        RequestAttachmentTypeEnum.UnsignedDismissalOrderScan,
+                        out fileName);
                     if (unsignedOrderScanAttachmentId.HasValue)
                     {
                         model.UnsignedOrderScanAttachmentId = unsignedOrderScanAttachmentId.Value;
                         model.UnsignedOrderScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? unsignedT2ScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.UnsignedT2ScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.UnsignedT2Scan],
+                        RequestAttachmentTypeEnum.UnsignedT2Scan,
+                        out fileName);
+                    if (unsignedT2ScanAttachmentId.HasValue)
+                    {
+                        model.UnsignedT2ScanAttachmentId = unsignedT2ScanAttachmentId.Value;
+                        model.UnsignedT2ScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? t2ScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.T2ScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.T2Scan],
+                        RequestAttachmentTypeEnum.T2Scan,
+                        out fileName);
+                    if (t2ScanAttachmentId.HasValue)
+                    {
+                        model.T2ScanAttachmentId = t2ScanAttachmentId.Value;
+                        model.T2ScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? unsignedDismissalAgreementScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.UnsignedDismissalAgreementScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan],
+                        RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan,
+                        out fileName);
+                    if (unsignedDismissalAgreementScanAttachmentId.HasValue)
+                    {
+                        model.UnsignedDismissalAgreementScanAttachmentId = unsignedDismissalAgreementScanAttachmentId.Value;
+                        model.UnsignedDismissalAgreementScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? dismissalAgreementScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.DismissalAgreementScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.DismissalAgreementScan],
+                        RequestAttachmentTypeEnum.DismissalAgreementScan,
+                        out fileName);
+                    if (dismissalAgreementScanAttachmentId.HasValue)
+                    {
+                        model.DismissalAgreementScanAttachmentId = dismissalAgreementScanAttachmentId.Value;
+                        model.DismissalAgreementScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? f182NScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.F182NScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.F182NScan],
+                        RequestAttachmentTypeEnum.F182NScan,
+                        out fileName);
+                    if (f182NScanAttachmentId.HasValue)
+                    {
+                        model.F182NScanAttachmentId = f182NScanAttachmentId.Value;
+                        model.F182NScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? f2NDFLScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.F2NDFLScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.F2NDFLScan],
+                        RequestAttachmentTypeEnum.F2NDFLScan,
+                        out fileName);
+                    if (f2NDFLScanAttachmentId.HasValue)
+                    {
+                        model.F2NDFLScanAttachmentId = f2NDFLScanAttachmentId.Value;
+                        model.F2NDFLScanAttachment = fileName;
+                    }
+                    // ---------------------------------------
+                    int? workbookRequestScanAttachmentId = SaveAttachment(dismissal.Id,
+                        model.WorkbookRequestScanAttachmentId,
+                        fileDtos[RequestAttachmentTypeEnum.WorkbookRequestScan],
+                        RequestAttachmentTypeEnum.WorkbookRequestScan,
+                        out fileName);
+                    if (workbookRequestScanAttachmentId.HasValue)
+                    {
+                        model.WorkbookRequestScanAttachmentId = workbookRequestScanAttachmentId.Value;
+                        model.WorkbookRequestScanAttachment = fileName;
                     }
                     // ---------------------------------------
 
@@ -2102,6 +2249,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // ----------------------------
                         if (model.UnsignedOrderScanAttachmentId > 0)
                             RequestAttachmentDao.Delete(model.UnsignedOrderScanAttachmentId);
+                        // ----------------------------
+                        if (model.UnsignedT2ScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.UnsignedT2ScanAttachmentId);
+                        // ----------------------------
+                        if (model.T2ScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.T2ScanAttachmentId);
+                        // ----------------------------
+                        if (model.UnsignedDismissalAgreementScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.UnsignedDismissalAgreementScanAttachmentId);
+                        // ----------------------------
+                        if (model.DismissalAgreementScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.DismissalAgreementScanAttachmentId);
+                        // ----------------------------
+                        if (model.F182NScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.F182NScanAttachmentId);
+                        // ----------------------------
+                        if (model.F2NDFLScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
+                        // ----------------------------
+                        if (model.WorkbookRequestScanAttachmentId > 0)
+                            RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
                         // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
@@ -3563,6 +3731,76 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return;
             model.UnsignedOrderScanAttachmentId = attach.Id;
             model.UnsignedOrderScanAttachment = attach.FileName;
+        }
+        protected void SetT2ScanAttachmentToModel(IT2ScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.T2ScanAttachmentId = attach.Id;
+            model.T2ScanAttachment = attach.FileName;
+        }
+        protected void SetUnsignedT2ScanAttachmentToModel(IUnsignedT2ScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.UnsignedT2ScanAttachmentId = attach.Id;
+            model.UnsignedT2ScanAttachment = attach.FileName;
+        }
+        protected void SetDismissalAgreementScanAttachmentToModel(IDismissalAgreementScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.DismissalAgreementScanAttachmentId = attach.Id;
+            model.DismissalAgreementScanAttachment = attach.FileName;
+        }
+        protected void SetUnsignedDismissalAgreementScanAttachmentToModel(IUnsignedDismissalAgreementScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.UnsignedDismissalAgreementScanAttachmentId = attach.Id;
+            model.UnsignedDismissalAgreementScanAttachment = attach.FileName;
+        }
+        protected void SetF182NScanAttachmentToModel(IF182NScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.F182NScanAttachmentId = attach.Id;
+            model.F182NScanAttachment = attach.FileName;
+        }
+        protected void SetF2NDFLScanAttachmentToModel(IF2NDFLScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.F2NDFLScanAttachmentId = attach.Id;
+            model.F2NDFLScanAttachment = attach.FileName;
+        }
+        protected void SetWorkbookRequestScanAttachmentToModel(IWorkbookRequestScanAttachment model, int id, RequestAttachmentTypeEnum type)
+        {
+            if (id == 0)
+                return;
+            RequestAttachment attach = RequestAttachmentDao.FindByRequestIdAndTypeId(id, type);
+            if (attach == null)
+                return;
+            model.WorkbookRequestScanAttachmentId = attach.Id;
+            model.WorkbookRequestScanAttachment = attach.FileName;
         }
         public bool SaveSicklistEditModel(SicklistEditModel model,UploadFileDto fileDto, out string error)
         {
