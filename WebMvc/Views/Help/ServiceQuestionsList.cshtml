@@ -104,6 +104,8 @@
                                 <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
                                 @if (Model.IsAddAvailable)
                                 {
+                                    <input type="button" value="Создать новую заявку на услугу" onclick="location.href='@Url.Action("ServiceRequestEdit", "Help", new { id = 0 })'"/>
+                                    <text>&nbsp; &nbsp; &nbsp;</text>   
                                     <input type="button" value="Создать новую заявку на услугу за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
                                 }                                                                                     
                             </td>
