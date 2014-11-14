@@ -13,6 +13,8 @@
     <property name="Description" length="256" not-null="false"/>
 
     <property name="DaysForApproval" not-null="false"/>
+
+    <property name="DeleteDate" not-null="false"/>
   
   </class>
 </hibernate-mapping>
