@@ -2468,22 +2468,15 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         protected void SetDocumentsToModel(ClearanceChecklistListModel model, User user)
         {
-
-            //UserRole role = (UserRole)(user.RoleId & (int)CurrentUser.UserRole);
-            UserRole role = UserRole.OutsourcingManager;
             model.DepartmentId = 0;
             model.PositionId = 0;
             model.Documents = ClearanceChecklistDao.GetClearanceChecklistDocuments(
                 user.Id,
-                role,
-                //model.DepartmentId,
-                //GetDepartmentId(model.Department),
+                user.UserRole,
                 model.DepartmentId,
                 model.PositionId,
-                //model.TypeId,
                 0,
                 model.StatusId,
-                //0,
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,

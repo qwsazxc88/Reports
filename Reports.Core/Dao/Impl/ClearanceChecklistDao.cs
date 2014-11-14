@@ -64,8 +64,8 @@ namespace Reports.Core.Dao.Impl
             {
                 sqlQuery += relevanceFilter;
             }
-                        
-            string whereString = GetWhereForUserRole(role, userId);
+
+            string whereString = string.Empty;
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
