@@ -248,7 +248,7 @@ namespace Reports.Core.Dao.Impl
                                 left join {1} t on v.TypeId = t.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId";
         protected const string sqlSelectForListClearanceChecklist =
-                                @"select v.Id as Id,
+                                @"select distinct v.Id as Id,
                                 u.Id as UserId,
                                 '{1}' as Name,
                                 {2} as Date,
