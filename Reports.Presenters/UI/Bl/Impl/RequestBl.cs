@@ -71,6 +71,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected IDismissalDao dismissalDao;
         protected IDismissalCommentDao dismissalCommentDao;
 
+        protected IClearanceChecklistCommentDao clearanceChecklistCommentDao;
+
         protected ITimesheetCorrectionTypeDao timesheetCorrectionTypeDao;
         protected ITimesheetCorrectionDao timesheetCorrectionDao;
         protected ITimesheetCorrectionCommentDao timesheetCorrectionCommentDao;
@@ -241,6 +243,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             get { return Validate.Dependency(dismissalCommentDao); }
             set { dismissalCommentDao = value; }
+        }
+
+        public IClearanceChecklistCommentDao ClearanceChecklistCommentDao
+        {
+            get { return Validate.Dependency(clearanceChecklistCommentDao); }
+            set { clearanceChecklistCommentDao = value; }
         }
 
         protected IClearanceChecklistDao clearanceChecklistDao;
@@ -2540,6 +2548,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DateCreated = clearanceChecklist.CreateDate.ToShortDateString();
             model.DocumentNumber = clearanceChecklist.Number.ToString();
             model.EndDate = clearanceChecklist.EndDate;
+            model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.ClearanceChecklist);
             SetUserInfoModel(user, model);
 
             return model;
@@ -6164,6 +6173,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             });
                     }
                     break;
+                    case (int)RequestTypeEnum.ClearanceChecklist:
+                    Dismissal clearanceChecklist = DismissalDao.Load(id);
+                    if ((clearanceChecklist.ClearanceChecklistComments != null) && (clearanceChecklist.ClearanceChecklistComments.Count() > 0))
+                    {
+                        commentModel.Comments = clearanceChecklist.ClearanceChecklistComments.OrderBy(x => x.DateCreated).ToList().
+                            ConvertAll(x => new RequestCommentModel
+                            {
+                                Comment = x.Comment,
+                                CreatedDate = x.DateCreated.ToString(),
+                                Creator = x.User.FullName,
+                            });
+                    }
+                    break;
                     case (int)RequestTypeEnum.TimesheetCorrection:
                     TimesheetCorrection timesheetCorrection = TimesheetCorrectionDao.Load(id);
                     if ((timesheetCorrection.Comments != null) && (timesheetCorrection.Comments.Count() > 0))
@@ -6311,6 +6333,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                             User = user,
                         };
                         DismissalCommentDao.MergeAndFlush(dismissalComment);
+                        break;
+                    case (int)RequestTypeEnum.ClearanceChecklist:
+                        Dismissal clearanceChecklist = DismissalDao.Load(model.DocumentId);
+                        user = UserDao.Load(userId);
+                        ClearanceChecklistComment clearanceChecklistComment = new ClearanceChecklistComment
+                        {
+                            Comment = model.Comment,
+                            ClearanceChecklist = clearanceChecklist,
+                            DateCreated = DateTime.Now,
+                            User = user,
+                        };
+                        ClearanceChecklistCommentDao.MergeAndFlush(clearanceChecklistComment);
                         break;
                     case (int)RequestTypeEnum.TimesheetCorrection:
                         TimesheetCorrection timesheetCorrection = TimesheetCorrectionDao.Load(model.DocumentId);

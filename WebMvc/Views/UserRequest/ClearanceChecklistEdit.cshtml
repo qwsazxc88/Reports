@@ -132,6 +132,16 @@ if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprova
     </form>            
 }
 
+<div class="comment-wrap">
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+            </td>
+        </tr>
+    </table>
+</div>
+
 <script type="text/javascript">
     
     function ApprovalSuccess()
