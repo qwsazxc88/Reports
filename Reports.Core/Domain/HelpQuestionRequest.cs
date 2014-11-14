@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Заявка на услугу
+    /// Вопрос/ответ
     /// </summary>
     public class HelpQuestionRequest : AbstractEntityWithVersion
     {
@@ -24,16 +24,17 @@ namespace Reports.Core.Domain
         //public virtual HelpServiceProductionTime ProductionTime { get; set; }
         //public virtual HelpServiceTransferMethod TransferMethod { get; set; }
         //public virtual HelpServicePeriod Period { get; set; }
-        //public virtual string Requirements { get; set; }
+        public virtual string Question { get; set; }
+        public virtual string Answer { get; set; }
        
 
         public virtual User User { get; set; }
         public virtual User Creator { get; set; }
         public virtual User Consultant { get; set; }
+        public virtual int ConsultantRoleId { get; set; }
 
 
-
-        //public virtual IList<HelpServiceRequestComment> Comments { get; set; }
+        public virtual IList<HelpQuestionHistoryEntity> HistoryEntities { get; set; }
 
       
         #endregion

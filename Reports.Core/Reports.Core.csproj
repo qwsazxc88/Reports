@@ -401,6 +401,7 @@
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
     <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpQuestionHistoryEntity.cs" />
     <Compile Include="Domain\HelpQuestionRequest.cs" />
     <Compile Include="Domain\HelpQuestionSubtype.cs" />
     <Compile Include="Domain\HelpQuestionType.cs" />
@@ -1037,6 +1038,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpQuestionRequest.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

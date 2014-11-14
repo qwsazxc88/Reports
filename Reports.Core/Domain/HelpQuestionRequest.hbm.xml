@@ -13,16 +13,20 @@
     <!--<property name="RejectWorkDate" not-null="false"/>-->
     <property name="Number"  not-null="true"/>
 	  
-	<many-to-one name="Type" class="HelpQuestionType" column="TypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionType" index="HelpQuestionRequest_HelpQuestionType"  not-null="true"/>
-  <many-to-one name="Subtype" class="HelpQuestionSubtype" column="SubtypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionSubtype" index="HelpQuestionRequest_HelpQuestionSubtype"  not-null="true"/>
+	  <many-to-one name="Type" class="HelpQuestionType" column="TypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionType" index="HelpQuestionRequest_HelpQuestionType"  not-null="true"/>
+    <many-to-one name="Subtype" class="HelpQuestionSubtype" column="SubtypeId" foreign-key="FK_HelpQuestionRequest_HelpQuestionSubtype" index="HelpQuestionRequest_HelpQuestionSubtype"  not-null="true"/>
+    <property name="Question" length="8192" not-null="false"/>
+    <property name="Answer" length="8192" not-null="false"/>
+  
  
-	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_HelpQuestionRequest_User" index="IX_HelpQuestionRequest_User_Id"  not-null="true"/>
-	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HelpQuestionRequest_CreatorUser" index="IX_HelpQuestionRequest_CreatorUser_Id"  not-null="true"/>
-  <many-to-one name="Consultant" class="User" column="ConsultantId" foreign-key="FK_HelpQuestionRequest_Consultant" index="IX_HelpQuestionRequest_Consultant_Id"  not-null="false"/>
+    <many-to-one name="User" class="User" column="UserId" foreign-key="FK_HelpQuestionRequest_User" index="IX_HelpQuestionRequest_User_Id"  not-null="true"/>
+    <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HelpQuestionRequest_CreatorUser" index="IX_HelpQuestionRequest_CreatorUser_Id"  not-null="true"/>
+    <many-to-one name="Consultant" class="User" column="ConsultantId" foreign-key="FK_HelpQuestionRequest_Consultant" index="IX_HelpQuestionRequest_Consultant_Id"  not-null="false"/>
+    <property name="ConsultantRoleId" not-null="false"/>
    
-	<!--<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
-	  <key column="HelpQuestionRequestId" foreign-key="FK_HelpQuestionRequestComment_HelpQuestionRequest"/>
-	  <one-to-many class="HelpQuestionRequestComment"/>
-	</bag>-->
+	<bag name="HistoryEntities" lazy="true" inverse="true" cascade="all-delete-orphan">
+	  <key column="HelpQuestionRequestId" foreign-key="FK_HelpQuestionRequestHistoryEntity_HelpQuestionRequest"/>
+	  <one-to-many class="HelpQuestionHistoryEntity"/>
+	</bag>
 	</class>
 </hibernate-mapping>
