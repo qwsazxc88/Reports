@@ -71,7 +71,7 @@
                         </ul>
                     </td>
                     <td>
-                        @if (approval.ApprovalDate != "")
+                        @if (!string.IsNullOrEmpty(approval.ApprovalDate))
                         {
                             <span style="color:Green">Cогласовано</span>
                         }
@@ -87,7 +87,7 @@
                     <td>@approval.ApprovedBy</td>
                     <td>@approval.ApprovalDate</td>
                     <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
-                    <td>@if (approval.Active)
+                    <td>@if (approval.Active && string.IsNullOrEmpty(approval.ApprovalDate))
                         {
                             <textarea rows="1" cols="30" value="@approval.Comment" wrap="soft" maxlength="240" data-approval-id="@approval.Id">@approval.Comment</textarea>
                             <a class="save-approval-comment-link" data-approval-id="@approval.Id" href="">Сохранить</a>
