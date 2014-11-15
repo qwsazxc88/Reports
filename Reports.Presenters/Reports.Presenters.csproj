@@ -194,6 +194,7 @@
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />
+    <Compile Include="UI\ViewModel\HelpQuestionEditModel.cs" />
     <Compile Include="UI\ViewModel\HelpServiceQuestionsListModel .cs" />
     <Compile Include="UI\ViewModel\HelpServiceRequestEditModel.cs" />
     <Compile Include="UI\ViewModel\HelpServiceRequestsListModel.cs" />
