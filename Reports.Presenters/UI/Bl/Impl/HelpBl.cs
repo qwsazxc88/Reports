@@ -96,6 +96,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionOrderRoleRecordDao); }
             set { missionOrderRoleRecordDao = value; }
         }
+
+        protected IHelpQuestionTypeDao helpQuestionTypeDao;
+        public IHelpQuestionTypeDao HelpQuestionTypeDao
+        {
+            get { return Validate.Dependency(helpQuestionTypeDao); }
+            set { helpQuestionTypeDao = value; }
+        }
+        protected IHelpQuestionSubtypeDao helpQuestionSubtypeDao;
+        public IHelpQuestionSubtypeDao HelpQuestionSubtypeDao
+        {
+            get { return Validate.Dependency(helpQuestionSubtypeDao); }
+            set { helpQuestionSubtypeDao = value; }
+        }
+        protected IHelpQuestionRequestDao helpQuestionRequestDao;
+        public IHelpQuestionRequestDao HelpQuestionRequestDao
+        {
+            get { return Validate.Dependency(helpQuestionRequestDao); }
+            set { helpQuestionRequestDao = value; }
+        }
         #endregion
 
         #region Service Requests List

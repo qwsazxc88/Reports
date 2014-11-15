@@ -89,6 +89,9 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IHelpFaqDao.cs" />
+    <Compile Include="Dao\IHelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\IHelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\IHelpQuestionTypeDao.cs" />
     <Compile Include="Dao\IHelpServicePeriodDao.cs" />
     <Compile Include="Dao\IHelpServiceProductionTimeDao.cs" />
     <Compile Include="Dao\IHelpServiceRequestCommentDao.cs" />
@@ -173,6 +176,9 @@
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionTypeDao.cs" />
     <Compile Include="Dao\Impl\HelpServicePeriodDao.cs" />
     <Compile Include="Dao\Impl\HelpServiceProductionTimeDao.cs" />
     <Compile Include="Dao\Impl\HelpServiceRequestCommentDao.cs" />

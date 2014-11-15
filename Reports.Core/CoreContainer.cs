@@ -514,6 +514,16 @@ namespace Reports.Core
                    ImplementedBy(typeof(MissionOrderRoleRecordDao)).
                    LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IHelpQuestionRequestDao)).
+                  ImplementedBy(typeof(HelpQuestionRequestDao)).
+                  LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpQuestionTypeDao)).
+                 ImplementedBy(typeof(HelpQuestionTypeDao)).
+                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpQuestionSubtypeDao)).
+                 ImplementedBy(typeof(HelpQuestionSubtypeDao)).
+                 LifeStyle.Is(type));
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

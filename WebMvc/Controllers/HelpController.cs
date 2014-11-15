@@ -189,6 +189,13 @@ namespace WebMvc.Controllers
             //SetMissionOrderListModelFromSession(model);
             return View(model);
         }
+
+        //[HttpGet]
+        //public ActionResult HelpQuestionEdit(int id, int? userId)
+        //{
+        //    HelpQuestionEditModel model = HelpBl.GetHelpQuestionEditModel(id, userId);
+        //    return View(model);
+        //}
         #endregion
         #region Versions
         [HttpGet]
