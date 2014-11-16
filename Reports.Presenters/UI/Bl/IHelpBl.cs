@@ -20,6 +20,8 @@ namespace Reports.Presenters.UI.Bl
         bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
         HelpServiceQuestionsListModel GetServiceQuestionsListModel();
+        HelpQuestionEditModel GetHelpQuestionEditModel(int id, int? userId);
+        void GetSubtypesForType(int typeId, HelpQuestionSubtypesModel model);
 
 
         HelpVersionsListModel GetVersionsModel();

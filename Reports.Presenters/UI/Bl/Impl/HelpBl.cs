@@ -29,6 +29,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrNoDepartmentForUser = "Не задано структурное подразделение для руководителя (id {0})";
         public const string StrNoManagerDepartments = "Не найдено структурных подразделений для руководителя (id {0}) в базе даннных.";
+
+        public const string StrQuestionNoUser = "Не указан сотрудник";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -283,6 +285,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.ConfirmWorkDate.HasValue)
                     model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
             }
+           
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, entity, model);
@@ -771,8 +774,229 @@ namespace Reports.Presenters.UI.Bl.Impl
             return moStatusesList;
         }
         #endregion
-        
+        #region Question Edit
+        public HelpQuestionEditModel GetHelpQuestionEditModel(int id, int? userId)
+        {
+            IUser current = AuthenticationService.CurrentUser;
+            if (id == 0 && !userId.HasValue)
+            {
+                if (current.UserRole == UserRole.Employee || current.UserRole == UserRole.Manager)
+                    userId = current.Id;
+                else
+                    throw new ValidationException(StrQuestionNoUser);
+            }
+            HelpQuestionRequest entity = null;
+            if (id != 0)
+                entity = HelpQuestionRequestDao.Load(id);
+            HelpQuestionEditModel model = new HelpQuestionEditModel
+            {
+                Id = id,
+                UserId = id == 0 ? userId.Value : entity.User.Id
+            };
+            User user = UserDao.Load(model.UserId);
+            User currUser = UserDao.Load(current.Id);
+            if (id == 0)
+            {
+                entity = new HelpQuestionRequest
+                {
+                    User = user,
+                    Creator = currUser,
+                    CreateDate = DateTime.Now,
+                    EditDate = DateTime.Now,
+                };
+            }
+            else
+            {
+                model.TypeId = entity.Type.Id;
+                model.SubtypeId = entity.Subtype.Id;
+                model.Question = entity.Question;
+                model.Answer = entity.Answer;
+                /*model.ProductionTimeTypeId = entity.ProductionTime.Id;
+                model.TransferMethodTypeId = entity.TransferMethod.Id;
+                model.PeriodId = entity.Period == null ? new int?() : entity.Period.Id;
+                model.Requirements = entity.Requirements;*/
+                model.Version = entity.Version;
+                model.DocumentNumber = entity.Number.ToString();
+                model.DateCreated = FormatDate(entity.CreateDate);
+                model.Creator = entity.Creator.FullName;
+                /*RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                    RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
+                if (attachment != null)
+                {
+                    model.AttachmentId = attachment.Id;
+                    model.Attachment = attachment.FileName;
+                }
+                RequestAttachment serviceAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
+                    RequestAttachmentTypeEnum.HelpServiceRequest);
+                if (serviceAttach != null)
+                {
+                    model.ServiceAttachmentId = serviceAttach.Id;
+                    model.ServiceAttachment = serviceAttach.FileName;
+                }*/
+                /*if (entity.Consultant != null)
+                    model.Worker = entity.Consultant.FullName;*/
+                switch (entity.ConsultantRoleId)
+                {
+                    case (int)UserRole.ConsultantOutsourcing:
+                        if(entity.ConsultantOutsourcing != null)
+                            model.Worker = entity.ConsultantOutsourcing.FullName;
+                        break;
+                    case (int)UserRole.ConsultantPersonnel:
+                        if (entity.ConsultantPersonnel != null)
+                            model.Worker = entity.ConsultantPersonnel.FullName;
+                        break;
+                    case (int)UserRole.ConsultantAccountant:
+                        if (entity.ConsultantAccountant != null)
+                            model.Worker = entity.ConsultantAccountant.FullName;
+                        break;
+                }
+                if (entity.EndWorkDate.HasValue)
+                    model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
+                if (entity.ConfirmWorkDate.HasValue)
+                    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
+            }
+            model.IsForQuestion = true;
+            SetUserInfoModel(user, model);
+            LoadDictionaries(model);
+            SetFlagsState(id, currUser, entity, model);
+            //SetStaticFields(model, entity);
 
+            SetHiddenFields(model);
+            return model;
+        }
+        protected void SetHiddenFields(HelpQuestionEditModel model)
+        {
+            model.TypeIdHidden = model.TypeId;
+            model.SubtypeIdHidden = model.SubtypeId;
+        }
+        protected void LoadDictionaries(HelpQuestionEditModel model)
+        {
+            List<HelpQuestionType> types = HelpQuestionTypeDao.LoadAllSortedByOrder();
+            model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if (model.TypeId == 0)
+                model.TypeId = types.First().Id;
+            model.Subtypes = HelpQuestionSubtypeDao.LoadForTypeIdSortedByOrder(model.TypeId)
+                .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+        }
+        protected void SetFlagsState(int id, User current, HelpQuestionRequest entity, HelpQuestionEditModel model)
+        {
+            UserRole currentRole = AuthenticationService.CurrentUser.UserRole;
+            SetFlagsState(model, false);
+            if (model.Id == 0)
+            {
+                if (currentRole != UserRole.Manager && currentRole != UserRole.Employee)
+                    throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
+                model.IsTypeEditable = true;
+                model.IsQuestionEditable = true;
+                model.IsSaveAvailable = true;
+                return;
+            }
+            switch (currentRole)
+            {
+                case UserRole.Employee:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (entity.Creator.Id == current.Id)
+                    {
+                        if (!entity.SendDate.HasValue)
+                        {
+                            model.IsTypeEditable = true;
+                            model.IsQuestionEditable = true;
+                            model.IsSendAvailable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                            model.IsEndAvailable = true;
+                    }
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
+                    {
+                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsRedirectAvailable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsAnswerEditable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsRedirectAvailable = true;
+                            model.IsBeginWorkAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantPersonnel:
+                    if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
+                    {
+                        if (entity.ConsultantPersonnel != null && entity.ConsultantPersonnel.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsRedirectAvailable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsAnswerEditable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsRedirectAvailable = true;
+                            model.IsBeginWorkAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantAccountant:
+                    if (entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
+                    {
+                        if (entity.ConsultantAccountant != null && entity.ConsultantAccountant.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsRedirectAvailable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsAnswerEditable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsRedirectAvailable = true;
+                            model.IsBeginWorkAvailable = true;
+                        }
+                    }
+                    break;
+            }
+        }
+        protected void SetFlagsState(HelpQuestionEditModel model, bool state)
+        {
+            model.IsTypeEditable = state;
+            model.IsQuestionEditable = state;
+            model.IsAnswerEditable = state;
+
+            model.IsBeginWorkAvailable = state;
+            model.IsEndAvailable = state;
+            model.IsEndWorkAvailable = state;
+            model.IsSaveAvailable = state;
+            model.IsSendAvailable = state;
+            model.IsRedirectAvailable = state;
+        }
+
+        public void GetSubtypesForType(int typeId, HelpQuestionSubtypesModel model)
+        {
+            model.Subtypes = HelpQuestionSubtypeDao.LoadForTypeIdSortedByOrder(typeId)
+                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+        }
+        #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()
         {

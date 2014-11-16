@@ -190,12 +190,31 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
-        //[HttpGet]
-        //public ActionResult HelpQuestionEdit(int id, int? userId)
-        //{
-        //    HelpQuestionEditModel model = HelpBl.GetHelpQuestionEditModel(id, userId);
-        //    return View(model);
-        //}
+        [HttpGet]
+        public ActionResult HelpQuestionEdit(int id, int? userId)
+        {
+            HelpQuestionEditModel model = HelpBl.GetHelpQuestionEditModel(id, userId);
+            return View(model);
+        }
+        [HttpGet]
+        public ContentResult GetSubtypesForType(int typeId)
+        {
+            //bool saveResult;
+            //string error = string.Empty;
+            HelpQuestionSubtypesModel model = new HelpQuestionSubtypesModel { Error = string.Empty };
+            try
+            {
+                HelpBl.GetSubtypesForType(typeId, model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetSubtypesForType:", ex);
+                model.Error = ex.GetBaseException().Message;
+            }
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
+        }
         #endregion
         #region Versions
         [HttpGet]

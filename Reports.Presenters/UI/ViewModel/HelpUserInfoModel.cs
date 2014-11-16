@@ -36,5 +36,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Услуга оказана")]
         public string ConfirmDate { get; set; }
+
+        public bool IsForQuestion { get; set; }
     }
 }
