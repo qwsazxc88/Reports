@@ -24,4 +24,9 @@ namespace Reports.Core.Dto
         public int? PeriodId { get; set; }
         #endregion
     }
+    public class HelpQuestionSubtypesModel 
+    {
+        public string Error { get; set; }
+        public IList<IdNameDto> Subtypes { get; set; }
+    }
 }
