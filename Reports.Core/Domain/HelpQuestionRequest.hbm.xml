@@ -21,6 +21,7 @@
  
     <many-to-one name="User" class="User" column="UserId" foreign-key="FK_HelpQuestionRequest_User" index="IX_HelpQuestionRequest_User_Id"  not-null="true"/>
     <many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HelpQuestionRequest_CreatorUser" index="IX_HelpQuestionRequest_CreatorUser_Id"  not-null="true"/>
+    <property name="CreatorRoleId" not-null="true"/>
     <many-to-one name="ConsultantOutsourcing" class="User" column="ConsultantOutsourcingId" foreign-key="FK_HelpQuestionRequest_ConsultantOutsourcing" index="IX_HelpQuestionRequest_ConsultantOutsourcing_Id"  not-null="false"/>
     <many-to-one name="ConsultantPersonnel" class="User" column="ConsultantPersonnelId" foreign-key="FK_HelpQuestionRequest_ConsultantPersonnel" index="IX_HelpQuestionRequest_ConsultantPersonnel_Id"  not-null="false"/>
     <many-to-one name="ConsultantAccountant" class="User" column="ConsultantAccountantId" foreign-key="FK_HelpQuestionRequest_ConsultantAccountant" index="IX_HelpQuestionRequest_ConsultantAccountant_Id"  not-null="false"/>

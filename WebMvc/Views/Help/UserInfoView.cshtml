@@ -78,6 +78,18 @@
             <input type="hidden" id="Creator" name="Creator" value="@Model.Creator" />
         </td>
     </tr>
+    @if (Model.IsForQuestion)
+    {
+     <tr>
+        <td>
+            @Html.LabelFor(m => m.QuestionSendDate)
+        </td>
+        <td>
+            @Html.DisplayFor(m => m.QuestionSendDate)
+            <input type="hidden" id="QuestionSendDate" name="QuestionSendDate" value="@Model.QuestionSendDate" />
+        </td>
+    </tr>
+    }
     <tr>
         <td>
             @Html.LabelFor(m => m.Worker)

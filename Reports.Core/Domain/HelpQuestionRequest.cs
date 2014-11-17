@@ -30,10 +30,11 @@ namespace Reports.Core.Domain
 
         public virtual User User { get; set; }
         public virtual User Creator { get; set; }
+        public virtual int CreatorRoleId { get; set; }
         public virtual User ConsultantOutsourcing { get; set; }
         public virtual User ConsultantPersonnel { get; set; }
         public virtual User ConsultantAccountant { get; set; }
-        public virtual int ConsultantRoleId { get; set; }
+        public virtual int? ConsultantRoleId { get; set; }
 
 
         public virtual IList<HelpQuestionHistoryEntity> HistoryEntities { get; set; }

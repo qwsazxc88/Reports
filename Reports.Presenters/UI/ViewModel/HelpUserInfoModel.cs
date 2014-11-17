@@ -28,6 +28,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Заявку создал(а)")]
         public string Creator { get; set; }
 
+        [Display(Name = "Вопрос задан")]
+        public string QuestionSendDate { get; set; }
+
         [Display(Name = "Исполнитель")]
         public string Worker { get; set; }
 
@@ -38,5 +41,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string ConfirmDate { get; set; }
 
         public bool IsForQuestion { get; set; }
+
     }
 }

@@ -67,6 +67,7 @@ create table HelpQuestionRequest (
   Answer NVARCHAR(MAX) null,
   UserId INT not null,
   CreatorId INT not null,
+  CreatorRoleId INT not null,
   ConsultantOutsourcingId INT null,
   ConsultantPersonnelId INT null,
   ConsultantAccountantId INT null,

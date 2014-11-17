@@ -802,7 +802,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     User = user,
                     Creator = currUser,
                     CreateDate = DateTime.Now,
-                    EditDate = DateTime.Now,
+                    EditDate = DateTime.Now
                 };
             }
             else
@@ -835,21 +835,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }*/
                 /*if (entity.Consultant != null)
                     model.Worker = entity.Consultant.FullName;*/
-                switch (entity.ConsultantRoleId)
+                if (entity.ConsultantRoleId.HasValue)
                 {
-                    case (int)UserRole.ConsultantOutsourcing:
-                        if(entity.ConsultantOutsourcing != null)
-                            model.Worker = entity.ConsultantOutsourcing.FullName;
-                        break;
-                    case (int)UserRole.ConsultantPersonnel:
-                        if (entity.ConsultantPersonnel != null)
-                            model.Worker = entity.ConsultantPersonnel.FullName;
-                        break;
-                    case (int)UserRole.ConsultantAccountant:
-                        if (entity.ConsultantAccountant != null)
-                            model.Worker = entity.ConsultantAccountant.FullName;
-                        break;
+                    switch (entity.ConsultantRoleId)
+                    {
+                        case (int) UserRole.ConsultantOutsourcing:
+                            if (entity.ConsultantOutsourcing != null)
+                                model.Worker = entity.ConsultantOutsourcing.FullName;
+                            break;
+                        case (int) UserRole.ConsultantPersonnel:
+                            if (entity.ConsultantPersonnel != null)
+                                model.Worker = entity.ConsultantPersonnel.FullName;
+                            break;
+                        case (int) UserRole.ConsultantAccountant:
+                            if (entity.ConsultantAccountant != null)
+                                model.Worker = entity.ConsultantAccountant.FullName;
+                            break;
+                    }
                 }
+                if (entity.SendDate.HasValue)
+                    model.QuestionSendDate = entity.SendDate.Value.ToShortDateString();
                 if (entity.EndWorkDate.HasValue)
                     model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
                 if (entity.ConfirmWorkDate.HasValue)
@@ -889,6 +894,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
                 model.IsSaveAvailable = true;
+                model.IsSendAvailable = true;
                 return;
             }
             switch (currentRole)
