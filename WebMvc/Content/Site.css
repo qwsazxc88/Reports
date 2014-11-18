@@ -402,6 +402,7 @@ div#title
 .field-validation-error
 {
     color: #ff0000;
+    vertical-align:top;
 }
 
 .field-validation-valid

@@ -57,7 +57,7 @@
             </tr>
              <tr>
                     <td>@Html.LabelFor(model => model.Question):</td>
-                    <td>
+                    <td style="vertical-align:top">
                        @Html.TextAreaFor(model => model.Question, 4, 50, Model.IsQuestionEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
                     </td>
              </tr>
@@ -113,13 +113,15 @@
     function ValidateForm()
     {
         var result = true;
-        if(($("#IsRequirementsVisible").val() == 'true') && !IsFieldNotEmpty($('#Requirements')))
+        if(IsFieldTooLong($('#Question'),8192))
             result = false;
         return result;
     }
     function SendRequest()
     {
         var result = ValidateForm();
+        if(!IsFieldNotEmpty($('#Question')))
+            result = false;
         if(!result)
             return result;
         $("#Operation").val(1);
@@ -147,13 +149,23 @@
     }
     function IsFieldNotEmpty(control)
     {
-        clearControlErrors(control);
+        //clearControlErrors(control);
         if(control.val() == '' )
         {
             addControlError(control,'Обязательное поле');
             return false;
         }
         return true;
+    }
+    function IsFieldTooLong(control,length)
+    {
+        clearControlErrors(control);
+        if(control.val().length > length )
+        {
+            addControlError(control,'Длина поля не может превышать '+length+' символов');
+            return true;
+        }
+        return false;
     }
     /*function SetControlStates()
     {

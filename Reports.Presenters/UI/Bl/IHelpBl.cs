@@ -22,6 +22,8 @@ namespace Reports.Presenters.UI.Bl
         HelpServiceQuestionsListModel GetServiceQuestionsListModel();
         HelpQuestionEditModel GetHelpQuestionEditModel(int id, int? userId);
         void GetSubtypesForType(int typeId, HelpQuestionSubtypesModel model);
+        void ReloadDictionariesToModel(HelpQuestionEditModel model);
+        bool SaveHelpQuestionEditModel(HelpQuestionEditModel model, out string error);
 
 
         HelpVersionsListModel GetVersionsModel();

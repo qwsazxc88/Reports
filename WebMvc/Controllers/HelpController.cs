@@ -196,6 +196,48 @@ namespace WebMvc.Controllers
             HelpQuestionEditModel model = HelpBl.GetHelpQuestionEditModel(id, userId);
             return View(model);
         }
+        [HttpPost]
+        public ActionResult HelpQuestionEdit(HelpQuestionEditModel model)
+        {
+            //CorrectCheckboxes(model);
+            CorrectDropdowns(model);
+            //UploadFileDto fileDto = GetFileContext();
+            //bool needToReload;
+            //string error;
+            if (!ValidateHelpQuestionEditModel(model))
+            {
+                model.Operation = 0;
+                HelpBl.ReloadDictionariesToModel(model);
+                return View(model);
+            }
+            string error;
+            if (!HelpBl.SaveHelpQuestionEditModel(model, out error))
+            {
+                //HttpContext.AddError(new Exception(error));
+                if (model.ReloadPage)
+                {
+                    ModelState.Clear();
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+                    return View(HelpBl.GetHelpQuestionEditModel(model.Id, model.UserId));
+                }
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("", error);
+            }
+            return View(model);
+        }
+        protected bool ValidateHelpQuestionEditModel(HelpQuestionEditModel model)
+        {
+            return ModelState.IsValid;
+        }
+        protected void CorrectDropdowns(HelpQuestionEditModel model)
+        {
+            if (!model.IsTypeEditable)
+            {
+                model.TypeId = model.TypeIdHidden;
+                model.SubtypeId = model.SubtypeIdHidden;
+            }
+        }
         [HttpGet]
         public ContentResult GetSubtypesForType(int typeId)
         {

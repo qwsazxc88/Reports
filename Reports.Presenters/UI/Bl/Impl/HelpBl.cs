@@ -31,6 +31,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const string StrNoManagerDepartments = "Не найдено структурных подразделений для руководителя (id {0}) в базе даннных.";
 
         public const string StrQuestionNoUser = "Не указан сотрудник";
+        public const string StrQuestionRequestNotFound = "Не найдена заявка-вопрос  (id {0}) в базе данных";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -815,26 +816,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.TransferMethodTypeId = entity.TransferMethod.Id;
                 model.PeriodId = entity.Period == null ? new int?() : entity.Period.Id;
                 model.Requirements = entity.Requirements;*/
-                model.Version = entity.Version;
+
+                SetStaticFields(model, entity);
+                /*model.Version = entity.Version;
                 model.DocumentNumber = entity.Number.ToString();
                 model.DateCreated = FormatDate(entity.CreateDate);
                 model.Creator = entity.Creator.FullName;
-                /*RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
-                    RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
-                if (attachment != null)
-                {
-                    model.AttachmentId = attachment.Id;
-                    model.Attachment = attachment.FileName;
-                }
-                RequestAttachment serviceAttach = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
-                    RequestAttachmentTypeEnum.HelpServiceRequest);
-                if (serviceAttach != null)
-                {
-                    model.ServiceAttachmentId = serviceAttach.Id;
-                    model.ServiceAttachment = serviceAttach.FileName;
-                }*/
-                /*if (entity.Consultant != null)
-                    model.Worker = entity.Consultant.FullName;*/
                 if (entity.ConsultantRoleId.HasValue)
                 {
                     switch (entity.ConsultantRoleId)
@@ -858,16 +845,47 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (entity.EndWorkDate.HasValue)
                     model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
                 if (entity.ConfirmWorkDate.HasValue)
-                    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
+                    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();*/
             }
             model.IsForQuestion = true;
             SetUserInfoModel(user, model);
             LoadDictionaries(model);
             SetFlagsState(id, currUser, entity, model);
-            //SetStaticFields(model, entity);
+            
 
             SetHiddenFields(model);
             return model;
+        }
+        protected void SetStaticFields(HelpQuestionEditModel model, HelpQuestionRequest entity)
+        {
+            model.Version = entity.Version;
+            model.DocumentNumber = entity.Number.ToString();
+            model.DateCreated = FormatDate(entity.CreateDate);
+            model.Creator = entity.Creator.FullName;
+            if (entity.ConsultantRoleId.HasValue)
+            {
+                switch (entity.ConsultantRoleId)
+                {
+                    case (int)UserRole.ConsultantOutsourcing:
+                        if (entity.ConsultantOutsourcing != null)
+                            model.Worker = entity.ConsultantOutsourcing.FullName;
+                        break;
+                    case (int)UserRole.ConsultantPersonnel:
+                        if (entity.ConsultantPersonnel != null)
+                            model.Worker = entity.ConsultantPersonnel.FullName;
+                        break;
+                    case (int)UserRole.ConsultantAccountant:
+                        if (entity.ConsultantAccountant != null)
+                            model.Worker = entity.ConsultantAccountant.FullName;
+                        break;
+                }
+            }
+            if (entity.SendDate.HasValue)
+                model.QuestionSendDate = entity.SendDate.Value.ToShortDateString();
+            if (entity.EndWorkDate.HasValue)
+                model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
+            if (entity.ConfirmWorkDate.HasValue)
+                model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();
         }
         protected void SetHiddenFields(HelpQuestionEditModel model)
         {
@@ -1002,6 +1020,164 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Subtypes = HelpQuestionSubtypeDao.LoadForTypeIdSortedByOrder(typeId)
                  .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
         }
+        public void ReloadDictionariesToModel(HelpQuestionEditModel model)
+        {
+            LoadDictionaries(model);
+        }
+        public bool SaveHelpQuestionEditModel(HelpQuestionEditModel model, out string error)
+        {
+            error = string.Empty;
+            User currUser = null;
+            User user = null;
+            HelpQuestionRequest entity = null;
+            try
+            {
+
+                IUser current = AuthenticationService.CurrentUser;
+                currUser = UserDao.Load(current.Id);
+                user = UserDao.Load(model.UserId);
+
+                /*if (model.Id != 0)
+                    entity = AppointmentDao.Get(model.Id);*/
+                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
+                {
+                    error = "Редактирование заявки запрещено";
+                    return false;
+                }*/
+
+                if (model.Id == 0)
+                {
+                    entity = new HelpQuestionRequest
+                    {
+                        CreateDate = DateTime.Now,
+                        Creator = currUser,//UserDao.Load(current.Id),
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpQuestionRequest),
+                        EditDate = DateTime.Now,
+                        User = user,
+                        CreatorRoleId = (int)(current.Id == user.Id?current.UserRole:UserRole.Employee)
+                    };
+                    ChangeEntityProperties(entity, model, currUser, out error);
+                    HelpQuestionRequestDao.SaveAndFlush(entity);
+                    model.Id = entity.Id;
+                    model.DocumentNumber = entity.Number.ToString();
+                    model.DateCreated = entity.CreateDate.ToShortDateString();
+                    model.Creator = entity.Creator.FullName;
+                }
+                else
+                {
+                    entity = HelpQuestionRequestDao.Get(model.Id);
+                    if (entity == null)
+                        throw new ValidationException(string.Format(StrQuestionRequestNotFound, model.Id));
+                    if (entity.Version != model.Version)
+                    {
+                        error = StrServiceRequestWasChanged;
+                        model.ReloadPage = true;
+                        return false;
+                    }
+                    ChangeEntityProperties(entity, model, currUser, out error);
+                    HelpQuestionRequestDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
+                        HelpQuestionRequestDao.SaveAndFlush(entity);
+                    }
+                }
+                //if (entity.DeleteDate.HasValue)
+                //    model.IsDeleted = true;
+                //}
+                //model.Version = entity.Version;
+                /*model.Worker = entity.Consultant != null ? entity.Consultant.FullName : string.Empty;
+                model.WorkerEndDate = entity.EndWorkDate.HasValue ?
+                                      entity.EndWorkDate.Value.ToShortDateString() : string.Empty;
+                model.ConfirmDate = entity.ConfirmWorkDate.HasValue ?
+                                     entity.ConfirmWorkDate.Value.ToShortDateString() : string.Empty;*/
+                SetStaticFields(model, entity);
+                SetFlagsState(entity.Id, currUser, entity, model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                HelpServiceRequestDao.RollbackTran();
+                Log.Error("Error on SaveServiceRequestEditModel:", ex);
+                error = StrException + ex.GetBaseException().Message;
+                return false;
+            }
+            finally
+            {
+                //SetUserInfoModel(user, model);
+                LoadDictionaries(model);
+                SetHiddenFields(model);
+            }
+        }
+        protected void ChangeEntityProperties(HelpQuestionRequest entity, HelpQuestionEditModel model,
+            User currUser, out string error)
+        {
+            error = string.Empty;
+            UserRole currRole = AuthenticationService.CurrentUser.UserRole;
+            if (model.IsTypeEditable)
+            {
+                entity.Type = HelpQuestionTypeDao.Load(model.TypeId);
+                entity.Subtype = HelpQuestionSubtypeDao.Load(model.SubtypeId);
+            }
+            if (model.IsQuestionEditable)
+                entity.Question = model.Question;
+            if(model.IsAnswerEditable)
+                entity.Answer = model.Answer;
+            switch (currRole)
+            {
+                case UserRole.Employee:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                            entity.SendDate = DateTime.Now;
+                        if (entity.EndWorkDate.HasValue)
+                        {
+                            if (model.Operation == 4)
+                                entity.ConfirmWorkDate = DateTime.Now;
+                            else if (model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                            }
+                        }
+                    }
+                    break;
+                case UserRole.Manager:
+                    if (entity.Creator.Id == currUser.Id)
+                    {
+                        if (model.Operation == 1 && !entity.SendDate.HasValue)
+                            entity.SendDate = DateTime.Now;
+                        if (entity.EndWorkDate.HasValue)
+                        {
+                            if (model.Operation == 4)
+                                entity.ConfirmWorkDate = DateTime.Now;
+                            else if (model.Operation == 5)
+                            {
+                                entity.SendDate = null;
+                                entity.BeginWorkDate = null;
+                                entity.EndWorkDate = null;
+                            }
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantOutsourcing:
+                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.ConsultantOutsourcing = currUser;
+                            entity.ConsultantRoleId = (int) UserRole.ConsultantOutsourcing;
+                        }
+                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                            entity.EndWorkDate = DateTime.Now;
+                    }
+                    break;
+            }
+        }
+
         #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()
