@@ -2277,7 +2277,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
                         // ----------------------------
                         if (model.WorkbookRequestScanAttachmentId > 0)
-                            RequestAttachmentDao.Delete(model.F2NDFLScanAttachmentId);
+                            RequestAttachmentDao.Delete(model.WorkbookRequestScanAttachmentId);
                         // ----------------------------
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
