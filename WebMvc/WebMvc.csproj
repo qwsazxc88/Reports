@@ -724,6 +724,8 @@
     <Content Include="Views\Help\CreateServiceRequest.cshtml" />
     <Content Include="Views\Help\ServiceQuestionsList.cshtml" />
     <Content Include="Views\Help\HelpQuestionEdit.cshtml" />
+    <Content Include="Views\Help\QuestionRedirectDialog.cshtml" />
+    <Content Include="Views\Help\QuestionRedirectDialogError.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

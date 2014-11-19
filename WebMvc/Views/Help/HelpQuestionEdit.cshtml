@@ -211,7 +211,64 @@
                      );
         return false;
     }
-    function deleteAttachment(id){
+    function Redirect()
+    {
+     var elem = document.createElement('div');
+        elem.id = "divQuestionRedirectDialog";
+        var newDiv = $(elem);
+        var id = $("#Id").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Перенаправление заявки";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("QuestionRedirectDialog", "Help")?id=" + id  + " #QuestionRedirectDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#QuestionRedirectLoadError').val() != undefined)
+                         disableSaveButton();
+//                     else
+//                     {
+//                        $("#ReleaseDate").datepicker();
+//                        $(".hasDatepicker").width("85px");
+//                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 620,
+	        height: 380,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Перенаправить": function () {
+                    /*if (!ValidateQuestion())
+                        return;*/
+                    RedirectQuestion();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function RedirectQuestion()
+    {
+        $("#divQuestionRedirectDialog").dialog("close");
+    }
+    /*function deleteAttachment(id){
         var actionUrl="@Url.Action("DeleteTemplate", "Help")";
         var url = actionUrl + "?Id=" + id;
         $.getJSON(url,
@@ -284,5 +341,5 @@
         {
             $('#PeriodTrId').hide();
         }
-    }
+    }*/
 </script> 

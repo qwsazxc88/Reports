@@ -1177,7 +1177,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
             }
         }
-
+        public HelpQuestionRedirectModel GetQuestionRedirectModel(int id)
+        {
+            HelpQuestionRedirectModel model = new HelpQuestionRedirectModel();
+            return model;
+        }
         #endregion
         #region Version
         public HelpVersionsListModel GetVersionsModel()

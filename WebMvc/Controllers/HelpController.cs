@@ -257,6 +257,22 @@ namespace WebMvc.Controllers
             var jsonString = jsonSerializer.Serialize(model);
             return Content(jsonString);
         }
+         [HttpGet]
+        public ActionResult QuestionRedirectDialog(int id)
+        {
+            try
+            {
+                HelpQuestionRedirectModel model = HelpBl.GetQuestionRedirectModel(id);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = StrErrorOnDataLoad + ex.GetBaseException().Message;
+                return PartialView("QuestionRedirectDialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        
         #endregion
         #region Versions
         [HttpGet]
