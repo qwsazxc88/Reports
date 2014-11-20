@@ -30,56 +30,64 @@ namespace Reports.Core.Dao.Impl
 
         protected const string sqlSelectForAppointmentList =
             @"select 
-                                v.Number as AppNumber,
-                                -- N'' as ReportNumber,
-                                v.Id as Id,
-                                v.EditDate as EditDate,
-                                -- u.Id as UserId,
-                                u.Name as UserName,
-                                pos.Name as PositionName,
-                                mapDep7.Name as ManDep7Name,
-                                -- aPos.Name as CanPosition, 
-                                v.PositionName as CanPosition, 
-                                dep3.Name as Dep3Name,
-                                dep7.Name as Dep7Name,
-                                -- v.Period as Period,
-                                v.Schedule as Schedule,
-                                v.Salary+v.Bonus as Salary,
-                                v.DesirableBeginDate as DesirableBeginDate,
-                                ar.Name as Reason,
-                                r.[Id] as RId,
-                                r.[Number] as RNumber,
-                                case when r.[Id] is null then N''
-                                     when r.[StaffDateAccept] is null then N'Нет' 
-                                     else N'Да' end as RStaffAccept,
-                                r.Name as RName,
-                                r.[Phone] as Phone,
-                                r.[Email] as Email,
-                                case when r.[Id] is null then  N'' 
-                                     when r.[DateAccept] is null and r.[DeleteDate] is null then N''
-                                     when r.[DateAccept] is null then N'Нет' 
-                                     else N'Да' end as RApprove,
-                                case when r.[Id] is null then  N''
-                                     when r.[DateAccept] is null and r.[DeleteDate] is null then N'' 
-                                     when r.[DeleteDate] is null then N'' 
-                                     else r.[RejectReason] end as RReject,
-                                ur.Name as StaffName
-                                from dbo.Appointment v
-                                left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
-                                left join [dbo].[Users] ur on ur.Id = r.CreatorId
-                                inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
-                                -- inner join dbo.Position aPos on v.PositionId = aPos.Id
-                                inner join [dbo].[Users] u on u.Id = v.CreatorId
-                                left join dbo.Position pos on u.PositionId = pos.Id
-                                inner join dbo.Department dep on v.DepartmentId = dep.Id
-                                inner join dbo.Department crDep on u.DepartmentId = crDep.Id
-                                inner join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
-                                inner join dbo.Department dep7 on dep.[Path] like dep7.[Path]+N'%' and dep7.ItemLevel = 7
-                                left join [dbo].[Users] uEmp on uEmp.Login +
-                                    case when u.RoleId & 512 > 0 then N'H' else N'R' end  
-                                    = u.Login and uEmp.RoleId = 2 
-                                left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
-                                ";
+                v.Number as AppNumber,
+                -- N'' as ReportNumber,
+                v.Id as Id,
+                v.EditDate as EditDate,
+                -- u.Id as UserId,
+                u.Name as UserName,
+                pos.Name as PositionName,
+                mapDep7.Name as ManDep7Name,
+                -- aPos.Name as CanPosition, 
+                v.PositionName as CanPosition, 
+                dep3.Name as Dep3Name,
+                dep7.Name as Dep7Name,
+                -- v.Period as Period,
+                v.Schedule as Schedule,
+                v.Salary+v.Bonus as Salary,
+                v.DesirableBeginDate as DesirableBeginDate,
+                ar.Name as Reason,
+                r.[Id] as RId,
+                r.[Number] as RNumber,
+                case when r.[Id] is null then N''
+                        when r.[StaffDateAccept] is null then N'Нет' 
+                        else N'Да' end as RStaffAccept,
+                r.Name as RName,
+                r.[Phone] as Phone,
+                r.[Email] as Email,
+                case when r.[Id] is null then  N'' 
+                        when r.[DateAccept] is null and r.[DeleteDate] is null then N''
+                        when r.[DateAccept] is null then N'Нет' 
+                        else N'Да' end as RApprove,
+                case when r.[Id] is null then  N''
+                        when r.[DateAccept] is null and r.[DeleteDate] is null then N'' 
+                        when r.[DeleteDate] is null then N'' 
+                        else r.[RejectReason] end as RReject,
+                ur.Name as StaffName,
+                case
+                        when v.ManagerDateAccept is null then N'Заявка создана'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Не одобрена вышестоящим руководителем'
+                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Одобрена вышестоящим руководителем'
+                        when v.StaffDateAccept is not null then N'Принята в работу'                        
+                        when v.DeleteDate is not null then N'Отменена'
+                        else N''
+                        end as Status
+                from dbo.Appointment v
+                left join  dbo.AppointmentReport r on r.[AppointmentId] = v.Id
+                left join [dbo].[Users] ur on ur.Id = r.CreatorId
+                inner join dbo.AppointmentReason ar on ar.Id = v.ReasonId
+                -- inner join dbo.Position aPos on v.PositionId = aPos.Id
+                inner join [dbo].[Users] u on u.Id = v.CreatorId
+                left join dbo.Position pos on u.PositionId = pos.Id
+                inner join dbo.Department dep on v.DepartmentId = dep.Id
+                inner join dbo.Department crDep on u.DepartmentId = crDep.Id
+                inner join dbo.Department dep3 on dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
+                inner join dbo.Department dep7 on dep.[Path] like dep7.[Path]+N'%' and dep7.ItemLevel = 7
+                left join [dbo].[Users] uEmp on uEmp.Login +
+                    case when u.RoleId & 512 > 0 then N'H' else N'R' end  
+                    = u.Login and uEmp.RoleId = 2 
+                left join dbo.Department mapDep7 on mapDep7.Id = uEmp.DepartmentId 
+                ";
         #endregion
                                 //{1}";
         public override IQuery CreateQuery(string sqlQuery)
@@ -109,7 +117,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RApprove", NHibernateUtil.String).
                 AddScalar("RReject", NHibernateUtil.String).
                 AddScalar("StaffName", NHibernateUtil.String).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Status", NHibernateUtil.String);
         }
         public AppointmentDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -309,6 +318,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 19:
                     orderBy = @" order by StaffName";
+                    break;
+                case 21:
+                    orderBy = @" order by Status";
                     break;
             }
             if (sortDescending.Value)
