@@ -99,6 +99,7 @@
     <Compile Include="Dao\IChildVacationDao.cs" />
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
