@@ -2285,6 +2285,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = string.Empty;
                         model.UnsignedOrderScanAttachmentId = 0;
                         model.UnsignedOrderScanAttachment = string.Empty;
+                        model.UnsignedT2ScanAttachmentId = 0;
+                        model.UnsignedT2ScanAttachment = string.Empty;
+                        model.UnsignedDismissalAgreementScanAttachmentId = 0;
+                        model.UnsignedDismissalAgreementScanAttachment = string.Empty;
+                        model.DismissalAgreementScanAttachmentId = 0;
+                        model.DismissalAgreementScanAttachment = string.Empty;
+                        model.F182NScanAttachmentId = 0;
+                        model.F182NScanAttachment = string.Empty;
+                        model.F2NDFLScanAttachmentId = 0;
+                        model.F2NDFLScanAttachment = string.Empty;
+                        model.WorkbookRequestScanAttachmentId = 0;
+                        model.WorkbookRequestScanAttachment = string.Empty;
+
                         if (current.UserRole == UserRole.OutsourcingManager)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
