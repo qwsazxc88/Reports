@@ -946,7 +946,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
-                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
+                    if ((entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
+                        && (!entity.ConsultantRoleId.HasValue || 
+                             entity.ConsultantRoleId.Value == (int) UserRole.ConsultantOutsourcing))
                     {
                         if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
@@ -964,7 +966,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantPersonnel:
-                    if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
+                    if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
+                        && (!entity.ConsultantRoleId.HasValue ||
+                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantPersonnel))
                     {
                         if (entity.ConsultantPersonnel != null && entity.ConsultantPersonnel.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
@@ -982,7 +986,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantAccountant:
-                    if (entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
+                    if ((entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
+                        && (!entity.ConsultantRoleId.HasValue ||
+                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantAccountant))
                     {
                         if (entity.ConsultantAccountant != null && entity.ConsultantAccountant.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
@@ -1173,14 +1179,98 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
+                        if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
+                        {
+                            entity.ConsultantRoleId = model.RedirectRoleId;
+                            entity.BeginWorkDate = null;
+                            HelpQuestionHistoryEntity redirect = new HelpQuestionHistoryEntity
+                                                                     {
+                                                                         Answer = entity.Answer,
+                                                                         Consultant = currUser,
+                                                                         CreateDate = DateTime.Now,
+                                                                         Creator = currUser,
+                                                                         CreatorRoleId = (int)UserRole.ConsultantOutsourcing,
+                                                                         Question = entity.Question,
+                                                                         RecipientRoleId = model.RedirectRoleId,
+                                                                         Request = entity,
+                                                                         Type = 2,// redirect
+                                                                     };
+                            entity.HistoryEntities.Add(redirect);
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantPersonnel:
+                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.ConsultantPersonnel = currUser;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantPersonnel;
+                        }
+                        if (entity.ConsultantPersonnel != null && entity.ConsultantPersonnel.Id == currUser.Id
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                            entity.EndWorkDate = DateTime.Now;
+                        if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
+                        {
+                            entity.ConsultantRoleId = model.RedirectRoleId;
+                            entity.BeginWorkDate = null;
+                            HelpQuestionHistoryEntity redirect = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)UserRole.ConsultantPersonnel,
+                                Question = entity.Question,
+                                RecipientRoleId = model.RedirectRoleId,
+                                Request = entity,
+                                Type = 2,// redirect
+                            };
+                            entity.HistoryEntities.Add(redirect);
+                        }
                     }
                     break;
             }
         }
         public HelpQuestionRedirectModel GetQuestionRedirectModel(int id)
         {
-            HelpQuestionRedirectModel model = new HelpQuestionRedirectModel();
+            HelpQuestionRedirectModel model = new HelpQuestionRedirectModel{Roles = new List<IdNameDto>()};
+            HelpQuestionRequest entity = helpQuestionRequestDao.Load(id);
+            if ((entity.ConsultantRoleId.HasValue &&
+                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsourcing &&
+               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantPersonnel &&
+               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantAccountant) ||
+               !entity.SendDate.HasValue || entity.EndWorkDate.HasValue)
+                throw new ArgumentException("В текущем состоянии перенаправление заявки невозможно");
+            if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing &&
+                    CurrentUser.UserRole != UserRole.ConsultantPersonnel &&
+                    CurrentUser.UserRole != UserRole.ConsultantAccountant)
+                throw new ArgumentException("Перенаправление заявки невозможно - неверная роль пользователя");
+            List<Role> roles = RoleDao.LoadAll().ToList();
+            if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing)
+            {
+                Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
+                model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
+            }
+            if (CurrentUser.UserRole != UserRole.ConsultantPersonnel)
+            {
+                Role role = GetRoleForId(roles, (int)UserRole.ConsultantPersonnel);
+                model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
+            }
+            if (CurrentUser.UserRole != UserRole.ConsultantAccountant)
+            {
+                Role role = GetRoleForId(roles, (int)UserRole.ConsultantAccountant);
+                model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
+            }    
             return model;
+        }
+        protected Role GetRoleForId(List<Role> roles,int roleId)
+        {
+            Role role = roles.Where(x => x.Id == roleId).FirstOrDefault();
+            if (role == null)
+                throw new ArgumentException(string.Format("Роль (Id {0}) отсутствует в базе данных", roleId));
+            return role;
         }
         #endregion
         #region Version

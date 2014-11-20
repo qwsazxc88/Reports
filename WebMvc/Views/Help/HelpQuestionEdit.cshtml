@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
     ViewBag.Title = "Задать вопрос";
 }
-@using (Html.BeginForm())
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "QuestionEdit" }))
 {
     <div class="doc-wrap">
         <table style="width:100%">
@@ -40,6 +40,7 @@
                     <input type="hidden" id="IsRedirectAvailable" name="IsRedirectAvailable" value="@Model.IsRedirectAvailable" />
 
                     <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                    <input type="hidden" id="RedirectRoleId" name="RedirectRoleId" value="@Model.RedirectRoleId" />
                 </td>
                 <td>
                     @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsTypeEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
@@ -227,6 +228,7 @@
                  if (status == "error") {
                      var msg = "Произошла ошибка: ";
                      $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                     disableSaveButton();
                  } else if (status == "success") {
                      if ($('#QuestionRedirectLoadError').val() != undefined)
                          disableSaveButton();
@@ -246,8 +248,8 @@
             bgiframe: true, 
             draggable: false,
             resizable: false,
-            width: 620,
-	        height: 380,
+            width: 320,
+	        height: 230,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },
@@ -264,82 +266,15 @@
             }
         });
     }
+     function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Перенаправить')").button("disable");
+    }
     function RedirectQuestion()
     {
+        $("#RedirectRoleId").val($("#RoleId").val());
+        $("#Operation").val(6);
         $("#divQuestionRedirectDialog").dialog("close");
+        $("#QuestionEdit").submit();
     }
-    /*function deleteAttachment(id){
-        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
-        var url = actionUrl + "?Id=" + id;
-        $.getJSON(url,
-                       function (result) {
-                            if(!result.Result){
-                                $('#Error').text(result.Error);
-                                $('#Error').show(); 
-                            }
-                            else{
-                                $('#Error').text("");
-                                $('#Error').hide();   
-                                $('#ViewAttachmentId').hide();                    
-                                $('#DeleteAttachmentId').hide();   
-                                $('#AttachmentId').val(0);     
-                                $('#Attachment').val('');             
-                           }
-                       }
-                     );
-        return false;
-    }
-    function deleteServiceAttachment(id){
-        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
-        var url = actionUrl + "?Id=" + id;
-        $.getJSON(url,
-                       function (result) {
-                            if(!result.Result){
-                                $('#Error').text(result.Error);
-                                $('#Error').show(); 
-                            }
-                            else{
-                                $('#Error').text("");
-                                $('#Error').hide();   
-                                $('#ViewServiceAttachmentId').hide();                    
-                                $('#DeleteServiceAttachmentId').hide();   
-                                $('#ServiceAttachmentId').val(0);     
-                                $('#ServiceAttachment').val('');             
-                           }
-                       }
-                     );
-        return false;
-    }
-
-    function SetControlStatesInternal(isAttachmentVisible,isRequirementsVisible,isPeriodVisible)
-    {
-        if(isAttachmentVisible == 'true' || isAttachmentVisible == 'True')
-        {
-            $('#ViewAttachmentTrId').show();
-            if($('#AttachmentTrId'))
-                $('#AttachmentTrId').show();
-        }
-        else
-        {
-            $('#ViewAttachmentTrId').hide();
-            if($('#AttachmentTrId'))
-                $('#AttachmentTrId').hide();
-        }
-        if(isRequirementsVisible == 'true' || isRequirementsVisible == 'True')
-        {
-            $('#RequirementsTrId').show();
-        }
-        else
-        {
-            $('#RequirementsTrId').hide();
-        }
-        if(isPeriodVisible == 'true' || isPeriodVisible == 'True')
-        {
-            $('#PeriodTrId').show();
-        }
-        else
-        {
-            $('#PeriodTrId').hide();
-        }
-    }*/
+    
 </script> 

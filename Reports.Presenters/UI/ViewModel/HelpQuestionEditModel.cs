@@ -43,6 +43,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsRedirectAvailable { get; set; }
 
         public int Operation { get; set; }
+        public int RedirectRoleId { get; set; }
 
         public bool ReloadPage { get; set; }
 
