@@ -156,9 +156,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Заявка создана"),
-                                                           new IdNameDto(2, "Не одобрена вышестоящим руководителем"),
-                                                           new IdNameDto(3, "Одобрена вышестоящим руководителем"),
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(2, "Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            new IdNameDto(5, "Отменена"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),

@@ -65,9 +65,9 @@ namespace Reports.Core.Dao.Impl
                         else r.[RejectReason] end as RReject,
                 ur.Name as StaffName,
                 case
-                        when v.ManagerDateAccept is null then N'Заявка создана'
-                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Не одобрена вышестоящим руководителем'
-                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Одобрена вышестоящим руководителем'
+                        when v.ManagerDateAccept is null then N'Черновик'
+                        when v.ManagerDateAccept is not null and v.ChiefDateAccept is null then N'Отправлена на согласование вышестоящему руководителю'
+                        when v.ChiefDateAccept is not null and v.StaffDateAccept is null then N'Согласована вышестоящим руководителем'
                         when v.StaffDateAccept is not null then N'Принята в работу'                        
                         when v.DeleteDate is not null then N'Отменена'
                         else N''
@@ -338,13 +338,13 @@ namespace Reports.Core.Dao.Impl
                 string statusWhere;
                 switch (statusId)
                 {
-                    case 1://1, "Заявка создана"
+                    case 1://1, "Черновик"
                         statusWhere = @"v.ManagerDateAccept is null ";
                         break;
-                    case 2://2, "Не одобрена вышестоящим руководителем"
+                    case 2://2, "Отправлена на согласование вышестоящему руководителю"
                         statusWhere = @"v.ManagerDateAccept is not null and v.ChiefDateAccept is null ";
                         break;
-                    case 3://3, "Одобрена вышестоящим руководителем"
+                    case 3://3, "Согласована вышестоящим руководителем"
                         statusWhere = @"v.ChiefDateAccept is not null and v.StaffDateAccept is null ";
                         break;
                     case 4://4, "Принята в работу"
