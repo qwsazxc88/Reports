@@ -116,7 +116,8 @@ namespace Reports.Core.Dao.Impl
             IList<User> clearanceChecklistApprovingAuthorities = new List<User>();
             clearanceChecklistApprovingAuthorities =
                 Session.CreateCriteria<User>().List<User>()
-                .Where<User>(user => user.ClearanceChecklistRoleRecords != null && user.ClearanceChecklistRoleRecords.Count > 0)
+                .Where<User>(user => user.ClearanceChecklistRoleRecords != null
+                    && user.ClearanceChecklistRoleRecords.Where(ccrr => ccrr.Role.DeleteDate == null).Count() > 0)
                 .ToList<User>();
                 //.Add(Restrictions.Where<ClearanceChecklistRole>(role => role != null))
                 /*.Add(Restrictions.Where<IList<ClearanceChecklistRoleRecord>>(roles => (roles !=null && roles.Count>0)))
