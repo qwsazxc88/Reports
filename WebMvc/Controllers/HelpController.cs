@@ -199,7 +199,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult HelpQuestionEdit(HelpQuestionEditModel model)
         {
-            //CorrectCheckboxes(model);
+            CorrectModel(model);
             CorrectDropdowns(model);
             //UploadFileDto fileDto = GetFileContext();
             //bool needToReload;
@@ -229,6 +229,21 @@ namespace WebMvc.Controllers
         protected bool ValidateHelpQuestionEditModel(HelpQuestionEditModel model)
         {
             return ModelState.IsValid;
+        }
+        protected void CorrectModel(HelpQuestionEditModel model)
+        {
+            if (model.Operation == 6 && !string.IsNullOrEmpty(model.Answer))
+            {
+                if (ModelState.ContainsKey("Answer"))
+                    ModelState.Remove("Answer");
+            }
+            if (model.Operation == 5)
+            {
+                if (ModelState.ContainsKey("Question"))
+                    ModelState.Remove("Question");
+                if (ModelState.ContainsKey("Answer"))
+                    ModelState.Remove("Answer");
+            }
         }
         protected void CorrectDropdowns(HelpQuestionEditModel model)
         {

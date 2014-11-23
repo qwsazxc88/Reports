@@ -849,7 +849,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             model.IsForQuestion = true;
             SetUserInfoModel(user, model);
-            LoadDictionaries(model);
+            LoadDictionaries(model,entity);
             SetFlagsState(id, currUser, entity, model);
             
 
@@ -892,14 +892,52 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.TypeIdHidden = model.TypeId;
             model.SubtypeIdHidden = model.SubtypeId;
         }
-        protected void LoadDictionaries(HelpQuestionEditModel model)
+        protected void LoadDictionaries(HelpQuestionEditModel model,HelpQuestionRequest entity)
         {
+            LoadHistory(model, entity);
             List<HelpQuestionType> types = HelpQuestionTypeDao.LoadAllSortedByOrder();
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             if (model.TypeId == 0)
                 model.TypeId = types.First().Id;
             model.Subtypes = HelpQuestionSubtypeDao.LoadForTypeIdSortedByOrder(model.TypeId)
                 .ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+        }
+        protected void LoadHistory(HelpQuestionEditModel model, HelpQuestionRequest entity)
+        {
+            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                return;
+            model.HistoryEntities = entity.HistoryEntities
+                .OrderByDescending(x => x.CreateDate).ToList()
+                .ConvertAll(x => new HistoryEntityModel
+                                     {
+                                         Answer = x.Answer,
+                                         CreateDate = x.CreateDate.ToString(),
+                                         CreatorName = x.Creator.FullName,
+                                         Question = x.Question,
+                                         Message = GetMessage(x)
+                                     });
+                                                                                        
+        }
+        protected string GetMessage(HelpQuestionHistoryEntity entity)
+        {
+            switch (entity.Type)
+            {
+                case 1://send
+                    return string.Format("Вопрос задан");
+                case 2://begin work
+                    return string.Format("Вопрос принят в работу");
+                case 3://end work
+                    return string.Format("Ответ на вопрос дан");
+                case 4://confirm
+                    return string.Format("Ответ на вопрос подтвержден");
+                case 5://reject
+                    return string.Format("Ответ на вопрос не подтвержден");
+                case 6://redirect
+                    Role targetRole = RoleDao.Load(entity.RecipientRoleId);
+                    return string.Format("Заявка перенаправлена роли {0}", targetRole.Name);
+                default:
+                    throw new ArgumentException(string.Format("Неизвестный тип записи в истории {0}",entity.Type));
+            }
         }
         protected void SetFlagsState(int id, User current, HelpQuestionRequest entity, HelpQuestionEditModel model)
         {
@@ -922,7 +960,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (!entity.SendDate.HasValue)
                         {
-                            model.IsTypeEditable = true;
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
                             model.IsQuestionEditable = true;
                             model.IsSendAvailable = true;
                             model.IsSaveAvailable = true;
@@ -936,7 +975,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         if (!entity.SendDate.HasValue)
                         {
-                            model.IsTypeEditable = true;
+                            if (entity.HistoryEntities == null || entity.HistoryEntities.Count == 0)
+                                model.IsTypeEditable = true;
                             model.IsQuestionEditable = true;
                             model.IsSendAvailable = true;
                             model.IsSaveAvailable = true;
@@ -1028,7 +1068,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void ReloadDictionariesToModel(HelpQuestionEditModel model)
         {
-            LoadDictionaries(model);
+
+            HelpQuestionRequest entity = HelpQuestionRequestDao.Load(model.Id);
+            LoadDictionaries(model,entity);
         }
         public bool SaveHelpQuestionEditModel(HelpQuestionEditModel model, out string error)
         {
@@ -1111,7 +1153,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             finally
             {
                 //SetUserInfoModel(user, model);
-                LoadDictionaries(model);
+                LoadDictionaries(model,entity);
                 SetHiddenFields(model);
             }
         }
@@ -1135,16 +1177,61 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Creator.Id == currUser.Id)
                     {
                         if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
                             entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
                         if (entity.EndWorkDate.HasValue)
                         {
                             if (model.Operation == 4)
+                            {
                                 entity.ConfirmWorkDate = DateTime.Now;
+                                HelpQuestionHistoryEntity confirm = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 4,// confirm
+                                };
+                                entity.HistoryEntities.Add(confirm);
+                            }
                             else if (model.Operation == 5)
                             {
                                 entity.SendDate = null;
                                 entity.BeginWorkDate = null;
                                 entity.EndWorkDate = null;
+                                HelpQuestionHistoryEntity reject = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 5,// reject
+                                };
+                                entity.HistoryEntities.Add(reject);
+                                model.Answer = null;
+                                model.Question = null;
+                                entity.Answer = null;
+                                entity.Question = null;
+                                entity.ConsultantRoleId = null;
                             }
                         }
                     }
@@ -1153,16 +1240,60 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Creator.Id == currUser.Id)
                     {
                         if (model.Operation == 1 && !entity.SendDate.HasValue)
+                        {
                             entity.SendDate = DateTime.Now;
+                            entity.ConsultantRoleId = (int) UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity send = new HelpQuestionHistoryEntity
+                            {
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)UserRole.ConsultantOutsourcing,
+                                Request = entity,
+                                Type = 1,// send
+                            };
+                            entity.HistoryEntities.Add(send);
+                        }
                         if (entity.EndWorkDate.HasValue)
                         {
                             if (model.Operation == 4)
+                            {
                                 entity.ConfirmWorkDate = DateTime.Now;
+                                HelpQuestionHistoryEntity confirm = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 4,// confirm
+                                };
+                                entity.HistoryEntities.Add(confirm);
+                            }
                             else if (model.Operation == 5)
                             {
                                 entity.SendDate = null;
                                 entity.BeginWorkDate = null;
                                 entity.EndWorkDate = null;
+                                HelpQuestionHistoryEntity reject = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 5,// reject
+                                };
+                                entity.HistoryEntities.Add(reject);
+                                model.Answer = null;
+                                model.Question = null;
+                                entity.Answer = null;
+                                entity.Question = null;
                             }
                         }
                     }
@@ -1175,10 +1306,40 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate = DateTime.Now;
                             entity.ConsultantOutsourcing = currUser;
                             entity.ConsultantRoleId = (int) UserRole.ConsultantOutsourcing;
+                            HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
+                            {
+                                //Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 2,// beginWork
+                            };
+                            entity.HistoryEntities.Add(beginWork);
+                            
+
                         }
                         if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 3,// endWork
+                            };
+                            entity.HistoryEntities.Add(endWork);
+                        }
                         if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
                         {
                             entity.ConsultantRoleId = model.RedirectRoleId;
@@ -1189,28 +1350,58 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                                          Consultant = currUser,
                                                                          CreateDate = DateTime.Now,
                                                                          Creator = currUser,
-                                                                         CreatorRoleId = (int)UserRole.ConsultantOutsourcing,
+                                                                         CreatorRoleId = (int)currRole,
                                                                          Question = entity.Question,
                                                                          RecipientRoleId = model.RedirectRoleId,
                                                                          Request = entity,
-                                                                         Type = 2,// redirect
+                                                                         Type = 6,// redirect
                                                                      };
                             entity.HistoryEntities.Add(redirect);
+                            entity.Answer = null;
+                            model.Answer = null;
                         }
                     }
                     break;
                 case UserRole.ConsultantPersonnel:
-                    if (entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == currUser.Id))
+                    if (entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == currUser.Id))
                     {
                         if (model.Operation == 2 && entity.SendDate.HasValue)
                         {
                             entity.BeginWorkDate = DateTime.Now;
                             entity.ConsultantPersonnel = currUser;
                             entity.ConsultantRoleId = (int)UserRole.ConsultantPersonnel;
+                            HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
+                            {
+                                //Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 2,// beginWork
+                            };
+                            entity.HistoryEntities.Add(beginWork);
                         }
                         if (entity.ConsultantPersonnel != null && entity.ConsultantPersonnel.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
                             entity.EndWorkDate = DateTime.Now;
+                            HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 3,// endWork
+                            };
+                            entity.HistoryEntities.Add(endWork);
+                        }
                         if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
                         {
                             entity.ConsultantRoleId = model.RedirectRoleId;
@@ -1221,13 +1412,77 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 Consultant = currUser,
                                 CreateDate = DateTime.Now,
                                 Creator = currUser,
-                                CreatorRoleId = (int)UserRole.ConsultantPersonnel,
+                                CreatorRoleId = (int)currRole,
                                 Question = entity.Question,
                                 RecipientRoleId = model.RedirectRoleId,
                                 Request = entity,
-                                Type = 2,// redirect
+                                Type = 6,// redirect
                             };
                             entity.HistoryEntities.Add(redirect);
+                            entity.Answer = null;
+                            model.Answer = null;
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantAccountant:
+                    if (entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.ConsultantAccountant = currUser;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantAccountant;
+                            HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
+                            {
+                                //Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 2,// beginWork
+                            };
+                            entity.HistoryEntities.Add(beginWork);
+                        }
+                        if (entity.ConsultantAccountant != null && entity.ConsultantAccountant.Id == currUser.Id
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 3,// endWork
+                            };
+                            entity.HistoryEntities.Add(endWork);
+                        }
+                        if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
+                        {
+                            entity.ConsultantRoleId = model.RedirectRoleId;
+                            entity.BeginWorkDate = null;
+                            HelpQuestionHistoryEntity redirect = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = model.RedirectRoleId,
+                                Request = entity,
+                                Type = 6,// redirect
+                            };
+                            entity.HistoryEntities.Add(redirect);
+                            entity.Answer = null;
+                            model.Answer = null;
                         }
                     }
                     break;

@@ -4,7 +4,7 @@ using Reports.Core.Dto;
 
 namespace Reports.Presenters.UI.ViewModel
 {
-    public class HelpQuestionEditModel :HelpUserInfoModel, IContainId
+    public class HelpQuestionEditModel : HelpUserInfoModel, IContainId
     {
         public int Version { get; set; }
 
@@ -29,7 +29,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Question { get; set; }
         [Display(Name = "Ответ")]
         public string Answer { get; set; }
-        
+
         public bool IsTypeEditable { get; set; }
         public bool IsQuestionEditable { get; set; }
         public bool IsAnswerEditable { get; set; }
@@ -47,6 +47,15 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool ReloadPage { get; set; }
 
-
+        public List<HistoryEntityModel> HistoryEntities { get; set; }
+    }
+    public class HistoryEntityModel
+    {
+        public string CreateDate { get; set; }
+        public string CreatorName { get; set; }
+        public string Question { get; set; }
+        public string Answer { get; set; }
+        //public int Type { get; set; }
+        public string Message { get; set; }
     }
 }

@@ -59,13 +59,13 @@
              <tr>
                     <td>@Html.LabelFor(model => model.Question):</td>
                     <td style="vertical-align:top">
-                       @Html.TextAreaFor(model => model.Question, 4, 50, Model.IsQuestionEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsQuestionEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
                     </td>
              </tr>
              <tr>
                     <td>@Html.LabelFor(model => model.Answer):</td>
                     <td>
-                       @Html.TextAreaFor(model => model.Answer, 4, 50, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                       @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
                     </td>
              </tr>
              <tr>
@@ -91,15 +91,53 @@
         </table>
     </div>
     <br />
-@*    <div class="comment-wrap">
-        <table style="width:100%">
+    if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
+    {
+        <div>
+            <table style="width:100%">
              <tr>
-                <td colspan="2">
-                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
-                </td>
-            </tr>
-        </table>
-    </div>*@
+                    <td colspan="2" style="text-align:center;font-weight:bold;border-bottom:2px solid">
+                       История заявки
+                    </td>
+                </tr>
+            @foreach (var entity in Model.HistoryEntities)
+            {
+                 <tr>
+                    <td style="width:140px">
+                        @entity.CreateDate
+                    </td>
+                     <td>
+                        @entity.CreatorName
+                    </td>
+                </tr>
+                <tr style="border-bottom:1px solid">
+                    <td colspan="2">
+                        @entity.Message
+                    </td>
+                </tr>
+                <tr @if (!string.IsNullOrEmpty(entity.Answer)){<text>style="border-bottom:1px solid"</text>} else {<text>style="border-bottom:2px solid"</text>}>
+                    <td>
+                        Вопрос:
+                    </td>
+                     <td>
+                         @entity.Question
+                    </td>
+                </tr>
+                if (!string.IsNullOrEmpty(entity.Answer))
+                {
+                 <tr style="border-bottom:2px solid">
+                    <td>
+                        Ответ:
+                    </td>
+                     <td>
+                         @entity.Answer
+                    </td>
+                </tr>
+                }
+            }
+            </table>
+        </div>
+    }
 }
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";
@@ -135,6 +173,13 @@
     }
     function EndWork()
     {
+        var result = true;
+        if(!IsFieldNotEmpty($('#Answer')))
+            result = false;
+        else if(IsFieldTooLong($('#Answer'),8192))
+            result = false;
+        if(!result)
+            return result;
         $("#Operation").val(3);
         return true;
     }
