@@ -1,7 +1,7 @@
 ﻿@model Reports.Presenters.UI.ViewModel.CreateHelpServiceRequestModel
 @{
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
-    ViewBag.Title = "Создание заявки на услугу";
+    ViewBag.Title = "Создание заявки";
 }
 @using (Html.BeginForm())
 {
@@ -51,6 +51,7 @@
             <tr @*@if (!Model.IsUserVisible) {<text>style="display:none"</text>}*@>
                 <td>
                     @Html.LabelFor(m => m.UserId):
+                     <input type="hidden" id="IsForQuestion" name="IsForQuestion" value="@Model.IsForQuestion" />
                 </td>
                 <td>
                    @Html.DropDownListFor(model => model.UserId, new SelectList(Model.Users, "ID", "Name")) 

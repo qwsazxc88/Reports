@@ -106,7 +106,7 @@
                                 {
                                     <input type="button" value="Задать вопрос" onclick="location.href='@Url.Action("HelpQuestionEdit", "Help", new { id = 0 })'"/>
                                     <text>&nbsp; &nbsp; &nbsp;</text>   
-                                    <input type="button" value="Задать вопрос за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help")'"/>
+                                    <input type="button" value="Задать вопрос за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help",new { isForQuestion = 1 } )'"/>
                                 }                                                                                     
                             </td>
                    </tr>

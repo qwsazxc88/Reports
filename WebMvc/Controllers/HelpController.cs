@@ -89,19 +89,21 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Manager)]
-        public ActionResult CreateServiceRequest()
+        public ActionResult CreateServiceRequest(int? isForQuestion)
         {
             CreateHelpServiceRequestModel model = HelpBl.GetCreateHelpServiceRequestModel();
+            if (isForQuestion.HasValue)
+                model.IsForQuestion = true;
             return View(model);
         }
         [HttpPost]
         public ActionResult CreateServiceRequest(CreateHelpServiceRequestModel model)
         {
-            return RedirectToAction("ServiceRequestEdit",
-                                             new RouteValueDictionary {
-                                                                        {"id", 0}, 
-                                                                        {"userId", model.UserId}
-                                                                       });
+            return RedirectToAction(model.IsForQuestion ? "HelpQuestionEdit" : "ServiceRequestEdit", 
+                new RouteValueDictionary {
+                                            {"id", 0}, 
+                                            {"userId", model.UserId}
+                                          });
         }
 
         [HttpGet]
