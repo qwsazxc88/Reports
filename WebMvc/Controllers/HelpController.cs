@@ -191,7 +191,13 @@ namespace WebMvc.Controllers
             //SetMissionOrderListModelFromSession(model);
             return View(model);
         }
-
+        [HttpPost]
+        public ActionResult ServiceQuestionsList(HelpServiceQuestionsListModel model)
+        {
+            bool hasError = !ValidateModel(model);
+            HelpBl.SetServiceQuestionsListModel(model, hasError);
+            return View(model);
+        }
         [HttpGet]
         public ActionResult HelpQuestionEdit(int id, int? userId)
         {

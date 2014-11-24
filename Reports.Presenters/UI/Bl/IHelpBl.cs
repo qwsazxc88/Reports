@@ -20,6 +20,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveComment(SaveCommentModel model, RequestTypeEnum type);
 
         HelpServiceQuestionsListModel GetServiceQuestionsListModel();
+        void SetServiceQuestionsListModel(HelpServiceQuestionsListModel model, bool hasError);
         HelpQuestionEditModel GetHelpQuestionEditModel(int id, int? userId);
         void GetSubtypesForType(int typeId, HelpQuestionSubtypesModel model);
         void ReloadDictionariesToModel(HelpQuestionEditModel model);

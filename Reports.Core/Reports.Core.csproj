@@ -520,6 +520,7 @@
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\HelpServiceDictionariesStatesModel.cs" />
+    <Compile Include="Dto\HelpServiceQuestionDto.cs" />
     <Compile Include="Dto\HelpServiceRequestDto.cs" />
     <Compile Include="Dto\HelpVersionDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />

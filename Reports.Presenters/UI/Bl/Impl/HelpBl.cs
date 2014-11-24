@@ -759,10 +759,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Черновик сотрудника"),
+                                                           new IdNameDto(1, "Черновик"),
                                                            new IdNameDto(2, "Вопрос задан"),
-                                                           new IdNameDto(3, "Вопрос ожидает ответа"),
-                                                           new IdNameDto(4, "Ответ на вопрос получен")
+                                                           new IdNameDto(3, "Вопрос принят в работу"),
+                                                           new IdNameDto(4, "Ответ на вопрос получен"),
+                                                           new IdNameDto(5, "Ответ на вопрос подтвержден")
                                                            //new IdNameDto(5, "Услуга оказана")
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
                                                            //new IdNameDto(5, "Одобрен членом правления"),
@@ -773,6 +774,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                        }.OrderBy(x => x.Name).ToList();
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return moStatusesList;
+        }
+        public void SetServiceQuestionsListModel(HelpServiceQuestionsListModel model, bool hasError)
+        {
+            SetDictionariesToModel(model);
+            User user = UserDao.Load(model.UserId);
+            if (hasError)
+                model.Documents = new List<HelpServiceQuestionDto>();
+            else
+                SetDocumentsToModel(model, user);
+        }
+        public void SetDocumentsToModel(HelpServiceQuestionsListModel model, User user)
+        {
+            UserRole role = CurrentUser.UserRole;
+            //model.Documents = new List<HelpServiceRequestDto>();
+            model.Documents = HelpQuestionRequestDao.GetDocuments(
+                user.Id,
+                role,
+                model.DepartmentId,
+                model.StatusId,
+                model.BeginDate,
+                model.EndDate,
+                model.UserName,
+                model.Number,
+                model.SortBy,
+                model.SortDescending);
         }
         #endregion
         #region Question Edit
