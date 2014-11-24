@@ -306,7 +306,10 @@
                         </th>
                         <th>
                             <div>Перерасчет<br />произведен</div><br />
-                            <input type="checkbox" id="setAllIsRecalculated" onclick="setSelectionIsRecalculated();" />
+                            @if (Model.IsRecalculationAvailable)
+                            {
+                                <input type="checkbox" id="setAllIsRecalculated" onclick="setSelectionIsRecalculated();" />
+                            }
                         </th>
                     }
                         
@@ -383,7 +386,14 @@
                                     <div>@(difference == 0 ? string.Empty : difference.ToString())</div>
                                 </td>
                                 <td style="text-align: center">
-                                    @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @class = "selcheckisrecalculated" })
+                                    @if (Model.IsRecalculationAvailable)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @class = "selcheckisrecalculated"});
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @disabled = "disabled" });
+                                    }
                                 </td>
                             }
                             @{i++;}
