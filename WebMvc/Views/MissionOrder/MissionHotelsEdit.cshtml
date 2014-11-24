@@ -1,0 +1,53 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionHotelsEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Добавить/редактировать запись";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td>
+                <div class="doc-wrap">
+                    <table >
+                        <tr>
+                            <td colspan="2">
+                                <b>Добавление/редактирование</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.Name)</td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Name)
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@Html.LabelFor(m => m.Account)</td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Account)
+                                @Html.ValidationMessageFor(model => model.Account)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" value="Сохранить"/>
+                <!--<input type="button" value="Отменить" onclick="CancelEdit();"  />-->
+            </td>
+        </tr>
+    </table>
+    
+    
+}
+
+<script type="text/javascript">
+    function CancelEdit(event) 
+    {
+        event.preventDefault();
+    }
+</script>

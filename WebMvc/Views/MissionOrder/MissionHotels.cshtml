@@ -1,0 +1,48 @@
+﻿@model Reports.Presenters.UI.ViewModel.MissionHotelsModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Гостиницы";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td>
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Гостиницы</b>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="grid">
+                    <tr>
+                        <th>Название гостиницы</th>
+                        <th>№ счета</th>
+                        <th></th>
+                    </tr>
+                    @if (Model.Documents != null && Model.Documents.Count > 0)
+                    {
+                        foreach (var doc in Model.Documents)
+                        {
+                            <tr>
+                                <td>@doc.Name</td>
+                                <td>@doc.Account</td>
+                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = doc.Id, Name = doc.Name, Account = doc.Account, flgNew = false })' style="cursor:hand">Редактировать</a></td>
+                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = 0, Name = "", Account = "", flgNew = true })' style="cursor:hand">Создать</a></td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+
+}

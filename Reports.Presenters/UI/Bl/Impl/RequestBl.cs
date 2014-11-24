@@ -416,6 +416,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionOrderDao); }
             set { missionOrderDao = value; }
         }
+        protected IMissionHotelsDao missionHotelDao;
+        public IMissionHotelsDao MissionHotelDao
+        {
+            get { return Validate.Dependency(missionHotelDao); }
+            set { missionHotelDao = value; }
+        }
         protected IMissionOrderCommentDao missionOrderCommentDao;
         public IMissionOrderCommentDao MissionOrderCommentDao
         {
@@ -2285,6 +2291,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.OrderScanAttachment = string.Empty;
                         model.UnsignedOrderScanAttachmentId = 0;
                         model.UnsignedOrderScanAttachment = string.Empty;
+                        model.UnsignedT2ScanAttachmentId = 0;
+                        model.UnsignedT2ScanAttachment = string.Empty;
+                        model.UnsignedDismissalAgreementScanAttachmentId = 0;
+                        model.UnsignedDismissalAgreementScanAttachment = string.Empty;
+                        model.DismissalAgreementScanAttachmentId = 0;
+                        model.DismissalAgreementScanAttachment = string.Empty;
+                        model.F182NScanAttachmentId = 0;
+                        model.F182NScanAttachment = string.Empty;
+                        model.F2NDFLScanAttachmentId = 0;
+                        model.F2NDFLScanAttachment = string.Empty;
+                        model.WorkbookRequestScanAttachmentId = 0;
+                        model.WorkbookRequestScanAttachment = string.Empty;
+
                         if (current.UserRole == UserRole.OutsourcingManager)
                             dismissal.DeleteAfterSendTo1C = true;
                         dismissal.CreateDate = DateTime.Now;
@@ -8030,6 +8049,103 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetDocumentsToModel(model, user);
             }
             //model.Documents = new List<MissionOrderDto>();
+        }
+        /// <summary>
+        /// При добавлении/редактировании счетов гостиниц проверяем поля на правильность заполнения.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="hasError"></param>
+        public void CheckFillFields(MissionHotelsEditModel model, System.Web.Mvc.ModelStateDictionary ms)
+        {
+            if (model.Name == null)
+                ms.AddModelError("Name", "Заполните поле 'Название гостиницы'");
+            if (model.Name != null && model.Name.Trim().Length > 256)
+                ms.AddModelError("Name", "Превышено допустимое количество символов!");
+            if (model.Account == null)
+                ms.AddModelError("Account", "Заполните поле '№ счета'");
+            if (model.Account != null && model.Account.Trim().Length > 32)
+                ms.AddModelError("Account", "Превышено допустимое количество символов!");
+
+            UserRole role = CurrentUser.UserRole;
+            MissionHotelsModel md = new MissionHotelsModel();
+            md.Documents = MissionHotelDao.GetHotels(role, md.Id, md.Name, md.Account);
+            int i = 0;
+            foreach (MissionHotelsDto mhdto in md.Documents)
+            {
+                if (mhdto.Account == model.Account)
+                    i = i + 1;
+            }
+            if (i > (int)(model.flgNew.HasValue && model.flgNew.Value ? 0 : 1)) ms.AddModelError("Account", "В базе данных уже есть запись с таким номером счета!");
+        }
+        /// <summary>
+        /// Загрузка списка гостиниц.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="hasError"></param>
+        public void SetMissionHotelsListModel(MissionHotelsModel model, bool hasError)
+        {
+            SetHotelListToModel(model);
+        }
+        /// <summary>
+        /// Гостиницы
+        /// </summary>
+        /// <param name="model"></param>
+        public void SetHotelListToModel(MissionHotelsModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Documents = MissionHotelDao.GetHotels(role,
+                model.Id,
+                model.Name,
+                model.Account);
+        }
+        /// <summary>
+        /// Сохраняем запись в базе данных.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool SaveMissionHotelsEditModel(MissionHotelsEditModel model, out string error)
+        {
+            error = string.Empty;
+            User user = null;
+            MissionHotels missionHotels = MissionHotelDao.Get(model.Id);
+            try
+            {
+                if (missionHotels == null)
+                {
+                    missionHotels = new MissionHotels
+                    {
+                        Id = model.Id,
+                        Name = model.Name,
+                        Account = model.Account
+                    };
+                }
+                else
+                {
+                    missionHotels.Id = model.Id;
+                    missionHotels.Name = model.Name;
+                    missionHotels.Account = model.Account;
+                }
+                //ChangeEntityProperties(current, missionHotels, model, user);
+                MissionHotelDao.SaveAndFlush(missionHotels);
+                model.Id = missionHotels.Id;
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MissionOrderDao.RollbackTran();
+                Log.Error("Error on SaveMissionOrderEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                //SetUserInfoModel(user, model);
+                //SetStaticFields(model, missionHotels);
+                //LoadDictionaries(model);
+                //SetHiddenFields(model);
+            }
         }
         protected void ApproveOrders(MissionOrderListModel model,List<int> idsForApprove)
         {
