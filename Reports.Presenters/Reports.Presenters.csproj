@@ -201,6 +201,8 @@
     <Compile Include="UI\ViewModel\LoginRecoveryModel.cs" />
     <Compile Include="UI\ViewModel\ManagerInfoModel.cs" />
     <Compile Include="UI\ViewModel\MissionEditModel.cs" />
+    <Compile Include="UI\ViewModel\MissionHotelsEditModel.cs" />
+    <Compile Include="UI\ViewModel\MissionHotelsModel.cs" />
     <Compile Include="UI\ViewModel\MissionListModel.cs" />
     <Compile Include="UI\ViewModel\MissionOrderEditModel.cs" />
     <Compile Include="UI\ViewModel\MissionOrderListModel.cs" />

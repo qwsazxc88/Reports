@@ -488,6 +488,11 @@ namespace Reports.Core
                   ImplementedBy(typeof(MissionOrderRoleRecordDao)).
                   LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IMissionHotelsDao)).
+             ImplementedBy(typeof(MissionHotelsDao)).
+             LifeStyle.Is(type));
+
+
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)

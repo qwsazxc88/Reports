@@ -79,6 +79,63 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
         }
+        /// <summary>
+        /// Гостиницы.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult MissionHotels()
+        {
+            MissionHotelsModel model = new MissionHotelsModel();
+            ModelState.Clear();
+            bool hasError = false;//!ValidateModel(model);
+            ////if (!hasError)
+            ////    SetMissionOrderFilterToSession(model);
+            RequestBl.SetMissionHotelsListModel(model, hasError);
+            //if (model.HasErrors)
+            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
+            return View(model);
+            //return View();
+        }
+        /// <summary>
+        /// Вызов страницы добавления/редактирования гостиниц
+        /// </summary>
+        /// <param name="Id">ID записи</param>
+        /// <param name="Name">Название гостиницы</param>
+        /// <param name="Account">№ счета</param>
+        /// <param name="flgNew">Признак новой записи</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult MissionHotelsEdit(int Id, string Name, string Account, bool flgNew)
+        {
+            MissionHotelsEditModel model = new MissionHotelsEditModel();
+            model.Id = Id;
+            model.Name = Name;
+            model.Account = Account;
+            model.flgNew = flgNew;
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult MissionHotelsEdit(MissionHotelsEditModel model)
+        {
+            ModelState.Clear();
+            RequestBl.CheckFillFields(model, ModelState);
+            if (ModelState.Count != 0)
+                return View(model);
+            else
+            {
+                string error;
+                if (RequestBl.SaveMissionHotelsEditModel(model, out error))
+                {
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("", error);
+
+                    return RedirectToAction("MissionHotels");
+                }
+                else
+                    return RedirectToAction("MissionHotelsEdit");
+            }
+        }
         protected void SetMissionOrderFilterToSession(MissionOrderListModel model)
         {
             MissionOrderFilterModel filterModel = new MissionOrderFilterModel

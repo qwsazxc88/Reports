@@ -102,6 +102,7 @@
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
     <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IMissionHotelsDao.cs" />
     <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
@@ -313,7 +315,6 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
-    
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -401,6 +402,7 @@
     <Compile Include="Domain\MissionDailyAllowanceGradeValue.cs" />
     <Compile Include="Domain\MissionGoal.cs" />
     <Compile Include="Domain\MissionGraid.cs" />
+    <Compile Include="Domain\MissionHotels.cs" />
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
     <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
@@ -491,6 +493,7 @@
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
+    <Compile Include="Dto\MissionHotelsDto.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
@@ -979,6 +982,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionHotels.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
