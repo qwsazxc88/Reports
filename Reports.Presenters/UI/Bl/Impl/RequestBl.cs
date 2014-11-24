@@ -8019,7 +8019,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if ((superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id) || (CurrentUser.UserRole == UserRole.OutsourcingManager))
             {
-                model.IsCorrectionsOnlyModeAvailable = true;
+                model.IsCorrectionsOnlyModeAvailable = true;                
+            }
+            if (superPersonnelId.HasValue && superPersonnelId.Value == CurrentUser.Id)
+            {
+                model.IsRecalculationAvailable = true;
             }
         }
         public void SetMissionOrderListModel(MissionOrderListModel model, bool hasError)
@@ -8033,11 +8037,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Documents = new List<MissionOrderDto>();
             else
             {
-                if(model.IsApproveClick)
+                if (model.IsApproveClick && model.Documents != null)
                 {
                     model.IsApproveClick = false;
                     List<int> idsForApprove = model.Documents.Where(x => x.IsChecked).Select(x => x.Id).ToList();
                     ApproveOrders(model,idsForApprove);
+                }
+                if (model.IsSaveIsRecalculatedClick && model.Documents != null)
+                {
+                    model.IsSaveIsRecalculatedClick = false;
+                    List<int> idsToSetIsRecalculated = model.Documents.Where(x => x.IsRecalculated).Select(x => x.Id).ToList();
+                    List<int> idsToResetIsRecalculated = model.Documents.Where(x => !x.IsRecalculated).Select(x => x.Id).ToList();
+                    SaveIsRecalculated(model, idsToSetIsRecalculated, idsToResetIsRecalculated);
                 }
                 SetDocumentsToModel(model, user);
             }
@@ -8048,6 +8059,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsForApprove).ToList();
             foreach (MissionOrder order in orders)
                 ApproveOrder(model,order);
+        }
+        protected void SaveIsRecalculated(MissionOrderListModel model, List<int> idsToSetIsRecalculated, List<int> idsToResetIsRecalculated)
+        {
+            List<MissionOrder> orders = MissionOrderDao.LoadForIdsList(idsToSetIsRecalculated).ToList();
+            if (CurrentUser.Id == ConfigurationService.SuperPersonnelId)
+            {
+                foreach (MissionOrder order in orders)
+                {
+                    order.IsRecalculated = true;
+                    MissionOrderDao.SaveAndFlush(order);
+                }
+
+                orders = MissionOrderDao.LoadForIdsList(idsToResetIsRecalculated).ToList();
+                foreach (MissionOrder order in orders)
+                {                
+                    order.IsRecalculated = false;
+                    MissionOrderDao.Save(order);
+                }
+                MissionOrderDao.Flush();
+            }
         }
         protected void ApproveOrder(MissionOrderListModel model,MissionOrder order)
         {
