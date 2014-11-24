@@ -60,6 +60,8 @@ namespace Reports.Core.Dao.Impl
 	                                from hemd
 	                                left join [dbo].[HelpQuestionHistoryEntity] hqhe
 	                                on hemd.HelpQuestionRequestId = hqhe.HelpQuestionRequestId and hemd.MaxDate = hqhe.CreateDate
+                                    where not exists (select Id from [dbo].[HelpQuestionHistoryEntity] hqhe1 where hqhe1.CreateDate > hemd.MaxDate
+	                                    and hqhe1.Type = 1   )
                                 )
                                 select v.Id as Id,
                                 u.Id as UserId,
