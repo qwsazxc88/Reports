@@ -162,6 +162,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
+
         public MissionOrderDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -221,7 +222,7 @@ namespace Reports.Core.Dao.Impl
             */
             return documentList;
         }
-      
+
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
                     int sortedBy,
                     bool? sortDescending)
