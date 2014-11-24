@@ -8057,7 +8057,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void CheckFillFields(MissionHotelsEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
             if (model.Name == null)
-                ms.AddModelError("Name", "Заполните поле 'Название гостиницы'");
+                ms.AddModelError("Name", "Заполните поле 'Наименование контрагента'");
             if (model.Name != null && model.Name.Trim().Length > 256)
                 ms.AddModelError("Name", "Превышено допустимое количество символов!");
             if (model.Account == null)

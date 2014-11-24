@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int Id { get; set; }
         public bool? flgNew { get; set; }
 
-        [Display(Name = "Название гостиницы")]
+        [Display(Name = "Наименование контрагента")]
         public string Name { get; set; }
 
         [Display(Name = "№ счета")]
