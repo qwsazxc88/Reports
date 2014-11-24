@@ -62,4 +62,13 @@ namespace Reports.Core.Dto
         public DateTime? ArchiveDate { get; set; }
         public string ArchiveNumber { get; set; }
     }
+    /// <summary>
+    /// Гостиницы.
+    /// </summary>
+    public class MissionHotelsDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Account { get; set; }
+    }
 }

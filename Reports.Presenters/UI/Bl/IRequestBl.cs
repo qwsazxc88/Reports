@@ -133,6 +133,9 @@ namespace Reports.Presenters.UI.Bl
 
         MissionOrderListModel GetMissionOrderListModel();
         void SetMissionOrderListModel(MissionOrderListModel model, bool hasError);
+        void SetMissionHotelsListModel(MissionHotelsModel model, bool hasError);
+        void CheckFillFields(MissionHotelsEditModel model, System.Web.Mvc.ModelStateDictionary ms);
+        bool SaveMissionHotelsEditModel(MissionHotelsEditModel model, out string error);
         MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId);
         void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model);
         CreateMissionOrderModel GetCreateMissionOrderModel();
