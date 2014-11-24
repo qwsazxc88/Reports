@@ -489,6 +489,7 @@
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
+    <Compile Include="Dto\MissionHotelsDto.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
