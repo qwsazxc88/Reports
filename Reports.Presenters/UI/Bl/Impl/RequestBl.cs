@@ -5489,7 +5489,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// Получить всех руководителей сотрудника
         /// </summary>
         /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
-        /// <returns>Словарь&lt;Уровень, Руководитель&gt;</returns>
+        /// <returns>Список руководителей</returns>
         public IList<User> GetManagersForEmployee(int userId)
         {
             IList<User> managers = new List<User>();

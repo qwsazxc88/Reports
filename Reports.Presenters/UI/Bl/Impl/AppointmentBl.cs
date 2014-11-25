@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
@@ -509,7 +510,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(rep != null)
                     model.StaffName = rep.Creator.FullName;
             }
-            
+
+            #region Заполнение списка вышестоящих руководителей
+
+            IList<User> chiefs = GetChiefsForManager(user.Id)
+                .Where<User>(chief => chief.Level >= 3)
+                .OrderByDescending<User, int?>(chief => chief.Level)
+                .ToList<User>();
+
+            StringBuilder chiefsBuilder = new StringBuilder();
+            foreach (var chief in chiefs)
+            {
+                chiefsBuilder.AppendFormat("{0} ({1}), ", chief.Name, chief.Position == null ? "<не указана>" : chief.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (chiefsBuilder.Length >= 2)
+            {
+                chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
+            }
+
+            model.Chiefs = chiefsBuilder.ToString();
+
+            #endregion
+
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
@@ -1745,6 +1768,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Managers = UserDao.GetManagersWithDepartments().ToList(),
             };
+        }
+
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Список руководителей</returns>
+        public IList<User> GetChiefsForManager(int userId)
+        {
+            IList<User> chiefs = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach (var mainManager in mainManagers)
+                {
+                    chiefs.Add(mainManager);
+                }
+            }
+
+            // Руководители вышележащих уровней по ветке для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) && manager.Level > 3)
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                chiefs.Add(mainManager);
+            }
+
+            return chiefs;
         }
     }
 }
