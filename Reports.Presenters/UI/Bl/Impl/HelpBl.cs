@@ -754,6 +754,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
         {
             model.Statuses = GetServiceQuestionsStatuses();
+            model.IsManagerColumnVisible = CurrentUser.UserRole != UserRole.Employee;
         }
         public List<IdNameDto> GetServiceQuestionsStatuses()
         {
@@ -1128,7 +1129,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.HelpQuestionRequest),
                         EditDate = DateTime.Now,
                         User = user,
-                        CreatorRoleId = (int)(current.Id == user.Id?current.UserRole:UserRole.Employee)
+                        CreatorRoleId = (int)(current.Id == user.Id?current.UserRole:UserRole.Employee),
+                        HistoryEntities = new List<HelpQuestionHistoryEntity>()
                     };
                     ChangeEntityProperties(entity, model, currUser, out error);
                     HelpQuestionRequestDao.SaveAndFlush(entity);

@@ -114,7 +114,7 @@
            </div>
         </td>
     </tr>   
-     @*<tr>
+     <tr>
         <td colspan="2">
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
@@ -129,9 +129,9 @@
                     <th>
                         <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
                     </th>
-                     <th>
+                    @* <th>
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
-                    </th>
+                    </th>*@
                     <th>
                         <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
                     </th>
@@ -139,19 +139,31 @@
                         <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
                     </th>
                     <th>
-                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> запроса</a></div>
+                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> вопроса</a></div>
                     </th>                    
                     <th>
-                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
+                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> ответа</a></div>
                     </th>
                         <th>
-                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
+                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид вопроса</a></div>
                     </th>
                     <th>
-                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
+                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Тип вопроса</a></div>
                     </th>
                     <th>
-                        <div id="sort10"  style="min-width:130px"><a href="#"  onclick = "SortChanged(10);">Состояние</a></div>
+                        <div id="sort10"  style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Кол-во<br/> вопросов</a></div>
+                    </th>
+                    @if (Model.IsManagerColumnVisible)
+                    {
+                     <th>
+                        <div id="sort11"  style="min-width:70px"><a href="#"  onclick = "SortChanged(11);">Консультация<br/> для руководителя</a></div>
+                    </th>
+                    }
+                    <th>
+                        <div id="sort12"  style="min-width:140px"><a href="#"  onclick = "SortChanged(12);">Переадресация</a></div>
+                    </th>
+                    <th>
+                        <div id="sort13"  style="min-width:100px"><a href="#"  onclick = "SortChanged(13);">Состояние</a></div>
                     </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -178,15 +190,21 @@
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
-                            <td>@doc.ManagerName</td>
-                            <td>@doc.Dep7Name</td>
+                           @* <td>@doc.ManagerName</td>*@
+                            <td>@doc.DepName</td>
                             <td style="text-align:left">
-                                <a class="ui-notify-close" href='@Url.Action("ServiceRequestEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
+                                <a class="ui-notify-close" href='@Url.Action("HelpQuestionEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
                             </td>
                             <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
-                            <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
-                            <td>@doc.RequestType</td>
-                            <td>@doc.RequestTransferType</td>
+                            <td>@BaseBl.FormatDate(@doc.EndWorkDate)</td>
+                            <td>@doc.QuestionType</td>
+                            <td>@doc.QuestionSubtype</td>
+                            <td>@doc.QuestionsCount</td>
+                            @if (Model.IsManagerColumnVisible)
+                            {
+                                <td>@if(doc.IsManagerQuestion){<text>Да</text>}</td>
+                            }
+                            <td>@doc.RedirectRole</td>
                             <td style="background-color:@color">
                                 @doc.Status
                             </td>
@@ -195,7 +213,7 @@
                 }
             </table>
         </td>
-     </tr>*@
+     </tr>
     </table>
 }
 <script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>

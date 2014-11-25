@@ -29,8 +29,9 @@ namespace Reports.Core.Dao.Impl
             set { missionOrderRoleRecordDao = value; }
         }
 
-        public const string sqlSelectForRn = @";with res as
-                                ({0})
+        public const string sqlSelectForRn = 
+                                //@";with res as
+                                @"{0} )
                                 select {1} as Number,* from res order by Number ";
         protected const string sqlSelectForHqList =
                                 @"
@@ -62,8 +63,10 @@ namespace Reports.Core.Dao.Impl
 	                                on hemd.HelpQuestionRequestId = hqhe.HelpQuestionRequestId and hemd.MaxDate = hqhe.CreateDate
                                     where not exists (select Id from [dbo].[HelpQuestionHistoryEntity] hqhe1 where hqhe1.CreateDate > hemd.MaxDate
 	                                    and hqhe1.Type = 1   )
-                                )
-                                select v.Id as Id,
+                                ),
+                                res as
+                                (
+                                select distinct v.Id as Id,
                                 u.Id as UserId,
                                 u.Name as UserName,
                                 up.Name as Position,
@@ -74,9 +77,9 @@ namespace Reports.Core.Dao.Impl
                                 v.EndWorkDate as EndWorkDate,
                                 t.Name as QuestionType,
                                 s.Name as QuestionSubtype,
-                                helr.SendCount as QuestionsCount,
+                                hesc.SendCount as QuestionsCount,
                                 r.Name as RedirectRole,
-                                case when v.CreatorRoleId == 4 and v.UserId == v.CreatorId then 1 else 0 end as IsManagerQuestion,
+                                case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then 1 else 0 end as IsManagerQuestion,
                                 case when v.[SendDate] is null then 1
                                      when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
                                      when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
@@ -91,14 +94,14 @@ namespace Reports.Core.Dao.Impl
                                      when v.[ConfirmWorkDate] is not null then N'Ответ на вопрос подтвержден' 
                                     else N''
                                 end as Status
-                                from dbo.HelpServiceRequest v
+                                from [dbo].[HelpQuestionRequest] v
                                 inner join [dbo].[HelpQuestionType] t on v.TypeId = t.Id
-                                inner join [dbo].[HelpQuestionSubtype] m on v.[SubtypeId] = m.Id
+                                inner join [dbo].[HelpQuestionSubtype] s on v.[SubtypeId] = s.Id
                                 inner join [dbo].[Users] u on u.Id = v.UserId
-                                inner join [dbo].[Users] crUser on crUser.Id = v.CreatorId
+                                -- inner join [dbo].[Users] crUser on crUser.Id = v.CreatorId
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
-                                left join helr on v.Id = helr.HelpQuestionRequestId
-                                left join hesc on v.Id = hesc.Id and v.[SendDate] is not null
+                                left join hesc on v.Id = hesc.Id 
+                                left join helr on v.Id = helr.HelpQuestionRequestId and v.[SendDate] is not null
                                 left join [dbo].[Role] r on r.Id = helr.LastRedirectId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {0}";
@@ -179,11 +182,11 @@ namespace Reports.Core.Dao.Impl
                 case 2:
                     orderBy = @" order by Position";
                     break;
-                case 3:
+                /*case 3:
                     orderBy += @" order by ManagerName";
-                    break;
+                    break;*/
                 case 4:
-                    orderBy = @" order by Dep7Name";
+                    orderBy = @" order by DepName";
                     break;
                 case 5:
                     orderBy = @" order by RequestNumber";
@@ -192,15 +195,24 @@ namespace Reports.Core.Dao.Impl
                     orderBy = @" order by CreateDate";
                     break;
                 case 7:
-                    orderBy = @" order by ConfirmWorkDate";
+                    orderBy = @" order by EndWorkDate";
                     break;
                 case 8:
-                    orderBy = @" order by RequestType";
+                    orderBy = @" order by QuestionType";
                     break;
                 case 9:
-                    orderBy = @" order by RequestTransferType";
+                    orderBy = @" order by QuestionSubtype";
                     break;
                 case 10:
+                    orderBy = @" order by QuestionsCount";
+                    break;
+                case 11:
+                    orderBy = @" order by IsManagerQuestion";
+                    break;
+                case 12:
+                    orderBy = @" order by RedirectRole";
+                    break;
+                case 13:
                     orderBy = @" order by Status";
                     break;
             }
@@ -234,7 +246,8 @@ namespace Reports.Core.Dao.Impl
                                 throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
                             sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
                             sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@" depM.Id in {0}", CoreUtils.CreateIn("(", depList));
+                            return string.Format(@"(u.Id = {3}) or (depM.Id in {0} and ((u.RoleId & 2 > 0) or ((u.Level >= {1}) and (u.[IsMainManager] < {2}))))",
+                                CoreUtils.CreateIn("(", depList), currentUser.Level, currentUser.IsMainManager ? 1 : 0, userId);
                         case 4:
                         case 5:
                         case 6:
@@ -242,7 +255,8 @@ namespace Reports.Core.Dao.Impl
                                 throw new ArgumentException(string.Format(StrInvalidManagerDepartment, currentUser.Id));
                             sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
                             sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@" depM.Id = {0}", currentUser.Department.Id);
+                            return string.Format(@"(u.Id = {3}) or (depM.Id = {0} and ((u.RoleId & 2 > 0) or ((u.Level >= {1}) and (u.[IsMainManager] < {2}))))", 
+                                currentUser.Department.Id,currentUser.Level,currentUser.IsMainManager?1:0,userId);
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
                                 currentUser.Level));
@@ -250,6 +264,8 @@ namespace Reports.Core.Dao.Impl
                 //return sqlQueryPart;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.ConsultantAccountant:
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Empty;

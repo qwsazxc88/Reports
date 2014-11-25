@@ -35,6 +35,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string Number { get; set; }
 
         public bool IsAddAvailable { get; set; }
+        public bool IsManagerColumnVisible { get; set; }
 
         public IList<HelpServiceQuestionDto> Documents { get; set; }
 
