@@ -81,6 +81,24 @@ namespace Reports.Core.Dao.Impl
             return query.SetResultTransformer(Transformers.AliasToBean<ClearanceChecklistDto>()).List<ClearanceChecklistDto>();
         }
 
+        public override string GetDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] < :endDate ";
+            }
+            return whereString;
+        }
+
         public override IQuery CreateQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).
