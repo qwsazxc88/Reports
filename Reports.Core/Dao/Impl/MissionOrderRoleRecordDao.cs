@@ -14,14 +14,17 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
-        public IList<MissionOrderRoleRecord> GetRoleRecords(User user = null, string roleCode = null, User targetUser = null, Department targetDepartment = null)
+        public IList<MissionOrderRoleRecord> GetRoleRecords(User user = null, string roleCode = null, User targetUser = null, Department targetDepartment = null, bool allLevels = false)
         {
             var result = Session.Query<MissionOrderRoleRecord>().ToList<MissionOrderRoleRecord>();
             result = result.Where(morr => true
                 && (user != null ? user.Id == morr.User.Id : true)
                 && (roleCode != null ? roleCode == morr.Role.Code : true)
                 && (targetUser != null && morr.TargetUser != null ? targetUser.Id == morr.TargetUser.Id : true)
-                && (targetDepartment != null && morr.TargetDepartment != null ? targetDepartment.Id == morr.TargetDepartment.Id : true)
+                && (targetDepartment != null && morr.TargetDepartment != null ?
+                    targetDepartment.Id == morr.TargetDepartment.Id
+                        // Если необходимо, включить записи вышележащих подразделений
+                        || (allLevels ? targetDepartment.Path.Contains(morr.TargetDepartment.Path) : false) : true)
                 ).ToList<MissionOrderRoleRecord>();
 
             return result;
