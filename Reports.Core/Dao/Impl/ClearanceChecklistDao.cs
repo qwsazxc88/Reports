@@ -72,6 +72,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+            whereString = GetSpecialFiltersWhere(whereString);
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -79,6 +80,34 @@ namespace Reports.Core.Dao.Impl
             //query.SetResultTransformer(Transformers.
             // return query.SetResultTransformer(Transformers.AliasToBean(typeof(ClearanceChecklistDto))).List<ClearanceChecklistDto>();
             return query.SetResultTransformer(Transformers.AliasToBean<ClearanceChecklistDto>()).List<ClearanceChecklistDto>();
+        }
+
+        // Фильтры, специфичные для обходных листов
+        private string GetSpecialFiltersWhere(string whereString)
+        {
+            whereString += @" and v.DeleteDate is null
+                              and v.UserDateAccept is not null
+                              and v.ManagerDateAccept is not null
+                              and v.PersonnelManagerDateAccept is not null ";
+            return whereString;
+        }
+
+        public override string GetDatesWhere(string whereString, DateTime? beginDate,
+            DateTime? endDate)
+        {
+            if (beginDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] >= :beginDate ";
+            }
+            if (endDate.HasValue)
+            {
+                if (whereString.Length > 0)
+                    whereString += @" and ";
+                whereString += @"v.[EndDate] < :endDate ";
+            }
+            return whereString;
         }
 
         public override IQuery CreateQuery(string sqlQuery)
