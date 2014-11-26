@@ -246,7 +246,7 @@ namespace Reports.Core.Dao.Impl
                                 throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
                             sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
                             sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@"(u.Id = {3}) or (depM.Id in {0} and ((u.RoleId & 2 > 0) or ((u.Level >= {1}) and (u.[IsMainManager] < {2}))))",
+                            return string.Format(@"(u.Id = {3}) or (depM.Id in {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))",
                                 CoreUtils.CreateIn("(", depList), currentUser.Level, currentUser.IsMainManager ? 1 : 0, userId);
                         case 4:
                         case 5:
@@ -255,7 +255,7 @@ namespace Reports.Core.Dao.Impl
                                 throw new ArgumentException(string.Format(StrInvalidManagerDepartment, currentUser.Id));
                             sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";
                             sqlQuery = string.Format(sqlQuery, sqlQueryPart);
-                            return string.Format(@"(u.Id = {3}) or (depM.Id = {0} and ((u.RoleId & 2 > 0) or ((u.Level >= {1}) and (u.[IsMainManager] < {2}))))", 
+                            return string.Format(@"(u.Id = {3}) or (depM.Id = {0} and ((u.RoleId & 2 > 0) or (u.Level > {1}) or ( u.Level = {1} and (u.[IsMainManager] < {2}))))", 
                                 currentUser.Department.Id,currentUser.Level,currentUser.IsMainManager?1:0,userId);
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
