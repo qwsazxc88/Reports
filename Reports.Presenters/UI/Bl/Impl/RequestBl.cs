@@ -3940,6 +3940,7 @@ namespace Reports.Presenters.UI.Bl.Impl
        
         protected void ChangeEntityProperties(IUser current, Sicklist entity,SicklistEditModel model,User user)
         {
+            // Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
@@ -3949,6 +3950,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Sicklist, false);
             }
+
+            // Согласование руководителем
             if (current.UserRole == UserRole.Manager && user.Manager != null
                 && current.Id == user.Manager.Id
                 && !entity.ManagerDateAccept.HasValue)
@@ -3965,11 +3968,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Number, RequestTypeEnum.Sicklist, false);
                 }
             }
+
+            // Согласование кадровиком
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-            if ((current.UserRole == UserRole.PersonnelManager
-                && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
-                (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)) || current.UserRole == UserRole.OutsourcingManager)
-                )
+            // Для расчетчика, кадровика или аутсорсинга
+            if ((current.UserRole == UserRole.PersonnelManager && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
+                || (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null))
+                || current.UserRole == UserRole.OutsourcingManager))
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -8597,6 +8602,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.TrainTicketType = model.TrainTicketType;
             }
             
+            // Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -8611,9 +8617,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,false);
             }
+
             bool canEdit = false;
-            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit)) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
+
+            // Согласование руководителем
+            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
+                || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
             {
+                // Согласование за сотрудника при создании заявки руководителем за сотрудника
                 if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
                     entity.UserDateAccept = DateTime.Now;
