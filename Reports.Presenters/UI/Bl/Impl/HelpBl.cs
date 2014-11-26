@@ -860,6 +860,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public bool CheckUserRights(User current,UserRole currRole, HelpQuestionRequest entity)
         {
+            if ((current.Id == entity.User.Id && (entity.User.RoleId & (int)currRole) > 0) ||
+                (current.Id == entity.Creator.Id && (currRole == UserRole.Manager)))
+                return true;
             switch (currRole)
             {
                 case UserRole.Employee:
