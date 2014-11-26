@@ -32,6 +32,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public const string StrQuestionNoUser = "Не указан сотрудник";
         public const string StrQuestionRequestNotFound = "Не найдена заявка-вопрос  (id {0}) в базе данных";
+        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
+        public const string StrInvalidHelpRequestOwner = "Неверная роль владельца заявки (id {0}) {1} в базе даннных.";
+        public const string StrInvalidUserDepartment = "Не указано структурное подразделение для пользователя (id {0}) в базе даннных.";
         #region DAOs
         protected IHelpVersionDao helpVersionDao;
         public IHelpVersionDao HelpVersionDao
@@ -839,40 +842,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.SubtypeId = entity.Subtype.Id;
                 model.Question = entity.Question;
                 model.Answer = entity.Answer;
-                /*model.ProductionTimeTypeId = entity.ProductionTime.Id;
-                model.TransferMethodTypeId = entity.TransferMethod.Id;
-                model.PeriodId = entity.Period == null ? new int?() : entity.Period.Id;
-                model.Requirements = entity.Requirements;*/
-
                 SetStaticFields(model, entity);
-                /*model.Version = entity.Version;
-                model.DocumentNumber = entity.Number.ToString();
-                model.DateCreated = FormatDate(entity.CreateDate);
-                model.Creator = entity.Creator.FullName;
-                if (entity.ConsultantRoleId.HasValue)
-                {
-                    switch (entity.ConsultantRoleId)
-                    {
-                        case (int) UserRole.ConsultantOutsourcing:
-                            if (entity.ConsultantOutsourcing != null)
-                                model.Worker = entity.ConsultantOutsourcing.FullName;
-                            break;
-                        case (int) UserRole.ConsultantPersonnel:
-                            if (entity.ConsultantPersonnel != null)
-                                model.Worker = entity.ConsultantPersonnel.FullName;
-                            break;
-                        case (int) UserRole.ConsultantAccountant:
-                            if (entity.ConsultantAccountant != null)
-                                model.Worker = entity.ConsultantAccountant.FullName;
-                            break;
-                    }
-                }
-                if (entity.SendDate.HasValue)
-                    model.QuestionSendDate = entity.SendDate.Value.ToShortDateString();
-                if (entity.EndWorkDate.HasValue)
-                    model.WorkerEndDate = entity.EndWorkDate.Value.ToShortDateString();
-                if (entity.ConfirmWorkDate.HasValue)
-                    model.ConfirmDate = entity.ConfirmWorkDate.Value.ToShortDateString();*/
+            }
+            if (!CheckUserRights(currUser, current.UserRole, entity))
+            {
+                Log.ErrorFormat("GetHelpQuestionEditModel:CheckUserRights return false for user {0}, request {1}", current.Id, entity.Id);
+                throw new ArgumentException("Доступ запрещен.");
             }
             model.IsForQuestion = true;
             SetUserInfoModel(user, model);
@@ -883,6 +858,68 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetHiddenFields(model);
             return model;
         }
+        public bool CheckUserRights(User current,UserRole currRole, HelpQuestionRequest entity)
+        {
+            switch (currRole)
+            {
+                case UserRole.Employee:
+                    return entity.User.Id == current.Id;
+                case UserRole.Manager:
+                    if (entity.User.Department == null)
+                       throw new ArgumentException(string.Format(StrInvalidUserDepartment, entity.User.Id));
+                    if (current.Department == null)
+                       throw new ArgumentException(string.Format(StrInvalidUserDepartment, current.Id));
+                    switch (current.Level)
+                    {
+                        case 2:
+                        case 3:
+                            List<Department> deps = MissionOrderRoleRecordDao.LoadDepartmentsForUserId(current.Id);
+                            if ((entity.User.RoleId & (int)UserRole.Employee) > 0)
+                                return deps.Any(x => entity.User.Department.Path.Contains(x.Path));
+                            if ((entity.User.RoleId & (int)UserRole.Manager) > 0)
+                            {
+                                User owner = entity.User;
+                                if (owner.Level < current.Level || (owner.Level == current.Level &&
+                                    ((owner.IsMainManager && !current.IsMainManager) ||
+                                    (!owner.IsMainManager && !current.IsMainManager) ||
+                                    (owner.IsMainManager && current.IsMainManager))))
+                                    return false;
+                                return deps.Any(x => entity.User.Department.Path.Contains(x.Path));
+                            }
+                            throw new ArgumentException(string.Format(StrInvalidHelpRequestOwner, entity.User.Id,
+                                   entity.User.RoleId));
+                        case 4:
+                        case 5:
+                        case 6:
+                            if ((entity.User.RoleId & (int)UserRole.Employee) > 0)
+                                return entity.User.Department.Path.Contains(current.Department.Path);
+                            if ((entity.User.RoleId & (int)UserRole.Manager) > 0)
+                            {
+                                User owner = entity.User;
+                                if (owner.Level < current.Level || (owner.Level == current.Level &&
+                                    ((owner.IsMainManager && !current.IsMainManager) || 
+                                    (!owner.IsMainManager && !current.IsMainManager) ||
+                                    (owner.IsMainManager && current.IsMainManager))))
+                                    return false;
+                                return entity.User.Department.Path.Contains(current.Department.Path);
+                            }
+                            throw new ArgumentException(string.Format(StrInvalidHelpRequestOwner, entity.User.Id,
+                                    entity.User.RoleId));
+                        default:
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, current.Id,
+                                current.Level));
+
+                    }
+                case UserRole.ConsultantOutsourcing:
+                case UserRole.ConsultantPersonnel:
+                case UserRole.ConsultantAccountant:
+                case UserRole.OutsourcingManager:
+                case UserRole.Admin:
+                    return true;
+            }
+            return false;
+        }
+
         protected void SetStaticFields(HelpQuestionEditModel model, HelpQuestionRequest entity)
         {
             model.Version = entity.Version;
