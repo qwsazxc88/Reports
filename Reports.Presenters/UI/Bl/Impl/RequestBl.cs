@@ -8133,7 +8133,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                MissionOrderDao.RollbackTran();
+                MissionHotelDao.RollbackTran();
                 Log.Error("Error on SaveMissionOrderEditModel:", ex);
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
