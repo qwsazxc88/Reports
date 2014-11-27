@@ -71,8 +71,8 @@
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 } 
-                <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
-                </div> 
+                @*<div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
+                </div> *@
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
                 @if (UserDto.IsHelpServiceAvailable(dto))
@@ -83,7 +83,7 @@
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
                 }
-                else
+                else if (UserDto.IsHelpTemplateAvailable(dto))
                 {
                     <div id="liHelp" class="mainOn">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                 }
@@ -111,7 +111,7 @@
                 <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Реестр вопросов", "ServiceQuestionsList", "Help")</div> 
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
             }
-            else
+            else if (UserDto.IsHelpTemplateAvailable(dto))
             {
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
             }

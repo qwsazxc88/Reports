@@ -96,7 +96,7 @@
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
+                @*@if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
                 {
                 <div @if (Model.menuId == 3)
                      {<text>class="mainOn"</text>}
@@ -105,7 +105,7 @@
                      id="mainTemplate">
                         @Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>
-                }
+                }*@
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                
                 @if (UserDto.IsHelpServiceAvailable(dto))
@@ -116,7 +116,7 @@
                     {
                         <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
                     }
-                    else
+                    else if (UserDto.IsHelpTemplateAvailable(dto))
                     {
                         <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                     }

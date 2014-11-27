@@ -136,6 +136,10 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantAccountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0;
         }
+        public static bool IsHelpTemplateAvailable(IUser dto)
+        {
+            return (dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0;
+        }
         public static string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
             ILoginBl bl = Ioc.Resolve<ILoginBl>();

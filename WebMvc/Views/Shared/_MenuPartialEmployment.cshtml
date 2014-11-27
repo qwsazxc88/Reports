@@ -74,11 +74,11 @@
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
+               @* @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0)
                 {
                     <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                     </div> 
-                }
+                }*@
                 <div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
                 
@@ -90,7 +90,7 @@
                 {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
                 }
-                 else
+                 else if (UserDto.IsHelpTemplateAvailable(dto))
                  {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
                  }
