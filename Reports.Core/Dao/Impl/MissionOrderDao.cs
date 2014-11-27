@@ -17,12 +17,7 @@ namespace Reports.Core.Dao.Impl
             get { return Validate.Dependency(userDao); }
             set { userDao = value; }
         }
-
-        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
-
-        public const string sqlSelectForMissionOrderRn = @";with res as
-                                ({0})
-                                select {1} as Number,* from res order by Number ";
+                
         public override IQuery CreateQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).
@@ -57,6 +52,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("AirTicketType", NHibernateUtil.String).
                 AddScalar("TrainTicketType", NHibernateUtil.String);
         }
+
+        #region Constants
+        
+        public const string sqlSelectForMissionOrderRn = @";with res as
+                                ({0})
+                                select {1} as Number,* from res order by Number ";
+
         protected const string sqlSelectForMoList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -162,6 +164,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
+        #endregion
 
         public MissionOrderDao(ISessionManager sessionManager)
             : base(sessionManager)
@@ -194,8 +197,8 @@ namespace Reports.Core.Dao.Impl
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
             //
-            // whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            // whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            // whereString += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+            // whereString += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
@@ -204,22 +207,7 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(number))
                 query.SetString("number", number);
             IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
-            /*
-            sqlQuery = sqlSelectForMoList;
-            whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
-            whereString += String.Format(" and u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            whereString = GetStatusWhere(whereString, statusId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
-            whereString = GetDepartmentWhere(whereString, departmentId);
-            whereString = GetUserNameWhere(whereString, userName);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
-            query = CreateQuery(sqlQuery);
-            AddDatesToQuery(query, beginDate, endDate, userName);
-            foreach (var document in query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>())
-            {
-                documentList.Add(document);
-            }
-            */
+
             return documentList;
         }
 
@@ -331,13 +319,16 @@ namespace Reports.Core.Dao.Impl
                     if(currentUser == null)
                         throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
 
+                    // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав
                     string sqlQueryPartTemplate =
                         @" select distinct emp.Id from dbo.Users emp
-                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 and manU.IsActive = 1
-                                             inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
-                                             ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
-                                             inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
-                                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
+                             inner join dbo.Users manU
+                               on manU.Login = emp.Login+N'R' and manU.RoleId = 4 and manU.IsActive = 1
+                             inner join dbo.Department dManU
+                               on manU.DepartmentId = dManU.Id
+                               and ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
+                             inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
+                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
                     string sqlQueryPart = string.Empty;
                     string sqlFlag = string.Empty;
 
@@ -350,21 +341,27 @@ namespace Reports.Core.Dao.Impl
                             break;
                         case 3:
                         case 4:
-                            sqlQueryPartTemplate += @" union 
-                                select distinct emp.id from Users emp
-                                    inner join dbo.Department dept
-	                                    on emp.DepartmentId = dept.id
-                                where
-	                                (emp.RoleId & 2) > 0
-	                                and
-	                                emp.departmentid in
-		                                (select Department.id from Department where Department.Path like
-			                                (select department.path+'%' from department where id =
-				                                (select departmentid from users where id={2})
-			                                )
-		                                )
-                                    and
-                                    not (select Login from dbo.Users where Id={2}) = emp.Login + N'R'";
+                            // Выборка рядовых пользователей по ветке для применения автоматических прав
+                            sqlQueryPartTemplate +=
+                                @" union
+                                   select distinct emp.id from Users emp
+                                     inner join dbo.Department dept
+	                                   on emp.DepartmentId = dept.id
+                                   where
+	                                 (emp.RoleId & 2) > 0
+	                                 and
+	                                   emp.departmentid in
+		                               (
+	                                     select Department.id from Department where Department.Path like
+			                             (
+	                                       select department.path+'%' from department where id =
+				                           (
+	                                         select departmentid from users where id={2}
+				                           )
+				                         )
+		                               )
+	                                 and
+	                                   not (select Login from dbo.Users where Id={2}) = emp.Login + N'R'";
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                         and v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             if (currentUser.Level == 3)
@@ -378,14 +375,21 @@ namespace Reports.Core.Dao.Impl
                             break;
                         case 5:
                         case 6:
-                            sqlQueryPartTemplate += @" union 
-                             select distinct emp1.Id from dbo.Users emp1
-                             inner join dbo.Department dEmp1 on emp1.DepartmentId = dEmp1.Id 
-                             and  ((emp1.RoleId & 2) > 0) 
-                             inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
-                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}
-                             where not exists (select Id from dbo.Users empMan1 where
-                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R' and empMan1.IsActive = 1)";
+                            sqlQueryPartTemplate +=
+                                @" union 
+                                   select distinct emp1.Id from Users emp1
+                                     inner join dbo.Department dEmp1
+                                       on emp1.DepartmentId = dEmp1.Id 
+                                       and ((emp1.RoleId & 2) > 0) 
+                                     inner join dbo.Department dMan
+                                       on dEmp1.Path like dMan.Path+N'%'
+                                     inner join dbo.Users man
+                                       on man.DepartmentId = dMan.Id and man.Id = {2}
+                                   where not exists
+                                   (
+                                     select Id from dbo.Users empMan1
+                                     where empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R' and empMan1.IsActive = 1
+                                   )";
                             if (currentUser.Level == 5)
                             {
                                 sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);                                
@@ -406,28 +410,31 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
-                    // Ручные привязки человек-человек и человек-подразделение из MissionOrderRoleRecord
-                    sqlQueryPart += string.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-                    sqlQueryPart += string.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += string.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+                    sqlQueryPart += string.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     return sqlQueryPart;
                 case UserRole.Director:
-                        //User currUser = UserDao.Load(userId);
-                        //if(currUser == null)
-                        //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
-                        const string sqlFlagD = @"case when (
-                                            (v.UserDateAccept is not null 
-                                            and  v.ManagerDateAccept is not null 
-                                            and  v.[ChiefDateAccept] is null 
-                                            and  v.[NeedToAcceptByChief] = 1) 
-                                            or
-                                            (v.UserDateAccept is not null 
-                                             and  v.ManagerDateAccept is null 
-                                             and v.[NeedToAcceptByChiefAsManager] = 1)
-                                            )
-                                            then 1 else 0 end as Flag";
-                        sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
-                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
+                    const string sqlFlagD =
+                        @"case when
+                          (
+                            (
+                              v.UserDateAccept is not null 
+                              and  v.ManagerDateAccept is not null 
+                              and  v.[ChiefDateAccept] is null 
+                              and  v.[NeedToAcceptByChief] = 1
+                            ) 
+                            or
+                            (
+                              v.UserDateAccept is not null 
+                              and  v.ManagerDateAccept is null 
+                              and v.[NeedToAcceptByChiefAsManager] = 1
+                            )
+                          )
+                          then 1 else 0 end as Flag";
+                    sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
+                    return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
@@ -438,6 +445,7 @@ namespace Reports.Core.Dao.Impl
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
             }
         }
+
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
         {

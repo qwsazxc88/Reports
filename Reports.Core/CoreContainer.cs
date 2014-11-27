@@ -470,8 +470,8 @@ namespace Reports.Core
             Register(Component.For(typeof(IMilitaryRankDao)).
                 ImplementedBy(typeof(MilitaryRankDao)).
                 LifeStyle.Is(type));
-            Register(Component.For(typeof(IMissionOrderRoleRecordDao)).
-                  ImplementedBy(typeof(MissionOrderRoleRecordDao)).
+            Register(Component.For(typeof(IManualRoleRecordDao)).
+                  ImplementedBy(typeof(ManualRoleRecordDao)).
                   LifeStyle.Is(type));
 
             Register(Component.For(typeof(IMissionHotelsDao)).

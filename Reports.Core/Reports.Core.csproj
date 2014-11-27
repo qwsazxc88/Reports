@@ -100,7 +100,7 @@
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
     <Compile Include="Dao\IMissionHotelsDao.cs" />
-    <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
+    <Compile Include="Dao\IManualRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
@@ -164,7 +164,7 @@
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
-    <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
+    <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
@@ -452,8 +452,8 @@
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
-    <Compile Include="Domain\MissionOrderRole.cs" />
-    <Compile Include="Domain\MissionOrderRoleRecord.cs" />
+    <Compile Include="Domain\ManualRole.cs" />
+    <Compile Include="Domain\ManualRoleRecord.cs" />
     <Compile Include="Domain\Employment2\Country.cs" />
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
     <Compile Include="Domain\DocumentType.cs" />
@@ -842,12 +842,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRoleRecord.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRoleRecord.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRole.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

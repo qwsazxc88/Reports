@@ -20,7 +20,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class  RequestBl : BaseBl, IRequestBl
     {
-       
+        #region Constants
         protected string EmptyDepartmentName = string.Empty;
         protected string ChildVacationTimesheetStatusShortName = "ОЖ";
         protected string OKTMOFormatError = "Ошибка формата ОКТМО";
@@ -33,9 +33,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int DailyCostTypeId = 1;
 
         public const int LastValidDay = 5;
+        #endregion
 
         #region DAOs
-        
+
         protected IVacationTypeDao vacationTypeDao;
         protected IAdditionalVacationTypeDao additionalVacationTypeDao;
         protected IRequestStatusDao requestStatusDao;
@@ -8018,9 +8019,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",
                             CurrentUser.Id));
                     model.IsAddAvailable = ((currentUser.UserRole & UserRole.Manager) == UserRole.Manager) && currentUser.Level.HasValue && currentUser.Level >= 3;
-                    model.IsApproveAvailable = model.IsAddAvailable || (currentUser.MissionOrderRoleRecords
-                        .Where<MissionOrderRoleRecord>(morr => morr.Role.Id == 1)
-                        .FirstOrDefault<MissionOrderRoleRecord>() != null);
+                    model.IsApproveAvailable = model.IsAddAvailable || (currentUser.ManualRoleRecords
+                        .Where<ManualRoleRecord>(mrr => mrr.Role.Id == 1)
+                        .FirstOrDefault<ManualRoleRecord>() != null);
                     break;
                 case UserRole.Director:
                     model.IsApproveAvailable = true;
@@ -8618,9 +8619,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,false);
             }
 
-            bool canEdit = false;
-
             // Согласование руководителем
+            
+            bool canEdit = false;
+                        
             if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
                 || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
             {
@@ -9341,11 +9343,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
             // Get the number of role records that allow the authenticated user to approve the current mission order
-            int relevantRoleRecordsCount = currentUser.MissionOrderRoleRecords
-                .Where<MissionOrderRoleRecord>(roleRecord =>
+            int relevantRoleRecordsCount = currentUser.ManualRoleRecords
+                .Where<ManualRoleRecord>(roleRecord =>
                     roleRecord.Role.Id == 1 &&
                     (roleRecord.TargetUser == user || roleRecord.TargetDepartment == user.Department))
-                .ToList<MissionOrderRoleRecord>()
+                .ToList<ManualRoleRecord>()
                 .Count;
             // If any roles satisfying the conditions have been found
             canEdit = (relevantRoleRecordsCount > 0) ? true : false;

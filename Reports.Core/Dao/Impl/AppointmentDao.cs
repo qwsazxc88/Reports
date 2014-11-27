@@ -410,8 +410,8 @@ namespace Reports.Core.Dao.Impl
                                 @" exists 
                                 ( 
                                     select uC.Id from dbo.Users uC
-                                    inner join  dbo.MissionOrderRoleRecord morr on  (morr.UserId = uC.[Id] and morr.TargetDepartmentId > 0)
-                                    inner join dbo.Department dc on dc.Id = morr.TargetDepartmentId
+                                    inner join  dbo.ManualRoleRecord mrr on  (mrr.UserId = uC.[Id] and mrr.TargetDepartmentId > 0)
+                                    inner join dbo.Department dc on dc.Id = mrr.TargetDepartmentId
                                     where uC.Id = {0}
                                     and crDep.Path like dC.Path + N'%' and dc.ItemLevel < crDep.ItemLevel
                                 )", currentUser.Id);
