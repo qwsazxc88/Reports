@@ -101,9 +101,13 @@
     }
     function SaveQuestion()
     {
-        var url='@Url.Action("SaveQuestion", "Help")'+'?id='+ $("#Id").val() 
-                +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
+        var url='@Url.Action("SaveQuestion", "Help")';//+'?id='+ $("#Id").val() +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
         var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    question:$("#Question").val(),
+                    answer:$("#Answer").val()
+                },
                 function (jsonResult) {
                                             if (!this.JSON) {
                                                     this.JSON = {};

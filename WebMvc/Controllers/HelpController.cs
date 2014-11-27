@@ -428,31 +428,25 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        public ContentResult SaveQuestion(int id, string question, string answer)
+        public ContentResult SaveQuestion(/*int id, string question, string answer*/HelpSaveFaqModel model)
         {
             bool saveResult = false;
             string error = string.Empty;
             try
             {
-                if (string.IsNullOrEmpty(question.Trim()))
+                if (string.IsNullOrEmpty(model.Question.Trim()))
                     error = StrQuestionIsRequired;
-                else if (question.Trim().Length > MaxQuestionLength)
+                else if (model.Question.Trim().Length > MaxQuestionLength)
                     error = string.Format(StrQuestionLengthError, MaxQuestionLength);
 
-                if (string.IsNullOrEmpty(answer.Trim()))
+                if (string.IsNullOrEmpty(model.Answer.Trim()))
                     error = StrAnswerIsRequired;
-                else if (answer.Trim().Length > MaxAnswerLength)
+                else if (model.Answer.Trim().Length > MaxAnswerLength)
                     error = string.Format(StrAnswerLengthError, MaxAnswerLength);
 
                 
                 if (string.IsNullOrEmpty(error))
                 {
-                    HelpSaveFaqModel model = new HelpSaveFaqModel
-                    {
-                        Question = question.Trim(),
-                        Answer = answer.Trim(),
-                        Id = id,
-                    };
                     saveResult = HelpBl.SaveFaq(model);
                     if (!saveResult)
                         error = model.Error;
