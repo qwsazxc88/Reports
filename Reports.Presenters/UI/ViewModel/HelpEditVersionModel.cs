@@ -23,6 +23,13 @@ namespace Reports.Presenters.UI.ViewModel
         public string Comment { get; set; }
         public string Error { get; set; }
     }
+    public class HelpSaveVersionModelFromView
+    {
+        public int Id { get; set; }
+        public string ReleaseDate { get; set; }
+        public string Comment { get; set; }
+        public string Error { get; set; }
+    }
     public class HelpEditFaqModel
     {
         public int Id { get; set; }

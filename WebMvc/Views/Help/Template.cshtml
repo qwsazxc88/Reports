@@ -213,9 +213,12 @@ function clearFaqErrors() {
      function SaveTemplateName()
     {
         clearTemplateErrors();
-        var url='@Url.Action("SaveTemplateName", "Help")'+'?id='+ $("#Id").val() 
-                +'&name='+escapeJson($("#Name").val());
+        var url='@Url.Action("SaveTemplateName", "Help")';//+'?id='+ $("#Id").val() +'&name='+escapeJson($("#Name").val());
         var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    name:$("#Name").val()
+                },
                 function (jsonResult) {
                                             if (!this.JSON) {
                                                     this.JSON = {};

@@ -329,28 +329,28 @@ namespace WebMvc.Controllers
         }
 
         [HttpPost]
-        public ContentResult SaveVersion(int id, string comment, string releaseDate)
+        public ContentResult SaveVersion(HelpSaveVersionModelFromView vModel)
         {
             bool saveResult = false;
             string error = string.Empty;
             DateTime dtReleaseDate = DateTime.Today;
             try
             {
-                if (string.IsNullOrEmpty(comment.Trim()))
+                if (string.IsNullOrEmpty(vModel.Comment.Trim()))
                     error = StrCommentIsRequired;
-                else if (comment.Trim().Length > MaxVersionLength)
+                else if (vModel.Comment.Trim().Length > MaxVersionLength)
                     error = string.Format(StrCommentLengthError, MaxCommentLength);
-                
-                if (string.IsNullOrEmpty(releaseDate.Trim()))
+
+                if (string.IsNullOrEmpty(vModel.ReleaseDate.Trim()))
                     error = StrReleaseDateIsRequired;
-                else if (!DateTime.TryParse(releaseDate,out dtReleaseDate))
+                else if (!DateTime.TryParse(vModel.ReleaseDate, out dtReleaseDate))
                     error = StrReleaseDateIsInvalid;
                 if(string.IsNullOrEmpty(error))
                 {
                     HelpSaveVersionModel model = new HelpSaveVersionModel
                                                      {
-                                                         Comment = comment.Trim(),
-                                                         Id = id,
+                                                         Comment = vModel.Comment.Trim(),
+                                                         Id = vModel.Id,
                                                          ReleaseDate = dtReleaseDate,
                                                      };
                     saveResult = HelpBl.SaveVersion(model);
@@ -578,25 +578,25 @@ namespace WebMvc.Controllers
             return Content(jsonString);
         }
         [HttpPost]
-        public ContentResult SaveTemplateName(int id, string name)
+        public ContentResult SaveTemplateName(SaveAttacmentModelFromView vModel)
         {
             bool saveResult;
             string error;
             try
             {
                 saveResult = true;
-                if (name == null || string.IsNullOrEmpty(name.Trim()))
+                if (vModel.Name == null || string.IsNullOrEmpty(vModel.Name.Trim()))
                     error = StrNameIsRequired;
-                else if (name.Trim().Length > MaxTemplateNameLength)
+                else if (vModel.Name.Trim().Length > MaxTemplateNameLength)
                     error = string.Format(StrNameIsTooLong, MaxCommentLength);
                 else
                 {
                     var model = new SaveAttacmentModel
                     {
                         EntityId = 0,
-                        Id = id,
+                        Id = vModel.Id,
                         EntityTypeId = RequestAttachmentTypeEnum.HelpTemplate,
-                        Description = name.Trim(),
+                        Description = vModel.Name.Trim(),
                     };
                     saveResult = HelpBl.SaveTemplateName(model);
                     error = model.Error;

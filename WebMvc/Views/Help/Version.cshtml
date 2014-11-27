@@ -112,9 +112,13 @@
     }
     function SaveVersion()
     {
-        var url='@Url.Action("SaveVersion", "Help")'+'?id='+ $("#Id").val() 
-                +'&comment='+escapeJson($("#Comment").val())+'&releaseDate='+$("#ReleaseDate").val() ;
+        var url='@Url.Action("SaveVersion", "Help")';//+'?id='+ $("#Id").val() +'&comment='+escapeJson($("#Comment").val())+'&releaseDate='+$("#ReleaseDate").val() ;
         var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    comment:$("#Comment").val(),
+                    releaseDate:$("#ReleaseDate").val()
+                },
                 function (jsonResult) {
                                             if (!this.JSON) {
                                                     this.JSON = {};
