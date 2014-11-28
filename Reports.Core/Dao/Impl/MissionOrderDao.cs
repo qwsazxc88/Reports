@@ -6,6 +6,7 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
+using System.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -33,6 +34,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("IsRecalculated", NHibernateUtil.Boolean).
                 AddScalar("AdditionalOrderId", NHibernateUtil.Int32).
                 AddScalar("AdditionalOrderNumber", NHibernateUtil.String).
                 AddScalar("AdditionalOrderEditDate", NHibernateUtil.DateTime).
@@ -65,6 +67,7 @@ namespace Reports.Core.Dao.Impl
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
                                 v.EditDate as EditDate,
+                                v.IsRecalculated as IsRecalculated,
                                 ao.Id as AdditionalOrderId,
                                 case when ao.Id is null then null 
                                      else cast(ao.Number as nvarchar(10))+N'-изм' end as AdditionalOrderNumber,
@@ -204,6 +207,7 @@ namespace Reports.Core.Dao.Impl
             if (!string.IsNullOrEmpty(number))
                 query.SetString("number", number);
             IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
+            #region Deleted
             /*
             sqlQuery = sqlSelectForMoList;
             whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
@@ -220,6 +224,7 @@ namespace Reports.Core.Dao.Impl
                 documentList.Add(document);
             }
             */
+            #endregion
             return documentList;
         }
 
@@ -431,6 +436,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
+                case UserRole.PersonnelManager:
                 case UserRole.Findep:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;

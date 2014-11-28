@@ -6,10 +6,11 @@
     <version name="Version" column= "Version"/>
     <property name="CreateDate" not-null="true"/>
 	<property name="EditDate" not-null="true"/>
-    <property name="BeginDate" not-null="false"/>
-    <property name="EndDate" not-null="false"/>
-    <property name="Number"  not-null="true"/>
-    <property name="IsAdditional"  not-null="false"/>
+  <property name="BeginDate" not-null="false"/>
+  <property name="EndDate" not-null="false"/>
+  <property name="Number"  not-null="true"/>
+  <property name="IsAdditional"  not-null="false"/>
+  <property name="IsRecalculated" not-null="false"/>
 	  
 	<many-to-one name="Type" class="MissionType" column="TypeId" foreign-key="FK_MissionOrder_MissionType" index="MissionOrder_MissionType"  not-null="false"/>
 	<property name="Kind"  not-null="true"/>
@@ -66,5 +67,6 @@
 		<key column="MissionOrderId" foreign-key="FK_MissionOrderComment_MissionOrder"/>
 		<one-to-many class="MissionOrderComment"/>
 	  </bag>
-	</class>
+    
+  </class>
 </hibernate-mapping>

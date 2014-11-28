@@ -41,6 +41,8 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsApproveAvailable { get; set; }
         public bool IsApproveClick { get; set; }
         public bool IsCorrectionsOnlyModeAvailable { get; set; }
+        public bool IsRecalculationAvailable { get; set; }
+        public bool IsSaveIsRecalculatedClick { get; set; }
 
         public IList<MissionOrderDto> Documents { get; set; }
     

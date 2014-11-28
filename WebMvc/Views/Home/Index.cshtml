@@ -8,6 +8,7 @@
 }
 @using Reports.Presenters.Services.Impl
 @using Reports.Core
+@using System.Configuration
 @using (Html.BeginForm())
 {
     if (Request.IsAuthenticated)
@@ -76,6 +77,7 @@
                      || (dto.UserRole & UserRole.Secretary) > 0
                      || (dto.UserRole & UserRole.Findep) > 0
                      || (dto.UserRole & UserRole.Archivist) > 0
+                     || (dto.UserRole & UserRole.PersonnelManager) > 0 && dto.Id.ToString() == ConfigurationManager.AppSettings["SuperPersonnelId"]
                     )
                 {
                     if ((dto.UserRole & UserRole.Archivist) > 0)
