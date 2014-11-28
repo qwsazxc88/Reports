@@ -178,8 +178,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { scheduleDao = value; }
         }
 
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        protected IManualRoleRecordDao missionOrderRoleRecordDao;
+        public IManualRoleRecordDao MissionOrderRoleRecordDao
         {
             get { return Validate.Dependency(missionOrderRoleRecordDao); }
             set { missionOrderRoleRecordDao = value; }
