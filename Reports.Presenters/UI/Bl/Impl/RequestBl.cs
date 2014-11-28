@@ -5356,7 +5356,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.Manager:
-                    if (user.Manager != null && user.Manager.Id != current.Id)
+
+                    bool canEdit = false;
+
+                    if (!IsCurrentManagerForUser(user, current, out canEdit) && !HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
                     {
                         Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1} user.Manager.Id {2}", user.Id, current.Id, user.Manager.Id);
                         return false;
