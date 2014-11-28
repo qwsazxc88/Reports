@@ -390,7 +390,7 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
                     // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
                     sqlQueryPart += string.Format(@"
-                        or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+                        or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
                     sqlQueryPart += string.Format(@"
                         or u.DepartmentId in
                         (

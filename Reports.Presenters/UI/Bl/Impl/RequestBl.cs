@@ -2104,6 +2104,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsApprovedForAll = state;
             model.IsApprovedForAllEnable = state;
         }
+        
         public bool SaveDismissalEditModel(DismissalEditModel model, IDictionary<RequestAttachmentTypeEnum, UploadFileDto> fileDtos, out string error)
         {
             error = string.Empty;
@@ -2118,7 +2119,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Dismissal dismissal;
+
                 if (model.Id == 0)
+                #region Сохранение нового увольнения
                 {
                     dismissal = new Dismissal
                     {
@@ -2130,11 +2133,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ChangeEntityProperties(current, dismissal, model, user);
                     DismissalDao.SaveAndFlush(dismissal);
                     model.Id = dismissal.Id;
-                    //
-                }
+                } 
+                #endregion
                 else
-                {                    
+                #region Сохранение существующего увольнения
+                {
                     dismissal = DismissalDao.Load(model.Id);
+
+                    #region Сканы
                     string fileName;
                     int? attachmentId = SaveAttachment(dismissal.Id,
                         model.AttachmentId,
@@ -2246,7 +2252,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.WorkbookRequestScanAttachmentId = workbookRequestScanAttachmentId.Value;
                         model.WorkbookRequestScanAttachment = fileName;
                     }
-                    // ---------------------------------------
+                    // --------------------------------------- 
+                    #endregion
 
                     if (dismissal.Version != model.Version)
                     {
@@ -2255,7 +2262,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         return false;
                     }
                     if (model.IsDelete)
+                    #region Отклонение увольнения
                     {
+                        #region Удаление сканов
                         if (model.AttachmentId > 0)
                             RequestAttachmentDao.Delete(model.AttachmentId);
                         // ----------------------------
@@ -2285,7 +2294,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         // ----------------------------
                         if (model.WorkbookRequestScanAttachmentId > 0)
                             RequestAttachmentDao.Delete(model.WorkbookRequestScanAttachmentId);
-                        // ----------------------------
+                        // ---------------------------- 
+
                         model.AttachmentId = 0;
                         model.Attachment = string.Empty;
                         model.OrderScanAttachmentId = 0;
@@ -2304,6 +2314,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.F2NDFLScanAttachment = string.Empty;
                         model.WorkbookRequestScanAttachmentId = 0;
                         model.WorkbookRequestScanAttachment = string.Empty;
+                        #endregion
 
                         if (current.UserRole == UserRole.OutsourcingManager)
                             dismissal.DeleteAfterSendTo1C = true;
@@ -2313,7 +2324,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.IsDelete = false;
                         SendEmailForUserRequest(dismissal.User, current, dismissal.Creator, true, dismissal.Id,
                             dismissal.Number, RequestTypeEnum.Dismissal, false);
-                    }
+                    } 
+                    #endregion
                     else
                     {
                         ChangeEntityProperties(current, dismissal, model, user);
@@ -2327,7 +2339,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (dismissal.DeleteDate.HasValue)
                         model.IsDeleted = true;
-                }
+                } 
+                #endregion
+
                 model.DocumentNumber = dismissal.Number.ToString();
                 model.Version = dismissal.Version;
                 //model.DaysCount = dismissal.DaysCount;
@@ -2367,16 +2381,22 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, Dismissal entity, DismissalEditModel model, User user)
         {
+            #region Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                && !entity.UserDateAccept.HasValue
-                && model.IsApproved)
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Dismissal, false);
-            }
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id)
+            } 
+            #endregion
+
+            #region Согласование руководителем
+            bool canEdit = false;
+
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                    || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
                 //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
@@ -2391,9 +2411,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
-            if (current.UserRole == UserRole.PersonnelManager 
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
-                )
+            #endregion
+
+            #region Согласование кадровиком
+            if (current.UserRole == UserRole.PersonnelManager
+                    && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                    )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -2404,7 +2427,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //entity.TimesheetStatus = TimesheetStatusDao.Load(model.StatusId);
                     entity.Compensation = string.IsNullOrEmpty(model.Compensation)
                                               ? new decimal?()
-                                              : (decimal) ((int) (decimal.Parse(model.Compensation)*100))/100;
+                                              : (decimal)((int)(decimal.Parse(model.Compensation) * 100)) / 100;
                     entity.Reduction = string.IsNullOrEmpty(model.Reduction)
                                              ? new decimal?()
                                              : (decimal)((int)(decimal.Parse(model.Reduction) * 100)) / 100;
@@ -2418,6 +2441,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
+            #endregion
+
             if (model.IsTypeEditable)
             {
 // ReSharper disable PossibleInvalidOperationException
@@ -2426,6 +2451,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 
             }
         }
+
         public void ReloadDictionariesToModel(DismissalEditModel model)
         {
             User user = UserDao.Load(model.UserId);
@@ -3838,7 +3864,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Sicklist sicklist;
+
                 if (model.Id == 0)
+                #region Сохранение нового БЛ
                 {
                     sicklist = new Sicklist
                     {
@@ -3851,12 +3879,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SicklistDao.SaveAndFlush(sicklist);
                     model.Id = sicklist.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующего БЛ
                 {
                     sicklist = SicklistDao.Load(model.Id);
                     string fileName;
-                    int? attachmentId = SaveAttachment(sicklist.Id,model.AttachmentId ,fileDto,RequestAttachmentTypeEnum.Sicklist,out fileName);
-                    if(attachmentId.HasValue)
+                    int? attachmentId = SaveAttachment(sicklist.Id, model.AttachmentId, fileDto, RequestAttachmentTypeEnum.Sicklist, out fileName);
+                    if (attachmentId.HasValue)
                     {
                         model.AttachmentId = attachmentId.Value;
                         model.Attachment = fileName;
@@ -3884,9 +3914,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
-                        ChangeEntityProperties(current,sicklist,model,user);
+                        ChangeEntityProperties(current, sicklist, model, user);
                         SicklistDao.SaveAndFlush(sicklist);
-                        if(sicklist.Version != model.Version)
+                        if (sicklist.Version != model.Version)
                         {
                             sicklist.CreateDate = DateTime.Now;
                             SicklistDao.SaveAndFlush(sicklist);
@@ -3894,7 +3924,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     if (sicklist.DeleteDate.HasValue)
                         model.IsDeleted = true;
-                }
+                } 
+                #endregion
+
                 model.DocumentNumber = sicklist.Number.ToString();
                 model.Version = sicklist.Version;
                 model.DaysCount = sicklist.DaysCount;
@@ -4631,17 +4663,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Absence absence;
+
                 if (model.Id == 0)
+                #region Сохранение новой неявки
                 {
                     absence = new Absence
-                    {   
+                    {
                         CreateDate = DateTime.Now,
                         Creator = UserDao.Load(current.Id),
-// ReSharper disable PossibleInvalidOperationException
+                        // ReSharper disable PossibleInvalidOperationException
                         BeginDate = model.BeginDate.Value,
                         EndDate = model.EndDate.Value,
-// ReSharper restore PossibleInvalidOperationException
-                        DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days+1,
+                        // ReSharper restore PossibleInvalidOperationException
+                        DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1,
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Absence),
                         //Status = RequestStatusDao.Load((int)RequestStatusEnum.NotApproved),
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
@@ -4659,8 +4693,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                     #endregion
 
-                    if (current.UserRole == UserRole.Manager && user.Manager != null
-                        && current.Id == user.Manager.Id)
+                    #region Согласование руководителем
+
+                    bool canEdit = false;
+
+                    if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                        || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
                     {
                         if (model.IsApprovedByUser && !absence.UserDateAccept.HasValue)
                             absence.UserDateAccept = DateTime.Now;
@@ -4672,6 +4710,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 absence.Number, RequestTypeEnum.Absence, false);
                         }
                     }
+                    #endregion
+
+                    #region Согласование кадровиком
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id*/
                         && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
@@ -4689,10 +4730,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
                             absence.ManagerDateAccept = DateTime.Now;
                     }
+                    #endregion
+
                     AbsenceDao.SaveAndFlush(absence);
                     model.Id = absence.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующей неявки
                 {
                     absence = AbsenceDao.Load(model.Id);
                     if (absence.Version != model.Version)
@@ -4716,31 +4761,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
+                        #region Согласование сотрудником
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                            && !absence.UserDateAccept.HasValue
-                            && model.IsApproved)
+                                            && !absence.UserDateAccept.HasValue
+                                            && model.IsApproved)
                         {
                             absence.UserDateAccept = DateTime.Now;
                             SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                 absence.Number, RequestTypeEnum.Absence, false);
                         }
-                        if (current.UserRole == UserRole.Manager && user.Manager != null
-                            && current.Id == user.Manager.Id
-                            && !absence.ManagerDateAccept.HasValue)
+                        #endregion
+
+                        #region Согласование руководителем
+                        bool canEdit = false;
+
+                        if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                                || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
                         {
-                            //absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if (model.IsApproved)
+                            if (!absence.ManagerDateAccept.HasValue && model.IsApproved)
                             {
                                 absence.ManagerDateAccept = DateTime.Now;
                                 SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                                     absence.Number, RequestTypeEnum.Absence, false);
                             }
                         }
+                        #endregion
+
+                        #region Согласование кадровиком
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                             && current.Id == user.PersonnelManager.Id*/
-                            && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
-                            && !absence.PersonnelManagerDateAccept.HasValue
-                            )
+                                            && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                                            && !absence.PersonnelManagerDateAccept.HasValue
+                                            )
                         {
                             absence.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                             if (model.IsApproved)
@@ -4752,12 +4804,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                             if (model.IsApprovedForAll && !absence.ManagerDateAccept.HasValue)
                                 absence.ManagerDateAccept = DateTime.Now;
                         }
+                        #endregion
+
                         if (model.IsAbsenceTypeEditable)
                         {
-// ReSharper disable PossibleInvalidOperationException
+                            // ReSharper disable PossibleInvalidOperationException
                             absence.BeginDate = model.BeginDate.Value;
                             absence.EndDate = model.EndDate.Value;
-// ReSharper restore PossibleInvalidOperationException
+                            // ReSharper restore PossibleInvalidOperationException
                             absence.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                             absence.Type = AbsenceTypeDao.Load(model.AbsenceTypeId);
                         }
@@ -4772,6 +4826,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (absence.DeleteDate.HasValue)
                         model.IsDeleted = true;
                 }
+                #endregion
+
                 model.DocumentNumber = absence.Number.ToString();
                 model.Version = absence.Version;
                 model.DaysCount = absence.DaysCount;
@@ -5033,26 +5089,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Vacation vacation;
-                if(model.Id == 0)
+                
+                if (model.Id == 0)
+                #region Сохранение нового отпуска
                 {
                     vacation = new Vacation
-                                            {
+                    {
 // ReSharper disable PossibleInvalidOperationException
-                                                BeginDate = model.BeginDate.Value,
-                                                EndDate = model.EndDate.Value,
-                                                AdditionalVacationBeginDate = model.AdditionalVacationBeginDate,
+                        BeginDate = model.BeginDate.Value,
+                        EndDate = model.EndDate.Value,
+                        AdditionalVacationBeginDate = model.AdditionalVacationBeginDate,
 // ReSharper restore PossibleInvalidOperationException
-                                                CreateDate = DateTime.Now,
-                                                Creator = UserDao.Load(current.Id),
-                                                DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1,
-                                                AdditionalVacationDaysCount = model.AdditionalVacationBeginDate.HasValue ? model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1 : 0,
-                                                Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
-                                                //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
-                                                Type = VacationTypeDao.Load(model.VacationTypeId),
-                                                AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? additionalVacationTypeDao.Get(model.AdditionalVacationTypeId) : null,
-                                                User = user,
-                                                //UserFullNameForPrint = user.FullName, 
-                                             };
+                        CreateDate = DateTime.Now,
+                        Creator = UserDao.Load(current.Id),
+                        DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1,
+                        AdditionalVacationDaysCount = model.AdditionalVacationBeginDate.HasValue ? model.EndDate.Value.Subtract(model.AdditionalVacationBeginDate.Value).Days + 1 : 0,
+                        Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.Vacation),
+                        //Status = RequestStatusDao.Load((int) RequestStatusEnum.NotApproved),
+                        Type = VacationTypeDao.Load(model.VacationTypeId),
+                        AdditionalVacationType = IsAdditionalVacationTypeNecessary(model) ? additionalVacationTypeDao.Get(model.AdditionalVacationTypeId) : null,
+                        User = user,
+                        //UserFullNameForPrint = user.FullName, 
+                    };
+
+                    #region Согласование сотрудником
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                         && model.IsApproved && !vacation.UserDateAccept.HasValue)
                     {
@@ -5060,8 +5120,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                             vacation.Number, RequestTypeEnum.Vacation, false);
                     }
-                    if (current.UserRole == UserRole.Manager && user.Manager != null
-                        && current.Id == user.Manager.Id)
+                    #endregion
+
+                    #region Согласовано руководителем
+                    bool canEdit = false;
+
+                    if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                            || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
                     {
                         //vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
@@ -5073,10 +5138,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 vacation.Number, RequestTypeEnum.Vacation, false);
                         }
                     }
+                    #endregion
+
+                    #region Согласовано кадровиком
                     if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                         && current.Id == user.PersonnelManager.Id*/
-                        && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
-                        )
+                                    && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                                    )
                     {
                         vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
                         if (model.IsApprovedByUser && !vacation.UserDateAccept.HasValue)
@@ -5090,11 +5158,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (model.IsApprovedForAll && !vacation.ManagerDateAccept.HasValue)
                             vacation.ManagerDateAccept = DateTime.Now;
                     }
+                    #endregion
 
                     VacationDao.SaveAndFlush(vacation);
                     model.Id = vacation.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующего отпуска
                 {
                     vacation = VacationDao.Load(model.Id);
                     string fileName;
@@ -5155,6 +5226,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
+                        #region Согласование сотрудником
                         if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                             && !vacation.UserDateAccept.HasValue
                             && model.IsApproved)
@@ -5163,18 +5235,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                             SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
                                 vacation.Number, RequestTypeEnum.Vacation, false);
                         }
-                        if (current.UserRole == UserRole.Manager && user.Manager != null
-                            && current.Id == user.Manager.Id
-                            && !vacation.ManagerDateAccept.HasValue )
+                        #endregion
+
+                        #region Согласование руководителем
+                        bool canEdit = false;
+	
+	                    if (( current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user,current,out canEdit) )
+			                    || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
                         {
-                            //vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                            if (model.IsApproved)
+                            if (!vacation.ManagerDateAccept.HasValue )
                             {
-                                vacation.ManagerDateAccept = DateTime.Now;
-                                SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
-                                    vacation.Number, RequestTypeEnum.Vacation, false);
+                                //vacation.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
+                                if (model.IsApproved)
+                                {
+                                    vacation.ManagerDateAccept = DateTime.Now;
+                                    SendEmailForUserRequest(vacation.User, current, vacation.Creator, false, vacation.Id,
+                                        vacation.Number, RequestTypeEnum.Vacation, false);
+                                }
                             }
                         }
+                        #endregion
+
+                        #region Согласование кадровиком
                         if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                             && current.Id == user.PersonnelManager.Id*/
                             && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
@@ -5193,6 +5275,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 vacation.ManagerDateAccept = DateTime.Now;
 
                         }
+                        #endregion
+
                         if (model.IsVacationTypeEditable)
                         {
 // ReSharper disable PossibleInvalidOperationException
@@ -5217,6 +5301,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (vacation.DeleteDate.HasValue)
                         model.IsDeleted = true;
                 }
+                #endregion
+
                 model.DocumentNumber = vacation.Number.ToString();
                 model.Version = vacation.Version;
                 model.DaysCount = vacation.DaysCount;
@@ -5247,6 +5333,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DaysCountHidden = model.DaysCount;
             }
         }
+        
         public bool CheckUserRightsForEntity(User user, IUser current, ICheckForEntity model)
         {
             if (current.UserRole == UserRole.OutsourcingManager)
@@ -5932,7 +6019,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 ChildVacation childVacation;
+
                 if (model.Id == 0)
+                #region Сохранение нового ОУЗР
                 {
                     childVacation = new ChildVacation
                     {
@@ -5940,13 +6029,15 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Creator = UserDao.Load(current.Id),
                         Number = RequestNextNumberDao.GetNextNumberForType((int)RequestTypeEnum.ChildVacation),
                         User = user,
-                        TimesheetStatus = TimesheetStatusDao.GetStatusForShortName(ChildVacationTimesheetStatusShortName), 
+                        TimesheetStatus = TimesheetStatusDao.GetStatusForShortName(ChildVacationTimesheetStatusShortName),
                     };
                     ChangeEntityProperties(current, childVacation, model, user);
                     ChildVacationDao.SaveAndFlush(childVacation);
                     model.Id = childVacation.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующего ОУЗР
                 {
                     childVacation = ChildVacationDao.Load(model.Id);
                     string fileName;
@@ -6004,6 +6095,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (childVacation.DeleteDate.HasValue)
                         model.IsDeleted = true;
                 }
+                #endregion
+
                 model.DocumentNumber = childVacation.Number.ToString();
                 model.Version = childVacation.Version;
                 //model.DaysCount = childVacation.DaysCount;
@@ -6029,30 +6122,40 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, ChildVacation entity, ChildVacationEditModel model, User user)
         {
+            #region Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                && !entity.UserDateAccept.HasValue
-                && model.IsApproved)
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
                 //!!! need to send e-mail
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.ChildVacation, false);
-            }
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+            } 
+            #endregion
+
+            #region Согласование руководителем
+            bool canEdit = false;
+
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                    || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
-                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;
-                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApproved)
+                if (!entity.ManagerDateAccept.HasValue)
                 {
-                    entity.ManagerDateAccept = DateTime.Now;
-                    //!!! need to send e-mail
-                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                        entity.Number, RequestTypeEnum.ChildVacation, false);
+                    if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                        entity.UserDateAccept = DateTime.Now;
+                    if (model.IsApproved)
+                    {
+                        entity.ManagerDateAccept = DateTime.Now;
+                        //!!! need to send e-mail
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.ChildVacation, false);
+                    }
                 }
-            }
+            } 
+            #endregion
+
+            #region Согласование кадровиком
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             if (current.UserRole == UserRole.PersonnelManager
                 && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value) ||
@@ -6076,6 +6179,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
+            #endregion
+
             if (model.IsVacationDatesEditable)
             {
                 // ReSharper disable PossibleInvalidOperationException
@@ -6083,16 +6188,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.EndDate = model.EndDate.Value;
                 // ReSharper restore PossibleInvalidOperationException
             }
-            //if (model.IsTypeEditable)
-            //{
-            //    entity.Type = SicklistTypeDao.Load(model.TypeId);
-            //    if (model.TypeId == sicklistTypeDao.SicklistTypeIdBabyMinding)
-            //        entity.BabyMindingType = model.BabyMindingTypeId.HasValue
-            //            ? SicklistBabyMindingTypeDao.Load(model.BabyMindingTypeId.Value)
-            //            : null;
-            //    else
-            //        entity.BabyMindingType = null;
-            //}
         }
         protected void SetPersonnelDataFromModel(ChildVacation entity, ChildVacationEditModel model)
         {
