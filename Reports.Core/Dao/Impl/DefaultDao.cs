@@ -551,6 +551,8 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                     on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
+                                    -- Сотрудник неявляется руководителем
+                                    and not exists (select 1 from dbo.Users employeeManagerAccount where employeeManagerAccount.Login like employee.Login+'R')
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
