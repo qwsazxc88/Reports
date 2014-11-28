@@ -11,12 +11,6 @@ namespace Reports.Core.Dao.Impl
 {
     public class AppointmentDao : DefaultDao<Appointment>, IAppointmentDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
         protected IDepartmentDao departmentDao;
         public IDepartmentDao DepartmentDao
         {

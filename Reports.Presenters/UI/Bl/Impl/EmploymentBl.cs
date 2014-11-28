@@ -348,7 +348,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity, model.UserId);
                 }
             }
-            catch (Exception exc)
+            catch (Exception)
             {
 
             }

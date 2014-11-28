@@ -13,12 +13,6 @@ namespace Reports.Core.Dao.Impl
 {
     public class MissionReportDao : DefaultDao<MissionReport>, IMissionReportDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
         protected const string sqlSelectForMissionReportRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";

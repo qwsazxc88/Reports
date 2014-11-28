@@ -3941,7 +3941,8 @@ namespace Reports.Presenters.UI.Bl.Impl
        
         protected void ChangeEntityProperties(IUser current, Sicklist entity,SicklistEditModel model,User user)
         {
-            // Согласование сотрудником
+            #region Согласование сотрудником
+
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsApproved)
@@ -3952,25 +3953,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Number, RequestTypeEnum.Sicklist, false);
             }
 
-            // Согласование руководителем
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id
-                && !entity.ManagerDateAccept.HasValue)
+            #endregion
+
+            #region Согласование руководителем
+
+            bool canEdit = false;
+
+            if (( current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user,current,out canEdit) )
+		        || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
-                if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;
-                //entity.TimesheetStatus = TimesheetStatusDao.Load(model.TimesheetStatusId);
-                if (model.IsApproved)
+                if (!entity.ManagerDateAccept.HasValue)
                 {
-                    entity.ManagerDateAccept = DateTime.Now;
-                    entity.ApprovedByManager = UserDao.Load(current.Id);
-                    //!!! need to send e-mail
-                    SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
-                        entity.Number, RequestTypeEnum.Sicklist, false);
+                    if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
+                        entity.UserDateAccept = DateTime.Now;
+
+                    if (model.IsApproved)
+                    {
+                        entity.ManagerDateAccept = DateTime.Now;
+                        entity.ApprovedByManager = UserDao.Get(current.Id);
+                        SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                            entity.Number, RequestTypeEnum.Sicklist, false);
+                    }
                 }
             }
 
-            // Согласование кадровиком
+            #endregion
+
+            #region Согласование кадровиком
+
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
             // Для расчетчика, кадровика или аутсорсинга
             if ((current.UserRole == UserRole.PersonnelManager && ((superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
@@ -3999,7 +4009,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 }
             }
-            if(model.IsDatesEditable)
+
+            #endregion
+
+            #region Date edits
+
+            if (model.IsDatesEditable)
             {
                 // ReSharper disable PossibleInvalidOperationException
                 entity.IsContinued = model.IsContinued;
@@ -4009,6 +4024,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.DaysCount = model.EndDate.Value.Subtract(model.BeginDate.Value).Days + 1;
                 entity.SicklistNumber = model.SicklistNumber;
             }
+
+            #endregion
+
+            #region Type edits
+
             if (model.IsTypeEditable)
             {
                 entity.Type = SicklistTypeDao.Load(model.TypeId);
@@ -4019,6 +4039,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                     entity.BabyMindingType = null;
             }
+
+            #endregion
         }
         protected void SetPersonnelDataFromModel(Sicklist sicklist,SicklistEditModel model)
         {
@@ -4625,12 +4647,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Type = AbsenceTypeDao.Load(model.AbsenceTypeId),
                         User = user
                     };
+
+                    #region Согласование сотрудником
+
                     if (current.UserRole == UserRole.Employee && current.Id == model.UserId && model.IsApproved)
                     {
                         absence.UserDateAccept = DateTime.Now;
                         SendEmailForUserRequest(absence.User, current, absence.Creator, false, absence.Id,
                          absence.Number, RequestTypeEnum.Absence, false);
                     }
+
+                    #endregion
+
                     if (current.UserRole == UserRole.Manager && user.Manager != null
                         && current.Id == user.Manager.Id)
                     {
@@ -7078,7 +7106,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveConstantEditModel(ConstantEditModel model, out string error)
         {
             error = string.Empty;
-            User user = null;
             try
             {
                 int days;
@@ -8112,7 +8139,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveMissionHotelsEditModel(MissionHotelsEditModel model, out string error)
         {
             error = string.Empty;
-            User user = null;
             MissionHotels missionHotels = MissionHotelDao.Get(model.Id);
             try
             {
@@ -8196,7 +8222,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(entity.UserDateAccept.HasValue && !entity.ManagerDateAccept.HasValue)
                 {
                     bool canEdit;
-                    if ((IsUserManagerForEmployee(entity.User, CurrentUser, out canEdit) && canEdit) || CanUserApproveMissionOrderForEmployee(entity.User, CurrentUser, out canEdit))
+                    if ((IsCurrentManagerForUser(entity.User, CurrentUser, out canEdit) && canEdit) || HasCurrentManualRoleForUser(entity.User, CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit))
                     {
                         entity.ManagerDateAccept = DateTime.Now;
                         entity.AcceptManager = UserDao.Load(CurrentUser.Id);
@@ -8554,9 +8580,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SetHiddenFields(model);
             }
         }
+        
         protected void ChangeEntityProperties(IUser current, MissionOrder entity, MissionOrderEditModel model, User user)
         {
             bool isDirectorManager = IsDirectorManagerForEmployee(user, current);
+
+            #region Common props edits
+
             if (model.IsEditable)
             {
                 entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
@@ -8585,7 +8615,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsChiefApproveNeed = IsMissionOrderLong(entity);//entity.NeedToAcceptByChief;
                 SaveMissionTargets(entity, model.Targets);
             }
-            if(model.IsSecritaryEditable)
+
+            #endregion
+
+            #region Secretary edits
+
+            if (model.IsSecritaryEditable)
             {
                 if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
                     entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
@@ -8602,8 +8637,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.AirTicketType = model.AirTicketType;
                 entity.TrainTicketType = model.TrainTicketType;
             }
-            
-            // Согласование сотрудником
+
+            #endregion
+
+            #region Согласование сотрудником
+
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
                 && model.IsUserApproved)
@@ -8619,12 +8657,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     SendEmailForMissionOrder(CurrentUser, entity, UserRole.Manager,false);
             }
 
-            // Согласование руководителем
-            
+            #endregion
+
+            #region Согласование руководителем
+
             bool canEdit = false;
                         
-            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user,current,out canEdit))
-                || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user,current,out canEdit))
+                || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit))
             {
                 // Согласование за сотрудника при создании заявки руководителем за сотрудника
                 if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
@@ -8632,6 +8672,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.UserDateAccept = DateTime.Now;
                     entity.AcceptUser = UserDao.Load(current.Id);
                 }
+                
                 if (!entity.ManagerDateAccept.HasValue)
                 {
                     if (model.IsManagerApproved.HasValue)
@@ -8640,8 +8681,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             entity.ManagerDateAccept = DateTime.Now;
                             entity.AcceptManager = UserDao.Load(current.Id);
-                            /*if (entity.Creator.RoleId == (int) UserRole.Manager && !entity.UserDateAccept.HasValue)
-                                entity.UserDateAccept = DateTime.Now;*/
+
                             if (!entity.NeedToAcceptByChief)
                             {
                                 CreateMission(entity);
@@ -8661,10 +8701,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                 }
-                /*if ((entity.Creator.RoleId == (int)UserRole.Manager) && !entity.UserDateAccept.HasValue)
-                    entity.UserDateAccept = DateTime.Now;*/
             }
-            if(current.UserRole == UserRole.Director)
+
+            #endregion
+
+            #region Director edits
+
+            if (current.UserRole == UserRole.Director)
             {
                 if (isDirectorManager && !entity.ManagerDateAccept.HasValue)
                 {
@@ -8719,8 +8762,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }  
                 }
             }
-            
+
+            #endregion
+
         }
+        
         protected EmailDto SendEmailForMissionOrder(IUser current, MissionOrder entity, UserRole receiverRole,bool isAdditional)
         {
             //User currentUser = UserDao.Load(current.Id);
@@ -9071,7 +9117,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Manager:
                     //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit = false;
-                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
+                    bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit) || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (entity.Creator.RoleId == (int)UserRole.Manager)
                     {
                          if(!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
@@ -9202,7 +9248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
+                    bool isManager = IsCurrentManagerForUser(user, current, out canEdit) || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (isManager)
                     {
                         if (isSave)
@@ -9248,111 +9294,81 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="current">Authenticated user</param>
         /// <param name="canEdit">Result output</param>
         /// <returns>true/false for check success/failure</returns>
-        protected bool IsUserManagerForEmployee(User user, IUser current,out bool canEdit)
+        protected bool IsCurrentManagerForUser(User user, IUser current,out bool canEdit)
         {
             canEdit = false;
+
             User currentUser = UserDao.Load(current.Id);
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
-            User manager = UserDao.GetManagerForEmployee(user.Login);
+
+            // Руководительская учетная запись сотрудника, подчиненность которого текущему пользователю проверяется
+            User usersManagerAccount = UserDao.GetManagerForEmployee(user.Login);
+
             switch (currentUser.Level)
             {
-                case 2:
-                    if (manager != null)
-                    {
-                        if ((((manager.Level == 2) && !manager.IsMainManager) || (manager.Level == 3)) &&
-                            manager.Department.Path.StartsWith(currentUser.Department.Path))
-                        {
-                            canEdit = true;
-                            return true;
-                        }
-                    }
-                    else
-                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                    break;
-                case 3:
-                case 4:
-                case 6:
-                    /*
-                    if (manager != null)
-                    {
-                        if ((((manager.Level == 3) && !manager.IsMainManager) || (manager.Level == 4) ||
-                             (manager.Level == 5)) &&
-                            manager.Department.Path.StartsWith(currentUser.Department.Path))
-                        {
-                            canEdit = true;
-                            return true;
-                        }
-                    }
-                    else
-                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                    break;
-                     */
+                // Права руководителей уровней 2, 3 определяются только по ручной привязке
 
-                    if (user.Department.Path.StartsWith(currentUser.Department.Path))
-                    {
-                        canEdit = true;
-                        return true;
-                    }
-                    break;
+                // Руководителям уровней 4-6 подчинены их замы (кроме уровня 3), руководители нижележащих уровней и рядовыми сотрудниками
                 
-                    /*if (manager != null)
-                    {
-                        if ((((manager.Level == 4) && !manager.IsMainManager) || (manager.Level == 5)) &&
-                            manager.Department.Path.StartsWith(currentUser.Department.Path))
-                            return true;
-                    }
-                    else
-                        throw new ArgumentException(string.Format("Отсутствует руководитель для пользователя (Id {0})", user.Id));
-                    break;*/
+                case 4:
                 case 5:
-                    if (manager != null)
+                case 6:
+
+                    // Определение подчиненности руководителей
+                    if (usersManagerAccount != null)
                     {
-                        if ((((manager.Level == 5) && !manager.IsMainManager) || (manager.Level == 6)) &&
-                            manager.Department.Path.StartsWith(currentUser.Department.Path))
+                        // Если зам
+                        if (((usersManagerAccount.Level == currentUser.Level && !usersManagerAccount.IsMainManager)
+                            // или нижележащий руководитель
+                            || usersManagerAccount.Level > currentUser.Level)
+                            // в той же ветке
+                            && usersManagerAccount.Department.Path.StartsWith(currentUser.Department.Path))
                         {
                             canEdit = true;
                             return true;
                         }
                     }
-                    if (((user.RoleId & (int)UserRole.Employee) > 0) &&
-                         user.Department.Path.StartsWith(currentUser.Department.Path))
+
+                    // Определение подчиненности рядовых сотрудников
+                    else if ((user.RoleId & (int)UserRole.Employee) > 0
+                        && user.Department.Path.StartsWith(currentUser.Department.Path))
                     {
                         canEdit = true;
                         return true;
                     }
-                    break;                
-                    /*
-                    if (manager != null)
-                    {
-                        if ((((manager.Level == 6) && !manager.IsMainManager)) &&
-                            manager.Department.Path.StartsWith(currentUser.Department.Path))
-                            return true;
-                    }
-                    if (((user.RoleId & (int)UserRole.Employee) > 0) &&
-                        user.Department.Path.StartsWith(currentUser.Department.Path))
-                        return true;
+
                     break;
-                    */
+                default:
+                    canEdit = false;
+                    return false;
             }
             return false;
         }
-        protected bool CanUserApproveMissionOrderForEmployee(User user, IUser current, out bool canEdit)
+
+        protected bool HasCurrentManualRoleForUser(User user, IUser current, UserManualRole manualRole, out bool canEdit)
         {
             User currentUser = UserDao.Load(current.Id);
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
-            // Get the number of role records that allow the authenticated user to approve the current mission order
+
+            // Учетная запись сотрудника, подчиненность которого текущему пользователю проверяется
+            // Если сотрудник - руководитель, то используется его руководительская учетная запись
+            User targetUser = UserDao.GetManagerForEmployee(user.Login) ?? user;
+
+            // Получаем количество ручных привязок по данной роли
             int relevantRoleRecordsCount = currentUser.ManualRoleRecords
                 .Where<ManualRoleRecord>(roleRecord =>
-                    roleRecord.Role.Id == 1 &&
-                    (roleRecord.TargetUser == user || roleRecord.TargetDepartment == user.Department))
+                    roleRecord.Role.Id == (int)manualRole
+                    && (roleRecord.TargetUser == targetUser || targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)))
                 .ToList<ManualRoleRecord>()
                 .Count;
-            // If any roles satisfying the conditions have been found
+
+            // Если ручные привязки найдены
             canEdit = (relevantRoleRecordsCount > 0) ? true : false;
             return canEdit;
         }
+
         protected void LoadDictionaries(MissionOrderEditModel model)
         {
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);
@@ -9891,19 +9907,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetFlagsState(model, false);
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
-            //if (id == 0)
-            //{
-            //    model.IsSaveAvailable = true;
-            //    model.IsEditable = true;
-            //    if (currentUserRole == UserRole.Employee)
-            //        model.IsUserApprovedAvailable = true;
-            //    else if (currentUserRole == UserRole.Manager)
-            //    {
-            //        model.IsManagerApproveAvailable = true;
-            //        model.IsUserApproved = model.IsUserApprovedHidden = true;
-            //    }
-            //    return;
-            //}
+
             model.IsUserApproved = entity.UserDateAccept.HasValue;
             model.IsManagerApproved = entity.ManagerDateAccept.HasValue ? true : new bool?();
             model.IsChiefApproved = entity.ChiefDateAccept.HasValue ? true : new bool?();
@@ -9921,29 +9925,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     break;
                 case UserRole.Manager:
                     bool canEdit = false;
-                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) 
-                        || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
-                    //bool isUserManager = entity.MainOrder.AcceptManager.Id == AuthenticationService.CurrentUser.Id;
-                    //IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
-                    //canEdit = isUserManager;
-                    /*if (entity.Creator.RoleId == (int)UserRole.Manager)
-                    {
-                        if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue 
-                            && isUserManager && canEdit)
-                        {
-                            model.IsEditable = true;
-                            model.IsManagerApproveAvailable = true;
-                            if (entity.UserDateAccept.HasValue)
-                                model.IsUserApproved = true;
-                        }
-                    }
-                    else
-                    {*/
+                    bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit)
+                        || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
+
                         if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                             && entity.UserDateAccept.HasValue && isUserManager /*&& canEdit*/)
                             model.IsManagerApproveAvailable = true;
 
-                    //}
                     break;
                 case UserRole.OutsourcingManager:
                     /*if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue)
@@ -10126,60 +10114,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             if (model.IsEditable)
             {
-                //entity.BeginDate = DateTime.Parse(model.BeginMissionDate);
-                //entity.EndDate = DateTime.Parse(model.EndMissionDate);
-                //entity.Goal = MissionGoalDao.Load(model.GoalId);
-                //entity.Type = MissionTypeDao.Load(model.TypeId);
-                //entity.Kind = model.Kind;
-                //entity.UserAllSum = Decimal.Parse(model.UserAllSum);
-                //entity.UserSumDaily = GetSum(model.UserAllSumDaily);
-                //entity.UserSumResidence = GetSum(model.UserAllSumResidence);
-                //entity.UserSumAir = GetSum(model.UserAllSumAir);
-                //entity.UserSumTrain = GetSum(model.UserAllSumTrain);
-                //entity.AllSum = Decimal.Parse(model.AllSum);
-                //entity.SumDaily = Decimal.Parse(model.AllSumDaily);
-                //entity.SumResidence = Decimal.Parse(model.AllSumResidence);
-                //entity.SumAir = Decimal.Parse(model.AllSumAir);
-                //entity.SumTrain = Decimal.Parse(model.AllSumTrain);
-                //entity.UserSumCash = GetSum(model.UserSumCash);
-                //entity.UserSumNotCash = GetSum(model.UserSumNotCash);
                 entity.NeedToAcceptByChiefAsManager = entity.MainOrder.NeedToAcceptByChiefAsManager;
-              
-                //entity.IsResidencePaid = model.IsResidencePaid;
-                //entity.IsAirTicketsPaid = model.IsAirTicketsPaid;
-                //entity.IsTrainTicketsPaid = model.IsTrainTicketsPaid;
                
                 SaveMissionTargets(entity, model.Targets);
                 DateTime additionalBeginDate = entity.Targets.Min(x => x.BeginDate);
                 DateTime additionalEndDate = entity.Targets.Max(x => x.EndDate);
-                entity.BeginDate = additionalBeginDate/*additionalBeginDate > entity.MainOrder.BeginDate
-                                       ? entity.MainOrder.BeginDate
-                                       : additionalBeginDate*/;
-                entity.EndDate = additionalEndDate/*additionalEndDate > entity.MainOrder.EndDate
-                                     ? additionalEndDate
-                                     : entity.MainOrder.EndDate*/;
+                entity.BeginDate = additionalBeginDate;
+                entity.EndDate = additionalEndDate;
                 entity.NeedToAcceptByChief = IsAdditionalMissionOrderLong(entity);
-                model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);//entity.NeedToAcceptByChief;
+                model.IsChiefApproveNeed = IsAdditionalMissionOrderLong(entity);
             }
-            bool isDirectorManager = IsDirectorManagerForEmployee(user, current); /*&& (entity.MainOrder.AcceptManager.Id == current.Id)
-                && current.UserRole == UserRole.Director*/
-            //if (model.IsSecritaryEditable)
-            //{
-            //    if (entity.ResidenceRequestNumber != model.ResidenceRequestNumber ||
-            //        entity.AirTicketsRequestNumber != model.AirTicketsRequestNumber ||
-            //        entity.TrainTicketsRequestNumber != model.TrainTicketsRequestNumber ||
-            //        model.AirTicketType != entity.AirTicketType ||
-            //        model.TrainTicketType != entity.TrainTicketType)
-            //    {
-            //        entity.Secretary = UserDao.Load(current.Id);
-            //        model.SecretaryFio = entity.Secretary.FullName;
-            //    }
-            //    entity.ResidenceRequestNumber = string.IsNullOrEmpty(model.ResidenceRequestNumber) ? null : model.ResidenceRequestNumber;
-            //    entity.AirTicketsRequestNumber = string.IsNullOrEmpty(model.AirTicketsRequestNumber) ? null : model.AirTicketsRequestNumber;
-            //    entity.TrainTicketsRequestNumber = string.IsNullOrEmpty(model.TrainTicketsRequestNumber) ? null : model.TrainTicketsRequestNumber;
-            //    entity.AirTicketType = model.AirTicketType;
-            //    entity.TrainTicketType = model.TrainTicketType;
-            //}
+            bool isDirectorManager = IsDirectorManagerForEmployee(user, current); 
 
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
                 && !entity.UserDateAccept.HasValue
@@ -10197,8 +10142,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             bool canEdit = false;
             if ((current.UserRole == UserRole.Manager && /*entity.MainOrder.AcceptManager.Id == current.Id*/
-                IsUserManagerForEmployee(user, current, out canEdit)) 
-                || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
+                IsCurrentManagerForUser(user, current, out canEdit)) 
+                || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit))
             {
                 /*if (entity.Creator.RoleId == (int)UserRole.Manager && !entity.UserDateAccept.HasValue)
                 {
@@ -10604,21 +10549,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //}
                     break;
                 case UserRole.Manager:
-                    //User curUser = userDao.Load(AuthenticationService.CurrentUser.Id);
                     bool canEdit;
-                    bool isUserManager = IsUserManagerForEmployee(user, AuthenticationService.CurrentUser, out canEdit) || CanUserApproveMissionOrderForEmployee(user, AuthenticationService.CurrentUser, out canEdit);
-                    //if (entity.Creator.RoleId == (int)UserRole.Manager)
-                    //{
-                    //    if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue && isUserManager && canEdit)
-                    //    {
-                    //        model.IsEditable = true;
-                    //        model.IsManagerApprovedAvailable = true;
-                    //        if (entity.UserDateAccept.HasValue)
-                    //            model.IsUserApproved = true;
-                    //    }
-                    //}
-                    //else
-                    //{
+                    bool isUserManager = IsCurrentManagerForUser(user, AuthenticationService.CurrentUser, out canEdit) || HasCurrentManualRoleForUser(user, AuthenticationService.CurrentUser, UserManualRole.ApprovesMissionOrders, out canEdit);
+
                     if (!entity.ManagerDateAccept.HasValue && !entity.DeleteDate.HasValue
                         && entity.UserDateAccept.HasValue && isUserManager && canEdit)
                     {
@@ -10729,7 +10662,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return true;
                 case UserRole.Manager:
                     bool canEdit;
-                    bool isManager = IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit);
+                    bool isManager = IsCurrentManagerForUser(user, current, out canEdit) || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit);
                     if (isManager)
                     {
                         if (isSave)
@@ -10864,7 +10797,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             bool canEdit;
-            if ((current.UserRole == UserRole.Manager && IsUserManagerForEmployee(user, current, out canEdit) || CanUserApproveMissionOrderForEmployee(user, current, out canEdit))
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit) || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesMissionOrders, out canEdit))
                 && !entity.ManagerDateAccept.HasValue
                 && entity.UserDateAccept.HasValue)
             {

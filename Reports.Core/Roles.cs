@@ -23,6 +23,15 @@ namespace Reports.Core
         StaffManager = 4096,
         Archivist = 8192,
     }
+
+    public enum UserManualRole
+    {
+        // Согласует приказы на командировку
+        ApprovesMissionOrders = 1,
+        // Согласует табель
+        ApprovesCommonRequests = 2
+    }
+
     public class ReportRoleConstants
     {
         public const string Admin = "1";
