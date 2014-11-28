@@ -121,6 +121,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { appointmentReportCommentDao = value; }
         }
 
+        protected IManualRoleRecordDao manualRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
+        {
+            get { return Validate.Dependency(manualRoleRecordDao); }
+            set { manualRoleRecordDao = value; }
+        }
+
         protected IEmploymentCommonDao employmentCommonDao;
         public IEmploymentCommonDao EmploymentCommonDao
         {
@@ -129,12 +136,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         	
         }
 
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao        
-        {
-            get { return Validate.Dependency(missionOrderRoleRecordDao); }
-            set { missionOrderRoleRecordDao = value; }            
-        }
+        
 
         #endregion
         protected IConfigurationService configurationService;
@@ -452,7 +454,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 */
                 case 3:
                     // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
-                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                    return ManualRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
                         .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
                 case 4:
                 case 5:

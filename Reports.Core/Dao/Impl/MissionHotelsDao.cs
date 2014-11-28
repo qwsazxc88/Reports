@@ -11,13 +11,6 @@ namespace Reports.Core.Dao.Impl
 {
     public class MissionHotelsDao : DefaultDao<MissionHotels>, IMissionHotelsDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
-
         public MissionHotelsDao(ISessionManager sessionManager)
             : base(sessionManager)
         {

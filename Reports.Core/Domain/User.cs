@@ -145,7 +145,7 @@ namespace Reports.Core.Domain
         
         // Extended roles
         public virtual IList<ClearanceChecklistRoleRecord> ClearanceChecklistRoleRecords { get; set; }
-        public virtual IList<MissionOrderRoleRecord> MissionOrderRoleRecords { get; set; }
+        public virtual IList<ManualRoleRecord> ManualRoleRecords { get; set; }
 
         //public virtual bool IsUserResponser
         //{

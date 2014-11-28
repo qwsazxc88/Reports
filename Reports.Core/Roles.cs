@@ -26,6 +26,15 @@ namespace Reports.Core
         Security = 32768,
         Trainer = 65536
     }
+
+    public enum UserManualRole
+    {
+        // Согласует приказы на командировку
+        ApprovesMissionOrders = 1,
+        // Согласует табель
+        ApprovesCommonRequests = 2
+    }
+
     public class ReportRoleConstants
     {
         public const string Admin = "1";
