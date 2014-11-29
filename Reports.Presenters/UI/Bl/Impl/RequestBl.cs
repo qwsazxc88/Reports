@@ -3044,7 +3044,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Mission mission;
+
                 if (model.Id == 0)
+                #region Сохранение новой командировки
                 {
                     mission = new Mission
                     {
@@ -3057,7 +3059,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MissionDao.SaveAndFlush(mission);
                     model.Id = mission.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующей командировки
                 {
                     mission = MissionDao.Load(model.Id);
                     string fileName;
@@ -3105,6 +3109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (mission.DeleteDate.HasValue)
                         model.IsDeleted = true;
                 }
+                #endregion
                 model.DocumentNumber = mission.Number.ToString();
                 model.Version = mission.Version;
                 model.DaysCount = mission.DaysCount;
@@ -3148,16 +3153,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, Mission entity, MissionEditModel model, User user)
         {
+            #region Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                && !entity.UserDateAccept.HasValue
-                && model.IsApproved)
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Mission, false);
             }
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id)
+            #endregion
+            #region Согласование руководителем
+            bool canEdit = false;
+
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                    || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -3172,10 +3182,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+            #endregion
+            #region Согласование кадровиком
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                 && current.Id == user.PersonnelManager.Id*/
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
-                )
+                    && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                    )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -3193,6 +3205,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
+            #endregion
             if (model.IsTypeEditable)
             {
 // ReSharper disable PossibleInvalidOperationException
