@@ -9489,7 +9489,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             int relevantRoleRecordsCount = currentUser.ManualRoleRecords
                 .Where<ManualRoleRecord>(roleRecord =>
                     roleRecord.Role.Id == (int)manualRole
-                    && (roleRecord.TargetUser == targetUser || targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)))
+                    && (roleRecord.TargetUser == targetUser
+                        || (targetUser.Department != null && roleRecord.TargetDepartment != null && targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path))))
                 .ToList<ManualRoleRecord>()
                 .Count;
 
