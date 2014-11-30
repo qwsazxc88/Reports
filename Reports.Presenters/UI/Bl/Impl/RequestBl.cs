@@ -9451,7 +9451,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 // Права руководителей уровней 2, 3 определяются только по ручной привязке
 
-                // Руководителям уровней 4-6 подчинены их замы (кроме уровня 3), руководители нижележащих уровней и рядовыми сотрудниками
+                // Руководителям уровней 4-6 подчинены их замы, руководители нижележащих уровней и рядовые сотрудники
                 
                 case 4:
                 case 5:
@@ -9464,7 +9464,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (((usersManagerAccount.Level == currentUser.Level && !usersManagerAccount.IsMainManager)
                             // или нижележащий руководитель
                             || usersManagerAccount.Level > currentUser.Level)
-                            // в той же ветке
+
+                            && usersManagerAccount.Department != null
+                            // не в ветке руководства
+                            && !usersManagerAccount.Department.Path.StartsWith("9900424.9900426.9900427.")
+                            // в ветке текущего пользователя
                             && usersManagerAccount.Department.Path.StartsWith(currentUser.Department.Path))
                         {
                             canEdit = true;
