@@ -497,23 +497,23 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"(v.ChiefDateAccept is null  and v.NeedToAcceptByChief = 1) or
                                         (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) ";
                         break;
+                    // Требует моего одобрения
                     case 7:
+                        statusWhere = @"v.UserDateAccept is not null
+                                        and v.ManagerDateAccept is null
+                                        and v.NeedToAcceptByChiefAsManager = 0
+                                        and";
+                        break;
+                    case 8:
                         statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
                                         and v.NeedToAcceptByChiefAsManager = 0";
                         break;
-                    case 8:
+                    case 9:
                         statusWhere = @"v.UserDateAccept is not null and ((v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) 
                                         or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1)
                                         or (ao.ManagerDateAccept is not null and ao.ChiefDateAccept is null and ao.NeedToAcceptByChief = 1))";
                         break;
-                    //case 8:
-                    //    statusWhere =
-                    //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
-                    //    break;
-                    //case 10:
-                    //    statusWhere = @"[DeleteDate] is not null";
-                    //    break;
-                    case 9:
+                    case 10:
                         statusWhere = @"v.SendTo1C is not null";
                         break;
                     default:
