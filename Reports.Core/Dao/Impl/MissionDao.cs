@@ -94,7 +94,7 @@ namespace Reports.Core.Dao.Impl
                                bool? sortDescending
            )
         {
-            string whereString = GetWhereForUserRole(role, userId);
+            string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);

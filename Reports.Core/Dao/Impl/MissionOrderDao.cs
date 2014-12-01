@@ -358,6 +358,8 @@ namespace Reports.Core.Dao.Impl
                                  )
                              inner join dbo.Department managerManagerAccountDept
                                on managerManagerAccount.DepartmentId = managerManagerAccountDept.Id
+                                 -- Исключить состоящих в ветке руководства
+                                 and managerManagerAccountDept.Path not like N'9900424.9900426.9900427.%'
                                
                              -- по ветке
                              inner join dbo.Department higherDept
@@ -373,12 +375,12 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Users currentUser
 	                                  on currentUser.Id = {0}
                                     inner join dbo.Department employeeDept
-                                      on employee.DepartmentId = employeeDept.Id 
+                                      on employee.DepartmentId = employeeDept.Id
+                                        -- Исключить состоящих в ветке руководства
+                                        and employeeDept.Path not like N'9900424.9900426.9900427.%'
                                     inner join dbo.Department higherDept
                                       on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
-                                    -- Сотрудник неявляется руководителем
-                                    and not exists (select 1 from dbo.Users employeeManagerAccount where employeeManagerAccount.Login like employee.Login+'R')
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
@@ -404,7 +406,7 @@ namespace Reports.Core.Dao.Impl
                                     on targetDept.Id = mrr.TargetDepartmentId
                                 inner join [dbo].[Department] branchDept
                                     on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = {0} and mrr.RoleId = 1                             
+                            where mrr.UserId = {0} and mrr.RoleId = 1 and (u.RoleId & 2) > 0
                         )
                         ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);

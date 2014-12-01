@@ -3044,7 +3044,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
                 }
                 Mission mission;
+
                 if (model.Id == 0)
+                #region Сохранение новой командировки
                 {
                     mission = new Mission
                     {
@@ -3057,7 +3059,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     MissionDao.SaveAndFlush(mission);
                     model.Id = mission.Id;
                 }
+                #endregion
                 else
+                #region Сохранение существующей командировки
                 {
                     mission = MissionDao.Load(model.Id);
                     string fileName;
@@ -3105,6 +3109,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (mission.DeleteDate.HasValue)
                         model.IsDeleted = true;
                 }
+                #endregion
                 model.DocumentNumber = mission.Number.ToString();
                 model.Version = mission.Version;
                 model.DaysCount = mission.DaysCount;
@@ -3148,16 +3153,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void ChangeEntityProperties(IUser current, Mission entity, MissionEditModel model, User user)
         {
+            #region Согласование сотрудником
             if (current.UserRole == UserRole.Employee && current.Id == model.UserId
-                && !entity.UserDateAccept.HasValue
-                && model.IsApproved)
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
             {
                 entity.UserDateAccept = DateTime.Now;
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Mission, false);
             }
-            if (current.UserRole == UserRole.Manager && user.Manager != null
-                && current.Id == user.Manager.Id)
+            #endregion
+            #region Согласование руководителем
+            bool canEdit = false;
+
+            if ((current.UserRole == UserRole.Manager && IsCurrentManagerForUser(user, current, out canEdit))
+                    || HasCurrentManualRoleForUser(user, current, UserManualRole.ApprovesCommonRequests, out canEdit))
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -3172,10 +3182,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+            #endregion
+            #region Согласование кадровиком
             if (current.UserRole == UserRole.PersonnelManager /*&& user.PersonnelManager != null
                 && current.Id == user.PersonnelManager.Id*/
-                && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
-                )
+                    && (user.Personnels.Where(x => x.Id == current.Id).FirstOrDefault() != null)
+                    )
             {
                 if (model.IsApprovedByUser && !entity.UserDateAccept.HasValue)
                     entity.UserDateAccept = DateTime.Now;
@@ -3193,6 +3205,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.ManagerDateAccept = DateTime.Now;
                 }
             }
+            #endregion
             if (model.IsTypeEditable)
             {
 // ReSharper disable PossibleInvalidOperationException
@@ -8275,7 +8288,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             catch (Exception ex)
             {
-                MissionOrderDao.RollbackTran();
+                MissionHotelDao.RollbackTran();
                 Log.Error("Error on SaveMissionOrderEditModel:", ex);
                 error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
                 return false;
@@ -9439,7 +9452,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 // Права руководителей уровней 2, 3 определяются только по ручной привязке
 
-                // Руководителям уровней 4-6 подчинены их замы (кроме уровня 3), руководители нижележащих уровней и рядовыми сотрудниками
+                // Руководителям уровней 4-6 подчинены их замы, руководители нижележащих уровней и рядовые сотрудники
                 
                 case 4:
                 case 5:
@@ -9452,7 +9465,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (((usersManagerAccount.Level == currentUser.Level && !usersManagerAccount.IsMainManager)
                             // или нижележащий руководитель
                             || usersManagerAccount.Level > currentUser.Level)
-                            // в той же ветке
+
+                            && usersManagerAccount.Department != null
+                            // не в ветке руководства
+                            && !usersManagerAccount.Department.Path.StartsWith("9900424.9900426.9900427.")
+                            // в ветке текущего пользователя
                             && usersManagerAccount.Department.Path.StartsWith(currentUser.Department.Path))
                         {
                             canEdit = true;
@@ -9490,7 +9507,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             int relevantRoleRecordsCount = currentUser.ManualRoleRecords
                 .Where<ManualRoleRecord>(roleRecord =>
                     roleRecord.Role.Id == (int)manualRole
-                    && (roleRecord.TargetUser == targetUser || targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)))
+                    && (roleRecord.TargetUser == targetUser
+                        || (targetUser.Department != null && roleRecord.TargetDepartment != null && targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path))))
                 .ToList<ManualRoleRecord>()
                 .Count;
 
