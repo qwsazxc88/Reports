@@ -581,7 +581,7 @@ namespace Reports.Core.Dao.Impl
                                     on targetDept.Id = mrr.TargetDepartmentId
                                 inner join [dbo].[Department] branchDept
                                     on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = {0} and mrr.RoleId = 2                             
+                            where mrr.UserId = {0} and mrr.RoleId = 2 and (u.RoleId & 2) > 0                            
                         )
                         ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
