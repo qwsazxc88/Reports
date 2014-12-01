@@ -22,7 +22,7 @@ namespace WebMvc.Controllers
 {
     public class EmploymentController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected int RUSSIAN_FEDERATION = 643;        
         protected IEmploymentBl employmentBl;

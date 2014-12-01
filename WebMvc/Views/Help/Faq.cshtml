@@ -1,0 +1,160 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpFaqListModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Часто задаваемые вопросы";
+}
+
+@using (Html.BeginForm())
+{
+    <div id="QuestionsModelContext">@Html.Partial("FaqPartial", Model)</div>
+}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        setActiveMenuItem("helpFaq");
+    });
+@*</script>
+<script type="text/javascript">*@
+    function Render() {
+        var actionUrl="@Url.Action("RenderQuestions", "Help")";
+        var url = actionUrl + "?dummy=" + new Date().getTime();
+        $("#QuestionsModelContext").load(url);
+    }
+    function OnAddQuestion() {
+        createQuestionDialog(0);
+    }
+     function OnEditQuestion(id) {
+        createQuestionDialog(id);
+    }
+    function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить')").button("disable");
+    }
+    function createQuestionDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divQuestionDialog";
+        var newDiv = $(elem);
+//        var documentId = $("#RequestId").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Редактирование записи";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditQuestionDialog", "Help")?id=" + id  + " #QuestionDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditFaqLoadError').val() != undefined)
+                         disableSaveButton();
+//                     else
+//                     {
+//                        $("#ReleaseDate").datepicker();
+//                        $(".hasDatepicker").width("85px");
+//                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 620,
+	        height: 380,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateQuestion())
+                        return;
+                    SaveQuestion();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateQuestion()
+    {
+        var result = true;
+        clearDlgErrors($("#QuestionDialogTable"));
+        if(trimSpaces($("#Question").val()) == "")
+        {
+            addDlgError($("#Question"),"Вопрос - обязательное поле");
+            result = false;
+            //return false;
+        }
+        if(trimSpaces($("#Answer").val()) == "")
+        {
+            addDlgError($("#Answer"),"  Ответ - обязательное поле");
+            result = false;
+        }
+        return result;
+    }
+    function SaveQuestion()
+    {
+        var url='@Url.Action("SaveQuestion", "Help")';//+'?id='+ $("#Id").val() +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
+        var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    question:$("#Question").val(),
+                    answer:$("#Answer").val()
+                },
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addFaqError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addFaqError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearFaqErrors();
+                                                $("#divQuestionDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addFaqError(value) {
+    $("#FaqError").text(value);
+    $("#FaqError").show();
+    }
+function clearFaqErrors() {
+    $("#FaqError").text("");
+    $("#FaqError").hide();
+}
+ function OnDeleteQuestion(id){
+        var actionUrl="@Url.Action("DeleteQuestion", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#ListQuestionsError").text(result.Error);
+                                $("#ListQuestionsError").show(); 
+                            }
+                            else{
+                                $("#ListQuestionsError").text("");
+                                $("#ListQuestionsError").hide();                                 
+                           }
+                           Render();
+                       }
+                     );
+        return false;
+    }
+</script>

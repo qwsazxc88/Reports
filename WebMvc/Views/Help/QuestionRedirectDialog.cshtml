@@ -1,0 +1,21 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpQuestionRedirectModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "QuestionRedirectDialogTable" style="width:100%;height:100px">
+                <tr>
+                    <td colspan="2"><div id="QuestionRedirectError" style="color:Red;display:none;"/></td>
+                </tr>
+               <tr>
+                    <td>
+                        @Html.LabelFor(m => m.RoleId):
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(model => model.RoleId, new SelectList(Model.Roles, "ID", "Name"))
+                    </td>
+                </tr>
+    </table>
+</body>
+</html>

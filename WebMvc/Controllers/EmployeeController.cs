@@ -13,7 +13,7 @@ namespace WebMvc.Controllers
     [Authorize]
     public class EmployeeController : BaseController
     {
-        public const int MaxFileSize = 2*1024*1024;
+        //public const int MaxFileSize = 2*1024*1024;
         protected IEmployeeBl employeeBl;
         public IEmployeeBl EmployeeBl
         {
@@ -126,7 +126,7 @@ namespace WebMvc.Controllers
             }
         }
 
-        protected UploadFileDto GetFileContext()
+        /*protected UploadFileDto GetFileContext()
         {
             string file = Request.Files.GetKey(0);
             HttpPostedFileBase hpf = Request.Files[file];
@@ -151,7 +151,7 @@ namespace WebMvc.Controllers
             var fileContent = new byte[length];
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
-        }
+        }*/
         public FileContentResult ViewAttachment(int id)
         {
             try

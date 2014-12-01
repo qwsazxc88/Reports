@@ -26,7 +26,7 @@ namespace WebMvc.Controllers
     public class UserRequestController : BaseController
     {
         
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
@@ -1584,13 +1584,13 @@ namespace WebMvc.Controllers
                  return PartialView("DialogError", new DialogErrorModel { Error = error });
              }
          }
-         protected UploadFileDto GetFileContext()
+         /*protected UploadFileDto GetFileContext()
          {
              if (Request.Files.Count == 0)
                  return null;
              string file = Request.Files.GetKey(0);
              return GetFileContext(file);
-         }
+         }*/
          [HttpPost]
          public ContentResult SaveAttachment(int id, string description, string qqFile)
          {
@@ -1666,7 +1666,7 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
  
-         protected UploadFileDto GetFileContext(string file)
+         /*protected UploadFileDto GetFileContext(string file)
          {
              //if (Request.Files.Count == 0)
              //    return null;
@@ -1693,7 +1693,7 @@ namespace WebMvc.Controllers
              var fileContent = new byte[length];
              file.InputStream.Read(fileContent, 0, length);
              return fileContent;
-         }
+         }*/
            #endregion
 
          #region Print

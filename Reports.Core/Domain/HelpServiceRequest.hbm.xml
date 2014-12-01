@@ -1,0 +1,31 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="HelpServiceRequest">
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="CreateDate" not-null="true"/>
+	  <property name="EditDate" not-null="true"/>
+    <property name="SendDate" not-null="false"/>
+    <property name="BeginWorkDate" not-null="false"/>
+    <property name="EndWorkDate" not-null="false"/>
+    <property name="ConfirmWorkDate" not-null="false"/>
+    <property name="RejectWorkDate" not-null="false"/>
+    <property name="Number"  not-null="true"/>
+	  
+	<many-to-one name="Type" class="HelpServiceType" column="TypeId" foreign-key="FK_HelpServiceRequest_HelpServiceType" index="HelpServiceRequest_HelpServiceType"  not-null="true"/>
+  <many-to-one name="ProductionTime" class="HelpServiceProductionTime" column="ProductionTimeId" foreign-key="FK_HelpServiceRequest_HelpServiceProductionTime" index="HelpServiceRequest_HelpServiceProductionTime"  not-null="true"/>
+  <many-to-one name="TransferMethod" class="HelpServiceTransferMethod" column="TransferMethodId" foreign-key="FK_HelpServiceRequest_HelpServiceTransferMethod" index="HelpServiceRequest_HelpServiceTransferMethod"  not-null="true"/>
+  <many-to-one name="Period" class="HelpServicePeriod" column="PeriodId" foreign-key="FK_HelpServiceRequest_HelpServicePeriod" index="HelpServiceRequest_HelpServicePeriod"  not-null="false"/>
+	<property name="Requirements" length="256"  not-null="false"/>
+
+	<many-to-one name="User" class="User" column="UserId" foreign-key="FK_HelpServiceRequest_User" index="IX_HelpServiceRequest_User_Id"  not-null="true"/>
+	<many-to-one name="Creator" class="User" column="CreatorId" foreign-key="FK_HelpServiceRequest_CreatorUser" index="IX_HelpServiceRequest_CreatorUser_Id"  not-null="true"/>
+  <many-to-one name="Consultant" class="User" column="ConsultantId" foreign-key="FK_HelpServiceRequest_Consultant" index="IX_HelpServiceRequest_Consultant_Id"  not-null="false"/>
+   
+	<bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+	  <key column="HelpServiceRequestId" foreign-key="FK_HelpServiceRequestComment_HelpServiceRequest"/>
+	  <one-to-many class="HelpServiceRequestComment"/>
+	</bag>
+	</class>
+</hibernate-mapping>

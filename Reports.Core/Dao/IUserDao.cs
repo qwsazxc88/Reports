@@ -65,6 +65,7 @@ namespace Reports.Core.Dao
         IList<IdNameAddressDto> GetArchivistAddresses();
 
         IList<IdNameDto> GetManagersWithDepartments();
+        IList<IdNameDto> GetEmployeesForCreateHelpServiceRequest(List<int> departments);
     }
 }
 

@@ -1,0 +1,12 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+	<class name="HelpFaq">
+		<id name="Id">
+			<generator class="native" />
+		</id>
+		<!--<version name="Version" column= "Version"/>-->
+		<many-to-one name="User" class="User" column="UserId" foreign-key="FK_HelpFaq_User" index="IX_HelpFaq_User_Id"  not-null="true"/>
+		<property name="DateCreated" not-null="true"/>
+		<property name="Question" length="8192" not-null="true"/>
+    <property name="Answer" length="8192" not-null="true"/>
+	</class>
+</hibernate-mapping>

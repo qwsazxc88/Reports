@@ -25,7 +25,9 @@
         MissionReport = 12,
         Appointment = 13,
         AppointmentReport = 14,
-        ClearanceChecklist = 15
+        ClearanceChecklist = 15,
+        HelpServiceRequest = 16,
+        HelpQuestionRequest = 17,
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -45,6 +47,9 @@
         MissionReport = 6,
         AppointmentReport = 7,
         MissionReportCost = 8,
+        HelpTemplate = 9,
+        HelpServiceRequestTemplate = 10,
+        HelpServiceRequest = 11,
 
         // Order Scans
 

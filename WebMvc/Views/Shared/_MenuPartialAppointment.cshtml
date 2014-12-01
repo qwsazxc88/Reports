@@ -73,10 +73,22 @@
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
-                <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
-                </div> 
+               @* <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
+                </div> *@
                 <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
+                 @if (UserDto.IsHelpServiceAvailable(dto))
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")</div> 
+                 }
+                 else if (UserDto.IsHelpQuestionAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
+                }
+                 else if (UserDto.IsHelpTemplateAvailable(dto))
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
+                 }
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
                 @if ((dto.UserRole & UserRole.Manager) > 0
@@ -99,7 +111,6 @@
                       )
              {  
                 <div class="menuitem" id="appAllRequests">@Html.ActionLink("Реестр заявок", "Index", "Appointment")</div> 
-               @* <div class="menuitem" id="appAllReports">@Html.ActionLink("Отчет по подбору сотрудника", "Report", "Appointment")</div> *@
              }
                 <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
             </div> 

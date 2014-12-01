@@ -1,0 +1,34 @@
+﻿@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpFaqListModel
+<table id="QuestionsTable" style="width: 100%;">
+        <tr>
+            <td colspan="3">
+                <input type="button" value="Добавить запись" @if (!Model.IsAddAvailable) { <text>style = "display:none"</text>; } id="AddQuestion" onclick="OnAddQuestion();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="ListQuestionsError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Questions != null && Model.Questions.Count > 0)
+        {
+            foreach (var question in Model.Questions)
+            {
+                <tr>
+                    <td style="border:1px solid;border-bottom:1px solid darkgray;width:100%">@question.Question</td>
+                @if (Model.IsAddAvailable)
+                {
+                
+                    <td rowspan="2" style="border:1px solid;">
+                        <input type="button" value="Редактировать" id="EditQuestion" onclick="OnEditQuestion(@question.Id);"/>
+                        <input type="button" value="Удалить" id="DeleteQuestion" onclick="OnDeleteQuestion(@question.Id);"/>
+                    </td>
+                }
+                </tr>
+                <tr>
+                    <td style="border:1px solid;border-top:1px solid darkgray;">@question.Answer</td>
+                </tr>
+            }
+        }
+</table>
