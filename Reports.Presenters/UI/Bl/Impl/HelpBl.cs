@@ -96,11 +96,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(helpServiceRequestCommentDao); }
             set { helpServiceRequestCommentDao = value; }
         }
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        protected IManualRoleRecordDao manualRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
         {
-            get { return Validate.Dependency(missionOrderRoleRecordDao); }
-            set { missionOrderRoleRecordDao = value; }
+            get { return Validate.Dependency(manualRoleRecordDao); }
+            set { manualRoleRecordDao = value; }
         }
 
         protected IHelpQuestionTypeDao helpQuestionTypeDao;
@@ -210,7 +210,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case 2:
                 case 3:
-                    List<Department> depList =  MissionOrderRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                    IList<Department> depList =  ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
                     if(depList == null || depList.Count() == 0)
                             throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
                     list = UserDao.GetEmployeesForCreateHelpServiceRequest(depList.Select(x => x.Id).Distinct().ToList());
@@ -876,7 +876,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     {
                         case 2:
                         case 3:
-                            List<Department> deps = MissionOrderRoleRecordDao.LoadDepartmentsForUserId(current.Id);
+                            IList<Department> deps = ManualRoleRecordDao.LoadDepartmentsForUserId(current.Id);
                             if ((entity.User.RoleId & (int)UserRole.Employee) > 0)
                                 return deps.Any(x => entity.User.Department.Path.Contains(x.Path));
                             if ((entity.User.RoleId & (int)UserRole.Manager) > 0)

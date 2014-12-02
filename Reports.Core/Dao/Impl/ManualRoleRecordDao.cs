@@ -26,5 +26,13 @@ namespace Reports.Core.Dao.Impl
 
             return result;
         }
+
+        public virtual IList<Department> LoadDepartmentsForUserId(int userId)
+        {
+            return Session.Query<ManualRoleRecord>()
+                .Where(x => x.Role.Id == 1 && x.TargetDepartment != null && x.User.Id == userId)
+                .Select(x => x.TargetDepartment).Distinct()
+                .ToList();
+        }
     }
 }

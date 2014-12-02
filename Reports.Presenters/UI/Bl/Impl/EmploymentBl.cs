@@ -1272,7 +1272,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
                     SaveAttachments<TVM>(model);
             }
-            catch (Exception exc)
+            catch (Exception)
             {
 
             }

@@ -518,10 +518,6 @@ namespace Reports.Core
             Register(Component.For(typeof(IHelpServiceRequestCommentDao)).
                     ImplementedBy(typeof(HelpServiceRequestCommentDao)).
                     LifeStyle.Is(type));
-            Register(Component.For(typeof(IMissionOrderRoleRecordDao)).
-                   ImplementedBy(typeof(MissionOrderRoleRecordDao)).
-                   LifeStyle.Is(type));
-
             Register(Component.For(typeof(IHelpQuestionRequestDao)).
                   ImplementedBy(typeof(HelpQuestionRequestDao)).
                   LifeStyle.Is(type));
