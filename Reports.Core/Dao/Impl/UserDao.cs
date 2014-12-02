@@ -549,9 +549,99 @@ namespace Reports.Core.Dao.Impl
             switch (managerRole)
             {
                 case UserRole.Employee:
-                    throw new ArgumentException("Список сотрудников нелоступен для сотрудника.");
+                    throw new ArgumentException("Список сотрудников недоступен для сотрудника.");
                 case UserRole.Manager:
-                    sqlWhere += "u.ManagerId = :userId";
+                    string userSelectionSubquery = string.Empty;
+                    User currentUser = Get(managerId);
+                    if (currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", managerId));
+
+                    switch (currentUser.Level)
+                    {
+                        case 2:
+                        case 3:
+                            userSelectionSubquery = "-1";
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав уровней 4-6
+                            userSelectionSubquery = @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
+                                inner join dbo.Users currentUser
+                                    on currentUser.Id = :userId
+                                inner join dbo.Users managerManagerAccount
+                                    on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
+                                        and managerManagerAccount.RoleId = 4
+                                        and managerManagerAccount.IsActive = 1
+                                        and
+                                        (
+                                            (
+                                                -- Руководители нижележащих уровней
+                                                managerManagerAccount.Level > currentUser.Level
+                                            )
+                                            or
+                                            (
+                                                -- Замы для уровней 4-6
+                                                managerManagerAccount.Level = currentUser.Level and managerManagerAccount.IsMainManager = 0
+                                            )
+                                        )
+                                inner join dbo.Department managerManagerAccountDept
+                                    on managerManagerAccount.DepartmentId = managerManagerAccountDept.Id
+                                        -- Исключить состоящих в ветке руководства
+                                        and managerManagerAccountDept.Path not like N'9900424.9900426.9900427.%'
+                               
+                                -- по ветке
+                                inner join dbo.Department higherDept
+                                    on managerManagerAccountDept.Path like higherDept.Path+N'%'
+                                where currentUser.DepartmentId = higherDept.Id
+                                    -- Исключение своей учетной записи 7 уровня
+                                    and not currentUser.Login = managerEmployeeAccount.Login + N'R'
+                             
+                                union
+
+                                select distinct employee.Id from Users employee
+                                    inner join dbo.Users currentUser
+	                                    on currentUser.Id = :userId
+                                    inner join dbo.Department employeeDept
+                                        on employee.DepartmentId = employeeDept.Id
+                                        -- Исключить состоящих в ветке руководства
+                                        and employeeDept.Path not like N'9900424.9900426.9900427.%'
+                                    inner join dbo.Department higherDept
+                                        on employeeDept.Path like higherDept.Path+N'%'
+                                where (employee.RoleId & 2) > 0
+                                    and currentUser.DepartmentId = higherDept.Id
+                                    and not currentUser.Login = employee.Login + N'R'";
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, managerId, currentUser.Level));
+                    }
+
+                    sqlWhere = string.Format(@"{0}
+                        (
+                            ( u.Level>3 or u.Level IS NULL )
+                            and u.Id in
+                            (
+                                {1}
+                            )
+                        )", sqlWhere, userSelectionSubquery);
+                    sqlWhere = string.Format(@"{0}
+                        or u.Id in
+                        (
+                            select mrr.TargetUserId
+                            from [dbo].[ManualRoleRecord] mrr
+                            where mrr.UserId = :userId and mrr.RoleId = 2 and mrr.TargetUserId is not null
+                        )
+                        or u.DepartmentId in
+                        (
+                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                inner join Department targetDept
+                                    on targetDept.Id = mrr.TargetDepartmentId
+                                inner join [dbo].[Department] branchDept
+                                    on branchDept.Path like targetDept.Path + '%'
+                            where mrr.UserId = :userId and mrr.RoleId = 2 and (u.RoleId & 2) > 0
+                        ) ", sqlWhere);
+
+                    //sqlWhere += "u.ManagerId = :userId";
                     break;
                 case UserRole.PersonnelManager:
                     sqlWhere += string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) and (u.RoleId & 2) = {0} ",(int)UserRole.Employee);
