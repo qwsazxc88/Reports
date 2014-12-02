@@ -114,6 +114,10 @@
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
                     </div> 
                 }
+                @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
+                 {
+                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
+                 }
              </div>
             </div>
             

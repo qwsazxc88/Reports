@@ -88,14 +88,9 @@ namespace WebMvc.Controllers
         {
             MissionHotelsModel model = new MissionHotelsModel();
             ModelState.Clear();
-            bool hasError = false;//!ValidateModel(model);
-            ////if (!hasError)
-            ////    SetMissionOrderFilterToSession(model);
+            bool hasError = false;
             RequestBl.SetMissionHotelsListModel(model, hasError);
-            //if (model.HasErrors)
-            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
-            //return View();
         }
         /// <summary>
         /// Вызов страницы добавления/редактирования гостиниц

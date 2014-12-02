@@ -110,6 +110,7 @@
     <Compile Include="UI\Bl\IBaseBl.cs" />
     <Compile Include="UI\Bl\IEmployeeBl.cs" />
     <Compile Include="UI\Bl\IEmploymentBl.cs" />
+    <Compile Include="UI\Bl\IGpdBl.cs" />
     <Compile Include="UI\Bl\Impl\AdminBl.cs" />
     <Compile Include="UI\Bl\Impl\AppointmentBl.cs" />
     <Compile Include="UI\Bl\Impl\AutoComplete.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="UI\Bl\Impl\EmployeeBl.cs" />
     <Compile Include="UI\Bl\ILoginBL.cs" />
     <Compile Include="UI\Bl\Impl\EmploymentBl.cs" />
+    <Compile Include="UI\Bl\Impl\GpdBl.cs" />
     <Compile Include="UI\Bl\IRequestBl.cs" />
     <Compile Include="UI\Bl\Impl\LoginBL.cs" />
     <Compile Include="UI\Bl\Impl\RequestBl.cs" />
@@ -182,6 +184,10 @@
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\OnsiteTrainingModel.cs" />
     <Compile Include="UI\ViewModel\Employment\AbstractEmploymentModel.cs" />
+    <Compile Include="UI\ViewModel\GpdContractEditModel.cs" />
+    <Compile Include="UI\ViewModel\GpdContractModel.cs" />
+    <Compile Include="UI\ViewModel\GpdRefDetailEditModel.cs" />
+    <Compile Include="UI\ViewModel\GpdRefDetailModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HolidayWorkEditModel.cs" />

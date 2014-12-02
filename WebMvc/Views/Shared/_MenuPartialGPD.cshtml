@@ -73,7 +73,7 @@
                 }
                 <div id="liTemplate" class="mainMenuItem">@Html.ActionLink("Шаблоны", "Index", "Template")
                 </div> 
-                <div id="liEmployment" class="mainOn">@Html.ActionLink("Прием", "Index", "Employment")
+                <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")
                 </div>
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
                 </div> 
@@ -89,26 +89,14 @@
                  }
                  @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
-                    <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
+                    <div id="liGPD" class="mainOn">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
         </div>  
-        <div class="podmenu">       
-            <div class="menuitem" id="empGeneralInfo">@Html.ActionLink("Общая информация", "GeneralInfo", "Employment")</div>
-            <div class="menuitem" id="empPassport">@Html.ActionLink("Паспортные данные", "Passport", "Employment")</div>
-            <div class="menuitem" id="empEducation">@Html.ActionLink("Образование", "Education", "Employment")</div>
-            <div class="menuitem" id="empFamily">@Html.ActionLink("Состав семьи", "Family", "Employment")</div>
-            <div class="menuitem" id="empMilitaryService">@Html.ActionLink("Воинский учет", "MilitaryService", "Employment")</div>
-            <div class="menuitem" id="empExperience">@Html.ActionLink("Трудовая деятельность", "Experience", "Employment")</div>
-            <div class="menuitem" id="empContacts">@Html.ActionLink("Контактные данные", "Contacts", "Employment")</div>
-            <div class="menuitem" id="empBackgroundCheck">@Html.ActionLink("Служба безопасности", "BackgroundCheck", "Employment")</div>
-
-            <div class="menuitem" id="empOnsiteTraining">@Html.ActionLink("Обучение", "OnsiteTraining", "Employment")</div>
-            <div class="menuitem" id="empApplicationLetter">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", "Employment")</div>
-            <div class="menuitem" id="empManagers">@Html.ActionLink("Руководители", "Managers", "Employment")</div>
-            <div class="menuitem" id="empPersonnelManagers">@Html.ActionLink("Кадры", "PersonnelManagers", "Employment")</div>
-            <div class="menuitem" id="empRoster">@Html.ActionLink("Реестр по приему", "Roster", "Employment")</div>
-            <div class="menuitem" id="empSigners">@Html.ActionLink("Справочник подписантов", "Signers", "Employment")</div>
-
+        <div class="podmenu">
+            <div class="menuitem" id="moContract">@Html.ActionLink("Договор", "Index", "GPD")</div>
+            <div class="menuitem" id="moAct">@Html.ActionLink("Акт", "", "GPD")</div>
+            <div class="menuitem" id="moReception">@Html.ActionLink("Прием", "", "GPD")</div>
+            <div class="menuitem" id="moGpdRefDetail">@Html.ActionLink("Справочник реквизитов", "GpdRefDetail", "GPD")</div>
             <div class="menuitem">@Html.ActionLink("На главную страницу", "Index", "Home")</div>
         </div>
     </div>   

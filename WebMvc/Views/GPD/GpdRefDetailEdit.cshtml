@@ -1,0 +1,126 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Редактирование справочника реквизитов";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="doc-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Создание/редактирование записи в справочнике реквизитов</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DTID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name")) 
+                                @Html.ValidationMessageFor(model => model.DTID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.Name):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Name)
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.Code):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Code)
+                                @Html.ValidationMessageFor(model => model.Code)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.INN):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.INN)
+                                @Html.ValidationMessageFor(model => model.INN)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.KPP):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.KPP)
+                                @Html.ValidationMessageFor(model => model.KPP)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.Account):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Account)
+                                @Html.ValidationMessageFor(model => model.Account)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.BankName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.BankName)
+                                @Html.ValidationMessageFor(model => model.BankName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.BankBIK):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.BankBIK)
+                                @Html.ValidationMessageFor(model => model.BankBIK)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.CorrAccount):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.CorrAccount)
+                                @Html.ValidationMessageFor(model => model.CorrAccount)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных"/>
+            </td>
+        </tr>
+    </table>
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#BeginDate").datepicker();
+        //$("#EndDate").datepicker();
+        //$(".hasDatepicker").width("75px");
+        //setSortFields();
+        setActiveMenuItem("moGpdRefDetail");
+    });
+ </script>   
+

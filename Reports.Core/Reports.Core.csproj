@@ -99,6 +99,8 @@
     <Compile Include="Dao\IChildVacationDao.cs" />
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IGpdContractDao.cs" />
+    <Compile Include="Dao\IGpdRefDetailDao.cs" />
     <Compile Include="Dao\IMissionHotelsDao.cs" />
     <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
@@ -163,6 +165,8 @@
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\GpdContractDao.cs" />
+    <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
@@ -385,6 +389,8 @@
     <Compile Include="Domain\ExportImportAction.cs" />
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
+    <Compile Include="Domain\GpdContract.cs" />
+    <Compile Include="Domain\GpdRefDetail.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -483,6 +489,8 @@
     <Compile Include="Dto\Employment\ReferenceDto.cs" />
     <Compile Include="Dto\Employment\DisabilityDto.cs" />
     <Compile Include="Dto\Employment\ForeignLanguageDto.cs" />
+    <Compile Include="Dto\GpdContractDto.cs" />
+    <Compile Include="Dto\GpdRefDetailDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />
@@ -991,6 +999,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\MissionHotels.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdRefDetail.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdContract.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
