@@ -377,7 +377,7 @@ namespace Reports.Core.Dao.Impl
         #endregion
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
-        }
+        } 
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
