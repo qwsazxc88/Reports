@@ -54,7 +54,7 @@
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.Surname):
+                                @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.flgDraft ? null : (object)new { disabled = "disabled" }) 
@@ -176,8 +176,8 @@
         </tr>
         <tr>
             <td colspan="2">
-                <input type="button" value="Черновик" title="Сохранить черновик в базе данных" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = @Model.Id, Draft = 1 })'"/>
-                <input type="button" value="Записать" title="Сохранить договор в базе данных" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = @Model.Id, Draft = 0 })'"/>
+                <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="@Model.flgDraft = true"/>
+                <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="@Model.flgDraft = false"/>
             </td>
         </tr>
     </table>

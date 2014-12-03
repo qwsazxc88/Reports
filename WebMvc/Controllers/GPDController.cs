@@ -67,7 +67,8 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Вызов страницы создания/редактирования договора.
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="Id">ID записи.</param>
+        /// <param name="flgDraft">Признак черновика.</param>
         /// <returns></returns>
         [HttpGet]
         public ActionResult GpdContractEdit(int Id)
@@ -82,13 +83,12 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Сохраняем договор.
         /// </summary>
-        /// <param name="model"></param>
+        /// <param name="model">Обрабатываемая модель.</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult GpdContractEdit(GpdContractEditModel model, bool flgDraft)
+        public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
             ModelState.Clear();
-            //model.flgDraft = Draft == 1 ? true : false;
             GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
             if (ModelState.Count != 0)
                 return View(model);
@@ -97,8 +97,6 @@ namespace WebMvc.Controllers
                 string error;
                 if (GpdBl.SaveGpdContract(model, out error))
                 {
-                    //думал, что после сохранения нужно возвращаться к списку
-                    //return RedirectToAction("GpdRefDetail");
                     return View(model);
                 }
                 else
