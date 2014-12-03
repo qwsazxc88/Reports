@@ -9399,6 +9399,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     Log.ErrorFormat("CheckUserMoRights user.Id {0} current.Id {1} ", user.Id, current.Id);
                     return false;
+                case UserRole.PersonnelManager:
+                    int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                    if (superPersonnelId.HasValue && CurrentUser.Id == superPersonnelId.Value)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        Log.ErrorFormat("CheckUserRights  PersonnelManager user.Id {0} current.Id {1}", user.Id, current.Id);
+                        return false;
+                    }
+                    break;
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
                     return true;
