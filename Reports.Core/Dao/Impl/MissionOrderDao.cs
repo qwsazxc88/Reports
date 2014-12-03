@@ -140,7 +140,7 @@ namespace Reports.Core.Dao.Impl
                                           and ao.UserDateAccept is not null 
                                           then N'Отправлен руководителю'    
                                     when  ao.UserDateAccept is null 
-                                          then N'Черновик сотрудника'    
+                                          then N'Черновик сотрудника'
                                     else N''
                                 end as AdditionalOrderState,
                                 case when ao.Id is null then null else ao.BeginDate end as AdditionalOrderBeginDate,  
@@ -155,7 +155,13 @@ namespace Reports.Core.Dao.Impl
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
+                                inner join dbo.Users currentUser
+                                    on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].[Users] uManagerAccount
+                                    on (uManagerAccount.RoleId & 4) > 0
+                                        and u.Email = uManagerAccount.Email
+                                        and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
@@ -202,6 +208,7 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate, userName);
             if (!string.IsNullOrEmpty(number))
                 query.SetString("number", number);
+            query.SetInt32("userId", userId);
             IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
 
             return documentList;
@@ -338,11 +345,9 @@ namespace Reports.Core.Dao.Impl
 
                             // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав уровней 4-6
                             sqlQueryPart += @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
-                             inner join dbo.Users currentUser
-                               on currentUser.Id = {0}
                              inner join dbo.Users managerManagerAccount
                                on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
-                                 and managerManagerAccount.RoleId = 4
+                                 and (managerManagerAccount.RoleId & 4) > 0
                                  and managerManagerAccount.IsActive = 1
                                  and
                                  (
@@ -372,8 +377,6 @@ namespace Reports.Core.Dao.Impl
                             sqlQueryPart += @"
                                 union
                                 select distinct employee.Id from Users employee
-                                    inner join dbo.Users currentUser
-	                                  on currentUser.Id = {0}
                                     inner join dbo.Department employeeDept
                                       on employee.DepartmentId = employeeDept.Id
                                         -- Исключить состоящих в ветке руководства
@@ -390,7 +393,7 @@ namespace Reports.Core.Dao.Impl
                         default:
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
                     }
-                    sqlQueryPart = string.Format(sqlQueryPart, userId);
+
                     sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
                                         
                     // Автороль должна действовать только для уровней ниже третьего
@@ -473,10 +476,6 @@ namespace Reports.Core.Dao.Impl
                 string statusWhere;
                 switch (statusId)
                 {
-                    //case 1:
-                    //    statusWhere =
-                    //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
-                    //    break;
                     case 1:
                         statusWhere = @"v.UserDateAccept is not null";
                         break;
@@ -502,7 +501,21 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"v.UserDateAccept is not null
                                         and v.ManagerDateAccept is null
                                         and v.NeedToAcceptByChiefAsManager = 0
-                                        and";
+                                        and 
+                                        (
+                                            (currentUser.Level = 6 and (u.Level is null or u.Level = 7))
+                                            or
+                                            (
+                                                uManagerAccount.Id > 0
+                                                and
+                                                (
+                                                    currentUser.Level = u.Level - 1
+                                                    or (currentUser.Level = u.Level and u.IsMainManager = 0)
+                                                    or (currentUser.Level = 2 and currentUser.Level = u.Level - 2 and u.IsMainManager = 1)
+                                                )
+                                            )
+                                        )
+                        ";
                         break;
                     case 8:
                         statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
