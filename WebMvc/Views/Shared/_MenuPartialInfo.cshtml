@@ -79,18 +79,19 @@
                 </div>
                  @if (UserDto.IsHelpServiceAvailable(dto))
                  {
-                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Index", "Help")</div> 
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
                  }
                  else if (UserDto.IsHelpQuestionAvailable(dto))
                 {
-                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "ServiceQuestionsList", "Help")</div> 
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
                 }
                  else if (UserDto.IsHelpTemplateAvailable(dto))
                  {
-                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("Помощь", "Template", "Help")</div> 
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
                  }
-                <div id="liInfo" class="mainOn"><span>ИнфоЗарплата</span>
-                </div>
+                 @*
+                <div id="liInfo" class="mainOn"><span>ИнфоЗарплата</span></div>
+                *@
                  @if ((dto.UserRole & UserRole.Manager) > 0
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0
