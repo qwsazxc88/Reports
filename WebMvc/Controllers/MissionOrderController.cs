@@ -731,7 +731,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AdditionalMissionOrderEdit", new RouteValueDictionary { { "id", additionalOrderId } });
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager |
           UserRole.Director | UserRole.Findep)]
         public ActionResult AdditionalMissionOrderEdit(int id)
         {
