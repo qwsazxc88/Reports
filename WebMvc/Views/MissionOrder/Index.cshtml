@@ -305,7 +305,7 @@
                             <div>Разница</div>
                         </th>
                         <th>
-                            <div>Перерасчет<br />произведен</div><br />
+                            <div id="sort24"><a href="#"  onclick = "SortChanged(24);">Перерасчет<br />произведен</a></div><br />
                             @if (Model.IsRecalculationAvailable)
                             {
                                 <input type="checkbox" id="setAllIsRecalculated" onclick="setSelectionIsRecalculated();" />
