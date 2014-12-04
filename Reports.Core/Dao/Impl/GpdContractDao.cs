@@ -136,7 +136,7 @@ namespace Reports.Core.Dao.Impl
                                             int PayerID,
                                             string GPDID,
                                             string PurposePayment,
-                                            bool flgDraft,
+                                            bool IsDraft,
                                             string CreatorName,
                                             DateTime CreateDate,
                                             string Surname,
@@ -150,7 +150,7 @@ namespace Reports.Core.Dao.Impl
 			                             A.StatusID as StatusID, E.[Name] as StatusName, A.NumContract as NumContract, 
 			                             A.NameContract as NameContract, A.DateBegin as DateBegin, A.DateEnd as DateEnd, A.PayeeID as PayeeID, A.PayerID as PayerID, A.GPDID as GPDID, A.PurposePayment as PurposePayment, 
 																	 A.DateP as DateP, A.DateP as DatePOld,
-			                             A.flgDraft as flgDraft, F.Name as CreatorName, A.CreateDate, F.Name as Autor
+			                             A.IsDraft as IsDraft, F.Name as CreatorName, A.CreateDate, F.Name as Autor
                             FROM dbo.GpdContract as A
                             INNER JOIN dbo.GpdRefPersons as B ON B.Id = A.PersonID
                             INNER JOIN dbo.GpdChargingType as C ON C.Id = A.CTID
@@ -187,7 +187,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayerID", NHibernateUtil.Int32).
                 AddScalar("GPDID", NHibernateUtil.String).
                 AddScalar("PurposePayment", NHibernateUtil.String).
-                AddScalar("flgDraft", NHibernateUtil.Boolean).
+                AddScalar("IsDraft", NHibernateUtil.Boolean).
                 AddScalar("CreatorName", NHibernateUtil.String).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Surname", NHibernateUtil.String).

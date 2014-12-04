@@ -67,7 +67,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string PurposePayment { get; set; }
 
         [Display(Name = "Черновик")]
-        public bool flgDraft { get; set; }
+        public bool IsDraft { get; set; }
 
         [Display(Name = "Автор")]
         public string Autor { get; set; }

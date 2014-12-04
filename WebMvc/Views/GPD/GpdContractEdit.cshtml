@@ -46,7 +46,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                @if (Model.flgDraft)
+                                @if (Model.IsDraft)
                                 {
                                     <input type="button" value="Выбрать" onclick="changeDepartment();"/>
                                 }
@@ -57,7 +57,7 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.flgDraft ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.IsDraft ? null : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PersonID)
                             </td>
                         </tr>
@@ -66,7 +66,7 @@
                                 @Html.LabelFor(m => m.CTID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.CTID, new SelectList(Model.ChargingTypes, "ID", "Name"), Model.flgDraft ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.CTID, new SelectList(Model.ChargingTypes, "ID", "Name"), Model.IsDraft ? null : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.CTID)
                             </td>
                         </tr>
@@ -75,7 +75,7 @@
                                 @Html.LabelFor(m => m.NameContract):
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => m.NameContract, Model.flgDraft ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.NameContract, Model.IsDraft ? (object)new { maxlength = "50" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.NameContract)
                             </td>
                         </tr>
@@ -84,7 +84,7 @@
                                 @Html.LabelFor(m => m.NumContract):
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => m.NumContract, Model.flgDraft ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.NumContract, Model.IsDraft ? (object)new { maxlength = "30" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.NumContract)
                             </td>
                         </tr>
@@ -93,9 +93,9 @@
                                 @Html.LabelFor(m => m.DateBegin):
                             </td>
                             <td>
-                                @Html.EditorFor(m => m.DateBegin, Model.flgDraft ? null : (object)new { disabled = "disabled" })
+                                @Html.EditorFor(m => m.DateBegin, Model.IsDraft ? null : (object)new { disabled = "disabled" })
                                 @Html.LabelFor(m => m.DateEnd):
-                                @Html.EditorFor(m => m.DateEnd, Model.flgDraft ? null : (object)new { disabled = "disabled" })
+                                @Html.EditorFor(m => m.DateEnd, Model.IsDraft ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.DateBegin)
                                 @Html.ValidationMessageFor(model => model.DateEnd)
                             </td>
@@ -115,7 +115,7 @@
                                 @Html.LabelFor(m => m.PayerID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PayerID, new SelectList(Model.Payers, "ID", "Name"), Model.flgDraft ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PayerID, new SelectList(Model.Payers, "ID", "Name"), Model.IsDraft ? null : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayerID)
                             </td>
                         </tr>
@@ -124,7 +124,7 @@
                                 @Html.LabelFor(m => m.PayeeID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.flgDraft ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.IsDraft ? null : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayeeID)
                             </td>
                         </tr>
@@ -133,7 +133,7 @@
                                 @Html.LabelFor(m => m.GPDID):
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => m.GPDID, Model.flgDraft ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.GPDID, Model.IsDraft ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.GPDID)
                             </td>
                         </tr>
@@ -142,32 +142,24 @@
                                 @Html.LabelFor(m => m.PurposePayment):
                             </td>
                             <td>
-                                @Html.TextAreaFor(m => m.PurposePayment, Model.flgDraft ? (object)new { style = "width:400px" } : (object)new { style = "width:400px", disabled = "disabled" })
+                                @Html.TextAreaFor(m => m.PurposePayment, Model.IsDraft ? (object)new { style = "width:400px", maxlength = "1000" } : (object)new { style = "width:400px", disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.PurposePayment)
                             </td>
                         </tr>
-                        @*
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.flgDraft):
+                                @Html.LabelFor(m => m.Autor):
                             </td>
                             <td>
-                                @Html.CheckBoxFor(m => m.flgDraft)
-                                @Html.ValidationMessageFor(model => model.flgDraft)
+                                <label id="AutorLabel">@Model.Autor</label>
                             </td>
                         </tr>
-                        *@
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.StatusName):
                             </td>
                             <td>
-                            @*
-                                @Html.DropDownListFor(model => model.StatusID, new SelectList(Model.Statuses, "ID", "Name")) 
-                                @Html.ValidationMessageFor(model => model.StatusID)
-                                *@
                                 <label id="StatusNameLabel">@Model.StatusName</label>
-                                <input type="hidden" id="flgDraft" name="flgDraft" value="@Model.flgDraft" />
                             </td>
                         </tr>
                     </table>
@@ -176,8 +168,8 @@
         </tr>
         <tr>
             <td colspan="2">
-                <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="@Model.flgDraft = true"/>
-                <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="@Model.flgDraft = false"/>
+                <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
+                <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
             </td>
         </tr>
     </table>
@@ -194,6 +186,21 @@
         $(".hasDatepicker").width("75px");
         //setSortFields();
         setActiveMenuItem("moContract");
+//        if($("#IsDraft") == false)
+//        {
+//            $(".hasDatepicker").readonly('True');
+//            //$("#DateEnd").readonly('True');
+//        }
     });
 
+    function SaveDraft()
+    {
+        $("#IsDraft").val('True');
+        return true;
+    }
+    function SaveContract()
+    {
+        $("#IsDraft").val('False');
+        return true;
+    }
 </script>   

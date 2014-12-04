@@ -18,6 +18,6 @@
     <property name="PayerID" not-null="false"/>
     <property name="GPDID" not-null="false"/>
     <property name="PurposePayment" not-null="false"/>
-    <property name="flgDraft" not-null="false"/>
+    <property name="IsDraft" not-null="false"/>
   </class>
 </hibernate-mapping>

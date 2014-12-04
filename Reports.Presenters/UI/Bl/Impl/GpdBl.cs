@@ -283,7 +283,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PayerID, 
                 model.GPDID, 
                 model.PurposePayment, 
-                model.flgDraft, 
+                model.IsDraft, 
                 model.CreatorName,
                 (DateTime)model.CreateDate,
                 model.Surname, 
@@ -311,7 +311,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayerID = doc.PayerID;
                     model.GPDID = doc.GPDID;
                     model.PurposePayment = doc.PurposePayment;
-                    model.flgDraft = doc.flgDraft;
+                    model.IsDraft = doc.IsDraft;
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
@@ -324,7 +324,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             else
-                model.flgDraft = true;
+                model.IsDraft = true;
 
             return model;
         }
@@ -409,13 +409,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.NameContract == null)
                 ms.AddModelError("NameContract", "Заполните поле 'Наименование договора'!");
-            if (model.NameContract != null && model.NameContract.Trim().Length > 50)
-                ms.AddModelError("NameContract", "Превышено допустимое количество символов!");
 
             if (model.NumContract == null)
                 ms.AddModelError("NumContract", "Заполните поле '№ договора'!");
-            if (model.NumContract != null && model.NumContract.Trim().Length > 30)
-                ms.AddModelError("NumContract", "Превышено допустимое количество символов!");
 
             if (model.DateBegin == null)
                 ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
@@ -441,14 +437,12 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.GPDID == null)
                 ms.AddModelError("GPDID", "Заполните поле 'ID ГПД в ЭССС'!");
-            if (model.GPDID != null && model.GPDID.Trim().Length > 20)
-                ms.AddModelError("GPDID", "Превышено допустимое количество символов!");
 
             if (model.PurposePayment == null)
                 ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
-            if (model.PurposePayment != null && model.PurposePayment.Trim().Length > 1000)
-                ms.AddModelError("PurposePayment", "Превышено допустимое количество символов!");
 
+//            if (ms.Count != 0)
+//                model.IsDraft = true;
             bool hasError = false;
             SetGpdContractPersons(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
@@ -488,7 +482,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         PayerID = model.PayerID,
                         GPDID = model.GPDID,
                         PurposePayment = model.PurposePayment,
-                        flgDraft = model.flgDraft,
+                        IsDraft = model.IsDraft,
                         DateP = model.DateP
                     };
                 }
@@ -508,7 +502,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdContract.PayerID = model.PayerID;
                     gpdContract.GPDID = model.GPDID;
                     gpdContract.PurposePayment = model.PurposePayment;
-                    gpdContract.flgDraft = model.flgDraft;
+                    gpdContract.IsDraft = model.IsDraft;
                     gpdContract.DateP = model.DateP;
                 }
                 GpdContractDao.SaveAndFlush(gpdContract);

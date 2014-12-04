@@ -85,7 +85,7 @@ namespace Reports.Core.Dao
                                             int PayerID,
                                             string GPDID,
                                             string PurposePayment,
-                                            bool flgDraft,
+                                            bool IsDraft,
                                             string CreatorName,
                                             DateTime CreateDate,
                                             string Surname,

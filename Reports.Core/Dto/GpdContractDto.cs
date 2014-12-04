@@ -49,7 +49,7 @@ namespace Reports.Core.Dto
         public string PurposePayment { get; set; }
         public string Surname { get; set; }
         public int CreatorID { get; set; }
-        public bool flgDraft { get; set; }
+        public bool IsDraft { get; set; }
         public string Autor { get; set; }
         public string CreatorName { get; set; }
         public DateTime CreateDate { get; set; }

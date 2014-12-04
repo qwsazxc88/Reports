@@ -68,7 +68,7 @@ namespace WebMvc.Controllers
         /// Вызов страницы создания/редактирования договора.
         /// </summary>
         /// <param name="Id">ID записи.</param>
-        /// <param name="flgDraft">Признак черновика.</param>
+        /// <param name="IsDraft">Признак черновика.</param>
         /// <returns></returns>
         [HttpGet]
         public ActionResult GpdContractEdit(int Id)
