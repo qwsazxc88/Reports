@@ -30,7 +30,7 @@ namespace Reports.Core.Domain
         public virtual User Creator { get; set; }
         public virtual User Consultant { get; set; }
 
-
+        public virtual string Address { get; set; }
 
         public virtual IList<HelpServiceRequestComment> Comments { get; set; }
 

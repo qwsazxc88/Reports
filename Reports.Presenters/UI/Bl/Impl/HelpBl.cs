@@ -193,7 +193,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.UserName,
                 model.Number,
                 model.SortBy,
-                model.SortDescending);
+                model.SortDescending,
+                model.Address);
         }
         #endregion
         #region Service Requests Edit
@@ -268,6 +269,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DocumentNumber = entity.Number.ToString();
                 model.DateCreated = FormatDate(entity.CreateDate);
                 model.Creator = entity.Creator.FullName;
+                model.Address = entity.Address;
                 RequestAttachment attachment = RequestAttachmentDao.FindByRequestIdAndTypeId(entity.Id,
                     RequestAttachmentTypeEnum.HelpServiceRequestTemplate);
                 if(attachment != null)
@@ -384,7 +386,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
-               ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+               ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
+               Where(x => x.Id < 3).ToList<IdNameDto>(); //удалил из списка почту России
+
             if(model.TypeId == 0)
                 model.TypeId = types.First().Id;
             HelpServiceType type = types.Where(x => x.Id == model.TypeId).First();
@@ -428,15 +432,82 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Department dep3 = DepartmentDao.GetParentDepartmentWithLevel(user.Department, 3);
                 if (dep3 != null)
                     model.Department1 = dep3.Name;
-                string managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true)
-                                       .Where(x => x.Email != user.Email)
-                                       .OrderByDescending(x => x.Level).
-                                       Aggregate(string.Empty, (current, x) => 
-                                       current + string.Format("{0} ({1}), ",x.FullName,x.Position == null ? "<не указана>": x.Position.Name));
-                if (managers.Length >= 2)
-                    managers = managers.Remove(managers.Length - 2);
-                model.ManagerName = managers;
+
+                //Были внесены изменения по отображению начальников над подчиненым сотрудником.
+                //ниже закомментарен старый метод отображения
+                //добавлен ниже новый (кусок взят из RequestBl)
+
+                //string managers = DepartmentDao.GetDepartmentManagers(user.Department.Id, true)
+                //                       .Where(x => x.Email != user.Email)
+                //                       .OrderByDescending(x => x.Level).
+                //                       Aggregate(string.Empty, (current, x) =>
+                //                       current + string.Format("{0} ({1}), ", x.FullName, x.Position == null ? "<не указана>" : x.Position.Name));
+                //if (managers.Length >= 2)
+                //    managers = managers.Remove(managers.Length - 2);
+                //model.ManagerName = managers;
+
+                
+                
+                IList<User> managerslist = GetManagersForEmployee(user.Id)
+                .Where<User>(manager => manager.Level >= 3)
+                .OrderByDescending<User, int?>(manager => manager.Level)
+                .ToList<User>();
+                System.Text.StringBuilder managersBuilder = new System.Text.StringBuilder();
+                foreach (var manager in managerslist)
+                {
+                    managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>" : manager.Position.Name);
+                }
+                // Cut off trailing ", "
+                if (managersBuilder.Length >= 2)
+                {
+                    managersBuilder.Remove(managersBuilder.Length - 2, 2);
+                }
+
+                model.ManagerName = managersBuilder.ToString();
             }
+
+            
+            
+        }
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Словарь&lt;Уровень, Руководитель&gt;</returns>
+        public IList<User> GetManagersForEmployee(int userId)
+        {
+            IList<User> managers = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach (var mainManager in mainManagers)
+                {
+                    managers.Add(mainManager);
+                }
+            }
+
+            // Руководители вышележащих уровней для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0))
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                managers.Add(mainManager);
+            }
+
+            return managers;
         }
         public void ReloadDictionariesToModel(HelpServiceRequestEditModel model)
         {
@@ -543,6 +614,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Period = type.IsPeriodAvailable
                                     ? model.PeriodId.HasValue ? helpServicePeriodDao.Load(model.PeriodId.Value) : null
                                     : null;
+                entity.Address = model.Address;
                 if(fileDto != null && entity.Type.IsAttachmentAvailable)
                 {
                     RequestAttachment attachment = new RequestAttachment
