@@ -178,9 +178,40 @@ namespace Reports.Core.Dao.Impl
     public class DefaultDao<TEntity> : DefaultDao<TEntity, int>, IDao<TEntity>
         where TEntity : IEntity<int>
     {
+        #region Constants
+        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
+        
         protected const string ObjectPropertyFormat = "{0}.{1}";
         protected const string DeleteRequestText = "Заявка отклонена";
 
+        protected const string RequestStatusStandardSelector = @"
+            case when v.DeleteDate is not null then '{0}'
+                when v.SendTo1C is not null then 'Выгружено в 1с' 
+                when v.PersonnelManagerDateAccept is not null 
+                        and v.ManagerDateAccept is not null 
+                        and v.UserDateAccept is not null 
+                        then 'Согласовано кадровиком'
+                when  v.PersonnelManagerDateAccept is null 
+                        and v.ManagerDateAccept is not null 
+                        and v.UserDateAccept is not null 
+                        then 'Отправлено кадровику'    
+                when  -- v.PersonnelManagerDateAccept is null and 
+                        v.ManagerDateAccept is null 
+                        and v.UserDateAccept is not null 
+                        then 'Отправлено руководителю'    
+                when  v.PersonnelManagerDateAccept is null 
+                        and v.ManagerDateAccept is null 
+                        and v.UserDateAccept is null 
+                        then 'Черновик сотрудника'    
+                else ''
+            end as RequestStatus";
+        protected const string sqlUManagerAccountJoin = @"left join [dbo].[Users] uManagerAccount
+                                                            on (uManagerAccount.RoleId & 4) > 0
+                                                                and u.Email = uManagerAccount.Email
+                                                                and uManagerAccount.IsActive = 1";
+        protected const string sqlCurrentUserJoin = @"inner join dbo.Users currentUser
+                                                        on currentUser.Id = :userId";
+        
         protected const string sqlSelectForList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -190,30 +221,14 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                t.Name as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus
+                                t.Name as RequestType," + 
+                                RequestStatusStandardSelector +
+                                @"
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
         protected const string sqlSelectForListSicklist =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -223,34 +238,17 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                t.Name as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus,
+                                t.Name as RequestType," + 
+                                RequestStatusStandardSelector + @",
                                 u.ExperienceIn1C as UserExperienceIn1C,
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
         protected const string sqlSelectForListClearanceChecklist =
-                                @"select v.Id as Id,
+                                @"select distinct v.Id as Id,
                                 u.Id as UserId,
                                 '{1}' as Name,
                                 {2} as Date,
@@ -277,31 +275,14 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                N'Отпуск по уходу за ребенком'  as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus,
+                                N'Отпуск по уходу за ребенком'  as RequestType," +
+                                RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 -- left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
         protected const string sqlSelectForListVacation =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -311,31 +292,14 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                t.Name as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus,
+                                t.Name as RequestType," +
+                                RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
         protected const string sqlSelectForListDismissal =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -345,41 +309,32 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                t.Name as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus,
+                                t.Name as RequestType," + 
+                                RequestStatusStandardSelector + @",
                                 v.IsOriginalReceived as IsOriginalReceived,
                                 v.IsPersonnelFileSentToArchive as IsPersonnelFileSentToArchive
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
+        #endregion
         public DefaultDao(ISessionManager sessionManager) : base(sessionManager)
         {
-        }
+        } 
 
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
             set { configurationService = value; }
             get { return Validate.Dependency(configurationService); }
+        }
+
+        protected IUserDao userDao;
+        public IUserDao UserDao
+        {
+            get { return Validate.Dependency(userDao); }
+            set { userDao = value; }
         }
 
         public TEntity Load(string id)
@@ -413,31 +368,240 @@ namespace Reports.Core.Dao.Impl
             criteria.AddOrder(new Order("Name", true));
             return criteria.List<TEntity>();
         }
+
+        // Where-блок определения прав при прямой привязке руководителя к сотруднику (deprecated)
         public virtual string GetWhereForUserRole(UserRole role,int userId)
         {
             switch (role)
             {
+                #region Employees
+                
                 case UserRole.Employee:
                     return string.Format(" u.Id = {0} ", userId);
+                
+                #endregion
+
+                #region Managers
+                
                 case UserRole.Manager:
                     return string.Format(" u.ManagerId = {0} ", userId);
+                
+                #endregion
+
+                #region PersonnelManagers
+                
                 case UserRole.PersonnelManager:
-                    {
-                        int? superPersonnelId = ConfigurationService.SuperPersonnelId;
-                        if (superPersonnelId.HasValue && superPersonnelId.Value == userId)
-                            return string.Empty;
-                        return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
-                    }
+                    int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                    if (superPersonnelId.HasValue && superPersonnelId.Value == userId)
+                        return string.Empty;
+                    return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
+                
+                #endregion
+
+                #region Inspectors
+                
                 case UserRole.Inspector:
                     return string.Format(" exists ( select * from InspectorToUser iu where iu.InspectorId = {0} and u.Id = iu.UserId ) ", userId);
+                
+                #endregion
+
+                #region Chiefs
+
                 case UserRole.Chief:
                     return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
+                
+                #endregion
+
+                #region OutsourcingManagers
+
                 case UserRole.OutsourcingManager:
                     return string.Empty;
+
+                #endregion
+
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
         }
+
+        public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
+        {
+            switch (role)
+            {
+                #region Employees
+                case UserRole.Employee:
+                    // sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
+                #endregion
+
+                #region Managers
+                case UserRole.Manager:
+                    User currentUser = UserDao.Load(userId);
+                    if (currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
+
+                    string sqlQueryPart = string.Empty;
+                    string sqlFlag = string.Empty;
+
+                    switch (currentUser.Level)
+                    {
+                        case 2:                            
+                        case 3:
+
+                            sqlQueryPart += " -1";
+                            sqlFlag = @"case when v.UserDateAccept is not null 
+                                and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
+                            break;
+
+                        case 4:
+                        case 5:
+                        case 6:
+                            // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав уровней 4-6
+                            sqlQueryPart += @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
+                            inner join dbo.Users currentUser
+                                on currentUser.Id = {0}
+                            inner join dbo.Users managerManagerAccount
+                                on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
+                                and managerManagerAccount.RoleId = 4
+                                and managerManagerAccount.IsActive = 1
+                                and
+                                (
+                                    (
+                                    -- Руководители нижележащих уровней
+                                    managerManagerAccount.Level > currentUser.Level
+                                    )
+                                    or
+                                    (
+                                    -- Замы для уровней 4-6
+                                    managerManagerAccount.Level = currentUser.Level and managerManagerAccount.IsMainManager = 0
+                                    )
+                                )
+                            inner join dbo.Department managerManagerAccountDept
+                                on managerManagerAccount.DepartmentId = managerManagerAccountDept.Id
+                                  -- Исключить состоящих в ветке руководства
+                                  and managerManagerAccountDept.Path not like N'9900424.9900426.9900427.%'
+                     
+                            -- по ветке
+                            inner join dbo.Department higherDept
+                                on managerManagerAccountDept.Path like higherDept.Path+N'%'
+                            where currentUser.DepartmentId = higherDept.Id
+                                -- Исключение своей учетной записи 7 уровня
+                                and not currentUser.Login = managerEmployeeAccount.Login + N'R'";
+
+                            // Выборка рядовых пользователей по ветке для применения автоматических прав
+                            sqlQueryPart += @"
+                                union
+                                select distinct employee.Id from Users employee
+                                    inner join dbo.Users currentUser
+                                        on currentUser.Id = {0}
+                                    inner join dbo.Department employeeDept
+                                    on employee.DepartmentId = employeeDept.Id 
+                                      -- Исключить состоящих в ветке руководства
+                                      and employeeDept.Path not like N'9900424.9900426.9900427.%'
+                                    inner join dbo.Department higherDept
+                                    on employeeDept.Path like higherDept.Path+N'%'
+                                where (employee.RoleId & 2) > 0
+                                    and currentUser.DepartmentId = higherDept.Id
+                                    and not currentUser.Login = employee.Login + N'R'";
+
+                            sqlFlag = @"case when v.UserDateAccept is not null 
+                                and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
+                            break;
+                        default:
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, userId, currentUser.Level));
+                    }
+
+                    sqlQueryPart = string.Format(sqlQueryPart, userId);
+                    sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
+
+                    // Автороль должна действовать только для уровней ниже третьего
+                    sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += string.Format(@"
+                        or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 2)", userId);
+                    sqlQueryPart += string.Format(@"
+                        or u.DepartmentId in
+                        (
+                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                inner join Department targetDept
+                                    on targetDept.Id = mrr.TargetDepartmentId
+                                inner join [dbo].[Department] branchDept
+                                    on branchDept.Path like targetDept.Path + '%'
+                            where mrr.UserId = {0} and mrr.RoleId = 2 and (u.RoleId & 2) > 0                            
+                        )
+                        ", userId);
+                    sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
+                    sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
+                    return sqlQueryPart;
+                #endregion                
+
+                #region PersonnelManagers
+
+                case UserRole.PersonnelManager:
+                    int? superPersonnelId = ConfigurationService.SuperPersonnelId;
+                    if (superPersonnelId.HasValue && superPersonnelId.Value == userId)
+                        return string.Empty;
+                    return string.Format(" exists ( select * from UserToPersonnel up where up.PersonnelId = {0} and u.Id = up.UserId ) ", userId);
+
+                #endregion
+
+                #region Inspectors
+
+                case UserRole.Inspector:
+                    return string.Format(" exists ( select * from InspectorToUser iu where iu.InspectorId = {0} and u.Id = iu.UserId ) ", userId);
+
+                #endregion
+
+                #region Chiefs
+
+                case UserRole.Chief:
+                    return string.Format(" exists ( select * from ChiefToUser cu where cu.ChiefId = {0} and u.Id = cu.UserId ) ", userId);
+
+                #endregion
+
+                #region OutsourcingManagers
+
+                case UserRole.OutsourcingManager:
+                    sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Empty;
+
+                #endregion
+
+                #region -Deleted (Directors, Accountants, Secretary, Findep)
+
+                /*
+                case UserRole.Director:
+                    const string sqlFlagD =
+                        @"case when
+                          (
+                            (
+                              v.UserDateAccept is not null
+                              and  v.ManagerDateAccept is not null
+                              and  v.[ChiefDateAccept] is null
+                              and  v.[NeedToAcceptByChief] = 1
+                            )
+                            or
+                            (
+                              v.UserDateAccept is not null
+                              and  v.ManagerDateAccept is null
+                              and v.[NeedToAcceptByChiefAsManager] = 1
+                            )
+                          )
+                          then 1 else 0 end as Flag";
+                    sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
+                    return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
+                
+                // case UserRole.Accountant:
+                // case UserRole.Secretary:
+                // case UserRole.Findep:*/
+
+                #endregion
+
+                default:
+                    throw new ArgumentException(string.Format("Invalid user role {0}", role));
+            }
+        }
+
         public virtual string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
         {
@@ -554,11 +718,29 @@ namespace Reports.Core.Dao.Impl
                         statusWhere =
                             @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
                         break;
+                    case 9:
+                        statusWhere = @"SendTo1C is not null";
+                        break;
                     case 10:
                         statusWhere = @"[DeleteDate] is not null";
                         break;
-                    case 9:
-                        statusWhere = @"SendTo1C is not null";
+                    case 11:
+                        statusWhere = @"UserDateAccept is not null and ManagerDateAccept is null
+                            and
+                            (
+                                (currentUser.Level = 6 and (u.Level is null or u.Level = 7))
+                                or
+                                (
+                                    uManagerAccount.Id > 0
+                                    and
+                                    (
+                                        currentUser.Level = u.Level - 1
+                                        or (currentUser.Level = u.Level and u.IsMainManager = 0)
+                                        or (currentUser.Level = 2 and currentUser.Level = u.Level - 2 and u.IsMainManager = 1)
+                                    )
+                                )
+                            )
+                        ";
                         break;
                     default:
                         throw new ArgumentException("Неправильный статус заявки");
@@ -656,7 +838,7 @@ namespace Reports.Core.Dao.Impl
                                 bool? sortDescending
             )
         {
-            string whereString = GetWhereForUserRole(role, userId);
+            string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -666,6 +848,7 @@ namespace Reports.Core.Dao.Impl
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,sortedBy,sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
+            query.SetInt32("userId", userId);
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }

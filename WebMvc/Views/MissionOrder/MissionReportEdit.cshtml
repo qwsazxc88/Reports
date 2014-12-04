@@ -61,7 +61,7 @@
                 @if (Model.IsCreateAdditionalOrderAvailable)
                 {
                     <div style="float:right;">
-                        <button onclick="window.location.href='@Url.Action("CreateAdditionalOrder", "MissionOrder", new { id = Model.Id })';">
+                        <button type="button" onclick="window.location.href='@Url.Action("CreateAdditionalOrder", "MissionOrder", new { id = Model.Id })';">
                             Создать изменение приказа на командировки<br />
                             (Только  для  изменения  по  факту  дат и маршрута)
                         </button>

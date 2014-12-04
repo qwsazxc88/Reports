@@ -121,6 +121,7 @@
   <ItemGroup>
     <Content Include="Content\Default.css" />
     <Content Include="Content\favicon.ico" />
+    <Content Include="Content\files\Образец заявления о приеме.jpg" />
     <Content Include="Content\fileuploader.css" />
     <Content Include="Content\fileuploader.js" />
     <Content Include="Content\icon_down_sort_arrow.png" />
@@ -690,6 +691,9 @@
     <Content Include="Views\MissionOrder\PrintAdditionalOrder.cshtml" />
     <Content Include="Views\Appointment\SelectManagerDialog.cshtml" />
     <Content Include="Views\Appointment\SelectManagerDialogError.cshtml" />
+    <Content Include="Views\UserRequest\PrintDismissalList.cshtml" />
+    <Content Include="Views\MissionOrder\MissionHotels.cshtml" />
+    <Content Include="Views\MissionOrder\MissionHotelsEdit.cshtml" />
     <Content Include="Views\Employment\GeneralInfoReadOnly.cshtml" />
     <Content Include="Views\Employment\PassportReadOnly.cshtml" />
     <Content Include="Views\Employment\EducationReadOnly.cshtml" />
@@ -703,6 +707,7 @@
     <Content Include="Views\Employment\PrintCreatedCandidate.cshtml" />
     <Content Include="Views\Employment\PrintContractForm.cshtml" />
     <Content Include="Views\Employment\PrintEmploymentOrder.cshtml" />
+    <Content Include="Views\UserRequest\ClearanceChecklistEditPartial.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Shared\_HelpInfo.cshtml" />
     <Content Include="Views\Shared\_MenuPartialHelp.cshtml" />

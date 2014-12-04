@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
@@ -120,12 +121,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { appointmentReportCommentDao = value; }
         }
 
+        protected IManualRoleRecordDao manualRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
+        {
+            get { return Validate.Dependency(manualRoleRecordDao); }
+            set { manualRoleRecordDao = value; }
+        }
+
         protected IEmploymentCommonDao employmentCommonDao;
         public IEmploymentCommonDao EmploymentCommonDao
         {
             get { return Validate.Dependency(employmentCommonDao); }
             set { employmentCommonDao = value; }
+        	
         }
+
+        
 
         #endregion
         protected IConfigurationService configurationService;
@@ -164,9 +175,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Заявка создана"),
-                                                           new IdNameDto(2, "Не одобрена вышестоящим руководителем"),
-                                                           new IdNameDto(3, "Одобрена вышестоящим руководителем"),
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(2, "Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            new IdNameDto(5, "Отменена"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
@@ -414,40 +425,50 @@ namespace Reports.Presenters.UI.Bl.Impl
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             return (creator.Level.Value == 2);
         }*/
+
         protected bool IsManagerChiefForCreator(User current, User creator)
         {
-            if( !current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+            if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
-                        current.Level.HasValue? current.Level.Value.ToString():"<не указан>" ,current.Id)); 
-            if( !creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+                        current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
+            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
-                        creator.Level.HasValue?creator.Level.Value.ToString():"<не указан>",creator.Id));
+                        creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
             List<DepartmentDto> departments;
             switch (current.Level)
             {
                 case 2:
                     IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
-                    if(managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
+                    if (managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
                         return true;
                     IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    if(managers.Any(x => x == creator.Id && creator.Level.Value == 3))
+                    if (managers.Any(x => x == creator.Id && creator.Level.Value == 3))
                         return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2 , true).ToList();
+                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
-                case 3:
+                /*case 3:
                     if (creator.Level != 4)
                         return false;
                     departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
                     return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
+                */
+                case 3:
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
+                    return ManualRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                        .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
+                case 4:
+                case 5:
+                    return creator.Department.Path.StartsWith(current.Department.Path)
+                        && creator.Department.Path.Length > current.Department.Path.Length;
                 default:
-                    if(creator.Department == null)
+                    if (creator.Department == null)
                         throw new ValidationException(string.Format(StrNoDepartmentForManager, creator.Id));
                     if (current.Department == null)
                         throw new ValidationException(string.Format(StrNoDepartmentForManager, current.Id));
-                    return current.Level + 1 == creator.Level &&
-                           creator.Department.Path.StartsWith(current.Department.Path);
+                    return false;
             }
         }
+
         protected void SetFlagsState(AppointmentEditModel model, bool state)
         {
             model.IsEditable = state;
@@ -499,7 +520,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(rep != null)
                     model.StaffName = rep.Creator.FullName;
             }
-            
+
+            #region Заполнение списка вышестоящих руководителей
+
+            IList<User> chiefs = GetChiefsForManager(user.Id)
+                .Where<User>(chief => chief.Level >= 3)
+                .OrderByDescending<User, int?>(chief => chief.Level)
+                .ToList<User>();
+
+            StringBuilder chiefsBuilder = new StringBuilder();
+            foreach (var chief in chiefs)
+            {
+                chiefsBuilder.AppendFormat("{0} ({1}), ", chief.Name, chief.Position == null ? "<не указана>" : chief.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (chiefsBuilder.Length >= 2)
+            {
+                chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
+            }
+
+            model.Chiefs = chiefsBuilder.ToString();
+
+            #endregion
+
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
@@ -1754,6 +1797,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Managers = UserDao.GetManagersWithDepartments().ToList(),
             };
+        }
+
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Список руководителей</returns>
+        public IList<User> GetChiefsForManager(int userId)
+        {
+            IList<User> chiefs = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach (var mainManager in mainManagers)
+                {
+                    chiefs.Add(mainManager);
+                }
+            }
+
+            // Руководители вышележащих уровней по ветке для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) && manager.Level > 3)
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                chiefs.Add(mainManager);
+            }
+
+            return chiefs;
         }
     }
 }

@@ -484,6 +484,14 @@ namespace Reports.Core
             Register(Component.For(typeof(IScheduleDao)).
                   ImplementedBy(typeof(ScheduleDao)).
                   LifeStyle.Is(type));
+            Register(Component.For(typeof(IManualRoleRecordDao)).
+                  ImplementedBy(typeof(ManualRoleRecordDao)).
+                  LifeStyle.Is(type));
+
+            Register(Component.For(typeof(IMissionHotelsDao)).
+             ImplementedBy(typeof(MissionHotelsDao)).
+             LifeStyle.Is(type));
+
 
 
             Register(Component.For(typeof (IHelpVersionDao)).
@@ -510,10 +518,6 @@ namespace Reports.Core
             Register(Component.For(typeof(IHelpServiceRequestCommentDao)).
                     ImplementedBy(typeof(HelpServiceRequestCommentDao)).
                     LifeStyle.Is(type));
-            Register(Component.For(typeof(IMissionOrderRoleRecordDao)).
-                   ImplementedBy(typeof(MissionOrderRoleRecordDao)).
-                   LifeStyle.Is(type));
-
             Register(Component.For(typeof(IHelpQuestionRequestDao)).
                   ImplementedBy(typeof(HelpQuestionRequestDao)).
                   LifeStyle.Is(type));

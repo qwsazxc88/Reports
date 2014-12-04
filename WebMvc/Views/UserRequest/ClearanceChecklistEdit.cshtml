@@ -8,8 +8,8 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.UserId)
     
-if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
-{
+    if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprovals.Count > 0)
+    {
         <div class="doc-wrap">
             <table style="width:100%">
                 <tr>
@@ -31,7 +31,7 @@ if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprova
                 }*@  
             </table>    
         </div>
-}
+    }
     
     <br />
     
@@ -71,7 +71,7 @@ if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprova
                         </ul>
                     </td>
                     <td>
-                        @if (approval.ApprovalDate != "")
+                        @if (!string.IsNullOrEmpty(approval.ApprovalDate))
                         {
                             <span style="color:Green">Cогласовано</span>
                         }
@@ -87,7 +87,7 @@ if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprova
                     <td>@approval.ApprovedBy</td>
                     <td>@approval.ApprovalDate</td>
                     <td>@Model.EndDate.ToString("dd.MM.yyyy")</td>
-                    <td>@if (approval.Active)
+                    <td>@if (approval.Active && string.IsNullOrEmpty(approval.ApprovalDate))
                         {
                             <textarea rows="1" cols="30" value="@approval.Comment" wrap="soft" maxlength="240" data-approval-id="@approval.Id">@approval.Comment</textarea>
                             <a class="save-approval-comment-link" data-approval-id="@approval.Id" href="">Сохранить</a>
@@ -129,18 +129,22 @@ if (Model.ClearanceChecklistApprovals != null && Model.ClearanceChecklistApprova
                 </tr>
             </tbody>
         </table>
+
+        <div class="comment-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                        @{
+                            ViewBag.AddCommentText = "Добавить комментарий";
+                        }
+                        <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
     </form>            
 }
-
-<div class="comment-wrap">
-    <table style="width:100%">
-        <tr>
-            <td colspan="2">
-                <div id="CommentModelContext">@Html.Partial("RequestCommentPartial", Model.CommentsModel)</div>
-            </td>
-        </tr>
-    </table>
-</div>
 
 <script type="text/javascript">
     

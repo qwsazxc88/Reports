@@ -29,6 +29,15 @@ namespace Reports.Core
         ConsultantPersonnel = 262144,
         ConsultantAccountant = 524288,
     }
+
+    public enum UserManualRole
+    {
+        // Согласует приказы на командировку
+        ApprovesMissionOrders = 1,
+        // Согласует табель
+        ApprovesCommonRequests = 2
+    }
+
     public class ReportRoleConstants
     {
         public const string Admin = "1";

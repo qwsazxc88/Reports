@@ -29,8 +29,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Специалист по подбору персонала")]
         public string StaffName { get; set; }
 
-        //[Display(Name = "Руководитель")]
-        //public string ManagerName { get; set; }
+        [Display(Name = "Вышестоящие руководители")]
+        public string Chiefs { get; set; }
 
         //[Display(Name = "Кадровик(и)")]
         //public string PersonnelName { get; set; }

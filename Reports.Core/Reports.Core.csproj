@@ -109,9 +109,12 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
-    <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
+    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IMissionHotelsDao.cs" />
+    <Compile Include="Dao\IManualRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
@@ -171,10 +174,13 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
+    <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\HelpFaqDao.cs" />
     <Compile Include="Dao\Impl\HelpQuestionRequestDao.cs" />
     <Compile Include="Dao\Impl\HelpQuestionSubtypeDao.cs" />
@@ -186,7 +192,6 @@
     <Compile Include="Dao\Impl\HelpServiceTransferMethodDao.cs" />
     <Compile Include="Dao\Impl\HelpServiceTypeDao.cs" />
     <Compile Include="Dao\Impl\HelpVersionDao.cs" />
-    <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
@@ -279,9 +284,9 @@
     <Compile Include="Dao\Impl\EmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\Impl\AdditionalVacationTypeDao.cs" />
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
-    <Compile Include="Dao\Impl\СlearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
+    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -290,6 +295,7 @@
     <Compile Include="Dao\IRequestPrintFormDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
+    <Compile Include="Dao\IScheduleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
     <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
     <Compile Include="Dao\ISicklistCommentDao.cs" />
@@ -331,10 +337,6 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
-    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
-    <Compile Include="Dao\IСlearanceChecklistCommentDao.cs" />
-    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
-    <Compile Include="Dao\IScheduleDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -434,6 +436,7 @@
     <Compile Include="Domain\MissionDailyAllowanceGradeValue.cs" />
     <Compile Include="Domain\MissionGoal.cs" />
     <Compile Include="Domain\MissionGraid.cs" />
+    <Compile Include="Domain\MissionHotels.cs" />
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
     <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
@@ -484,8 +487,8 @@
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
-    <Compile Include="Domain\MissionOrderRole.cs" />
-    <Compile Include="Domain\MissionOrderRoleRecord.cs" />
+    <Compile Include="Domain\ManualRole.cs" />
+    <Compile Include="Domain\ManualRoleRecord.cs" />
     <Compile Include="Domain\Employment2\Country.cs" />
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
     <Compile Include="Domain\DocumentType.cs" />
@@ -528,6 +531,7 @@
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
+    <Compile Include="Dto\MissionHotelsDto.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
@@ -882,12 +886,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRoleRecord.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRoleRecord.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRole.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -1015,11 +1019,16 @@
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\HelpVersion.hbm.xml" />
     <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionHotels.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Domain\HelpFaq.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpVersion.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpServiceType.hbm.xml" />

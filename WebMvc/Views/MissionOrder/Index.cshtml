@@ -117,10 +117,15 @@
                             </td>
                             <td style = "text-align:right">
                                 <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
+                                <input type="hidden" id="IsSaveIsRecalculatedClick" name="IsSaveIsRecalculatedClick" value="@Model.IsSaveIsRecalculatedClick" />
                                 @if (Model.IsApproveAvailable)
                                 {
                                  @*   <input type="button" value="Отменить вы" onclick="clearSelection();"/>*@
                                     <input type="submit" value="Записать" onclick="return approveClick();"/>
+                                }
+                                @if (Model.IsRecalculationAvailable)
+                                {
+                                    <input type="submit" value="Записать отметки о перерасчете" onclick="$('#IsSaveIsRecalculatedClick').val(true);" />
                                 }
                             </td>
                    </tr>
@@ -130,6 +135,9 @@
     </tr>   
      <tr>
         <td colspan="2">
+            
+            @* BEGIN DELETE
+            
             <div class="announcement">
                 Уважаемые Пользователи!<br />
                 Обращаем ваше внимание:<br />
@@ -191,6 +199,9 @@
                     </li>
                 </ol>
             </div>
+
+            END DELETE *@
+            
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
@@ -293,6 +304,13 @@
                         <th>
                             <div>Разница</div>
                         </th>
+                        <th>
+                            <div>Перерасчет<br />произведен</div><br />
+                            @if (Model.IsRecalculationAvailable)
+                            {
+                                <input type="checkbox" id="setAllIsRecalculated" onclick="setSelectionIsRecalculated();" />
+                            }
+                        </th>
                     }
                         
                 </tr>
@@ -301,12 +319,9 @@
                     int i = 0;
                     foreach (var doc in Model.Documents)
                     {
-                        if (Model.IsCorrectionsOnlyModeOn && doc.AdditionalOrderId == null)
-                        {
-                            continue;
-                        }
-                        <tr>
-                            <td>@doc.Number</td>
+                        <tr @(Model.IsCorrectionsOnlyModeOn && !doc.AdditionalOrderId.HasValue ? "style=display:none" : string.Empty)>
+                            <td>@doc.Number
+                            <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" /></td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
                              <td>@doc.Dep7Name</td>
@@ -360,19 +375,28 @@
                                 <td>@if (doc.Flag)
                                     {
                                         @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
-                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
-                                        i++;
                                     }
                                 </td>
                                 }
                             }
-                            @if (Model.IsCorrectionsOnlyModeOn)
+                            @if (Model.IsCorrectionsOnlyModeOn && doc.AdditionalOrderId.HasValue)
                             {
                                 double? difference = @doc.AdditionalOrderEndDate.Value.Subtract(@doc.AdditionalOrderBeginDate.Value).Subtract(@doc.EndDate.Subtract(@doc.BeginDate)).TotalDays;
                                 <td style="text-align:center;">
                                     <div>@(difference == 0 ? string.Empty : difference.ToString())</div>
                                 </td>
+                                <td style="text-align: center">
+                                    @if (Model.IsRecalculationAvailable)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @class = "selcheckisrecalculated"});
+                                    }
+                                    else
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsRecalculated, new { @disabled = "disabled" });
+                                    }
+                                </td>
                             }
+                            @{i++;}
                         </tr>
                        
                     }
@@ -413,6 +437,15 @@
         else
             $(".selcheck").removeAttr('checked');
     }
+
+    function setSelectionIsRecalculated()
+    {
+        if($("#setAllIsRecalculated").is(':checked'))
+            $(".selcheckisrecalculated").attr('checked','checked');
+        else
+            $(".selcheckisrecalculated").removeAttr('checked');
+    }
+
      function approveClick()
     {
         clearErrors();

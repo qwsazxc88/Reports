@@ -368,9 +368,9 @@
 <div id="add-certification-dialog" title="Добавление сведений об аттестации">
     @using (Html.BeginForm("EducationAddCertification", "Employment", FormMethod.Post))
     {
-        <label for="CertificationDate" style="display:block;">Дата аттестации</label><input type="text" name="CertificationDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="CertificationDate" style="display:block;">Дата аттестации</label><input type="text" id="CertificationDate" name="CertificationDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="CertificateNumber" style="display:block;">Номер документа</label><input type="text" name="CertificateNumber" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" id="CertificateDateOfIssue" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
         <label for="InitiatingOrder" style="display:block;">Основание</label><input type="text" name="InitiatingOrder" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
  
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -396,9 +396,12 @@
 
 @* --- *@
 
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
+        attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
 
         var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
         {

@@ -11,19 +11,12 @@ using Reports.Core.Utils;
 namespace Reports.Core.Dao.Impl
 {
     public class HelpServiceRequestDao : DefaultDao<HelpServiceRequest>, IHelpServiceRequestDao
-    {
-        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
+    {        
         public const string StrInvalidManagerDepartment = "Не указано структурное подразделение для руководителя (id {0}) в базе даннных.";
         public const string StrNoManagerDepartments = "Не найдено структурных подразделений для руководителя (id {0}) в базе даннных.";
-
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+                
+        protected IManualRoleRecordDao missionOrderRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
         {
             get { return Validate.Dependency(missionOrderRoleRecordDao); }
             set { missionOrderRoleRecordDao = value; }
@@ -177,7 +170,7 @@ namespace Reports.Core.Dao.Impl
             //sqlQuery += @" order by Date DESC,Name ";
             //return sqlQuery;
         }
-        public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
+        public override string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
         {
             switch (role)
             {
@@ -194,7 +187,7 @@ namespace Reports.Core.Dao.Impl
 //                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2", currentUser.Id);
 //                            sqlFlag = @"case when v.UserDateAccept is not null 
 //                                        and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            List<Department> depList =  MissionOrderRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
+                            IList<Department> depList =  ManualRoleRecordDao.LoadDepartmentsForUserId(currentUser.Id);
                             if(depList == null || depList.Count() == 0)
                                 throw new ArgumentException(string.Format(StrNoManagerDepartments, currentUser.Id));
                             sqlQueryPart = @" inner join dbo.Department depM on dep.Path like depM.Path +N'%'";

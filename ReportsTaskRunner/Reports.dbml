@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="WebAppSKB" Class="ReportsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=WEBSRV\SQLEXPRESS;Initial Catalog=WebAppSKB;Persist Security Info=True;User ID=sa" SettingsObjectName="ReportsTaskRunner.Properties.Settings" SettingsPropertyName="WebAppDBConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Dismissal" Member="Dismissal">
+    <Type Name="Dismissal">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="EndDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Number" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TypeId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Compensation" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="Reason" Type="System.String" DbType="NVarChar(256)" CanBeNull="true" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CreatorId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UserDateAccept" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ManagerDateAccept" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="PersonnelManagerDateAccept" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="SendTo1C" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="DeleteDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="TimesheetStatusId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DeleteAfterSendTo1C" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Reduction" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="RegistryNumber" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PersonalIncomeTax" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="OKTMO" Type="System.String" DbType="NVarChar(8)" CanBeNull="true" />
+      <Column Name="IsOriginalReceived" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPersonnelFileSentToArchive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="Dismissal_ClearanceChecklistApproval" Member="ClearanceChecklistApproval" ThisKey="Id" OtherKey="DismissalId" Type="ClearanceChecklistApproval" />
+      <Association Name="User_Dismissal" Member="Users" ThisKey="CreatorId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="User_Dismissal1" Member="User" Storage="_Users1" ThisKey="UserId" OtherKey="Id" Type="User" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Users" Member="User">
+    <Type Name="User">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsFirstTimeLogin" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsActive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsNew" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Login" Type="System.String" DbType="NVarChar(64) NOT NULL" CanBeNull="false" />
+      <Column Name="Password" Type="System.String" DbType="NVarChar(64)" CanBeNull="true" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(32)" CanBeNull="true" />
+      <Column Name="DateAccept" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="NVarChar(512) NOT NULL" CanBeNull="false" />
+      <Column Name="Email" Type="System.String" DbType="NVarChar(512)" CanBeNull="true" />
+      <Column Name="DateRelease" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Comment" Type="System.String" DbType="NVarChar(512)" CanBeNull="true" />
+      <Column Name="RoleId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ManagerId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OrganizationId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PositionId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DepartmentId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Cnilc" Type="System.String" DbType="NVarChar(14)" CanBeNull="true" />
+      <Column Name="LoginAd" Type="System.String" DbType="NVarChar(32)" CanBeNull="true" />
+      <Column Name="Rate" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="GivesCredit" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="[Level]" Member="Level" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsMainManager" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Grade" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ExperienceIn1C" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="Address" Type="System.String" DbType="NVarChar(256)" CanBeNull="true" />
+      <Association Name="User_Dismissal" Member="Dismissal" ThisKey="Id" OtherKey="CreatorId" Type="Dismissal" />
+      <Association Name="User_Dismissal1" Member="Dismissal1" ThisKey="Id" OtherKey="UserId" Type="Dismissal" />
+      <Association Name="User_User" Member="User1" Storage="_Users2" ThisKey="Id" OtherKey="ManagerId" Type="User" />
+      <Association Name="User_ClearanceChecklistRoleRecords" Member="TargetUserClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="TargetUserId" Type="ClearanceChecklistRoleRecords" />
+      <Association Name="User_ClearanceChecklistRoleRecords1" Member="ClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="UserId" Type="ClearanceChecklistRoleRecords" />
+      <Association Name="User_ClearanceChecklistApproval" Member="ClearanceChecklistApproval" ThisKey="Id" OtherKey="ApprovedById" Type="ClearanceChecklistApproval" />
+      <Association Name="User_User" Member="Users1" ThisKey="ManagerId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="Department_User" Member="Department" ThisKey="DepartmentId" OtherKey="Id" Type="Department" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ClearanceChecklistRoleRecord" Member="ClearanceChecklistRoleRecords">
+    <Type Name="ClearanceChecklistRoleRecords">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RoleId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TargetUserId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="TargetDepartmentId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="User_ClearanceChecklistRoleRecords" Member="Users" ThisKey="TargetUserId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="User_ClearanceChecklistRoleRecords1" Member="User" ThisKey="UserId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="ClearanceChecklistRole_ClearanceChecklistRoleRecords" Member="ClearanceChecklistRole" ThisKey="RoleId" OtherKey="Id" Type="ClearanceChecklistRole" IsForeignKey="true" />
+      <Association Name="Department_ClearanceChecklistRoleRecords" Member="Department" ThisKey="TargetDepartmentId" OtherKey="Id" Type="Department" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ClearanceChecklistRole" Member="ClearanceChecklistRole">
+    <Type Name="ClearanceChecklistRole">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(32)" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(256)" CanBeNull="true" />
+      <Column Name="DaysForApproval" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DeleteDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="ClearanceChecklistRole_ClearanceChecklistRoleRecords" Member="ClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="RoleId" Type="ClearanceChecklistRoleRecords" />
+      <Association Name="ClearanceChecklistRole_ClearanceChecklistApproval" Member="ClearanceChecklistApproval" ThisKey="Id" OtherKey="RoleId" Type="ClearanceChecklistApproval" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ClearanceChecklistApproval" Member="ClearanceChecklistApproval">
+    <Type Name="ClearanceChecklistApproval">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="DismissalId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RoleId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ApprovedById" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ApprovalDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Comment" Type="System.String" DbType="NVarChar(256)" CanBeNull="true" />
+      <Association Name="User_ClearanceChecklistApproval" Member="User" ThisKey="ApprovedById" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="ClearanceChecklistRole_ClearanceChecklistApproval" Member="ClearanceChecklistRole" ThisKey="RoleId" OtherKey="Id" Type="ClearanceChecklistRole" IsForeignKey="true" />
+      <Association Name="Dismissal_ClearanceChecklistApproval" Member="Dismissal" ThisKey="DismissalId" OtherKey="Id" Type="Dismissal" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Department" Member="Department">
+    <Type Name="Department">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="Name" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
+      <Column Name="Code1C" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ParentId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Path" Type="System.String" DbType="NVarChar(128)" CanBeNull="true" />
+      <Column Name="ItemLevel" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Department_User" Member="User" ThisKey="Id" OtherKey="DepartmentId" Type="User" />
+      <Association Name="Department_ClearanceChecklistRoleRecords" Member="ClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="TargetDepartmentId" Type="ClearanceChecklistRoleRecords" />
+      <Association Name="Department_Department" Member="Department2" ThisKey="Code1C" OtherKey="ParentId" Type="Department" />
+      <Association Name="Department_Department" Member="Department1" ThisKey="ParentId" OtherKey="Code1C" Type="Department" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Settings" Member="Settings">
+    <Type Name="Settings">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="DownloadDictionaryFilePath" Type="System.String" DbType="NVarChar(512) NOT NULL" CanBeNull="false" />
+      <Column Name="UploadTimesheetFilePath" Type="System.String" DbType="NVarChar(512) NOT NULL" CanBeNull="false" />
+      <Column Name="ReleaseEmployeeDeleteDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="ExportImportEmail" Type="System.String" DbType="NVarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="SendEmailToManagerAboutNew" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="NotificationEmail" Type="System.String" DbType="NVarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="NotificationSmtp" Type="System.String" DbType="NVarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="NotificationPort" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="NotificationLogin" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
+      <Column Name="NotificationPassword" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
+      <Column Name="BillingEmail" Type="System.String" DbType="NVarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="BillingSmtp" Type="System.String" DbType="NVarChar(128) NOT NULL" CanBeNull="false" />
+      <Column Name="BillingPort" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BillingLogin" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
+      <Column Name="BillingPassword" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>

@@ -1,0 +1,122 @@
+﻿@model Reports.Presenters.UI.ViewModel.DismissalListModel
+@{
+    Layout = "~/Views/Shared/_PrintLayout.cshtml";
+    ViewBag.Title = "Печать увольнений";
+}
+
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+     <tr>
+        <td colspan="2">
+            @Html.ValidationSummary(false)
+                               
+        </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+           <table class="grid" style="width:100%">
+                <tr>
+                    <th>№<br />п/п</th>
+                    <th>
+                        <div id="sort1"><a href="#" onclick = "SortChanged(1);">Вид заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2"><a href="#"  onclick = "SortChanged(2);">Ф.И.О.</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"><a href="#"  onclick = "SortChanged(3);">Дата</a></div>
+                    </th>
+                     <th style="width:80px">
+                        <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
+                    </th>
+                    <th>
+                        <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"><a href="#"  onclick = "SortChanged(5);">Состояние</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7"><a href="#"  onclick = "SortChanged(7);">Период</a></div>
+                    </th>                    
+                    <th>
+                        <div id="sort10"><a href="#" onclick="SortChanged(10);">Оригиналы<br />документов<br />получены</a></div><br />
+                        @if (Model.IsOriginalReceivedEditable)
+                        {
+                            <input type="checkbox" id="setAll1" />
+                        }
+                    </th>
+                    
+                    <th>
+                        <div id="sort11"><a href="#" onclick="SortChanged(11);">Личное дело<br />передано<br />в архив</a></div><br />
+                        @if (Model.IsPersonnelFileSentToArchiveEditable)
+                        {
+                            <input type="checkbox" id="setAll2" />
+                        }
+                    </th>
+                   @* <th>
+                        Дата окончания
+                    </th>*@
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    var i = 1;
+                    foreach (var doc in Model.Documents)
+                    {
+                        <tr>
+                            <td>
+                                @i
+                                <input type="hidden" id="Documents[@(i - 1)].Id" name="Documents[@(i - 1)].Id" value="@doc.Id" />
+                            </td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("DismissalEdit", new { id = doc.Id, UserId = doc.UserId })' style="cursor:hand">@doc.Name</a>
+                            </td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Date</td>
+                             <td>@doc.Number</td>
+                            <td>@doc.RequestType</td>
+                            <td>@doc.RequestStatus</td>
+                            <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+
+                            <td style="text-align: center">
+                                @if(Model.IsOriginalReceivedEditable)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsOriginalReceived, new { @class = "selcheck1", disabled = "disabled" })
+                                }
+                            </td>
+
+                            <td style="text-align: center">
+                                @if (Model.IsPersonnelFileSentToArchiveEditable)
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2" })
+                                }
+                                else
+                                {
+                                    @Html.CheckBoxFor(m => m.Documents[i - 1].IsPersonnelFileSentToArchive, new { @class = "selcheck2", disabled = "disabled" })
+                                }
+                            </td>
+                            
+                            @* <td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
+                            <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
+                        </tr>
+                                i++;
+                    }
+                }
+            </table>
+            <input type="hidden" name="anticache" value=@DateTime.Now />
+        </td>
+    </tr>
+ </table>
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+         setSortFields();
+    });
+</script>   

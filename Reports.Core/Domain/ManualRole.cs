@@ -5,9 +5,9 @@ using Iesi.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Расширенные роли пользователей в дополнение к заданным через RoleId
+    /// Роли для ручной привязки
     /// </summary>
-    public class MissionOrderRole : AbstractEntityWithVersion
+    public class ManualRole : AbstractEntityWithVersion
     {
         public virtual string Code { get; set; }
         public virtual string Description { get; set; }        

@@ -1,0 +1,1 @@
+alter table MissionOrder add IsRecalculated bit not null default 0

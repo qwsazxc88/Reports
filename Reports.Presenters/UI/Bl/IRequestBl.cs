@@ -27,7 +27,7 @@ namespace Reports.Presenters.UI.Bl
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int vacationId, bool isChildVacantion);
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId, RequestTypeEnum requestType);
 
-        RequestCommentsModel GetCommentsModel(int id, int typeId);
+        RequestCommentsModel GetCommentsModel(int id, int typeId, string addCommentText = null, bool hasParent = false);
         bool SaveComment(SaveCommentModel model);
 
         AbsenceListModel GetAbsenceListModel();
@@ -62,7 +62,7 @@ namespace Reports.Presenters.UI.Bl
         DismissalListModel GetDismissalListModel();
         void SetDismissalListModel(DismissalListModel model, bool hasError);
         DismissalEditModel GetDismissalEditModel(int id, int userId);
-        bool SaveDismissalEditModel(DismissalEditModel model, UploadFileDto fileDto, UploadFileDto unsignedOrderScanFileDto, UploadFileDto orderScanFileDto, out string error);
+        bool SaveDismissalEditModel(DismissalEditModel model, IDictionary<RequestAttachmentTypeEnum, UploadFileDto> fileDtos, out string error);
         void ReloadDictionariesToModel(DismissalEditModel model);
                 
         ClearanceChecklistListModel GetClearanceChecklistListModel();
@@ -133,6 +133,9 @@ namespace Reports.Presenters.UI.Bl
 
         MissionOrderListModel GetMissionOrderListModel();
         void SetMissionOrderListModel(MissionOrderListModel model, bool hasError);
+        void SetMissionHotelsListModel(MissionHotelsModel model, bool hasError);
+        void CheckFillFields(MissionHotelsEditModel model, System.Web.Mvc.ModelStateDictionary ms);
+        bool SaveMissionHotelsEditModel(MissionHotelsEditModel model, out string error);
         MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId);
         void SetMissionOrderEditTargetModel(MissionOrderEditTargetModel model);
         CreateMissionOrderModel GetCreateMissionOrderModel();

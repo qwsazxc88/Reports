@@ -87,68 +87,67 @@
 
         <fieldset class="bordered nomargin clear">
         <legend class="level2">@Html.LabelFor(m => m.References)</legend>
-            @if (Model.References.Count > 0)
-            {
                 <div id="reference-container">
                     <table class="grid">
-                    
-                        <tr>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].LastName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].FirstName)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Patronymic)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].WorksAt)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Position)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Phone)
-                            </th>
-                            <th>
-                                @Html.LabelFor(m => m.References[0].Relation)
-                            </th>
-                        </tr>
-                    
-                        @for (var i = 0; i < Model.References.Count; i++)
-                        {
+                        <thead>
                             <tr>
-                                <td>
-                                    @Model.References[i].LastName
-                                </td>
-                                <td>
-                                    @Model.References[i].FirstName
-                                </td>
-                                <td>
-                                    @Model.References[i].Patronymic
-                                </td>
-                                <td>
-                                    @Model.References[i].WorksAt
-                                </td>
-                                <td>
-                                    @Model.References[i].Position
-                                </td>
-                                <td>
-                                    @Model.References[i].Phone
-                                </td>
-                                <td>
-                                    @Model.References[i].Relation
-                                </td>
-                                @*<td id="delete-foreign-language">
-                                    <a href="" data-index=@i>Удалить</a>
-                                </td>*@
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].LastName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].FirstName)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Patronymic)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].WorksAt)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Position)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Phone)
+                                </th>
+                                <th>
+                                    @Html.LabelFor(m => m.References[0].Relation)
+                                </th>
                             </tr>
-                        }                    
+                        </thead>  
+                        <tbody>                 
+                            @for (var i = 0; i < Model.References.Count; i++)
+                            {
+                                <tr class="reference-row">
+                                    <td>
+                                        @Model.References[i].LastName
+                                    </td>
+                                    <td>
+                                        @Model.References[i].FirstName
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Patronymic
+                                    </td>
+                                    <td>
+                                        @Model.References[i].WorksAt
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Position
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Phone
+                                    </td>
+                                    <td>
+                                        @Model.References[i].Relation
+                                    </td>
+                                    @*<td id="delete-foreign-language">
+                                        <a href="" data-index=@i>Удалить</a>
+                                    </td>*@
+                                </tr>
+                            } 
+                        </tbody>                    
 
                     </table>
                 </div>
-            }
             <a href="" id="add-reference">Добавить новую запись</a>
         </fieldset>
 
@@ -297,7 +296,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-reference-dialog form').submit();
+                    processAddNameChange();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -305,6 +304,31 @@
                 }
             }
         });
+
+        var processAddNameChange = function()
+        {
+            var url = "@Url.Action("BackgroundCheckAddReference", "Employment")";
+            var dataToSend = $("#add-reference-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#reference-container>table");
+                var $rows = $("#reference-container>table .reference-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"reference-row\"><td>" +
+                        (dataReceived[i].LastName ? dataReceived[i].LastName : "") + "</td><td>" +
+                        (dataReceived[i].FirstName ? dataReceived[i].FirstName : "") + "</td><td>" +
+                        (dataReceived[i].Patronymic ? dataReceived[i].Patronymic : "") + "</td><td>" +
+                        (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
+                        (dataReceived[i].Position ? dataReceived[i].Position : "") + "</td><td>" +
+                        (dataReceived[i].Phone ? dataReceived[i].Phone : "") + "</td><td>" +
+                        (dataReceived[i].Relation ? dataReceived[i].Relation : "") +
+                        "</td></tr>"
+                    );
+                }
+            }, "json");
+        };
 
         $("#add-reference").click(function (e) {
             $addReferenceDialog.dialog("open");
