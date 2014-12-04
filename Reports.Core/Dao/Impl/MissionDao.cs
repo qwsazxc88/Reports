@@ -19,34 +19,18 @@ namespace Reports.Core.Dao.Impl
                                 {6} as EndDate,  
                                 v.Number as Number,
                                 u.Name as UserName,
-                                t.Name as RequestType,
-                                case when v.DeleteDate is not null then '{0}'
-                                     when v.SendTo1C is not null then 'Выгружено в 1с' 
-                                     when v.PersonnelManagerDateAccept is not null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Согласовано кадровиком'
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is not null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено кадровику'    
-                                    when  -- v.PersonnelManagerDateAccept is null and 
-                                          v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is not null 
-                                          then 'Отправлено руководителю'    
-                                    when  v.PersonnelManagerDateAccept is null 
-                                          and v.ManagerDateAccept is null 
-                                          and v.UserDateAccept is null 
-                                          then 'Черновик сотрудника'    
-                                    else ''
-                                end as RequestStatus,
+                                t.Name as RequestType," +
+                                RequestStatusStandardSelector +
+                                @",
                                 case when v.IsAdditionalOrderExists = 1 then N'Да' else N'Нет' end as IsAdditionalOrderExists,
                                 case when ((v.DeleteDate is not null) or (v.IsAdditionalOrderExists = 0)) then null
                                      when AdditionalOrderRecalculateDate is not null then 0
                                      else 1 end as Flag 
                                 from {4} v
                                 left join {1} t on v.TypeId = t.Id
-                                inner join [dbo].[Users] u on u.Id = v.UserId";
+                                inner join [dbo].[Users] u on u.Id = v.UserId
+                                " + sqlUManagerAccountJoin + @"
+                                " + sqlCurrentUserJoin;
         public MissionDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -104,6 +88,7 @@ namespace Reports.Core.Dao.Impl
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
+            query.SetInt32("userId", userId);
             AddDatesToQuery(query, beginDate, endDate, userName);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionDto))).List<MissionDto>();
         }
