@@ -54,7 +54,8 @@ namespace Reports.Core.Dao.Impl
                                      when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then N'Услуга сформирована' 
                                      when v.[ConfirmWorkDate] is not null then N'Услуга оказана' 
                                     else N''
-                                end as Status
+                                end as Status,
+                                v.Address as address
                                 from dbo.HelpServiceRequest v
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpServiceTransferMethod] m on v.[TransferMethodId] = m.Id
@@ -80,7 +81,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestTransferType", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("Number", NHibernateUtil.Int32);  
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Address", NHibernateUtil.String);  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,
                 UserRole role,
@@ -91,7 +93,8 @@ namespace Reports.Core.Dao.Impl
                 string userName,
                 string number,
                 int sortBy,
-                bool? sortDescending)
+                bool? sortDescending,
+                string Address)
         {
             string sqlQuery = sqlSelectForHsList;
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
