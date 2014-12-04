@@ -101,7 +101,12 @@
                     @Html.LabelFor(m => m.TransferMethodTypeId):
                 </td>
                 <td>
-                    @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "SelectTMT();" } : (object)new { disabled = "disabled" }) 
+                    <label id="lblAddress"> Адрес:   </label>
+                    @Html.TextBoxFor(model => model.Address, Model.IsEditable ? (object)new { maxlength = 200, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                    @*
+                    <input type="text" id="txtAddress" name="Address"  maxlength="200" style="width:40%"/>
+                    *@
                     <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
                 </td>
             </tr>
@@ -161,6 +166,7 @@
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
       SetControlStates();
+      SelectTMT();
    });
 //    function Delete() {
 //        $("#IsDelete").val("true");
@@ -327,6 +333,21 @@
         else
         {
             $('#PeriodTrId').hide();
+        }
+    }
+
+    function SelectTMT()
+    {
+        if ($("#TransferMethodTypeId").val() == 1)
+        {
+            $("#lblAddress").hide();
+            $("#Address").val('');
+            $("#Address").hide();
+        }
+        else
+        {
+            $("#lblAddress").show();
+            $("#Address").show();
         }
     }
 </script> 

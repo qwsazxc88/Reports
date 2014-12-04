@@ -16,6 +16,7 @@ namespace Reports.Core.Dao
                                                  string userName,
                                                  string number,
                                                  int sortBy,
-                                                 bool? sortDescending);
+                                                 bool? sortDescending,
+                                                 string Address);
     }
 }

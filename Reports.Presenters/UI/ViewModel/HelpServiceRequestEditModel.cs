@@ -60,5 +60,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int Operation { get; set; }
 
         public bool ReloadPage { get; set; }
+
+        public string Address { get; set; }
     }
 }
