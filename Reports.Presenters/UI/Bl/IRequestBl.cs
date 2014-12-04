@@ -27,7 +27,7 @@ namespace Reports.Presenters.UI.Bl
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int vacationId, bool isChildVacantion);
         int GetOtherRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId, RequestTypeEnum requestType);
 
-        RequestCommentsModel GetCommentsModel(int id, int typeId);
+        RequestCommentsModel GetCommentsModel(int id, int typeId, string addCommentText = null, bool hasParent = false);
         bool SaveComment(SaveCommentModel model);
 
         AbsenceListModel GetAbsenceListModel();

@@ -43,6 +43,15 @@ namespace WebMvc.Controllers
                 return Validate.Dependency(appointmentBl);
             }
         }
+        protected IHelpBl helpBl;
+        public IHelpBl HelpBl
+        {
+            get
+            {
+                helpBl = Ioc.Resolve<IHelpBl>();
+                return Validate.Dependency(helpBl);
+            }
+        }
 
         public ActionResult Index(int? menuId)
         {
@@ -197,6 +206,10 @@ namespace WebMvc.Controllers
                 case (int)RequestTypeEnum.AppointmentReport:
                     model = AppointmentBl.GetCommentsModel(id, (RequestTypeEnum)typeId);
                     break;
+                case (int)RequestTypeEnum.HelpServiceRequest:
+                //case (int)RequestTypeEnum.AppointmentReport:
+                    model = HelpBl.GetCommentsModel(id, (RequestTypeEnum)typeId);
+                    break;
                 default:
                     throw new ArgumentException(string.Format(StrInvalidCommentType,typeId)); 
             }
@@ -249,6 +262,9 @@ namespace WebMvc.Controllers
                             break;
                         case (int)RequestTypeEnum.AppointmentReport:
                             saveResult = AppointmentBl.SaveComment(model, RequestTypeEnum.AppointmentReport);
+                            break;
+                        case (int)RequestTypeEnum.HelpServiceRequest:
+                            saveResult = HelpBl.SaveComment(model, RequestTypeEnum.HelpServiceRequest);
                             break;
                         default:
                             throw new ArgumentException(string.Format(StrInvalidCommentType, typeId));

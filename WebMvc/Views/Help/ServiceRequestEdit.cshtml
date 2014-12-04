@@ -1,0 +1,354 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpServiceRequestEditModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Заказ услуги";
+}
+@using (Html.BeginForm("ServiceRequestEdit", "Help", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Partial("UserInfoView", Model)
+                </td>
+            </tr>
+            <tr>
+                <td style="width:200px">
+                    @Html.LabelFor(m => m.TypeId):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                    <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                    <input type="hidden" id="IsEditable" name="IsEditable" value="@Model.IsEditable" />
+                    <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
+                    <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
+                    <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
+                    <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
+                    <input type="hidden" id="IsConsultantOutsourcingEditable" name="IsConsultantOutsourcingEditable" value="@Model.IsConsultantOutsourcingEditable" />
+
+                    <input type="hidden" id="IsAttachmentVisible" name="IsAttachmentVisible" value="@Model.IsAttachmentVisible" />
+                    <input type="hidden" id="IsRequirementsVisible" name="IsRequirementsVisible" value="@Model.IsRequirementsVisible" />
+                    <input type="hidden" id="IsPeriodVisible" name="IsPeriodVisible" value="@Model.IsPeriodVisible" />
+                    @*<input type="hidden" id="IsServiceAttachmentVisible" name="IsServiceAttachmentVisible" value="@Model.IsServiceAttachmentVisible" />*@
+                    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                </td>
+            </tr>
+             <tr id="ViewAttachmentTrId">
+                <td>@Html.LabelFor(model => model.Attachment):</td>
+                <td>
+                    @if (Model.AttachmentId > 0)
+                    {
+                        <a id="ViewAttachmentId" class="ui-notify-close" href='@Url.Action("ViewTemplate", new { Id = Model.AttachmentId })' style="cursor:hand" target="_blank" >@Model.Attachment</a>
+                        <input type="hidden" id="Attachment" name="Attachment" value="@Model.Attachment" />
+                        <input type="hidden" id="AttachmentId" name="AttachmentId" value="@Model.AttachmentId" />
+                        if (Model.IsEditable && Model.AttachmentId > 0)
+                        {
+                            <text>&nbsp; &nbsp; &nbsp;<a class="ui-notify-close" id="DeleteAttachmentId" onclick="return deleteAttachment(@Model.AttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>
+                        }
+                    }
+                </td>
+            </tr>
+             @if (Model.IsEditable)
+             {
+                <tr id="AttachmentTrId">    
+                    <td>Прикрепить скан образца</td>
+                    <td>
+                        <input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span>
+                    </td>
+                </tr>
+            }
+            <tr id="RequirementsTrId">
+                <td>
+                    @Html.LabelFor(m => m.Requirements):
+                </td>
+                <td>
+                   @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                </td>
+            </tr>
+             <tr  id="PeriodTrId">
+                <td>
+                    @Html.LabelFor(m => m.PeriodId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.PeriodId, new SelectList(Model.Periods, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PeriodIdHidden" name="PeriodIdHidden" value="@Model.PeriodIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductionTimeTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ProductionTimeTypeId, new SelectList(Model.ProductionTimeTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ProductionTimeTypeIdHidden" name="ProductionTimeTypeIdHidden" value="@Model.ProductionTimeTypeIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.TransferMethodTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? (object)new { onchange = "SelectTMT();" } : (object)new { disabled = "disabled" }) 
+                    <label id="lblAddress"> Адрес:   </label>
+                    @Html.TextBoxFor(model => model.Address, Model.IsEditable ? (object)new { maxlength = 200, style = "width:500px" } : (object)new { @readonly = "read-only", style = "width:500px" }) 
+                    @*
+                    <input type="text" id="txtAddress" name="Address"  maxlength="200" style="width:40%"/>
+                    *@
+                    <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
+                </td>
+            </tr>
+            <tr id="ViewServiceAttachmentTrId">
+                <td>@Html.LabelFor(model => model.ServiceAttachment):</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.ServiceAttachment))
+                    {
+                        <a class="ui-notify-close" id="ViewServiceAttachmentId"  href='@Url.Action("ViewTemplate", new { Id = Model.ServiceAttachmentId })' style="cursor:hand" target="_blank" >@Model.ServiceAttachment</a>
+                        <input type="hidden" id="ServiceAttachment" name="ServiceAttachment" value="@Model.ServiceAttachment" />
+                        <input type="hidden" id="ServiceAttachmentId" name="ServiceAttachmentId" value="@Model.ServiceAttachmentId" />
+                        if (Model.IsConsultantOutsourcingEditable)
+                        {<text>&nbsp; &nbsp; &nbsp;<a class="ui-notify-close" id="DeleteServiceAttachmentId"  onclick="return deleteServiceAttachment(@Model.ServiceAttachmentId);" href='' style="cursor:hand" target="_blank" >Удалить</a></text>}
+                    }
+                </td>
+            </tr>
+            @if (Model.IsConsultantOutsourcingEditable)
+            {
+            <tr>    
+                <td>Прикрепить скан</td>
+                <td><input id="ServiceFileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            </tr>
+            }
+             <tr>
+                <td colspan="2">
+                   <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                                    {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Отправить запрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
+                                                                                                 {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Услугой удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
+                 
+                   <input type="submit" value="Принять услугу в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
+                                                                                                      {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
+              
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    <div class="comment-wrap">
+        <table style="width:100%">
+             <tr>
+                <td colspan="2">
+                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+ var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+ var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+  $(document).ready(function () {
+      SetControlStates();
+      SelectTMT();
+      $("#ManagerNameRow").hide();
+   });
+//    function Delete() {
+//        $("#IsDelete").val("true");
+//        return true;
+//    }
+    function ValidateForm()
+    {
+        var result = true;
+        if(($("#IsRequirementsVisible").val() == 'true') && !IsFieldNotEmpty($('#Requirements')))
+            result = false;
+        return result;
+    }
+    function SendRequest()
+    {
+        var result = ValidateForm();
+        if(!result)
+            return result;
+        $("#Operation").val(1);
+        return true;
+    }
+    function BeginWork()
+    {
+        $("#Operation").val(2);
+        return true;
+    }
+    function EndWork()
+    {
+        $("#Operation").val(3);
+        return true;
+    }
+    function EndRequest()
+    {
+        $("#Operation").val(4);
+        return true;
+    }
+     function RejectRequest()
+    {
+        $("#Operation").val(5);
+        return true;
+    }
+    function IsFieldNotEmpty(control)
+    {
+        clearControlErrors(control);
+        if(control.val() == '' )
+        {
+            addControlError(control,'Обязательное поле');
+            return false;
+        }
+        return true;
+    }
+    function SetControlStates()
+    {
+        SetControlStatesInternal($("#IsAttachmentVisible").val(),
+        $("#IsRequirementsVisible").val(),$("#IsPeriodVisible").val());
+    }
+    function onTypeChange()
+    {
+        clearControlErrors($('#Requirements'));
+       getDictionariesStates();
+    }
+    function setValuesToDropdown(controlName,data)
+    {
+            var optionsValues = '<select id="' + controlName + '" name="' + controlName + '">';
+            $.each(data, function (item, data) {
+                optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+            })
+            optionsValues += '</select>';
+            var options = $('#' + controlName );
+            options.replaceWith(optionsValues);
+        }
+    function getDictionariesStates(){
+        var actionUrl="@Url.Action("GetDictionariesStates", "Help")";
+        var url = actionUrl + "?TypeId=" +  $('#TypeId').val();
+        $.getJSON(url,
+                       function (result) {
+                            if(result.Error != ''){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide(); 
+                                $('#IsAttachmentVisible').val(result.IsAttachmentVisible);  
+                                $('#IsRequirementsVisible').val(result.IsRequirementsVisible);
+                                $('#IsPeriodVisible').val(result.IsPeriodVisible);
+                                SetControlStates();
+                                setValuesToDropdown('PeriodId',result.Periods);
+                                if((result.PeriodId != 0) /*&& ($('#PeriodId').val() == 0)*/)
+                                    $('#PeriodId').val(result.PeriodId);
+                           }
+                       }
+                     );
+        return false;
+    }
+    function deleteAttachment(id){
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide();   
+                                $('#ViewAttachmentId').hide();                    
+                                $('#DeleteAttachmentId').hide();   
+                                $('#AttachmentId').val(0);     
+                                $('#Attachment').val('');             
+                           }
+                       }
+                     );
+        return false;
+    }
+    function deleteServiceAttachment(id){
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide();   
+                                $('#ViewServiceAttachmentId').hide();                    
+                                $('#DeleteServiceAttachmentId').hide();   
+                                $('#ServiceAttachmentId').val(0);     
+                                $('#ServiceAttachment').val('');             
+                           }
+                       }
+                     );
+        return false;
+    }
+
+    function SetControlStatesInternal(isAttachmentVisible,isRequirementsVisible,isPeriodVisible)
+    {
+        if(isAttachmentVisible == 'true' || isAttachmentVisible == 'True')
+        {
+            $('#ViewAttachmentTrId').show();
+            if($('#AttachmentTrId'))
+                $('#AttachmentTrId').show();
+        }
+        else
+        {
+            $('#ViewAttachmentTrId').hide();
+            if($('#AttachmentTrId'))
+                $('#AttachmentTrId').hide();
+        }
+        if(isRequirementsVisible == 'true' || isRequirementsVisible == 'True')
+        {
+            $('#RequirementsTrId').show();
+        }
+        else
+        {
+            $('#RequirementsTrId').hide();
+        }
+        if(isPeriodVisible == 'true' || isPeriodVisible == 'True')
+        {
+            $('#PeriodTrId').show();
+        }
+        else
+        {
+            $('#PeriodTrId').hide();
+        }
+    }
+
+    function SelectTMT()
+    {
+        if ($("#TransferMethodTypeId").val() == 1)
+        {
+            $("#lblAddress").hide();
+            $("#Address").val('');
+            $("#Address").hide();
+        }
+        else
+        {
+            $("#lblAddress").show();
+            $("#Address").show();
+        }
+    }
+</script> 

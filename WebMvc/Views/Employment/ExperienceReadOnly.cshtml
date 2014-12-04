@@ -1,0 +1,147 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ExperienceModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Трудовая деятельность";
+}
+
+<fieldset class="bordered doc-wrap panel">
+<legend>Опыт работы</legend>
+    
+    <fieldset class="bordered nomargin clear"><legend class="level2">@Html.LabelFor(m => m.ExperienceItems)</legend>
+        @if (Model.ExperienceItems.Count > 0)
+        {
+            <div id="experience-items-container">
+                <table class="grid">
+                
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.ExperienceItems[0].BeginningDate)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.ExperienceItems[0].EndDate)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.ExperienceItems[0].Company)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.ExperienceItems[0].Position)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.ExperienceItems[0].CompanyContacts)
+                        </th> 
+                    </tr>
+                
+                    @for (var i = 0; i < Model.ExperienceItems.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                               @Html.DisplayFor(m => m.ExperienceItems[i].BeginningDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => m.ExperienceItems[i].EndDate)
+                            </td>
+                            <td>
+                                @Model.ExperienceItems[i].Company
+                            </td>
+                            <td>
+                                @Model.ExperienceItems[i].Position
+                            </td>
+                            <td>
+                                @Model.ExperienceItems[i].CompanyContacts
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+        else
+        {
+            <text>-</text>
+        }
+    </fieldset>
+
+    <br />
+
+    <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.ExperienceItems)</legend>
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookSeries)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookSeries)&nbsp;</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookNumber)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookNumber)&nbsp;</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookDateOfIssue)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookDateOfIssue)&nbsp;</span>
+                </td>
+            </tr>
+        </table>
+        @if (!string.IsNullOrEmpty(Model.WorkBookScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.WorkBookScanAttachmentFilename
+            </a>
+        }
+    </fieldset>
+
+    <br />
+
+    <fieldset class="bordered nomargin clear">
+    <legend class="level2">Сведения о вкладыше в трудовую книжку</legend>
+        <table>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookSupplementSeries)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookSupplementSeries)&nbsp;</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookSupplementNumber)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookSupplementNumber)&nbsp;</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.WorkBookSupplementDateOfIssue)
+                </td>
+                <td>
+                    <span class="fakeFormField">@Html.DisplayFor(m => m.WorkBookSupplementDateOfIssue)&nbsp;</span>
+                </td>
+            </tr>
+        </table>
+        @if (!string.IsNullOrEmpty(Model.WorkBookSupplementScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.WorkBookSupplementScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.WorkBookSupplementScanAttachmentFilename
+            </a>
+        }
+    </fieldset>
+
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empExperience");
+    });
+</script>

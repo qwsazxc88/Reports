@@ -25,7 +25,7 @@ namespace WebMvc.Controllers
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
         public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
@@ -956,7 +956,7 @@ namespace WebMvc.Controllers
                 return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
             }
         }
-        protected UploadFileDto GetFileContext()
+        /*protected UploadFileDto GetFileContext()
         {
             if (Request.Files.Count == 0)
                 return null;
@@ -990,8 +990,8 @@ namespace WebMvc.Controllers
             var fileContent = new byte[length];
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
-        }
-        protected string  GetFileName(object qqFile,out byte[] context)
+        }*/
+        public static string  GetFileName(object qqFile,out byte[] context)
         {
             context = null;
             if (qqFile is string[])

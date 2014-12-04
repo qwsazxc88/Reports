@@ -8,19 +8,29 @@
 
     <many-to-one name="Candidate" class="EmploymentCandidate" column="CandidateId" foreign-key="FK_Managers_Candidate" index="Managers_Candidate" not-null="true"/>
     <many-to-one name="Position" class="Position" column="PositionId" foreign-key="FK_Managers_Position" index="Managers_Position"  not-null="false"/>
-    <many-to-one name="Directorate" class="Department" column="DirectorateId" foreign-key="FK_Managers_Directorate" index="Managers_Directorate"  not-null="false"/>
     <many-to-one name="Department" class="Department" column="DepartmentId" foreign-key="FK_Managers_Department" index="Managers_Department"  not-null="false"/>
-    <property name="EmploymentConditions" length="100" not-null="false"/>
-    <property name="Schedule" length="50" not-null="false"/>
+    <property name="EmploymentConditions" length="250" not-null="false"/>
+    <many-to-one name="Schedule" class="Schedule" column="ScheduleId" foreign-key="FK_Managers_Schedule" index="Managers_Schedule"  not-null="false"/>
     <property name="ProbationaryPeriod" length="50" not-null="false"/>
-    <!--property name="SalaryBasis" precision="19" scale="2" not-null="true"/-->
-    <property name="WorkCity" length="50" not-null="false"/>
+    <property name="DailySalaryBasis" precision="15" scale="2" not-null="false"/>
+    <property name="HourlySalaryBasis" precision="15" scale="2" not-null="false"/>
+    <property name="SalaryMultiplier" precision="3" scale="2" not-null="false"/>
+    <property name="WorkCity" length="100" not-null="false"/>
     <property name="PersonalAddition" precision="19" scale="2" not-null="false"/>
     <property name="PositionAddition" precision="19" scale="2" not-null="false"/>
     <property name="IsFront" not-null="true"/>
     <property name="Bonus" precision="19" scale="2" not-null="false"/>
     <property name="IsLiable" not-null="true"/>
     <property name="RequestNumber" length="50" not-null="false"/>
-    
+
+    <property name="ManagerApprovalStatus" not-null="false"/>
+    <many-to-one name="ApprovingManager" class="User" column="ApprovingManagerId" foreign-key="FK_Managers_ApprovingManager" index="Managers_ApprovingManager" not-null="false"/>
+    <property name="ManagerRejectionReason" length="50" not-null="false"/>
+    <property name="HigherManagerApprovalStatus" not-null="false"/>
+    <many-to-one name="ApprovingHigherManager" class="User" column="ApprovingHigherManagerId" foreign-key="FK_Managers_ApprovingHigherManager" index="Managers_ApprovingHigherManager" not-null="false"/>
+    <property name="HigherManagerRejectionReason" length="50" not-null="false"/>
+    <many-to-one name="RejectingChief" class="User" column="RejectingChiefId" foreign-key="FK_Managers_RejectingChief" index="Managers_RejectingChief" not-null="false"/>
+    <property name="ChiefRejectionReason" length="50" not-null="false"/>
+
   </class>
 </hibernate-mapping>

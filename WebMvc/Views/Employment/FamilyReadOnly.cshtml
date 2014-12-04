@@ -1,0 +1,154 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.FamilyModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Состав семьи";
+}
+
+<fieldset class="bordered doc-wrap panel"><legend>Состав семьи</legend>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.IsMarried) @Html.DisplayFor(m => m.IsMarried)
+    </div>            
+    <table class="grid centered clear">
+    <thead>
+        <tr>
+            <th>
+                Степень родства
+            </th>
+            <th>
+                ФИО
+            </th>
+            <th>
+                Паспортные данные
+            </th>
+            <th>
+                Дата рождения
+            </th>
+            <th>
+                Место рождения
+            </th>
+            <th>
+                Место работы, должность,<br />(рабочий, мобильный телефон)
+            </th>
+            <th>
+                Адрес места жительства,<br />(домашний, мобильный телефон)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Spouse != null)
+        {
+            <tr id="spouse-row" style="vertical-align:top;">
+                <td style="">
+                    @Html.LabelFor(m => m.Spouse)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.PassportData)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.DateOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.WorksAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Spouse.Contacts)
+                </td>
+            </tr>
+        }
+        <tr style="vertical-align:top;">
+            <td>
+                @Html.LabelFor(m => m.Father)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.PassportData)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.DateOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.PlaceOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.WorksAt)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Father.Contacts)
+            </td>
+        </tr>
+        <tr style="vertical-align:top;">
+            <td>
+                @Html.LabelFor(m => m.Mother)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.PassportData)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.DateOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.PlaceOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.WorksAt)
+            </td>
+            <td>
+                @Html.DisplayFor(m => m.Mother.Contacts)
+            </td>
+        </tr>
+
+        @for (var i = 0; i < Model.Children.Count; i++)
+        {
+            <tr>
+                <td>
+                    Ребенок
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].PassportData)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].DateOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].PlaceOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].WorksAt)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => m.Children[i].Contacts)
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>
+
+    @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.MarriageCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.MarriageCertificateScanAttachmentFilename
+        </a>
+    }
+    
+</fieldset>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empFamily");        
+    });
+</script>

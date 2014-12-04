@@ -4,23 +4,50 @@
     ViewBag.Title = "Прием - Паспортные данные";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("Passport", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Паспорт РФ</legend>
-        @*<div class="formfield clearleft">
-            @Html.LabelFor(m => m.DocumentType)&nbsp;@Html.ValidationMessageFor(m => m.DocumentType)<br />
-            @Html.DropDownListFor(m => m.DocumentType, Model.DocumentTypeItems)
-        </div>*@
+        <div class="formfield clearleft">
+            @Html.LabelFor(m => m.DocumentTypeId)&nbsp;@Html.ValidationMessageFor(m => m.DocumentTypeId)<br />
+            @Html.DropDownListFor(m => m.DocumentTypeId, Model.DocumentTypeItems)
+        </div>
+
+        <div class="formfield">
+            Выбрать скан для загрузки<br /><input type="file" name="InternalPassportScanFile" /> @Html.ValidationMessageFor(m => m.InternalPassportScanFile)
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.InternalPassportScanAttachmentFilename))
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InternalPassportScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.InternalPassportScanAttachmentFilename
+                </a>
+            </div>
+            <div class="formfield">
+                <br /><input type="button" value="Удалить скан" onclick="deleteAttachment(@Model.InternalPassportScanAttachmentId);" @*@if (!Model.IsDeleteScanAvailable)
+                                                                                           {<text>style="display:none"</text>}*@/>
+            </div>
+        }
+
+        <div class="formfield">
+            <br /><a href="">Открыть</a>
+        </div>
+        <div class="formfield">
+            <br /><a href="">Удалить</a>
+        </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportSeries)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSeries)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSeries)
+            @Html.TextBoxFor(m => m.InternalPassportSeries, new { pattern = @"^\d{4}$", title = "4 цифры (####)" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportNumber)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportNumber)<br />
-            @Html.TextBoxFor(m => m.InternalPassportNumber)
+            @Html.TextBoxFor(m => m.InternalPassportNumber, new { pattern = @"^\d{6}$", title = "6 цифр (######)" })
         </div>
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.InternalPassportDateOfIssue)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportDateOfIssue)<br />
@@ -32,7 +59,7 @@
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.InternalPassportSubdivisionCode)&nbsp;@Html.ValidationMessageFor(m => m.InternalPassportSubdivisionCode)<br />
-            @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode)
+            @Html.TextBoxFor(m => m.InternalPassportSubdivisionCode, new { pattern = @"^\d{3}-\d{3}$", title = "###-###" })
         </div>
         <fieldset class="bordered nomargin clear">
         <legend class="level2">Регистрация</legend>
@@ -42,7 +69,7 @@
             </div>
             <div class="formfield clear">
                 @Html.LabelFor(m => m.ZipCode)&nbsp;@Html.ValidationMessageFor(m => m.ZipCode)<br />
-                @Html.TextBoxFor(m => m.ZipCode)
+                @Html.TextBoxFor(m => m.ZipCode, new { pattern = @"^\d{6}$", title = "6 цифр (######)" })
             </div>
             <div class="formfield clear">
                 @Html.LabelFor(m => m.Region)&nbsp;@Html.ValidationMessageFor(m => m.Region)<br />
@@ -96,18 +123,17 @@
     </fieldset>
 
     <div class="clear">
-        <button type="submit">Записать черновик</button>
+        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>
     </div>
 
 }
 
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empPassport");
-        $('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue').datepicker({
-            changeYear: true,
-            yearRange: "-50:+0"
-        });
+        attachDatepickerToInputs($('#InternalPassportDateOfIssue, #RegistrationDate, #InternationalPassportDateOfIssue'), "-60:+0", true);
     });
 </script>

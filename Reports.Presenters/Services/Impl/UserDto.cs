@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Security.Principal;
 using log4net;
 using Reports.Core;
 using Reports.Core.Domain;
 using Reports.Presenters.UI.Bl;
-using Reports.Presenters.UI.Bl.Impl;
+
 
 namespace Reports.Presenters.Services.Impl
 {
@@ -44,6 +42,12 @@ namespace Reports.Presenters.Services.Impl
                     return UserRole.Secretary;
                 if (IsInRole(ReportRoleConstants.Findep))
                     return UserRole.Findep;
+                if (IsInRole(ReportRoleConstants.ConsultantOutsourcing))
+                    return UserRole.ConsultantOutsourcing;
+                if (IsInRole(ReportRoleConstants.ConsultantPersonnel))
+                    return UserRole.ConsultantPersonnel;
+                if (IsInRole(ReportRoleConstants.ConsultantAccountant))
+                    return UserRole.ConsultantAccountant;
                 //if (IsInRole(ReportRoleConstants.Doctor))
                 //    return SafetyZoneRoles.Doctor;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterAdminHosp))
@@ -113,6 +117,28 @@ namespace Reports.Presenters.Services.Impl
                 Log.Error(string.Format("Ошибка определения пользователя: {0}", data), ex);
                 throw new ArgumentException("Ошибка определения пользователя.");
             }
+        }
+        public static bool IsHelpServiceAvailable(IUser dto)
+        {
+            return (dto.UserRole & UserRole.Manager) > 0
+                   || (dto.UserRole & UserRole.Employee) > 0
+                   || (dto.UserRole & UserRole.Admin) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
+                   || (dto.UserRole & UserRole.OutsourcingManager) > 0;
+        }
+        public static bool IsHelpQuestionAvailable(IUser dto)
+        {
+            return (dto.UserRole & UserRole.Manager) > 0
+                   || (dto.UserRole & UserRole.Employee) > 0
+                   || (dto.UserRole & UserRole.Admin) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
+                   || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
+                   || (dto.UserRole & UserRole.ConsultantAccountant) > 0
+                   || (dto.UserRole & UserRole.OutsourcingManager) > 0;
+        }
+        public static bool IsHelpTemplateAvailable(IUser dto)
+        {
+            return (dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer)) == 0;
         }
         public static string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

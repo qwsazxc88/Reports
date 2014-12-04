@@ -424,7 +424,6 @@ namespace Reports.Core
               ImplementedBy(typeof(AppointmentReportCommentDao)).
               LifeStyle.Is(type));
 
-
             Register(Component.For(typeof(IEmploymentCandidateDao)).
                 ImplementedBy(typeof(EmploymentCandidateDao)).
                 LifeStyle.Is(type));
@@ -434,8 +433,14 @@ namespace Reports.Core
             Register(Component.For(typeof(IEmploymentGeneralInfoDao)).
                 ImplementedBy(typeof(EmploymentGeneralInfoDao)).
                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IInsuredPersonTypeDao)).
+                ImplementedBy(typeof(InsuredPersonTypeDao)).
+                LifeStyle.Is(type));
             Register(Component.For(typeof(IEmploymentPassportDao)).
                 ImplementedBy(typeof(EmploymentPassportDao)).
+                LifeStyle.Is(type));
+            Register(Component.For(typeof(IDocumentTypeDao)).
+                ImplementedBy(typeof(DocumentTypeDao)).
                 LifeStyle.Is(type));
             Register(Component.For(typeof(IEmploymentEducationDao)).
                 ImplementedBy(typeof(EmploymentEducationDao)).
@@ -467,9 +472,18 @@ namespace Reports.Core
             Register(Component.For(typeof(ICountryDao)).
                 ImplementedBy(typeof(CountryDao)).
                 LifeStyle.Is(type));
-            Register(Component.For(typeof(IMilitaryRankDao)).
-                ImplementedBy(typeof(MilitaryRankDao)).
-                LifeStyle.Is(type));
+            Register(Component.For(typeof(IAccessGroupDao)).
+                  ImplementedBy(typeof(AccessGroupDao)).
+                  LifeStyle.Is(type));
+            Register(Component.For(typeof(IDisabilityDegreeDao)).
+                  ImplementedBy(typeof(DisabilityDegreeDao)).
+                  LifeStyle.Is(type));
+            Register(Component.For(typeof(IPersonalAccountContractorDao)).
+                  ImplementedBy(typeof(PersonalAccountContractorDao)).
+                  LifeStyle.Is(type));
+            Register(Component.For(typeof(IScheduleDao)).
+                  ImplementedBy(typeof(ScheduleDao)).
+                  LifeStyle.Is(type));
             Register(Component.For(typeof(IManualRoleRecordDao)).
                   ImplementedBy(typeof(ManualRoleRecordDao)).
                   LifeStyle.Is(type));
@@ -478,6 +492,41 @@ namespace Reports.Core
              ImplementedBy(typeof(MissionHotelsDao)).
              LifeStyle.Is(type));
 
+
+
+            Register(Component.For(typeof (IHelpVersionDao)).
+                         ImplementedBy(typeof (HelpVersionDao)).
+                         LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpFaqDao)).
+                       ImplementedBy(typeof(HelpFaqDao)).
+                       LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServicePeriodDao)).
+                       ImplementedBy(typeof(HelpServicePeriodDao)).
+                       LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceProductionTimeDao)).
+                      ImplementedBy(typeof(HelpServiceProductionTimeDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceTransferMethodDao)).
+                      ImplementedBy(typeof(HelpServiceTransferMethodDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceTypeDao)).
+                      ImplementedBy(typeof(HelpServiceTypeDao)).
+                      LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceRequestDao)).
+                     ImplementedBy(typeof(HelpServiceRequestDao)).
+                     LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpServiceRequestCommentDao)).
+                    ImplementedBy(typeof(HelpServiceRequestCommentDao)).
+                    LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpQuestionRequestDao)).
+                  ImplementedBy(typeof(HelpQuestionRequestDao)).
+                  LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpQuestionTypeDao)).
+                 ImplementedBy(typeof(HelpQuestionTypeDao)).
+                 LifeStyle.Is(type));
+            Register(Component.For(typeof(IHelpQuestionSubtypeDao)).
+                 ImplementedBy(typeof(HelpQuestionSubtypeDao)).
+                 LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")

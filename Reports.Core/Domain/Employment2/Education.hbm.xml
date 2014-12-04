@@ -22,6 +22,8 @@
       <key column="EducationId" foreign-key="FK_Training_Education"/>
       <one-to-many class="Training"/>
     </bag>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

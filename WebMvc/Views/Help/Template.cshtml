@@ -1,0 +1,326 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpTemplateListModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Шаблоны";
+}
+
+@using (Html.BeginForm())
+{
+    <div id="TemplateModelContext">@Html.Partial("TemplatePartial", Model)</div>
+}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        setActiveMenuItem("helpTemplate");
+    });
+@*</script>
+<script type="text/javascript">*@
+    function Render() {
+        var actionUrl="@Url.Action("RenderTemplates", "Help")";
+        var url = actionUrl + "?dummy=" + new Date().getTime();
+        $("#TemplateModelContext").load(url);
+    }
+    function OnAddTemplate() {
+        createTemplateDialog(0);
+    }
+     function OnEditTemplate(id) {
+        createTemplateDialog(id);
+    }
+    function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить название')").button("disable");
+    }
+    /*function createTemplateDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divTemplateDialog";
+        var newDiv = $(elem);
+//        var documentId = $("#RequestId").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Редактирование записи";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditTemplateDialog", "Help")?id=" + id  + " #TemplateDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditTemplateLoadError').val() != undefined)
+                         disableSaveButton();
+//                     else
+//                     {
+//                        $("#ReleaseDate").datepicker();
+//                        $(".hasDatepicker").width("85px");
+//                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 620,
+	        height: 380,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateTemplate())
+                        return;
+                    SaveTemplate();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateTemplate()
+    {
+        var result = true;
+        clearDlgErrors($("#QuestionDialogTable"));
+        if(trimSpaces($("#Question").val()) == "")
+        {
+            addDlgError($("#Question"),"Вопрос - обязательное поле");
+            result = false;
+            //return false;
+        }
+        if(trimSpaces($("#Answer").val()) == "")
+        {
+            addDlgError($("#Answer"),"  Ответ - обязательное поле");
+            result = false;
+        }
+        return result;
+    }
+    function SaveTemplate()
+    {
+        var url='@Url.Action("SaveTemplate", "Help")'+'?id='+ $("#Id").val() 
+                +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addFaqError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addFaqError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearFaqErrors();
+                                                $("#divQuestionDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addFaqError(value) {
+    $("#FaqError").text(value);
+    $("#FaqError").show();
+    }
+function clearFaqErrors() {
+    $("#FaqError").text("");
+    $("#FaqError").hide();
+}*/
+ function OnDeleteTemplate(id){
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#ListTemplatesError").text(result.Error);
+                                $("#ListTemplatesError").show(); 
+                            }
+                            else{
+                                $("#ListTemplatesError").text("");
+                                $("#ListTemplatesError").hide();                                 
+                           }
+                           Render();
+                       }
+                     );
+        return false;
+    }
+
+     /*function OnAddAttachment(name) {
+        createAttachmentDialog(0,name);
+    }*/
+    function createTemplateDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divTemplateDialog";
+        var newDiv = $(elem);
+        //var documentId = $("#Id").val();
+        //var typeId = $("#AttachmentRequestTypeId").val();
+
+        var title =  "Редактирование записи";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditTemplateDialog", "Help")?id=" + id + " #TemplateDialogTable",
+        function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditTemplateLoadError').val() != undefined)
+                         disableSaveButton();
+                     else if(id == 0)
+                        disableSaveButton();
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 750,
+	        height: 250,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            open: function(event, ui) {
+                timedSetupUploader();
+            },
+            buttons:
+            {
+                "Сохранить название": function () {
+                    if (!ValidateTemplate())
+                        return;
+                    SaveTemplateName();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+     function SaveTemplateName()
+    {
+        clearTemplateErrors();
+        var url='@Url.Action("SaveTemplateName", "Help")';//+'?id='+ $("#Id").val() +'&name='+escapeJson($("#Name").val());
+        var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    name:$("#Name").val()
+                },
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addTemplateError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addTemplateError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearTemplateErrors();
+                                                $("#divTemplateDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function timedSetupUploader()
+    {
+            elem = document.getElementById('file-uploader');
+            if(elem == null)
+            {
+                setTimeout(function()   {
+                    timedSetupUploader();
+                }, 100);    
+            }
+            else
+                setupUploader();
+    }
+    function ValidateTemplate()
+    {
+        clearDlgErrors($("#TemplateDialogTable"));
+        if(trimSpaces($("#Name").val()) == "")
+        {
+            //addTemplateError("Название - обязательное поле");
+            addDlgError($("#Name"),"Название - обязательное поле");
+            return false;
+        }
+        return true;
+    }
+    function addTemplateError(value) {
+        $("#TemplateError").text(value);
+        $("#TemplateError").show();
+    }
+    function clearTemplateErrors() {
+        $("#TemplateError").text("");
+        $("#TemplateError").hide();
+    }
+function setupUploader()
+{
+    //var id = $('#DocumentId').val();
+    var uploader = new qq.FileUploader(
+    {
+        // pass the dom node (ex. $(selector)[0] for jQuery users)
+        element: document.getElementById('file-uploader'),
+        // path to server-side upload script      
+        action: "@Url.Action("SaveTemplate", "Help")",
+        sizeLimit: 2097152,
+        onSubmit: function (id, fileName) {
+            if(!ValidateTemplate())
+                return false;
+            clearTemplateErrors();
+            $('.qq-upload-list').hide();
+            var name = $('#Name').val();
+            var id = $('#Id').val();
+            uploader.setParams({
+                id: id
+                ,name: name
+            });
+        },
+        onProgress: function (id, fileName, loaded, total) {
+            $('.qq-upload-list').hide();
+        },
+        onComplete: function (id, fileName, responseJSON) {
+            $('.qq-upload-list').hide();
+            if(responseJSON == "")
+            {
+                addTemplateError("Ошибка асинхронного запроса - не был получен ответ.");
+                return;
+            }
+            var result = responseJSON; 
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
+            {
+                if((result.success != undefined) && (!result.success))
+                    addTemplateError("Ошибка - не получен ответ сервера.");
+                else
+                    addTemplateError(result.Error);
+            }
+            else
+            {
+                clearTemplateErrors();
+                $("#divTemplateDialog").dialog("close");
+                Render();
+            }    
+        },
+        debug: true
+    });
+}
+</script>

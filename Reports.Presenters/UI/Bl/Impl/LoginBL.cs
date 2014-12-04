@@ -194,6 +194,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.StaffManager);
             if ((user.UserRole & UserRole.Archivist) > 0 && !roles.Contains(UserRole.Archivist))
                 roles.Add(UserRole.Archivist);
+            if ((user.UserRole & UserRole.Candidate) > 0 && !roles.Contains(UserRole.Candidate))
+                roles.Add(UserRole.Candidate);
+            if ((user.UserRole & UserRole.Security) > 0 && !roles.Contains(UserRole.Security))
+                roles.Add(UserRole.Security);
+            if ((user.UserRole & UserRole.Trainer) > 0 && !roles.Contains(UserRole.Trainer))
+                roles.Add(UserRole.Trainer);
+            if ((user.UserRole & UserRole.ConsultantOutsourcing) > 0 && !roles.Contains(UserRole.ConsultantOutsourcing))
+                roles.Add(UserRole.ConsultantOutsourcing);
+            if ((user.UserRole & UserRole.ConsultantPersonnel) > 0 && !roles.Contains(UserRole.ConsultantPersonnel))
+                roles.Add(UserRole.ConsultantPersonnel);
+            if ((user.UserRole & UserRole.ConsultantAccountant) > 0 && !roles.Contains(UserRole.ConsultantAccountant))
+                roles.Add(UserRole.ConsultantAccountant);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
@@ -396,7 +408,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(usersAndRoles.Count == 0)
                 throw new ArgumentException("Отсутствуют роли в системе для данного пользователя");
             IList<Role> allRoles = RoleDao.LoadAll();
-            List<IdNameDto> roles = new List<IdNameDto>();
+            List<IdLongNameDto> roles = new List<IdLongNameDto>();
             foreach (UserRolesDto dto in usersAndRoles)
             {
                 foreach (UserRole role in dto.roles)
@@ -404,10 +416,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     Role r = allRoles.Where(x => x.Id == (int)role).FirstOrDefault();
                     if(r == null)
                         throw new ArgumentException(string.Format("Не могу загрузить роль с id {0}",(int)role));
-                    roles.Add(new IdNameDto
+                    roles.Add(new IdLongNameDto
                                   {
-                                      Id = r.Id*100000+dto.user.Id,
-                                      Name = r.Name+" "+dto.user.Login,
+                                      Id = (ulong)r.Id * 100000 + (ulong)dto.user.Id,
+                                      Name = r.Name + " " + dto.user.Login
                                   }); 
                 }
             }
@@ -421,7 +433,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", userId));
             UserRole role = (UserRole)(model.RoleId/100000);
-            int modelUserId = model.RoleId%100000;
+            int modelUserId = (model.RoleId % 100000) <= int.MaxValue ? (int)(model.RoleId % 100000) : -1;
             User modelUser = UserDao.FindById(modelUserId);
             if (modelUser == null)
                 throw new ValidationException(string.Format("Не могу загрузить пользователя с id {0}", modelUserId));

@@ -1,0 +1,484 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.MissionOrderListModel
+@{
+    Layout = "~/Views/Shared/_LayoutMissionOrder.cshtml";
+    ViewBag.Title = "Приказ - реестр";
+}
+@using (Html.BeginForm())
+{
+     <table style="width:100%">
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName)
+                                    </td>
+                             </tr>
+                          }
+                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+
+                        @if (@Model.IsCorrectionsOnlyModeAvailable)
+                        {
+                            <tr>                                
+                                <td colspan="2">
+                                    @Html.CheckBoxFor(m => m.IsCorrectionsOnlyModeOn)@Html.LabelFor(m => m.IsCorrectionsOnlyModeOn)
+                                </td>
+                            </tr>
+                        }
+                        
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    <tr>
+                            <td>
+                                @if (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+                                {
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("MissionOrderEdit", "MissionOrder", new { id = 0 })'"/>   
+                                }
+                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                @if (Model.IsAddAvailable)
+                                {
+                                    <input type="button" value="Создать новую заявку" onclick="location.href='@Url.Action("CreateMissionOrderRequest", "MissionOrder")'"/>
+                                }                                                                                     
+                            </td>
+                            <td style = "text-align:right">
+                                <input type="hidden" id="IsApproveClick" name="IsApproveClick" value="@Model.IsApproveClick" />
+                                @if (Model.IsApproveAvailable)
+                                {
+                                 @*   <input type="button" value="Отменить вы" onclick="clearSelection();"/>*@
+                                    <input type="submit" value="Записать" onclick="return approveClick();"/>
+                                }
+                            </td>
+                   </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+     <tr>
+        <td colspan="2">
+            
+            @* BEGIN DELETE
+            
+            <div class="announcement">
+                Уважаемые Пользователи!<br />
+                Обращаем ваше внимание:<br />
+                <ol>
+                    <li>С 1 августа действует новый порядок согласования Командировок (получения денег в подотчет) и предоставления Авансовых отчетов по произведенным расходам.</li>
+                    <li>Ручной ввод заявок в Командировки-Табель закрыт.</li>
+                    <li>Краткий порядок пользования подпрограммой "Приказ на командировки (подотчет)".
+                        <ol type="a">
+                            <li>
+                                Сотрудник создает приказ на  командировку (заполняет дату, период, маршрут, цель,  сумму в подотчет (необходимую), отмечает поле для секретариата,
+                                если билеты и проживание будет оплачивать банк, а не самостоятельно сотрудник).<br />
+                                <span style="color: red">ВАЖНО!!! Сотруднику обязательно необходимо указать сумму денежных стредств в подотчет в поле &laquo;Сумма наличными в кассе&raquo;
+                                или в поле &laquo;Сумма на зарплатную карту&raquo;, иначе сотрудник не получит командировочные.</span><br />
+                                Обращаем внимание: у  сотрудника  есть возможность сохранить черновик перед отправкой на согласование, чтобы  внимательно проверить заполненные данные.
+                                После отправки на согласование исправления будет внести невозможно.
+                            </li>
+                            <li>
+                                Согласовывает: Руководитель (6), Руководитель БГ (5), Руководитель Управления АУПа (5), <span style="color: blue">Руководитель Управления Дирекций (4)</span>,
+                                Региональный  директор, Заместитель  (3), Руководитель департаментов АУПа, Заместитель (3).
+                            </li>
+                            <li>
+                                Если командировка  свыше 7 календарных дней или  приходится  на  выходные, праздничные дни - требуется согласование Члена Правления
+                                (Спиваков А.Д., Хотимский С.В., Оснос А.П.).
+                            </li>
+                            <li>
+                                Обращаем внимание: Руководители (5 или 3) на любом уровне могут отклонить командировку,
+                                в этом случае у сотрудника Приказ превращается в Черновик, который в дальнейшем можно использовать.
+                            </li>
+                            <li>
+                                Секретари могут заполнять поля для секретариата, если в реестре приказов в колонке «Секретариат» есть значение «Заказ»,
+                                <span style="color: blue">и в колонке состояние есть значение "Согласован" или "Выгружен в 1С"</span>.
+                            </li>
+                            <li>
+                                После согласования Руководителями (одобрения) ежедневно в 10-00 мск подотчетная сумма выгружается для бухгалтерии банка
+                                для обработки и перечисления через отдел Пластиковых карт на лицевой счет сотрудника.
+                            </li>
+                        </ol>
+                    </li>
+                    <li>
+                        После согласований руководством автоматически создается Заявка в Командировках-Табель с согласованными полями "Сотрудник , Руководитель".
+                        Далее с данной  заявкой работает Кадровая служба.
+                    </li>
+                    <li>Автоматически при согласовании Приказа создается форма авансового отчета, которая заполняется сотрудником по приезду из командировки.</li>
+                    <li>
+                        Обращаем ваше внимание:<br />
+                        Если командировочные дни приходятся на выходные или праздничные,
+                        для ускорения согласования, необходимо указать в комментариях причину командировки в нерабочие дни.
+                    </li>
+                    <li>
+                        <span style="color: blue">Если появилась необходимость Руководителю создать Приказ на командировку ЗА СОТРУДНИКА,
+                        Руководитель во вкладке &laquo;Приказ-реестр&raquo; нажимает на кнопку &laquo;Создать новую заявку&raquo;,
+                        выбирает из справочника за какого сотрудника нужно создать приказ на командировку, нажимает кнопку "Создать" и заполняет поля  приказа на командировку.
+                        Согласование сотрудника в этом случае ставится автоматически.
+                        Если руководитель создает  приказ на командировку за сотрудника, то сотрудник вносить правки в эту заявку  не может.
+                        Приказ за сотрудника может редактировать только руководитель, создавший его.</span>
+                    </li>
+                    <li>
+                        <span style="color: blue">Обращаем Ваше внимание, что при создании приказа на командировку руководителем за сотрудника, авансовый отчет заполняется сотрудником.</span>
+                    </li>
+                </ol>
+            </div>
+
+            END DELETE *@
+            
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                    @*<th>Название документа</th>
+                    <th>Дата</th>*@
+                     <th>
+                        @*<div id="sort1"><a href="#" onclick = "SortChanged(1);">*@
+                        № п/п
+                        @*</a></div>*@
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                    </th>
+                    <th>
+                        <div id="sort22" style="min-width:130px"><a href="#" onclick = "SortChanged(22);">Должность</a></div>
+                    </th>
+                     <th>
+                        <div id="sort2" style="min-width:210px"><a href="#"  onclick = "SortChanged(2);">Подразделение <br/>уровня 7</a></div>
+                    </th>
+                    <th>
+                        <div id="sort3"  style="min-width:70px"><a href="#"  onclick = "SortChanged(3);">Номер <br/>приказа</a></div>
+                    </th>
+                    @if (!Model.IsCorrectionsOnlyModeOn)
+                    {
+                        <th>
+                            <div id="sort4" style="min-width:70px"><a href="#"  onclick = "SortChanged(4);">Дата</a></div>
+                        </th>
+                    }
+                    <th>
+                        <div id="sort18"  style="min-width:70px"><a href="#"  onclick = "SortChanged(18);">Номер<br/> изм.<br/> приказа</a></div>
+                    </th>
+                    @if (!Model.IsCorrectionsOnlyModeOn)
+                    {
+                        <th>
+                            <div id="sort19" style="min-width:70px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
+                        </th>                    
+                        <th>
+                            <div id="sort23" style="min-width:130px"><a href="#" onclick = "SortChanged(23);">Цель <br/>командировки</a></div>
+                        </th>                    
+                        <th>
+                            <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                        </th>
+                         <th>
+                            <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                        </th>
+                        <th>
+                            <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
+                        </th>
+                        <th>
+                            <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
+                        </th>
+                        <th>
+                            <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
+                        </th>
+                        <th>
+                            <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                        </th>
+                         <th>
+                            <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                        </th>
+                        <th>
+                            <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
+                        </th>
+                         <th>
+                            <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                        </th>
+                    }
+                    <th>
+<<<<<<< HEAD
+                        <div id="sort19" style="min-width:70px"><a href="#"  onclick = "SortChanged(19);">Дата</a></div>
+                    </th>
+                     <th>
+                        <div id="sort23" style="min-width:130px"><a href="#" onclick = "SortChanged(23);">Цель <br/>командировки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5" style="min-width:86px"><a href="#"  onclick = "SortChanged(5);">Тип <br/>командировки</a></div>
+                    </th>
+                     <th>
+                        <div id="sort15" style="min-width:86px"><a href="#"  onclick = "SortChanged(15);">Вид <br/>командировки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6" style="min-width:130px"><a href="#"  onclick = "SortChanged(6);">Маршрут</a></div>
+                    </th>
+                    <th>
+                        <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">G грейд</a></div>
+                    </th>
+                    <th>
+                        <div id="sort8" style="min-width:80px"><a href="#"  onclick = "SortChanged(8);">Сумма <br/>по G грейду</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9" style="min-width:70px"><a href="#"  onclick = "SortChanged(9);">Превышение  <br/>по G</a></div>
+                    </th>
+                     <th>
+                        <div id="sort10"><a href="#"  onclick = "SortChanged(10);">Сумма <br/>в подотчет<br/> запрошенная</a></div>
+                    </th>
+                    <th>
+                        <div id="sort11" style="min-width:96px"><a href="#"  onclick = "SortChanged(11);">Заявка <br/>в табеле</a></div>
+                    </th>
+                     <th>
+                        <div id="sort14"  style="min-width:115px"><a href="#"  onclick = "SortChanged(14);">Секретариат</a></div>
+                    </th>
+                     <th>
+=======
+>>>>>>> master
+                        <div id="sort12"  style="min-width:100px"><a href="#"  onclick = "SortChanged(12);">Состояние</a></div>
+                    </th>                    
+                    <th>
+                        <div id="sort13"  style="min-width:110px"><a href="#"  onclick = "SortChanged(13);">Период</a></div>
+                    </th>
+                        <th>
+                        <div id="sort20"  style="min-width:70px"><a href="#"  onclick = "SortChanged(20);">Состояние<br/>изм.</a></div>
+                    </th>
+                        <th>
+                        <div id="sort21"  style="min-width:70px"><a href="#"  onclick = "SortChanged(21);">Период</a></div>
+                    </th>
+                    @if (!Model.IsCorrectionsOnlyModeOn)
+                    {
+                         <th>
+                            <div id="sort16" style="min-width:70px"><a href="#"  onclick = "SortChanged(16);">Авиа <br/>билеты</a></div>
+                        </th>
+                        <th>
+                            <div id="sort17" style="min-width:70px"><a href="#"  onclick = "SortChanged(17);">Ж/д <br/>билеты</a></div>
+                        </th>
+                    
+                        if (Model.IsApproveAvailable)
+                        {
+                            <th>
+                                <input type="checkbox" id="setAll" onclick="setSelection();" />
+                            </th>
+                        }
+                    }
+                    
+                    @if (Model.IsCorrectionsOnlyModeOn)
+                    {
+                        <th>
+                            <div>Разница</div>
+                        </th>
+                    }
+                        
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    int i = 0;
+                    foreach (var doc in Model.Documents)
+                    {
+                        if (Model.IsCorrectionsOnlyModeOn && doc.AdditionalOrderId == null)
+                        {
+                            continue;
+                        }
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                             <td>@doc.Dep7Name</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("MissionOrderEdit", new { id = doc.Id })' style="cursor:hand">@doc.OrderNumber</a>
+                            </td>
+                            @if (!Model.IsCorrectionsOnlyModeOn)
+                            {
+                                <td>@doc.EditDate.ToShortDateString()</td>
+                            }
+                            <td style="text-align:left">
+                                @if (doc.AdditionalOrderId != null)
+                                {
+                                    <a class="ui-notify-close" href='@Url.Action("AdditionalMissionOrderEdit", new { id = doc.AdditionalOrderId })' style="cursor:hand">@doc.AdditionalOrderNumber</a>
+                                }
+                            </td>
+<<<<<<< HEAD
+                            <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>
+                            <td>@doc.MissionGoal</td>
+                            <td>@doc.MissionType</td>
+                            <td>@doc.MissionKind</td>
+                            <td>@doc.Target</td>
+                            <td>@doc.Grade</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                            <td>@doc.HasMission</td>
+                            <td>@doc.NeedSecretary</td>
+                            <td>@doc.State</td>
+=======
+                            @if (!Model.IsCorrectionsOnlyModeOn)
+                            {
+                                <td>@RequestBl.FormatDate(@doc.AdditionalOrderEditDate)</td>                            
+                                <td>@doc.MissionGoal</td>
+                                <td>@doc.MissionType</td>
+                                <td>@doc.MissionKind</td>
+                                <td>@doc.Target</td>
+                                <td>@doc.Grade</td>
+                                <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                                <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                                <td>@RequestBl.FormatSum(@doc.UserSum)</td>
+                                <td>@doc.HasMission</td>
+                                <td>@doc.NeedSecretary</td>
+                            }
+                            <td>@doc.State</td>                            
+>>>>>>> master
+                            <td>@doc.BeginDate.ToString("dd.MM") - @doc.EndDate.ToString("dd.MM")</td>
+                            <td>
+                                @if (doc.AdditionalOrderId != null)
+                                {
+                                    @doc.AdditionalOrderState
+                                }
+                            </td>
+                            <td>
+                                @if (doc.AdditionalOrderId != null && doc.AdditionalOrderBeginDate != null)
+                                {
+                                    <text>@doc.AdditionalOrderBeginDate.Value.ToString("dd.MM") - @doc.AdditionalOrderEndDate.Value.ToString("dd.MM")</text>
+                                }
+                            </td>
+                            @if (!Model.IsCorrectionsOnlyModeOn)
+                            {
+                                <td>@doc.AirTicketType</td>
+                                <td>@doc.TrainTicketType</td>
+                                if (Model.IsApproveAvailable)
+                                {
+                                <td>@if (doc.Flag)
+                                    {
+                                        @Html.CheckBoxFor(m => m.Documents[i].IsChecked, new { @class = "selcheck" })
+                                        <input type="hidden" class="selid" id="Documents[@i].Id" name="Documents[@i].Id" value="@doc.Id" />
+                                        i++;
+                                    }
+                                </td>
+                                }
+                            }
+                            @if (Model.IsCorrectionsOnlyModeOn)
+                            {
+                                double? difference = @doc.AdditionalOrderEndDate.Value.Subtract(@doc.AdditionalOrderBeginDate.Value).Subtract(@doc.EndDate.Subtract(@doc.BeginDate)).TotalDays;
+                                <td style="text-align:center;">
+                                    <div>@(difference == 0 ? string.Empty : difference.ToString())</div>
+                                </td>
+                            }
+                        </tr>
+                       
+                    }
+                }
+            </table>
+        </td>
+     </tr>
+    </table> 
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("moAllOrders");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+    function setSelection()
+    {
+        if($("#setAll").is(':checked'))
+            $(".selcheck").attr('checked','checked');
+        else
+            $(".selcheck").removeAttr('checked');
+    }
+     function approveClick()
+    {
+        clearErrors();
+        if($(".selcheck").filter(':checked').length == 0)
+        {
+            addError("Не выбрано ни одного приказа для согласования");
+            return false;
+        }
+        $("#IsApproveClick").val('True');
+        return true;
+    }
+ </script> 

@@ -71,11 +71,24 @@
                 {
                     <div id="liGraphics" class="mainMenuItem">@Html.ActionLink("Плановые графики", "Index", "Graphics")</div>
                 }
-                <div class="mainMenuItem" id="mainTemplate">
+               @* <div class="mainMenuItem" id="mainTemplate">
                         @Html.ActionLink("Шаблоны", "Index", "Template")
-                </div> 
+                </div> *@
+                 @if (UserDto.IsHelpServiceAvailable(dto))
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
+                 }
+                 else if (UserDto.IsHelpQuestionAvailable(dto))
+                {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
+                }
+                 else if (UserDto.IsHelpTemplateAvailable(dto))
+                 {
+                    <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Template", "Help")</div> 
+                 }
+                @*
                 <div id="liInfo" class="mainMenuItem">@Html.ActionLink("ИнфоЗарплата", "Index", "Info")
-                </div> 
+                *@
                  @if ((dto.UserRole & UserRole.Manager) > 0
                      //|| (dto.UserRole & UserRole.Director) > 0
                      || (dto.UserRole & UserRole.OutsourcingManager) > 0

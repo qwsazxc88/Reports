@@ -4,163 +4,391 @@
     ViewBag.Title = "Прием - Реестр по приему";
 }
 
-<fieldset class="bordered doc-wrap panel">
-<legend>Реестр по приему</legend>
+@* BEGIN Выбор параметров *@
 
-<table class="grid">
-
-<tr>
-        
-    <th>
-        №<br />п/п
-    </th>
-        
-    <th>
-        ФИО
-    </th>
-
-    <th>
-        Дирекция
-    </th>
-
-    <th>
-        Город<br />места<br />работы
-    </th>
-
-    <th>
-        Структурное<br />подразделение
-    </th>
-
-    <th>
-        Должность
-    </th>        
-        
-    <th>
-        Дата<br />приема
-    </th>
-        
-    <th>
-        Номер<br />приказа
-    </th>
-        
-    <th>
-        Дата<br />приказа
-    </th>
-
-    <th>
-        Номер<br />трудового<br />договора
-    </th>
-
-    @* Вид работы (осн./совм.) *@
-    @* Характер работы (пост./врем.) *@
-
-    <th>
-        Исп.<br />срок
-    </th>
-
-    <th>
-        График<br />работы
-    </th>
-
-    <th>
-        Дата<br />рождения
-    </th>
-
-    <th>
-        Инвалидность
-    </th>
-
-    <th>
-        Грейд
-    </th>
-
-    <th>
-        Текущее<br />состояние
-    </th>
-
-</tr>
-
-@foreach (var candidate in Model.Roster)
+@using (Html.BeginForm("Roster", "Employment", FormMethod.Post, new {id = "mainForm"}))
 {
-  
-    <tr>
-        
-        <td>
-            @* № по порядку *@
-        </td>
-        
-        <td>
-            @candidate.Name
-        </td>
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <div class="filter-wrap">
+                    <table>
+                        <tr>
+                            <td colspan="2">
+                                <span style="font-weight: bold">Выбор параметров</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>           
+                            </td>
+                        </tr>
+                        <tr>
+                                <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, Model.Statuses, string.Empty)
+                                </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.UserName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.UserName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                                </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                            <button type="submit" name="submit">Выбрать</button>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                            </td>
+                        </tr>                        
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style = "text-align:right">
+                @if (Model.IsBulkApproveByManagerAvailable || Model.IsBulkApproveByHigherManagerAvailable)
+                {
+                    <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
+                    <button id="SaveApprovals">Записать</button>
+                }
+            </td>
+        </tr>
+    </table>
 
-        <td>
-            @candidate.Directorate
-        </td>
+    @* END Выбор параметров *@
+    
+    <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    
+    @* END CreateCandidate *@
 
-        <td>
-            @candidate.WorkCity
-        </td>
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Реестр по приему</legend>
 
-        <td>
-            @candidate.Department
-        </td>
+    <table class="grid">
 
-        <td>
-            @candidate.Position
-        </td>        
+    <tr style="vertical-align:bottom;">
         
-        <td>
-            @candidate.EmploymentDate
-        </td>
+        <th>
+            №<br />п/п
+        </th>
         
-        <td>
-            @candidate.EmploymentOrderNumber
-        </td>
-        
-        <td>
-            @candidate.EmploymentOrderDate
-        </td>
+        <th>
+            ФИО
+        </th>
 
-        <td>
-            @candidate.ContractNumber
-        </td>
+        <th>
+            Анкета
+        </th>
+
+        <th>
+            Город<br />места<br />работы
+        </th>
+
+        <th>
+            Структурное<br />подразделение
+        </th>
+
+        <th>
+            Должность
+        </th>        
+        
+        <th>
+            Дата<br />приема
+        </th>
+        
+        <th>
+            Номер<br />приказа
+        </th>
+        
+        <th>
+            Дата<br />приказа
+        </th>
+
+        <th>
+            Номер<br />трудового<br />договора
+        </th>
 
         @* Вид работы (осн./совм.) *@
         @* Характер работы (пост./врем.) *@
 
-        <td>
-            @candidate.ProbationaryPeriod
-        </td>
+        <th>
+            Исп.<br />срок
+        </th>
 
-        <td>
-            @candidate.Timetable
-        </td>
+        <th>
+            График<br />работы
+        </th>
 
-        <td>
-            @candidate.DateOfBirth
-        </td>
+        <th>
+            Дата<br />рождения
+        </th>
 
-        <td>
-            @candidate.Disabilities
-        </td>
+        <th>
+            Инвалидность
+        </th>
 
-        <td>
-            @candidate.Grade
-        </td>
+        <th>
+            Грейд
+        </th>
 
-        <td>
-            @candidate.Status
-        </td>
+        <th>
+            Текущее<br />состояние
+        </th>
 
+        @if (Model.IsBulkApproveByManagerAvailable)
+        {
+            <th>
+                Согласовано<br />руководителем<br />
+                <input type="checkbox" id="setAllByManager" />
+            </th>
+        }
+    
+        @if (Model.IsBulkApproveByHigherManagerAvailable)
+        {
+            <th>
+                Согласовано<br />вышестоящим<br />руководителем<br />
+                <input type="checkbox" id="setAllByHigherManager" />
+            </th>
+        }
+    
     </tr>
+
+    @{ int i = 1; }
+
+    @foreach (var candidate in Model.Roster)
+    {
+  
+        <tr>
+        
+            <td rowspan="2">
+                @i
+                @Html.HiddenFor(m => m.Roster[i - 1].Id)
+            </td>
+        
+            <td rowspan="2">
+                @candidate.Name
+            </td>
+
+            <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
+                <span class="buttonLink">Разделы</span>
+            </td>
+
+            <td>
+                &nbsp;@candidate.WorkCity
+            </td>
+
+            <td>
+                &nbsp;@candidate.Department
+            </td>
+
+            <td>
+                &nbsp;@candidate.Position
+            </td>        
+        
+            <td>
+                &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
+            </td>
+        
+            <td>
+                &nbsp;@candidate.EmploymentOrderNumber
+            </td>
+        
+            <td>
+                &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td>
+                &nbsp;@candidate.ContractNumber
+            </td>
+
+            @* Вид работы (осн./совм.) *@
+            @* Характер работы (пост./врем.) *@
+
+            <td>
+                &nbsp;@candidate.ProbationaryPeriod
+            </td>
+
+            <td>
+                &nbsp;@candidate.Schedule
+            </td>
+
+            <td>
+                &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td>
+                &nbsp;@candidate.Disabilities
+            </td>
+
+            <td>
+                &nbsp;@candidate.Grade
+            </td>
+
+            <td>
+                &nbsp;@candidate.Status
+            </td>
+        
+            @if (Model.IsBulkApproveByManagerAvailable)
+            {
+                <td rowspan="2" class="centered">
+                    @if (Model.Roster[i - 1].IsApproveByManagerAvailable)
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByManager, new { @class = "selcheckByManager", dataId = Model.Roster[i - 1].Id })
+                    }&nbsp;
+                </td>
+            }
+        
+            @if (Model.IsBulkApproveByHigherManagerAvailable)
+            {
+                <td rowspan="2" class="centered">
+                    @if (Model.Roster[i - 1].IsApproveByHigherManagerAvailable)
+                    {
+                        @Html.CheckBoxFor(m => m.Roster[i - 1].IsApprovedByHigherManager, new { @class = "selcheckByHigherManager", dataId = Model.Roster[i - 1].Id })
+                    }&nbsp;
+                </td>
+            }        
+
+            @{i++;}
+        </tr>
+        <tr>
+            <td colspan="13" style="padding: 0;">
+                <div style="display:none;">
+                    @if (Model.IsCandidateInfoAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Общая информация", "GeneralInfo", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Паспортные данные", "Passport", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Образование", "Education", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Состав семьи", "Family", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Воинский учет", "MilitaryService", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Трудовая деятельность", "Experience", new { id = candidate.UserId })</span>
+                        <span class="buttonLink">@Html.ActionLink("Контактные данные", "Contacts", new { id = candidate.UserId })</span>
+                    }
+
+                    @if (Model.IsBackgroundCheckAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Служба безопасности", "BackgroundCheck", new { id = candidate.UserId })</span>
+                    }
+                    
+                    <span class="buttonLink">@Html.ActionLink("Обучение", "OnsiteTraining", new { id = candidate.UserId })</span>
+
+                    @if (Model.IsCandidateInfoAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Заявление о приеме", "ApplicationLetter", new { id = candidate.UserId })</span>
+                    }
+
+                    @if (Model.IsManagersAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Руководители", "Managers", new { id = candidate.UserId })</span>
+                    }
+                    @if (Model.IsPersonalManagersAvailable)
+                    {
+                        <span class="buttonLink">@Html.ActionLink("Кадры", "PersonnelManagers", new { id = candidate.UserId })</span>
+                    }
+                </div>
+            </td>
+        </tr>
+    }
+
+    </table>
+
+    </fieldset>
+    
 }
 
-</table>
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
-</fieldset>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
 
-<script>
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
+        attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
+
+        $("#setAllByManager").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckByManager").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckByManager").removeAttr('checked');
+            }
+        });
+
+        $("#setAllByHigherManager").click(function(){
+        if ($(this).is(':checked'))
+        {
+            $(".selcheckByHigherManager").attr('checked','checked');
+        }
+        else
+        {
+            $(".selcheckByHigherManager").removeAttr('checked');
+        }
+        });
+
+        $("#SaveApprovals").click(function(e){
+            $("#IsApproveModified").val("true");
+            
+            $.post("/Employment/RosterBulkApprove",                
+                $("#mainForm").serialize(),
+                function (data) {
+                    if (data.ok === true) {
+                        showInputActionResult([$(this)], true);
+                    }
+                    else {
+                        showInputActionResult([$(this)], false);
+                    }
+                }
+            );
+            e.preventDefault();
+        });
+
+        $("td.displayLinks > span").click(function () {
+            $(this).parent().parent().next().children().children().toggle();
+        });
     });
+
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DepartmentName").val('');
+
+        if ($('#PositionId option').length > 1)
+            $("#PositionId").val('0');
+        $("#VacationTypeId").val('0');
+        $("#RequestStatusId").val('0');
+        $("#UserName").val('');
+    }
 </script>

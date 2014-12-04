@@ -1,6 +1,6 @@
 namespace Reports.Core.Domain
 {
-    public class Contacts : AbstractEntityWithVersion
+    public class Contacts : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion
@@ -22,6 +22,8 @@ namespace Reports.Core.Domain
         public virtual string HomePhone { get; set; } //ok
         public virtual string Mobile { get; set; } //ok
         public virtual string Email { get; set; } //ok
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

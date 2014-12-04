@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
-    public class Experience : AbstractEntityWithVersion
+    public class Experience : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion
@@ -22,6 +22,8 @@ namespace Reports.Core.Domain
         public virtual DateTime? WorkBookSupplementDateOfIssue { get; set; } //ok
         // Скан трудовой книжки
         // Скан вкладыша в трудовую книжку
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors

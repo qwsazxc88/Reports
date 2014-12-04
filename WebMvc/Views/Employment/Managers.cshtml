@@ -6,11 +6,50 @@
 
 @using (Html.BeginForm("Managers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Руководители</legend>
         <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionId)&nbsp;@Html.ValidationMessageFor(m => m.PositionId)<br />
+            @Html.DropDownListFor(m => m.PositionId, Model.PositionItems)
+        </div>
+        
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DepartmentName):
+        </div>
+        <div class="formfield">
+            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+            @Html.HiddenFor(m => m.DepartmentName)
+            @Html.HiddenFor(m => m.DepartmentId)
+        </div>
+        <div class="formfield clear">
+            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
+            @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
+            @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
+        </div>
+        <div class="formfield">
             @Html.LabelFor(m => m.ProbationaryPeriod)&nbsp;@Html.ValidationMessageFor(m => m.ProbationaryPeriod)<br />
             @Html.EditorFor(m => m.ProbationaryPeriod)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DailySalaryBasis)@Html.ValidationMessageFor(m => m.DailySalaryBasis)<br />
+            @Html.TextBoxFor(m => m.DailySalaryBasis, new { @class = "calc" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.HourlySalaryBasis)&nbsp;@Html.ValidationMessageFor(m => m.HourlySalaryBasis)<br />
+            @Html.TextBoxFor(m => m.HourlySalaryBasis, new { @class = "calc" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
+            @Html.TextBoxFor(m => m.SalaryMultiplier, new { @class = "calc halfwidth" })
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.WorkCity)&nbsp;@Html.ValidationMessageFor(m => m.WorkCity)<br />
@@ -24,15 +63,16 @@
             @Html.LabelFor(m => m.PositionAddition)&nbsp;@Html.ValidationMessageFor(m => m.PositionAddition)<br />
             @Html.EditorFor(m => m.PositionAddition)
         </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.IsFront)&nbsp;@Html.EditorFor(m => m.IsFront)                
+        <div class="formfield clear" id="isFrontContainer">
+            @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label for="IsFrontTrue">Фронт</label>
+            @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label for="IsFrontFalse">Бэк</label>
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.Bonus)&nbsp;@Html.ValidationMessageFor(m => m.Bonus)<br />
             @Html.EditorFor(m => m.Bonus)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.IsLiable)&nbsp;@Html.EditorFor(m => m.IsLiable)                
+            @Html.EditorFor(m => m.IsLiable)@Html.LabelFor(m => m.IsLiable)
         </div>
         <div class="formfield clear">
             @Html.LabelFor(m => m.RequestNumber)&nbsp;@Html.ValidationMessageFor(m => m.RequestNumber)<br />
@@ -41,13 +81,48 @@
     </fieldset>
     
     <div class="clear">
-        <button type="submit">Записать черновик</button>
-        <button type="submit">Сохранить</button>
+        @if (Model.IsApproveByManagerAvailable || Model.ManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.ManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingManagerName</span>
+        }
+        @if (Model.IsApproveByManagerAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+@using (@Html.BeginForm("ManagersApproveByHigherManager", "Employment", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <div class="clear">
+        @if (Model.IsApproveByHigherManagerAvailable || Model.HigherManagerApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.HigherManagerApprovalStatus)<text>&nbsp;</text>
+            @Html.DropDownListFor(m => m.HigherManagerApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByHigherManagerAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.HigherManagerApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApprovingHigherManagerName</span>
+        }
+        @if (Model.IsApproveByHigherManagerAvailable)
+        {
+            <button>Применить</button>
+        }
     </div>
 }
 
 <script>
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+
     $(document).ready(function () {
         setActiveMenuItem("empManagers");
+        $('#isFrontContainer').buttonset();
     });
 </script>

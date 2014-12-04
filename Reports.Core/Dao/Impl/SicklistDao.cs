@@ -53,6 +53,7 @@ namespace Reports.Core.Dao.Impl
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
+            query.SetInt32("userId", userId);
             AddDatesToQuery(query, beginDate, endDate, userName);
 
             return query.SetResultTransformer(Transformers.AliasToBean<SicklistDto>()).List<SicklistDto>();
