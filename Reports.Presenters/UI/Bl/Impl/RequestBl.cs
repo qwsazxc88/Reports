@@ -575,7 +575,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //model.Types = GetEmploymentTypes(true);
             //model.GraphicTypes = GetEmploymentGraphicTypes(true);
 
-            model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses(CurrentUser.UserRole);
             //model.Positions = GetPositions(user);
         }
         public void SetAllRequestListModel(AllRequestListModel model, bool hasError)
@@ -1842,7 +1842,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetDismissalTypes(true);
-            model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetDismissalTypes(bool addAll)
@@ -2791,7 +2791,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Departments = GetDepartments(user);
             model.Types = GetMissionTypes(true);
-            model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
         }
         protected List<IdNameDto> GetMissionTypes(bool addAll)
@@ -3663,7 +3663,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //model.Department = GetDepartments(user);
             model.Types = GetSicklistTypes(true,false);
-            model.Statuses = GetRequestStatuses();
+            model.Statuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
             //model.PaymentPercentTypes = GetSicklisPaymentPercentTypes(true,true);
        }
@@ -4421,7 +4421,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 DepartmentId = dep.Id,
                 DepartmentReadOnly = dep.IsReadOnly,
                 AbsenceTypes = GetAbsenceTypes(true),
-                RequestStatuses = GetRequestStatuses(),
+                RequestStatuses = GetRequestStatuses(CurrentUser.UserRole),
                 Positions = GetPositions(user)
             };
             SetInitialDates(model);
@@ -4441,7 +4441,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(model.UserId);
             //model.Departments = GetDepartments(user);
-            model.RequestStatuses = GetRequestStatuses();
+            model.RequestStatuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
             model.AbsenceTypes = GetAbsenceTypes(true);
             if(hasError)
@@ -4883,7 +4883,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                               DepartmentId = dep.Id,
                                               DepartmentReadOnly = dep.IsReadOnly,
                                               VacationTypes = GetVacationTypes(true),
-                                              RequestStatuses = GetRequestStatuses(),
+                                              RequestStatuses = GetRequestStatuses(CurrentUser.UserRole),
                                               Positions = GetPositions(user)
                                           };
             SetFlagsState(user, model);
@@ -4894,7 +4894,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             //model.Departments = GetDepartments(user);
-            model.RequestStatuses = GetRequestStatuses();
+            model.RequestStatuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
             model.VacationTypes = GetVacationTypes(true);
             if (hasError)
@@ -4999,7 +4999,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return additionalVacationTypeList;
         }
 
-        public List<IdNameDto> GetRequestStatuses()
+        public List<IdNameDto> GetRequestStatuses(UserRole adaptForRole = UserRole.NoRole)
         {
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> requestStatusesList = new List<IdNameDto>
@@ -5015,6 +5015,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(9, "Выгруженные в 1С"),
                                                            new IdNameDto(10, "Отклоненные"),
                                                        }.OrderBy(x =>x.Name).ToList();
+            switch (adaptForRole)
+            {
+                case UserRole.Manager:
+                    requestStatusesList.Insert(0, new IdNameDto(11, "Требует моего одобрения"));
+                    break;
+                default:
+                    break;
+            }
             requestStatusesList.Insert(0, new IdNameDto(0, SelectAll));
             return requestStatusesList;
         }
@@ -5734,7 +5742,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 DepartmentId = dep.Id,
                 DepartmentReadOnly = dep.IsReadOnly,
                 //VacationTypes = GetVacationTypes(true),
-                RequestStatuses = GetRequestStatuses(),
+                RequestStatuses = GetRequestStatuses(CurrentUser.UserRole),
                 Positions = GetPositions(user)
             };
             SetFlagsState(user, model);
@@ -5745,7 +5753,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
             //model.Departments = GetDepartments(user);
-            model.RequestStatuses = GetRequestStatuses();
+            model.RequestStatuses = GetRequestStatuses(CurrentUser.UserRole);
             model.Positions = GetPositions(user);
             //model.VacationTypes = GetVacationTypes(true);
             if (hasError)
@@ -8460,11 +8468,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         }        
         public void SetDictionariesToModel(MissionOrderListModel model)
         {
-            model.Statuses = GetMoStatuses();
+            model.Statuses = GetMoStatuses(CurrentUser.UserRole);
         }
-        public List<IdNameDto> GetMoStatuses()
+        public List<IdNameDto> GetMoStatuses(UserRole adaptForRole = UserRole.NoRole)
         {
-            //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
                                                            new IdNameDto(1, "Одобрен сотрудником"),
@@ -8473,12 +8480,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                            new IdNameDto(4, "Не одобрен руководителем"),
                                                            new IdNameDto(5, "Одобрен членом правления"),
                                                            new IdNameDto(6, "Не одобрен членом правления"),
-                                                           new IdNameDto(7, "Требует моего одобрения"),
                                                            new IdNameDto(8, "Требует одобрения руководителем"),
                                                            new IdNameDto(9, "Требует одобрения членом правления"),
                                                            new IdNameDto(10, "Выгружен в 1С"),
-                                                       }.OrderBy(x => x.Name).ToList();
+                                                       }.OrderBy(x => x.Name).ToList();            
+            switch(adaptForRole)
+            {
+                case UserRole.Manager:
+                    // moStatusesList.Insert(0, new IdNameDto(7, "Требует моего одобрения"));
+                    break;
+                default:
+                    break;
+            }
             moStatusesList.Insert(0, new IdNameDto(0, SelectAll));
+
             return moStatusesList;
         }
         public MissionOrderEditModel GetMissionOrderEditModel(int id, int? userId)
