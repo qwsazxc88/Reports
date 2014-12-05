@@ -4,7 +4,9 @@
     Layout = "~/Views/Shared/_SimpleLayout.cshtml";
     ViewBag.Title = "Авторизация";
 }
-@using (Html.BeginForm()) {
+@using (Html.BeginForm())
+{
+
     <div>
         @Html.ValidationSummary(true, "")
         <fieldset>
@@ -30,7 +32,9 @@
             </div>
 *@
             <p>
-                <input type="submit" value="Вход" @if (Model.IsButtonHidden) { <text>style = "display:none"</text>; }/><br/>
+                <input type="submit" value="Вход" @if (Model.IsButtonHidden)
+                                                  { <text>style = "display:none"</text>;
+                                                  }/><br/>
                 @Html.ActionLink("Забыли пароль ?", "LoginRecovery")
             </p>
 
