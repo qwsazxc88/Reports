@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         
         public virtual int Number { get; set; }
         public virtual bool IsAdditional { get; set; }
+        public virtual bool IsRecalculated { get; set; }
        
         
         public virtual MissionType Type { get; set; }
@@ -72,7 +73,6 @@ namespace Reports.Core.Domain
 
         public virtual IList<MissionOrderComment> Comments { get; set; }
 
-      
         #endregion
 
         #region Properties

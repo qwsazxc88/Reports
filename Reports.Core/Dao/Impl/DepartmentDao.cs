@@ -4,6 +4,8 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Services;
+using System.Linq;
+using NHibernate.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
@@ -66,6 +68,34 @@ namespace Reports.Core.Dao.Impl
                 SetInt32("departmentId", departmentId).
                 SetResultTransformer(Transformers.AliasToBean(typeof(Department))).
                 List<Department>();
+        }
+        public Department GetParentDepartmentWithLevel(Department dep,int level)
+        {
+            return Session.Query<Department>().
+                Where(x => x.ItemLevel == level && dep.Path.StartsWith(x.Path))
+                .FirstOrDefault();
+        }
+        public IList<User> GetDepartmentManagers(int departmentId, bool allLevels = false)
+        {
+            IList<User> managers;
+            if (allLevels)
+            {
+                Department department = Get(departmentId);
+                if (department == null)
+                {
+                    return new List<User>();
+                }
+                managers = Session.Query<User>()
+                    .Where<User>(user => (user.RoleId & (int)UserRole.Manager) > 0 && department.Path.StartsWith(user.Department.Path) && user.IsActive == true)
+                    .ToList<User>();
+            }
+            else
+            {
+                managers = Session.Query<User>()
+                    .Where<User>(user => (user.RoleId & (int)UserRole.Manager) > 0 && user.Department.Id == departmentId && user.IsActive == true)
+                    .ToList<User>();
+            }
+            return managers;
         }
     }
 }

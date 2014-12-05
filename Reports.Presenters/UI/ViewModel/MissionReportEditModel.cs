@@ -15,6 +15,8 @@ namespace Reports.Presenters.UI.ViewModel
         public string DocumentTitle { get; set; }
         [Display(Name = "Даты командировки из приказа")]
         public string OrderDates { get; set; }
+        [Display(Name = "Даты командировки из изменения к приказу")]
+        public string AdditionalOrderDates { get; set; }
         public string Costs { get; set; }
 
         [Display(Name = "Справочно.Проживал в гостинице")]

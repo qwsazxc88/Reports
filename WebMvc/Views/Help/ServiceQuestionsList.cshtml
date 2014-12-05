@@ -1,0 +1,244 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpServiceQuestionsListModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Задать вопрос";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+     <tr>
+        <td colspan="2">
+          <div class="filter-wrap">
+            <table style="width:100%">
+                <tr>
+                    <td colspan="2">
+                    <b>Выбор параметров</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.ValidationSummary(false)
+                                <div id="Error" style="color:Red;display:none;"></div>
+                                @Html.HiddenFor(m => m.UserId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="DepartmentReadOnly" name="DepartmentReadOnly" value="@Model.DepartmentReadOnly" />
+                                @if (!Model.DepartmentReadOnly)
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }            
+                            </td>
+                        </tr>
+                         <tr>
+                             <td>
+                                @Html.LabelFor(m => m.StatusId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                             </td>
+                        </tr>
+                          @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)
+                          {
+                            <tr>
+                                    <td>
+                                        @Html.LabelFor(m => m.UserName):
+                                    </td>
+                                    <td>
+                                        @Html.TextBoxFor(model => model.UserName)
+                                    </td>
+                             </tr>
+                          }
+                          <tr>
+                                <td>
+                                    @Html.LabelFor(m => m.Number):
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.Number)
+                                </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.BeginDate):
+                                @Html.EditorFor(model => model.BeginDate) 
+                                @Html.LabelFor(m => m.EndDate):
+                                @Html.EditorFor(model => model.EndDate) 
+                             </td>
+                        </tr>
+                        <tr>
+                          <td colspan="2">
+                            <input type="submit" value="Выбрать"/>
+                            <input type="button" value="Очистить" onclick="resetFilter();"/>
+                          </td>
+                        </tr>
+            </table>
+        </div>
+    </td>
+    </tr>
+     <tr>
+        <td colspan="2">
+          <div class="action-wrap">
+            <table style="width:100%">
+                    <tr>
+                            <td>
+                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+                                    /*|| (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)*/)
+                                {
+                                    <input type="button" value="Задать вопрос" onclick="location.href='@Url.Action("HelpQuestionEdit", "Help", new { id = 0 })'"/>   
+                                }
+                                <input type="hidden" id="IsAddAvailable" name="IsAddAvailable" value="@Model.IsAddAvailable" />
+                                @if (Model.IsAddAvailable)
+                                {
+                                    <input type="button" value="Задать вопрос" onclick="location.href='@Url.Action("HelpQuestionEdit", "Help", new { id = 0 })'"/>
+                                    <text>&nbsp; &nbsp; &nbsp;</text>   
+                                    <input type="button" value="Задать вопрос за сотрудника" onclick="location.href='@Url.Action("CreateServiceRequest", "Help",new { isForQuestion = 1 } )'"/>
+                                }                                                                                     
+                            </td>
+                   </tr>
+              </table>  
+           </div>
+        </td>
+    </tr>   
+     <tr>
+        <td colspan="2">
+            <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+            <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+            <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
+                <tr>
+                     <th>
+                        № п/п
+                    </th>
+                    <th>
+                        <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                    </th>
+                    <th>
+                        <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
+                    </th>
+                    @* <th>
+                        <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
+                    </th>*@
+                    <th>
+                        <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
+                    </th>
+                    <th>
+                        <div id="sort5"  style="min-width:70px"><a href="#"  onclick = "SortChanged(5);">Номер<br/> заявки</a></div>
+                    </th>
+                    <th>
+                        <div id="sort6"  style="min-width:70px"><a href="#"  onclick = "SortChanged(6);">Дата<br/> вопроса</a></div>
+                    </th>                    
+                    <th>
+                        <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> ответа</a></div>
+                    </th>
+                        <th>
+                        <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид вопроса</a></div>
+                    </th>
+                    <th>
+                        <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Тип вопроса</a></div>
+                    </th>
+                    <th>
+                        <div id="sort10"  style="min-width:70px"><a href="#"  onclick = "SortChanged(10);">Кол-во<br/> вопросов</a></div>
+                    </th>
+                    @if (Model.IsManagerColumnVisible)
+                    {
+                     <th>
+                        <div id="sort11"  style="min-width:70px"><a href="#"  onclick = "SortChanged(11);">Консультация<br/> для руководителя</a></div>
+                    </th>
+                    }
+                    <th>
+                        <div id="sort12"  style="min-width:140px"><a href="#"  onclick = "SortChanged(12);">Перенаправлено<br/> роли</a></div>
+                    </th>
+                    <th>
+                        <div id="sort13"  style="min-width:100px"><a href="#"  onclick = "SortChanged(13);">Состояние</a></div>
+                    </th>
+                </tr>
+                @if (Model.Documents != null && Model.Documents.Count > 0)
+                {
+                    foreach (var doc in Model.Documents)
+                    {
+                        string color = "white";
+                        switch (doc.StatusNumber)
+                        {
+                            case 2:
+                                color = "orange";
+                                break;
+                            case 3:
+                                color = "yellow";
+                                break;
+                            case 4:
+                                color = "LightGreen";
+                                break;
+                            case 5:
+                                color = "green";
+                                break;
+                        }
+                        <tr>
+                            <td>@doc.Number</td>
+                            <td>@doc.UserName</td>
+                            <td>@doc.Position</td>
+                           @* <td>@doc.ManagerName</td>*@
+                            <td>@doc.DepName</td>
+                            <td style="text-align:left">
+                                <a class="ui-notify-close" href='@Url.Action("HelpQuestionEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
+                            </td>
+                            <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
+                            <td>@BaseBl.FormatDate(@doc.EndWorkDate)</td>
+                            <td>@doc.QuestionType</td>
+                            <td>@doc.QuestionSubtype</td>
+                            <td>@doc.QuestionsCount</td>
+                            @if (Model.IsManagerColumnVisible)
+                            {
+                                <td>@if(doc.IsManagerQuestion){<text>Да</text>}</td>
+                            }
+                            <td>@doc.RedirectRole</td>
+                            <td style="background-color:@color">
+                                @doc.Status
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+        </td>
+     </tr>
+    </table>
+}
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#BeginDate").datepicker();
+        $("#EndDate").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("helpQuestionsRequests");
+    });
+    function resetFilter() {
+        $("#BeginDate").val('');
+        $("#EndDate").val('');
+        if ($("#DepartmentReadOnly").val() == "False") {
+            $("#DepartmentId").val('0');
+            $("#DepartmentNameLabel").text('');
+            $("#DepartmentName").val('');
+        }
+        //$("#TypeId").val('0');
+         $("#StatusId").val('0');
+         $("#UserName").val('');
+         $("#Number").val('');
+    }
+</script>
+

@@ -34,6 +34,8 @@
 @*<input  type="button"  id="btnRender" value="Срендерить" onclick="Render();"/>*@
 
 <script type="text/javascript">
+    
+    // Вывод комментариев
     function Render() {
         var actionUrl="@Url.Action("RenderComments", "UserRequest")";
         var documentId = $("#RequestId").val();
@@ -92,6 +94,8 @@
         }
         return true;
     }
+
+    // Отправка комментария на сервер
     function SaveComment()
     {
         var url="@Url.Action("SaveComment", "UserRequest")"+"?id="+ $("#RequestId").val() + "&typeId="+ $("#RequestTypeId").val()

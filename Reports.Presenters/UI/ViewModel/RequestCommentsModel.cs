@@ -6,7 +6,9 @@ namespace Reports.Presenters.UI.ViewModel
     {
         public int RequestId { get; set; }
         public int RequestTypeId { get; set; }
-        public IList<RequestCommentModel> Comments { get; set; }
+        public string AddCommentText { get; set; }
+        public bool HasParent { get; set; }
+        public IList<RequestCommentModel> Comments { get; set; }        
     }
 
     public class RequestCommentModel

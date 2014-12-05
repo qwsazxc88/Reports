@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
-  <class name="MissionOrderRoleRecord" table="[MissionOrderRoleRecord]">
+  <class name="ManualRoleRecord" table="[ManualRoleRecord]">
     
     <id name="Id">
       <generator class="native" />
@@ -12,17 +12,17 @@
       name="User"
       class="User"
       column="UserId"
-      foreign-key="FK_MissionOrderRoleRecord_User"
-      index="IX_MissionOrderRoleRecord_User_Id"
+      foreign-key="FK_ManualRoleRecord_User"
+      index="IX_ManualRoleRecord_User_Id"
       not-null="true"
     />
 
     <many-to-one
       name="Role"
-      class="MissionOrderRole"
+      class="ManualRole"
       column="RoleId"
-      foreign-key="FK_MissionOrderRoleRecord_MissionOrderRole"
-      index="IX_MissionOrderRoleRecord_MissionOrderRole_Id"
+      foreign-key="FK_ManualRoleRecord_ManualRole"
+      index="IX_ManualRoleRecord_ManualRole_Id"
       not-null="true"
     />
 
@@ -30,8 +30,8 @@
       name="TargetUser"
       class="User"
       column="TargetUserId"
-      foreign-key="FK_MissionOrderRoleRecord_TargetUser"
-      index="IX_MissionOrderRoleRecord_TargetUser_Id"
+      foreign-key="FK_ManualRoleRecord_TargetUser"
+      index="IX_ManualRoleRecord_TargetUser_Id"
       not-null="false"
     />
 
@@ -39,8 +39,8 @@
       name="TargetDepartment"
       class="Department"
       column="TargetDepartmentId"
-      foreign-key="FK_MissionOrderRoleRecord_TargetDepartment"
-      index="IX_MissionOrderRoleRecord_TargetDepartment_Id"
+      foreign-key="FK_ManualRoleRecord_TargetDepartment"
+      index="IX_ManualRoleRecord_TargetDepartment_Id"
       not-null="false"
     />
 

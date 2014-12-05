@@ -94,6 +94,9 @@
     </tr>
     <tr>
         <td colspan="2">
+            
+            @* BEGIN DELETE
+
             <div class="announcement">
                 Уважаемые Пользователи!<br />
                 Обращаем ваше внимание:<br />
@@ -130,12 +133,10 @@
                             </li>
                             <li>
                                 По окончании  заполнения авансового отчета вам необходимо подтвердить внесенные данные, нажав "галку" в окошке напротив своей фамилии и нажав кнопку "Сохранить".<br />
-                                <span style="color:Red;">Обращаем ваше внимание: если у вас возникли проблемы с прикреплением сканов документов к авансовому отчету,
-                                вам необходимо обратиться в <a href="mailto:Ithelp@sovcombank.ru">Ithelp@sovcombank.ru</a>.</span><br />
                                 Авансовый  отчет уйдет на согласование.
                             </li>
                             <li>
-                                Согласовывает: Руководитель БГ (5), Руководитель Управления АУПа (5), Региональный директор, Заместитель (3), Руководитель департаментов АУПа, Заместитель (3).
+                                Согласовывает: Руководитель (6), Руководитель БГ (5), Руководитель Управления АУПа (5), Региональный директор, Заместитель (3), Руководитель департаментов АУПа, Заместитель (3).
                             </li>
                             <li>
                                 Если Руководитель отклонит авансовый отчет, у сотрудника авансовый отчет возвращается в статус "Черновик".<br />
@@ -159,6 +160,9 @@
                     </li>
                 </ol>
             </div>
+
+            END DELETE *@
+
             <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
             <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
             <table class="grid" style="width:100%;border-bottom:0px;border-right:0px">
@@ -200,7 +204,7 @@
                     </th>
                     <th>
                         <div id="sort7" style="min-width:80px"><a href="#"  onclick = "SortChanged(7);">Сумма <br/>по G грейду</a></div>
-                    </th>
+                    </th>                    
                     <th>
                         <div id="sort8" style="min-width:120px"><a href="#"  onclick = "SortChanged(8);">Фактически  <br/>потраченная <br/>сумма</a></div>
                     </th>
@@ -209,6 +213,9 @@
                     </th>
                     <th>
                         <div id="sort10" style="min-width:120px"><a href="#"  onclick = "SortChanged(10);">Превышение  <br/>по G</a></div>
+                    </th>
+                    <th>
+                        <div id="sort18" style="min-width:120px"><a href="#"  onclick = "SortChanged(18);">Сумма<br/>в подотчет<br/>полученная</a></div>
                     </th>
                     <th>
                         <div id="sort16" style="min-width:80px"><a href="#"  onclick = "SortChanged(16);">Сальдо  <br/>расчётов</a></div>
@@ -263,10 +270,11 @@
                             @*<td>@doc.MissionKind</td>
                             <td>@doc.Target</td>*@
                             <td>@doc.Grade</td>
-                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>
+                            <td>@RequestBl.FormatSum(doc.GradeSum)</td>                            
                             <td>@RequestBl.FormatSum(@doc.UserSum)</td>
                             <td>@RequestBl.FormatSum(@doc.AccountantSum)</td>
                             <td>@RequestBl.FormatSum(@doc.GradeIncrease)</td>
+                            <td>@RequestBl.FormatSum(@doc.UserSumReceived)</td>
                             <td>@RequestBl.FormatSum(@doc.Saldo)</td>
                             
                           @*  <td>@doc.HasMission</td>

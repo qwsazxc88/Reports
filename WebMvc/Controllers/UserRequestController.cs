@@ -12,6 +12,10 @@ using Reports.Core.Enum;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
+using System.Configuration;
+using System.Text;
+using System.Web.Security;
+using System.Diagnostics;
 
 namespace WebMvc.Controllers
 {
@@ -22,7 +26,7 @@ namespace WebMvc.Controllers
     public class UserRequestController : BaseController
     {
         
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         protected IRequestBl requestBl;
         public IRequestBl RequestBl
@@ -426,6 +430,15 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
+             UploadFileDto t2ScanFileDto = GetFileContext("t2ScanFile");
+             UploadFileDto dismissalAgreementScanFileDto = GetFileContext("dismissalAgreementScanFile");
+             UploadFileDto f182NScanFileDto = GetFileContext("f182NScanFile");
+             UploadFileDto f2NDFLScanFileDto = GetFileContext("f2NDFLScanFile");
+             UploadFileDto unsignedT2ScanFileDto = GetFileContext("unsignedT2ScanFile");
+             UploadFileDto unsignedDismissalAgreementScanFileDto = GetFileContext("unsignedDismissalAgreementScanFile");
+             UploadFileDto workbookRequestScanFileDto = GetFileContext("workbookRequestScanFile");
+
              if (!ValidateDismissalEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -434,7 +447,18 @@ namespace WebMvc.Controllers
                  return View(model);
              }
              string error;
-             if (!RequestBl.SaveDismissalEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveDismissalEditModel(model, new Dictionary<RequestAttachmentTypeEnum, UploadFileDto> {
+                    { RequestAttachmentTypeEnum.Dismissal, fileDto},
+                    { RequestAttachmentTypeEnum.UnsignedDismissalOrderScan, unsignedOrderScanFileDto},
+                    { RequestAttachmentTypeEnum.DismissalOrderScan, orderScanFileDto},
+                    { RequestAttachmentTypeEnum.T2Scan, t2ScanFileDto },
+                    { RequestAttachmentTypeEnum.DismissalAgreementScan, dismissalAgreementScanFileDto },
+                    { RequestAttachmentTypeEnum.F182NScan, f182NScanFileDto },
+                    { RequestAttachmentTypeEnum.F2NDFLScan, f2NDFLScanFileDto },
+                    { RequestAttachmentTypeEnum.UnsignedT2Scan, unsignedT2ScanFileDto },
+                    { RequestAttachmentTypeEnum.UnsignedDismissalAgreementScan, unsignedDismissalAgreementScanFileDto },
+                    { RequestAttachmentTypeEnum.WorkbookRequestScan, workbookRequestScanFileDto}
+                }, out error))
              {
                  //HttpContext.AddError(new Exception(error));
                  if (model.ReloadPage)
@@ -551,7 +575,7 @@ namespace WebMvc.Controllers
              else
              {
                  var model = RequestBl.GetClearanceChecklistEditModelByParentId((int)parentId, userId);
-                 return PartialView(model);
+                 return PartialView("ClearanceChecklistEditPartial", model);
              }
          }
 
@@ -880,6 +904,12 @@ namespace WebMvc.Controllers
              if (model.BeginDate.HasValue && model.EndDate.HasValue)
              {
                  UserRole role = AuthenticationService.CurrentUser.UserRole;
+
+                 // Проверка на дубликаты
+                 int requestCount = RequestBl.GetOtherRequestCountsForUserAndDates(model.BeginDate.Value, model.EndDate.Value, model.UserId, model.Id, RequestTypeEnum.Sicklist);
+                 if (requestCount > 0)
+                     ModelState.AddModelError("BeginDate", "Для данного пользователя существуют другие заявки в указанном интервале дат.");
+
                  if(model.BeginDate > model.EndDate)
                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
                  else if (!model.IsDelete && model.IsApproved
@@ -1124,6 +1154,7 @@ namespace WebMvc.Controllers
              CorrectDropdowns(model);
              UploadFileDto fileDto = GetFileContext();
              UploadFileDto orderScanFileDto = GetFileContext("orderScanFile");
+             UploadFileDto unsignedOrderScanFileDto = GetFileContext("unsignedOrderScanFile");
              if (!ValidateVacationEditModel(model,fileDto))
              {
                  model.IsApproved = false;
@@ -1133,7 +1164,7 @@ namespace WebMvc.Controllers
              }
 
              string error;
-             if (!RequestBl.SaveVacationEditModel(model, fileDto, orderScanFileDto, out error))
+             if (!RequestBl.SaveVacationEditModel(model, fileDto, unsignedOrderScanFileDto, orderScanFileDto, out error))
              {
                  
                  if (model.ReloadPage)
@@ -1443,10 +1474,10 @@ namespace WebMvc.Controllers
 
          #region Comments
          [HttpGet]
-         public ActionResult RenderComments(int id,int typeId)
+         public ActionResult RenderComments(int id, int typeId, string addCommentText = null, bool hasParent = false)
          {
              //IContractRequest bo = Ioc.Resolve<IContractRequest>();
-             RequestCommentsModel model = RequestBl.GetCommentsModel(id,typeId);
+             RequestCommentsModel model = RequestBl.GetCommentsModel(id, typeId, null, hasParent);
              return PartialView("RequestCommentPartial", model);
          }
         
@@ -1553,13 +1584,13 @@ namespace WebMvc.Controllers
                  return PartialView("DialogError", new DialogErrorModel { Error = error });
              }
          }
-         protected UploadFileDto GetFileContext()
+         /*protected UploadFileDto GetFileContext()
          {
              if (Request.Files.Count == 0)
                  return null;
              string file = Request.Files.GetKey(0);
              return GetFileContext(file);
-         }
+         }*/
          [HttpPost]
          public ContentResult SaveAttachment(int id, string description, string qqFile)
          {
@@ -1635,7 +1666,7 @@ namespace WebMvc.Controllers
              return Content(jsonString);
          }
  
-         protected UploadFileDto GetFileContext(string file)
+         /*protected UploadFileDto GetFileContext(string file)
          {
              //if (Request.Files.Count == 0)
              //    return null;
@@ -1662,7 +1693,7 @@ namespace WebMvc.Controllers
              var fileContent = new byte[length];
              file.InputStream.Read(fileContent, 0, length);
              return fileContent;
-         }
+         }*/
            #endregion
 
          #region Print
@@ -1680,6 +1711,158 @@ namespace WebMvc.Controllers
                 throw;
             }
          }
+
+         //  
+
+         [HttpGet]
+         public ActionResult RenderToPdf(string urlTemplate, DateTime? beginDate, DateTime? endDate, int? departmentId,
+                     int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
+         {
+             string filePath = null;
+             try
+             {
+                 var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                 var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                 folderPath = HttpContext.Server.MapPath(folderPath);
+                 if (!Directory.Exists(folderPath))
+                     Directory.CreateDirectory(folderPath);
+                 filePath = Path.Combine(folderPath, fileName);
+
+                 var arguments = new StringBuilder();
+
+                 var cookieName = FormsAuthentication.FormsCookieName;
+                 var authCookie = Request.Cookies[cookieName];
+                 if (authCookie == null || authCookie.Value == null)
+                     throw new ArgumentException("Ошибка авторизации.");
+                 arguments.AppendFormat("{0} --cookie {1} {2}",
+                     GetConverterCommandParam(urlTemplate, beginDate, endDate, departmentId,
+                     requestStatusId, typeId, userName, sortBy, sortDescending)
+                     , cookieName, authCookie.Value);
+                 
+                 arguments.AppendFormat(" \"{0}\"", filePath);
+                 var serverSideProcess = new Process
+                 {
+                     StartInfo =
+                     {
+                         FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                         Arguments = arguments.ToString(),
+                         UseShellExecute = true
+                     },
+                     EnableRaisingEvents = true
+                 };
+                 serverSideProcess.Start();
+                 serverSideProcess.WaitForExit();
+                 return GetFile(filePath, fileName, @"application/pdf");
+             }
+             catch (Exception ex)
+             {
+                 Log.Error("Exception on RenderToPdf", ex);
+                 throw;
+             }
+             finally
+             {
+                 if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                 {
+                     try
+                     {
+                         System.IO.File.Delete(filePath);
+                     }
+                     catch (Exception ex)
+                     {
+                         Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                     }
+                 }
+             }
+         }
+
+         protected string GetConverterCommandParam(string urlTemplate, DateTime? beginDate, DateTime? endDate, int? departmentId,
+                    int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
+         {
+             var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+             string args = @"";
+             if (beginDate.HasValue)
+                 args += string.Format("beginDate={0}&", beginDate.Value.ToShortDateString());
+             if (endDate.HasValue)
+                 args += string.Format("endDate={0}&", endDate.Value.ToShortDateString());
+             if (departmentId.HasValue)
+                 args += string.Format("departmentId={0}&", departmentId.Value);
+             if (requestStatusId.HasValue)
+                 args += string.Format("requestStatusId={0}&", requestStatusId.Value);
+             if (typeId.HasValue)
+                 args += string.Format("typeId={0}&", typeId.Value);
+             if (!string.IsNullOrEmpty(userName))
+                 args += string.Format("userName={0}&", Server.UrlEncode(userName));
+             if (sortBy.HasValue)
+                 args += string.Format("sortBy={0}&", sortBy.Value);
+             if (sortDescending.HasValue)
+                 args += string.Format("sortDescending={0}&", sortDescending.Value);
+             if (!string.IsNullOrEmpty(args))
+                 args = args.Substring(0, args.Length - 1);
+             args = "?" + args;
+
+             return !string.IsNullOrEmpty(localhostUrl)
+                        ? string.Format(@"{0}/{1}{2}", localhostUrl, urlTemplate, args)
+                        : Url.Content(string.Format(@"{0}{1}", urlTemplate, args));
+         }
+
+         protected ActionResult GetFile(string filePath, string fileName, string contentType)
+         {
+             byte[] value;
+             using (FileStream stream = System.IO.File.Open(filePath, FileMode.Open))
+             {
+                 value = new byte[stream.Length];
+                 stream.Read(value, 0, (int)stream.Length);
+             }
+             const string userFileName = "PrintOut.pdf";
+             //const string contentType = "application/pdf";
+             Response.Clear();
+             if (Request.Browser.Browser == "IE")
+             {
+                 string attachment = String.Format("attachment; filename=\"{0}\"", Server.UrlPathEncode(userFileName));
+                 Response.AddHeader("Content-Disposition", attachment);
+             }
+             else
+                 Response.AddHeader("Content-Disposition", "attachment; filename=\"" + userFileName + "\"");
+
+             Response.ContentType = contentType;
+             Response.Charset = "utf-8";
+             Response.HeaderEncoding = Encoding.UTF8;
+             Response.ContentEncoding = Encoding.UTF8;
+             Response.BinaryWrite(value);
+             Response.End();
+             return null;
+         }
+
+         [HttpGet]
+         public ActionResult PrintDismissalList(string beginDate, string endDate, int? departmentId,
+                     int? requestStatusId, int? typeId, string userName, int? sortBy, bool? sortDescending)
+         {
+             DismissalListModel model = new DismissalListModel
+             {
+                 BeginDate = parseDateTime(beginDate),
+                 EndDate = parseDateTime(endDate),
+                 DepartmentId = departmentId.HasValue ? departmentId.Value : 0,
+                 StatusId = requestStatusId.HasValue ? requestStatusId.Value : 0,
+                 TypeId = typeId.HasValue ? typeId.Value : 0,
+                 UserName = string.IsNullOrEmpty(userName) ? string.Empty : Server.UrlDecode(userName),
+                 SortBy = sortBy.HasValue ? sortBy.Value : 0,
+                 SortDescending = sortDescending.HasValue ? sortDescending.Value : new bool?(),
+             };
+             RequestBl.SetDismissalListModel(model, !ValidateModel(model));
+             return View(model);
+         }
+
+         protected DateTime? parseDateTime(string value)
+         {
+             if (string.IsNullOrEmpty(value))
+                 return new DateTime?();
+             DateTime result;
+             if (!DateTime.TryParse(value, out result))
+                 return new DateTime?();
+             return result;
+         }
+
          /*[HttpGet]
          public ActionResult VacationPrint(int id)
          {
@@ -1702,6 +1885,7 @@ namespace WebMvc.Controllers
                      throw new ArgumentException(string.Format("Неизвестный тип формы {0}",typeId));
              }
          }
+         
          [HttpGet]
          public ActionResult RenderToPdf(int id,int typeId)
          {
@@ -1759,6 +1943,7 @@ namespace WebMvc.Controllers
                  }
              }
          }
+        
          protected string GetConverterCommandParam(int formId, int typeId)
          {
              //if (!formId.HasValue && !typeId.HasValue)
@@ -1988,13 +2173,14 @@ namespace WebMvc.Controllers
                 return;
             DateTime beginDate = date.Value;
             DateTime current = DateTime.Today;
+            int limitDate = AuthenticationService.CurrentUser.UserRole == UserRole.PersonnelManager ? 5 : 1;
             DateTime monthBegin = new DateTime(current.Year, current.Month, 1);
-            if ((current.Day != 1) && monthBegin > beginDate)
+            if ((current.Day > limitDate) && monthBegin > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;
             }
-            if ((current.Day == 1) && monthBegin.AddMonths(-1) > beginDate)
+            if ((current.Day <= limitDate) && monthBegin.AddMonths(-1) > beginDate)
             {
                 ModelState.AddModelError(string.Empty, "Создание/изменение заявки в прошлом запрещено .");
                 return;
@@ -2142,20 +2328,5 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
-    }
-    
-        /*struct keyWordEntry
-    {
-        public string keyword;
-        public int position;
-        public string spacesAfter;
-
-        public keyWordEntry(string kword, int pos, string spaces)
-        {
-            keyword = kword;
-            position = pos;
-            spacesAfter = spaces;
-        }
-    }*/
-        
+    }        
 }

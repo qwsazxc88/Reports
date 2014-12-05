@@ -25,6 +25,9 @@
         MissionReport = 12,
         Appointment = 13,
         AppointmentReport = 14,
+        ClearanceChecklist = 15,
+        HelpServiceRequest = 16,
+        HelpQuestionRequest = 17,
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -44,6 +47,9 @@
         MissionReport = 6,
         AppointmentReport = 7,
         MissionReportCost = 8,
+        HelpTemplate = 9,
+        HelpServiceRequestTemplate = 10,
+        HelpServiceRequest = 11,
 
         // Order Scans
 
@@ -52,8 +58,11 @@
         ChildVacationOrderScan = 105,
         MissionOrderScan = 118,
 
-        // Employment documents
+        UnsignedDismissalOrderScan = 153,
+        UnsignedVacationOrderScan = 154,
 
+        // Employment documents
+        
         Photo = 201,
         INNScan = 202,
         SNILSScan = 203,
@@ -84,6 +93,16 @@
         // ? = 281,
         // ? = 282,
 
+        // Dismissal Additional Documents Scans
+
+        T2Scan = 201,        
+        DismissalAgreementScan = 202,
+        F182NScan = 203,
+        F2NDFLScan = 204,
+        WorkbookRequestScan = 205,
+
+        UnsignedT2Scan = 251,        
+        UnsignedDismissalAgreementScan = 252
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)
   //dbo.Dismissal (увольнения)            RequestTypeId = 2, (приказ)
@@ -92,6 +111,7 @@
   //dbo.Mission (командировки)            RequestTypeId = 4, (приказ) и RequestTypeId = 5, (удостоверение)
   //dbo.Sicklist (больничные)             RequestTypeId = "",(Нет печатной формы)
   //dbo.Vacation (отпуска)                RequestTypeId = 1, (приказ)
+
     public enum RequestPrintFormTypeEnum
     {
         Vacation = 1,

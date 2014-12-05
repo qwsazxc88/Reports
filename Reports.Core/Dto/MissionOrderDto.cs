@@ -12,6 +12,7 @@ namespace Reports.Core.Dto
         public string Dep7Name { get; set; }
         public int OrderNumber { get; set; }
         public DateTime EditDate { get; set; }
+        public bool IsRecalculated { get; set; }
         public int? AdditionalOrderId { get; set; }
         public string AdditionalOrderNumber { get; set; }
         public DateTime? AdditionalOrderEditDate { get; set; }
@@ -34,7 +35,7 @@ namespace Reports.Core.Dto
         public string AirTicketType { get; set; }
         public string TrainTicketType { get; set; }
         public bool Flag { get; set; }
-        public bool IsChecked { get; set; }
+        public bool IsChecked { get; set; }        
         
         //public bool IsApproveFlagAvailable { get; set; }
     }
@@ -52,6 +53,7 @@ namespace Reports.Core.Dto
         public int Grade { get; set; }
         public decimal GradeSum { get; set; }
         public decimal UserSum { get; set; }
+        public decimal UserSumReceived { get; set; }
         public decimal AccountantSum { get; set; }
         public Decimal? GradeIncrease { get; set; }
         public Decimal? Saldo { get; set; }

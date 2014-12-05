@@ -27,6 +27,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
+        public int RUSSIAN_FEDERATION = 643;
+
         #region Dependencies
 
         protected IEmploymentCandidateDao employmentCandidateDao;
@@ -176,6 +178,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { scheduleDao = value; }
         }
 
+        protected IManualRoleRecordDao missionOrderRoleRecordDao;
+        public IManualRoleRecordDao MissionOrderRoleRecordDao
+        {
+            get { return Validate.Dependency(missionOrderRoleRecordDao); }
+            set { missionOrderRoleRecordDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -196,7 +205,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity != null)
             {
                 model.AgreedToPersonalDataProcessing = entity.AgreedToPersonalDataProcessing;
-                model.CitizenshipId = entity.Citizenship.Id;
+                model.CitizenshipId = entity.Citizenship != null ? entity.Citizenship.Id : RUSSIAN_FEDERATION;
                 model.CityOfBirth = entity.CityOfBirth;
                 model.DateOfBirth = entity.DateOfBirth;
 
@@ -235,7 +244,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Patronymic = entity.Patronymic;
                 model.RegionOfBirth = entity.RegionOfBirth;
                 model.SNILS = entity.SNILS;
-                model.StatusId = entity.Status;
+                model.StatusId = entity.Status ?? 0;
                 model.Version = entity.Version;
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
@@ -277,7 +286,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Building = entity.Building;
                 model.City = entity.City;
                 model.District = entity.District;
-                model.DocumentTypeId = entity.DocumentType.Id;
+                model.DocumentTypeId = entity.DocumentType != null ? entity.DocumentType.Id : 0;
                 model.InternalPassportDateOfIssue = entity.InternalPassportDateOfIssue;
                 model.InternalPassportIssuedBy = entity.InternalPassportIssuedBy;
                 model.InternalPassportNumber = entity.InternalPassportNumber;
@@ -406,10 +415,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                if (model.Father == null)
+                /*if (model.Father == null)
                 {
                     model.Father = new FamilyMemberDto();
-                }
+                }*/
 
                 model.Mother = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
                     .ToList<FamilyMember>()
@@ -423,10 +432,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                if (model.Mother == null)
+                /*if (model.Mother == null)
                 {
                     model.Mother = new FamilyMemberDto();
-                }
+                }*/
 
                 model.Spouse = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
                     .ToList<FamilyMember>()
@@ -443,7 +452,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.Spouse == null)
                 {
                     model.IsMarried = false;
-                    model.Spouse = new FamilyMemberDto();
+                    //model.Spouse = new FamilyMemberDto();
                 }
                 else
                 {
@@ -648,7 +657,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Results = entity.Results;
                 model.Type = entity.Type;
 
-                model.ApproverName = entity.Approver.Name;
+                model.ApproverName = entity.Approver != null ? entity.Approver.Name : string.Empty;
                 model.ApprovalStatus = entity.IsComplete;
                 model.IsApproveByTrainerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
                     && ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer);
@@ -687,15 +696,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Bonus = entity.Bonus;
                 model.DailySalaryBasis = entity.DailySalaryBasis;
-                model.DepartmentId = entity.Department.Id;
-                model.DepartmentName = entity.Department.Name;
+                model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
+                model.DepartmentName = entity.Department != null ? entity.Department.Name : string.Empty;
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.HourlySalaryBasis = entity.HourlySalaryBasis;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
                 model.PersonalAddition = entity.PersonalAddition;
                 model.PositionAddition = entity.PositionAddition;
-                model.PositionId = entity.Position.Id;
+                model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
@@ -737,7 +746,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity != null)
             {
-                model.AccessGroupId = entity.AccessGroup.Id;
+                model.AccessGroupId = entity.AccessGroup != null ? entity.AccessGroup.Id : 0;
                 //model.ApprovedByPersonnelManager = entity.ApprovedByPersonnelManager;
                 model.AreaAddition = entity.AreaAddition;
                 model.AreaMultiplier = entity.AreaMultiplier;
@@ -757,7 +766,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
                 model.OverallExperienceYears = entity.OverallExperienceYears;
                 model.PersonalAccount = entity.PersonalAccount;
-                model.PersonalAccountContractorId = entity.PersonalAccountContractor.Id;
+                model.PersonalAccountContractorId = entity.PersonalAccountContractor != null ? entity.PersonalAccountContractor.Id : 0;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
 
@@ -1159,13 +1168,81 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 User = newUser,
                 AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : current,
-                QuestionnaireDate = DateTime.Now
+                QuestionnaireDate = DateTime.Now                
             };
-
+            
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             candidate.User.Login = "c" + candidate.Id.ToString();
             candidate.User.Name = candidate.User.Login;
+
+            // Create blank employment pages
+            candidate.GeneralInfo = new GeneralInfo
+            {
+                AgreedToPersonalDataProcessing = false,
+                Candidate = candidate,
+                IsPatronymicAbsent = false,
+                IsFinal = false
+            };
+            candidate.Passport = new Passport
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.Education = new Education
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.Family = new Family
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+            candidate.MilitaryService = new MilitaryService
+            {
+                Candidate = candidate,
+                IsAssigned = false,
+                IsLiableForMilitaryService = false,
+                IsReserved = false,
+                IsFinal = false
+            };
+
+            candidate.Experience = new Experience
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+
+            candidate.Contacts = new Contacts
+            {
+                Candidate = candidate,
+                IsFinal = false
+            };
+
+            candidate.BackgroundCheck = new BackgroundCheck
+            {
+                Candidate = candidate,
+                IsReadyForBusinessTrips = false,
+                IsFinal = false
+            };
+
+            candidate.OnsiteTraining = new OnsiteTraining
+            {
+                Candidate = candidate
+            };
+
+            candidate.Managers = new Managers
+            {
+                Candidate = candidate,
+                IsFront = false,
+                IsLiable = false
+            };
+
+            candidate.PersonnelManagers = new PersonnelManagers
+            {
+                Candidate = candidate
+            };
 
             EmploymentCommonDao.SaveAndFlush(candidate);
 
@@ -1195,7 +1272,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
                     SaveAttachments<TVM>(model);
             }
-            catch (Exception exc)
+            catch (Exception)
             {
 
             }
@@ -1592,42 +1669,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Если информация об отце заносится в БД впервые
             if (viewModel.Father != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER))
             {
-                FamilyMember father = SetFamilyMember(new FamilyMember(), viewModel.Father);
+                FamilyMember father = SetFamilyMember(new FamilyMember(), FamilyRelationship.FATHER, viewModel.Father);
                 entity.FamilyMembers.Add(father);
             }
             // Если требуется обновление информации об отце
             else if (viewModel.Father != null)
             {
                 FamilyMember father = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.FATHER);
-                SetFamilyMember(father, viewModel.Father);
+                SetFamilyMember(father, FamilyRelationship.FATHER, viewModel.Father);
             }
 
             if (viewModel.Mother != null && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER))
             {
-                FamilyMember mother = SetFamilyMember(new FamilyMember(), viewModel.Mother);
+                FamilyMember mother = SetFamilyMember(new FamilyMember(), FamilyRelationship.MOTHER, viewModel.Mother);
                 entity.FamilyMembers.Add(mother);
             }
             else if (viewModel.Mother != null)
             {
                 FamilyMember mother = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.MOTHER);
-                SetFamilyMember(mother, viewModel.Mother);
+                SetFamilyMember(mother, FamilyRelationship.MOTHER, viewModel.Mother);
             }
 
             if (viewModel.IsMarried && !entity.FamilyMembers.Any<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE))
             {
-                FamilyMember spouse = SetFamilyMember(new FamilyMember(), viewModel.Spouse);
+                FamilyMember spouse = SetFamilyMember(new FamilyMember(), FamilyRelationship.SPOUSE, viewModel.Spouse);
                 entity.FamilyMembers.Add(spouse);
             }
-            else if (viewModel.Mother != null)
+            else if (viewModel.Spouse != null)
             {
                 FamilyMember spouse = GetFamilyMemberByRelationship(entity.FamilyMembers, FamilyRelationship.SPOUSE);
-                SetFamilyMember(spouse, viewModel.Spouse);
+                SetFamilyMember(spouse, FamilyRelationship.SPOUSE, viewModel.Spouse);
             }
 
             if (viewModel.Children != null && viewModel.Children.Count > entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD).Count())
             {
                 int lastIndex = viewModel.Children.Count - 1;
-                entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), viewModel.Children[lastIndex]));
+                entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), FamilyRelationship.CHILD, viewModel.Children[lastIndex]));
             }
 
             entity.IsFinal = !viewModel.IsDraft;
@@ -1647,7 +1724,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return result;
         }
 
-        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyMemberDto data)
+        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
         {
             familyMember.Contacts = data.Contacts;
             familyMember.DateOfBirth = data.DateOfBirth;
@@ -1655,6 +1732,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             familyMember.PassportData = data.PassportData;
             familyMember.PlaceOfBirth = data.PlaceOfBirth;
             familyMember.WorksAt = data.WorksAt;
+            familyMember.RelationshipId = relationship;
             return familyMember;
         }
 
@@ -2259,33 +2337,37 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
-
-            if (!current.Level.HasValue || current.Level < MinManagerLevel || current.Level > MaxManagerLevel)
+            // Контроль уровня вышестоящего руководителя
+            if (!IsManagerLevelValid(current))
+            {
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         current.Level.HasValue ? current.Level.Value.ToString() : "<не указан>", current.Id));
-            if (!creator.Level.HasValue || creator.Level < MinManagerLevel || creator.Level > MaxManagerLevel)
+            }
+            // Контроль уровня руководителя-инициатора
+            if (!IsManagerLevelValid(creator))
+            {
                 throw new ValidationException(string.Format(StrIncorrectManagerLevel,
                         creator.Level.HasValue ? creator.Level.Value.ToString() : "<не указан>", creator.Id));
-            List<DepartmentDto> departments;
+            }
+
             switch (current.Level)
             {
-                case 2:
-                    IList<int> managers2 = AppointmentDao.GetChildrenManager2ForManager2(current.Id);
-                    if (managers2.Any(x => x == creator.Id && creator.Level.Value == 2))
-                        return true;
-                    IList<int> managers = AppointmentDao.GetManager3ForManager2(current.Id);
-                    if (managers.Any(x => x == creator.Id && creator.Level.Value == 3))
-                        return true;
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 2, true).ToList();
-                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path) && creator.Level == 4);
                 case 3:
-                    /*if (creator.Level != 4)
-                        return false;*/
-                    departments = AppointmentDao.GetDepartmentsForManager23(current.Id, 3, false).ToList();
-                    return departments.Any(x => creator.Department.Path.StartsWith(x.Path));
+                    // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
+                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                        .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
+                case 4:
+                case 5:
+                    return creator.Department.Path.StartsWith(current.Department.Path)
+                        && creator.Department.Path.Length > current.Department.Path.Length;
                 default:
                     return false;
             }
+        }
+
+        protected bool IsManagerLevelValid(User manager)
+        {
+            return (manager.Level.HasValue && manager.Level >= MinManagerLevel && manager.Level <= MaxManagerLevel);
         }
 
         public bool IsUnlimitedEditAvailable()

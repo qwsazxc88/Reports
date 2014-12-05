@@ -34,6 +34,46 @@ namespace Reports.Presenters.UI.ViewModel
         string OrderScanAttachment { get; set; }
         int OrderScanAttachmentId { get; set; }
     }
+    public interface IUnsignedOrderScanAttachment
+    {
+        string UnsignedOrderScanAttachment { get; set; }
+        int UnsignedOrderScanAttachmentId { get; set; }
+    }
+    public interface IT2ScanAttachment
+    {
+        string T2ScanAttachment { get; set; }
+        int T2ScanAttachmentId { get; set; }
+    }
+    public interface IUnsignedT2ScanAttachment
+    {
+        string UnsignedT2ScanAttachment { get; set; }
+        int UnsignedT2ScanAttachmentId { get; set; }
+    }
+    public interface IDismissalAgreementScanAttachment
+    {
+        string DismissalAgreementScanAttachment { get; set; }
+        int DismissalAgreementScanAttachmentId { get; set; }
+    }
+    public interface IUnsignedDismissalAgreementScanAttachment
+    {
+        string UnsignedDismissalAgreementScanAttachment { get; set; }
+        int UnsignedDismissalAgreementScanAttachmentId { get; set; }
+    }
+    public interface IF182NScanAttachment
+    {
+        string F182NScanAttachment { get; set; }
+        int F182NScanAttachmentId { get; set; }
+    }
+    public interface IF2NDFLScanAttachment
+    {
+        string F2NDFLScanAttachment { get; set; }
+        int F2NDFLScanAttachmentId { get; set; }
+    }
+    public interface IWorkbookRequestScanAttachment
+    {
+        string WorkbookRequestScanAttachment { get; set; }
+        int WorkbookRequestScanAttachmentId { get; set; }
+    }
     public interface ICheckForEntity
     {
         bool IsDeleteAvailable { get; set; }

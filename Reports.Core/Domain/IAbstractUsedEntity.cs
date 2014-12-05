@@ -8,4 +8,8 @@ namespace Reports.Core.Domain
     {
         bool IsUsed { get; set;}
     }
+    public interface ISortOrder
+    {
+        int SortOrder { get; set; }
+    }
 }

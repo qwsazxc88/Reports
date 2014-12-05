@@ -13,12 +13,6 @@ namespace Reports.Core.Dao.Impl
 {
     public class MissionReportDao : DefaultDao<MissionReport>, IMissionReportDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
         protected const string sqlSelectForMissionReportRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
@@ -41,6 +35,7 @@ namespace Reports.Core.Dao.Impl
                                 u.Grade as Grade,
                                 v.AllSum as GradeSum,
                                 v.UserAllSum as UserSum,
+                                v.UserSumReceived as UserSumReceived,
                                 v.[AccountantAllSum] as AccountantSum,
                                 v.UserAllSum - v.AllSum as GradeIncrease,
                                 case when v.[AccountantDateAccept] is not null then
@@ -122,9 +117,9 @@ namespace Reports.Core.Dao.Impl
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
             //
-           
-            //whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            //whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+
+            //whereString += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+            //whereString += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
            
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -149,7 +144,7 @@ namespace Reports.Core.Dao.Impl
 
                     string sqlQueryPartTemplate =
                         @" select distinct emp.Id from dbo.Users emp
-                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 
+                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 and manU.IsActive = 1
                                              inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
                                              ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
                                              inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
@@ -200,7 +195,7 @@ namespace Reports.Core.Dao.Impl
                              inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
                              inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}
                              where not exists (select Id from dbo.Users empMan1 where
-                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R')";
+                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R' and empMan1.IsActive = 1)";
                             if (currentUser.Level == 5)
                             {
                                 sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);
@@ -223,9 +218,9 @@ namespace Reports.Core.Dao.Impl
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = String.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
-                    // Ручные привязки человек-человек и человек-подразделение из MissionOrderRoleRecord
-                    sqlQueryPart += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-                    sqlQueryPart += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+                    sqlQueryPart += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     return sqlQueryPart;
 //                case UserRole.Director:
@@ -426,6 +421,9 @@ namespace Reports.Core.Dao.Impl
                 case 17:
                     orderBy = @" order by Position";
                     break;
+                case 18:
+                    orderBy = @" order by UserSumReceived";
+                    break;
                 //case 14:
                 //    orderBy = @" order by NeedSecretary";
                 //    break;
@@ -475,6 +473,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Grade", NHibernateUtil.Int32).
                 AddScalar("GradeSum", NHibernateUtil.Decimal).
                 AddScalar("UserSum", NHibernateUtil.Decimal).
+                AddScalar("UserSumReceived", NHibernateUtil.Decimal).
                 AddScalar("AccountantSum", NHibernateUtil.Decimal).
                 AddScalar("GradeIncrease", NHibernateUtil.Decimal).
                 AddScalar("Saldo", NHibernateUtil.Decimal).

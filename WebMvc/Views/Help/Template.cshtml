@@ -1,0 +1,489 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpTemplateListModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Шаблоны";
+}
+
+@using (Html.BeginForm())
+{
+    <!--<div id="TemplateModelContext">@Html.Partial("TemplatePartial", Model)</div>-->
+    <table style="width:100%">
+    <tr>
+        <td style="font-weight:bold">Шаблоны документов</td>
+    </tr>
+  <tr>
+      <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_edinovremennoe_posobie_pri_rozhdenii_rebenka.doc")" target="_blank">Заявление на единовременное пособие при рождении ребенка</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_ezhegodnyj_otpusk.doc")" target="_blank">Заявление на ежегодный отпуск</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_1_5_let.doc")" target="_blank">Заявление на ежемесячное пособие по уходу за ребенком до 1,5 лет</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_ezhemesyachnoe_posobie_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Заявление на ежемесячное пособие по уходу за ребенком до 3-х лет</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_materialnuyu_pomoshch_v_svyazi_s_zaklyucheniem_braka.doc")" target="_blank">Заявление на материальную помощь в связи с заключением брака</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_materialnuyu_pomoshch_v_svyazi_s_rozhdeniem_rebenka.doc")" target="_blank">Заявление на материальную помощь в связи с рождением ребенка</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_materialnuyu_pomoshch_v_svyazi_so_smertyu.doc")" target="_blank">Заявление на материальную помощь в связи со смертью</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_otpusk_bez_sohraneniya_zp.doc")" target="_blank">Заявление на отпуск без сохранения зп</a>
+        </td>
+    </tr> 
+
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_otpusk_po_uhodu_za_rebenkom_do_1_5_let.doc")" target="_blank">Заявление на отпуск по уходу за ребенком до 1,5 лет</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_otpusk_po_uhodu_za_rebenkom_do_3_h_let.doc")" target="_blank">Заявление на отпуск по уходу за ребенком до 3-х лет</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_otpusk_s_posleduyushchim_uvolneniem.doc")" target="_blank">Заявление на отпуск с последующим увольнением</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_perevod.doc")" target="_blank">Заявление на перевод</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_poluchenie_bankovskoj_karty.doc")" target="_blank">Заявление на получение банковской карты</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_raschet_bl_s_uchetom_spravok_s_pred_mesta_raboty.docx")" target="_blank">Заявление на расчет бл с учетом справок с пред. места работы</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_smenu_mesta_zhitelstva.doc")" target="_blank">Заявление на смену места жительства</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_smenu_pasportnyh_dannyh.doc")" target="_blank">Заявление на смену паспортных данных</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_smenu_fio.doc")" target="_blank">Заявление на смену ФИО</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_na_uvolnenie_po_sobstvennomu_zhelaniyu.doc")" target="_blank">Заявление на увольнение по собственному желанию</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_nepolnyj_rabochij_den.doc")" target="_blank">Заявление неполный рабочий день</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_vyplate_posobiya_kak_vstavshej_na_uchet_v_rannie_sroki_beremennosti.doc")" target="_blank">Заявление о выплате пособия, как вставшей на учет в ранние сроки беременности</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_perenose_otpuska.doc")" target="_blank">Заявление о переносе отпуска</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_predostavlenii_otpuska_po_beremennosti_i_rodam.doc")" target="_blank">Заявление о предоставлении отпуска по беременности и родам</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_prieme_na_rabotu.doc")" target="_blank">Заявление о приеме на работу</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/zayavlenie_o_soglasii_na_uderzhanie_pri_uvolnenii.doc")" target="_blank">Заявление о согласии на удержание при увольнении</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/prilozhenie_1_o_standartnom_nalogovom_vychete.doc")" target="_blank">Приложение №1 О стандартном налоговом вычете</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/prilozhenie_2_o_dvojnom_standartnom_nalogovom_vychete.doc")" target="_blank">Приложение №2 О двойном стандартном налоговом вычете</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/prilozhenie_3_o_predostavlenii_imushchestvennogo_nalogovogo_vycheta.doc")" target="_blank">Приложение №3 О предоставлении имущественного налогового вычета</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/prilozhenie_4_o_predostavlenii_standartnogo_nalogovogo_vycheta_st_218.doc")" target="_blank">Приложение №4 О предоставлении стандартного налогового вычета ст.218</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/sz_na_izmenenie_shtatnogo_raspisaniya.xls")" target="_blank">СЗ на изменение штатного расписания</a>
+        </td>
+    </tr> 
+  <tr>
+        <td>
+            <a href="@Url.Content("~/Templates/sluzhebnaya_zapiska_na_oformlenie_sotrudnika.doc")" target="_blank">Служебная записка на оформление сотрудника</a>
+        </td>
+    </tr> 
+
+</table> 
+
+}
+<script type="text/javascript">
+   
+    $(document).ready(function () {
+        setActiveMenuItem("helpTemplate");
+    });
+@*</script>
+<script type="text/javascript">*@
+    function Render() {
+        var actionUrl="@Url.Action("RenderTemplates", "Help")";
+        var url = actionUrl + "?dummy=" + new Date().getTime();
+        $("#TemplateModelContext").load(url);
+    }
+    function OnAddTemplate() {
+        createTemplateDialog(0);
+    }
+     function OnEditTemplate(id) {
+        createTemplateDialog(id);
+    }
+    function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Сохранить название')").button("disable");
+    }
+    /*function createTemplateDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divTemplateDialog";
+        var newDiv = $(elem);
+//        var documentId = $("#RequestId").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Редактирование записи";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditTemplateDialog", "Help")?id=" + id  + " #TemplateDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditTemplateLoadError').val() != undefined)
+                         disableSaveButton();
+//                     else
+//                     {
+//                        $("#ReleaseDate").datepicker();
+//                        $(".hasDatepicker").width("85px");
+//                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 620,
+	        height: 380,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Сохранить": function () {
+                    if (!ValidateTemplate())
+                        return;
+                    SaveTemplate();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+    function ValidateTemplate()
+    {
+        var result = true;
+        clearDlgErrors($("#QuestionDialogTable"));
+        if(trimSpaces($("#Question").val()) == "")
+        {
+            addDlgError($("#Question"),"Вопрос - обязательное поле");
+            result = false;
+            //return false;
+        }
+        if(trimSpaces($("#Answer").val()) == "")
+        {
+            addDlgError($("#Answer"),"  Ответ - обязательное поле");
+            result = false;
+        }
+        return result;
+    }
+    function SaveTemplate()
+    {
+        var url='@Url.Action("SaveTemplate", "Help")'+'?id='+ $("#Id").val() 
+                +'&question='+escapeJson($("#Question").val())+'&answer='+escapeJson($("#Answer").val())  ;
+        var jqxhr = $.post(url,
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addFaqError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addFaqError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearFaqErrors();
+                                                $("#divQuestionDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function addFaqError(value) {
+    $("#FaqError").text(value);
+    $("#FaqError").show();
+    }
+function clearFaqErrors() {
+    $("#FaqError").text("");
+    $("#FaqError").hide();
+}*/
+ function OnDeleteTemplate(id){
+        var actionUrl="@Url.Action("DeleteTemplate", "Help")";
+        var url = actionUrl + "?Id=" + id;
+        $.getJSON(url,
+                       function (result) {
+                            if(!result.Result){
+                                $("#ListTemplatesError").text(result.Error);
+                                $("#ListTemplatesError").show(); 
+                            }
+                            else{
+                                $("#ListTemplatesError").text("");
+                                $("#ListTemplatesError").hide();                                 
+                           }
+                           Render();
+                       }
+                     );
+        return false;
+    }
+
+     /*function OnAddAttachment(name) {
+        createAttachmentDialog(0,name);
+    }*/
+    function createTemplateDialog(id) 
+    {
+        var elem = document.createElement('div');
+        elem.id = "divTemplateDialog";
+        var newDiv = $(elem);
+        //var documentId = $("#Id").val();
+        //var typeId = $("#AttachmentRequestTypeId").val();
+
+        var title =  "Редактирование записи";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("EditTemplateDialog", "Help")?id=" + id + " #TemplateDialogTable",
+        function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                 } else if (status == "success") {
+                     if ($('#EditTemplateLoadError').val() != undefined)
+                         disableSaveButton();
+                     else if(id == 0)
+                        disableSaveButton();
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 750,
+	        height: 250,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            open: function(event, ui) {
+                timedSetupUploader();
+            },
+            buttons:
+            {
+                "Сохранить название": function () {
+                    if (!ValidateTemplate())
+                        return;
+                    SaveTemplateName();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+     function SaveTemplateName()
+    {
+        clearTemplateErrors();
+        var url='@Url.Action("SaveTemplateName", "Help")';//+'?id='+ $("#Id").val() +'&name='+escapeJson($("#Name").val());
+        var jqxhr = $.post(url,
+                {
+                    id:$("#Id").val(),
+                    name:$("#Name").val()
+                },
+                function (jsonResult) {
+                                            if (!this.JSON) {
+                                                    this.JSON = {};
+                                            }
+                                            if(jsonResult == "")
+                                            {
+                                                addTemplateError("Ошибка асинхронного запроса - не был получен ответ.");
+                                                return;
+                                            }
+                                            var result = JSON.parse(jsonResult);  
+                                            if(!result.Result)
+                                            {
+                                                addTemplateError(result.Error);
+                                                //Render();
+                                            }
+                                            else
+                                            {
+                                                clearTemplateErrors();
+                                                $("#divTemplateDialog").dialog("close");
+                                                Render();
+                                            }    
+                                  });
+    }
+    function timedSetupUploader()
+    {
+            elem = document.getElementById('file-uploader');
+            if(elem == null)
+            {
+                setTimeout(function()   {
+                    timedSetupUploader();
+                }, 100);    
+            }
+            else
+                setupUploader();
+    }
+    function ValidateTemplate()
+    {
+        clearDlgErrors($("#TemplateDialogTable"));
+        if(trimSpaces($("#Name").val()) == "")
+        {
+            //addTemplateError("Название - обязательное поле");
+            addDlgError($("#Name"),"Название - обязательное поле");
+            return false;
+        }
+        return true;
+    }
+    function addTemplateError(value) {
+        $("#TemplateError").text(value);
+        $("#TemplateError").show();
+    }
+    function clearTemplateErrors() {
+        $("#TemplateError").text("");
+        $("#TemplateError").hide();
+    }
+function setupUploader()
+{
+    //var id = $('#DocumentId').val();
+    var uploader = new qq.FileUploader(
+    {
+        // pass the dom node (ex. $(selector)[0] for jQuery users)
+        element: document.getElementById('file-uploader'),
+        // path to server-side upload script      
+        action: "@Url.Action("SaveTemplate", "Help")",
+        sizeLimit: 2097152,
+        onSubmit: function (id, fileName) {
+            if(!ValidateTemplate())
+                return false;
+            clearTemplateErrors();
+            $('.qq-upload-list').hide();
+            var name = $('#Name').val();
+            var id = $('#Id').val();
+            uploader.setParams({
+                id: id
+                ,name: name
+            });
+        },
+        onProgress: function (id, fileName, loaded, total) {
+            $('.qq-upload-list').hide();
+        },
+        onComplete: function (id, fileName, responseJSON) {
+            $('.qq-upload-list').hide();
+            if(responseJSON == "")
+            {
+                addTemplateError("Ошибка асинхронного запроса - не был получен ответ.");
+                return;
+            }
+            var result = responseJSON; 
+            if(((result.success != undefined) && (!result.success)) || !result.Result)
+            {
+                if((result.success != undefined) && (!result.success))
+                    addTemplateError("Ошибка - не получен ответ сервера.");
+                else
+                    addTemplateError(result.Error);
+            }
+            else
+            {
+                clearTemplateErrors();
+                $("#divTemplateDialog").dialog("close");
+                Render();
+            }    
+        },
+        debug: true
+    });
+}
+</script>

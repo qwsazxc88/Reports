@@ -5,6 +5,7 @@ using NHibernate.Criterion;
 using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
+using Reports.Core.Enum;
 using Reports.Core.Services;
 
 namespace Reports.Core.Dao.Impl
@@ -15,7 +16,7 @@ namespace Reports.Core.Dao.Impl
             : base(sessionManager)
         {
         }
-
+       
         public IList<SicklistDto> GetSicklistDocuments(
                int userId, 
                UserRole role,
@@ -42,7 +43,7 @@ namespace Reports.Core.Dao.Impl
                     "v.[EndDate]"
                 );
 
-            string whereString = GetWhereForUserRole(role, userId);
+            string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetTypeWhere(whereString, typeId);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -52,43 +53,10 @@ namespace Reports.Core.Dao.Impl
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
+            query.SetInt32("userId", userId);
             AddDatesToQuery(query, beginDate, endDate, userName);
 
             return query.SetResultTransformer(Transformers.AliasToBean<SicklistDto>()).List<SicklistDto>();
-
-            //return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
-
-            //return GetDefaultDocuments(userId, role, departmentId,
-            //    positionId, typeId,
-            //    statusId, beginDate, endDate,userName,
-            //    sqlQuery, sortedBy, sortDescending);
-
-//            string sqlQuery =
-//                string.Format(@"select v.Id as Id,
-//                         u.Id as UserId,
-//                         'Болезнь (неявка) '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
-//                         v.[CreateDate] as Date    
-//            from [dbo].[Sicklist] v
-//            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
-//            string whereString = GetWhereForUserRole(role, userId);
-//            whereString = GetTypeWhere(whereString, typeId);
-//            whereString = GetStatusWhere(whereString, statusId);
-//            whereString = GetDatesWhere(whereString, beginDate, endDate);
-//            whereString = GetPositionWhere(whereString, positionId);
-//            whereString = GetDepartmentWhere(whereString, departmentId);
-            
-//            if (paymentPercentTypeId != 0)
-//            {
-//                if (whereString.Length > 0)
-//                    whereString += @" and ";
-//                whereString += @"v.[PaymentPercentId] = :paymentPercentTypeId ";
-//            }
-//            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString,0, null);
-//            IQuery query = CreateQuery(sqlQuery);
-//            AddDatesToQuery(query, beginDate, endDate);
-//            if (paymentPercentTypeId != 0)
-//                query.SetInt32("paymentPercentTypeId", paymentPercentTypeId);
-//            return query.SetResultTransformer(Transformers.AliasToBean(typeof(VacationDto))).List<VacationDto>();
         }
 
         public override IQuery CreateQuery(string sqlQuery)
@@ -134,5 +102,11 @@ namespace Reports.Core.Dao.Impl
             criteria.Add(Restrictions.In("Id", ids));
             return criteria.List<Sicklist>();
         }
+        
+        public int GetRequestCountsForUserAndDates(DateTime beginDate, DateTime endDate, int userId, int requestId)
+        {
+            return GetRequestsCountForType(beginDate, endDate, RequestTypeEnum.Sicklist, userId, UserRole.Employee, requestId);
+        }
+                
     }
 }

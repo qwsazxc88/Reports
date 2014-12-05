@@ -27,13 +27,6 @@ namespace Reports.Core.Dao.Impl
                int sortedBy,
                bool? sortDescending)
         {
-//            string sqlQuery =
-//                string.Format(@"select v.Id as Id,
-//                         u.Id as UserId,
-//                         'Неявка '+ u.Name + case when [DeleteDate] is not null then N' ({0})' else '' end as Name,
-//                         v.[CreateDate] as Date    
-//            from [dbo].[Absence] v
-//            inner join [dbo].[Users] u on u.Id = v.UserId",DeleteRequestText);
             string sqlQuery = string.Format(sqlSelectForList,
                                 DeleteRequestText,
                                 "dbo.AbsenceType",
