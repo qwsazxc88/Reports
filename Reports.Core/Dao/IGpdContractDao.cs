@@ -72,6 +72,7 @@ namespace Reports.Core.Dao
                                             int Id,
                                             int CreatorID,
                                             int DepartmentId,
+                                            string DepartmentName,
                                             int PersonID,
                                             int CTID,
                                             int StatusID,
@@ -91,6 +92,13 @@ namespace Reports.Core.Dao
                                             string Surname,
                                             string CTName,
                                             string StatusName,
-                                            string Autor);
+                                            string Autor,
+                                            bool IsFind);
+        /// <summary>
+        /// Уровень подразделения.
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        int GetDepLevel(int Id);
     }
 }

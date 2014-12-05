@@ -31,6 +31,7 @@ namespace Reports.Presenters.UI.Bl
         void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
         void SetGpdContractStatuses(GpdContractEditModel model, bool hasError);
         bool SaveGpdContract(GpdContractEditModel model, out string error);
+        void SetGpdContract(GpdContractModel model);
         #endregion
     }
 }

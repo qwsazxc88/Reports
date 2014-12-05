@@ -32,6 +32,7 @@ namespace Reports.Core.Dto
     {
         public int Id { get; set; }
         public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; }
         public int PersonID { get; set; }
         public int CTID { get; set; }
         public string CTName { get; set; }

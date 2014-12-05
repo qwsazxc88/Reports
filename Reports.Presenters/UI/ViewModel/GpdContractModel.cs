@@ -43,6 +43,23 @@ namespace Reports.Presenters.UI.ViewModel
         public string Surname { get; set; }
 
         public IList<GpdContractDto> Contracts { get; set; }
+        public int PersonID { get; set; }
+        public string NumContract { get; set; }
+        public string NameContract { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public System.DateTime DateP { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public System.DateTime DatePOld { get; set; }
+        public int PayeeID { get; set; }
+        public int PayerID { get; set; }
+        public string GPDID { get; set;}
+        public string PurposePayment { get; set; }
+        public bool IsDraft { get; set; }
+        public string CreatorName { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public System.DateTime CreateDate { get; set; }
+        public string Autor { get; set; }
+        public bool IsFind { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

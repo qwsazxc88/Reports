@@ -83,5 +83,6 @@ namespace Reports.Presenters.UI.ViewModel
         public bool hasErrors { get; set; }
         public string CreatorName { get; set; }
         public System.DateTime CreateDate { get; set; }
+        public bool IsFind { get; set; }
     }
 }

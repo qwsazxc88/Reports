@@ -88,6 +88,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
+            bool hasError = false;
             ModelState.Clear();
             GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
             if (ModelState.Count != 0)
@@ -97,6 +98,7 @@ namespace WebMvc.Controllers
                 string error;
                 if (GpdBl.SaveGpdContract(model, out error))
                 {
+                    model = GpdBl.SetGpdContractEdit(model.Id, hasError);
                     return View(model);
                 }
                 else

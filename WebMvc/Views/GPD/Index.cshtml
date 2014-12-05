@@ -71,7 +71,8 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
+                                <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
+                                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindContract();"/>
                                 <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
                             </td>
                         </tr>
@@ -94,24 +95,36 @@
                                 <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
                                 <table class="grid">
                                     <tr>
-                                        <th>№ п/п</th>
-                                        @*<th>ФИО</th>
-                                        *@
+                                        <th>
+                                            <div id="sort0" style="min-width:130px"><a href="#" onclick = "SortChanged(0);">№ п/п</a></div>
+                                        </th>
                                         <th>
                                             <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
                                         </th>
-                                        @*<th>Вид начисления</th>
-                                        *@
                                         <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Вид начисления</a></div>
                                         </th>
-                                        <th>№ договора</th>
-                                        <th>Дата начала договора</th>
-                                        <th>Дата окончания договора</th>
-                                        <th>Дата пролонгации</th>
-                                        <th>Дирекция 3 ур.</th>
-                                        <th>Подразделение 7ур.</th>
-                                        <th>Состояние</th>
+                                        <th>
+                                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">№ договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Дата начала договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата окончания договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата пролонгации</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дирекция 3 ур.</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Подразделение 7ур.</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Состояние</a></div>
+                                        </th>
                                     </tr>
                                     @if (Model.Contracts != null && Model.Contracts.Count > 0)
                                     {
@@ -166,4 +179,9 @@
         $("#CTID").val('0');
     }
 
+    function GetFindContract()
+    {
+        $("#IsFind").val('True');
+        return true;
+    }
  </script>   

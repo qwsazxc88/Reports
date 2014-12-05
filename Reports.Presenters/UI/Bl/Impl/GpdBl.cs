@@ -247,6 +247,8 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             SetGpdContractStatuses(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
+            if (model.IsFind)
+                SetGpdContract(model);
         }
         /// <summary>
         /// Заполнение модели для создания/редактирования договора.
@@ -268,6 +270,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Id, 
                 model.CreatorID, 
                 model.DepartmentId, 
+                model.DepartmentName,
                 model.PersonID, 
                 model.CTID, 
                 model.StatusID, 
@@ -289,7 +292,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Surname, 
                 model.CTName, 
                 model.StatusName,
-                model.Autor);
+                model.Autor,
+                model.IsFind);
 
             if (model.Contracts.Count > 0)
             {
@@ -298,6 +302,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = doc.Id;
                     model.CreatorID = doc.CreatorID;
                     model.DepartmentId = doc.DepartmentId;
+                    model.DepartmentName = doc.DepartmentName;
                     model.PersonID = doc.PersonID;
                     model.CTID = doc.CTID;
                     model.StatusID = doc.StatusID;
@@ -315,7 +320,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
-                        model.Autor = doc.CreatorName + " Дата создания договора" + doc.CreateDate.ToShortDateString();
+                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToShortDateString();
                     model.CreatorName = doc.CreatorName;
                     model.CreateDate = doc.CreateDate;
                     model.Surname = doc.Surname;
@@ -392,6 +397,40 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Payeers = GpdContractDao.GetDetails(role, 1, model.PayeeID, model.PayeeName);
         }
         /// <summary>
+        /// Достаем список договоров.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        public void SetGpdContract(GpdContractModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Contracts = GpdContractDao.GetContracts(role,
+                model.Id,
+                model.CreatorID,
+                model.DepartmentId,
+                model.DepartmentName,
+                model.PersonID,
+                model.CTID,
+                model.StatusID,
+                model.NumContract,
+                model.NameContract,
+                model.DateBegin,
+                model.DateBegin,
+                model.DateP,
+                model.DatePOld,
+                model.PayeeID,
+                model.PayerID,
+                model.GPDID,
+                model.PurposePayment,
+                model.IsDraft,
+                model.CreatorName,
+                model.CreateDate,
+                model.Surname,
+                model.CTName,
+                model.StatusName,
+                model.Autor, 
+                model.IsFind);
+        }
+        /// <summary>
         /// Проверки при сохранении договора.
         /// </summary>
         /// <param name="model"></param>
@@ -400,6 +439,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             if (model.DepartmentId == 0)
                 ms.AddModelError("DepartmentId", "Выберите подразделение!");
+            else
+            {
+                //проверяем уровень выбранного подразделения
+                if (GpdContractDao.GetDepLevel(model.DepartmentId) != 7)
+                    ms.AddModelError("DepartmentId", "Нужно выбрать подразделение седьмого уровня!");
+            }
 
             if (model.PersonID == 0)
                 ms.AddModelError("PersonID", "Выберите физическое лицо из списка!");
@@ -441,8 +486,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.PurposePayment == null)
                 ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
 
-//            if (ms.Count != 0)
-//                model.IsDraft = true;
+            //if (ms.Count != 0)
+            //    model.IsDraft = true;
+
             bool hasError = false;
             SetGpdContractPersons(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
@@ -473,7 +519,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         DepartmentId = model.DepartmentId,
                         PersonID = model.PersonID,
                         CTID = model.CTID,
-                        StatusID = model.StatusID,
+                        StatusID = model.IsDraft ? 4 : 2,
                         NumContract = model.NumContract,
                         NameContract = model.NameContract,
                         DateBegin = model.DateBegin,
