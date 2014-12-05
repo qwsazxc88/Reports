@@ -1,0 +1,12 @@
+--изменения к пункту "ИнфоУслуги"
+use WebAppTest2
+go
+
+ALTER TABLE [dbo].[HelpServiceRequest] ADD [Address] nvarchar(200) null;
+go
+
+UPDATE [dbo].[HelpQuestionType] SET [Name] = 'Вопрос кадровику' WHERE [Id] = 2;
+UPDATE [dbo].[HelpQuestionType] SET [Name] = 'Техподдержка по программе Вэб' WHERE [Id] = 3;
+
+INSERT INTO [dbo].[HelpQuestionSubtype](Code, Name, SortOrder, TypeId)
+VALUES(NULL, 'Предложения по улучшению программы "Web-табель"', 5, 3)

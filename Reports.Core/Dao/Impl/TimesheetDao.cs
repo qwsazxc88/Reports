@@ -24,16 +24,10 @@ namespace Reports.Core.Dao.Impl
         private const string UserAlias = "User";
 
         protected ITimesheetStatusDao timesheetStatusDao;
-        protected IUserDao userDao;
         public ITimesheetStatusDao TimesheetStatusDao
         {
             get { return Validate.Dependency(timesheetStatusDao); }
             set { timesheetStatusDao = value; }
-        }
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
         }
         public TimesheetDao(ISessionManager sessionManager)
             : base(sessionManager)

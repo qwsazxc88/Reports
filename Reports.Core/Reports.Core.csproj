@@ -88,6 +88,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
+    <Compile Include="Dao\IHelpFaqDao.cs" />
+    <Compile Include="Dao\IHelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\IHelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\IHelpQuestionTypeDao.cs" />
+    <Compile Include="Dao\IHelpServicePeriodDao.cs" />
+    <Compile Include="Dao\IHelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\IHelpServiceRequestCommentDao.cs" />
+    <Compile Include="Dao\IHelpServiceRequestDao.cs" />
+    <Compile Include="Dao\IHelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\IHelpServiceTypeDao.cs" />
+    <Compile Include="Dao\IHelpVersionDao.cs" />
     <Compile Include="Dao\IAccessGroupDao.cs" />
     <Compile Include="Dao\IAccountDao.cs" />
     <Compile Include="Dao\IAppointmentCommentDao.cs" />
@@ -98,8 +109,12 @@
     <Compile Include="Dao\IChiefToUserDao.cs" />
     <Compile Include="Dao\IChildVacationCommentDao.cs" />
     <Compile Include="Dao\IChildVacationDao.cs" />
+    <Compile Include="Dao\IClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\IClearanceChecklistDao.cs" />
     <Compile Include="Dao\IContractorDao.cs" />
+    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
+    <Compile Include="Dao\IMissionHotelsDao.cs" />
+    <Compile Include="Dao\IManualRoleRecordDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\IMissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\IMissionReportCommentDao.cs" />
@@ -159,10 +174,24 @@
     <Compile Include="Dao\Impl\ChiefToUserDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationCommentDao.cs" />
     <Compile Include="Dao\Impl\ChildVacationDao.cs" />
+    <Compile Include="Dao\Impl\ClearanceChecklistCommentDao.cs" />
     <Compile Include="Dao\Impl\ClearanceChecklistDao.cs" />
     <Compile Include="Dao\Impl\ContractorDao.cs" />
     <Compile Include="Dao\IAppointmentDao.cs" />
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
+    <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
+    <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
+    <Compile Include="Dao\Impl\HelpFaqDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionRequestDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionSubtypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpQuestionTypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpServicePeriodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceProductionTimeDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceRequestCommentDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceRequestDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTransferMethodDao.cs" />
+    <Compile Include="Dao\Impl\HelpServiceTypeDao.cs" />
+    <Compile Include="Dao\Impl\HelpVersionDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookDocumentDao.cs" />
     <Compile Include="Dao\Impl\MissionPurchaseBookRecordDao.cs" />
     <Compile Include="Dao\Impl\MissionReportCommentDao.cs" />
@@ -257,7 +286,7 @@
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
-    <Compile Include="Dao\Impl\MissionOrderRoleRecordDao.cs" />
+    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
     <Compile Include="Dao\Impl\UserDao.cs" />
@@ -266,6 +295,7 @@
     <Compile Include="Dao\IRequestPrintFormDao.cs" />
     <Compile Include="Dao\IRequestTypeDao.cs" />
     <Compile Include="Dao\IRoleDao.cs" />
+    <Compile Include="Dao\IScheduleDao.cs" />
     <Compile Include="Dao\ISettingsDao.cs" />
     <Compile Include="Dao\ISicklistBabyMindingTypeDao.cs" />
     <Compile Include="Dao\ISicklistCommentDao.cs" />
@@ -307,10 +337,6 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
-    <Compile Include="Dao\IDisabilityDegreeDao.cs" />
-    <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
-    <Compile Include="Dao\IScheduleDao.cs" />
-    <Compile Include="Dao\IMissionOrderRoleRecordDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -382,6 +408,18 @@
     <Compile Include="Domain\ExportImportAction.cs" />
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
+    <Compile Include="Domain\HelpFaq.cs" />
+    <Compile Include="Domain\HelpQuestionHistoryEntity.cs" />
+    <Compile Include="Domain\HelpQuestionRequest.cs" />
+    <Compile Include="Domain\HelpQuestionSubtype.cs" />
+    <Compile Include="Domain\HelpQuestionType.cs" />
+    <Compile Include="Domain\HelpServicePeriod.cs" />
+    <Compile Include="Domain\HelpServiceProductionTime.cs" />
+    <Compile Include="Domain\HelpServiceRequest.cs" />
+    <Compile Include="Domain\HelpServiceRequestComment.cs" />
+    <Compile Include="Domain\HelpServiceTransferMethod.cs" />
+    <Compile Include="Domain\HelpServiceType.cs" />
+    <Compile Include="Domain\HelpVersion.cs" />
     <Compile Include="Domain\HolidayWork.cs" />
     <Compile Include="Domain\HolidayWorkComment.cs" />
     <Compile Include="Domain\HolidayWorkType.cs" />
@@ -398,6 +436,7 @@
     <Compile Include="Domain\MissionDailyAllowanceGradeValue.cs" />
     <Compile Include="Domain\MissionGoal.cs" />
     <Compile Include="Domain\MissionGraid.cs" />
+    <Compile Include="Domain\MissionHotels.cs" />
     <Compile Include="Domain\MissionOrder.cs" />
     <Compile Include="Domain\MissionOrderComment.cs" />
     <Compile Include="Domain\MissionPurchaseBookDocument.cs" />
@@ -448,13 +487,14 @@
     <Compile Include="Domain\WorkingGraphicType.cs" />
     <Compile Include="Domain\WorkingGraphicTypeToUser.cs" />
     <Compile Include="Domain\ClearanceChecklistRoleRecord.cs" />
-    <Compile Include="Domain\MissionOrderRole.cs" />
-    <Compile Include="Domain\MissionOrderRoleRecord.cs" />
+    <Compile Include="Domain\ManualRole.cs" />
+    <Compile Include="Domain\ManualRoleRecord.cs" />
     <Compile Include="Domain\Employment2\Country.cs" />
     <Compile Include="Domain\Employment2\InsuredPersonType.cs" />
     <Compile Include="Domain\DocumentType.cs" />
     <Compile Include="Domain\AdditionalVacationType.cs" />
     <Compile Include="Domain\AccessGroup.cs" />
+    <Compile Include="Domain\ClearanceChecklistComment.cs" />
     <Compile Include="Domain\Employment2\DisabilityDegree.cs" />
     <Compile Include="Domain\Schedule.cs" />
     <Compile Include="Dto\AcceptRequestDateDto.cs" />
@@ -482,11 +522,16 @@
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
+    <Compile Include="Dto\HelpServiceDictionariesStatesModel.cs" />
+    <Compile Include="Dto\HelpServiceQuestionDto.cs" />
+    <Compile Include="Dto\HelpServiceRequestDto.cs" />
+    <Compile Include="Dto\HelpVersionDto.cs" />
     <Compile Include="Dto\IdNameDto.cs" />
     <Compile Include="Dto\ImportDto.cs" />
     <Compile Include="Dto\ItemUsedDto.cs" />
     <Compile Include="Dto\DateDto.cs" />
     <Compile Include="Dto\MinMaxDate.cs" />
+    <Compile Include="Dto\MissionHotelsDto.cs" />
     <Compile Include="Dto\MissionOrderDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookDocDto.cs" />
     <Compile Include="Dto\MissionPurchaseBookRecordDto.cs" />
@@ -841,12 +886,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRoleRecord.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRoleRecord.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\MissionOrderRole.hbm.xml">
+    <EmbeddedResource Include="Domain\ManualRole.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -895,9 +940,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\GeneralInfo.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Passport.hbm.xml" />
@@ -912,17 +955,13 @@
     <EmbeddedResource Include="Domain\Employment2\MilitaryService.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\Experience.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\Contacts.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\BackgroundCheck.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\OnsiteTraining.hbm.xml">
@@ -930,9 +969,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Domain\Employment2\Managers.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Employment2\PersonnelManagers.hbm.xml" />
@@ -962,9 +999,6 @@
     <EmbeddedResource Include="Domain\Employment2\Reference.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Domain\Employment2\ConscriptionStatus.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Domain\AdditionalVacationType.hbm.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -983,6 +1017,46 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\Schedule.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\ClearanceChecklistComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\MissionHotels.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpFaq.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpVersion.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceProductionTime.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceTransferMethod.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServicePeriod.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpServiceRequest.hbm.xml" />
+    <EmbeddedResource Include="Domain\HelpServiceRequestComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionType.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionSubtype.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionRequest.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

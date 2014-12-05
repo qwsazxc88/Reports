@@ -5,14 +5,14 @@ using Iesi.Collections.Generic;
 namespace Reports.Core.Domain
 {
     /// <summary>
-    /// Расширенные роли пользователей в дополнение к заданным через RoleId
+    /// Ручные привязки ролей
     /// </summary>
-    public class MissionOrderRoleRecord : AbstractEntityWithVersion
+    public class ManualRoleRecord : AbstractEntityWithVersion
     {
         // RoleOwner
         public virtual User User { get; set; }
 
-        public virtual MissionOrderRole Role { get; set; }
+        public virtual ManualRole Role { get; set; }
 
         public virtual User TargetUser { get; set; }
 

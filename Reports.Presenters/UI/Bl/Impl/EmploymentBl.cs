@@ -178,8 +178,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { scheduleDao = value; }
         }
 
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        protected IManualRoleRecordDao missionOrderRoleRecordDao;
+        public IManualRoleRecordDao MissionOrderRoleRecordDao
         {
             get { return Validate.Dependency(missionOrderRoleRecordDao); }
             set { missionOrderRoleRecordDao = value; }
@@ -1272,7 +1272,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
                     SaveAttachments<TVM>(model);
             }
-            catch (Exception exc)
+            catch (Exception)
             {
 
             }

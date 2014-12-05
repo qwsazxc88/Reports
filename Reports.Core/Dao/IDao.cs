@@ -36,6 +36,11 @@ namespace Reports.Core.Dao
 //        bool IsSameNameEntityExists(Type type,int entityId, string name);
 //        ContentManagementRole GetUserRoles(User user, AbstractSecuredEntity item, Category cat);
     }
+    public interface IDaoSorted<TEntity> : IDao<TEntity>
+        where TEntity : IEntity<int>,ISortOrder
+    {
+        List<TEntity> LoadAllSortedByOrder();
+    }
 
     public interface IUsedDao<TEntity> : IDao<TEntity>
     where TEntity : AbstractUsedEntity 

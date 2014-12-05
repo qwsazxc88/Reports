@@ -25,6 +25,7 @@
         MissionReport = 12,
         Appointment = 13,
         AppointmentReport = 14,
+        ClearanceChecklist = 15
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -52,9 +53,15 @@
         ChildVacationOrderScan = 105,
         MissionOrderScan = 118,
 
+        UnsignedDismissalOrderScan = 153,
+        UnsignedVacationOrderScan = 154,
 <<<<<<< HEAD
-        // Employment documents
+        
+=======
 
+>>>>>>> Employment
+        // Employment documents
+        
         Photo = 201,
         INNScan = 202,
         SNILSScan = 203,
@@ -84,10 +91,6 @@
 
         // ? = 281,
         // ? = 282,
-=======
-        UnsignedDismissalOrderScan = 153,
-        UnsignedVacationOrderScan = 154,
->>>>>>> master
 
     }
   //dbo.Absence (неявки)                  RequestTypeId = "",(Нет печатной формы)

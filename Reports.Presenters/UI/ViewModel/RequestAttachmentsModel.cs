@@ -29,6 +29,11 @@ namespace Reports.Presenters.UI.ViewModel
         public UploadFileDto FileDto { get; set; }
         public int Id { get; set; }
     }
+    public class SaveAttacmentModelFromView
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
+    }
     public class DeleteAttacmentModel
     {
         public int Id { get; set; }

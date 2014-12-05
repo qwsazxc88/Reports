@@ -6,23 +6,12 @@ using NHibernate.Transform;
 using Reports.Core.Domain;
 using Reports.Core.Dto;
 using Reports.Core.Services;
+using System.Linq;
 
 namespace Reports.Core.Dao.Impl
 {
     public class MissionOrderDao : DefaultDao<MissionOrder>, IMissionOrderDao
-    {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
-
-        public const string StrInvalidManagerLevel = "Неверный уровень руководителя (id {0}) {1} в базе даннных.";
-
-        public const string sqlSelectForMissionOrderRn = @";with res as
-                                ({0})
-                                select {1} as Number,* from res order by Number ";
+    {             
         public override IQuery CreateQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).
@@ -33,6 +22,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Dep7Name", NHibernateUtil.String).
                 AddScalar("OrderNumber", NHibernateUtil.Int32).
                 AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("IsRecalculated", NHibernateUtil.Boolean).
                 AddScalar("AdditionalOrderId", NHibernateUtil.Int32).
                 AddScalar("AdditionalOrderNumber", NHibernateUtil.String).
                 AddScalar("AdditionalOrderEditDate", NHibernateUtil.DateTime).
@@ -57,6 +47,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("AirTicketType", NHibernateUtil.String).
                 AddScalar("TrainTicketType", NHibernateUtil.String);
         }
+
+        #region Constants
+        
+        public const string sqlSelectForMissionOrderRn = @";with res as
+                                ({0})
+                                select {1} as Number,* from res order by Number ";
+
         protected const string sqlSelectForMoList =
                                 @"select v.Id as Id,
                                 u.Id as UserId,
@@ -65,6 +62,7 @@ namespace Reports.Core.Dao.Impl
                                 dep.Name as Dep7Name,
                                 v.Number as OrderNumber,
                                 v.EditDate as EditDate,
+                                v.IsRecalculated as IsRecalculated,
                                 ao.Id as AdditionalOrderId,
                                 case when ao.Id is null then null 
                                      else cast(ao.Number as nvarchar(10))+N'-изм' end as AdditionalOrderNumber,
@@ -142,7 +140,7 @@ namespace Reports.Core.Dao.Impl
                                           and ao.UserDateAccept is not null 
                                           then N'Отправлен руководителю'    
                                     when  ao.UserDateAccept is null 
-                                          then N'Черновик сотрудника'    
+                                          then N'Черновик сотрудника'
                                     else N''
                                 end as AdditionalOrderState,
                                 case when ao.Id is null then null else ao.BeginDate end as AdditionalOrderBeginDate,  
@@ -157,11 +155,19 @@ namespace Reports.Core.Dao.Impl
                                 from dbo.MissionOrder v
                                 left join dbo.MissionType t on v.TypeId = t.Id
                                 left join dbo.MissionOrder ao on v.Id = ao.MainOrderId
+                                inner join dbo.Users currentUser
+                                    on currentUser.Id = :userId
                                 inner join [dbo].[Users] u on u.Id = v.UserId
+                                left join [dbo].[Users] uManagerAccount
+                                    on (uManagerAccount.RoleId & 4) > 0
+                                        and u.Email = uManagerAccount.Email
+                                        and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
                                 {1}";
+        #endregion
+
         public MissionOrderDao(ISessionManager sessionManager)
             : base(sessionManager)
         {
@@ -193,8 +199,8 @@ namespace Reports.Core.Dao.Impl
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
             //
-            // whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            // whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+            // whereString += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+            // whereString += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
@@ -202,26 +208,12 @@ namespace Reports.Core.Dao.Impl
             AddDatesToQuery(query, beginDate, endDate, userName);
             if (!string.IsNullOrEmpty(number))
                 query.SetString("number", number);
+            query.SetInt32("userId", userId);
             IList<MissionOrderDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>();
-            /*
-            sqlQuery = sqlSelectForMoList;
-            whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
-            whereString += String.Format(" and u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            whereString = GetStatusWhere(whereString, statusId);
-            whereString = GetDatesWhere(whereString, beginDate, endDate);
-            whereString = GetDepartmentWhere(whereString, departmentId);
-            whereString = GetUserNameWhere(whereString, userName);
-            sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
-            query = CreateQuery(sqlQuery);
-            AddDatesToQuery(query, beginDate, endDate, userName);
-            foreach (var document in query.SetResultTransformer(Transformers.AliasToBean(typeof(MissionOrderDto))).List<MissionOrderDto>())
-            {
-                documentList.Add(document);
-            }
-            */
+
             return documentList;
         }
-      
+
         public override string GetSqlQueryOrdered(string sqlQuery, string whereString,
                     int sortedBy,
                     bool? sortDescending)
@@ -308,6 +300,9 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = @" order by MissionGoal";
                     break;
+                case 24:
+                    orderBy = @" order by IsRecalculated";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -318,81 +313,83 @@ namespace Reports.Core.Dao.Impl
             //return sqlQuery;
         }
 
-        public virtual string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
+        public override string GetWhereForUserRole(UserRole role, int userId, ref string sqlQuery)
         {
             switch (role)
             {
+                #region Employees
                 case UserRole.Employee:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
+                #endregion
+
+                #region Managers
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
                     if(currentUser == null)
                         throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
-
-                    string sqlQueryPartTemplate =
-                        @" select distinct emp.Id from dbo.Users emp
-                                            inner join dbo.Users manU on manU.Login = emp.Login+N'R' and manU.RoleId = 4 and manU.IsActive = 1
-                                             inner join dbo.Department dManU on manU.DepartmentId = dManU.Id and
-                                             ((manU.[level] in ({0})) or ((manU.[level] = {1}) and (manU.IsMainManager = 0)))
-                                             inner join dbo.Department dMan on dManU.Path like dMan.Path+N'%'
-                                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}";
+                    
                     string sqlQueryPart = string.Empty;
                     string sqlFlag = string.Empty;
 
                     switch (currentUser.Level)
                     {
-                        case 2:
-                            sqlQueryPart = string.Format(sqlQueryPartTemplate, "3", "2", currentUser.Id);
+                        case 2:                            
+                        case 3:
+
+                            sqlQueryPart += " -1";
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                         and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
-                        case 3:
+
                         case 4:
-                            sqlQueryPartTemplate += @" union 
-                                select distinct emp.id from Users emp
-                                    inner join dbo.Department dept
-	                                    on emp.DepartmentId = dept.id
-                                where
-	                                (emp.RoleId & 2) > 0
-	                                and
-	                                emp.departmentid in
-		                                (select Department.id from Department where Department.Path like
-			                                (select department.path+'%' from department where id =
-				                                (select departmentid from users where id={2})
-			                                )
-		                                )
-                                    and
-                                    not (select Login from dbo.Users where Id={2}) = emp.Login + N'R'";
-                            sqlFlag = @"case when v.UserDateAccept is not null 
-                                        and v.ManagerDateAccept is null then 1 else 0 end as Flag";
-                            if (currentUser.Level == 3)
-                            {
-                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "4,5,6", "3", currentUser.Id);
-                            }
-                            else
-                            {
-                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "5,6", "4", currentUser.Id);
-                            }
-                            break;
                         case 5:
                         case 6:
-                            sqlQueryPartTemplate += @" union 
-                             select distinct emp1.Id from dbo.Users emp1
-                             inner join dbo.Department dEmp1 on emp1.DepartmentId = dEmp1.Id 
-                             and  ((emp1.RoleId & 2) > 0) 
-                             inner join dbo.Department dMan on dEmp1.Path like dMan.Path+N'%'
-                             inner join dbo.Users man on man.DepartmentId = dMan.Id and man.Id = {2}
-                             where not exists (select Id from dbo.Users empMan1 where
-                                empMan1.RoleId = 4 and empMan1.Login = emp1.Login+N'R' and empMan1.IsActive = 1)";
-                            if (currentUser.Level == 5)
-                            {
-                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "6", "5", currentUser.Id);                                
-                            }
-                            else
-                            {
-                                sqlQueryPart = string.Format(sqlQueryPartTemplate, "-1", "6", currentUser.Id);
-                            }
+
+                            // Выборка замов и руководителей нижележащих уровней по ветке для применения автоматических прав уровней 4-6
+                            sqlQueryPart += @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
+                             inner join dbo.Users managerManagerAccount
+                               on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
+                                 and (managerManagerAccount.RoleId & 4) > 0
+                                 and managerManagerAccount.IsActive = 1
+                                 and
+                                 (
+                                   (
+                                     -- Руководители нижележащих уровней
+                                     managerManagerAccount.Level > currentUser.Level
+                                   )
+                                   or
+                                   (
+                                     -- Замы для уровней 4-6
+                                     managerManagerAccount.Level = currentUser.Level and managerManagerAccount.IsMainManager = 0
+                                   )
+                                 )
+                             inner join dbo.Department managerManagerAccountDept
+                               on managerManagerAccount.DepartmentId = managerManagerAccountDept.Id
+                                 -- Исключить состоящих в ветке руководства
+                                 and managerManagerAccountDept.Path not like N'9900424.9900426.9900427.%'
+                               
+                             -- по ветке
+                             inner join dbo.Department higherDept
+                               on managerManagerAccountDept.Path like higherDept.Path+N'%'
+                             where currentUser.DepartmentId = higherDept.Id
+                               -- Исключение своей учетной записи 7 уровня
+                               and not currentUser.Login = managerEmployeeAccount.Login + N'R'";
+
+                            // Выборка рядовых пользователей по ветке для применения автоматических прав
+                            sqlQueryPart += @"
+                                union
+                                select distinct employee.Id from Users employee
+                                    inner join dbo.Department employeeDept
+                                      on employee.DepartmentId = employeeDept.Id
+                                        -- Исключить состоящих в ветке руководства
+                                        and employeeDept.Path not like N'9900424.9900426.9900427.%'
+                                    inner join dbo.Department higherDept
+                                      on employeeDept.Path like higherDept.Path+N'%'
+                                where (employee.RoleId & 2) > 0
+                                    and currentUser.DepartmentId = higherDept.Id
+                                    and not currentUser.Login = employee.Login + N'R'";
+
                             sqlFlag = @"case when v.UserDateAccept is not null 
                                             and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
@@ -401,35 +398,55 @@ namespace Reports.Core.Dao.Impl
                     }
 
                     sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
-
-                    sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
+                                        
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = string.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
-                    // Ручные привязки человек-человек и человек-подразделение из MissionOrderRoleRecord
-                    sqlQueryPart += string.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-                    sqlQueryPart += string.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += string.Format(@"
+                        or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
+                    sqlQueryPart += string.Format(@"
+                        or u.DepartmentId in
+                        (
+                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                inner join Department targetDept
+                                    on targetDept.Id = mrr.TargetDepartmentId
+                                inner join [dbo].[Department] branchDept
+                                    on branchDept.Path like targetDept.Path + '%'
+                            where mrr.UserId = {0} and mrr.RoleId = 1 and (u.RoleId & 2) > 0
+                        )
+                        ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
+                    sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     return sqlQueryPart;
+                #endregion
+
+                #region Directors
                 case UserRole.Director:
-                        //User currUser = UserDao.Load(userId);
-                        //if(currUser == null)
-                        //    throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
-                        const string sqlFlagD = @"case when (
-                                            (v.UserDateAccept is not null 
-                                            and  v.ManagerDateAccept is not null 
-                                            and  v.[ChiefDateAccept] is null 
-                                            and  v.[NeedToAcceptByChief] = 1) 
-                                            or
-                                            (v.UserDateAccept is not null 
-                                             and  v.ManagerDateAccept is null 
-                                             and v.[NeedToAcceptByChiefAsManager] = 1)
-                                            )
-                                            then 1 else 0 end as Flag";
-                        sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
-                        return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
+                    const string sqlFlagD =
+                        @"case when
+                          (
+                            (
+                              v.UserDateAccept is not null 
+                              and  v.ManagerDateAccept is not null 
+                              and  v.[ChiefDateAccept] is null 
+                              and  v.[NeedToAcceptByChief] = 1
+                            ) 
+                            or
+                            (
+                              v.UserDateAccept is not null 
+                              and  v.ManagerDateAccept is null 
+                              and v.[NeedToAcceptByChiefAsManager] = 1
+                            )
+                          )
+                          then 1 else 0 end as Flag";
+                    sqlQuery = string.Format(sqlQuery, sqlFlagD, string.Empty);
+                    return @" ((v.[NeedToAcceptByChief] = 1) or (v.[NeedToAcceptByChiefAsManager] = 1) or (ao.NeedToAcceptByChief = 1))  ";
+                #endregion
+
                 case UserRole.Accountant:
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
+                case UserRole.PersonnelManager:
                 case UserRole.Findep:
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
@@ -437,6 +454,7 @@ namespace Reports.Core.Dao.Impl
                     throw new ArgumentException(string.Format("Invalid user role {0}", role));
             }
         }
+
         public override string GetDatesWhere(string whereString, DateTime? beginDate,
             DateTime? endDate)
         {
@@ -461,10 +479,6 @@ namespace Reports.Core.Dao.Impl
                 string statusWhere;
                 switch (statusId)
                 {
-                    //case 1:
-                    //    statusWhere =
-                    //        @"UserDateAccept is null and ManagerDateAccept is null and PersonnelManagerDateAccept is null and SendTo1C is null";
-                    //    break;
                     case 1:
                         statusWhere = @"v.UserDateAccept is not null";
                         break;
@@ -485,23 +499,37 @@ namespace Reports.Core.Dao.Impl
                         statusWhere = @"(v.ChiefDateAccept is null  and v.NeedToAcceptByChief = 1) or
                                         (v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) ";
                         break;
+                    // Требует моего одобрения
                     case 7:
+                        statusWhere = @"v.UserDateAccept is not null
+                                        and v.ManagerDateAccept is null
+                                        and v.NeedToAcceptByChiefAsManager = 0
+                                        and 
+                                        (
+                                            (currentUser.Level = 6 and (u.Level is null or u.Level = 7))
+                                            or
+                                            (
+                                                uManagerAccount.Id > 0
+                                                and
+                                                (
+                                                    currentUser.Level = u.Level - 1
+                                                    or (currentUser.Level = u.Level and u.IsMainManager = 0)
+                                                    or (currentUser.Level = 2 and currentUser.Level = u.Level - 2 and u.IsMainManager = 1)
+                                                )
+                                            )
+                                        )
+                        ";
+                        break;
+                    case 8:
                         statusWhere = @"v.UserDateAccept is not null and v.ManagerDateAccept is null
                                         and v.NeedToAcceptByChiefAsManager = 0";
                         break;
-                    case 8:
+                    case 9:
                         statusWhere = @"v.UserDateAccept is not null and ((v.ManagerDateAccept is null and v.NeedToAcceptByChiefAsManager = 1) 
                                         or (v.ManagerDateAccept is not null and v.ChiefDateAccept is null and v.NeedToAcceptByChief = 1)
                                         or (ao.ManagerDateAccept is not null and ao.ChiefDateAccept is null and ao.NeedToAcceptByChief = 1))";
                         break;
-                    //case 8:
-                    //    statusWhere =
-                    //        @"UserDateAccept is not null and ManagerDateAccept is not null and PersonnelManagerDateAccept is not null";
-                    //    break;
-                    //case 10:
-                    //    statusWhere = @"[DeleteDate] is not null";
-                    //    break;
-                    case 9:
+                    case 10:
                         statusWhere = @"v.SendTo1C is not null";
                         break;
                     default:

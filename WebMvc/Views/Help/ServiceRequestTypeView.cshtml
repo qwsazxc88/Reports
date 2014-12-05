@@ -1,0 +1,36 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpServiceRequestTypeModel            
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.Requirements):
+                </td>
+                <td>
+                   @Html.TextBoxFor(model => model.Requirements, Model.IsEditable ? (object)new { maxlength = 256 } : (object)new { @readonly = "read-only" }) 
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.PeriodId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.PeriodId, new SelectList(Model.Periods, "ID", "Name"),Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="PeriodIdHidden" name="PeriodIdHidden" value="@Model.PeriodIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductionTimeTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.ProductionTimeTypeId, new SelectList(Model.ProductionTimeTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="ProductionTimeTypeIdHidden" name="ProductionTimeTypeIdHidden" value="@Model.ProductionTimeTypeIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    @Html.LabelFor(m => m.TransferMethodTypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TransferMethodTypeId, new SelectList(Model.TransferMethodTypes, "ID", "Name"), Model.IsEditable ? null : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TransferMethodTypeIdHidden" name="TransferMethodTypeIdHidden" value="@Model.TransferMethodTypeIdHidden" />
+                </td>
+            </tr>

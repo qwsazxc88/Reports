@@ -30,6 +30,7 @@ namespace Reports.Core.Dao
                                                              int sortBy,
                                                              bool? sortDescending,bool showDepts);
 
+
         bool CheckOtherOrdersExists(int id, int userId, DateTime beginDate, DateTime endDate);
         bool CheckAnyOtherOrdersExists(int id, int userId, DateTime beginDate, DateTime endDate);
         bool CheckAdditionalOrderExists(int id);

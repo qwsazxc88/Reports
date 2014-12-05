@@ -20,7 +20,7 @@ namespace WebMvc.Controllers
     [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.PersonnelManager | UserRole.StaffManager)]
     public class AppointmentController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         public const string StrInvalidReasonFromDate = "Неверная дата для основания появления вакансии";
         public const string StrInvalidDesirableBeginDate = "Неверная желательная дата выхода";
@@ -28,7 +28,7 @@ namespace WebMvc.Controllers
         public const string StrInvalidDepartment = "Указано неверное структурное подразделение.У вас нет права создания заявки для него.";
         public const string StrInvalidDepartmentLevel = "Выбор структурного подразделения уровня {0} обязателен";
         public const string StrInvalidListDates = "Дата в поле <Период с> не может быть больше даты в поле <по>.";
-        public const string StrFileSizeError = "Размер прикрепленного файла не может превышать {0} Мб.";
+        //public const string StrFileSizeError = "Размер прикрепленного файла не может превышать {0} Мб.";
 
         public const string StrInvalidColloquyDate = "Неверная дата собеседования";
         public const string StrInvalidDateAccept = "Неверная дата приема на работу";
@@ -356,7 +356,7 @@ namespace WebMvc.Controllers
         }
 
         #region FileContext
-        public static UploadFileDto GetFileContext(HttpRequestBase request, ModelStateDictionary modelState)
+        /*public static UploadFileDto GetFileContext(HttpRequestBase request, ModelStateDictionary modelState)
         {
             if (request.Files.Count == 0)
                 return null;
@@ -387,7 +387,7 @@ namespace WebMvc.Controllers
             var fileContent = new byte[length];
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
-        }
+        }*/
         #endregion
         #region Attachment
         [ReportAuthorize(UserRole.OutsourcingManager | UserRole.Manager | UserRole.StaffManager)]

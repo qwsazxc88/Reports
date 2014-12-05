@@ -1,0 +1,26 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpEditFaqModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "QuestionDialogTable" style="width:100%;height:100px">
+                <tr>
+                    <td colspan="2"><div id="FaqError" style="color:Red;display:none;"/></td>
+                    @Html.HiddenFor(model => model.Id)
+                </tr>
+               <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Question):</td>
+                    <td>
+                       @Html.TextAreaFor(model => model.Question, 4, 50,(object)new { style = "resize: none;" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Answer):</td>
+                    <td>
+                       @Html.TextAreaFor(model => model.Answer, 4, 50,(object)new { style = "resize: none;" })
+                    </td>
+                </tr>
+    </table>
+</body>
+</html>
