@@ -16,6 +16,9 @@
     </tr>
     <tr>
         <td colspan="2">
+            @{
+                ViewBag.ShowManagers = true;                  
+            }
             @Html.Partial("../UserInfoView", Model)
         </td>
     </tr>

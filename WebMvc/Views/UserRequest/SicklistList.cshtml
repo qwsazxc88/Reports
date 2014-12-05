@@ -65,7 +65,7 @@
                         @Html.LabelFor(m => m.StatusId):
                     </td>
                     <td>
-                        @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                        @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name", Model.StatusId = 11)) 
                      </td>
                 </tr>
                 <tr>
