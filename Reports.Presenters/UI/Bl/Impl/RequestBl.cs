@@ -5017,6 +5017,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                                        }.OrderBy(x =>x.Name).ToList();
             switch (adaptForRole)
             {
+                case UserRole.OutsourcingManager:
                 case UserRole.Manager:
                     requestStatusesList.Insert(0, new IdNameDto(11, "Требует моего одобрения"));
                     break;
