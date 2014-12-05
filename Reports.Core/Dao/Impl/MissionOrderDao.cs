@@ -300,6 +300,9 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = @" order by MissionGoal";
                     break;
+                case 24:
+                    orderBy = @" order by IsRecalculated";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
