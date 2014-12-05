@@ -2328,20 +2328,5 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
-    }
-    
-        /*struct keyWordEntry
-    {
-        public string keyword;
-        public int position;
-        public string spacesAfter;
-
-        public keyWordEntry(string kword, int pos, string spaces)
-        {
-            keyword = kword;
-            position = pos;
-            spacesAfter = spaces;
-        }
-    }*/
-        
+    }        
 }
