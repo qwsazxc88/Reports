@@ -344,6 +344,10 @@ namespace Reports.Core.Dao.Impl
                                 select distinct employee.Id from Users employee
                                     inner join dbo.Users currentUser
 	                                    on currentUser.Id = :userId
+                                    left join [dbo].[Users] employeeManagerAccount
+                                        on (employeeManagerAccount.RoleId & 4) > 0
+                                            and employeeManagerAccount.Login = u.Login+N'R'
+                                            --and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                         on employee.DepartmentId = employeeDept.Id
                                         -- Исключить состоящих в ветке руководства
@@ -351,6 +355,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                         on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
+                                    and employeeManagerAccount.Id is null
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
                             break;
@@ -373,15 +378,24 @@ namespace Reports.Core.Dao.Impl
                             from [dbo].[ManualRoleRecord] mrr
                             where mrr.UserId = :userId and mrr.RoleId = 2 and mrr.TargetUserId is not null
                         )
-                        or u.DepartmentId in
+                        or 
                         (
-                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
-                                inner join Department targetDept
-                                    on targetDept.Id = mrr.TargetDepartmentId
-                                inner join [dbo].[Department] branchDept
-                                    on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = :userId and mrr.RoleId = 2 and (u.RoleId & 2) > 0
-                        ) ", sqlWhere);
+                            (u.RoleId & 2) > 0
+                            and
+                            u.DepartmentId in
+                            (
+                                select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                    inner join Department targetDept
+                                        on targetDept.Id = mrr.TargetDepartmentId
+                                    inner join [dbo].[Department] branchDept
+                                        on branchDept.Path like targetDept.Path + '%'
+                                    inner join Users
+                                        on mrr.UserId = :userId
+                                    inner join Role
+                                        on mrr.RoleId = 1
+                            )
+                        )
+                        ", sqlWhere);
                     break;
                 case UserRole.PersonnelManager:
                     sqlWhere += string.Format("u.RoleId = {0}  and  exists ( select * from UserToPersonnel up where up.PersonnelId = :userId and u.Id = up.UserId ) ", (int)UserRole.Employee);//"u.PersonnelManagerId = :userId";
@@ -408,8 +422,7 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if(managerRole != UserRole.OutsourcingManager)
-                query.SetInt32("userId", managerId);
+            query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
@@ -602,6 +615,10 @@ namespace Reports.Core.Dao.Impl
                                 select distinct employee.Id from Users employee
                                     inner join dbo.Users currentUser
 	                                    on currentUser.Id = :userId
+                                    left join [dbo].[Users] employeeManagerAccount
+                                        on (employeeManagerAccount.RoleId & 4) > 0
+                                            and employeeManagerAccount.Login = u.Login+N'R'
+                                            --and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                         on employee.DepartmentId = employeeDept.Id
                                         -- Исключить состоящих в ветке руководства
@@ -609,6 +626,8 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                         on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
+                                    and employee.IsActive = 1
+                                    and employeeManagerAccount.Id is null
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
                             break;
@@ -631,15 +650,24 @@ namespace Reports.Core.Dao.Impl
                             from [dbo].[ManualRoleRecord] mrr
                             where mrr.UserId = :userId and mrr.RoleId = 2 and mrr.TargetUserId is not null
                         )
-                        or u.DepartmentId in
+                        or 
                         (
-                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
-                                inner join Department targetDept
-                                    on targetDept.Id = mrr.TargetDepartmentId
-                                inner join [dbo].[Department] branchDept
-                                    on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = :userId and mrr.RoleId = 2 and (u.RoleId & 2) > 0
-                        ) ", sqlWhere);
+                            (u.RoleId & 2) > 0
+                            and
+                            u.DepartmentId in
+                            (
+                                select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                    inner join Department targetDept
+                                        on targetDept.Id = mrr.TargetDepartmentId
+                                    inner join [dbo].[Department] branchDept
+                                        on branchDept.Path like targetDept.Path + '%'
+                                    inner join Users
+                                        on mrr.UserId = :userId
+                                    inner join Role
+                                        on mrr.RoleId = 1
+                            )
+                        )
+                        ", sqlWhere);
 
                     //sqlWhere += "u.ManagerId = :userId";
                     break;
@@ -661,27 +689,6 @@ namespace Reports.Core.Dao.Impl
             return query.
             SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).
             List<IdNameDto>();
-            /*ICriteria criteria = Session.CreateCriteria(typeof(User));
-            switch (managerRole)
-            {
-                case UserRole.Employee:
-                    throw new ArgumentException("Список сотрудников нелоступен для сотрудника.");
-                case UserRole.Manager:
-                    criteria.Add(Restrictions.Eq("Manager.Id", managerId));
-                    break;
-                case UserRole.PersonnelManager:
-                    criteria.Add(Restrictions.Eq("PersonnelManager.Id", managerId));
-                    break;
-                //case UserRole.BudgetManager:
-                //    criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
-                //    break;
-                //case UserRole.OutsourcingManager:
-                //    criteria.Add(Restrictions.Eq("Role.Id", (int)UserRole.Employee));
-                //    break;
-                default:
-                    break;
-            }
-            return criteria.List<User>().ToList().ConvertAll(x => new IdNameDto(x.Id, x.FullName)).OrderBy(x => x.Name).ToList();*/
         }
         public IList<UserDto> GetUsersForManager(string userName,
             int managerId,UserRole managerRole, int? role,ref int currentPage,
