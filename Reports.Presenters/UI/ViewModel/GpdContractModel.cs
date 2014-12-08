@@ -60,6 +60,8 @@ namespace Reports.Presenters.UI.ViewModel
         public System.DateTime CreateDate { get; set; }
         public string Autor { get; set; }
         public bool IsFind { get; set; }
+        public string DepLevel3Name { get; set; }
+        public string DepLevel7Name { get; set; }
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }

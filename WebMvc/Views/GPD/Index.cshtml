@@ -96,34 +96,34 @@
                                 <table class="grid">
                                     <tr>
                                         <th>
-                                            <div id="sort0" style="min-width:130px"><a href="#" onclick = "SortChanged(0);">№ п/п</a></div>
+                                            <div id="sort0" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">№ п/п</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">ФИО</a></div>
+                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Вид начисления</a></div>
+                                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Вид начисления</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">№ договора</a></div>
+                                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">№ договора</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Дата начала договора</a></div>
+                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата начала договора</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата окончания договора</a></div>
+                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата окончания договора</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата пролонгации</a></div>
+                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата пролонгации</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дирекция 3 ур.</a></div>
+                                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Дирекция 3 ур.</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Подразделение 7ур.</a></div>
+                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Подразделение 7ур.</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Состояние</a></div>
+                                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">Состояние</a></div>
                                         </th>
                                     </tr>
                                     @if (Model.Contracts != null && Model.Contracts.Count > 0)
@@ -135,12 +135,12 @@
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <!--<td>@doc.NumContract</td>-->
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Id</a></td>
-                                                <td>@doc.DateBegin</td>
-                                                <td>@doc.DateEnd</td>
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Id</a></td>
+                                                <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
+                                                <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
                                                 <td>@doc.DateP</td>
-                                                <td></td>
-                                                <td></td>
+                                                <td>@doc.DepLevel3Name</td>
+                                                <td>@doc.DepLevel7Name</td>
                                                 <td>@doc.StatusName</td>
                                             </tr>
                                         }

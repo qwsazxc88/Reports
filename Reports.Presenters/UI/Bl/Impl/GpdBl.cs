@@ -241,9 +241,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="hasError">Флажок для ошибок.</param>
         public void SetGpdContractView(GpdContractModel model, bool hasError)
         {
-            DateTime today = DateTime.Today;
-            model.DateBegin = new DateTime(today.Year, today.Month, 1);
-            model.DateEnd = today;
+            if (!model.IsFind)
+            {
+                DateTime today = DateTime.Today;
+                model.DateBegin = new DateTime(today.Year, today.Month, 1);
+                model.DateEnd = today;
+            }
 
             SetGpdContractStatuses(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
@@ -293,6 +296,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CTName, 
                 model.StatusName,
                 model.Autor,
+                null, null,
                 model.IsFind);
 
             if (model.Contracts.Count > 0)
@@ -414,7 +418,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.NumContract,
                 model.NameContract,
                 model.DateBegin,
-                model.DateBegin,
+                model.DateEnd,
                 model.DateP,
                 model.DatePOld,
                 model.PayeeID,
@@ -428,6 +432,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.CTName,
                 model.StatusName,
                 model.Autor, 
+                model.DepLevel3Name,
+                model.DepLevel7Name,
                 model.IsFind);
         }
         /// <summary>

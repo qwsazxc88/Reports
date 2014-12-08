@@ -109,6 +109,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Id"></param>
         /// <param name="CreatorID"></param>
         /// <param name="DepartmentId"></param>
+        /// <param name="DepartmentName"></param>
         /// <param name="PersonID"></param>
         /// <param name="CTID"></param>
         /// <param name="StatusID"></param>
@@ -116,10 +117,22 @@ namespace Reports.Core.Dao.Impl
         /// <param name="NameContract"></param>
         /// <param name="DateBegin"></param>
         /// <param name="DateEnd"></param>
+        /// <param name="DateP"></param>
+        /// <param name="DatePOld"></param>
         /// <param name="PayeeID"></param>
         /// <param name="PayerID"></param>
         /// <param name="GPDID"></param>
         /// <param name="PurposePayment"></param>
+        /// <param name="IsDraft"></param>
+        /// <param name="CreatorName"></param>
+        /// <param name="CreateDate"></param>
+        /// <param name="Surname"></param>
+        /// <param name="CTName"></param>
+        /// <param name="StatusName"></param>
+        /// <param name="Autor"></param>
+        /// <param name="DepLevel3Name"></param>
+        /// <param name="DepLevel7Name"></param>
+        /// <param name="IsFind"></param>
         /// <returns></returns>
         public IList<GpdContractDto> GetContracts(UserRole role,
                                             int Id,
@@ -146,39 +159,45 @@ namespace Reports.Core.Dao.Impl
                                             string CTName,
                                             string StatusName,
                                             string Autor,
+                                            string DepLevel3Name,
+                                            string DepLevel7Name,
                                             bool IsFind)
         {
-            string sqlQuery = @"SELECT G.ItemLevel,
-                                        A.Id as Id, A.[Version] as [Version], A.CreatorID as CreatorID, A.DepartmentId as DepartmentId, 
-			                                          A.PersonID as PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName as Surname, 
-			                                          A.CTID as CTID, C.[Name] as CTName,
-			                                          A.StatusID as StatusID, E.[Name] as StatusName, A.NumContract as NumContract, 
-			                                          A.NameContract as NameContract, A.DateBegin as DateBegin, A.DateEnd as DateEnd, A.PayeeID as PayeeID, A.PayerID as PayerID, A.GPDID as GPDID, A.PurposePayment as PurposePayment, 
-				                                        A.DateP as DateP, A.DateP as DatePOld,
-			                                          A.IsDraft as IsDraft, F.Name as CreatorName, A.CreateDate, F.Name as Autor,
-				                                        '' as DepLevel3, G.Name as DepartmentName 
-                                        FROM dbo.GpdContract as A
-                                        INNER JOIN dbo.GpdRefPersons as B ON B.Id = A.PersonID
-                                        INNER JOIN dbo.GpdChargingType as C ON C.Id = A.CTID
-                                        INNER JOIN dbo.GpdRefStatus as E ON E.Id = A.StatusID
-                                        LEFT JOIN dbo.Users as F ON F.Id = A.CreatorID
-                                        INNER JOIN dbo.Department as G ON G.Id = A.DepartmentId";
+            string sqlQuery = @"SELECT A.Id as Id, A.[Version] as [Version], A.CreatorID as CreatorID, A.DepartmentId as DepartmentId, G.[Name] as DepartmentName,
+			                              A.PersonID as PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName as Surname, 
+			                              A.CTID as CTID, C.[Name] as CTName,
+			                              A.StatusID as StatusID, E.[Name] as StatusName, A.NumContract as NumContract, 
+			                              A.NameContract as NameContract, A.DateBegin as DateBegin, A.DateEnd as DateEnd, A.PayeeID as PayeeID, A.PayerID as PayerID, A.GPDID as GPDID, A.PurposePayment as PurposePayment, 
+				                            A.DateP as DateP, A.DateP as DatePOld,
+			                              A.IsDraft as IsDraft, F.[Name] as CreatorName, A.CreateDate, F.[Name] as Autor,
+				                            K.[Name] as DepLevel3Name, G.[Name] as DepLevel7Name 
+                            FROM dbo.GpdContract as A
+                            INNER JOIN dbo.GpdRefPersons as B ON B.Id = A.PersonID
+                            INNER JOIN dbo.GpdChargingType as C ON C.Id = A.CTID
+                            INNER JOIN dbo.GpdRefStatus as E ON E.Id = A.StatusID
+                            LEFT JOIN dbo.Users as F ON F.Id = A.CreatorID
+                            INNER JOIN dbo.Department as G ON G.Id = A.DepartmentId
+                            LEFT JOIN [dbo].[Department] as H ON H.Code = G.ParentId
+                            LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
+                            LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
+                            LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId";
 
             string SqlWhere = "";
 
             if (!IsFind)
-                SqlWhere = " WHERE A.Id = " + Id.ToString();
+                SqlWhere = "A.Id = " + Id.ToString();
             else
             {
                 SqlWhere = (DepartmentId != 0 ? " A.DepartmentId = " + DepartmentId.ToString() : "");//подразделение
-                SqlWhere = (SqlWhere.Length != 0 ? " and " : " ") + (CTID != 0 ? " A.CTID = " + CTID.ToString() : "");//вид начисления
-                //SqlWhere = (SqlWhere.Length != 0 ? " and " : " ") + " A.DateBegin between '" + DateBegin.Value.ToShortDateString() + "' and '" + DateEnd.Value.ToShortDateString() + "'";//дата начала действия договора
-                SqlWhere = (SqlWhere.Length != 0 ? " and " : " ") + " A.DateBegin >= '" + DateBegin.Value.ToShortDateString() + "' and A.DateEnd <= '" + DateBegin.Value.ToShortDateString() + "'";//дата начала действия договора
+                SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (CTID != 0 ? " A.CTID = " + CTID.ToString() : "");//вид начисления
+                SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " A.DateBegin between '" + DateBegin.Value.ToString("d") + "' and '" + DateEnd.Value.ToString("d") + "'";//дата начала действия договора
+                //DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)
+                //@"v.[EditDate] >= :beginDate "
                 if (Surname != null)
-                    SqlWhere = (SqlWhere.Length != 0 ? " and " : " ") + (Surname.Trim().Length != 0 ? " Surname like '" + Surname + "%'" : "");//по фио
+                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (Surname.Trim().Length != 0 ? " Surname like '" + Surname + "%'" : "");//по фио
             }
 
-            sqlQuery = sqlQuery + SqlWhere;
+            sqlQuery = sqlQuery + (SqlWhere.Length != 0 ? " WHERE " + SqlWhere : "");
 
             IQuery query = CreateContractQuery(sqlQuery);
             IList<GpdContractDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractDto))).List<GpdContractDto>();
@@ -198,7 +217,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DepartmentName", NHibernateUtil.String).
                 AddScalar("PersonID", NHibernateUtil.Int32).
                 AddScalar("CTID", NHibernateUtil.Int32).
+                AddScalar("CTName", NHibernateUtil.String).
                 AddScalar("StatusID", NHibernateUtil.Int32).
+                AddScalar("StatusName", NHibernateUtil.String).
                 AddScalar("NumContract", NHibernateUtil.String).
                 AddScalar("NameContract", NHibernateUtil.String).
                 AddScalar("DateBegin", NHibernateUtil.DateTime).
@@ -213,9 +234,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CreatorName", NHibernateUtil.String).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Surname", NHibernateUtil.String).
-                AddScalar("CTName", NHibernateUtil.String).
-                AddScalar("StatusName", NHibernateUtil.String).
-                AddScalar("Autor", NHibernateUtil.String);
+                AddScalar("Autor", NHibernateUtil.String).
+                AddScalar("DepLevel3Name", NHibernateUtil.String).
+                AddScalar("DepLevel7Name", NHibernateUtil.String);
         }
         /// <summary>
         /// Достаем уровень подразделения.

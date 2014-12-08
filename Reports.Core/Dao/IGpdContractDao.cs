@@ -93,6 +93,8 @@ namespace Reports.Core.Dao
                                             string CTName,
                                             string StatusName,
                                             string Autor,
+                                            string DepLevel3Name,
+                                            string DepLevel7Name,
                                             bool IsFind);
         /// <summary>
         /// Уровень подразделения.

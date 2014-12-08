@@ -31,6 +31,7 @@ namespace Reports.Core.Dto
     public class GpdContractDto
     {
         public int Id { get; set; }
+        public int CreatorID { get; set; }
         public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
         public int PersonID { get; set; }
@@ -48,12 +49,13 @@ namespace Reports.Core.Dto
         public int PayerID { get; set; }
         public string GPDID { get; set; }
         public string PurposePayment { get; set; }
-        public string Surname { get; set; }
-        public int CreatorID { get; set; }
         public bool IsDraft { get; set; }
-        public string Autor { get; set; }
         public string CreatorName { get; set; }
         public DateTime CreateDate { get; set; }
+        public string Surname { get; set; }
+        public string Autor { get; set; }
+        public string DepLevel3Name { get; set; }
+        public string DepLevel7Name { get; set; }
     }
     /// <summary>
     /// Список реквизитов.
