@@ -40,6 +40,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Услуга оказана")]
         public string ConfirmDate { get; set; }
 
+        [Display(Name = "Email сотрудника")]
+        public string Email { get; set; }
+
         public bool IsForQuestion { get; set; }
 
     }

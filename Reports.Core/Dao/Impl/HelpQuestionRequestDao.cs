@@ -8,6 +8,7 @@ using Reports.Core.Dto;
 using Reports.Core.Services;
 using Reports.Core.Utils;
 
+
 namespace Reports.Core.Dao.Impl
 {
     public class HelpQuestionRequestDao : DefaultDao<HelpQuestionRequest>, IHelpQuestionRequestDao
@@ -86,7 +87,8 @@ namespace Reports.Core.Dao.Impl
                                      when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then N'Ответ на вопрос получен' 
                                      when v.[ConfirmWorkDate] is not null then N'Ответ на вопрос подтвержден' 
                                     else N''
-                                end as Status
+                                end as Status,
+                                J.Name as Dep3Name
                                 from [dbo].[HelpQuestionRequest] v
                                 inner join [dbo].[HelpQuestionType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpQuestionSubtype] s on v.[SubtypeId] = s.Id
@@ -97,6 +99,10 @@ namespace Reports.Core.Dao.Impl
                                 left join helr on v.Id = helr.HelpQuestionRequestId and v.[SendDate] is not null
                                 left join [dbo].[Role] r on r.Id = helr.LastRedirectId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
+                                LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
+                                LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
+                                LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
                                 {0}";
         
         public HelpQuestionRequestDao(ISessionManager sessionManager)
@@ -121,7 +127,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RedirectRole", NHibernateUtil.String).
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
-                AddScalar("Number", NHibernateUtil.Int32);
+                AddScalar("Number", NHibernateUtil.Int32).
+                AddScalar("Dep3Name", NHibernateUtil.String);
         }
         public List<HelpServiceQuestionDto> GetDocuments(int userId,
                 UserRole role,
@@ -135,6 +142,14 @@ namespace Reports.Core.Dao.Impl
                 bool? sortDescending)
         {
             string sqlQuery = sqlSelectForHqList;
+            //для кадровиков показываем вопросы по своим дирекциям
+            if (role == UserRole.ConsultantOutsorsingManager || role == UserRole.PersonnelManager)
+            {
+                sqlQuery = string.Format(sqlQuery, string.Empty);
+                sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as L ON L.[UserID] = v.[UserID] and L.[PersonnelId] = " + userId.ToString() + " {0}";
+            }
+
+
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
@@ -208,6 +223,9 @@ namespace Reports.Core.Dao.Impl
                 case 13:
                     orderBy = @" order by Status";
                     break;
+                case 14:
+                    orderBy = @" order by Dep3Name";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -259,6 +277,12 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.ConsultantPersonnel:
                 case UserRole.ConsultantAccountant:
+                case UserRole.PersonnelManager:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return " v.[TypeId] = 1 ";
+                case UserRole.ConsultantOutsorsingManager:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return " v.[TypeId] = 2 ";
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Empty;
