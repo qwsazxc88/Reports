@@ -380,7 +380,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
@@ -652,7 +652,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
