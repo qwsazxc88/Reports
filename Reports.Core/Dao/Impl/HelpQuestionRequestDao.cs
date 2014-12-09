@@ -143,7 +143,7 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForHqList;
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.ConsultantOutsorsingManager || role == UserRole.PersonnelManager)
+            if (role == UserRole.PersonnelManager)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as L ON L.[UserID] = v.[UserID] and L.[PersonnelId] = " + userId.ToString() + " {0}";
