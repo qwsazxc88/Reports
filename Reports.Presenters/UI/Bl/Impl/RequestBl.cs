@@ -9527,16 +9527,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (currentUser == null)
                 throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", current.Id));
 
-            // Учетная запись сотрудника, подчиненность которого текущему пользователю проверяется
-            // Если сотрудник - руководитель, то используется его руководительская учетная запись
-            User targetUser = UserDao.GetManagerForEmployee(user.Login) ?? user;
-
             // Получаем количество ручных привязок по данной роли
             int relevantRoleRecordsCount = currentUser.ManualRoleRecords
                 .Where<ManualRoleRecord>(roleRecord =>
                     roleRecord.Role.Id == (int)manualRole
-                    && (roleRecord.TargetUser == targetUser
-                        || (targetUser.Department != null && roleRecord.TargetDepartment != null && targetUser.Department.Path.StartsWith(roleRecord.TargetDepartment.Path))))
+                    && (roleRecord.TargetUser == user
+                        || (user.Department != null && roleRecord.TargetDepartment != null && user.Department.Path.StartsWith(roleRecord.TargetDepartment.Path))))
                 .ToList<ManualRoleRecord>()
                 .Count;
 
