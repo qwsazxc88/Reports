@@ -95,7 +95,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 if (user.IsFirstTimeLogin &&
                                     ((user.UserRole & UserRole.Employee) > 0 ||
                                      (user.UserRole & UserRole.Manager) > 0 ||
-                                     (user.UserRole & UserRole.PersonnelManager) > 0))
+                                     (user.UserRole & UserRole.PersonnelManager) > 0 ||
+                                     (user.UserRole & UserRole.ConsultantOutsorsingManager) > 0))
                                 {
                                     model.IsFirstTimeLogin = user.IsFirstTimeLogin;
                                     model.UserId = user.Id;
@@ -206,6 +207,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantPersonnel);
             if ((user.UserRole & UserRole.ConsultantAccountant) > 0 && !roles.Contains(UserRole.ConsultantAccountant))
                 roles.Add(UserRole.ConsultantAccountant);
+            if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
+                roles.Add(UserRole.ConsultantOutsorsingManager);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {

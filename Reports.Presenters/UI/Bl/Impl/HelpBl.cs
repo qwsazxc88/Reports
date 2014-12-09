@@ -364,6 +364,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsBeginWorkAvailable = true;
                     }
                     break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
+                    {
+                        if (entity.Consultant != null && entity.Consultant.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsConsultantOutsourcingEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                            model.IsBeginWorkAvailable = true;
+                    }
+                    break;
             }
         }
 
@@ -385,9 +399,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if (model.Id == 0)
+                model.ProductionTimeTypeId = 2;
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
-               Where(x => x.Id < 3).ToList<IdNameDto>(); //удалил из списка почту России
+               Where(x => x.Id != 3).ToList<IdNameDto>(); //удалил из списка почту России
 
             if(model.TypeId == 0)
                 model.TypeId = types.First().Id;
@@ -426,6 +442,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
+            model.Email = user.Email;
             if(user.Department != null)
             {
                 model.Department2 = user.Department.Name;
@@ -706,6 +723,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.EndWorkDate = DateTime.Now;
                     }
                     break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.Consultant = currUser;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                            entity.EndWorkDate = DateTime.Now;
+                    }
+                    break;
             }
         }
         public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
@@ -829,7 +859,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
         {
             model.Statuses = GetServiceQuestionsStatuses();
-            model.IsManagerColumnVisible = CurrentUser.UserRole != UserRole.Employee;
+            model.IsManagerColumnVisible = CurrentUser.UserRole != UserRole.Employee & CurrentUser.UserRole != UserRole.PersonnelManager & CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager;
         }
         public List<IdNameDto> GetServiceQuestionsStatuses()
         {
@@ -989,6 +1019,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                 case UserRole.ConsultantAccountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.PersonnelManager:
+                case UserRole.ConsultantOutsorsingManager:
                 case UserRole.Admin:
                     return true;
             }
@@ -1016,6 +1048,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case (int)UserRole.ConsultantAccountant:
                         if (entity.ConsultantAccountant != null)
                             model.Worker = entity.ConsultantAccountant.FullName;
+                        break;
+                    case (int)UserRole.ConsultantOutsorsingManager:
+                        if (entity.ConsultantOutsorsingManager != null)
+                            model.Worker = entity.ConsultantOutsorsingManager.FullName;
                         break;
                 }
             }
@@ -1150,6 +1186,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                              entity.ConsultantRoleId.Value == (int)UserRole.ConsultantPersonnel))
                     {
                         if (entity.ConsultantPersonnel != null && entity.ConsultantPersonnel.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsRedirectAvailable = true;
+                            model.IsSaveAvailable = true;
+                            model.IsAnswerEditable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsRedirectAvailable = true;
+                            model.IsBeginWorkAvailable = true;
+                        }
+                    }
+                    break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if ((entity.ConsultantOutsorsingManager == null || (entity.ConsultantOutsorsingManager.Id == current.Id))
+                        && (!entity.ConsultantRoleId.HasValue ||
+                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantOutsorsingManager))
+                    {
+                        if (entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
