@@ -35,6 +35,7 @@ namespace Reports.Core.Domain
         public virtual User ConsultantPersonnel { get; set; }
         public virtual User ConsultantAccountant { get; set; }
         public virtual User ConsultantOutsorsingManager { get; set; }
+        //public virtual User PersonnelManager { get; set; }
         public virtual int? ConsultantRoleId { get; set; }
 
 

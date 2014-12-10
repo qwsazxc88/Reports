@@ -127,7 +127,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                   || (dto.UserRole & UserRole.PersonnelManager) > 0
+                   //|| (dto.UserRole & UserRole.PersonnelManager) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
         }
         public static bool IsHelpQuestionAvailable(IUser dto)
@@ -139,7 +139,7 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                    || (dto.UserRole & UserRole.ConsultantAccountant) > 0
                    || (dto.UserRole & UserRole.OutsourcingManager) > 0
-                   || (dto.UserRole & UserRole.PersonnelManager) > 0
+                   //|| (dto.UserRole & UserRole.PersonnelManager) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
         }
         public static bool IsHelpTemplateAvailable(IUser dto)
