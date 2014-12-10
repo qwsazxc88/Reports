@@ -1066,7 +1066,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //case (int)UserRole.PersonnelManager:
                     //    if (entity.PersonnelManager != null)
                     //        model.Worker = entity.PersonnelManager.FullName;
-                        break;
+                    //    break;
                     case (int)UserRole.ConsultantOutsorsingManager:
                         if (entity.ConsultantOutsorsingManager != null)
                             model.Worker = entity.ConsultantOutsorsingManager.FullName;
@@ -1223,12 +1223,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                         && (!entity.ConsultantRoleId.HasValue ||
                              entity.ConsultantRoleId.Value == (int)UserRole.ConsultantOutsorsingManager))
                     {
-                        if (entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == current.Id
-                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        if (//entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == current.Id
+                            //&& 
+                            entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
                             model.IsRedirectAvailable = false;
-                            model.IsSaveAvailable = true;
+                            model.IsSaveAvailable = false;
                             model.IsAnswerEditable = true;
                         }
                         if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
@@ -1257,7 +1258,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //            model.IsBeginWorkAvailable = true;
                 //        }
                 //    }
-                    break;
+                //    break;
                 case UserRole.ConsultantAccountant:
                     if ((entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
@@ -1804,8 +1805,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                             };
                             entity.HistoryEntities.Add(beginWork);
                         }
-                        if (entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == currUser.Id
-                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        if (//entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == currUser.Id
+                            //&& 
+                            model.Operation == 3 && entity.BeginWorkDate.HasValue)
                         {
                             entity.EndWorkDate = DateTime.Now;
                             HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
