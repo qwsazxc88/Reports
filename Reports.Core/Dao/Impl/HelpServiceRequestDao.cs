@@ -108,7 +108,7 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = sqlSelectForHsList;
 
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.PersonnelManager)
+            if (role == UserRole.ConsultantOutsorsingManager)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId.ToString() + " {0}";
@@ -120,21 +120,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
-            //для текущего пользователя и выбранной роли надо показывать услуги его дирекции
-
-            //User user = userDao.FindById(AuthenticationService.CurrentUser.Id);
-
-            //User user = UserDao.FindByLogin(model.UserName);
-            //List<UserRolesDto> usersAndRoles = GetUserRoles(user);
-
-            //IList<User> list = UserDao.FindByEmail(user.Email);
-            //foreach (User usr in list.Where(x => x.IsActive))
-            //{
-            //    List<UserRole> roles = new List<UserRole>();
-            //    GetRolesForUser(roles, usr);
-            //    usersAndRoles.Add(new UserRolesDto { user = usr, roles = roles });
-            //}
-
+            
 
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 

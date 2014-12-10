@@ -143,7 +143,7 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = sqlSelectForHqList;
             //для кадровиков показываем вопросы по своим дирекциям
-            if (role == UserRole.PersonnelManager)
+            if (role == UserRole.ConsultantOutsorsingManager)
             {
                 sqlQuery = string.Format(sqlQuery, string.Empty);
                 sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as L ON L.[UserID] = v.[UserID] and L.[PersonnelId] = " + userId.ToString() + " {0}";
@@ -272,17 +272,18 @@ namespace Reports.Core.Dao.Impl
                             throw new ArgumentException(string.Format(StrInvalidManagerLevel, currentUser.Id,
                                 currentUser.Level));
                     }
+                case UserRole.ConsultantOutsorsingManager:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then 1 else 0 end) = 0 ";
                 //return sqlQueryPart;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.ConsultantPersonnel:
                 case UserRole.ConsultantAccountant:
                 case UserRole.PersonnelManager:
-                    sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return " v.[TypeId] = 1 ";
-                case UserRole.ConsultantOutsorsingManager:
-                    sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return " v.[TypeId] = 2 ";
+                    //sqlQuery = string.Format(sqlQuery, string.Empty);
+                    //return " v.[TypeId] = 2 ";
+                
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Empty;
