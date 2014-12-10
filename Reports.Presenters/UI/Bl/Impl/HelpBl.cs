@@ -143,8 +143,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceRequestsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = (CurrentUser.UserRole == UserRole.Manager);
-            //|| (CurrentUser.UserRole == UserRole.Employee);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
         }
         public void SetDictionariesToModel(HelpServiceRequestsListModel model)
         {
@@ -233,7 +232,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (id == 0 && !userId.HasValue)
             {
-                if (current.UserRole == UserRole.Employee)
+                if ((current.UserRole & UserRole.Employee) == UserRole.Employee)
                     userId = current.Id;
                 else
                     throw new ValidationException(StrNoUser);
@@ -314,7 +313,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if (currentRole != UserRole.Manager && currentRole != UserRole.Employee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -526,14 +525,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 currUser = UserDao.Load(current.Id);
                 user = UserDao.Load(model.UserId);
                
-                /*if (model.Id != 0)
-                    entity = AppointmentDao.Get(model.Id);*/
-                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
-                {
-                    error = "Редактирование заявки запрещено";
-                    return false;
-                }*/
-
                 if (model.Id == 0)
                 {
                     entity = new HelpServiceRequest
@@ -723,10 +714,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     HelpServiceRequest request = HelpServiceRequestDao.Load(id);
                     isAddAvailable =  (((CurrentUser.Id == request.Creator.Id) &&
-                                        (CurrentUser.UserRole == UserRole.Manager || CurrentUser.UserRole == UserRole.Employee)) ||
+                                        ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
                                         (request.Consultant != null && 
                                             CurrentUser.Id == request.Consultant.Id && 
-                                            CurrentUser.UserRole == UserRole.ConsultantOutsourcing)
+                                            (CurrentUser.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
                                         );
                 }
             }
@@ -824,12 +815,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetIsAvailable(HelpServiceQuestionsListModel model)
         {
-            model.IsAddAvailable = model.IsAddAvailable = (CurrentUser.UserRole == UserRole.Manager);
+            model.IsAddAvailable = model.IsAddAvailable = ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager);
         }
         public void SetDictionariesToModel(HelpServiceQuestionsListModel model)
         {
             model.Statuses = GetServiceQuestionsStatuses();
-            model.IsManagerColumnVisible = CurrentUser.UserRole != UserRole.Employee;
+            model.IsManagerColumnVisible = (CurrentUser.UserRole & UserRole.Employee) != UserRole.Employee;
         }
         public List<IdNameDto> GetServiceQuestionsStatuses()
         {
@@ -883,7 +874,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             IUser current = AuthenticationService.CurrentUser;
             if (id == 0 && !userId.HasValue)
             {
-                if (current.UserRole == UserRole.Employee || current.UserRole == UserRole.Manager)
+                if ((current.UserRole & UserRole.Employee) == UserRole.Employee || (current.UserRole & UserRole.Manager) == UserRole.Manager)
                     userId = current.Id;
                 else
                     throw new ValidationException(StrQuestionNoUser);
@@ -932,8 +923,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public bool CheckUserRights(User current,UserRole currRole, HelpQuestionRequest entity)
         {
-            if ((current.Id == entity.User.Id && (currRole == UserRole.Manager || currRole == UserRole.Employee)) ||
-                (current.Id == entity.Creator.Id && currRole == UserRole.Manager))
+            if ((current.Id == entity.User.Id && ((currRole & UserRole.Manager) == UserRole.Manager || (currRole & UserRole.Employee) == UserRole.Employee)) ||
+                (current.Id == entity.Creator.Id && (currRole & UserRole.Manager) == UserRole.Manager))
                 return true;
             switch (currRole)
             {
@@ -1084,7 +1075,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if (model.Id == 0)
             {
-                if (currentRole != UserRole.Manager && currentRole != UserRole.Employee)
+                if ((currentRole & UserRole.Manager) != UserRole.Manager && (currentRole & UserRole.Employee) != UserRole.Employee)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsTypeEditable = true;
                 model.IsQuestionEditable = true;
@@ -1638,22 +1629,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantAccountant) ||
                !entity.SendDate.HasValue || entity.EndWorkDate.HasValue)
                 throw new ArgumentException("В текущем состоянии перенаправление заявки невозможно");
-            if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing &&
-                    CurrentUser.UserRole != UserRole.ConsultantPersonnel &&
-                    CurrentUser.UserRole != UserRole.ConsultantAccountant)
+            if ((CurrentUser.UserRole & UserRole.ConsultantOutsourcing) != UserRole.ConsultantOutsourcing &&
+                    (CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel &&
+                    (CurrentUser.UserRole & UserRole.ConsultantAccountant) != UserRole.ConsultantAccountant)
                 throw new ArgumentException("Перенаправление заявки невозможно - неверная роль пользователя");
             List<Role> roles = RoleDao.LoadAll().ToList();
-            if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing)
+            if ((CurrentUser.UserRole & UserRole.ConsultantOutsourcing) != UserRole.ConsultantOutsourcing)
             {
                 Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
                 model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
             }
-            if (CurrentUser.UserRole != UserRole.ConsultantPersonnel)
+            if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel)
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantPersonnel);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
             }
-            if (CurrentUser.UserRole != UserRole.ConsultantAccountant)
+            if ((CurrentUser.UserRole & UserRole.ConsultantAccountant) != UserRole.ConsultantAccountant)
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantAccountant);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
@@ -1673,7 +1664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new HelpVersionsListModel
                        {
-                           IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
+                           IsAddAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Admin) == UserRole.Admin,
                            Versions = HelpVersionDao.LoadAllSortedByDate().ConvertAll(
                                 x => new HelpVersionDto
                                          {
@@ -1741,7 +1732,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new HelpFaqListModel
             {
-                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
+                IsAddAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Admin) == UserRole.Admin,
                 Questions = HelpFaqDao.LoadAllSortedByQuestion().ConvertAll(
                      x => new HelpFaqDto
                      {
@@ -1807,7 +1798,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return new HelpTemplateListModel
             {
-                IsAddAvailable = AuthenticationService.CurrentUser.UserRole == UserRole.Admin,
+                IsAddAvailable = (AuthenticationService.CurrentUser.UserRole & UserRole.Admin) == UserRole.Admin,
                 Documents = RequestAttachmentDao.FindManyByRequestIdAndTypeId(0,RequestAttachmentTypeEnum.HelpTemplate).
                             ToList().ConvertAll(x => new HelpTemplateDto
                             {
