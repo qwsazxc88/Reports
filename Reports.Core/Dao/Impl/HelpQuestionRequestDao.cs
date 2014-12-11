@@ -55,8 +55,7 @@ namespace Reports.Core.Dao.Impl
 	                                from hemd
 	                                left join [dbo].[HelpQuestionHistoryEntity] hqhe
 	                                on hemd.HelpQuestionRequestId = hqhe.HelpQuestionRequestId and hemd.MaxDate = hqhe.CreateDate
-                                    where not exists (select Id from [dbo].[HelpQuestionHistoryEntity] hqhe1 where hqhe1.CreateDate > hemd.MaxDate
-	                                    and hqhe1.Type = 1   )
+                                    --where not exists (select Id from [dbo].[HelpQuestionHistoryEntity] hqhe1 where hqhe1.CreateDate > hemd.MaxDate and hqhe1.Type = 1 )
                                 ),
                                 res as
                                 (
@@ -72,7 +71,7 @@ namespace Reports.Core.Dao.Impl
                                 t.Name as QuestionType,
                                 s.Name as QuestionSubtype,
                                 hesc.SendCount as QuestionsCount,
-                                r.Name as RedirectRole,
+                                r.id as RedirectRoleID, r.Name as RedirectRole,
                                 case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then 1 else 0 end as IsManagerQuestion,
                                 case when v.[SendDate] is null then 1
                                      when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
@@ -276,10 +275,14 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then 1 else 0 end) = 0 ";
                 //return sqlQueryPart;
+                case UserRole.ConsultantPersonnel:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return @" r.[Id] = " + (int)UserRole.ConsultantPersonnel + " ";
+                case UserRole.ConsultantAccountant:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return @" r.[Id] = " + (int)UserRole.ConsultantAccountant + " ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
-                case UserRole.ConsultantPersonnel:
-                case UserRole.ConsultantAccountant:
                 case UserRole.PersonnelManager:
                     //sqlQuery = string.Format(sqlQuery, string.Empty);
                     //return " v.[TypeId] = 2 ";
