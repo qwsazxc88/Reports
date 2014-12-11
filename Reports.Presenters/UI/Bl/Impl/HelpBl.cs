@@ -364,6 +364,34 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsBeginWorkAvailable = true;
                     }
                     break;
+                case UserRole.PersonnelManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
+                    {
+                        if (entity.Consultant != null && entity.Consultant.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsConsultantOutsourcingEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                            model.IsBeginWorkAvailable = true;
+                    }
+                    break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == current.Id))
+                    {
+                        if (entity.Consultant != null && entity.Consultant.Id == current.Id
+                            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsConsultantOutsourcingEditable = true;
+                            model.IsSaveAvailable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                            model.IsBeginWorkAvailable = true;
+                    }
+                    break;
             }
         }
 
@@ -385,9 +413,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
                 ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+            if (model.Id == 0)
+                model.ProductionTimeTypeId = 2;
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
-               Where(x => x.Id < 3).ToList<IdNameDto>(); //удалил из списка почту России
+               Where(x => x.Id != 3).ToList<IdNameDto>(); //удалил из списка почту России
 
             if(model.TypeId == 0)
                 model.TypeId = types.First().Id;
@@ -426,6 +456,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (user.Position != null)
                 model.Position = user.Position.Name;
             model.UserName = user.FullName;
+            model.Email = user.Email;
             if(user.Department != null)
             {
                 model.Department2 = user.Department.Name;
@@ -702,6 +733,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.Consultant = currUser;
                         }
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id 
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                            entity.EndWorkDate = DateTime.Now;
+                    }
+                    break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.Consultant = currUser;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
                     }
@@ -989,6 +1033,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.ConsultantPersonnel:
                 case UserRole.ConsultantAccountant:
                 case UserRole.OutsourcingManager:
+                case UserRole.PersonnelManager:
+                case UserRole.ConsultantOutsorsingManager:
                 case UserRole.Admin:
                     return true;
             }
@@ -1016,6 +1062,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     case (int)UserRole.ConsultantAccountant:
                         if (entity.ConsultantAccountant != null)
                             model.Worker = entity.ConsultantAccountant.FullName;
+                        break;
+                    //case (int)UserRole.PersonnelManager:
+                    //    if (entity.PersonnelManager != null)
+                    //        model.Worker = entity.PersonnelManager.FullName;
+                    //    break;
+                    case (int)UserRole.ConsultantOutsorsingManager:
+                        if (entity.ConsultantOutsorsingManager != null)
+                            model.Worker = entity.ConsultantOutsorsingManager.FullName;
                         break;
                 }
             }
@@ -1164,6 +1218,47 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if ((entity.ConsultantOutsorsingManager == null || (entity.ConsultantOutsorsingManager.Id == current.Id))
+                        && (!entity.ConsultantRoleId.HasValue ||
+                             entity.ConsultantRoleId.Value == (int)UserRole.ConsultantOutsorsingManager))
+                    {
+                        if (//entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == current.Id
+                            //&& 
+                            entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                        {
+                            model.IsEndWorkAvailable = true;
+                            model.IsRedirectAvailable = false;
+                            model.IsSaveAvailable = false;
+                            model.IsAnswerEditable = true;
+                        }
+                        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                        {
+                            model.IsRedirectAvailable = false;
+                            model.IsBeginWorkAvailable = true;
+                        }
+                    }
+                    break;
+                //case UserRole.PersonnelManager:
+                //    if ((entity.PersonnelManager == null || (entity.PersonnelManager.Id == current.Id))
+                //        && (!entity.ConsultantRoleId.HasValue ||
+                //             entity.ConsultantRoleId.Value == (int)UserRole.PersonnelManager))
+                //    {
+                //        if (entity.PersonnelManager != null && entity.PersonnelManager.Id == current.Id
+                //            && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
+                //        {
+                //            model.IsEndWorkAvailable = true;
+                //            model.IsRedirectAvailable = true;
+                //            model.IsSaveAvailable = true;
+                //            model.IsAnswerEditable = true;
+                //        }
+                //        if (entity.SendDate.HasValue && !entity.BeginWorkDate.HasValue)
+                //        {
+                //            model.IsRedirectAvailable = true;
+                //            model.IsBeginWorkAvailable = true;
+                //        }
+                //    }
+                //    break;
                 case UserRole.ConsultantAccountant:
                     if ((entity.ConsultantAccountant == null || (entity.ConsultantAccountant.Id == current.Id))
                         && (!entity.ConsultantRoleId.HasValue ||
@@ -1626,6 +1721,131 @@ namespace Reports.Presenters.UI.Bl.Impl
                         }
                     }
                     break;
+                //case UserRole.PersonnelManager:
+                //    if (entity.PersonnelManager == null || (entity.PersonnelManager.Id == currUser.Id))
+                //    {
+                //        if (model.Operation == 2 && entity.SendDate.HasValue)
+                //        {
+                //            entity.BeginWorkDate = DateTime.Now;
+                //            entity.PersonnelManager = currUser;
+                //            entity.ConsultantRoleId = (int)UserRole.PersonnelManager;
+                //            HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
+                //            {
+                //                //Answer = entity.Answer,
+                //                Consultant = currUser,
+                //                CreateDate = DateTime.Now,
+                //                Creator = currUser,
+                //                CreatorRoleId = (int)currRole,
+                //                Question = entity.Question,
+                //                RecipientRoleId = (int)currRole,
+                //                Request = entity,
+                //                Type = 2,// beginWork
+                //            };
+                //            entity.HistoryEntities.Add(beginWork);
+                //        }
+                //        if (entity.PersonnelManager != null && entity.PersonnelManager.Id == currUser.Id
+                //            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                //        {
+                //            entity.EndWorkDate = DateTime.Now;
+                //            HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
+                //            {
+                //                Answer = entity.Answer,
+                //                Consultant = currUser,
+                //                CreateDate = DateTime.Now,
+                //                Creator = currUser,
+                //                CreatorRoleId = (int)currRole,
+                //                Question = entity.Question,
+                //                RecipientRoleId = (int)currRole,
+                //                Request = entity,
+                //                Type = 3,// endWork
+                //            };
+                //            entity.HistoryEntities.Add(endWork);
+                //        }
+                //        if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
+                //        {
+                //            entity.ConsultantRoleId = model.RedirectRoleId;
+                //            entity.BeginWorkDate = null;
+                //            HelpQuestionHistoryEntity redirect = new HelpQuestionHistoryEntity
+                //            {
+                //                Answer = entity.Answer,
+                //                Consultant = currUser,
+                //                CreateDate = DateTime.Now,
+                //                Creator = currUser,
+                //                CreatorRoleId = (int)currRole,
+                //                Question = entity.Question,
+                //                RecipientRoleId = model.RedirectRoleId,
+                //                Request = entity,
+                //                Type = 6,// redirect
+                //            };
+                //            entity.HistoryEntities.Add(redirect);
+                //            entity.Answer = null;
+                //            model.Answer = null;
+                //        }
+                //    }
+                //    break;
+                case UserRole.ConsultantOutsorsingManager:
+                    if (entity.ConsultantOutsorsingManager == null || (entity.ConsultantOutsorsingManager.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.ConsultantOutsorsingManager = currUser;
+                            entity.ConsultantRoleId = (int)UserRole.ConsultantOutsorsingManager;
+                            HelpQuestionHistoryEntity beginWork = new HelpQuestionHistoryEntity
+                            {
+                                //Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 2,// beginWork
+                            };
+                            entity.HistoryEntities.Add(beginWork);
+                        }
+                        if (//entity.ConsultantOutsorsingManager != null && entity.ConsultantOutsorsingManager.Id == currUser.Id
+                            //&& 
+                            model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = (int)currRole,
+                                Request = entity,
+                                Type = 3,// endWork
+                            };
+                            entity.HistoryEntities.Add(endWork);
+                        }
+                        if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
+                        {
+                            entity.ConsultantRoleId = model.RedirectRoleId;
+                            entity.BeginWorkDate = null;
+                            HelpQuestionHistoryEntity redirect = new HelpQuestionHistoryEntity
+                            {
+                                Answer = entity.Answer,
+                                Consultant = currUser,
+                                CreateDate = DateTime.Now,
+                                Creator = currUser,
+                                CreatorRoleId = (int)currRole,
+                                Question = entity.Question,
+                                RecipientRoleId = model.RedirectRoleId,
+                                Request = entity,
+                                Type = 6,// redirect
+                            };
+                            entity.HistoryEntities.Add(redirect);
+                            entity.Answer = null;
+                            model.Answer = null;
+                        }
+                    }
+                    break;
             }
         }
         public HelpQuestionRedirectModel GetQuestionRedirectModel(int id)
@@ -1635,12 +1855,16 @@ namespace Reports.Presenters.UI.Bl.Impl
             if ((entity.ConsultantRoleId.HasValue &&
                 entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsourcing &&
                entity.ConsultantRoleId.Value != (int)UserRole.ConsultantPersonnel &&
-               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantAccountant) ||
+               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantAccountant &&
+               entity.ConsultantRoleId.Value != (int)UserRole.ConsultantOutsorsingManager) ||//&&
+               //entity.ConsultantRoleId.Value != (int)UserRole.PersonnelManager) ||
                !entity.SendDate.HasValue || entity.EndWorkDate.HasValue)
                 throw new ArgumentException("В текущем состоянии перенаправление заявки невозможно");
             if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing &&
                     CurrentUser.UserRole != UserRole.ConsultantPersonnel &&
-                    CurrentUser.UserRole != UserRole.ConsultantAccountant)
+                    CurrentUser.UserRole != UserRole.ConsultantAccountant &&
+                    CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)// &&
+                    //CurrentUser.UserRole != UserRole.PersonnelManager)
                 throw new ArgumentException("Перенаправление заявки невозможно - неверная роль пользователя");
             List<Role> roles = RoleDao.LoadAll().ToList();
             if (CurrentUser.UserRole != UserRole.ConsultantOutsourcing)
@@ -1657,7 +1881,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantAccountant);
                 model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
-            }    
+            }
+            if (CurrentUser.UserRole != UserRole.ConsultantOutsorsingManager)
+            {
+                Role role = GetRoleForId(roles, (int)UserRole.ConsultantOutsorsingManager);
+                model.Roles.Add(new IdNameDto { Id = role.Id, Name = role.Name });
+            }
             return model;
         }
         protected Role GetRoleForId(List<Role> roles,int roleId)

@@ -419,6 +419,16 @@ namespace Reports.Core.Dao.Impl
 
                 #endregion
 
+                #region ConsultantPersonnel
+                case UserRole.ConsultantPersonnel:
+                    return string.Empty;
+                #endregion
+
+                #region ConsultantOutsorsingManager
+                case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;
+                #endregion
+
                 default:
                     throw new ArgumentException(string.Format("Invalid user role {0}",role));
             }
@@ -565,6 +575,16 @@ namespace Reports.Core.Dao.Impl
                     sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
                     return string.Empty;
 
+                #endregion
+
+                #region ConsultantPersonnel
+                case UserRole.ConsultantPersonnel:
+                    return string.Empty;
+                #endregion
+
+                #region ConsultantOutsorsingManager
+                case UserRole.ConsultantOutsorsingManager:
+                    return string.Empty;
                 #endregion
 
                 #region -Deleted (Directors, Accountants, Secretary, Findep)

@@ -129,6 +129,9 @@
                     <th>
                         <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Должность</a></div>
                     </th>
+                    <th>
+                        <div id="sort14" style="min-width:130px"><a href="#" onclick = "SortChanged(14);">Подразделение<br /> 3 уровня</a></div>
+                    </th>
                     @* <th>
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>*@
@@ -190,13 +193,26 @@
                             <td>@doc.Number</td>
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
+                            <td>@doc.Dep3Name</td>
                            @* <td>@doc.ManagerName</td>*@
                             <td>@doc.DepName</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("HelpQuestionEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
                             </td>
+                            @*
                             <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
                             <td>@BaseBl.FormatDate(@doc.EndWorkDate)</td>
+                            *@
+                            <td>@doc.CreateDate.ToShortDateString() @doc.CreateDate.ToShortTimeString()</td>                            
+                            @if (@doc.EndWorkDate == null)
+                            {
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td>@doc.EndWorkDate.Value.ToShortDateString() @doc.EndWorkDate.Value.ToShortTimeString()</td>
+                            }
+
                             <td>@doc.QuestionType</td>
                             <td>@doc.QuestionSubtype</td>
                             <td>@doc.QuestionsCount</td>
