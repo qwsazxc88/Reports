@@ -524,9 +524,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region Заполнение списка вышестоящих руководителей
 
             IList<User> chiefs = GetChiefsForManager(user.Id)
-                .Where<User>(chief => chief.Level >= 3)
+                .Where<User>(chief => chief.Level >= 4)
                 .OrderByDescending<User, int?>(chief => chief.Level)
                 .ToList<User>();
+
+            // + руководители по ручным привязкам
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            foreach (var manualRoleManager in manualRoleManagers)
+            {
+                if (!chiefs.Contains(manualRoleManager))
+                {
+                    chiefs.Add(manualRoleManager);
+                }
+            }
 
             StringBuilder chiefsBuilder = new StringBuilder();
             foreach (var chief in chiefs)
