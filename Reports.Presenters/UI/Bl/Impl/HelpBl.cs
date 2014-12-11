@@ -750,6 +750,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.EndWorkDate = DateTime.Now;
                     }
                     break;
+                case UserRole.PersonnelManager:
+                    if (entity.Consultant == null || (entity.Consultant.Id == currUser.Id))
+                    {
+                        if (model.Operation == 2 && entity.SendDate.HasValue)
+                        {
+                            entity.BeginWorkDate = DateTime.Now;
+                            entity.Consultant = currUser;
+                        }
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                            entity.EndWorkDate = DateTime.Now;
+                    }
+                    break;
             }
         }
         public void GetDictionariesStates(int typeId,HelpServiceDictionariesStatesModel model)
