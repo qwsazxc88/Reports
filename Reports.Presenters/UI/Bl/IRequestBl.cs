@@ -197,6 +197,6 @@ namespace Reports.Presenters.UI.Bl
         AdditionalMissionOrderEditModel GetAdditionalMissionOrderEditModel(int id);
         bool SaveAdditionalMissionOrderEditModel(AdditionalMissionOrderEditModel model, out string error);
 
-        IList<User> GetManagersForEmployee(int userId);
+        IList<User> GetManagersForEmployee(int userId, int? minManagerLevel = null);
     }
 }
