@@ -538,7 +538,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = {0}
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", userId);
