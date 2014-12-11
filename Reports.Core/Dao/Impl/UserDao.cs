@@ -31,11 +31,6 @@ namespace Reports.Core.Dao.Impl
         {
         }
 
-        //public override void Save(User entity)
-        //{
-        //    Session.Merge(entity);/*SaveOrUpdateCopy(entity);*/
-        //}
-
         public string ConstFKExistsViewName
         {
             get { return FKExistsViewName; }
@@ -246,20 +241,13 @@ namespace Reports.Core.Dao.Impl
             }
         }
 
-        //public virtual User FindByCustomerId(string masterCustomerId, string subCustomerId)
-        //{
-        //    ICriteria criteria = Session.CreateCriteria(typeof (User));
-        //    criteria.Add(Restrictions.Eq("MasterCustomerId", masterCustomerId));
-        //    criteria.Add(Restrictions.Eq("SubCustomerId", subCustomerId));
-        //    return (User)criteria.UniqueResult();
-        //}
-
         public virtual int Count()
         {
             return (int)Session.CreateCriteria(typeof(User))
                             .SetProjection(Projections.RowCount())
                             .UniqueResult();
         }
+
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDatePaged(int managerId, UserRole managerRole,
             DateTime beginDate,DateTime endDate,int departmentId, string userName)
         {
@@ -392,7 +380,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
@@ -409,7 +397,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
-            if(departmentId != 0 && managerRole != UserRole.Employee)
+            if(departmentId != 0 && (managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
 
             sqlQuery += @" where " + sqlWhere;
@@ -422,7 +410,8 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            query.SetInt32("userId", managerId);
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
+                query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
@@ -485,7 +474,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль {0}",(int)managerRole));
             }
-            if (departmentId != 0 && managerRole != UserRole.Employee)
+            if (departmentId != 0 && (managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
 
             sqlQuery += @" where " + sqlWhere;
@@ -498,13 +487,12 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if (managerRole != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
                 query.SetInt32("userId", managerId);
             if (!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%" + userName + "%");
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(IdNameDtoWithDates))).List<IdNameDtoWithDates>();
         }
-
 
         public IList<IdNameDtoWithDates> GetUsersForManagerWithDate(int userId, UserRole managerRole)
         {
@@ -664,7 +652,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
@@ -677,7 +665,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
-            if(managerRole != UserRole.Employee)
+            if((managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by u.Name,u.Id ";
@@ -858,284 +846,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("DateAccept", NHibernateUtil.DateTime);
-            if (managerRole != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
                 query.SetInt32("userId", userId);
             query.SetDateTime("beginDate", beginDate);
             query.SetDateTime("endDate", endDate);
             return query.SetResultTransformer(Transformers.AliasToBean(typeof(AcceptRequestDateDto))).List<AcceptRequestDateDto>();
         }
 
-
-//        public ISet<Institution> GetLinkedInstitutions(int userId)
-//        {
-//            ISet<Institution> set = new HashedSet<Institution>();
-//            set.AddAll(Session.CreateSQLQuery(
-//                           "select institution.Id,Location,Name from institution " +
-//                           "inner join UserInstitutionLink on UserInstitutionLink.InstitutionId = Institution.Id " +
-//                           "where UserInstitutionLink.UserId = " + userId + " order by Name,Location ")
-//                           .AddScalar("Id", NHibernateUtil.Int32)
-//                           .AddScalar("Location", NHibernateUtil.String)
-//                           .AddScalar("Name", NHibernateUtil.String).
-////                           .AddScalar("ImageFileId", NHibernateUtil.Int32).
-//                           SetResultTransformer(Transformers.AliasToBean(typeof (Institution))).List<Institution>());
-//            return set;
-//        }
-
-        //public Iesi.Collections.Generic.ISet<IdNameDto> GetAllEntitiesForDictionary(string fieldName)
-        //{
-        //    IList<NameDto> list = 
-        //    Session.CreateSQLQuery(@" select distinct(" + fieldName + ") as Name from [Users] ").
-        //    AddScalar("Name", NHibernateUtil.String).
-        //    SetResultTransformer(Transformers.AliasToBean(typeof (NameDto))).List<NameDto>();
-        //    Iesi.Collections.Generic.ISet<IdNameDto> result = new HashedSet<IdNameDto>();
-        //    int i = 0;
-        //    result.Add(new IdNameDto(i++,string.Empty)); 
-        //    if (list.Count <= 0)
-        //        return result;
-        //    foreach (NameDto name in list)
-        //    {
-        //        if (!string.IsNullOrEmpty(name.Name))
-        //        {
-        //            IdNameDto dto = new IdNameDto(i++, name.Name);
-        //            result.Add(dto);
-        //        }
-        //    }
-        //    return result;	
-        //}
-
-        //public IList<UsersListItemDto> FindByFilter(UserListFilter filter, out int count)
-        //{
-        //    ICriteria criteria = Session.CreateCriteria(typeof(User));
-        //    ICriterion criterion = Expression.Sql("");
-
-        //    if (!string.IsNullOrEmpty(filter.FirstName))
-        //        criterion = Restrictions.And(criterion, new LikeExpression("FirstName", filter.FirstName, MatchMode.Start));
-        //    if (!string.IsNullOrEmpty(filter.MiddleName))
-        //        criterion = Restrictions.And(criterion, new LikeExpression("MiddleName", filter.MiddleName, MatchMode.Start));
-        //    if (!string.IsNullOrEmpty(filter.LastName))
-        //        criterion = Restrictions.And(criterion, new LikeExpression("LastName", filter.LastName, MatchMode.Start));
-        //    //if (filter.Status != null)
-        //    //    criterion = Expression.And(criterion, new EqExpression("IsActive", filter.Status));
-
-        //    if (!string.IsNullOrEmpty(filter.Branch))
-        //        criterion = Restrictions.And(criterion, Restrictions.Eq("Branch", filter.Branch));
-        //    if (!string.IsNullOrEmpty(filter.Department))
-        //        criterion = Restrictions.And(criterion, Restrictions.Eq("Department", filter.Department));
-        //    if (!string.IsNullOrEmpty(filter.Position))
-        //        criterion = Restrictions.And(criterion, Restrictions.Eq("Position", filter.Position));
-
-        //    ICriteria criteria2 = Session.CreateCriteria(typeof(User));
-        //    criteria2.Add(criterion);
-        //    criteria2.SetProjection(Projections.RowCount());
-        //    count = (int)criteria2.UniqueResult();
-        //    if (filter.FirstResult > count) filter.FirstResult = 0;
-        //    criteria.Add(criterion);
-        //    if (filter.MaxResults != -1)
-        //        criteria.SetMaxResults(filter.MaxResults);
-        //    if (filter.FirstResult != -1)
-        //        criteria.SetFirstResult(filter.FirstResult);
-        //    if (!string.IsNullOrEmpty(filter.SortExpression))
-        //    {
-        //        criteria.AddOrder(new Order(filter.SortExpression, filter.SortAscending));
-        //        if (filter.SortExpression.CompareTo(LastNameSortFieldName) == 0)
-        //        {
-        //            criteria.AddOrder(new Order(FirstNameSortFieldName, filter.SortAscending));
-        //            criteria.AddOrder(new Order(MiddleNameSortFieldName, filter.SortAscending));
-        //        }
-        //    }
-        //    IList<User> list = criteria.List<User>();
-        //    IList<UsersListItemDto> result = new List<UsersListItemDto>();
-        //    if (list.Count <= 0)
-        //        return result;
-        //    foreach (User user in list)
-        //    {
-        //        UsersListItemDto dto = new UsersListItemDto(user);
-        //        result.Add(dto);
-        //    }
-        //    //IList<ItemUsedDto> usedList = CoreUtils.GetFKsForEntitiesList(Session, FKExistsViewName, list);
-        //    //CoreUtils.SetUsedEntityFlag(list, usedList);
-
-        //    return result;
-        //}
-		//public IList<User> GetUsersInRole(string roleName)
-		//{
-		//    IList<User> list = new List<User>();
-		//    ICriterion experssion = null;
-		//    switch (roleName)
-		//    {
-		//        case SystemRoleConstants.EditingUser:
-		//            experssion = Expression.Eq("IsEditingUser", true);
-		//            break;
-		//        case SystemRoleConstants.UserAdministrator:
-		//            experssion = Expression.Eq("IsUserAdministrator", true);
-		//            break;
-		//        case SystemRoleConstants.ContentAdministrator:
-		//            experssion = Expression.Eq("IsContentAdministrator", true);
-		//            break;
-		//        case SystemRoleConstants.SuperAdministrator:
-		//            experssion = Expression.Eq("IsSuperAdministrator", true);
-		//            break;
-		//        case SystemRoleConstants.NotApproved:
-		//            experssion = Expression.Eq("IsApproved", false);
-		//            break;
-		//        case SystemRoleConstants.Inactive:
-		//            experssion = Expression.Eq("IsActive", false);
-		//            break;
-		//        default:
-		//            break;
-		//    }
-		//    if (experssion != null)
-		//    {
-		//        list = Session.CreateCriteria(typeof(User))
-		//            .Add(experssion)
-		//            .List<User>();
-		//    }
-		//    return list;
-		//}
-
-		//public IList<User> GetUsersInDcmRole(ContentManagementRole role, int baseCaseId)
-		//{
-		//    StringBuilder queryStr = new StringBuilder();
-		//    IList<User> list = new List<User>();
-
-
-		//    queryStr.Append("select DISTINCT pm.UserId as Id from GraphEdgePathLink as gepl ");
-		//    queryStr.Append("inner join GraphPath as gp on gepl.GraphPathId = gp.Id and gp.BaseCaseId = ");
-		//    queryStr.Append(baseCaseId.ToString());
-		//    queryStr.Append(" left outer join Permission as pm on pm.OwnerId = gepl.SecuredEntityId ");
-		//    queryStr.Append("and (pm.Role&:role) <> 0 ");
-		//    queryStr.Append("where pm.UserId is not null");
-		//    IQuery queryInt = Session.CreateSQLQuery(queryStr.ToString())
-		//        .AddScalar("Id", NHibernateUtil.Int32);
-		//    queryInt.SetParameter("role", role);
-		//    IList<int> lstInt = queryInt.List<int>();
-		//    if (lstInt.Count > 0)
-		//    {
-		//        int last = lstInt[lstInt.Count - 1];
-            
-
-		//        queryStr.Remove(0, queryStr.Length);
-
-		//        queryStr.Append("from User u where u.Id in ( ");
-		//        foreach (int i in lstInt)
-		//        {
-		//            queryStr.Append(i.ToString());
-		//            if(i != last)
-		//            {
-		//                queryStr.Append(", ");
-		//            }
-		//        }
-		//        queryStr.Append(")");
-
-		//        IQuery query = Session.CreateQuery(queryStr.ToString());
-		//        list = query.List<User>();
-		//    }
-
-		//    return list;
-		//}
-
-//        public ContentManagementRole GetUserRolesForCase(int userId, int baseCaseId)
-//        {
-//            StringBuilder queryStr = new StringBuilder();
-
-//            ContentManagementRole resRole = ContentManagementRole.None;
-
-//            queryStr.Append("select pm.Role as CMRole from GraphEdgePathLink as gepl ");
-//            queryStr.Append("inner join GraphPath as gp on gepl.GraphPathId = gp.Id and gp.BaseCaseId = ");
-//            queryStr.Append(baseCaseId.ToString());
-//            queryStr.Append(" left outer join Permission as pm on pm.OwnerId = gepl.SecuredEntityId ");
-//            queryStr.Append("and (pm.Role&:role) <> 0 ");
-//            queryStr.Append("where pm.UserId = :userId");
-//            IQuery queryInt = Session.CreateSQLQuery(queryStr.ToString())
-//                .AddScalar("CMRole", NHibernateUtil.Int32);
-//            queryInt.SetParameter("userId", userId);
-//            queryInt.SetParameter("role", ContentManagementRole.All);
-//            IList<int> lstInt = queryInt.List<int>();
-			
-//            foreach (int role in lstInt)
-//            {
-//                resRole = resRole | ((ContentManagementRole)role);
-//            }
-
-//            return resRole;
-//        }
-
-//        public IList<User> GetUsersInDcmRoles(ContentManagementRole roles,
-//            int maxResults,int firstResult,
-//            string sortExpression,bool sortAscending, out int count) // role is bit mask of DCM roles
-//        {
-//            ICriteria criteria = Session.CreateCriteria(typeof(User));
-////            ICriterion criterion = Expression.Sql("");
-//            Array values = Enum.GetValues(typeof(ContentManagementRole));
-//            Junction jun = Expression.Disjunction();
-//            foreach (ContentManagementRole role in values)
-//            {
-//                if((role != ContentManagementRole.None) && (role != ContentManagementRole.All))
-//                {
-//                    if ((roles & role) == role)
-//                        jun.Add(Expression.Sql("( DefaultCMRole&" + ((int)role + "=" + ((int)role)+" )")));//criterion, new SqlExpression("DefaultCMRole" /*+ ((int)role)*/, role));
-//                }
-//            }
-//            ICriteria criteria2 = Session.CreateCriteria(typeof(User));
-//            criteria2.Add(jun);
-//            criteria2.SetProjection(Projections.RowCount());
-//            count = (int)criteria2.UniqueResult();
-//            if (firstResult > count) firstResult = 0;
-//            criteria.Add(jun);
-//            if (maxResults != -1)
-//                criteria.SetMaxResults(maxResults);
-//            if (firstResult != -1)
-//                criteria.SetFirstResult(firstResult);
-//            if (!string.IsNullOrEmpty(sortExpression))
-//                criteria.AddOrder(new Order(sortExpression, sortAscending));
-//            return criteria.List<User>();
-//        }
-
-//        public string[] GetUsersLoginInRole(string roleName)
-//        {
-//            List<User> list = (List<User>)GetUsersInRole(roleName);
-//            List<string> listLogin = list.ConvertAll<string>(delegate(User user) { return user.Login; });
-//            string[] users = listLogin.ToArray();
-//            return users;
-//        }
-//        public IList<SelectUserDto> LoadDtoListForInstitution(IList<User> list,int institutionId)
-//        {
-//            IList<SelectUserDto> resultList = new List<SelectUserDto>();
-//            if(list.Count <= 0)
-//                return resultList;
-//            //ArrayList userList = new ArrayList();
-//            //foreach (User user in list)
-//            //{
-//            //    if (!userList.Contains(user.Id))
-//            //        userList.Add(user.Id);
-//            //}
-//            ICriteria criteria = Session.CreateCriteria(typeof(UserInstitutionLink));
-//            criteria.Add(Expression.In("User.Id", CoreUtils.CreateArrayList(list)));
-//            criteria.Add(Expression.Eq("Institution.Id", institutionId));
-//            IList<UserInstitutionLink> linkList = criteria.List<UserInstitutionLink>();
-//            if (linkList.Count > 0)
-//            {
-//                IList<ItemUsedDto> usedList = CoreUtils.GetFKsForEntitiesList(Session, UserInstitutionLinkDao.FKExistsViewName, linkList);
-//                CoreUtils.SetUsedEntityFlag(linkList, usedList);
-//            }
-//            foreach (User user in list)
-//            {
-//                SelectUserDto dto = new SelectUserDto(user);
-//                UserInstitutionLink link = FindInList(linkList, user.Id);
-//                if(link != null)
-//                {
-//                    dto.IsSelected = true;
-//                    dto.IsUsed = link.IsUsed; 
-//                }
-//                else
-//                {
-//                    dto.IsSelected = false;
-//                    dto.IsUsed = false; 
-//                }
-//                resultList.Add(dto); 
-//            }
-//            return resultList; 
-//        }
         public IList<User> LoadForIdsList(ArrayList ids)
         {
             ICriteria criteria = Session.CreateCriteria(typeof(User));

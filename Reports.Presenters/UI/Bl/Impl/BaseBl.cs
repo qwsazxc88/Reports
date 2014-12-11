@@ -542,7 +542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IdNameReadonlyDto GetDepartmentDto(User user)
         {
             return
-                AuthenticationService.CurrentUser.UserRole == UserRole.Employee 
+                (AuthenticationService.CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee 
                     ? new IdNameReadonlyDto
                           {
                               Id = user.Department == null ? 0 : user.Department.Id,
