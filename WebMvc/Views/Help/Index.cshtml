@@ -96,8 +96,7 @@
             <table style="width:100%">
                     <tr>
                             <td>
-                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
-                                    /*|| (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)*/)
+                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee))
                                 {
                                     <input type="button" value="Создать новую заявку на услугу" onclick="location.href='@Url.Action("ServiceRequestEdit", "Help", new { id = 0 })'"/>   
                                 }
@@ -138,6 +137,9 @@
                         <div id="sort3" style="min-width:130px"><a href="#"  onclick = "SortChanged(3);">Руководитель<br/> за сотрудника</a></div>
                     </th>
                     <th>
+                        <div id="sort11" style="min-width:130px"><a href="#"  onclick = "SortChanged(11);">Подразделение<br/> 3 уровня</a></div>
+                    </th>
+                    <th>
                         <div id="sort4"  style="min-width:210px"><a href="#"  onclick = "SortChanged(4);">Подразделение</a></div>
                     </th>
                     <th>
@@ -149,8 +151,11 @@
                     <th>
                         <div id="sort7"  style="min-width:110px"><a href="#"  onclick = "SortChanged(7);">Дата<br/> выполнения<br/> услуги</a></div>
                     </th>
-                        <th>
+                    <th>
                         <div id="sort8"  style="min-width:130px"><a href="#"  onclick = "SortChanged(8);">Вид услуги</a></div>
+                    </th>
+                    <th>
+                        <div id="sort12"  style="min-width:130px"><a href="#"  onclick = "SortChanged(12);">Срок<br /> изготовления</a></div>
                     </th>
                     <th>
                         <div id="sort9"  style="min-width:130px"><a href="#"  onclick = "SortChanged(9);">Способ<br/> передачи</a></div>
@@ -184,13 +189,26 @@
                             <td>@doc.UserName</td>
                             <td>@doc.Position</td>
                             <td>@doc.ManagerName</td>
+                            <td>@doc.Dep3Name</td>
                             <td>@doc.Dep7Name</td>
                             <td style="text-align:left">
                                 <a class="ui-notify-close" href='@Url.Action("ServiceRequestEdit", new { id = doc.Id })' style="cursor:hand">@doc.RequestNumber</a>
                             </td>
+                            @*
                             <td>@BaseBl.FormatDate(@doc.CreateDate)</td>                            
                             <td>@BaseBl.FormatDate(@doc.ConfirmWorkDate)</td>
+                            *@
+                            <td>@doc.CreateDate.ToShortDateString() @doc.CreateDate.ToShortTimeString()</td>                            
+                            @if (@doc.ConfirmWorkDate == null)
+                            {
+                                <td></td>
+                            }
+                            else
+                            {
+                                <td>@doc.ConfirmWorkDate.Value.ToShortDateString() @doc.ConfirmWorkDate.Value.ToShortTimeString()</td>
+                            }
                             <td>@doc.RequestType</td>
+                            <td>@doc.ProdTimeName</td>
                             <td>@doc.RequestTransferType</td>
                             <td style="background-color:@color">
                                 @doc.Status

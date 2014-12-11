@@ -60,7 +60,7 @@ namespace Reports.Core.Dao.Impl
             int? superPersonnelId = ConfigurationService.SuperPersonnelId;
 
             // Фильтрация по релевантности производится для всех кроме суперпользователя и аутсорса
-            if (!(superPersonnelId.HasValue && superPersonnelId.Value == userId) && !(role == UserRole.OutsourcingManager))
+            if (!(superPersonnelId.HasValue && superPersonnelId.Value == userId) && !((role & UserRole.OutsourcingManager) == UserRole.OutsourcingManager))
             {
                 sqlQuery += relevanceFilter;
             }

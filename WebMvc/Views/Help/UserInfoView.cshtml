@@ -21,7 +21,7 @@
         </td>
         <td>
             @Html.DisplayFor(m => m.DocumentNumber)
-            <input type="hidden" id="DocumentNumber" name="DocumentNumber" value="@Model.DocumentNumber" />
+            <input type="hidden" id="DocumentNumber" name="DocumentNumber" value="@Model.DocumentNumber" /> 
         </td>
     </tr>
     <tr>
@@ -29,7 +29,7 @@
             @Html.LabelFor(m => m.UserName)
         </td>
         <td>
-            @Html.DisplayFor(m => m.UserName)
+            @Html.DisplayFor(m => m.UserName) <a href="mailto:@Model.Email">@Model.Email</a>
             <input type="hidden" id="UserName" name="UserName" value="@Model.UserName" />
         </td>
     </tr>

@@ -54,6 +54,8 @@ namespace Reports.Presenters.Services.Impl
                 //    return SafetyZoneRoles.RegisterAdminHosp;
                 //if (IsInRole(SafetyZoneRoleConstants.RegisterDoctor))
                 //    return SafetyZoneRoles.RegisterDoctor;
+                if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
+                    return UserRole.ConsultantOutsorsingManager;
                 return IsInRole(ReportRoleConstants.PersonnelManager) ?
                        UserRole.PersonnelManager :
                        UserRole.NoRole;
@@ -124,7 +126,9 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.Employee) > 0
                    || (dto.UserRole & UserRole.Admin) > 0
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
-                   || (dto.UserRole & UserRole.OutsourcingManager) > 0;
+                   || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                   || (dto.UserRole & UserRole.PersonnelManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
         }
         public static bool IsHelpQuestionAvailable(IUser dto)
         {
@@ -134,7 +138,9 @@ namespace Reports.Presenters.Services.Impl
                    || (dto.UserRole & UserRole.ConsultantOutsourcing) > 0
                    || (dto.UserRole & UserRole.ConsultantPersonnel) > 0
                    || (dto.UserRole & UserRole.ConsultantAccountant) > 0
-                   || (dto.UserRole & UserRole.OutsourcingManager) > 0;
+                   || (dto.UserRole & UserRole.OutsourcingManager) > 0
+                   //|| (dto.UserRole & UserRole.PersonnelManager) > 0
+                   || (dto.UserRole & UserRole.ConsultantOutsorsingManager) > 0;
         }
         public static bool IsHelpTemplateAvailable(IUser dto)
         {
