@@ -1,0 +1,26 @@
+﻿@model Reports.Presenters.UI.ViewModel.HelpEditVersionModel
+<html>
+<head>
+    <title/>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" id = "VersionDialogTable" style="width:100%;height:100px">
+                <tr>
+                    <td colspan="2"><div id="VersionError" style="color:Red;display:none;"/></td>
+                    @Html.HiddenFor(model => model.Id)
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.ReleaseDate):</td>
+                    <td>
+                        @Html.EditorFor(model => model.ReleaseDate)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right">@Html.LabelFor(model => model.Comment):</td>
+                    <td>
+                       @Html.TextAreaFor(model => model.Comment, 4, 50,(object)new { style = "resize: none;" })
+                    </td>
+                </tr>
+    </table>
+</body>
+</html>

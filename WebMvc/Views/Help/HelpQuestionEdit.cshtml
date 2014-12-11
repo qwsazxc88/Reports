@@ -1,0 +1,327 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.HelpQuestionEditModel
+@{
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
+    ViewBag.Title = "Задать вопрос";
+}
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "QuestionEdit" }))
+{
+    <div class="doc-wrap">
+        <table style="width:100%">
+            <tr>
+                <td colspan="2">
+                    @Html.ValidationSummary(false)
+                    <div id="Error" style="color:Red;display:none;"></div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @Html.Partial("UserInfoView", Model)
+                </td>
+            </tr>
+            <tr>
+                <td style="width:200px">
+                    @Html.LabelFor(m => m.TypeId):
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    <input type="hidden" id="UserId" name="UserId" value="@Model.UserId" />
+                    <input type="hidden" id="Version" name="Version" value="@Model.Version" />
+                   
+                    <input type="hidden" id="IsTypeEditable" name="IsTypeEditable" value="@Model.IsTypeEditable" />
+                    <input type="hidden" id="IsQuestionEditable" name="IsQuestionEditable" value="@Model.IsQuestionEditable" />
+                    <input type="hidden" id="IsAnswerEditable" name="IsAnswerEditable" value="@Model.IsAnswerEditable" />
+
+                    <input type="hidden" id="IsSaveAvailable" name="IsSaveAvailable" value="@Model.IsSaveAvailable" />
+                    <input type="hidden" id="IsSendAvailable" name="IsSendAvailable" value="@Model.IsSendAvailable" />
+                    <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
+                    <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
+                    <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
+                    <input type="hidden" id="IsRedirectAvailable" name="IsRedirectAvailable" value="@Model.IsRedirectAvailable" />
+
+                    <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                    <input type="hidden" id="RedirectRoleId" name="RedirectRoleId" value="@Model.RedirectRoleId" />
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.TypeId, new SelectList(Model.Types, "ID", "Name"), Model.IsTypeEditable ? (object)new { onchange = "onTypeChange();" } : (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="TypeIdHidden" name="TypeIdHidden" value="@Model.TypeIdHidden" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.SubtypeId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.SubtypeId, new SelectList(Model.Subtypes, "ID", "Name"), Model.IsTypeEditable ? null: (object)new { disabled = "disabled" }) 
+                    <input type="hidden" id="SubtypeIdHidden" name="SubtypeIdHidden" value="@Model.SubtypeIdHidden" />
+                </td>
+            </tr>
+             <tr>
+                    <td>@Html.LabelFor(model => model.Question):</td>
+                    <td style="vertical-align:top">
+                       @Html.TextAreaFor(model => model.Question, 4, 80, Model.IsQuestionEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                    </td>
+             </tr>
+             <tr>
+                    <td>@Html.LabelFor(model => model.Answer):</td>
+                    <td>
+                       @Html.TextAreaFor(model => model.Answer, 4, 80, Model.IsAnswerEditable ? (object)new { style = "resize: none;" } : (object)new { style = "resize: none;", @readonly = "read-only" })
+                    </td>
+             </tr>
+             <tr>
+                <td colspan="2">
+                   <input type="submit" value="Сохранить черновик" onclick="return ValidateForm();" @if (!Model.IsSaveAvailable)
+                                                                                                    {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Отправить вопрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
+                                                                                                 {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Ответом удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
+                 
+                   <input type="submit" value="Принять вопрос в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
+                                                                                                      {<text>style="display:none"</text>}/>
+                   <input type="submit" value="Отправить ответ" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
+                   <input type="button" value="Перенаправить вопрос" onclick="return Redirect();" @if (!Model.IsRedirectAvailable)
+                                                                                           {<text>style="display:none"</text>}/>
+              
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Ответом не удовлетворен(а), задать новый вопрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                                                                                              {<text>style="display:none"</text>}/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <br />
+    if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
+    {
+        <div>
+            <table style="width:100%">
+             <tr>
+                    <td colspan="2" style="text-align:center;font-weight:bold;border-bottom:2px solid">
+                       История заявки
+                    </td>
+                </tr>
+            @foreach (var entity in Model.HistoryEntities)
+            {
+                 <tr>
+                    <td style="width:140px">
+                        @entity.CreateDate
+                    </td>
+                     <td>
+                        @entity.CreatorName
+                    </td>
+                </tr>
+                <tr style="border-bottom:1px solid">
+                    <td colspan="2">
+                        @entity.Message
+                    </td>
+                </tr>
+                <tr @if (!string.IsNullOrEmpty(entity.Answer)){<text>style="border-bottom:1px solid"</text>} else {<text>style="border-bottom:2px solid"</text>}>
+                    <td>
+                        Вопрос:
+                    </td>
+                     <td>
+                         @entity.Question
+                    </td>
+                </tr>
+                if (!string.IsNullOrEmpty(entity.Answer))
+                {
+                 <tr style="border-bottom:2px solid">
+                    <td>
+                        Ответ:
+                    </td>
+                     <td>
+                         @entity.Answer
+                    </td>
+                </tr>
+                }
+            }
+            </table>
+        </div>
+    }
+}
+<script type="text/javascript">
+ var actionDepUrl = "@Url.Action("GetChildren", "Home")";
+ var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+  $(document).ready(function () {
+      //SetControlStates();
+      $("#ManagerNameRow").hide();
+      setActiveMenuItem("helpQuestionsRequests");
+   });
+//    function Delete() {
+//        $("#IsDelete").val("true");
+//        return true;
+//    }
+    function ValidateForm()
+    {
+        var result = true;
+        if(IsFieldTooLong($('#Question'),8192))
+            result = false;
+        return result;
+    }
+    function SendRequest()
+    {
+        var result = ValidateForm();
+        if(!IsFieldNotEmpty($('#Question')))
+            result = false;
+        if(!result)
+            return result;
+        $("#Operation").val(1);
+        return true;
+    }
+    function BeginWork()
+    {
+        $("#Operation").val(2);
+        return true;
+    }
+    function EndWork()
+    {
+        var result = true;
+        if(!IsFieldNotEmpty($('#Answer')))
+            result = false;
+        else if(IsFieldTooLong($('#Answer'),8192))
+            result = false;
+        if(!result)
+            return result;
+        $("#Operation").val(3);
+        return true;
+    }
+    function EndRequest()
+    {
+        $("#Operation").val(4);
+        return true;
+    }
+     function RejectRequest()
+    {
+        $("#Operation").val(5);
+        return true;
+    }
+    function IsFieldNotEmpty(control)
+    {
+        //clearControlErrors(control);
+        if(control.val() == '' )
+        {
+            addControlError(control,'Обязательное поле');
+            return false;
+        }
+        return true;
+    }
+    function IsFieldTooLong(control,length)
+    {
+        clearControlErrors(control);
+        if(control.val().length > length )
+        {
+            addControlError(control,'Длина поля не может превышать '+length+' символов');
+            return true;
+        }
+        return false;
+    }
+    /*function SetControlStates()
+    {
+        SetControlStatesInternal($("#IsAttachmentVisible").val(),
+        $("#IsRequirementsVisible").val(),$("#IsPeriodVisible").val());
+    }*/
+    function onTypeChange()
+    {
+       //clearControlErrors($('#Requirements'));
+       setSubtypes();
+    }
+    function setValuesToDropdown(controlName,data)
+    {
+            var optionsValues = '<select id="' + controlName + '" name="' + controlName + '">';
+            $.each(data, function (item, data) {
+                optionsValues += '<option value="' + data.Id + '">' + data.Name + '</option>';
+            })
+            optionsValues += '</select>';
+            var options = $('#' + controlName );
+            options.replaceWith(optionsValues);
+        }
+    function setSubtypes(){
+        var actionUrl="@Url.Action("GetSubtypesForType", "Help")";
+        var url = actionUrl + "?TypeId=" +  $('#TypeId').val();
+        $.getJSON(url,
+                       function (result) {
+                            if(result.Error != ''){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
+                            }
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide(); 
+                                /*$('#IsAttachmentVisible').val(result.IsAttachmentVisible);  
+                                $('#IsRequirementsVisible').val(result.IsRequirementsVisible);
+                                $('#IsPeriodVisible').val(result.IsPeriodVisible);
+                                SetControlStates();*/
+                                setValuesToDropdown('SubtypeId',result.Subtypes);
+                                /*if((result.PeriodId != 0))
+                                    $('#PeriodId').val(result.PeriodId);*/
+                           }
+                       }
+                     );
+        return false;
+    }
+    function Redirect()
+    {
+     var elem = document.createElement('div');
+        elem.id = "divQuestionRedirectDialog";
+        var newDiv = $(elem);
+        var id = $("#Id").val();
+//        var typeId = $("#RequestTypeId").val();
+
+        var title =  "Перенаправление заявки";
+        $(newDiv).text('Подождите, идет загрузка данных ...'); 
+        $.ajaxSetup({cache: false});
+        $(newDiv).load("@Url.Action("QuestionRedirectDialog", "Help")?id=" + id  + " #QuestionRedirectDialogTable",
+         function (response, status, xhr) {
+                 if (status == "error") {
+                     var msg = "Произошла ошибка: ";
+                     $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                     disableSaveButton();
+                 } else if (status == "success") {
+                     if ($('#QuestionRedirectLoadError').val() != undefined)
+                         disableSaveButton();
+//                     else
+//                     {
+//                        $("#ReleaseDate").datepicker();
+//                        $(".hasDatepicker").width("85px");
+//                     }
+                 }
+             });
+        $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true, 
+            draggable: false,
+            resizable: false,
+            width: 320,
+	        height: 230,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "Перенаправить": function () {
+                    /*if (!ValidateQuestion())
+                        return;*/
+                    RedirectQuestion();
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }
+     function disableSaveButton() {
+        $(".ui-dialog-buttonpane button:contains('Перенаправить')").button("disable");
+    }
+    function RedirectQuestion()
+    {
+        $("#RedirectRoleId").val($("#RoleId").val());
+        $("#Operation").val(6);
+        $("#divQuestionRedirectDialog").dialog("close");
+        $("#QuestionEdit").submit();
+    }
+    
+</script> 

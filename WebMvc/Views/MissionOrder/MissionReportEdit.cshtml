@@ -43,6 +43,18 @@
                 <input type="hidden" id="OrderDates" name="OrderDates" value="@Model.OrderDates" />
             </td>
         </tr>
+        @if (!string.IsNullOrEmpty(@Model.AdditionalOrderDates))
+        {
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.AdditionalOrderDates):
+                </td>
+                 <td>
+                    @Model.AdditionalOrderDates
+                    <input type="hidden" id="AdditionalOrderDates" name="AdditionalOrderDates" value="@Model.OrderDates" />
+                </td>
+            </tr>
+        }
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsCreateAdditionalOrderAvailable" name="IsCreateAdditionalOrderAvailable" value="@Model.IsCreateAdditionalOrderAvailable" />

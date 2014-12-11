@@ -4,280 +4,499 @@
     ViewBag.Title = "Прием - Образование";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("Education", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <input type="hidden" id="cmd" name="cmd" />
+    @Html.HiddenFor(m => m.UserId)
+
+    <fieldset class="bordered doc-wrap panel">
+    <legend>@Html.LabelFor(m => m.HigherEducationDiplomas)</legend>
+        @if (Model.HigherEducationDiplomas.Count > 0)
+        {
+            <div id="higher-education-diplomas-container">
+                <table class="grid">
+                    
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].IssuedBy)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Series)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Number)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].AdmissionYear)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].GraduationYear)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Qualification)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Speciality)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Profession)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.HigherEducationDiplomas[0].Department)
+                        </th>
+                        <th>
+                            Сканы
+                        </th>
+                    </tr>
+                    
+                    @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].IssuedBy
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Series
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Number
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].AdmissionYear
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].GraduationYear
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Qualification
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Speciality
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Profession
+                            </td>
+                            <td>
+                                @Model.HigherEducationDiplomas[i].Department
+                            </td>
+                            <td>
+                                <div class="formfield">
+                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                </div>
+                                <div class="formfield clear">
+                                    <br /><a href="">Открыть</a>
+                                </div>
+                                <div class="formfield">
+                                    <br /><a href="">Удалить</a>
+                                </div>
+                            </td>
+                            @*<td id="delete-foreign-language">
+                                <a href="" data-index=@i>Удалить</a>
+                            </td>*@
+                        </tr>
+                    }                    
+
+                </table>
+            </div>
+        }
+        <a href="" id="add-higher-education-diploma">Добавить новую запись</a>
+    </fieldset>
+    
+    <br />
     
     <fieldset class="bordered doc-wrap panel">
-    <legend>Сведения об образовании (высшее, неполное высшее)</legend>
-        <div id="higher-education-diplomas-container">
-            @for (var i = 0; i < Model.HigherEducationDiplomas.Count; i++)
-            {
-                <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+    <legend>@Html.LabelFor(m => m.PostGraduateEducationDiplomas)</legend>
+        @if (Model.PostGraduateEducationDiplomas.Count > 0)
+        {
+            <div id="post-graduate-education-diplomas-container">
+                <table class="grid">
+                    
                     <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].IssuedBy)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].IssuedBy)
-                        </td>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].IssuedBy)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Series)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Number)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].AdmissionYear)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].GraduationYear)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[0].Speciality)
+                        </th>
+                        <th>
+                            Сканы
+                        </th>
                     </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Series)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Series)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Number)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Number)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].AdmissionYear)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].GraduationYear)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].GraduationYear)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Qualification)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Qualification)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Speciality)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Speciality)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Profession)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Profession)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.HigherEducationDiplomas[i].Department)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.HigherEducationDiplomas[i].Department)
-                        </td>
-                    </tr>
+                    
+                    @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].IssuedBy
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].Series
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].Number
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].AdmissionYear
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].GraduationYear
+                            </td>
+                            <td>
+                                @Model.PostGraduateEducationDiplomas[i].Speciality
+                            </td>
+                            <td>
+                                <div class="formfield">
+                                    Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                </div>
+                                <div class="formfield clear">
+                                    <br /><a href="">Открыть</a>
+                                </div>
+                                <div class="formfield">
+                                    <br /><a href="">Удалить</a>
+                                </div>
+                            </td>
+                            @*<td id="delete-foreign-language">
+                                <a href="" data-index=@i>Удалить</a>
+                            </td>*@
+                        </tr>
+                    }                    
+
                 </table>
-            }
-        </div>
-        <button type="submit" id="add-higher-education-diploma-button">Добавить новую запись</button>
+            </div>
+        }
+        <a href="" id="add-post-graduate-education-diploma">Добавить новую запись</a>
     </fieldset>
+    
     <br />
-    <fieldset class="bordered doc-wrap panel">
-    <legend>Послевузовское образование</legend>
-        <div id="postgraduate-education-diplomas-container">
-            @for (var i = 0; i < Model.PostGraduateEducationDiplomas.Count; i++)
-            {
-                <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].IssuedBy)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Series)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Series)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Number)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Number)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].AdmissionYear)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].GraduationYear)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @Html.LabelFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
-                        </td>
-                        <td>
-                            @Html.EditorFor(m => m.PostGraduateEducationDiplomas[i].Speciality)
-                        </td>
-                    </tr>      
-                </table>
-            }
-        </div>
-        <button type="submit" id="add-postgraduate-education-diploma-button">Добавить новую запись</button>
-    </fieldset>
-    <br />
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Сведения о дополнительном образовании</legend>
-        <fieldset class="bordered nomargin">
-        <legend class="level2">Аттестация</legend>
-            <div id="certifications-container">
-                @for (var i = 0; i < Model.Certifications.Count; i++)
-                {
-                    <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+        
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.Certifications)</legend>
+            @if (Model.Certifications.Count > 0)
+            {
+                <div id="certifications-container">
+                    <table class="grid">
+                    
                         <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Certifications[i].CertificationDate)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Certifications[i].CertificationDate)
-                            </td>
+                            <th>
+                                @Html.LabelFor(m => m.Certifications[0].CertificationDate)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Certifications[0].CertificateNumber)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Certifications[0].CertificateDateOfIssue)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Certifications[0].InitiatingOrder)
+                            </th>
+                            <th>
+                                Сканы
+                            </th>
                         </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Certifications[i].CertificateNumber)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Certifications[i].CertificateNumber)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Certifications[i].CertificateDateOfIssue)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Certifications[i].CertificateDateOfIssue)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Certifications[i].Order)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Certifications[i].Order)
-                            </td>
-                        </tr>     
+                    
+                        @for (var i = 0; i < Model.Certifications.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.Certifications[i].CertificationDate
+                                </td>
+                                <td>
+                                    @Model.Certifications[i].CertificateNumber
+                                </td>
+                                <td>
+                                    @Model.Certifications[i].CertificateDateOfIssue
+                                </td>
+                                <td>
+                                    @Model.Certifications[i].InitiatingOrder
+                                </td>
+                                <td>
+                                    <div class="formfield">
+                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                    </div>
+                                    <div class="formfield clear">
+                                        <br /><a href="">Открыть</a>
+                                    </div>
+                                    <div class="formfield">
+                                        <br /><a href="">Удалить</a>
+                                    </div>
+                                </td>
+                                @*<td id="delete-foreign-language">
+                                    <a href="" data-index=@i>Удалить</a>
+                                </td>*@
+                            </tr>
+                        }                    
+
                     </table>
-                }
-            </div>
-            <button type="submit" id="add-certification-button">Добавить новую запись</button>
+                </div>
+            }
+            <a href="" id="add-certification">Добавить новую запись</a>
         </fieldset>
-        <fieldset class="bordered nomargin">
-        <legend class="level2">Повышение квалификации</legend>
-            <div id="training-container">
-                @for (var i = 0; i < Model.Training.Count; i++)
-                {
-                    <table style="border: 1px solid lightgray; padding: 5px; margin-bottom: 5px;" data-id=@i>
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.Training)</legend>
+            @if (Model.Training.Count > 0)
+            {
+                <div id="training-container">
+                    <table class="grid">
+                    
                         <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].CertificateIssuedBy)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].CertificateIssuedBy)
-                            </td>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].CertificateIssuedBy)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].Series)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].Number)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].BeginningDate)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].EndDate)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.Training[0].Speciality)
+                            </th>
+                            <th>
+                                Сканы
+                            </th>
                         </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].Series)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].Series)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].Number)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].Number)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].BeginningDate)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].BeginningDate)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].EndDate)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].EndDate)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Training[i].Speciality)
-                            </td>
-                            <td>
-                                @Html.EditorFor(m => m.Training[i].Speciality)
-                            </td>
-                        </tr>
+                    
+                        @for (var i = 0; i < Model.Training.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.Training[i].CertificateIssuedBy
+                                </td>
+                                <td>
+                                    @Model.Training[i].Series
+                                </td>
+                                <td>
+                                    @Model.Training[i].Number
+                                </td>
+                                <td>
+                                    @Model.Training[i].BeginningDate
+                                </td>
+                                <td>
+                                    @Model.Training[i].EndDate
+                                </td>
+                                <td>
+                                    @Model.Training[i].Speciality
+                                </td>
+                                <td>
+                                    <div class="formfield">
+                                        Выбрать скан для загрузки<br /><input type="file" name="INNScan" />
+                                    </div>
+                                    <div class="formfield clear">
+                                        <br /><a href="">Открыть</a>
+                                    </div>
+                                    <div class="formfield">
+                                        <br /><a href="">Удалить</a>
+                                    </div>
+                                </td>
+                                @*<td id="delete-foreign-language">
+                                    <a href="" data-index=@i>Удалить</a>
+                                </td>*@
+                            </tr>
+                        }                    
+
                     </table>
-                }
-            </div>
-            <button type="submit" id="add-training-button">Добавить новую запись</button>
+                </div>
+            }
+            <a href="" id="add-training">Добавить новую запись</a>
         </fieldset>
     </fieldset>
 
     <div class="clear">
-        <button type="submit">Записать черновик</button>
+        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>
     </div>
 }
 
+@* --- *@
+
+<div id="add-higher-education-diploma-dialog" title="Добавление сведений о высшем образовании">
+    @using (Html.BeginForm("EducationAddHigherEducationDiploma", "Employment", FormMethod.Post))
+    {
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="IssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="AdmissionYear" style="display:block;">Год поступления</label><input type="text" name="AdmissionYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="GraduationYear" style="display:block;">Год окончания</label><input type="text" name="GraduationYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Qualification" style="display:block;">Квалификация по диплому</label><input type="text" name="Qualification" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Profession" style="display:block;">Профессия основная</label><input type="text" name="Profession" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Department" style="display:block;">Факультет/отделение</label><input type="text" name="Department" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+<div id="add-post-graduate-education-diploma-dialog" title="Добавление сведений о послевузовском образовании">
+    @using (Html.BeginForm("EducationAddPostGraduateEducationDiploma", "Employment", FormMethod.Post))
+    {
+        <label for="IssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="IssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="AdmissionYear" style="display:block;">Год поступления</label><input type="text" name="AdmissionYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="GraduationYear" style="display:block;">Год окончания</label><input type="text" name="GraduationYear" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Speciality" style="display:block;">Специальность по диплому</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+<div id="add-certification-dialog" title="Добавление сведений об аттестации">
+    @using (Html.BeginForm("EducationAddCertification", "Employment", FormMethod.Post))
+    {
+        <label for="CertificationDate" style="display:block;">Дата аттестации</label><input type="text" id="CertificationDate" name="CertificationDate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="CertificateNumber" style="display:block;">Номер документа</label><input type="text" name="CertificateNumber" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="CertificateDateOfIssue" style="display:block;">Дата документа</label><input type="text" id="CertificateDateOfIssue" name="CertificateDateOfIssue" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="InitiatingOrder" style="display:block;">Основание</label><input type="text" name="InitiatingOrder" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+ 
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+<div id="add-training-dialog" title="Добавление сведений об повышении квалификации">
+    @using (Html.BeginForm("EducationAddTraining", "Employment", FormMethod.Post))
+    {
+        <label for="CertificateIssuedBy" style="display:block;">Наименование образов. учреждения</label><input type="text" name="CertificateIssuedBy" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Series" style="display:block;">Серия</label><input type="text" name="Series" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <label for="Number" style="display:block;">Номер</label><input type="text" name="Number" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <span style="display:block;">Период обучения</span>
+        <label for="BeginningDate">с </label><input type="text" name="BeginningDate" value="" class="text ui-widget-content ui-corner-all" />
+        <label for="EndDate">по </label><input type="text" name="EndDate" value="" class="text ui-widget-content ui-corner-all" />
+        <label for="Speciality" style="display:block;">Специальность/квалификация</label><input type="text" name="Speciality" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+ 
+        <!-- Allow form submission with keyboard without duplicating the dialog button -->
+        <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
+    }
+</div>
+
+@* --- *@
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
-        $("#add-higher-education-diploma-button").click(function () {
-            $("#cmd").val("add-higher-education-diploma");
+        attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
+
+        var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-higher-education-diploma-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
         });
-        $("#add-postgraduate-education-diploma-button").click(function () {
-            $("#cmd").val("add-postgraduate-education-diploma");
+
+        var $addPostGraduateEducationDiplomaDialog = $('#add-post-graduate-education-diploma-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-post-graduate-education-diploma-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
         });
-        $("#add-certification-button").click(function () {
-            $("#cmd").val("add-certification");
+
+        var $addCertificationDialog = $('#add-certification-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-certification-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
         });
-        $("#add-training-button").click(function () {
-            $("#cmd").val("add-training");
+
+        var $addTrainingDialog = $('#add-training-dialog').dialog(
+        {
+            autoOpen: false,
+            modal: true,
+            width: "auto",
+            draggable: false,
+            resizable: false,
+            buttons:
+            {
+                "OK": function () {
+                    $('#add-training-dialog form').submit();
+                    $(this).dialog("close");
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $("#add-higher-education-diploma").click(function (e) {
+            $addHigherEducationDiplomaDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        $("#add-post-graduate-education-diploma").click(function (e) {
+            $addPostGraduateEducationDiplomaDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        $("#add-certification").click(function (e) {
+            $addCertificationDialog.dialog("open");
+            e.preventDefault();
+        });
+
+        $("#add-training").click(function (e) {
+            $addTrainingDialog.dialog("open");
+            e.preventDefault();
         });
     });
 </script>

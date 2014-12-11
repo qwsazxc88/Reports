@@ -183,6 +183,9 @@
                     <th>
                         <div id="sort19" style="min-width:110px"><a href="#"  onclick = "SortChanged(19);">Служба<br/> персонала<br/> (ФИО)</a></div>
                     </th>
+                    <th>
+                        <div id="sort21" style="min-width:110px"><a href="#"  onclick = "SortChanged(21);">Статус</a></div>
+                    </th>
                 </tr>
                 @if (Model.Documents != null && Model.Documents.Count > 0)
                 {
@@ -218,6 +221,7 @@
                             <td>@doc.RApprove</td>
                             <td>@doc.RReject</td>
                             <td>@doc.StaffName</td>@*19*@
+                            <td>@doc.Status</td>
                         </tr>
                     }
                 }

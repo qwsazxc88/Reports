@@ -4,8 +4,10 @@
     ViewBag.Title = "Прием - Обучение";
 }
 
-@using (Html.BeginForm("Training", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("OnsiteTraining", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Обучение</legend>
     <table>
@@ -46,7 +48,10 @@
                 @Html.LabelFor(m => m.IsComplete)
             </td>
             <td>
-                    @Html.EditorFor(m => m.IsComplete)
+                @Html.DropDownListFor(m => m.IsComplete, new List<SelectListItem> {
+                    new SelectListItem {Text = "Нет", Value = "false"},
+                    new SelectListItem {Text = "Да", Value = "true"}
+                })
             </td>
         </tr>
         <tr>
@@ -65,14 +70,24 @@
                     @Html.TextBoxFor(m => m.Results)
             </td>
         </tr>
+        
         <tr>
-            <td>
-                @Html.LabelFor(m => m.IsConfirmed)
-            </td>
-            <td>
-                    @Html.EditorFor(m => m.IsConfirmed)
+            <td colspan="2">
+                @if (Model.IsApproveByTrainerAvailable || Model.ApprovalStatus != null)
+                {        
+                    @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByTrainerAvailable ? null : new { disabled = "disabled" })
+                }
+                @if (Model.ApprovalStatus != null)
+                {
+                    <span class="fakeFormField">@Model.ApproverName</span>
+                }
+                @if (Model.IsApproveByTrainerAvailable)
+                {
+                    <button>Применить</button>
+                }
             </td>
         </tr>
+
         <tr>
             <td>
                 @Html.LabelFor(m => m.Comments)
@@ -84,14 +99,18 @@
     </table>
     </fieldset>
 
+@* *** Удалить блок в релизе *** *@
     <div class="clear">
-        <button type="submit">Записать черновик</button>
-        <button type="submit">Сохранить</button>
+        <button type="submit">Согласовать</button>
     </div>
 }
+@* ***************************** *@
 
-<script>
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empOnsiteTraining");
+        attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
     });
 </script>

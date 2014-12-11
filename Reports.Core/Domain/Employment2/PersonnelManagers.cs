@@ -2,7 +2,7 @@ using System;
 
 namespace Reports.Core.Domain
 {
-    public class PersonnelManagers : AbstractEntityWithVersion
+    public class PersonnelManagers : AbstractEntityWithVersion, IEmploymentInfoSection
     {
         #region Constants
         #endregion
@@ -12,10 +12,10 @@ namespace Reports.Core.Domain
 
         #region Properties
         public virtual EmploymentCandidate Candidate { get; set; }
-        public virtual DateTime EmploymentOrderDate { get; set; } //ok
+        public virtual DateTime? EmploymentOrderDate { get; set; } //ok
         public virtual string EmploymentOrderNumber { get; set; } //ok
-        public virtual DateTime EmploymentDate { get; set; } //ok
-        public virtual DateTime ContractDate { get; set; } //ok
+        public virtual DateTime? EmploymentDate { get; set; } //ok
+        public virtual DateTime? ContractDate { get; set; } //ok
         public virtual string ContractNumber { get; set; } //ok
         public virtual decimal? NorthernAreaAddition { get; set; } //ok
         public virtual decimal? AreaMultiplier { get; set; } //ok
@@ -23,7 +23,6 @@ namespace Reports.Core.Domain
         public virtual decimal? TravelRelatedAddition { get; set; } //ok
         public virtual decimal? CompetenceAddition { get; set; } //ok
         public virtual decimal? FrontOfficeExperienceAddition { get; set; }
-        // public virtual int? Grade { get; set; }// Грейд (is it necessary?)
         public virtual int OverallExperienceYears { get; set; } //ok
         public virtual int OverallExperienceMonths { get; set; } //ok
         public virtual int OverallExperienceDays { get; set; } //ok
@@ -32,12 +31,12 @@ namespace Reports.Core.Domain
         public virtual int InsurableExperienceDays { get; set; } //ok
         // TODO: EMPL Ознакомлен с регламентными документами
         public virtual string PersonalAccount { get; set; } //ok
-        public virtual string PersonalAccountContractor { get; set; } //ok
+        public virtual PersonalAccountContractor PersonalAccountContractor { get; set; } //ok
         // TODO: EMPL Признаки ЦФО 1
         // TODO: EMPL Признаки ЦФО 2
         // TODO: EMPL Заявление на вычет
         // TODO: EMPL Скан заявления на вычет
-        // TODO: EMPL Группа доступа
+        public virtual AccessGroup AccessGroup { get; set; }
         public virtual User ApprovedByPersonnelManager { get; set; } //ok
         #endregion
 

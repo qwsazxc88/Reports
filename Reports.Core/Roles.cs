@@ -22,7 +22,23 @@ namespace Reports.Core
         Findep = 2048,
         StaffManager = 4096,
         Archivist = 8192,
+        Candidate = 16384,
+        Security = 32768,
+        Trainer = 65536,
+        ConsultantOutsourcing = 131072,
+        ConsultantPersonnel = 262144,
+        ConsultantAccountant = 524288,
+        ConsultantOutsorsingManager = 1048576
     }
+
+    public enum UserManualRole
+    {
+        // Согласует приказы на командировку
+        ApprovesMissionOrders = 1,
+        // Согласует табель
+        ApprovesCommonRequests = 2
+    }
+
     public class ReportRoleConstants
     {
         public const string Admin = "1";
@@ -38,6 +54,13 @@ namespace Reports.Core
         public const string Findep = "2048";
         public const string StaffManager = "4096";
         public const string Archivist = "8192";
+        public const string Candidate = "16384";
+        public const string Security = "32768";
+        public const string Trainer = "65536";
+        public const string ConsultantOutsourcing = "131072";
+        public const string ConsultantPersonnel = "262144";
+        public const string ConsultantAccountant = "524288";
+        public const string ConsultantOutsorsingManager = "1048576";
         //public const string RegisterDoctor = "4";
         //public const string RegisterAdminHosp = "5";
         //public const string GuestAdmin = "7";
@@ -61,6 +84,13 @@ namespace Reports.Core
                              {UserRole.Findep, Findep},
                              {UserRole.StaffManager, StaffManager},
                              {UserRole.Archivist, Archivist},
+                             {UserRole.Candidate, Candidate},
+                             {UserRole.Security, Security},
+                             {UserRole.Trainer, Trainer},
+                             {UserRole.ConsultantOutsourcing, ConsultantOutsourcing},
+                             {UserRole.ConsultantPersonnel, ConsultantPersonnel},
+                             {UserRole.ConsultantAccountant, ConsultantAccountant},
+                             {UserRole.ConsultantOutsorsingManager, ConsultantOutsorsingManager}
                              //{SafetyZoneRoles.RegisterAdminHosp, RegisterAdminHosp},
                              //{SafetyZoneRoles.RegisterDoctor, RegisterDoctor},
                              //{SafetyZoneRoles.GuestAdmin, GuestAdmin}

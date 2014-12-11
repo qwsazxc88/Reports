@@ -1,0 +1,276 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.BackgroundCheckModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Служба безопасности";
+}
+
+<div style="float:left">
+    <fieldset class="bordered doc-wrap panel"><legend>Служба безопасности</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.AverageSalary)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.AverageSalary)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Liabilities)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Liabilities)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PreviousDismissalReason)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.PreviousDismissalReason)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PreviousSuperior)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.PreviousSuperior)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PositionSought)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.PositionSought)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.MilitaryOperationsExperience)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.MilitaryOperationsExperience)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.HasDriversLicense)<br />
+            @Html.DisplayFor(m => m.HasDriversLicense)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DriversLicenseNumber)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DriversLicenseNumber)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DriversLicenseDateOfIssue)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DriversLicenseDateOfIssue)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DriversLicenseCategories)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DriversLicenseCategories)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DrivingExperience)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DrivingExperience)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.HasAutomobile)<br />
+            @Html.DisplayFor(m => m.HasAutomobile)
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AutomobileMake)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.AutomobileMake)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.AutomobileLicensePlateNumber)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.AutomobileLicensePlateNumber)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsReadyForBusinessTrips)&nbsp;@Html.DisplayFor(m => m.IsReadyForBusinessTrips)
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Sports)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Sports)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Hobbies)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Hobbies)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ImportantEvents)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.ImportantEvents)&nbsp;</span>
+        </div>
+
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">@Html.LabelFor(m => m.References)</legend>
+            @if (Model.References.Count > 0)
+            {
+                <div id="reference-container">
+                    <table class="grid">
+                    
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].LastName)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].FirstName)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].Patronymic)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].WorksAt)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].Position)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].Phone)
+                            </th>
+                            <th>
+                                @Html.LabelFor(m => m.References[0].Relation)
+                            </th>
+                        </tr>
+                    
+                        @for (var i = 0; i < Model.References.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Model.References[i].LastName
+                                </td>
+                                <td>
+                                    @Model.References[i].FirstName
+                                </td>
+                                <td>
+                                    @Model.References[i].Patronymic
+                                </td>
+                                <td>
+                                    @Model.References[i].WorksAt
+                                </td>
+                                <td>
+                                    @Model.References[i].Position
+                                </td>
+                                <td>
+                                    @Model.References[i].Phone
+                                </td>
+                                <td>
+                                    @Model.References[i].Relation
+                                </td>
+                            </tr>
+                        }                    
+
+                    </table>
+                </div>
+            }
+            else
+            {
+                <text>-</text>
+            }
+        </fieldset>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.ChronicalDiseases)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.ChronicalDiseases)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Penalties)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Penalties)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.PsychiatricAndAddictionTreatment)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.PsychiatricAndAddictionTreatment)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Drinking)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Drinking)&nbsp;</span>
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Smoking)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Smoking)&nbsp;</span>
+        </div>
+
+        @* ---- *@
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Рукописный текст согласия на обработку персональных данных</legend>
+            
+            @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.PersonalDataProcessingScanAttachmentFilename
+                    </a>
+                </div>
+            }
+
+            <div class="letter clear">
+                <p class="content">
+                    Я, _______________ даю свое согласие ООО ИКБ &laquo;Совкомбанк&raquo; на обработку как с использованием средств автоматизации,
+                    так и без использования таких средств, моих персональных данных, т.е. совершение в том числе следующих действий:
+                    сбор, систематизация, накопление, хранение, уточнение, использование, блокирование, уничтожение, а также право на передачу
+                    такой информации третьим лицам и получение информации и документов от третьих лиц для осуществления проверки достоверности
+                    и полноты информации обо мне, в иных случаях, установленных законодательством.
+                </p>
+                <p class="content">
+                    Согласие дается с целью проверки корректности предоставленных мной сведений, принятия решения о принятии меня на работу в Банк.
+                </p>
+                <p class="content">
+                    В том числе даю согласие на получение и обработку данных о моей частной жизни с целью оперативного сообщения мне необходимой информации
+                    и предупреждения чрезвычайных ситуаций.
+                </p>
+                <p class="content">
+                    &laquo;____&raquo; ______________________ 20____ г.
+                </p>
+            </div>
+        </fieldset>
+        @* ---- *@
+
+        @* ---- *@
+        <fieldset class="bordered nomargin clear">
+        <legend class="level2">Рукописный текст о достоверности сведений</legend>
+            
+            @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+            {
+                <div class="formfield">
+                    <br />Скан:
+                    <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
+                        @Model.InfoValidityScanAttachmentFilename
+                    </a>
+                </div>
+            }
+
+            <div class="letter clear">                
+                <p class="content">
+                    Я, _______________ заверяю, что мои ответы на вопросы анкеты являются полными, достоверными.
+                    В дальнейшем обязуюсь сообщать обо всех изменениях в своем положении в отдел персонала для их внесения
+                    в личное дело. Данные о трудовой деятельности, учебе соответствуют документам, удостоверяющим личность,
+                    записям в трудовой книжке, документам об образовании, воинской службе.
+                </p>
+                <p class="content">
+                    &laquo;____&raquo; ______________________ 20____ г.
+                </p>
+            </div>
+        </fieldset>
+        @* ---- *@
+
+    </fieldset>
+
+    @if (!string.IsNullOrEmpty(Model.PersonalDataProcessingScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.PersonalDataProcessingScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.PersonalDataProcessingScanAttachmentFilename
+        </a>
+    }
+    
+    @if (!string.IsNullOrEmpty(Model.InfoValidityScanAttachmentFilename))
+    {
+        <br />
+        <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.InfoValidityScanAttachmentId })' style="cursor:hand" target="_blank">
+            @Model.InfoValidityScanAttachmentFilename
+        </a>
+    }
+</div>
+
+@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.UserId)
+    <div class="clear">
+        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
+        {        
+            @Html.LabelFor(m => m.ApprovalStatus)
+            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
+        }
+        @if (Model.ApprovalStatus != null)
+        {
+            <span class="fakeFormField">@Model.ApproverName</span>
+        }
+        @if (Model.IsApproveBySecurityAvailable)
+        {
+            <button>Применить</button>
+        }
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empBackgroundCheck");        
+    });
+</script>

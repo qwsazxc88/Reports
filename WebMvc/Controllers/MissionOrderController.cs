@@ -22,10 +22,10 @@ using System.Web.Routing;
 namespace WebMvc.Controllers
 {
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
-        UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+        UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.PersonnelManager)]
     public class MissionOrderController : BaseController
     {
-        public const int MaxFileSize = 2 * 1024 * 1024;
+        //public const int MaxFileSize = 2 * 1024 * 1024;
 
         public const string StrOtherOrdersExists = "Для указанного сотрудника уже существует приказ на командировку в указанном интервале дат";
         public const string StrNoBeginOrEndDate = "Не указаны дата(ы) начала или окончания командировки";
@@ -59,7 +59,7 @@ namespace WebMvc.Controllers
         }
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
-            UserRole.Director | UserRole.Secretary | UserRole.Findep )]
+            UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.PersonnelManager)]
         public ActionResult Index()
         {
             var model = RequestBl.GetMissionOrderListModel();
@@ -196,7 +196,7 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
-           UserRole.Director | UserRole.Secretary | UserRole.Findep)]
+           UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.PersonnelManager)]
         public ActionResult MissionOrderEdit(int id,int? userId)
         {
             MissionOrderEditModel model = RequestBl.GetMissionOrderEditModel(id,userId);
@@ -620,12 +620,6 @@ namespace WebMvc.Controllers
         public ActionResult MissionReportEdit(MissionReportEditModel model)
         {
             CorrectCheckboxes(model);
-            //CorrectDropdowns(model);
-            //if (!ValidateMissionOrderEditModel(model))
-            //{
-            //    RequestBl.ReloadDictionaries(model);
-            //    return View(model);
-            //}
 
             string error;
             if (!RequestBl.SaveMissionReportEditModel(model, out error) || !string.IsNullOrEmpty(error))
@@ -726,7 +720,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AdditionalMissionOrderEdit", new RouteValueDictionary { { "id", additionalOrderId } });
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager |
           UserRole.Director | UserRole.Findep)]
         public ActionResult AdditionalMissionOrderEdit(int id)
         {
@@ -951,7 +945,7 @@ namespace WebMvc.Controllers
                 return PartialView("AttachmentDialogError", new DialogErrorModel { Error = error });
             }
         }
-        protected UploadFileDto GetFileContext()
+        /*protected UploadFileDto GetFileContext()
         {
             if (Request.Files.Count == 0)
                 return null;
@@ -985,8 +979,8 @@ namespace WebMvc.Controllers
             var fileContent = new byte[length];
             file.InputStream.Read(fileContent, 0, length);
             return fileContent;
-        }
-        protected string  GetFileName(object qqFile,out byte[] context)
+        }*/
+        public static string  GetFileName(object qqFile,out byte[] context)
         {
             context = null;
             if (qqFile is string[])

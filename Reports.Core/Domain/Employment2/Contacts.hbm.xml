@@ -18,6 +18,8 @@
     <property name="HomePhone" length="10" not-null="false"/>
     <property name="Mobile" length="10" not-null="false"/>
     <property name="Email" length="50" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

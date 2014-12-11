@@ -16,6 +16,8 @@
     <property name="WorkBookSupplementSeries" length="20" not-null="false"/>
     <property name="WorkBookSupplementNumber" length="20" not-null="false"/>
     <property name="WorkBookSupplementDateOfIssue" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

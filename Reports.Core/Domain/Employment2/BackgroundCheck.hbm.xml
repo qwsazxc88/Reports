@@ -28,6 +28,14 @@
       <one-to-many class="Reference"/>
     </bag>
     <property name="ChronicalDiseases" length="250" not-null="false"/>
-    
+    <property name="Penalties" length="250" not-null="false"/>
+    <property name="PsychiatricAndAddictionTreatment" length="250" not-null="false"/>
+    <property name="Smoking" length="250" not-null="false"/>
+    <property name="Drinking" length="250" not-null="false"/>
+    <property name="ApprovalStatus" not-null="false"/>
+    <many-to-one name="Approver" class="User" column="ApproverId" foreign-key="FK_BackgroundCheck_Approver" index="BackgroundCheck_Approver" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
+
   </class>
 </hibernate-mapping>

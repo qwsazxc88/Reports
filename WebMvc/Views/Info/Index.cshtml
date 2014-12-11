@@ -1,6 +1,6 @@
 ﻿@model Reports.Presenters.UI.ViewModel.InfoModel
 @{
-    Layout = "~/Views/Shared/_LayoutInfo.cshtml";
+    Layout = "~/Views/Shared/_HelpInfo.cshtml";
     ViewBag.Title = "ИнфоЗарплата";
 }
 
@@ -18,3 +18,10 @@
         </tr>
     </table>
 }
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("helpInfo");
+    });
+
+</script>

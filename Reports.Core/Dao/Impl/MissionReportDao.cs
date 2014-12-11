@@ -13,12 +13,6 @@ namespace Reports.Core.Dao.Impl
 {
     public class MissionReportDao : DefaultDao<MissionReport>, IMissionReportDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
         protected const string sqlSelectForMissionReportRn = @";with res as
                                 ({0})
                                 select {1} as Number,* from res order by Number ";
@@ -123,9 +117,9 @@ namespace Reports.Core.Dao.Impl
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
             //
-           
-            //whereString += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-            //whereString += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+
+            //whereString += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+            //whereString += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
            
             //
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
@@ -224,9 +218,9 @@ namespace Reports.Core.Dao.Impl
                     //sqlQuery = string.Format(sqlQuery, sqlFlag, string.Empty);
                     // Автороль должна действовать только для уровней ниже третьего
                     sqlQueryPart = String.Format(" ((u.Level>3 or u.Level IS NULL) and {0} ) ", sqlQueryPart);
-                    // Ручные привязки человек-человек и человек-подразделение из MissionOrderRoleRecord
-                    sqlQueryPart += String.Format(" or u.Id in (select morr.TargetUserId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
-                    sqlQueryPart += String.Format(" or u.DepartmentId in (select morr.TargetDepartmentId from [dbo].[MissionOrderRoleRecord] morr where morr.UserId = {0})", userId);
+                    // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                    sqlQueryPart += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
+                    sqlQueryPart += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
                     return sqlQueryPart;
 //                case UserRole.Director:

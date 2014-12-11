@@ -4,8 +4,12 @@
     ViewBag.Title = "Прием - Контактные данные";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("Contacts", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
+    @Html.HiddenFor(m => m.UserId)
+    
     <fieldset class="bordered doc-wrap panel">
     <legend>Фактическое место жительства</legend>
         <table class="clear">
@@ -14,7 +18,7 @@
                     @Html.LabelFor(m => m.ZipCode)
                 </td>
                 <td>
-                        @Html.TextBoxFor(m => m.ZipCode)
+                    @Html.EditorFor(m => m.ZipCode)
                 </td>
             </tr>
             <tr>
@@ -22,7 +26,7 @@
                     @Html.LabelFor(m => m.Region)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.Region)
+                    @Html.EditorFor(m => m.Region)
                 </td>
             </tr>
             <tr>
@@ -30,7 +34,7 @@
                     @Html.LabelFor(m => m.District)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.District)
+                    @Html.EditorFor(m => m.District)
                 </td>
             </tr>
             <tr>
@@ -38,7 +42,7 @@
                     @Html.LabelFor(m => m.City)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.City)
+                    @Html.EditorFor(m => m.City)
                 </td>
             </tr>
             <tr>
@@ -46,7 +50,7 @@
                     @Html.LabelFor(m => m.Street)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.Street)
+                    @Html.EditorFor(m => m.Street)
                 </td>
             </tr>
             <tr>
@@ -54,7 +58,7 @@
                     @Html.LabelFor(m => m.StreetNumber)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.StreetNumber)
+                    @Html.EditorFor(m => m.StreetNumber)
                 </td>
             </tr>
             <tr>
@@ -62,7 +66,7 @@
                     @Html.LabelFor(m => m.Building)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.Building)
+                    @Html.EditorFor(m => m.Building)
                 </td>
             </tr>
             <tr>
@@ -70,7 +74,7 @@
                     @Html.LabelFor(m => m.Apartment)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.Apartment)
+                    @Html.EditorFor(m => m.Apartment)
                 </td>
             </tr>
         </table>
@@ -84,7 +88,7 @@
                     @Html.LabelFor(m => m.WorkPhone)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.WorkPhone)
+                    @Html.TextBoxFor(m => m.WorkPhone, new { @type = "tel" })
                 </td>
             </tr>
             <tr>
@@ -92,7 +96,7 @@
                     @Html.LabelFor(m => m.HomePhone)
                 </td>
                 <td>
-                    @Html.TextBoxFor(m => m.HomePhone)
+                    @Html.TextBoxFor(m => m.HomePhone, new { @type = "tel" })
                 </td>
             </tr>
             <tr>
@@ -100,7 +104,7 @@
                     @Html.LabelFor(m => m.Mobile)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Mobile)
+                    @Html.TextBoxFor(m => m.Mobile, new { @type = "tel" })
                 </td>
             </tr>
             <tr>
@@ -108,14 +112,14 @@
                     @Html.LabelFor(m => m.Email)
                 </td>
                 <td>
-                    @Html.EditorFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { @type = "email" })
                 </td>
             </tr>
         </table>
     </fieldset>
 
     <div class="clear">
-        <button type="submit">Записать черновик</button>
+        @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>
     </div>
 }

@@ -1,10 +1,11 @@
 ﻿using System;
+using Reports.Core.Enum;
 
 namespace Reports.Core.Domain
 {
     public class FamilyMember : AbstractEntityWithVersion
     {
-        public virtual FamilyRelationship Relationship { get; set; }
+        public virtual FamilyRelationship RelationshipId { get; set; }
         public virtual string Name { get; set; }
         public virtual string PassportData { get; set; }
         public virtual DateTime? DateOfBirth { get; set; }

@@ -1,0 +1,94 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.OnsiteTrainingModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Обучение";
+}
+
+<fieldset class="bordered doc-wrap panel">
+<legend>Обучение</legend>
+<table>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Type)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Type)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Description)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Description)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.BeginningDate)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.BeginningDate)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.EndDate)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.EndDate)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.IsComplete)
+        </td>
+        <td>
+            <span class="fakeFormField">@(Model.IsComplete == true ? "Да" : "Нет")</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.ReasonsForIncompleteTraining)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.ReasonsForIncompleteTraining)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Results)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Results)</span>
+        </td>
+    </tr>
+        
+    <tr>
+        <td colspan="2">
+            @if (Model.ApprovalStatus != null)
+            {
+                <text>Тренер: </text><span class="fakeFormField">@Model.ApproverName</span>
+            }
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            @Html.LabelFor(m => m.Comments)
+        </td>
+        <td>
+                <span class="fakeFormField">@Html.DisplayFor(m => m.Comments)</span>
+        </td>
+    </tr>
+</table>
+</fieldset>
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script  type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empOnsiteTraining");
+        attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+    });
+</script>

@@ -17,5 +17,6 @@ namespace Reports.Core.Dao
         int UpdateAttachement(int id, byte[] context);
         List<RequestAttachment> FindOldEntities(int beforeId);
         void Evict(RequestAttachment entity);
+        void SaveFileNotChangeAndFlush(RequestAttachment entity);
     }
 }

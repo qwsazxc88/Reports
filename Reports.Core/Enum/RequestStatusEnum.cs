@@ -25,7 +25,9 @@
         MissionReport = 12,
         Appointment = 13,
         AppointmentReport = 14,
-        ClearanceChecklist = 15
+        ClearanceChecklist = 15,
+        HelpServiceRequest = 16,
+        HelpQuestionRequest = 17,
     }
     public enum RequestAttachmentTypeEnum
     {
@@ -45,6 +47,9 @@
         MissionReport = 6,
         AppointmentReport = 7,
         MissionReportCost = 8,
+        HelpTemplate = 9,
+        HelpServiceRequestTemplate = 10,
+        HelpServiceRequest = 11,
 
         // Order Scans
 
@@ -55,6 +60,38 @@
 
         UnsignedDismissalOrderScan = 153,
         UnsignedVacationOrderScan = 154,
+
+        // Employment documents
+        
+        Photo = 201,
+        INNScan = 202,
+        SNILSScan = 203,
+        DisabilityCertificateScan = 204,
+
+        InternalPassportScan = 211,
+
+        HigherEducationDiplomaScan = 221,
+        PostGraduateEducationDiplomaScan = 222,
+        CertificationScan = 223,
+        Training = 224,
+
+        MarriageCertificateScan = 231,
+        ChildBirthCertificateScan = 232,
+        //SpousePassportScan = 233,
+
+        MilitaryCardScan = 241,
+        MobilizationTicketScan = 242,
+
+        WorkbookScan = 251,
+        WorkbookSupplementScan = 252,
+
+        PersonalDataProcessingScan = 261,
+        InfoValidityScan = 262,
+
+        ApplicationLetterScan = 271,
+
+        // ? = 281,
+        // ? = 282,
 
         // Dismissal Additional Documents Scans
 

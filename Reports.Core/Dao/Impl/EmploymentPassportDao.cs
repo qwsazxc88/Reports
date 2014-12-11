@@ -10,4 +10,12 @@ namespace Reports.Core.Dao.Impl
         {
         }
     }
+
+    public class DocumentTypeDao : DefaultDao<DocumentType>, IDocumentTypeDao
+    {
+        public DocumentTypeDao(ISessionManager sessionManager)
+            : base(sessionManager)
+        {
+        }
+    }
 }

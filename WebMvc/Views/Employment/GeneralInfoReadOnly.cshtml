@@ -1,0 +1,206 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.GeneralInfoModel
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Общая информация";
+}
+
+<fieldset class="bordered doc-wrap panel">
+<legend>Общая информация</legend>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.LastName)&nbsp;@Html.ValidationMessageFor(m => m.LastName)<br />
+        <span class="fakeFormField">@Model.LastName&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.FirstName)&nbsp;@Html.ValidationMessageFor(m => m.FirstName)<br />
+        <span class="fakeFormField">@Model.FirstName&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.Patronymic)&nbsp;@Html.ValidationMessageFor(m => m.Patronymic)<br />
+        <span class="fakeFormField">@Model.Patronymic&nbsp;</span>
+    </div>
+    
+    <fieldset class="bordered nomargin clear"><legend class="level2">Изменения ФИО</legend>
+        @if (Model.NameChanges.Count > 0)
+        {        
+            <div id="name-changes-container">
+                <table class="grid">
+                    
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.NameChanges[0].PreviousName)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.NameChanges[0].Date)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.NameChanges[0].Place)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.NameChanges[0].Reason)
+                        </th>
+                    </tr>
+                    
+                    @for (var i = 0; i < Model.NameChanges.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.NameChanges[i].PreviousName
+                            </td>
+                            <td>
+                                @(@Model.NameChanges[i].Date.HasValue ? @Model.NameChanges[i].Date.Value.ToShortDateString() : " ")
+                            </td>
+                            <td>
+                                @Model.NameChanges[i].Place
+                            </td>
+                            <td>
+                                @Model.NameChanges[i].Reason
+                            </td>
+                        </tr>
+                    }                    
+
+                </table>
+            </div>
+        }
+        else
+        {
+            <text>-</text>
+        }
+    </fieldset>
+    
+    <div class="formfield clear" id="gender">
+        @Html.LabelFor(m => m.IsMale)<br />
+        <span class="fakeFormField">@(Model.IsMale? "М" : "Ж")&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.CitizenshipId)<br />
+        <span class="fakeFormField">@Model.CitizenshipItems.Where(x => x.Value == Model.CitizenshipId.ToString()).FirstOrDefault().Text&nbsp;</span>
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.InsuredPersonTypeId)<br />
+        <span class="fakeFormField">@Model.InsuredPersonTypeSelectedName&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.DateOfBirth)<br />
+        <span class="fakeFormField">@Html.DisplayFor(m => m.DateOfBirth)&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        <fieldset class="bordered nomargin">
+        <legend class="level2">Место рождения</legend>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.RegionOfBirth)<br />
+                <span class="fakeFormField">@Model.RegionOfBirth&nbsp;</span>
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.CityOfBirth)<br />
+                <span class="fakeFormField">@Model.CityOfBirth&nbsp;</span>
+            </div>
+        </fieldset>
+    </div>
+
+    <fieldset class="bordered nomargin clear"><legend class="level2">@Html.LabelFor(m => m.ForeignLanguages)</legend>
+        @if (Model.ForeignLanguages.Count > 0)
+        {        
+            <div id="foreign-languages-container">
+                <table class="grid">
+                
+                    <tr>
+                        <th>
+                            @Html.LabelFor(m => m.ForeignLanguages[0].LanguageName)
+                        </th>
+                        <th>
+                            @Html.LabelFor(m => m.ForeignLanguages[0].Level)
+                        </th>
+                    </tr>
+                
+                    @for (var i = 0; i < Model.ForeignLanguages.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model.ForeignLanguages[i].LanguageName
+                            </td>
+                            <td>
+                                @Model.ForeignLanguages[i].Level
+                            </td>
+                        </tr>
+                    }                    
+    
+                </table>
+            </div>
+        }
+        else
+        {
+            <text>-</text>
+        }
+    </fieldset>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.INN)<br />
+        <span class="fakeFormField">@Model.INN&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.INNScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.INNScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.INNScanAttachmentFilename
+            </a>
+        }
+    </div>
+    <div class="formfield">
+        @Html.LabelFor(m => m.SNILS)<br />
+        <span class="fakeFormField">@Model.SNILS&nbsp;</span>
+        @if (!string.IsNullOrEmpty(Model.SNILSScanAttachmentFilename))
+        {
+            <br />
+            <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.SNILSScanAttachmentId })' style="cursor:hand" target="_blank">
+                @Model.SNILSScanAttachmentFilename
+            </a>
+        }
+    </div>
+    <fieldset class="bordered nomargin clear">
+    <legend class="level2">Инвалидность</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.DisabilityCertificateSeries)<br />
+            <span class="fakeFormField">@Model.DisabilityCertificateSeries&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DisabilityCertificateNumber)<br />
+            <span class="fakeFormField">@Model.DisabilityCertificateNumber&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DisabilityCertificateDateOfIssue)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DisabilityCertificateDateOfIssue)&nbsp;</span>
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DisabilityDegreeId)<br />
+            @Html.DropDownListFor(m => m.DisabilityDegreeId, Model.DisabilityDegrees, string.Empty, new { disabled = "disabled" })
+        </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.DisabilityCertificateExpirationDate)<br />
+            <span class="fakeFormField">@Html.DisplayFor(m => m.DisabilityCertificateExpirationDate)&nbsp;</span>            
+        </div>
+
+        <div class="formfield">
+            @if (!string.IsNullOrEmpty(Model.DisabilityCertificateScanAttachmentFilename))
+            {
+                <br />
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.DisabilityCertificateScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.DisabilityCertificateScanAttachmentFilename
+                </a>
+            }
+        </div>
+
+    </fieldset>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.StatusId)<br />
+        <span class="fakeFormField">@Model.StatusItems.Where(x => x.Value == Model.StatusId.ToString()).FirstOrDefault().Text&nbsp;</span>
+    </div>
+    <div class="formfield clear">
+        @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)@Html.DisplayFor(m => m.AgreedToPersonalDataProcessing)
+    </div>
+</fieldset>
+
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setActiveMenuItem("empGeneralInfo");
+    });
+</script>

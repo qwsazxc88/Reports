@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using Reports.Core;
 using Reports.Core.Dao;
 using Reports.Core.Domain;
@@ -120,12 +121,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { appointmentReportCommentDao = value; }
         }
 
-        protected IMissionOrderRoleRecordDao missionOrderRoleRecordDao;
-        public IMissionOrderRoleRecordDao MissionOrderRoleRecordDao
+        protected IManualRoleRecordDao manualRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
         {
-            get { return Validate.Dependency(missionOrderRoleRecordDao); }
-            set { missionOrderRoleRecordDao = value; }
+            get { return Validate.Dependency(manualRoleRecordDao); }
+            set { manualRoleRecordDao = value; }
         }
+
+        protected IEmploymentCommonDao employmentCommonDao;
+        public IEmploymentCommonDao EmploymentCommonDao
+        {
+            get { return Validate.Dependency(employmentCommonDao); }
+            set { employmentCommonDao = value; }
+        	
+        }
+
+        
 
         #endregion
         protected IConfigurationService configurationService;
@@ -149,7 +160,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetInitialDates(model);
             SetDictionariesToModel(model);
-            model.IsAddAvailable = role == UserRole.Manager;
+            model.IsAddAvailable = (role & UserRole.Manager) == UserRole.Manager;
             model.IsAddForStaffAvailable = role == UserRole.StaffManager;
             //SetInitialStatus(model);
             //SetIsAvailable(model);
@@ -164,9 +175,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             //var requestStatusesList = RequestStatusDao.LoadAllSorted().ToList().ConvertAll(x => new IdNameDto(x.Id, x.Name));
             List<IdNameDto> moStatusesList = new List<IdNameDto>
                                                        {
-                                                           new IdNameDto(1, "Заявка создана"),
-                                                           new IdNameDto(2, "Не одобрена вышестоящим руководителем"),
-                                                           new IdNameDto(3, "Одобрена вышестоящим руководителем"),
+                                                           new IdNameDto(1, "Черновик"),
+                                                           new IdNameDto(2, "Отправлена на согласование вышестоящему руководителю"),
+                                                           new IdNameDto(3, "Согласована вышестоящим руководителем"),
                                                            new IdNameDto(4, "Принята в работу"),
                                                            new IdNameDto(5, "Отменена"),
                                                            //new IdNameDto(4, "Не одобрен руководителем"),
@@ -286,7 +297,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetCreatorDepartment(User creator,AppointmentEditModel model)
         {
-            if (creator.UserRole == UserRole.Manager)
+            if ((creator.UserRole & UserRole.Manager) == UserRole.Manager)
             {
                 List<DepartmentDto> departments;
                 switch (creator.Level)
@@ -321,7 +332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if (currRole != UserRole.Manager && model.StaffCreatorId != current.Id)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -443,7 +454,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 */
                 case 3:
                     // Для руководителей 3 уровня получаем список ручных привязок к подразделениям
-                    return MissionOrderRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
+                    return ManualRoleRecordDao.GetRoleRecords(user: current, roleCode: "000000037")
                         .Any(roleRecord => (roleRecord.TargetDepartment != null && creator.Department.Path.StartsWith(roleRecord.TargetDepartment.Path)));
                 case 4:
                 case 5:
@@ -509,7 +520,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(rep != null)
                     model.StaffName = rep.Creator.FullName;
             }
-            
+
+            #region Заполнение списка вышестоящих руководителей
+
+            IList<User> chiefs = GetChiefsForManager(user.Id)
+                .Where<User>(chief => chief.Level >= 3)
+                .OrderByDescending<User, int?>(chief => chief.Level)
+                .ToList<User>();
+
+            StringBuilder chiefsBuilder = new StringBuilder();
+            foreach (var chief in chiefs)
+            {
+                chiefsBuilder.AppendFormat("{0} ({1}), ", chief.Name, chief.Position == null ? "<не указана>" : chief.Position.Name);
+            }
+            // Cut off trailing ", "
+            if (chiefsBuilder.Length >= 2)
+            {
+                chiefsBuilder.Remove(chiefsBuilder.Length - 2, 2);
+            }
+
+            model.Chiefs = chiefsBuilder.ToString();
+
+            #endregion
+
             model.Department = user.Department == null ? string.Empty : user.Department.Name;
             model.Organization = user.Organization != null ? user.Organization.Name : string.Empty;
             model.Position = user.Position != null ? user.Position.Name : string.Empty;
@@ -519,7 +552,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             level = 0;
             int departmentId = model.DepartmentId;
-            if (CurrentUser.UserRole != UserRole.Manager && model.StaffCreatorId != CurrentUser.Id)
+            if ((CurrentUser.UserRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != CurrentUser.Id)
                 return true;
             Department dep = DepartmentDao.Load(departmentId);
             if(dep == null)
@@ -529,8 +562,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             level = dep.ItemLevel.Value;
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
-            /*if (AuthenticationService.CurrentUser.UserRole == UserRole.Director)
-                return true;*/
+
             User currUser = UserDao.Load(model.UserId);
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
@@ -584,14 +616,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
                
-                /*if (model.Id != 0)
-                    entity = AppointmentDao.Get(model.Id);*/
-                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
-                {
-                    error = "Редактирование заявки запрещено";
-                    return false;
-                }*/
-
                 if (model.Id == 0)
                 {
                     entity = new Appointment
@@ -616,54 +640,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.ReloadPage = true;
                         return false;
                     }
-                    //if (model.IsDelete)
-                    //{
-                    //    if (current.UserRole == UserRole.OutsourcingManager)
-                    //        entity.DeleteAfterSendTo1C = true;
-                    //    entity.DeleteDate = DateTime.Now;
-                    //    //missionOrder.CreateDate = DateTime.Now;
-                    //    MissionOrderDao.SaveAndFlush(entity);
-                    //    if (entity.Mission != null)
-                    //    {
-                    //        Mission mission = entity.Mission;
-                    //        if (mission.SendTo1C.HasValue)
-                    //            mission.DeleteAfterSendTo1C = true;
-                    //        mission.DeleteDate = DateTime.Now;
-                    //        mission.CreateDate = DateTime.Now;
-                    //        MissionDao.SaveAndFlush(mission);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission for mission order with id {0}", entity.Id);
-                    //    MissionReport report = MissionReportDao.GetReportForOrder(entity.Id);
-                    //    if (report != null)
-                    //    {
-                    //        report.DeleteDate = DateTime.Now;
-                    //        report.EditDate = DateTime.Now;
-                    //        MissionReportDao.SaveAndFlush(report);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission report for mission order with id {0}", entity.Id);
-                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
-                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
-                    //    model.IsDelete = false;
-                    //}
-                    //else
-                    //{
-                        ChangeEntityProperties(current, entity, model, creator, out error);
-                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
-                        //string country = GetStringForList(cityList);
-                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
-                        //string org = GetStringForList(orgList);
+                    ChangeEntityProperties(current, entity, model, creator, out error);
+                    AppointmentDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
                         AppointmentDao.SaveAndFlush(entity);
-                        if (entity.Version != model.Version)
-                        {
-                            entity.EditDate = DateTime.Now;
-                            AppointmentDao.SaveAndFlush(entity);
-                        }
                     }
-                    if (entity.DeleteDate.HasValue)
-                        model.IsDeleted = true;
-                //}
+                }
+                if (entity.DeleteDate.HasValue)
+                    model.IsDeleted = true;
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
@@ -1148,11 +1134,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                /*if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
-                {
-                    model.Error = StrCommentCreationDedied;
-                    return false;
-                }*/
                 User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
                 switch (type)
                 {
@@ -1420,18 +1401,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport entity = null;
             try
             {
-                //creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                //AppointmentReport entity = null;
                 entity = AppointmentReportDao.Get(model.Id);
                 if (entity == null)
                     throw new ValidationException(string.Format(StrAppointmentReportNotFound, model.Id));
                 creator = UserDao.Load(entity.Appointment.Creator.Id);
-                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
-                {
-                    error = "Редактирование заявки запрещено";
-                    return false;
-                }*/
+
                 if (entity.Version != model.Version)
                 {
                     error = StrMultipleAccessError;
@@ -1621,6 +1596,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.AcceptManager = currUser;
                         entity.TempLogin = entity.Id.ToString();
                         entity.TempPassword = CreatePassword(PasswordLength);
+
+                        CreateCandidate(entity);
                     }
                     if (!entity.DeleteDate.HasValue && entity.Appointment.Creator.Id == current.Id && dateAcceptSet)
                     {
@@ -1636,6 +1613,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                     throw new ArgumentException(string.Format("Недопустимая роль {0}", current.UserRole));
             }
         }
+
+        private void CreateCandidate(AppointmentReport entity)
+        {
+            User newUserEntity = new User();
+            newUserEntity.Login = entity.TempLogin;
+            newUserEntity.Password = entity.TempPassword;            
+            newUserEntity.IsFirstTimeLogin = true;
+            newUserEntity.IsActive = true;
+            newUserEntity.IsNew = true;
+            newUserEntity.Name = entity.Name;
+            newUserEntity.RoleId = (int)UserRole.Candidate;
+            newUserEntity.GivesCredit = false;
+            newUserEntity.IsMainManager = false;
+            //UserDao.SaveAndFlush(newUserEntity);
+            EmploymentCommonDao.SaveAndFlush(new EmploymentCandidate { User = newUserEntity });
+        }
+
         protected void RejectReportsExceptId(int appointmentId,int exceptReportId,User user,string rejectReason)
         {
             List<AppointmentReport> list = AppointmentReportDao.LoadForAppointmentId(appointmentId);
@@ -1745,6 +1739,47 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Managers = UserDao.GetManagersWithDepartments().ToList(),
             };
+        }
+
+        /// <summary>
+        /// Получить всех руководителей сотрудника
+        /// </summary>
+        /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
+        /// <returns>Список руководителей</returns>
+        public IList<User> GetChiefsForManager(int userId)
+        {
+            IList<User> chiefs = new List<User>();
+
+            User user = UserDao.Load(userId);
+            User managerAccount = UserDao.GetManagerForEmployee(user.Login);
+
+            IList<User> mainManagers;
+
+            // Для руководителей-замов ближайшие руководители находится на том же уровне
+            if (managerAccount != null && !managerAccount.IsMainManager)
+            {
+                mainManagers = DepartmentDao.GetDepartmentManagers(managerAccount.Department != null ? managerAccount.Department.Id : 0)
+                    .Where<User>(manager => manager.IsMainManager)
+                    .ToList<User>();
+
+                foreach (var mainManager in mainManagers)
+                {
+                    chiefs.Add(mainManager);
+                }
+            }
+
+            // Руководители вышележащих уровней по ветке для всех
+            User currentUserOrManagerAccount = managerAccount ?? user;
+            mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0) && manager.Level > 3)
+                .ToList<User>();
+
+            foreach (var mainManager in mainManagers)
+            {
+                chiefs.Add(mainManager);
+            }
+
+            return chiefs;
         }
     }
 }

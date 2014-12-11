@@ -142,6 +142,11 @@ namespace Reports.Core.Dao.Impl
         {
             Session.Evict(entity);
         }
+        public void SaveFileNotChangeAndFlush(RequestAttachment entity)
+        {
+            Session.Save(entity);
+            Session.Flush();
+        }
         public override void SaveAndFlush(RequestAttachment entity)
         {
             string rootPath = GetRootPath();

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core">
+  <class name="ManualRoleRecord" table="[ManualRoleRecord]">
+    
+    <id name="Id">
+      <generator class="native" />
+    </id>
+    
+    <version name="Version" column= "Version"/>
+
+    <many-to-one
+      name="User"
+      class="User"
+      column="UserId"
+      foreign-key="FK_ManualRoleRecord_User"
+      index="IX_ManualRoleRecord_User_Id"
+      not-null="true"
+    />
+
+    <many-to-one
+      name="Role"
+      class="ManualRole"
+      column="RoleId"
+      foreign-key="FK_ManualRoleRecord_ManualRole"
+      index="IX_ManualRoleRecord_ManualRole_Id"
+      not-null="true"
+    />
+
+    <many-to-one
+      name="TargetUser"
+      class="User"
+      column="TargetUserId"
+      foreign-key="FK_ManualRoleRecord_TargetUser"
+      index="IX_ManualRoleRecord_TargetUser_Id"
+      not-null="false"
+    />
+
+    <many-to-one
+      name="TargetDepartment"
+      class="Department"
+      column="TargetDepartmentId"
+      foreign-key="FK_ManualRoleRecord_TargetDepartment"
+      index="IX_ManualRoleRecord_TargetDepartment_Id"
+      not-null="false"
+    />
+
+  </class>
+</hibernate-mapping>
