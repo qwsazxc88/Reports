@@ -231,14 +231,14 @@ namespace Reports.Core.Dao.Impl
                                 currentUser.Level));
                     }
                     //return sqlQueryPart;
-                case UserRole.OutsourcingManager:
-                case UserRole.ConsultantOutsourcing:
                 case UserRole.PersonnelManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (2, 4, 5) ";
                 case UserRole.ConsultantOutsorsingManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return @"  v.[TypeId] in (1, 3, 6) ";
+                case UserRole.OutsourcingManager:
+                case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery,string.Empty);
                     return string.Empty;
