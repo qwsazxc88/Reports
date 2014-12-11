@@ -271,28 +271,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.Contracts = GpdContractDao.GetContracts(role, 
                 model.Id, 
-                //model.CreatorID, 
                 model.DepartmentId, 
-                //model.DepartmentName,
-                //model.PersonID, 
                 model.CTID, 
-                //model.StatusID, 
-                //model.NumContract, 
-                //model.NameContract, 
                 null, null,
-                //null, null,
-                //model.PayeeID, 
-                //model.PayerID, 
-                //model.GPDID, 
-                //model.PurposePayment, 
                 model.IsDraft, 
-                //model.CreatorName,
-                //(DateTime)model.CreateDate,
                 model.Surname, 
-                //model.CTName, 
-                //model.StatusName,
-                //model.Autor,
-                //null, null,
                 model.IsFind,
                 0, null);
 
@@ -539,22 +522,29 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    gpdContract.Id = model.Id;
-                    gpdContract.CreatorID = currentUseId.Id;
-                    gpdContract.DepartmentId = model.DepartmentId;
-                    gpdContract.PersonID = model.PersonID;
-                    gpdContract.CTID = model.CTID;
-                    gpdContract.StatusID = model.StatusID;
-                    gpdContract.NumContract = model.NumContract;
-                    gpdContract.NameContract = model.NameContract;
-                    gpdContract.DateBegin = model.DateBegin;
-                    gpdContract.DateEnd = model.DateEnd;
-                    gpdContract.PayeeID = model.PayeeID;
-                    gpdContract.PayerID = model.PayerID;
-                    gpdContract.GPDID = model.GPDID;
-                    gpdContract.PurposePayment = model.PurposePayment;
-                    gpdContract.IsDraft = model.IsDraft;
-                    gpdContract.DateP = model.DateP;
+                    if (!gpdContract.IsDraft)
+                    {
+                        gpdContract.DateP = model.DateP;
+                    }
+                    else
+                    {
+                        gpdContract.Id = model.Id;
+                        gpdContract.CreatorID = currentUseId.Id;
+                        gpdContract.DepartmentId = model.DepartmentId;
+                        gpdContract.PersonID = model.PersonID;
+                        gpdContract.CTID = model.CTID;
+                        gpdContract.StatusID = model.StatusID;
+                        gpdContract.NumContract = model.NumContract;
+                        gpdContract.NameContract = model.NameContract;
+                        gpdContract.DateBegin = model.DateBegin;
+                        gpdContract.DateEnd = model.DateEnd;
+                        gpdContract.PayeeID = model.PayeeID;
+                        gpdContract.PayerID = model.PayerID;
+                        gpdContract.GPDID = model.GPDID;
+                        gpdContract.PurposePayment = model.PurposePayment;
+                        gpdContract.IsDraft = model.IsDraft;
+                        gpdContract.DateP = model.DateP;
+                    }
                 }
                 GpdContractDao.SaveAndFlush(gpdContract);
                 model.Id = gpdContract.Id;

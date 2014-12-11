@@ -90,7 +90,10 @@ namespace WebMvc.Controllers
         {
             bool hasError = false;
             ModelState.Clear();
-            GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+
+            if (model.IsDraft)
+                GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+
             if (ModelState.Count != 0)
                 return View(model);
             else

@@ -170,7 +170,11 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsDraft" name="IsDraft" value="@Model.IsDraft" />
-                <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
+                @if (@Model.IsDraft)
+                {
+                    <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
+                }
+                
                 <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
             </td>
         </tr>

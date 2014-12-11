@@ -36,9 +36,7 @@ namespace Reports.Core.Dao.Impl
                                                     int Id,
                                                     string Name)
         {
-            string sqlQuery = @"SELECT 0 as Id, 'Все' as Name
-                                UNION ALL
-                                SELECT Id as Id, Name as Name FROM dbo.GpdRefStatus";
+            string sqlQuery = @"SELECT * FROM dbo.vwGpdStatus";
 
             IQuery query = CreateRefQuery(sqlQuery);
             IList<GpdContractStatusesDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractStatusesDto))).List<GpdContractStatusesDto>();
@@ -66,9 +64,7 @@ namespace Reports.Core.Dao.Impl
                                                     int Id,
                                                     string Name)
         {
-            string sqlQuery = @"SELECT 0 as Id, 'Все' as Name
-                                UNION ALL
-                                SELECT Id as Id, Name as Name FROM dbo.GpdChargingType";
+            string sqlQuery = @"SELECT * FROM vwGpdChargingType";
 
             IQuery query = CreateRefQuery(sqlQuery);
             IList<GpdContractChargingTypesDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractChargingTypesDto))).List<GpdContractChargingTypesDto>();
@@ -85,7 +81,7 @@ namespace Reports.Core.Dao.Impl
                                                     int Id,
                                                     string Name)
         {
-            string sqlQuery = @"SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Name FROM GpdRefPersons ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS";
+            string sqlQuery = @"SELECT * FROM vwGpdRefPersons ORDER BY Name";
 
             IQuery query = CreateRefQuery(sqlQuery);
             IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
@@ -96,7 +92,7 @@ namespace Reports.Core.Dao.Impl
                                                     int Id,
                                                     string Name)
         {
-            string sqlQuery = @"SELECT DTID as DTID, Id as Id, Name as Name FROM GpdRefDetail WHERE DTID = " + (DTID == 0 ? "" : DTID.ToString()) + " ORDER BY Name";
+            string sqlQuery = @"SELECT * FROM vwGpdRefDetail WHERE DTID = " + (DTID == 0 ? "" : DTID.ToString()) + " ORDER BY Name";
 
             IQuery query = CreateRefQuery(sqlQuery);
             IList<GpdContractDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractDetailDto))).List<GpdContractDetailDto>();
@@ -119,67 +115,29 @@ namespace Reports.Core.Dao.Impl
         /// <returns></returns>
         public IList<GpdContractDto> GetContracts(UserRole role,
                                             int Id,
-                                            //int CreatorID,
                                             int DepartmentId,
-                                            //string DepartmentName,
-                                            //int PersonID,
                                             int CTID,
-                                            //int StatusID,
-                                            //string NumContract,
-                                            //string NameContract,
                                             DateTime? DateBegin,
                                             DateTime? DateEnd,
-                                            //DateTime? DateP,
-                                            //DateTime? DatePOld,
-                                            //int PayeeID,
-                                            //int PayerID,
-                                            //string GPDID,
-                                            //string PurposePayment,
                                             bool IsDraft,
-                                            //string CreatorName,
-                                            //DateTime CreateDate,
                                             string Surname,
-                                            //string CTName,
-                                            //string StatusName,
-                                            //string Autor,
-                                            //string DepLevel3Name,
-                                            //string DepLevel7Name,
                                             bool IsFind,
                                             int SortBy,
                                             bool? SortDescending)
         {
-//            string sqlQuery = @"SELECT A.Id as Id, A.[Version] as [Version], A.CreatorID as CreatorID, A.DepartmentId as DepartmentId, G.[Name] as DepartmentName,
-//			                              A.PersonID as PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName as Surname, 
-//			                              A.CTID as CTID, C.[Name] as CTName,
-//			                              A.StatusID as StatusID, E.[Name] as StatusName, A.NumContract as NumContract, 
-//			                              A.NameContract as NameContract, A.DateBegin as DateBegin, A.DateEnd as DateEnd, A.PayeeID as PayeeID, A.PayerID as PayerID, A.GPDID as GPDID, A.PurposePayment as PurposePayment, 
-//				                            A.DateP as DateP, A.DateP as DatePOld,
-//			                              A.IsDraft as IsDraft, F.[Name] as CreatorName, A.CreateDate, F.[Name] as Autor,
-//				                            K.[Name] as DepLevel3Name, G.[Name] as DepLevel7Name 
-//                            FROM dbo.GpdContract as A
-//                            INNER JOIN dbo.GpdRefPersons as B ON B.Id = A.PersonID
-//                            INNER JOIN dbo.GpdChargingType as C ON C.Id = A.CTID
-//                            INNER JOIN dbo.GpdRefStatus as E ON E.Id = A.StatusID
-//                            LEFT JOIN dbo.Users as F ON F.Id = A.CreatorID
-//                            INNER JOIN dbo.Department as G ON G.Id = A.DepartmentId
-//                            LEFT JOIN [dbo].[Department] as H ON H.Code = G.ParentId
-//                            LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
-//                            LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
-//                            LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId";
-            string sqlQuery = @"SELECT  *
-                               FROM [dbo].[vwGpdContractList]";
+
+            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdContractList]";
 
             string SqlWhere = "";
 
             if (!IsFind)
-                SqlWhere = "A.Id = " + Id.ToString();
+                SqlWhere = "Id = " + Id.ToString();
             else
             {
                 SqlWhere = (DepartmentId != 0 ? " DepartmentId = " + DepartmentId.ToString() : "");//подразделение
                 SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (CTID != 0 ? " CTID = " + CTID.ToString() : "");//вид начисления
                 SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " DateBegin between '" + DateBegin.Value.ToString("d") + "' and '" + DateEnd.Value.ToString("d") + "'";//дата начала действия договора
-                //DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)
-                //@"v.[EditDate] >= :beginDate "
+                
                 if (Surname != null)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (Surname.Trim().Length != 0 ? " Surname like '" + Surname + "%'" : "");//по фио
             }
@@ -268,6 +226,11 @@ namespace Reports.Core.Dao.Impl
             IQuery query = CreateDLQuery("SELECT ItemLevel FROM dbo.Department WHERE Id = " + Id.ToString());
             return query.UniqueResult<int>();
         }
+        /// <summary>
+        /// Создание подзапроса.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
         public virtual IQuery CreateDLQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).AddScalar("ItemLevel", NHibernateUtil.Int32);

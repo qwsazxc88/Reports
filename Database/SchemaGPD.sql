@@ -71,3 +71,51 @@ FROM         dbo.GpdContract AS A INNER JOIN
                       dbo.Department AS K ON K.Code = J.ParentId
 
 GO
+
+
+IF OBJECT_ID ('vwGpdStatus', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdStatus]
+GO
+
+CREATE VIEW [dbo].[vwGpdStatus]
+AS
+SELECT 0 as Id, 'Все' as Name
+UNION ALL
+SELECT Id as Id, Name as Name FROM dbo.GpdRefStatus
+GO
+
+
+IF OBJECT_ID ('vwGpdChargingType', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdChargingType]
+GO
+
+CREATE VIEW [dbo].[vwGpdChargingType]
+AS
+SELECT 0 as Id, 'Все' as Name
+UNION ALL
+SELECT Id as Id, Name as Name FROM dbo.GpdChargingType
+GO
+
+
+
+IF OBJECT_ID ('vwGpdRefPersons', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdRefPersons]
+GO
+
+CREATE VIEW [dbo].[vwGpdRefPersons]
+AS
+SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Name, SNILS
+FROM GpdRefPersons 
+--ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
+GO
+
+
+IF OBJECT_ID ('vwGpdRefDetail', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdRefDetail]
+GO
+
+CREATE VIEW [dbo].[vwGpdRefDetail]
+AS
+SELECT DTID as DTID, Id as Id, Name as Name FROM GpdRefDetail
+GO
+
