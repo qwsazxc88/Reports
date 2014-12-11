@@ -5575,23 +5575,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             //|| model.IsApprovedByManagerEnable || model.IsApprovedByUserEnable ||
             //model.IsApprovedByPersonnelManagerEnable;
         }
-        protected void SetUserInfoModel(User user,UserInfoModel model)
+        protected void SetUserInfoModel(User user,UserInfoModel model, UserManualRole manualRoleForManagersList = UserManualRole.ApprovesCommonRequests)
         {
             //model.DateCreated = DateTime.Today.ToShortDateString();
             //IList<IdNameDto> departments = UserToDepartmentDao.GetByUserId(user.Id);
             //if (departments.Count > 0)
-            model.Department = user.Department == null?string.Empty:user.Department.Name ;
+            model.Department = user.Department == null ? string.Empty : user.Department.Name;
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
 
             // Руководители до 4 уровня по ветке
-            IList<User> managers = GetManagersForEmployee(user.Id)
-                .Where<User>(manager => manager.Level >= 4)
+            IList<User> managers = GetManagersForEmployee(user.Id, 4)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
             // + руководители по ручным привязкам
-            managers.Concat(ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests));
-            managers = managers.Distinct().ToList();
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, manualRoleForManagersList);
+            foreach (var manualRoleManager in manualRoleManagers)
+            {
+                if (!managers.Contains(manualRoleManager))
+                {
+                    managers.Add(manualRoleManager);
+                }
+            }
 
             StringBuilder managersBuilder = new StringBuilder();
             foreach(var manager in managers)
@@ -5626,7 +5631,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// </summary>
         /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
         /// <returns>Список руководителей</returns>
-        public IList<User> GetManagersForEmployee(int userId)
+        public IList<User> GetManagersForEmployee(int userId, int? minManagerLevel = null)
         {
             IList<User> managers = new List<User>();
 
@@ -5651,7 +5656,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Руководители вышележащих уровней для всех
             User currentUserOrManagerAccount = managerAccount ?? user;
             mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
-                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0))
+                .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0)
+                && (minManagerLevel != null && manager.Department.ItemLevel != null) ? manager.Department.ItemLevel >= minManagerLevel : true)
                 .ToList<User>();
 
             foreach (var mainManager in mainManagers)
@@ -8588,7 +8594,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 LoadGraids(model, user.Grade.Value, entity, DateTime.Today);
                 //model.IsEditable = true;
             }
-            SetUserInfoModel(user, model);
+            SetUserInfoModel(user, model, UserManualRole.ApprovesMissionOrders);
             SetFlagsState(id,user,entity,model);
             SetStaticFields(model, entity);
             LoadDictionaries(model);
@@ -8717,7 +8723,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             finally
             {
-                SetUserInfoModel(user, model);
+                SetUserInfoModel(user, model, UserManualRole.ApprovesMissionOrders);
                 SetStaticFields(model, missionOrder);
                 LoadDictionaries(model);
                 SetHiddenFields(model);
@@ -9411,7 +9417,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         Log.ErrorFormat("CheckUserRights  PersonnelManager user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
                     }
-                    break;
                 case UserRole.OutsourcingManager:
                 case UserRole.Secretary:
                     return true;
@@ -9565,7 +9570,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void ReloadDictionaries(MissionOrderEditModel model)
         {
             User user = UserDao.Load(model.UserId);
-            SetUserInfoModel(user, model);
+            SetUserInfoModel(user, model, UserManualRole.ApprovesMissionOrders);
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.MissionOrder);
             LoadDictionaries(model);
             if (model.Id == 0)
@@ -9799,7 +9804,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionOrder order = MissionOrderDao.Load(id);
             if(order == null)
                 throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
-            SetUserInfoModel(order.User,model);
+            SetUserInfoModel(order.User,model, UserManualRole.ApprovesMissionOrders);
             model.DocumentNumber = order.Number.ToString();
             model.DateCreated = order.CreateDate.ToShortDateString();
             model.Goal = order.Goal.Name;
@@ -9852,7 +9857,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionOrder order = MissionOrderDao.Load(id);
             if (order == null)
                 throw new ArgumentException(string.Format("Приказ на командировку (id {0}) отсутствует в базе данных."));
-            SetUserInfoModel(order.User, model);
+            SetUserInfoModel(order.User, model, UserManualRole.ApprovesMissionOrders);
             model.DocumentNumber = order.Number.ToString();
             model.DateCreated = order.CreateDate.ToShortDateString();
             return model;
@@ -9988,7 +9993,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             JsonList list = new JsonList { List = targets };
             JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
             model.Targets = jsonSerializer.Serialize(list);
-            SetUserInfoModel(user, model);
+            SetUserInfoModel(user, model, UserManualRole.ApprovesMissionOrders);
             SetFlagsState(id, user, entity, model);
             SetHiddenFields(model);
             return model;
@@ -10204,7 +10209,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             finally
             {
-                SetUserInfoModel(user, model);
+                SetUserInfoModel(user, model, UserManualRole.ApprovesMissionOrders);
                 //LoadDictionaries(model);
                 SetHiddenFields(model);
             }
@@ -10581,7 +10586,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetUserInfoModel(User user,MissionReportEditModel model)
         {
-            SetUserInfoModel(user,(UserInfoModel)model);
+            SetUserInfoModel(user,(UserInfoModel)model, UserManualRole.ApprovesMissionOrders);
             model.UserFio ="Сотрудник " + user.FullName;
         }
         protected void SetStaticFields(MissionReportEditModel model,MissionReport entity)
@@ -11129,7 +11134,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             MissionReport report = MissionReportDao.Load(id);
             if (report == null)
                 throw new ArgumentException(string.Format("Авансовый отчет (id {0}) отсутствует в базе данных.",id));
-            SetUserInfoModel(report.User, model);
+            SetUserInfoModel(report.User, model, UserManualRole.ApprovesMissionOrders);
             model.OrderNumber = report.MissionOrder.Number.ToString();
             model.DocumentNumber = "АО" + report.Number;
             model.DateCreated = report.CreateDate.ToShortDateString();
