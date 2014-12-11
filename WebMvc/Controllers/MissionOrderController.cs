@@ -625,12 +625,6 @@ namespace WebMvc.Controllers
         public ActionResult MissionReportEdit(MissionReportEditModel model)
         {
             CorrectCheckboxes(model);
-            //CorrectDropdowns(model);
-            //if (!ValidateMissionOrderEditModel(model))
-            //{
-            //    RequestBl.ReloadDictionaries(model);
-            //    return View(model);
-            //}
 
             string error;
             if (!RequestBl.SaveMissionReportEditModel(model, out error) || !string.IsNullOrEmpty(error))
