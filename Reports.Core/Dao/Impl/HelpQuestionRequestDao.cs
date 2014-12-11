@@ -83,7 +83,7 @@ namespace Reports.Core.Dao.Impl
                                 case when v.[SendDate] is null then N'Черновик'
                                      when v.[SendDate] is not null and v.[BeginWorkDate] is null then N'Вопрос задан' 
                                      when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then N'Вопрос принят в работу' 
-                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then N'Ответ на вопрос получен' 
+                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then N'Ответ на вопрос предоставлен' 
                                      when v.[ConfirmWorkDate] is not null then N'Ответ на вопрос подтвержден' 
                                     else N''
                                 end as Status,
