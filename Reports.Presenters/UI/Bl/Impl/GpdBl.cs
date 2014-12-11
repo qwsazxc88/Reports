@@ -425,54 +425,66 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="ms"></param>
         public void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
-            if (model.DepartmentId == 0)
-                ms.AddModelError("DepartmentId", "Выберите подразделение!");
+            if (!model.IsDraft)
+            {
+                if (model.DateP != null)
+                {
+                    if (model.DateP <= model.DateEnd)
+                        ms.AddModelError("DateP", "Дата пролонгации должна быть больше даты окончания действия договора!");
+                }
+            }
             else
             {
-                //проверяем уровень выбранного подразделения
-                if (GpdContractDao.GetDepLevel(model.DepartmentId) != 7)
-                    ms.AddModelError("DepartmentId", "Нужно выбрать подразделение седьмого уровня!");
+                if (model.DepartmentId == 0)
+                    ms.AddModelError("DepartmentId", "Выберите подразделение!");
+                else
+                {
+                    //проверяем уровень выбранного подразделения
+                    if (GpdContractDao.GetDepLevel(model.DepartmentId) != 7)
+                        ms.AddModelError("DepartmentId", "Нужно выбрать подразделение седьмого уровня!");
+                }
+
+                if (model.PersonID == 0)
+                    ms.AddModelError("PersonID", "Выберите физическое лицо из списка!");
+
+                if (model.CTID == 0)
+                    ms.AddModelError("STID", "Выберите вид начисления из списка!");
+
+                if (model.NameContract == null)
+                    ms.AddModelError("NameContract", "Заполните поле 'Наименование договора'!");
+
+                if (model.NumContract == null)
+                    ms.AddModelError("NumContract", "Заполните поле '№ договора'!");
+
+                if (model.DateBegin == null)
+                    ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
+
+                if (model.DateEnd == null)
+                    ms.AddModelError("DateEnd", "Укажите дату окончания действия договора!");
+
+                if (model.DateEnd < model.DateBegin)
+                    ms.AddModelError("DateEnd", "Дата окончания действия договора должна быть больше, чем дата начала договора!");
+
+                if (model.DateP != null)
+                {
+                    if (model.DateP <= model.DateEnd)
+                        ms.AddModelError("DateP", "Дата пролонгации должна быть больше даты окончания действия договора!");
+                }
+
+                if (model.PayerID == 0)
+                    ms.AddModelError("PayerID", "Выберите плательщика из списка!");
+
+                if (model.PayeeID == 0)
+                    ms.AddModelError("PayeeID", "Выберите получателя из списка!");
+
+
+                if (model.GPDID == null)
+                    ms.AddModelError("GPDID", "Заполните поле 'ID ГПД в ЭССС'!");
+
+                if (model.PurposePayment == null)
+                    ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
             }
-
-            if (model.PersonID == 0)
-                ms.AddModelError("PersonID", "Выберите физическое лицо из списка!");
-
-            if (model.CTID == 0)
-                ms.AddModelError("STID", "Выберите вид начисления из списка!");
-
-            if (model.NameContract == null)
-                ms.AddModelError("NameContract", "Заполните поле 'Наименование договора'!");
-
-            if (model.NumContract == null)
-                ms.AddModelError("NumContract", "Заполните поле '№ договора'!");
-
-            if (model.DateBegin == null)
-                ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
-
-            if (model.DateEnd == null)
-                ms.AddModelError("DateEnd", "Укажите дату окончания действия договора!");
-
-            if (model.DateEnd < model.DateBegin)
-                ms.AddModelError("DateEnd", "Дата окончания действия договора должна быть больше, чем дата начала договора!");
-
-            if (model.DateP != null)
-            {
-                if (model.DateP <= model.DateEnd)
-                    ms.AddModelError("DateP", "Дата пролонгации должна быть больше даты окончания действия договора!");
-            }
-
-            if (model.PayerID == 0)
-                ms.AddModelError("PayerID", "Выберите плательщика из списка!");
-
-            if (model.PayeeID == 0)
-                ms.AddModelError("PayeeID", "Выберите получателя из списка!");
-
-
-            if (model.GPDID == null)
-                ms.AddModelError("GPDID", "Заполните поле 'ID ГПД в ЭССС'!");
-
-            if (model.PurposePayment == null)
-                ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
+            
 
             //if (ms.Count != 0)
             //    model.IsDraft = true;
@@ -528,7 +540,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     else
                     {
-                        gpdContract.Id = model.Id;
+                        //gpdContract.Id = model.Id;
                         gpdContract.CreatorID = currentUseId.Id;
                         gpdContract.DepartmentId = model.DepartmentId;
                         gpdContract.PersonID = model.PersonID;
