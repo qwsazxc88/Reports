@@ -4,6 +4,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationSummary()
 
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
@@ -71,7 +72,7 @@
     var actionSelectManagerDialogUrl = "@Url.Action("SelectManagerDialog", "Appointment")";
 
     $(document).ready(function () {
-        attachDatepickerToInputs($('#DateOfBirth'), "-80:+0", true);
+        attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
     });
 
     function changeManager() {

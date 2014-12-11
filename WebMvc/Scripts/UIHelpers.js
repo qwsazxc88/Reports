@@ -16,11 +16,18 @@
     }
 };
 
+// Добавить datepicker к текстовым контролам
+// $inputs - jQuery-объект с выборкой контролов
+// range - строка формата "диапазон_лет[;минимальная_дата[;максимальная_дата]]", пример: "-80:-14;-80Y;-14Y"
+// makeReadonly - заблокировать ввод в контрол с помощью клавиатуры
 var attachDatepickerToInputs = function ($inputs, range, makeReadonly) {
+    var rangeArray = range.split(";");
     $inputs.datepicker({
         dateFormat: "dd.mm.yy",
         changeYear: true,
-        yearRange: range
+        yearRange: rangeArray[0] !== undefined ? rangeArray[0] : null,
+        minDate: rangeArray[1] !== undefined ? rangeArray[1] : null,
+        maxDate: rangeArray[2] !== undefined ? rangeArray[2] : null
     });
     if (makeReadonly) {
         $inputs.attr("readOnly", "true");

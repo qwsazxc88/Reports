@@ -651,7 +651,9 @@ namespace WebMvc.Controllers
 
         protected bool ValidateModel(CreateCandidateModel model)
         {
-            int numberOfFilledFields = 0;
+            const int minimumAge = 14;
+
+            int numberOfFilledFields = 0;            
 
             numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
@@ -659,7 +661,12 @@ namespace WebMvc.Controllers
 
             if (numberOfFilledFields < 2)
             {
-                ModelState.AddModelError(null, "Необходимо заполнить хотя бы 2 поля личных данных.");
+                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных.");
+            }
+
+            if (model.DateOfBirth > DateTime.Now.AddYears(-minimumAge))
+            {
+                ModelState.AddModelError("DateOfBirth", "Некорректная дата рождения.");
             }
 
             return ModelState.IsValid;
