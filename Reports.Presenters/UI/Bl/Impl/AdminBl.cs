@@ -86,13 +86,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             //int id = CurrentUser.Id;
             UserRole role = CurrentUser.UserRole;
-            if (role != UserRole.Admin && role != UserRole.PersonnelManager)
+            if ((role & UserRole.Admin) != UserRole.Admin && (role & UserRole.PersonnelManager) != UserRole.PersonnelManager)
                 throw new ArgumentException("Доступ запрещен.");
             model.Roles = GetRoleList(true,role);
             int numberOfPages;
             int currentPage = model.CurrentPage;
             IList<Role> allRoles = RoleDao.LoadAll();
-            if (role == UserRole.Admin)
+            if ((role & UserRole.Admin) == UserRole.Admin)
             {
                 model.Users = UserDao.GetUsersForAdmin(model.UserName, model.RoleId,
                                                        ref currentPage, out numberOfPages).ToList().
@@ -105,7 +105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                             Role = GetUserRoleName(allRoles,x.RoleId),
                                         });
             }
-            else if (role == UserRole.PersonnelManager)
+            else if ((role & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 model.Users = UserDao.GetUsersForPersonnel(model.UserName, CurrentUser.Id, ref currentPage, out numberOfPages).ToList().
                    ConvertAll(x => new UserDtoModel
@@ -131,12 +131,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void GetUserEditModel(UserEditModel model)
         {
             UserRole role = CurrentUser.UserRole;
-            if (role != UserRole.Admin && role != UserRole.PersonnelManager)
+            if ((role & UserRole.Admin) != UserRole.Admin && (role & UserRole.PersonnelManager) != UserRole.PersonnelManager)
                 throw new ArgumentException("Доступ запрещен.");
-            //model.Roles = GetRoleList(false,role);
+
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            //model.Personnels = role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true) 
-            //                                            : new List<IdNameDto> { new IdNameDto {Id = CurrentUser.Id,Name = CurrentUser.Name}};
+
             if (model.Id > 0)
             {
                 User user = UserDao.Load(model.Id);
@@ -157,9 +156,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     if (user.Manager != null)
                         model.ManagerId = user.Manager.Id;
-                    // !!!
-                    /*if (user.PersonnelManager != null)
-                        model.PersonnelId = user.PersonnelManager.Id;*/
                 }
                 SetControlStates(model, user);
             }
@@ -174,12 +170,9 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public void SetStaticToModel(UserEditModel model,bool setStatic)
         {
-            //UserRole role = CurrentUser.UserRole;
             model.Role = GetUserRoleName(model.RoleId);//GetRoleList(false,role);
             model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-            //model.PersonnelName = 
-            //    role == UserRole.Admin ? GetUsersWithRoleList(UserRole.PersonnelManager, true)
-            //                                           : new List<IdNameDto> { new IdNameDto { Id = CurrentUser.Id, Name = CurrentUser.Name } };
+
             SetStaticUserPopertiesToModel(model);
         }
 
@@ -188,16 +181,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 SetStaticToModel(model,false);
-                //UserRole role = CurrentUser.UserRole;
-                //model.Roles = GetRoleList(false,role);
-                //model.Managers = GetUsersWithRoleList(UserRole.Manager, true);
-                //model.Personnels = GetUsersWithRoleList(UserRole.PersonnelManager, true);
+
                 var user = new User();
                 if (model.Id > 0)
                     user = UserDao.Load(model.Id);
                 if (!ValidateModel(model, user))
                 {
-//                    SetControlStates(model);
                     return;
                 }
                 user.IsActive = model.IsActive;
@@ -209,7 +198,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     user.Name = model.UserName;
                     user.Password = model.Password;
                     user.IsNew = true;
-                    //user.RoleId = model.RoleId;//RoleDao.Load(model.RoleId);
                     if (IsUserFrom1C((UserRole)(model.RoleId)))
                         user.IsFirstTimeLogin = true;
                     user.Code = string.Empty;
@@ -305,7 +293,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             else
             {
-                if (CurrentUser.UserRole == UserRole.PersonnelManager && !user.IsFirstTimeLogin)
+                if ((CurrentUser.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager && !user.IsFirstTimeLogin)
                 {
                     model.IsPasswordHide = true;
                     model.Password = "1234567";
@@ -511,11 +499,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<string> codes = new List<string>();
             foreach (ImportDto dto in dtos)
             {
-                if(dto.Role == UserRole.Employee)
+                if((dto.Role & UserRole.Employee) == UserRole.Employee)
                     codes.Add(dto.EmployeeCode);
-                else if( dto.Role == UserRole.Manager)
+                else if((dto.Role & UserRole.Manager) == UserRole.Manager)
                     codes.Add(dto.ManagerCode);
-                else if( dto.Role == UserRole.PersonnelManager)
+                else if((dto.Role & UserRole.PersonnelManager) == UserRole.PersonnelManager)
                     codes.Add(dto.PersonnelCode);
             }
             IList<User> users = UserDao.LoadUserByCodes(codes);
@@ -527,7 +515,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SaveManagers(List<ImportDto> dtos, IList<User> users, 
             IList<Role> roles,ref bool hasWarnings)
         {
-            IEnumerable<ImportDto> managerDtos = dtos.Where(x => x.Role == UserRole.Manager);
+            IEnumerable<ImportDto> managerDtos = dtos.Where(x => (x.Role & UserRole.Manager) == UserRole.Manager);
             foreach (ImportDto dto in managerDtos)
             {
                 User manager = users.Where(x => x.Code == dto.ManagerCode).FirstOrDefault();
@@ -545,7 +533,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     manager.Password = manager.Login;
                 }
                 manager.Comment = dto.Comment;
-                if (!isNewManager && (manager.UserRole != UserRole.Manager))
+                if (!isNewManager && ((manager.UserRole & UserRole.Manager) != UserRole.Manager))
                 {
                     Log.WarnFormat("Роль в базе данных для пользователя {0} отличается от руководителя.", manager.Id);
                     hasWarnings = true;
@@ -567,7 +555,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SavePersonnels(List<ImportDto> dtos, IList<User> users,
             IList<Role> roles, ref bool hasWarnings)
         {
-            IEnumerable<ImportDto> personnelDtos = dtos.Where(x => x.Role == UserRole.PersonnelManager);
+            IEnumerable<ImportDto> personnelDtos = dtos.Where(x => (x.Role & UserRole.PersonnelManager) == UserRole.PersonnelManager);
             foreach (ImportDto dto in personnelDtos)
             {
                 User personnel = users.Where(x => x.Code == dto.PersonnelCode).FirstOrDefault();
@@ -585,7 +573,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     personnel.Password = personnel.Login;
                 }
                 personnel.Comment = dto.Comment;
-                if (!isNewPersonnel && (personnel.UserRole != UserRole.PersonnelManager))
+                if (!isNewPersonnel && ((personnel.UserRole & UserRole.PersonnelManager) != UserRole.PersonnelManager))
                 {
                     Log.WarnFormat("Роль в базе данных для пользователя {0} отличается от кадровика.",personnel.Id);
                     hasWarnings = true;
@@ -607,7 +595,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected void SaveEmployees(List<ImportDto> dtos, IList<User> users,
             IList<Role> roles, ref bool hasWarnings)
         {
-            IEnumerable<ImportDto> employeesDtos = dtos.Where(x => x.Role == UserRole.Employee);
+            IEnumerable<ImportDto> employeesDtos = dtos.Where(x => (x.Role & UserRole.Employee) == UserRole.Employee);
             foreach (ImportDto dto in employeesDtos)
             {
                 bool isNewEmployee = false;
@@ -640,7 +628,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 employee.Comment = dto.Comment;
                 employee.DateAccept = dto.DateAccept;
                 employee.DateRelease = dto.DateRelease;
-                if (!isNewEmployee && (employee.UserRole != UserRole.Employee))
+                if (!isNewEmployee && ((employee.UserRole & UserRole.Employee) != UserRole.Employee))
                 {
                     Log.WarnFormat("Роль в базе данных для пользователя {0} отличается от сотрудника.", employee.Id);
                     hasWarnings = true;
@@ -734,7 +722,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Log.Warn("Для пользователя указаны и код руководителя, и код кадровика.Запись пропущена.");
                 return null; 
             }
-            if(dto.Role == UserRole.Employee
+            if((dto.Role & UserRole.Employee) == UserRole.Employee
                 && 
                 (string.IsNullOrEmpty(dto.ManagerCode) 
                || string.IsNullOrEmpty(dto.PersonnelCode)))
@@ -745,7 +733,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             DateTime acceptDate;
             if (!DateTime.TryParse(RemoveDelimiters(fields[6]), out acceptDate))
             {
-                if (dto.Role == UserRole.Employee)
+                if ((dto.Role & UserRole.Employee) == UserRole.Employee)
                 {
                     Log.Warn("Для сотрудника не указана дата приема,запись пропущена.");
                     return null; 
@@ -1064,28 +1052,51 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected string GetUserRoleName(IList<Role> allRoles,int role)
         {
             string roles = string.Empty;
-           
-            if ((role & (int)UserRole.Accountant) > 0)
-                roles += GetRoleName(allRoles,UserRole.Accountant)+" ";
+
             if ((role & (int)UserRole.Admin) > 0)
                 roles += GetRoleName(allRoles, UserRole.Admin) + " ";
-            if ((role & (int)UserRole.BudgetManager) > 0)
-                roles += GetRoleName(allRoles, UserRole.BudgetManager) + " ";
-            if ((role & (int)UserRole.Chief) > 0)
-                roles += GetRoleName(allRoles, UserRole.Chief) + " ";
             if ((role & (int)UserRole.Employee) > 0)
                 roles += GetRoleName(allRoles, UserRole.Employee) + " ";
-            if ((role & (int)UserRole.Inspector) > 0)
-                roles += GetRoleName(allRoles, UserRole.Inspector) + " ";
             if ((role & (int)UserRole.Manager) > 0)
                 roles += GetRoleName(allRoles, UserRole.Manager) + " ";
-            if ((role & (int)UserRole.OutsourcingManager) > 0)
-                roles += GetRoleName(allRoles, UserRole.OutsourcingManager) + " ";
             if ((role & (int)UserRole.PersonnelManager) > 0)
                 roles += GetRoleName(allRoles, UserRole.PersonnelManager) + " ";
+            if ((role & (int)UserRole.BudgetManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.BudgetManager) + " ";
+            if ((role & (int)UserRole.OutsourcingManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.OutsourcingManager) + " ";
+            if ((role & (int)UserRole.Inspector) > 0)
+                roles += GetRoleName(allRoles, UserRole.Inspector) + " ";
+            if ((role & (int)UserRole.Chief) > 0)
+                roles += GetRoleName(allRoles, UserRole.Chief) + " ";
+            if ((role & (int)UserRole.Accountant) > 0)
+                roles += GetRoleName(allRoles,UserRole.Accountant)+" ";
             if ((role & (int)UserRole.Director) > 0)
                 roles += GetRoleName(allRoles, UserRole.Director) + " ";
-            return roles;
+            if ((role & (int)UserRole.Secretary) > 0)
+                roles += GetRoleName(allRoles, UserRole.Secretary) + " ";
+            if ((role & (int)UserRole.Findep) > 0)
+                roles += GetRoleName(allRoles, UserRole.Findep) + " ";
+            if ((role & (int)UserRole.StaffManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.StaffManager) + " ";
+            if ((role & (int)UserRole.Archivist) > 0)
+                roles += GetRoleName(allRoles, UserRole.Archivist) + " ";
+            if ((role & (int)UserRole.Candidate) > 0)
+                roles += GetRoleName(allRoles, UserRole.Candidate) + " ";
+            if ((role & (int)UserRole.Security) > 0)
+                roles += GetRoleName(allRoles, UserRole.Security) + " ";
+            if ((role & (int)UserRole.Trainer) > 0)
+                roles += GetRoleName(allRoles, UserRole.Trainer) + " ";
+            if ((role & (int)UserRole.ConsultantOutsourcing) > 0)
+                roles += GetRoleName(allRoles, UserRole.ConsultantOutsourcing) + " ";
+            if ((role & (int)UserRole.ConsultantPersonnel) > 0)
+                roles += GetRoleName(allRoles, UserRole.ConsultantPersonnel) + " ";
+            if ((role & (int)UserRole.ConsultantAccountant) > 0)
+                roles += GetRoleName(allRoles, UserRole.ConsultantAccountant) + " ";
+            if ((role & (int)UserRole.ConsultantOutsorsingManager) > 0)
+                roles += GetRoleName(allRoles, UserRole.ConsultantOutsorsingManager) + " ";
+
+            return roles; 
             /*switch (role)
             {
                 case UserRole.Admin:
@@ -1114,7 +1125,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             List<IdNameDto> dtoList = RoleDao.LoadAllSorted().ToList().
                 ConvertAll(x => new IdNameDto(x.Id, x.Name));
-            if (role == UserRole.PersonnelManager)
+            if ((role & UserRole.PersonnelManager) == UserRole.PersonnelManager)
                 return dtoList.Where(x => x.Id == (int) UserRole.Employee).ToList();
             if (addAll)
                 dtoList.Insert(0, new IdNameDto(0, "Все"));
@@ -1134,9 +1145,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool IsUserFrom1C(UserRole role)
         {
             return true;
-            /*return (role == UserRole.Employee) ||
-                   (role == UserRole.Manager) ||
-                   (role == UserRole.PersonnelManager);*/
         }
 
         #endregion

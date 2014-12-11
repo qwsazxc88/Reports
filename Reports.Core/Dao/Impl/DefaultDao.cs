@@ -205,10 +205,12 @@ namespace Reports.Core.Dao.Impl
                         then '„ерновик сотрудника'    
                 else ''
             end as RequestStatus";
+
         protected const string sqlUManagerAccountJoin = @"left join [dbo].[Users] uManagerAccount
                                                             on (uManagerAccount.RoleId & 4) > 0
                                                                 and u.Email = uManagerAccount.Email
                                                                 and uManagerAccount.IsActive = 1";
+
         protected const string sqlCurrentUserJoin = @"inner join dbo.Users currentUser
                                                         on currentUser.Id = :userId";
         
@@ -467,9 +469,8 @@ namespace Reports.Core.Dao.Impl
                         case 5:
                         case 6:
                             // ¬ыборка замов и руководителей нижележащих уровней по ветке дл€ применени€ автоматических прав уровней 4-6
-                            sqlQueryPart += @" select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
-                            inner join dbo.Users currentUser
-                                on currentUser.Id = {0}
+                            sqlQueryPart += @" 
+                            select distinct managerEmployeeAccount.Id from dbo.Users managerEmployeeAccount
                             inner join dbo.Users managerManagerAccount
                                 on managerManagerAccount.Login = managerEmployeeAccount.Login+N'R'
                                 and managerManagerAccount.RoleId = 4
@@ -502,8 +503,10 @@ namespace Reports.Core.Dao.Impl
                             sqlQueryPart += @"
                                 union
                                 select distinct employee.Id from Users employee
-                                    inner join dbo.Users currentUser
-                                        on currentUser.Id = {0}
+                                    left join [dbo].[Users] employeeManagerAccount
+                                    on (employeeManagerAccount.RoleId & 4) > 0
+                                        and employeeManagerAccount.Login = u.Login+N'R'
+                                        and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                     on employee.DepartmentId = employeeDept.Id 
                                       -- »сключить состо€щих в ветке руководства
@@ -511,6 +514,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                     on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
+                                    and employeeManagerAccount.Id is null
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
@@ -530,14 +534,22 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 2)", userId);
                     sqlQueryPart += string.Format(@"
-                        or u.DepartmentId in
+                        or 
                         (
-                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
-                                inner join Department targetDept
-                                    on targetDept.Id = mrr.TargetDepartmentId
-                                inner join [dbo].[Department] branchDept
-                                    on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = {0} and mrr.RoleId = 2 and (u.RoleId & 2) > 0                            
+                            (u.RoleId & 2) > 0
+                            and
+                            u.DepartmentId in
+                            (
+                                select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                    inner join Department targetDept
+                                        on targetDept.Id = mrr.TargetDepartmentId
+                                    inner join [dbo].[Department] branchDept
+                                        on branchDept.Path like targetDept.Path + '%'
+                                    inner join Users
+                                        on mrr.UserId = {0}
+                                    inner join Role
+                                        on mrr.RoleId = 1
+                            )
                         )
                         ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);
