@@ -491,6 +491,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             get { return Validate.Dependency(missionPurchaseBookRecordDao); }
             set { missionPurchaseBookRecordDao = value; }
         }
+        protected IManualRoleRecordDao manualRoleRecordDao;
+        public IManualRoleRecordDao ManualRoleRecordDao
+        {
+            get { return Validate.Dependency(manualRoleRecordDao); }
+            set { manualRoleRecordDao = value; }
+        }
+
         protected IConfigurationService configurationService;
         public IConfigurationService ConfigurationService
         {
@@ -5605,16 +5612,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             if(user.Manager != null)
                 model.ManagerName = user.Manager.FullName;
 
+            // Руководители до 4 уровня по ветке
             IList<User> managers = GetManagersForEmployee(user.Id)
-                .Where<User>(manager => manager.Level >= 3)
+                .Where<User>(manager => manager.Level >= 4)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
+            // + руководители по ручным привязкам
+            managers.Concat(ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests));
+            managers = managers.Distinct().ToList();
 
             StringBuilder managersBuilder = new StringBuilder();
             foreach(var manager in managers)
             {
                 managersBuilder.AppendFormat("{0} ({1}), ", manager.Name, manager.Position == null ? "<не указана>": manager.Position.Name);
             }
+
             // Cut off trailing ", "
             if (managersBuilder.Length >= 2)
             {
@@ -5638,7 +5650,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         /// <summary>
-        /// Получить всех руководителей сотрудника
+        /// Получить руководителей сотрудника по ветке
         /// </summary>
         /// <param name="user">Сотрудник, для которого требуется найти руководителей</param>
         /// <returns>Список руководителей</returns>
