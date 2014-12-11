@@ -380,7 +380,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
@@ -397,7 +397,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
-            if(departmentId != 0 && managerRole != UserRole.Employee)
+            if(departmentId != 0 && (managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
 
             sqlQuery += @" where " + sqlWhere;
@@ -410,7 +410,7 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if (managerRole != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
                 query.SetInt32("userId", managerId);
             if(!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%"+userName+"%");
@@ -474,7 +474,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     throw new ArgumentException(string.Format("Неизвестная роль {0}",(int)managerRole));
             }
-            if (departmentId != 0 && managerRole != UserRole.Employee)
+            if (departmentId != 0 && (managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
 
             sqlQuery += @" where " + sqlWhere;
@@ -487,7 +487,7 @@ namespace Reports.Core.Dao.Impl
             query.
                 SetDateTime("beginDate", beginDate).
                 SetDateTime("endDate", endDate);
-            if (managerRole != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
                 query.SetInt32("userId", managerId);
             if (!string.IsNullOrEmpty(userName))
                 query.SetString("userName", "%" + userName + "%");
@@ -652,7 +652,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join Users
                                         on mrr.UserId = :userId
                                     inner join Role
-                                        on mrr.RoleId = 1
+                                        on mrr.RoleId = 2
                             )
                         )
                         ", sqlWhere);
@@ -665,7 +665,7 @@ namespace Reports.Core.Dao.Impl
                 default:
                     break;
             }
-            if(managerRole != UserRole.Employee)
+            if((managerRole & UserRole.Employee) != UserRole.Employee)
                 sqlWhere = GetDepartmentWhere(sqlWhere, departmentId);
             sqlQuery += @" where " + sqlWhere;
             sqlQuery += @" order by u.Name,u.Id ";
@@ -846,7 +846,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("UserId", NHibernateUtil.Int32).
                 AddScalar("UserName", NHibernateUtil.String).
                 AddScalar("DateAccept", NHibernateUtil.DateTime);
-            if (managerRole != UserRole.OutsourcingManager)
+            if ((managerRole & UserRole.OutsourcingManager) != UserRole.OutsourcingManager)
                 query.SetInt32("userId", userId);
             query.SetDateTime("beginDate", beginDate);
             query.SetDateTime("endDate", endDate);

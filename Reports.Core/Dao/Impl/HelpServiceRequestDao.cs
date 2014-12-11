@@ -55,7 +55,9 @@ namespace Reports.Core.Dao.Impl
                                      when v.[ConfirmWorkDate] is not null then N'Услуга оказана' 
                                     else N''
                                 end as Status,
-                                v.Address as address
+                                v.Address as address,
+                                J.Name as Dep3Name,
+                                L.Name as ProdTimeName
                                 from dbo.HelpServiceRequest v
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpServiceTransferMethod] m on v.[TransferMethodId] = m.Id
@@ -63,6 +65,11 @@ namespace Reports.Core.Dao.Impl
                                 inner join [dbo].[Users] crUser on crUser.Id = v.CreatorId
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
+                                LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
+                                LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
+                                LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
+                                LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
                                 {0}";
         
         public override IQuery CreateQuery(string sqlQuery)
@@ -82,7 +89,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("StatusNumber", NHibernateUtil.Int32).
                 AddScalar("Status", NHibernateUtil.String).
                 AddScalar("Number", NHibernateUtil.Int32).
-                AddScalar("Address", NHibernateUtil.String);  
+                AddScalar("Address", NHibernateUtil.String).
+                AddScalar("Dep3Name", NHibernateUtil.String).
+                AddScalar("ProdTimeName", NHibernateUtil.String);  
         }
         public List<HelpServiceRequestDto> GetDocuments(int userId,
                 UserRole role,
@@ -97,12 +106,22 @@ namespace Reports.Core.Dao.Impl
                 string Address)
         {
             string sqlQuery = sqlSelectForHsList;
+
+            //для кадровиков показываем вопросы по своим дирекциям
+            if (role == UserRole.ConsultantOutsorsingManager)
+            {
+                sqlQuery = string.Format(sqlQuery, string.Empty);
+                sqlQuery += "INNER JOIN [dbo].[UserToPersonnel] as N ON N.[UserID] = v.[UserID] and N.[PersonnelId] = " + userId.ToString() + " {0}";
+            }
+
             string whereString = GetWhereForUserRole(role, userId, ref sqlQuery);
             whereString = GetStatusWhere(whereString, statusId);
             whereString = GetDatesWhere(whereString, beginDate, endDate);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
+            
+
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -161,6 +180,12 @@ namespace Reports.Core.Dao.Impl
                 case 10:
                     orderBy = @" order by Status";
                     break;
+                case 11:
+                    orderBy = @" order by Dep3Name";
+                    break;
+                case 12:
+                    orderBy = @" order by ProdTimeName";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -208,6 +233,12 @@ namespace Reports.Core.Dao.Impl
                     //return sqlQueryPart;
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
+                case UserRole.PersonnelManager:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return @"  v.[TypeId] in (2, 4, 5) ";
+                case UserRole.ConsultantOutsorsingManager:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return @"  v.[TypeId] in (1, 3, 6) ";
                 case UserRole.Admin:
                     sqlQuery = string.Format(sqlQuery,string.Empty);
                     return string.Empty;

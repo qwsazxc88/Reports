@@ -187,7 +187,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
             if (whereString.Length > 0)
                 whereString += @" and ";
-            if(role != UserRole.Director)
+            if((role & UserRole.Director) != UserRole.Director)
                 whereString += @" v.IsAdditional = 0 ";
             else
                 whereString += @" ((v.IsAdditional = 0) or (ao.NeedToAcceptByChief = 1)) ";

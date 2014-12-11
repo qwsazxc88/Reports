@@ -402,30 +402,7 @@ namespace WebMvc.Controllers
                 ModelState.AddModelError("BeginDate", "Дата в поле <Период с> не может быть больше даты в поле <по>.");
             return ModelState.IsValid;
         }
-        //[HttpGet]
-        //public ActionResult TimesheetEdit(int Id)
-        //{
-        //    TimesheetEditModel model = new TimesheetEditModel
-        //    {
-        //        Id = Id
-        //    };
-        //    EmployeeBl.GetTimesheetEditModel(model);
-        //    return View(model);
-        //}
-        //[HttpPost]
-        //public ActionResult TimesheetEdit(TimesheetEditModel model)
-        //{
-        //    CorrectTimesheetEditCheckboxes(model);
-        //    EmployeeBl.SetTimesheet(model);
-        //    if(AuthenticationService.CurrentUser.UserRole == UserRole.Employee)
-        //        return RedirectToAction("EmployeeTimesheetList");
-        //     return RedirectToAction("TimesheetList",
-        //                            new
-        //                                {
-        //                                    month = model.Month.ToString(), 
-        //                                    managerId = AuthenticationService.CurrentUser.Id
-        //                                });
-        //}
+
         protected void CorrectTimesheetEditCheckboxes(TimesheetEditModel model)
         {
             if (!model.IsNotApprovedByUserEnable && model.IsNotApprovedByUserHidden)

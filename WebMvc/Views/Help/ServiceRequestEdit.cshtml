@@ -166,6 +166,7 @@
  var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
   $(document).ready(function () {
       SetControlStates();
+      setActiveMenuItem("helpAllRequests");
       SelectTMT();
       $("#ManagerNameRow").hide();
    });
@@ -339,16 +340,20 @@
 
     function SelectTMT()
     {
+        $("#lblAddress").hide();
+        $("#Address").val('');
+        $("#Address").hide();
+
         if ($("#TransferMethodTypeId").val() == 1)
         {
-            $("#lblAddress").hide();
-            $("#Address").val('');
-            $("#Address").hide();
+            //$("#lblAddress").hide();
+            //$("#Address").val('');
+            //$("#Address").hide();
         }
         else
         {
-            $("#lblAddress").show();
-            $("#Address").show();
+            //$("#lblAddress").show();
+            //$("#Address").show();
         }
     }
 </script> 
