@@ -56,7 +56,7 @@ namespace Reports.Core.Dao.Impl
                                     else N''
                                 end as Status,
                                 v.Address as address,
-                                K.Name as Dep3Name,
+                                dep3.Name as Dep3Name,
                                 L.Name as ProdTimeName
                                 from dbo.HelpServiceRequest v
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id
@@ -65,10 +65,11 @@ namespace Reports.Core.Dao.Impl
                                 inner join [dbo].[Users] crUser on crUser.Id = v.CreatorId
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
-                                LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
-                                LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
-                                LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
-                                LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                --LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
+                                --LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
+                                --LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
+                                --LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 LEFT JOIN [dbo].[HelpServiceProductionTime] as L ON L.Id = v.ProductionTimeId
                                 {0}";
         
