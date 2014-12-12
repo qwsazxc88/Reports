@@ -56,7 +56,7 @@ namespace Reports.Core.Dao.Impl
                                     else N''
                                 end as Status,
                                 v.Address as address,
-                                J.Name as Dep3Name,
+                                K.Name as Dep3Name,
                                 L.Name as ProdTimeName
                                 from dbo.HelpServiceRequest v
                                 inner join [dbo].[HelpServiceType] t on v.TypeId = t.Id

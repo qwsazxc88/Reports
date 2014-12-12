@@ -87,7 +87,7 @@ namespace Reports.Core.Dao.Impl
                                      when v.[ConfirmWorkDate] is not null then N'Ответ на вопрос подтвержден' 
                                     else N''
                                 end as Status,
-                                J.Name as Dep3Name
+                                K.Name as Dep3Name
                                 from [dbo].[HelpQuestionRequest] v
                                 inner join [dbo].[HelpQuestionType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpQuestionSubtype] s on v.[SubtypeId] = s.Id
