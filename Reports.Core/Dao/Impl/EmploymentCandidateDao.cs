@@ -129,7 +129,6 @@ namespace Reports.Core.Dao.Impl
             return criteria.List<EmploymentCandidate>();
         }
 
-        //ok
         public override string GetWhereForUserRole(UserRole role, int currentId)
         {            
             string sqlQueryPart = string.Empty;
@@ -176,7 +175,6 @@ namespace Reports.Core.Dao.Impl
             return sqlQueryPart;
         }
 
-        //ok
         public override string GetStatusWhere(string whereString, int statusId)
         {
             if (statusId > 0)
@@ -187,7 +185,6 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        //ok
         public override string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate)
         {
             if (beginDate.HasValue)
@@ -201,7 +198,6 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        //ok
         public override string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)
@@ -236,6 +232,59 @@ namespace Reports.Core.Dao.Impl
             {
                 sqlQuery += @" where " + whereString;
             }
+
+            switch (sortedBy)
+            {
+                case 1:
+                    orderBy = "Name";
+                    break;
+                case 2:
+                    orderBy = "WorkCity";
+                    break;
+                case 3:
+                    orderBy = "Department";
+                    break;
+                case 4:
+                    orderBy = "Position";
+                    break;
+                case 5:
+                    orderBy = "EmploymentDate";
+                    break;
+                case 6:
+                    orderBy = "EmploymentOrderNumber";
+                    break;
+                case 7:
+                    orderBy = "EmploymentOrderDate";
+                    break;
+                case 8:
+                    orderBy = "ContractNumber";
+                    break;
+                case 9:
+                    orderBy = "ProbationaryPeriod";
+                    break;
+                case 10:
+                    orderBy = "Schedule";
+                    break;
+                case 11:
+                    orderBy = "DateOfBirth";
+                    break;
+                case 12:
+                    orderBy = "Disabilities";
+                    break;
+                case 13:
+                    orderBy = "Grade";
+                    break;
+                case 14:
+                    orderBy = "Status";
+                    break;
+                default:
+                    orderBy = "Name";
+                    break;
+            }
+
+            orderBy = string.Format(@" order by {0} {1} ", orderBy, (orderBy.Length > 0 && sortDescending.HasValue && sortDescending.Value) ? "desc" : string.Empty);
+
+            sqlQuery += orderBy;
 
             return sqlQuery;
         }

@@ -7,7 +7,7 @@ using Reports.Core;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class RosterModel
+    public class RosterModel: SortableModel
     {
         public bool IsCandidateInfoAvailable { get; set; }
         public bool IsBackgroundCheckAvailable { get; set; }

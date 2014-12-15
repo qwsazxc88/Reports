@@ -818,8 +818,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
-                    0,
-                    null);
+                    filters.SortBy,
+                    filters.SortDescending);
+
+                model.SortBy = filters.SortBy;
+                model.SortDescending = filters.SortDescending;
             }
 
             LoadDictionaries(model);
