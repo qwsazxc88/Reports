@@ -63,8 +63,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public IList<ForeignLanguageDto> ForeignLanguages { get; set; } //TODO: EMPL кнопка добавления
 
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
-            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
-            Required(ErrorMessage = "*")]
+            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр")]
         public string INN { get; set; } //ok
         [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
             RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
