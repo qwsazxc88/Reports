@@ -87,7 +87,7 @@ namespace Reports.Core.Dao.Impl
                                      when v.[ConfirmWorkDate] is not null then N'Ответ на вопрос подтвержден' 
                                     else N''
                                 end as Status,
-                                J.Name as Dep3Name
+                                dep3.Name as Dep3Name
                                 from [dbo].[HelpQuestionRequest] v
                                 inner join [dbo].[HelpQuestionType] t on v.TypeId = t.Id
                                 inner join [dbo].[HelpQuestionSubtype] s on v.[SubtypeId] = s.Id
@@ -98,10 +98,11 @@ namespace Reports.Core.Dao.Impl
                                 left join helr on v.Id = helr.HelpQuestionRequestId and v.[SendDate] is not null
                                 left join [dbo].[Role] r on r.Id = helr.LastRedirectId
                                 inner join dbo.Department dep on u.DepartmentId = dep.Id
-                                LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
-                                LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
-                                LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
-                                LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                --LEFT JOIN [dbo].[Department] as H ON H.Code = dep.ParentId
+                                --LEFT JOIN [dbo].[Department] as I ON I.Code = H.ParentId
+                                --LEFT JOIN [dbo].[Department] as J ON J.Code = I.ParentId
+                                --LEFT JOIN [dbo].[Department] as K ON K.Code = J.ParentId
+                                LEFT JOIN dbo.Department dep3 ON dep.[Path] like dep3.[Path]+N'%' and dep3.ItemLevel = 3 
                                 {0}";
         
         public HelpQuestionRequestDao(ISessionManager sessionManager)

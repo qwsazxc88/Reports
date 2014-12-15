@@ -774,7 +774,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                                         ((CurrentUser.UserRole & UserRole.Manager) == UserRole.Manager || (CurrentUser.UserRole & UserRole.Employee) == UserRole.Employee)) ||
                                         (request.Consultant != null && 
                                             CurrentUser.Id == request.Consultant.Id && 
-                                            (CurrentUser.UserRole & UserRole.ConsultantOutsourcing) == UserRole.ConsultantOutsourcing)
+                                            CurrentUser.UserRole == UserRole.ConsultantOutsourcing) ||
+                                         (request.Consultant != null &&
+                                            CurrentUser.Id == request.Consultant.Id &&
+                                            CurrentUser.UserRole == UserRole.PersonnelManager) ||
+                                         (request.Consultant != null &&
+                                            CurrentUser.Id == request.Consultant.Id &&
+                                            CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager)
                                         );
                 }
             }
