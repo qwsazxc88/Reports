@@ -14,13 +14,6 @@ namespace Reports.Core.Dao.Impl
     /// </summary>
     public class GpdContractDao : DefaultDao<GpdContract>, IGpdContractDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
-
         public GpdContractDao(ISessionManager sessionManager)
             : base(sessionManager)
         {

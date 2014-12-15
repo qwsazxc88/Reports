@@ -26,27 +26,8 @@ insert into GpdChargingType (name, code) values ('Оплата по договорам аренды иму
 --select * from Role
 --select * from Users where RoleId = 2
 --select * from gpdcontract
---SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Surname FROM GpdRefPersons ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
+--SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Surname FROM RefPeople ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
 
-IF OBJECT_ID ('updGpdContract', 'TR') IS NOT NULL
-   DROP TRIGGER updGpdContract;
-GO
-
-
-CREATE TRIGGER updGpdContract
-ON dbo.GpdContract
-AFTER INSERT, UPDATE 
-AS
-  
-	IF NOT EXISTS (SELECT * FROM GpdMagProlongation as A
-								 INNER JOIN inserted as B ON B.Id = A.GCID and B.DateP = A.DateP) and 
-								 (SELECT DateP FROM inserted) is not null
-	
-  INSERT INTO GpdMagProlongation (GCID, DateP, CreatorID)
-  SELECT Id, DateP, CreatorID
-  FROM inserted 
-	
-GO
 
 
 IF OBJECT_ID ('vwGpdContractList', 'V') IS NOT NULL
@@ -55,20 +36,23 @@ GO
 
 CREATE VIEW [dbo].[vwGpdContractList]
 AS
-SELECT     A.Id, A.Version, A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
-                      C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, A.DateEnd, A.PayeeID, A.PayerID, A.GPDID, 
-                      A.PurposePayment, A.DateP, A.DateP AS DatePOld, A.IsDraft, F.Name AS CreatorName, A.CreateDate, F.Name AS Autor, K.Name AS DepLevel3Name, 
-                      G.Name AS DepLevel7Name
+SELECT     A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
+					 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
+           C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, A.DateEnd, 
+					 A.PayeeID, A.PayerID, A.GPDID, 
+           A.PurposePayment, A.DateP as DateP, A.DateP AS DatePOld, A.IsDraft, F.Name AS CreatorName, A.CreateDate, F.Name AS Autor, dep3.Name AS DepLevel3Name, 
+           G.Name AS DepLevel7Name
 FROM         dbo.GpdContract AS A INNER JOIN
-                      dbo.GpdRefPersons AS B ON B.Id = A.PersonID INNER JOIN
+                      dbo.RefPeople AS B ON B.Id = A.PersonID INNER JOIN
                       dbo.GpdChargingType AS C ON C.Id = A.CTID INNER JOIN
                       dbo.GpdRefStatus AS E ON E.Id = A.StatusID LEFT OUTER JOIN
-                      dbo.Users AS F ON F.Id = A.CreatorID INNER JOIN
-                      dbo.Department AS G ON G.Id = A.DepartmentId LEFT OUTER JOIN
-                      dbo.Department AS H ON H.Code = G.ParentId LEFT OUTER JOIN
-                      dbo.Department AS I ON I.Code = H.ParentId LEFT OUTER JOIN
-                      dbo.Department AS J ON J.Code = I.ParentId LEFT OUTER JOIN
-                      dbo.Department AS K ON K.Code = J.ParentId
+                      dbo.Users AS F ON F.Id = A.CreatorID 
+											INNER JOIN dbo.Department AS G ON G.Id = A.DepartmentId 
+											--LEFT OUTER JOIN dbo.Department AS H ON H.Code = G.ParentId 
+											--LEFT OUTER JOIN dbo.Department AS I ON I.Code = H.ParentId 
+											--LEFT OUTER JOIN dbo.Department AS J ON J.Code = I.ParentId 
+											--LEFT OUTER JOIN dbo.Department AS K ON K.Code = J.ParentId
+											LEFT JOIN dbo.Department as dep3 ON G.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
 
 GO
 
@@ -105,7 +89,7 @@ GO
 CREATE VIEW [dbo].[vwGpdRefPersons]
 AS
 SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Name, SNILS
-FROM GpdRefPersons 
+FROM RefPeople 
 --ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
 GO
 

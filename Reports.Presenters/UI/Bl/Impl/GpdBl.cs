@@ -145,7 +145,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     gpdrefDetail = new GpdRefDetail
                     {
-                        Id = model.Id,
+                        //Id = model.Id,
                         Name = model.Name,
                         DTID = model.DTID,
                         INN = model.INN,
@@ -160,7 +160,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 else
                 {
-                    gpdrefDetail.Id = model.Id;
+                    //gpdrefDetail.Id = model.Id;
                     gpdrefDetail.Name = model.Name;
                     gpdrefDetail.DTID = model.DTID;
                     gpdrefDetail.INN = model.INN;
@@ -169,7 +169,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdrefDetail.BankName = model.BankName;
                     gpdrefDetail.BankBIK = model.BankBIK;
                     gpdrefDetail.CorrAccount = model.CorrAccount;
-                    gpdrefDetail.CreatorID = currentUseId.Id;
+                    gpdrefDetail.CreatorID = model.CreatorID;
                     gpdrefDetail.Code = model.Code;
                 }
                 GpdRefDetailDao.SaveAndFlush(gpdrefDetail);
@@ -283,7 +283,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 foreach (var doc in model.Contracts)
                 {
-                    model.Id = doc.Id;
+                    //model.Id = doc.Id;
                     model.CreatorID = doc.CreatorID;
                     model.DepartmentId = doc.DepartmentId;
                     model.DepartmentName = doc.DepartmentName;
@@ -301,6 +301,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.GPDID = doc.GPDID;
                     model.PurposePayment = doc.PurposePayment;
                     model.IsDraft = doc.IsDraft;
+                    //model.IsDraft = true;
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
@@ -425,7 +426,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="ms"></param>
         public void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
-            if (!model.IsDraft)
+            bool hasError = false;
+            SetGpdContractPersons(model, hasError);
+            SetGpdContractChargingTypes(model, hasError);
+            SetGpdContractDetails(model, hasError);
+            SetGpdContractStatuses(model, hasError);
+
+            if (!model.IsDraft && model.Id != 0)
             {
                 if (model.DateP != null)
                 {
@@ -448,7 +455,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     ms.AddModelError("PersonID", "Выберите физическое лицо из списка!");
 
                 if (model.CTID == 0)
-                    ms.AddModelError("STID", "Выберите вид начисления из списка!");
+                    ms.AddModelError("CTID", "Выберите вид начисления из списка!");
 
                 if (model.NameContract == null)
                     ms.AddModelError("NameContract", "Заполните поле 'Наименование договора'!");
@@ -488,12 +495,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //if (ms.Count != 0)
             //    model.IsDraft = true;
-
-            bool hasError = false;
-            SetGpdContractPersons(model, hasError);
-            SetGpdContractChargingTypes(model, hasError);
-            SetGpdContractDetails(model, hasError);
-            SetGpdContractStatuses(model, hasError);
         }
         /// <summary>
         /// Процедура сохранения договора в базе данных.
@@ -503,18 +504,18 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveGpdContract(GpdContractEditModel model, out string error)
         {
             error = string.Empty;
-            //UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             IUser currentUseId = AuthenticationService.CurrentUser;
 
             try
             {
-                GpdContract gpdContract = GpdContractDao.Get(model.Id);
+                GpdContract gpdContract;// = GpdContractDao.Get(model.Id);
 
-                if (gpdContract == null)
+                if (model.Id == 0)
                 {
                     gpdContract = new GpdContract
                     {
-                        Id = model.Id,
+                        //Id = model.Id,
                         CreatorID = currentUseId.Id,
                         DepartmentId = model.DepartmentId,
                         PersonID = model.PersonID,
@@ -529,18 +530,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         GPDID = model.GPDID,
                         PurposePayment = model.PurposePayment,
                         IsDraft = model.IsDraft,
-                        DateP = model.DateP
+                        DateP = model.DateP,                        
+                        MagEntities = new List<GpdMagProlongation>()
                     };
                 }
                 else
                 {
+                    gpdContract = GpdContractDao.Get(model.Id);
                     if (!gpdContract.IsDraft)
                     {
-                        gpdContract.DateP = model.DateP;
+                        if (model.DateP.HasValue)
+                            gpdContract.DateP = model.DateP.Value;
                     }
                     else
                     {
-                        //gpdContract.Id = model.Id;
                         gpdContract.CreatorID = currentUseId.Id;
                         gpdContract.DepartmentId = model.DepartmentId;
                         gpdContract.PersonID = model.PersonID;
@@ -548,16 +551,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.StatusID = model.StatusID;
                         gpdContract.NumContract = model.NumContract;
                         gpdContract.NameContract = model.NameContract;
-                        gpdContract.DateBegin = model.DateBegin;
-                        gpdContract.DateEnd = model.DateEnd;
+                        gpdContract.DateBegin = model.DateBegin.Value;
+                        gpdContract.DateEnd = model.DateEnd.Value;
                         gpdContract.PayeeID = model.PayeeID;
                         gpdContract.PayerID = model.PayerID;
                         gpdContract.GPDID = model.GPDID;
                         gpdContract.PurposePayment = model.PurposePayment;
                         gpdContract.IsDraft = model.IsDraft;
-                        gpdContract.DateP = model.DateP;
+                        if (model.DateP.HasValue)
+                            gpdContract.DateP = model.DateP.Value;
                     }
                 }
+
+                ChangeEntityProperties(gpdContract, model, currentUseId.Id);
                 GpdContractDao.SaveAndFlush(gpdContract);
                 model.Id = gpdContract.Id;
                 return true;
@@ -575,6 +581,28 @@ namespace Reports.Presenters.UI.Bl.Impl
                 //SetStaticFields(model, missionHotels);
                 //LoadDictionaries(model);
                 //SetHiddenFields(model);
+            }
+        }
+        /// <summary>
+        /// Редактируем подчиненную строку (журнал дат пролонгации договоров)
+        /// </summary>
+        /// <param name="entity">Объект договора.</param>
+        /// <param name="model">Модель.</param>
+        /// <param name="UserID">ID пользователя.</param>
+        protected void ChangeEntityProperties(GpdContract entity, GpdContractEditModel model, int UserID)
+        {
+            //if (model.Id == 0) return;
+            if (model.DateP.HasValue && model.DatePOld != model.DateP)
+            {
+                //создаем строку для подчиненной таблицы
+                GpdMagProlongation MagProlong = new GpdMagProlongation
+                {
+                    //GCID = entity.Id,
+                    DateP = model.DateP,
+                    CreatorID = UserID,
+                    GpdContracts = entity
+                };
+                entity.MagEntities.Add(MagProlong);
             }
         }
         #endregion

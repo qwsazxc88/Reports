@@ -14,13 +14,6 @@ namespace Reports.Core.Dao.Impl
     /// </summary>
     public class GpdRefDetailDao : DefaultDao<GpdRefDetail>, IGpdRefDetailDao
     {
-        protected IUserDao userDao;
-        public IUserDao UserDao
-        {
-            get { return Validate.Dependency(userDao); }
-            set { userDao = value; }
-        }
-
         public GpdRefDetailDao(ISessionManager sessionManager)
             : base(sessionManager)
         {

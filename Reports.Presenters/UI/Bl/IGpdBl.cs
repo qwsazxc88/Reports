@@ -32,6 +32,7 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContractStatuses(GpdContractEditModel model, bool hasError);
         bool SaveGpdContract(GpdContractEditModel model, out string error);
         void SetGpdContract(GpdContractModel model);
+        //void ChangeEntityProperties(GpdContract entity, GpdContractEditModel model, int UserID);
         #endregion
     }
 }

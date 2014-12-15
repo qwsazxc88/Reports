@@ -22,6 +22,9 @@ namespace Reports.Core.Domain
         public virtual int CreatorID { get; set; }
         public virtual bool IsDraft { get; set; }
         public virtual DateTime? DateP { get; set; }
+
+        //журнал изменений даты пролонгации
+        public virtual IList<GpdMagProlongation> MagEntities { get; set; }
         #endregion
 
         #region Properties
