@@ -139,6 +139,10 @@
             <div id="sort8"><a href="#" onclick = "SortChanged(8);">Номер<br />трудового<br />договора</a></div>
         </th>
 
+        <th>
+            Дата<br />окончания<br />СТД
+        </th>
+
         @* Вид работы (осн./совм.) *@
         @* Характер работы (пост./врем.) *@
 
@@ -230,6 +234,10 @@
 
             <td>
                 &nbsp;@candidate.ContractNumber
+            </td>
+
+            <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value) {<text>style="background-color:yellow"</text>}>
+                &nbsp;@candidate.ContractEndDate
             </td>
 
             @* Вид работы (осн./совм.) *@

@@ -42,6 +42,8 @@ namespace Reports.Core.Dao.Impl
                 , personnelManagers.EmploymentOrderDate EmploymentOrderDate
                 , personnelManagers.ContractNumber ContractNumber
                 , personnelManagers.ContractDate ContractDate
+                , personnelManagers.ContractEndDate ContractEndDate
+                , candidateUser.IsFixedTermContract IsFixedTermContract
                 , managers.ProbationaryPeriod ProbationaryPeriod
                 , schedule.Name Schedule
                 , generalInfo.DateOfBirth DateOfBirth
@@ -303,6 +305,8 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("EmploymentOrderDate", NHibernateUtil.DateTime)
                 .AddScalar("ContractNumber", NHibernateUtil.String)
                 .AddScalar("ContractDate", NHibernateUtil.DateTime)
+                .AddScalar("ContractEndDate", NHibernateUtil.DateTime)
+                .AddScalar("IsFixedTermContract", NHibernateUtil.Boolean)
                 .AddScalar("ProbationaryPeriod", NHibernateUtil.String)
                 .AddScalar("Schedule", NHibernateUtil.String)
                 .AddScalar("DateOfBirth", NHibernateUtil.DateTime)
