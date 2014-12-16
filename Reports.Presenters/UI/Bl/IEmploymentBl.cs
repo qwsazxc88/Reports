@@ -81,6 +81,8 @@ namespace Reports.Presenters.UI.Bl
 
         string GetStartView();
         AttachmentModel GetFileContext(int id);
-        bool DeleteAttachment(DeleteAttacmentModel model);        
+        bool DeleteAttachment(DeleteAttacmentModel model);
+
+        bool IsFixedTermContract(int userId);
     }
 }

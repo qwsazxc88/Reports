@@ -2404,5 +2404,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return "Roster";
             }
         }
+
+        public bool IsFixedTermContract(int userId)
+        {
+            User user = UserDao.Get(userId);
+            return user != null && user.IsFixedTermContract.HasValue && user.IsFixedTermContract.Value;
+        }
     }
 }

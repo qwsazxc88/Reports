@@ -547,7 +547,7 @@ namespace WebMvc.Controllers
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
             }
             model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 ViewBag.Error = error;
                 return View(model);
@@ -775,7 +775,15 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(PersonnelManagersModel model)
         {
-
+            bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            if (model.ContractEndDate == null && isFixedTermContract)
+            {
+                ModelState.AddModelError("ContractEndDate", "*");
+            }
+            if (model.ContractEndDate != null && !isFixedTermContract)
+            {
+                ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
+            }
             return ModelState.IsValid;
         }
 
