@@ -752,6 +752,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AreaMultiplier = entity.AreaMultiplier;
                 model.CompetenceAddition = entity.CompetenceAddition;
                 model.ContractDate = entity.ContractDate;
+                model.ContractEndDate = entity.ContractEndDate;
                 model.ContractNumber = entity.ContractNumber;
                 model.EmploymentDate = entity.EmploymentDate;
                 model.EmploymentOrderDate = entity.EmploymentOrderDate;
@@ -761,6 +762,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.InsurableExperienceDays = entity.InsurableExperienceDays;
                 model.InsurableExperienceMonths = entity.InsurableExperienceMonths;
                 model.InsurableExperienceYears = entity.InsurableExperienceYears;
+                model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
                 model.NorthernAreaAddition = entity.NorthernAreaAddition;
                 model.OverallExperienceDays = entity.OverallExperienceDays;
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
@@ -1164,7 +1166,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 RoleId = (int)UserRole.Candidate,
                 Department = DepartmentDao.Load(model.DepartmentId),
                 GivesCredit = false,
-                IsMainManager = false
+                IsMainManager = false,
+                IsFixedTermContract = model.IsFixedTermContract
             };
 
             EmploymentCandidate candidate = new EmploymentCandidate
@@ -2246,7 +2249,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity = new PersonnelManagers();
                 }
 
-                if (GetCandidate(viewModel.UserId).Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                EmploymentStatus candidateStatus = GetCandidate(viewModel.UserId).Status;
+
+                if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
+                    || candidateStatus == EmploymentStatus.COMPLETE)
                 {
                     entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
                     //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
@@ -2257,6 +2263,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate.User.Grade = viewModel.Grade;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
                     entity.ContractDate = viewModel.ContractDate;
+                    entity.ContractEndDate = viewModel.ContractEndDate;
                     entity.ContractNumber = viewModel.ContractNumber;
                     entity.EmploymentDate = viewModel.EmploymentDate;
                     entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;

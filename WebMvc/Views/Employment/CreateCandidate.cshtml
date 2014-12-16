@@ -35,6 +35,12 @@
             <input type="button" value="Выбрать" onclick="changeDepartment();"/>
         </div>
 
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsFixedTermContract)<br />
+            @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
+            @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
+        </div>
+
         @if (Model.IsOnBehalfOfManagerAvailable)
         {
             @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)

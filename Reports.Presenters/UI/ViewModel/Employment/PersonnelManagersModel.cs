@@ -88,6 +88,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
 
+        public bool? IsFixedTermContract { get; set; }
+
+        [Display(Name = "Окончание ТД"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ContractEndDate { get; set; }        
+
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]
         public string ApprovedByPersonnelManager { get; set; }

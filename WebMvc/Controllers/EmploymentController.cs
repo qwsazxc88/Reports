@@ -546,7 +546,7 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
             }
-            model = EmploymentBl.GetPersonnelManagersModel();
+            model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
             if (!string.IsNullOrEmpty(error))
             {
                 ViewBag.Error = error;
