@@ -41,7 +41,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Категории"),
             RegularExpression(@"^((M|[A-D]|BE|CE|DE|Tm|Tb|A1|B1|C1|D1|C1E|D1E)(,| |(, )|$))*$",
                 ErrorMessage = "Требуется список категорий, разделенных запятыми или пробелами")]
-        public string DriversLicenseCategories { get; set; } // TODO: multiselect dropdown
+        public string DriversLicenseCategories { get; set; }
 
         [Display(Name = "Водительский стаж")]
         public int? DrivingExperience { get; set; } //ok

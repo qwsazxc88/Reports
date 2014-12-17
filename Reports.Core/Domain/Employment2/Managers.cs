@@ -18,7 +18,7 @@ namespace Reports.Core.Domain
         public virtual decimal? DailySalaryBasis { get; set; }
         public virtual decimal? HourlySalaryBasis { get; set; }
         public virtual decimal? SalaryMultiplier { get; set; }
-        // TODO: EMPL несколько окладов и ставка
+        // TODO: EMPL Несколько окладов и ставка
         // public virtual decimal SalaryBasis { get; set; }
         public virtual string WorkCity { get; set; } //ok
         public virtual decimal? PersonalAddition { get; set; } //ok

@@ -191,8 +191,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public GeneralInfoModel GetGeneralInfoModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
-            //UserRole role = AuthenticationService.CurrentUser.UserRole;
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             GeneralInfoModel model = new GeneralInfoModel { UserId = userId.Value };
             LoadDictionaries(model);
@@ -271,7 +269,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public PassportModel GetPassportModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             PassportModel model = new PassportModel { UserId = userId.Value };
             Passport entity = null;
@@ -310,7 +307,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public EducationModel GetEducationModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             EducationModel model = new EducationModel { UserId = userId.Value };
             Education entity = null;
@@ -378,7 +374,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public FamilyModel GetFamilyModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             FamilyModel model = new FamilyModel { UserId = userId.Value };
             Family entity = null;
@@ -467,7 +462,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public MilitaryServiceModel GetMilitaryServiceModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             MilitaryServiceModel model = new MilitaryServiceModel { UserId = userId.Value };
             MilitaryService entity = null;
@@ -506,7 +500,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ExperienceModel GetExperienceModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ExperienceModel model = new ExperienceModel { UserId = userId.Value };
             Experience entity = null;
@@ -543,7 +536,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ContactsModel GetContactsModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ContactsModel model = new ContactsModel { UserId = userId.Value };
             Contacts entity = null;
@@ -575,7 +567,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public BackgroundCheckModel GetBackgroundCheckModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             BackgroundCheckModel model = new BackgroundCheckModel { UserId = userId.Value };
             BackgroundCheck entity = null;
@@ -637,7 +628,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             OnsiteTrainingModel model = new OnsiteTrainingModel { UserId = userId.Value };
             OnsiteTraining entity = null;
@@ -682,7 +672,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ManagersModel GetManagersModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ManagersModel model = new ManagersModel { UserId = userId.Value };
             Managers entity = null;
@@ -734,7 +723,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public PersonnelManagersModel GetPersonnelManagersModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             PersonnelManagersModel model = new PersonnelManagersModel { UserId = userId.Value };
             PersonnelManagers entity = null;
@@ -852,7 +840,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public SignersModel GetSignersModel()
         {
-            // TODO: EMPL заменить реализацией
+            // STUB: EMPL GetSignersModel
             return new SignersModel();
         }
 
@@ -1154,6 +1142,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 error = "Необходимо выбрать руководителя, от имени которого Вы добавляете кандидата.";
                 return null;
             }
+
+            // TODO: EMPL Проверка прав руководителя на подразделение
             
             User newUser = new User
             {
@@ -1376,7 +1366,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        // TODO: SaveEducationAttachments
+        // TODO: EMPL SaveEducationAttachments
 
         protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
         {
@@ -1386,7 +1376,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
             }
-            // TODO: Upload Child Birth Certificates
+            // TODO: EMPL Загрузка сканов свидетельств о рождении
         }
 
         protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
@@ -1863,7 +1853,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
-            // TODO: Добавить проверку завершенности всех предыдущих документов
+            // TODO: EMPL Добавить проверку завершенности всех предыдущих документов
             if (entity.IsFinal)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
@@ -2098,7 +2088,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            // TODO: Добавить реализацию
             IUser current = AuthenticationService.CurrentUser;
             if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
             {

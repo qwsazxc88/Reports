@@ -60,7 +60,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string CityOfBirth { get; set; } //ok
         
         [Display(Name = "Знание иностранных языков")]
-        public IList<ForeignLanguageDto> ForeignLanguages { get; set; } //TODO: EMPL кнопка добавления
+        public IList<ForeignLanguageDto> ForeignLanguages { get; set; }
 
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
             RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр")]
