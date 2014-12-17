@@ -54,7 +54,6 @@ namespace Reports.Presenters.UI.ViewModel
         public int PayerID { get; set; }
         public string GPDID { get; set;}
         public string PurposePayment { get; set; }
-        public bool IsDraft { get; set; }
         public string CreatorName { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime CreateDate { get; set; }

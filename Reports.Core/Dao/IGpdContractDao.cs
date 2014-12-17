@@ -58,7 +58,6 @@ namespace Reports.Core.Dao
         /// <param name="CTID"></param>
         /// <param name="DateBegin"></param>
         /// <param name="DateEnd"></param>
-        /// <param name="IsDraft"></param>
         /// <param name="Surname"></param>
         /// <param name="IsFind"></param>
         /// <param name="SortBy"></param>
@@ -66,31 +65,11 @@ namespace Reports.Core.Dao
         /// <returns></returns>
         IList<GpdContractDto> GetContracts(UserRole role,
                                             int Id,
-                                            //int CreatorID,
                                             int DepartmentId,
-                                            //string DepartmentName,
-                                            //int PersonID,
                                             int CTID,
-                                            //int StatusID,
-                                            //string NumContract,
-                                            //string NameContract,
                                             DateTime? DateBegin,
                                             DateTime? DateEnd,
-                                            //DateTime? DateP,
-                                            //DateTime? DatePOld,
-                                            //int PayeeID,
-                                            //int PayerID,
-                                            //string GPDID,
-                                            //string PurposePayment,
-                                            bool IsDraft,
-                                            //string CreatorName,
-                                            //DateTime CreateDate,
                                             string Surname,
-                                            //string CTName,
-                                            //string StatusName,
-                                            //string Autor,
-                                            //string DepLevel3Name,
-                                            //string DepLevel7Name,
                                             bool IsFind,
                                             int SortBy,
                                             bool? SortDescending);

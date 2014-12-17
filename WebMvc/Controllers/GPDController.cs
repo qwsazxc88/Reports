@@ -68,7 +68,6 @@ namespace WebMvc.Controllers
         /// Вызов страницы создания/редактирования договора.
         /// </summary>
         /// <param name="Id">ID записи.</param>
-        /// <param name="IsDraft">Признак черновика.</param>
         /// <returns></returns>
         [HttpGet]
         public ActionResult GpdContractEdit(int Id)
@@ -151,7 +150,7 @@ namespace WebMvc.Controllers
         public ActionResult GpdRefDetailEdit(int Id)
         {
             bool hasError = false;
-            GpdRefDetailEditModel model = GpdBl.GetMissionOrderEditModel(Id, hasError);
+            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, hasError);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -160,11 +159,12 @@ namespace WebMvc.Controllers
         /// <summary>
         /// Сохраняем данные в справочнике реквизитов.
         /// </summary>
-        /// <param name="Id"></param>
+        /// <param name="model">Модель редактирования.</param>
         /// <returns></returns>
         [HttpPost]
         public ActionResult GpdRefDetailEdit(GpdRefDetailEditModel model)
         {
+            bool hasError = false;
             ModelState.Clear();
             GpdBl.CheckFillFieldsForGpdRefDetail(model, ModelState);
             if (ModelState.Count != 0)
@@ -176,6 +176,80 @@ namespace WebMvc.Controllers
                 {
                     //думал, что после сохранения нужно возвращаться к списку
                     //return RedirectToAction("GpdRefDetail");
+                    model = GpdBl.SetRefDetailEditModel(model.Id, hasError);
+                    return View(model);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("errorMessage", error);
+                    return View(model);
+                }
+            }
+        }
+        /// <summary>
+        /// Вызываем форму просмотра актов ГПД.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GpdActList()
+        {
+            bool hasError = false;
+            GpdActListModel model = new GpdActListModel();
+            GpdBl.SetGpdActFind(model, hasError);
+            if (model.hasErrors)
+                ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
+            return View(model);
+        }
+        /// <summary>
+        /// Просмотр актов ГПД с возможными сортировками в таблице.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult GpdActList(GpdActListModel model)
+        {
+            //GpdContractModel model = new GpdContractModel();
+            bool hasError = false;
+            GpdBl.SetGpdActView(model, hasError);
+            return View(model);
+        }
+        /// <summary>
+        /// Вызываем форму создания/редактирования акта ГПД.
+        /// </summary>
+        /// <param name="Id">ID акта.</param>
+        /// <param name="GCID">ID договора.</param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GpdActEdit(int Id, int GCID)
+        {
+            bool hasError = false;
+            GpdActEditModel model = GpdBl.SetActEditModel(Id, GCID, hasError);
+            ModelState.Clear();
+            if (model.hasErrors)
+                ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
+            return View(model);
+        }
+        /// <summary>
+        /// Различные телодвижения в составлении/редактировании акта ГПД..
+        /// </summary>
+        /// <param name="model">Модель создания/редактирования акта ГПД.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult GpdActEdit(GpdActEditModel model)
+        {
+            bool hasError = false;
+            ModelState.Clear();
+            if (!model.IsCancel)
+                GpdBl.CheckFillFieldsForGpdAct(model, ModelState);
+            if (ModelState.Count != 0)
+                return View(model);
+            else
+            {
+                string error;
+                if (GpdBl.SaveGpdAct(model, out error))
+                {
+                    model = GpdBl.SetActEditModel(model.Id, model.GCID, hasError);
                     return View(model);
                 }
                 else

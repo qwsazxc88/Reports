@@ -100,7 +100,6 @@ namespace Reports.Core.Dao.Impl
         /// <param name="CTID"></param>
         /// <param name="DateBegin"></param>
         /// <param name="DateEnd"></param>
-        /// <param name="IsDraft"></param>
         /// <param name="Surname"></param>
         /// <param name="IsFind"></param>
         /// <param name="SortBy"></param>
@@ -112,7 +111,6 @@ namespace Reports.Core.Dao.Impl
                                             int CTID,
                                             DateTime? DateBegin,
                                             DateTime? DateEnd,
-                                            bool IsDraft,
                                             string Surname,
                                             bool IsFind,
                                             int SortBy,
@@ -152,25 +150,25 @@ namespace Reports.Core.Dao.Impl
             switch (SortBy)
             {
                 case 1:
-                    return " ORDER BY Id " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY Id " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 2:
-                    return " ORDER BY Surname " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY Surname " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 3:
-                    return " ORDER BY CTName " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY CTName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 4:
-                    return " ORDER BY Id " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY Id " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 5:
-                    return " ORDER BY DateBegin " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY DateBegin " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 6:
-                    return " ORDER BY DateEnd " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY DateEnd " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 7:
-                    return " ORDER BY DateP " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY DateP " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 8:
-                    return " ORDER BY DepLevel3Name " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY DepLevel3Name " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 9:
-                    return " ORDER BY DepLevel7Name " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY DepLevel7Name " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 10:
-                    return " ORDER BY StatusName " + (SortDescending.HasValue && !SortDescending.Value ? " desc" : "");
+                    return " ORDER BY StatusName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
             }
             return "";
         }
@@ -201,13 +199,13 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayerID", NHibernateUtil.Int32).
                 AddScalar("GPDID", NHibernateUtil.String).
                 AddScalar("PurposePayment", NHibernateUtil.String).
-                AddScalar("IsDraft", NHibernateUtil.Boolean).
                 AddScalar("CreatorName", NHibernateUtil.String).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Surname", NHibernateUtil.String).
                 AddScalar("Autor", NHibernateUtil.String).
                 AddScalar("DepLevel3Name", NHibernateUtil.String).
-                AddScalar("DepLevel7Name", NHibernateUtil.String);
+                AddScalar("DepLevel7Name", NHibernateUtil.String).
+                AddScalar("IsLong", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Достаем уровень подразделения.

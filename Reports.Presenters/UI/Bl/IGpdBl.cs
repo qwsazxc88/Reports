@@ -17,10 +17,10 @@ namespace Reports.Presenters.UI.Bl
         void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms);
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
-        GpdRefDetailEditModel GetMissionOrderEditModel(int id, bool hasError);
+        GpdRefDetailEditModel SetRefDetailEditModel(int id, bool hasError);
         #endregion
 
-        #region Договора
+        #region Договоры
         void SetGpdContractView(GpdContractModel model, bool hasError);
         void SetGpdContractStatuses(GpdContractModel model, bool hasError);
         void SetGpdContractChargingTypes(GpdContractModel model, bool hasError);
@@ -32,7 +32,14 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContractStatuses(GpdContractEditModel model, bool hasError);
         bool SaveGpdContract(GpdContractEditModel model, out string error);
         void SetGpdContract(GpdContractModel model);
-        //void ChangeEntityProperties(GpdContract entity, GpdContractEditModel model, int UserID);
+        #endregion
+
+        #region Акты
+        GpdActEditModel SetActEditModel(int Id, int GCID, bool hasError);
+        void CheckFillFieldsForGpdAct(GpdActEditModel model, System.Web.Mvc.ModelStateDictionary ms);
+        bool SaveGpdAct(GpdActEditModel model, out string error);
+        void SetGpdActFind(GpdActListModel model, bool hasError);
+        void SetGpdActView(GpdActListModel model, bool hasError);
         #endregion
     }
 }

@@ -20,8 +20,8 @@ namespace Reports.Core.Domain
         public virtual string GPDID { get; set; }
         public virtual string PurposePayment { get; set; }
         public virtual int CreatorID { get; set; }
-        public virtual bool IsDraft { get; set; }
         public virtual DateTime? DateP { get; set; }
+        public virtual bool IsLong { get; set; }
 
         //журнал изменений даты пролонгации
         public virtual IList<GpdMagProlongation> MagEntities { get; set; }

@@ -187,6 +187,8 @@
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\OnsiteTrainingModel.cs" />
     <Compile Include="UI\ViewModel\Employment\AbstractEmploymentModel.cs" />
+    <Compile Include="UI\ViewModel\GpdActEditModel.cs" />
+    <Compile Include="UI\ViewModel\GpdActListModel.cs" />
     <Compile Include="UI\ViewModel\GpdContractEditModel.cs" />
     <Compile Include="UI\ViewModel\GpdContractModel.cs" />
     <Compile Include="UI\ViewModel\GpdRefDetailEditModel.cs" />

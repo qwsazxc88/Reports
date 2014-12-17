@@ -66,9 +66,6 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Назначение платежа")]
         public string PurposePayment { get; set; }
 
-        [Display(Name = "Черновик")]
-        public bool IsDraft { get; set; }
-
         [Display(Name = "Автор")]
         public string Autor { get; set; }
 
@@ -84,5 +81,6 @@ namespace Reports.Presenters.UI.ViewModel
         public string CreatorName { get; set; }
         public System.DateTime CreateDate { get; set; }
         public bool IsFind { get; set; }
+        public bool IsLong { get; set; }
     }
 }

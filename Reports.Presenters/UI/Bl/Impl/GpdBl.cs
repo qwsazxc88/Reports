@@ -197,7 +197,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="id">Значение ID.</param>
         /// <param name="hasError">Признак ошибки.</param>
         /// <returns></returns>
-        public GpdRefDetailEditModel GetMissionOrderEditModel(int Id, bool hasError)
+        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, bool hasError)
         {
             GpdRefDetailEditModel model = new GpdRefDetailEditModel();
             SetGpdRefDetailTypes(model);
@@ -274,7 +274,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId, 
                 model.CTID, 
                 null, null,
-                model.IsDraft, 
                 model.Surname, 
                 model.IsFind,
                 0, null);
@@ -300,8 +299,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayerID = doc.PayerID;
                     model.GPDID = doc.GPDID;
                     model.PurposePayment = doc.PurposePayment;
-                    model.IsDraft = doc.IsDraft;
-                    //model.IsDraft = true;
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
@@ -314,7 +311,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             else
-                model.IsDraft = true;
+                model.StatusID = 4;
 
             return model;
         }
@@ -390,31 +387,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.Contracts = GpdContractDao.GetContracts(role,
                 model.Id,
-                //model.CreatorID,
                 model.DepartmentId,
-                //model.DepartmentName,
-                //model.PersonID,
                 model.CTID,
-                //model.StatusID,
-                //model.NumContract,
-                //model.NameContract,
                 model.DateBegin,
                 model.DateEnd,
-                //model.DateP,
-                //model.DatePOld,
-                //model.PayeeID,
-                //model.PayerID,
-                //model.GPDID,
-                //model.PurposePayment,
-                model.IsDraft,
-                //model.CreatorName,
-                //model.CreateDate,
                 model.Surname,
-                //model.CTName,
-                //model.StatusName,
-                //model.Autor, 
-                //model.DepLevel3Name,
-                //model.DepLevel7Name,
                 model.IsFind,
                 model.SortBy,
                 model.SortDescending);
@@ -432,7 +409,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetGpdContractDetails(model, hasError);
             SetGpdContractStatuses(model, hasError);
 
-            if (!model.IsDraft && model.Id != 0)
+            if (model.StatusID != 4 && model.Id != 0)
             {
                 if (model.DateP != null)
                 {
@@ -466,6 +443,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.DateBegin == null)
                     ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
 
+                if (model.DateBegin < DateTime.Today && model.DateBegin.Value.Month != DateTime.Today.Month)
+                    ms.AddModelError("DateBegin", "Дата начала срока действия договора должна входить в текущий месяц!");
+
                 if (model.DateEnd == null)
                     ms.AddModelError("DateEnd", "Укажите дату окончания действия договора!");
 
@@ -491,10 +471,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PurposePayment == null)
                     ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
             }
-            
-
-            //if (ms.Count != 0)
-            //    model.IsDraft = true;
         }
         /// <summary>
         /// Процедура сохранения договора в базе данных.
@@ -520,7 +496,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         DepartmentId = model.DepartmentId,
                         PersonID = model.PersonID,
                         CTID = model.CTID,
-                        StatusID = model.IsDraft ? 4 : 2,
+                        StatusID = model.StatusID,
                         NumContract = model.NumContract,
                         NameContract = model.NameContract,
                         DateBegin = model.DateBegin,
@@ -529,18 +505,21 @@ namespace Reports.Presenters.UI.Bl.Impl
                         PayerID = model.PayerID,
                         GPDID = model.GPDID,
                         PurposePayment = model.PurposePayment,
-                        IsDraft = model.IsDraft,
                         DateP = model.DateP,                        
+                        IsLong = model.DateP.HasValue ? true : false,
                         MagEntities = new List<GpdMagProlongation>()
                     };
                 }
                 else
                 {
                     gpdContract = GpdContractDao.Get(model.Id);
-                    if (!gpdContract.IsDraft)
+                    if (gpdContract.StatusID != 4)
                     {
                         if (model.DateP.HasValue)
+                        {
                             gpdContract.DateP = model.DateP.Value;
+                            gpdContract.IsLong = model.DateP.HasValue ? true : false;
+                        }
                     }
                     else
                     {
@@ -557,9 +536,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.PayerID = model.PayerID;
                         gpdContract.GPDID = model.GPDID;
                         gpdContract.PurposePayment = model.PurposePayment;
-                        gpdContract.IsDraft = model.IsDraft;
                         if (model.DateP.HasValue)
+                        {
                             gpdContract.DateP = model.DateP.Value;
+                            gpdContract.IsLong = true;
+                        }
                     }
                 }
 
@@ -606,6 +587,212 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
-        
+
+        #region Акты
+        public IGpdActDao gpdActDao;
+        public IGpdActDao GpdActDao
+        {
+            get { return Validate.Dependency(gpdActDao); }
+            set { gpdActDao = value; }
+        }
+        /// <summary>
+        /// Заполняем модель для создания/редактирования акта по указанному.
+        /// </summary>
+        /// <param name="Id">Значение ID акт.</param>
+        /// <param name="GCID">Занчение ID договора.</param>
+        /// <param name="hasError">Признак ошибки.</param>
+        /// <returns></returns>
+        public GpdActEditModel SetActEditModel(int Id, int GCID, bool hasError)
+        {
+            GpdActEditModel model = new GpdActEditModel();
+            UserRole role = CurrentUser.UserRole;
+            IList<GpdActDto> document = null;
+            //создание нового акта
+            if (Id == 0)
+                document = GpdActDao.GetNewAct(role, GCID);
+            else //редактирование существующего
+                document = GpdActDao.GetAct(role, Id, false, model.DateBegin, model.DateEnd, 0, null, 0, 0, false);
+
+            if (document.Count > 0)
+            {
+                foreach (var doc in document)
+                {
+                    model.Id = doc.Id;
+                    model.ActDate = doc.ActDate;
+                    model.ActNumber = (Id == 0 ? doc.GCID.ToString() + "/" + doc.GCCount.ToString() : doc.ActNumber);
+                    model.Surname = doc.Surname;
+                    model.NameContract = doc.NameContract;
+                    model.NumContract = doc.NumContract + (doc.ContractBeginDate.HasValue && doc.ContractEndDate.HasValue ? " с " + doc.ContractBeginDate.Value.ToShortDateString() + " по " + doc.ContractEndDate.Value.ToShortDateString() : "");
+                    model.ContractBeginDate = doc.ContractBeginDate;
+                    model.ContractEndDate = doc.ContractEndDate;
+                    model.DepLevel3Name = doc.DepLevel3Name;
+                    model.ChargingDate = doc.ChargingDate;
+                    model.DateBegin = doc.DateBegin;
+                    model.DateEnd = doc.DateEnd;
+                    model.Amount = doc.Amount;
+                    model.AmountPayment = doc.AmountPayment;
+                    model.POrderDate = doc.POrderDate;
+                    model.PurposePayment = doc.PurposePayment;
+                    model.ESSSNum = doc.ESSSNum;
+                    model.Autor = doc.CreatorName + (doc.CreateDate.HasValue ? " - " + doc.CreateDate.Value.ToShortDateString() : "");
+                    model.StatusName = doc.StatusName;
+                    model.StatusID = doc.StatusID;
+                    model.GCID = doc.GCID;
+                    model.CreatorID = doc.CreatorID;
+                }
+            }
+
+            return model;
+        }
+        /// <summary>
+        /// Проверки при сохранении акта ГПД.
+        /// </summary>
+        /// <param name="model">Модель.</param>
+        /// <param name="ms">Словарь.</param>
+        public void CheckFillFieldsForGpdAct(GpdActEditModel model, System.Web.Mvc.ModelStateDictionary ms)
+        {
+            if (model.ActDate == null)
+                ms.AddModelError("ActDate", "Укажите дату акта!");
+            else
+            {
+                if (model.ActDate < model.ContractBeginDate || model.ActDate > model.ContractEndDate)
+                    ms.AddModelError("ActDate", "Дата акта должна входить в период действия договора!");
+            }
+
+            if (model.ChargingDate == null)
+                ms.AddModelError("ChargingDate", "Укажите дату начисления!");
+
+            if (model.DateBegin == null)
+                ms.AddModelError("DateBegin", "Укажите начало периода оплаты!");
+
+            if (model.DateEnd == null)
+                ms.AddModelError("DateEnd", "Укажите конец периода оплаты!");
+
+            if (model.DateBegin != null && model.DateEnd != null)
+            {
+                if (model.DateBegin < model.ContractBeginDate || model.DateBegin > model.ContractEndDate)
+                    ms.AddModelError("DateBegin", "Дата начала срока оплаты должна входить в период действия договора!");
+
+                if (model.DateEnd < model.ContractBeginDate || model.DateEnd > model.ContractEndDate)
+                    ms.AddModelError("DateEnd", "Дата конца срока оплаты должна входить в период действия договора!");
+
+                if (model.DateBegin > model.DateEnd)
+                    ms.AddModelError("DateBegin", "Дата начала срока оплаты должна быть меньше даты конца срока оплаты!");
+            }
+
+
+            if (model.Amount == 0)
+                ms.AddModelError("Amount", "Сумма не должна быть равна нулю!");
+
+            if (model.PurposePayment == null)
+                ms.AddModelError("PurposePayment", "Укажите Назначение договора!");
+
+            if (model.ESSSNum == null)
+                ms.AddModelError("ESSSNum", "Укажите № заявки ЭССС!");
+
+        }
+        /// <summary>
+        /// Процедура сохранения акта в базе данных.
+        /// </summary>
+        /// <param name="model">Текущая модель.</param>
+        /// <param name="error">Переменная для возврата текста сообщения об ошибке.</param>
+        public bool SaveGpdAct(GpdActEditModel model, out string error)
+        {
+            error = string.Empty;
+            UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
+            IUser currentUseId = AuthenticationService.CurrentUser;
+
+            try
+            {
+                GpdAct gpdAct;// = GpdContractDao.Get(model.Id);
+
+                if (model.Id == 0)
+                {
+                    gpdAct = new GpdAct
+                    {
+                        CreatorID = currentUseId.Id,
+                        EditDate = DateTime.Now,
+                        EditorID = currentUseId.Id,
+                        ActNumber = model.ActNumber,
+                        ActDate = model.ActDate,
+                        GCID = model.GCID,
+                        ChargingDate = model.ChargingDate,
+                        DateBegin = model.DateBegin,
+                        DateEnd = model.DateEnd,
+                        Amount = model.Amount,
+                        PurposePayment = model.PurposePayment,
+                        ESSSNum = model.ESSSNum,
+                        StatusID = model.StatusID
+                    };
+                }
+                else
+                {
+                    gpdAct = GpdActDao.Get(model.Id);
+                    gpdAct.CreatorID = model.CreatorID;
+                    gpdAct.EditDate = DateTime.Now;
+                    gpdAct.EditorID = currentUseId.Id;
+                    gpdAct.ActNumber = model.ActNumber;
+                    gpdAct.ActDate = model.ActDate;
+                    gpdAct.GCID = model.GCID;
+                    gpdAct.ChargingDate = model.ChargingDate;
+                    gpdAct.DateBegin = model.DateBegin;
+                    gpdAct.DateEnd = model.DateEnd;
+                    gpdAct.Amount = model.Amount;
+                    gpdAct.PurposePayment = model.PurposePayment;
+                    gpdAct.ESSSNum = model.ESSSNum;
+                    gpdAct.StatusID = model.StatusID;
+                }
+
+                GpdActDao.SaveAndFlush(gpdAct);
+                model.Id = gpdAct.Id;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                GpdContractDao.RollbackTran();
+                Log.Error("Error on SaveMissionOrderEditModel:", ex);
+                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+                return false;
+            }
+            finally
+            {
+                //SetUserInfoModel(user, model);
+                //SetStaticFields(model, missionHotels);
+                //LoadDictionaries(model);
+                //SetHiddenFields(model);
+            }
+        }
+        /// <summary>
+        /// Заполняем модель просмора актов ГПД (запросная форма).
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="hasError"></param>
+        public void SetGpdActFind(GpdActListModel model, bool hasError)
+        {
+            DateTime today = DateTime.Today;
+            model.DateBegin = new DateTime(today.Year, today.Month, 1);
+            model.DateEnd = today;
+            model.Statuses = GpdActDao.GetStatuses();//список статусов
+        }
+        /// <summary>
+        /// Заполняем модель просмора актов ГПД.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель.</param>
+        /// <param name="hasError">Флажок для ошибок.</param>
+        public void SetGpdActView(GpdActListModel model, bool hasError)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Statuses = GpdActDao.GetStatuses();//список статусов
+            if (!model.IsFind)
+            {
+                DateTime today = DateTime.Today;
+                model.DateBegin = new DateTime(today.Year, today.Month, 1);
+                model.DateEnd = today;
+            }
+
+            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.SortBy, model.SortDescending);//список статусов
+            
+        }
+        #endregion
     }
 }
