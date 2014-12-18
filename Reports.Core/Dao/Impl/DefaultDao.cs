@@ -514,7 +514,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                     on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
-                                    and employeeManagerAccount.Id is null
+                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
@@ -711,7 +711,7 @@ namespace Reports.Core.Dao.Impl
                 whereString += string.Format(@"exists 
                     (select d1.ID from dbo.Department d
                      inner join dbo.Department d1 on d1.Path like d.Path +'%'
-                     and u.DepartmentID = d1.ID and d1.ItemLevel = 7 
+                     and u.DepartmentID = d1.ID --and d1.ItemLevel = 7 
                      and d.Id = {0}) "
                     , departmentId);
             }
