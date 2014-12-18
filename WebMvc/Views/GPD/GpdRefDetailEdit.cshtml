@@ -10,6 +10,7 @@
         <tr>
             <td colspan="2">
                 <h5 >
+                    <label id="errorMessage" style="color:red">@Model.errorMessage</label>
                     @Html.ValidationMessageFor(model => model.errorMessage)
                 </h5>
                 <div class="doc-wrap">

@@ -8,7 +8,7 @@
 	- заносятся только первичные данные в справочники ГПД, справочник физических лиц после запуска скрипта ОСТАНЕТСЯ ПУСТЫМ
 
 
-
+--удаление всех таблиц ГПД включая справочник физических лиц
 DROP TABLE [dbo].[GpdMagProlongation]
 GO
 DROP TABLE [dbo].[GpdМаgComments]
@@ -914,7 +914,7 @@ BEGIN
 	insert into dbo.GpdRefStatus (name) values('Черновик')
 END
 
-IF NOT EXISTS (SELECT * FROM dbo.GpdRefStatus)
+IF NOT EXISTS (SELECT * FROM dbo.GpdChargingType)
 BEGIN
 	insert into dbo.GpdChargingType (name, code) values ('Оплата по договорам подряда#3601', '3601')
 	insert into dbo.GpdChargingType (name, code) values ('Оплата по договорам подряда с ФСС#3602', '3602')

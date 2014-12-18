@@ -177,6 +177,7 @@ namespace WebMvc.Controllers
                     //думал, что после сохранения нужно возвращаться к списку
                     //return RedirectToAction("GpdRefDetail");
                     model = GpdBl.SetRefDetailEditModel(model.Id, hasError);
+                    model.errorMessage = "Запись сохранена!";
                     return View(model);
                 }
                 else
