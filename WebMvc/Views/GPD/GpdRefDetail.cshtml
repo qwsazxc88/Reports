@@ -1,0 +1,110 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Справочник реквизитов";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Справочник реквизитов</b>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:220px">
+                @Html.LabelFor(m => m.DTID):
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name")) 
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Name):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
+                <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="action-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td>
+                                @if (@Model.Permissions[0].IsCreate)
+                                {
+                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="grid">
+                    <tr>
+                        <th>Код</th>
+                        <th>Наименование</th>
+                    </tr>
+                    @if (Model.Documents != null && Model.Documents.Count > 0)
+                    {
+                        foreach (var doc in Model.Documents)
+                        {
+                            <tr>
+                                
+                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Id</a></td>
+                                <td>@doc.Name</td>
+                                @*
+                                <td>@doc.Id</td>
+                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = doc.Id, Name = doc.Name, Account = doc.Account, flgNew = false })' style="cursor:hand">Редактировать</a></td>
+                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = 0, Name = "", Account = "", flgNew = true })' style="cursor:hand">Создать</a></td>
+                                *@
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#BeginDate").datepicker();
+        //$("#EndDate").datepicker();
+        //$(".hasDatepicker").width("75px");
+        //setSortFields();
+        setActiveMenuItem("moGpdRefDetail");
+    });
+
+    function resetFilter() {
+        //$("#TypeId").val('0');
+        $("#DTID").val('1');
+        $("#Name").val('');
+
+    }
+ </script>   
+

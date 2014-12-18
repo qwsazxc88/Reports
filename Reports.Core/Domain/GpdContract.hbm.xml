@@ -1,0 +1,29 @@
+﻿<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" namespace="Reports.Core.Domain" assembly="Reports.Core" >
+  <class name="GpdContract" table="GpdContract">
+    <id name="Id" >
+      <generator class="native" />
+    </id>
+    <version name="Version" column= "Version"/>
+    <property name="DepartmentId" not-null="false"/>
+    <property name="CreatorID" not-null="false"/>
+    <property name="PersonID" not-null="false"/>
+    <property name="CTID" not-null="false"/>
+    <property name="StatusID" not-null="false"/>
+    <property name="NumContract" not-null="false"/>
+    <property name="NameContract" not-null="false"/>
+    <property name="DateBegin" type="date" not-null="false"/>
+    <property name="DateEnd" type="date" not-null="false"/>
+    <property name="DateP" type="date" not-null="false"/>
+    <property name="PayeeID" not-null="false"/>
+    <property name="PayerID" not-null="false"/>
+    <property name="GPDID" not-null="false"/>
+    <property name="PurposePayment" not-null="false"/>
+    <property name="IsLong" not-null="false"/>
+
+    <bag name="MagEntities" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract"/>
+      <one-to-many class="GpdMagProlongation"/>
+    </bag>
+
+  </class>
+</hibernate-mapping>

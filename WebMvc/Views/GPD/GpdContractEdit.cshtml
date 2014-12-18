@@ -1,0 +1,260 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.GpdContractEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Редактирование договоров.";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="doc-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Создание/редактирование договора ГПД</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                @if (Model.Id != 0)
+                                {
+                                    @Html.DisplayTextFor(m => m.Id)
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                                @Html.ValidationMessageFor(model => model.DepartmentId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if ((Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsWrite || Model.Permissions[0].IsDraft))
+                                {
+                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PersonID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PersonID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CTID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.CTID, new SelectList(Model.ChargingTypes, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.CTID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.NameContract):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "50" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.NameContract)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.NumContract):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.NumContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "30" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.NumContract)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DateBegin):
+                            </td>
+                            <td>
+                                @if(Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.EditorFor(m => m.DateBegin)
+                                }
+                                else
+                                {
+                                    <label id="DateBegin">@RequestBl.FormatDate(@Model.DateBegin)</label>
+                                    <input type="hidden" id="HiddenDateBegin" name="HiddenDateBegin" value="@Model.DateBegin" />
+                                }
+                                
+                                @Html.LabelFor(m => m.DateEnd):
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.EditorFor(m => m.DateEnd)
+                                }
+                                else
+                                {
+                                    <label id="DateEnd">@RequestBl.FormatDate(@Model.DateEnd)</label>
+                                    <input type="hidden" id="HiddenDateEnd" name="HiddenDateEnd" value="@Model.DateEnd" />
+                                }
+                                @Html.ValidationMessageFor(model => model.DateBegin)
+                                @Html.ValidationMessageFor(model => model.DateEnd)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DateP):
+                            </td>
+                            <td>
+                                @if (DateTime.Now >= @Model.DateEnd)
+                                {
+                                    @Html.EditorFor(m => m.DateP)
+                                    @Html.ValidationMessageFor(model => model.DateP)
+                                }
+                                else
+                                {
+                                    <label id="DateP">@RequestBl.FormatDate(@Model.DateP)</label>
+                                    <input type="hidden" id="HiddenDateP" name="HiddenDateP" value="@Model.DatePOld" />
+                                }
+                                <input type="hidden" id="DatePOld" name="DatePOld" value="@Model.DatePOld" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayerID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PayerID, new SelectList(Model.Payers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PayerID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayeeID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PayeeID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.GPDID):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.GPDID, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.GPDID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PurposePayment):
+                            </td>
+                            <td>
+                                @Html.TextAreaFor(m => m.PurposePayment, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { style = "width:400px", maxlength = "500" } : (object)new { style = "width:400px", disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.PurposePayment)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Autor):
+                            </td>
+                            <td>
+                                <label id="AutorLabel">@Model.Autor</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.StatusName):
+                            </td>
+                            <td>
+                                <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
+                                <label id="StatusNameLabel">@Model.StatusName</label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="IsLong" name="IsLong" value="@Model.IsLong" />
+                @if ((@Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsDraft))
+                {
+                    <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
+                }
+                
+                @if (@Model.StatusID != 1)
+                {
+                    if (Model.Permissions[0].IsWrite)
+                    {
+                        <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
+                    }
+                    if (Model.Id != 0 && Model.StatusID != 4 && Model.Permissions[0].IsCancel)
+                    {
+                        <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
+                    }
+                }
+                
+
+                @if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCreateAct)
+                {
+                    <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
+                }
+                
+            </td>
+        </tr>
+    </table>
+}
+
+
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#DateBegin").datepicker();
+        $("#DateEnd").datepicker();
+        $("#DateP").datepicker();
+        $(".hasDatepicker").width("75px");
+        //setSortFields();
+        setActiveMenuItem("moContract");
+//        if($("#IsDraft") == false)
+//        {
+//            $(".hasDatepicker").readonly('True');
+//            //$("#DateEnd").readonly('True');
+//        }
+    });
+
+    function SaveDraft()
+    {
+        $("#StatusID").val('4');
+        return true;
+    }
+    function SaveContract()
+    {
+        $("#StatusID").val('2');
+        return true;
+    }
+    function RejectContract()
+    {
+        $("#StatusID").val('4')
+        return true;
+    }
+</script>   
