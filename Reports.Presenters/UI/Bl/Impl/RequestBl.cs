@@ -9520,6 +9520,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             return canEdit;
         }
 
+        protected bool IsUserManagerForDepartment(Department department, User user)
+        {
+            // STUB: IsCurrentManagerForDepartment
+
+
+            return true;
+        }
+
         protected void LoadDictionaries(MissionOrderEditModel model)
         {
             //model.CommentsModel = GetCommentsModel(model.Id, (int)RequestTypeEnum.Dismissal);

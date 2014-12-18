@@ -1134,16 +1134,26 @@ namespace Reports.Presenters.UI.Bl.Impl
         public int? CreateCandidate(CreateCandidateModel model, out string error)
         {
             error = string.Empty;
-            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IUser current = AuthenticationService.CurrentUser;
+            User currentUser = UserDao.Load(current.Id);
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
+            Department department = DepartmentDao.Load(model.DepartmentId);
 
-            if ((current.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
+            if ((currentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
             {
                 error = "Необходимо выбрать руководителя, от имени которого Вы добавляете кандидата.";
                 return null;
             }
 
-            // TODO: EMPL Проверка прав руководителя на подразделение
+            // TODO: EMPL Проверка прав руководителя на подразделение при создании кандидата
+            // Если руководитель, добавляющий кандидата (руководитель, за которого добавляют кандидата)
+            // не состоит по должности и не привязан вручную к выбранному подразделению или одному из его вышележащих подразделений,
+            // то ошибка
+            if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
+            {
+                error = "Необходимо выбрать подчиненное подразделение.";
+                return null;
+            }
             
             User newUser = new User
             {
@@ -1154,7 +1164,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsNew = true,
                 Name = string.Empty,
                 RoleId = (int)UserRole.Candidate,
-                Department = DepartmentDao.Load(model.DepartmentId),
+                Department = department,
                 GivesCredit = false,
                 IsMainManager = false,
                 IsFixedTermContract = model.IsFixedTermContract
@@ -1163,7 +1173,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCandidate candidate = new EmploymentCandidate
             {
                 User = newUser,
-                AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : current,
+                AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : currentUser,
                 QuestionnaireDate = DateTime.Now                
             };
             
