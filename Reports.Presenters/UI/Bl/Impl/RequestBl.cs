@@ -9520,12 +9520,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             return canEdit;
         }
 
-        protected bool IsUserManagerForDepartment(Department department, User user)
+        protected bool IsUserManagerForDepartment(Department department, User user, UserManualRole manualRole = UserManualRole.ApprovesCommonRequests)
         {
-            // STUB: IsCurrentManagerForDepartment
-
-
-            return true;
+            return
+                (
+                    (
+                    // Подчиненность подразделения по должности
+                        (user.UserRole & UserRole.Manager) == UserRole.Manager
+                        && user.Level > 3
+                        && user.Department != null
+                        && department.Path.StartsWith(user.Department.Path)
+                    )
+                    ||
+                    (
+                    // Подчиненность подразделения по ручным привязкам
+                        user.ManualRoleRecords
+                            .Where(roleRecord =>
+                                roleRecord.Role.Id == (int)manualRole
+                                && roleRecord.TargetDepartment != null
+                                && department.Path.StartsWith(roleRecord.TargetDepartment.Path)
+                            )
+                            .Count() > 0
+                    )
+                );
         }
 
         protected void LoadDictionaries(MissionOrderEditModel model)
