@@ -46,5 +46,10 @@ namespace Reports.Presenters.UI.ViewModel
         public bool hasErrors { get; set; }
 
         public IList<GpdRefDetailFullDto> Documents { get; set; }
+
+
+        //права
+        public IList<GpdPermissionDto> Permissions { get; set; }
+
     }
 }

@@ -64,5 +64,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         public int SortBy { get; set; }
         public bool? SortDescending { get; set; }
+
+
+        //права
+        public IList<GpdPermissionDto> Permissions { get; set; }
     }
 }

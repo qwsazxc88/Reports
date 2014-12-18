@@ -82,5 +82,8 @@ namespace Reports.Presenters.UI.ViewModel
         public System.DateTime CreateDate { get; set; }
         public bool IsFind { get; set; }
         public bool IsLong { get; set; }
+
+        //права
+        public IList<GpdPermissionDto> Permissions { get; set; }
     }
 }

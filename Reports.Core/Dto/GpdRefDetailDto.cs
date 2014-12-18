@@ -28,4 +28,16 @@ namespace Reports.Core.Dto
         public virtual int CreatorID { get; set; }
         public virtual string Code { get; set; }
     }
+    /// <summary>
+    /// Для прав доступа к операциям 
+    /// </summary>
+    public class GpdPermissionDto
+    {
+        public virtual bool IsCreate { get; set; }
+        public virtual bool IsDraft { get; set; }
+        public virtual bool IsWrite { get; set; }
+        public virtual bool IsCancel { get; set; }
+        public virtual bool IsComment { get; set; }
+        public virtual bool IsCreateAct { get; set; }
+    }
 }

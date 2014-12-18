@@ -53,5 +53,11 @@ namespace Reports.Core.Dao
         /// <param name="Id">Id акта ГПД.</param>
         /// <returns></returns>
         IList<GpdActCommentDto> GetComments(int Id);
+        /// <summary>
+        /// Права.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        IList<GpdPermissionDto> GetPermission(UserRole role);
     }
 }

@@ -108,7 +108,10 @@
         
         <tr>
             <td colspan="2">
-                <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных"/>
+                @if (@Model.Permissions[0].IsWrite)
+                {
+                    <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных"/>
+                }
             </td>
         </tr>
     </table>

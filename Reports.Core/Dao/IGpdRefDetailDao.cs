@@ -44,5 +44,11 @@ namespace Reports.Core.Dao
                                                 string CorrAccount,
                                                 int CreatorID,
                                                 string Code);
+        /// <summary>
+        /// Права.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        IList<GpdPermissionDto> GetPermission(UserRole role);
     }
 }

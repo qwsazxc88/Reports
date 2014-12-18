@@ -19,6 +19,28 @@ namespace Reports.Core.Dao.Impl
         {
         }
         /// <summary>
+        /// Права.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public IList<GpdPermissionDto> GetPermission(UserRole role)
+        {
+            string sqlQuery = @"SELECT * FROM [dbo].[GpdPermission] WHERE RoleID = " + (int)role + " and MenuID = 2";
+            IQuery query = CreatePermissionQuery(sqlQuery);
+            IList<GpdPermissionDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdPermissionDto))).List<GpdPermissionDto>();
+            return documentList;
+        }
+        public virtual IQuery CreatePermissionQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("IsCreate", NHibernateUtil.Boolean).
+                AddScalar("IsDraft", NHibernateUtil.Boolean).
+                AddScalar("IsWrite", NHibernateUtil.Boolean).
+                AddScalar("IsCancel", NHibernateUtil.Boolean).
+                AddScalar("IsComment", NHibernateUtil.Boolean).
+                AddScalar("IsCreateAct", NHibernateUtil.Boolean);
+        }
+        /// <summary>
         /// Список статусов договоров.
         /// </summary>
         /// <param name="role"></param>

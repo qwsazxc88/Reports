@@ -35,6 +35,53 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void SetGpdRefDetailView(GpdRefDetailModel model, bool hasError)
         {
             SetGpdRefDetailTypes(model);
+            GetPermission(model);
+        }
+        /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdRefDetailModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdRefDetailDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
+        }
+        /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdRefDetailEditModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdRefDetailDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
         }
         /// <summary>
         /// Создаем список типов реквизитов для модели просмотра.
@@ -67,6 +114,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             SetGpdRefDetailTypes(model);
             UserRole role = CurrentUser.UserRole;
+            GetPermission(model);
             model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, model.INN, model.KPP, model.Account, model.BankName, model.BankBIK, model.CorrAccount, model.CreatorID, model.Code);
         }
         /// <summary>
@@ -200,6 +248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public GpdRefDetailEditModel SetRefDetailEditModel(int Id, bool hasError)
         {
             GpdRefDetailEditModel model = new GpdRefDetailEditModel();
+            GetPermission(model);
             SetGpdRefDetailTypes(model);
             model.Id = Id;
             UserRole role = CurrentUser.UserRole;
@@ -235,6 +284,52 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { gpdContractDao = value; }
         }
         /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdContractModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdContractDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
+        }
+        /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdContractEditModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdContractDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
+        }
+        /// <summary>
         /// Просмотр договоров.
         /// </summary>
         /// <param name="model">Обрабатываемая модель.</param>
@@ -247,7 +342,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateBegin = new DateTime(today.Year, today.Month, 1);
                 model.DateEnd = today;
             }
-
+            GetPermission(model);
             SetGpdContractStatuses(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
             if (model.IsFind)
@@ -263,6 +358,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             GpdContractEditModel model = new GpdContractEditModel();
             model.Id = Id;
+            GetPermission(model);
             SetGpdContractPersons(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
             SetGpdContractDetails(model, hasError);
@@ -596,6 +692,52 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { gpdActDao = value; }
         }
         /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdActListModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdActDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
+        }
+        /// <summary>
+        /// Определяем права роли текущего пользователя.
+        /// </summary>
+        /// <param name="model"></param>
+        public void GetPermission(GpdActEditModel model)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.Permissions = GpdActDao.GetPermission(role);
+
+            //
+            if (model.Permissions.Count == 0)
+            {
+                GpdPermissionDto perm = new GpdPermissionDto();
+                perm.IsCancel = false;
+                perm.IsComment = false;
+                perm.IsCreate = false;
+                perm.IsCreateAct = false;
+                perm.IsDraft = false;
+                perm.IsWrite = false;
+
+                model.Permissions.Add(perm);
+            }
+        }
+        /// <summary>
         /// Заполняем модель для создания/редактирования акта по указанному.
         /// </summary>
         /// <param name="Id">Значение ID акт.</param>
@@ -605,6 +747,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public GpdActEditModel SetActEditModel(int Id, int GCID, bool hasError)
         {
             GpdActEditModel model = new GpdActEditModel();
+            GetPermission(model);
             UserRole role = CurrentUser.UserRole;
             IList<GpdActDto> document = null;
             //создание нового акта
@@ -744,8 +887,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdAct.ESSSNum = model.ESSSNum;
                     gpdAct.StatusID = model.StatusID;
                 }
-
-                AddComment(gpdAct, model);
+                
+                AddComment(gpdAct, model);  //добавление комментария
                 GpdActDao.SaveAndFlush(gpdAct);
                 model.Id = gpdAct.Id;
                 return true;
@@ -792,7 +935,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateBegin = new DateTime(today.Year, today.Month, 1);
                 model.DateEnd = today;
             }
-
+            GetPermission(model);
             model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.SortBy, model.SortDescending);
             
         }

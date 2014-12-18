@@ -79,5 +79,11 @@ namespace Reports.Core.Dao
         /// <param name="Id"></param>
         /// <returns></returns>
         int GetDepLevel(int Id);
+        /// <summary>
+        /// Права.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        IList<GpdPermissionDto> GetPermission(UserRole role);
     }
 }

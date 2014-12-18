@@ -18,6 +18,8 @@ namespace Reports.Presenters.UI.Bl
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
         GpdRefDetailEditModel SetRefDetailEditModel(int id, bool hasError);
+        void GetPermission(GpdRefDetailModel model);
+        void GetPermission(GpdRefDetailEditModel model);
         #endregion
 
         #region Договоры
@@ -32,6 +34,8 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContractStatuses(GpdContractEditModel model, bool hasError);
         bool SaveGpdContract(GpdContractEditModel model, out string error);
         void SetGpdContract(GpdContractModel model);
+        void GetPermission(GpdContractModel model);
+        void GetPermission(GpdContractEditModel model);
         #endregion
 
         #region Акты
@@ -40,6 +44,8 @@ namespace Reports.Presenters.UI.Bl
         bool SaveGpdAct(GpdActEditModel model, out string error);
         void SetGpdActFind(GpdActListModel model, bool hasError);
         void SetGpdActView(GpdActListModel model, bool hasError);
+        void GetPermission(GpdActListModel model);
+        void GetPermission(GpdActEditModel model);
         #endregion
     }
 }

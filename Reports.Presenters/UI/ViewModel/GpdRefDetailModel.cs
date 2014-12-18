@@ -46,5 +46,8 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }
         public bool hasErrors { get; set; }
+
+        //права
+        public IList<GpdPermissionDto> Permissions { get; set; }
     }
 }

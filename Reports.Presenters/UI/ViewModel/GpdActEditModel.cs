@@ -78,5 +78,8 @@ namespace Reports.Presenters.UI.ViewModel
 
         public IList<GpdActCommentDto> Comments { get; set; }
         public string CommentStr { get; set; }
+
+        //права
+        public IList<GpdPermissionDto> Permissions { get; set; }
     }
 }

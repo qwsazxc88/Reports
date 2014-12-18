@@ -220,7 +220,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                @if (@Model.StatusID == 4 || @Model.Id == 0)
+                @if ((@Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsWrite || Model.Permissions[0].IsDraft))
                 {
                     <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
                     <input type="submit" value="Записать" title="Сохранить акт в базе данных" onclick="SaveAct();"/>
@@ -228,12 +228,9 @@
                 
                 @if (@Model.StatusID != 1)
                 {
-                    if (@Model.StatusID != 4 && @Model.Id != 0)
+                    if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCancel)
                     {
-                    <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectAct();"/>
-                    <!--
-                    <input type="button" value="Комментарии" title="Создать комментарий для данного акта"/>
-                    -->
+                        <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectAct();"/>
                     }
                 }
             </td>
@@ -242,17 +239,21 @@
     <br />
     <div class="comment-wrap">
         <table id="CommentsTable" style="width: 100%;">
-        <tr>
-            <td>
-                @Html.TextAreaFor(m => m.CommentStr, (object)new { style = "width:400px", maxlength = "500" })
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input type="submit" value="Добавить комментарий" id="AddComment" onclick="OnAddComment();"/>
-                @* @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } *@
-            </td>
-        </tr>
+        @if (Model.Permissions[0].IsComment)
+        {
+            <tr>
+                <td>
+                    @Html.TextAreaFor(m => m.CommentStr, (object)new { style = "width:400px", maxlength = "500" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" value="Добавить комментарий" id="AddComment" onclick="OnAddComment();"/>
+                    @* @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } *@
+                </td>
+            </tr>
+        }
+        
         <tr>
             <td style="font-weight:bold">Комментарии</td>
         </tr>

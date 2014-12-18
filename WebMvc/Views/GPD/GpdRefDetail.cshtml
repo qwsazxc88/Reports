@@ -51,7 +51,10 @@
                     <table style="width:100%">
                         <tr>
                             <td>
-                                <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
+                                @if (@Model.Permissions[0].IsCreate)
+                                {
+                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
+                                }
                             </td>
                         </tr>
                     </table>

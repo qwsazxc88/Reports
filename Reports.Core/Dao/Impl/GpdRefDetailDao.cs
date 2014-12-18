@@ -19,6 +19,28 @@ namespace Reports.Core.Dao.Impl
         {
         }
         /// <summary>
+        /// Права.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public IList<GpdPermissionDto> GetPermission(UserRole role)
+        {
+            string sqlQuery = @"SELECT * FROM [dbo].[GpdPermission] WHERE RoleID = " + (int)role + " and MenuID = 1";
+            IQuery query = CreatePermissionQuery(sqlQuery);
+            IList<GpdPermissionDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdPermissionDto))).List<GpdPermissionDto>();
+            return documentList;
+        }
+        public virtual IQuery CreatePermissionQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("IsCreate", NHibernateUtil.Boolean).
+                AddScalar("IsDraft", NHibernateUtil.Boolean).
+                AddScalar("IsWrite", NHibernateUtil.Boolean).
+                AddScalar("IsCancel", NHibernateUtil.Boolean).
+                AddScalar("IsComment", NHibernateUtil.Boolean).
+                AddScalar("IsCreateAct", NHibernateUtil.Boolean);
+        }
+        /// <summary>
         /// Список типов реквизитов.
         /// </summary>
         /// <param name="role"></param>
@@ -29,7 +51,7 @@ namespace Reports.Core.Dao.Impl
                 int Id,
                 string Name)
         {
-            string sqlQuery = @"SELECT Id as Id, Name as Name FROM dbo.GpdDetailType";
+            string sqlQuery = @"SELECT * FROM [dbo].[GpdDetailType]" ;
 
             IQuery query = CreateDTQuery(sqlQuery);
             IList<GpdRefDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdRefDetailDto))).List<GpdRefDetailDto>();
@@ -69,8 +91,7 @@ namespace Reports.Core.Dao.Impl
             int CreatorID,
             string Code)
         {
-            string sqlQuery = @"SELECT Id as Id, Name as Name, DTID as DTID, INN as INN, KPP as KPP, Account as Account, BankName as BankName, BankBIK as BankBIK, CorrAccount as CorrAccount, CreatorID as CreatorID, Code as Code
-                                FROM dbo.GpdRefDetail
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetailList] 
                                 WHERE " + (Id == 0 ? ("DTID = " + DTID.ToString() + (Name == null || Name.Trim().Length == 0 ? "" : " and Name like '" + Name + "%'")) : "ID = " + Id.ToString());
 
             IQuery query = CreateGRDQuery(sqlQuery);

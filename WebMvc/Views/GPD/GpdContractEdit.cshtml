@@ -47,7 +47,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                @if ((Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsWrite || Model.Permissions[0].IsDraft))
                                 {
                                     <input type="button" value="Выбрать" onclick="changeDepartment();"/>
                                 }
@@ -196,19 +196,25 @@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="IsLong" name="IsLong" value="@Model.IsLong" />
-                @if (@Model.StatusID == 4 || @Model.Id == 0)
+                @if ((@Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsDraft))
                 {
                     <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
                 }
                 
                 @if (@Model.StatusID != 1)
                 {
-                    <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
-                    <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
+                    if (Model.Permissions[0].IsWrite)
+                    {
+                        <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
+                    }
+                    if (Model.Id != 0 && Model.StatusID != 4 && Model.Permissions[0].IsCancel)
+                    {
+                        <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
+                    }
                 }
                 
 
-                @if (@Model.StatusID != 4 && @Model.Id != 0)
+                @if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCreateAct)
                 {
                     <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
                 }
