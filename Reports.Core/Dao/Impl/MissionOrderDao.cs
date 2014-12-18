@@ -326,8 +326,8 @@ namespace Reports.Core.Dao.Impl
                 #region Managers
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
-                    if(currentUser == null)
-                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
+                    if (currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
                     
                     string sqlQueryPart = string.Empty;
                     string sqlFlag = string.Empty;
@@ -399,7 +399,7 @@ namespace Reports.Core.Dao.Impl
                                             and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         default:
-                            throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, userId, currentUser.Level));
                     }
 
                     sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
