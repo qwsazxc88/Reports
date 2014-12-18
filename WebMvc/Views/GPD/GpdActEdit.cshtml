@@ -7,7 +7,7 @@
     ViewBag.Title = "Редактирование актов.";
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("GpdActEdit", "GPD", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <table style="width:100%">
         <tr>
@@ -241,13 +241,39 @@
     </table>
     <br />
     <div class="comment-wrap">
-        <table style="width:100%">
-             <tr>
-                <td colspan="2">
-                    <div id="CommentModelContext">@Html.Partial("../Home/CommentPartial", Model.CommentsModel)</div>
-                </td>
+        <table id="CommentsTable" style="width: 100%;">
+        <tr>
+            <td>
+                @Html.TextAreaFor(m => m.CommentStr, (object)new { style = "width:400px", maxlength = "500" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit" value="Добавить комментарий" id="AddComment" onclick="OnAddComment();"/>
+                @* @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } *@
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight:bold">Комментарии</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="CommentError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@attach.Creator  @attach.CreateDate</td>
             </tr>
-        </table>
+            <tr>
+                <td class="comment-text">@attach.Comment</td>
+            </tr>   
+            }
+        }
+</table>
     </div>
 }
 
@@ -279,4 +305,9 @@
         $("#IsCancel").val('True');
         return true;
     }
+
+    function OnAddComment()
+    {
+    }
+
 </script>   

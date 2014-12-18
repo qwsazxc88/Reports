@@ -76,6 +76,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int CreatorID { get; set; }
         public bool IsCancel { get; set; }
 
-        public CommentsModel CommentsModel { get; set; }
+        public IList<GpdActCommentDto> Comments { get; set; }
+        public string CommentStr { get; set; }
     }
 }

@@ -415,6 +415,7 @@
     <Compile Include="Domain\ClearanceChecklistRole.cs" />
     <Compile Include="Domain\Employment2\EmploymentCandidate.cs" />
     <Compile Include="Domain\GpdAct.cs" />
+    <Compile Include="Domain\GpdActComment.cs" />
     <Compile Include="Domain\GpdContract.cs" />
     <Compile Include="Domain\GpdMagProlongation.cs" />
     <Compile Include="Domain\GpdRefDetail.cs" />
@@ -1082,6 +1083,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdAct.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdActComment.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -47,5 +47,11 @@ namespace Reports.Core.Dao
         /// <param name="Name"></param>
         /// <returns></returns>
         IList<GpdActStatusesDto> GetStatuses();
+        /// <summary>
+        /// Комментарии к акту ГПД.
+        /// </summary>
+        /// <param name="Id">Id акта ГПД.</param>
+        /// <returns></returns>
+        IList<GpdActCommentDto> GetComments(int Id);
     }
 }

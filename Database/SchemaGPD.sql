@@ -222,3 +222,15 @@ AS
 SELECT DTID as DTID, Id as Id, Name as Name FROM GpdRefDetail
 GO
 
+
+IF OBJECT_ID ('vwGpdActComments', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdActComments]
+GO
+
+CREATE VIEW [dbo].[vwGpdActComments]
+AS
+SELECT A.Id, A.UserId, A.ActId, A.Comment, A.CreateDate, B.Name as Creator
+FROM GpdÃ‡gComments as A
+INNER JOIN Users as B ON B.Id = A.UserId
+
+GO

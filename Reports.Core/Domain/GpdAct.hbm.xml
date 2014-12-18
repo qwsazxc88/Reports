@@ -17,5 +17,10 @@
     <property name="PurposePayment" not-null="false"/>
     <property name="ESSSNum" not-null="false"/>
     <property name="StatusID" not-null="false"/>
+
+    <bag name="Comments" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="ActId" foreign-key="FK_GpdМаgComments_GpdAct"/>
+      <one-to-many class="GpdActComment"/>
+    </bag>
   </class>
 </hibernate-mapping>

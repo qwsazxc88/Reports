@@ -47,4 +47,16 @@ namespace Reports.Core.Dto
         public int Id { get; set; }
         public string Name { get; set; }
     }
+    /// <summary>
+    /// Комментарии к акту ГПД.
+    /// </summary>
+    public class GpdActCommentDto
+    {
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public int ActId { get; set; }
+        public string Comment { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string Creator { get; set; }
+    }
 }

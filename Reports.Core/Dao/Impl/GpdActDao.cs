@@ -28,7 +28,7 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActNew] WHERE GCID = " + GCID.ToString();
 
-            IQuery query = CreateContractQuery(sqlQuery);
+            IQuery query = CreateActQuery(sqlQuery);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
             return documentList;
         }
@@ -64,16 +64,16 @@ namespace Reports.Core.Dao.Impl
             else
                 sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID) + ActListSqlOrderBy(SortBy, SortDescending);
 
-            IQuery query = CreateContractQuery(sqlQuery);
+            IQuery query = CreateActQuery(sqlQuery);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
             return documentList;
         }
         /// <summary>
-        /// Создание запроса для договоров.
+        /// Создание запроса для актов.
         /// </summary>
         /// <param name="sqlQuery"></param>
         /// <returns></returns>
-        public virtual IQuery CreateContractQuery(string sqlQuery)
+        public virtual IQuery CreateActQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
@@ -226,6 +226,35 @@ namespace Reports.Core.Dao.Impl
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
+        }
+        /// <summary>
+        /// Запрос для комментариев к акту.
+        /// </summary>
+        /// <param name="Id">Id акта ГПД.</param>
+        /// <returns></returns>
+        public IList<GpdActCommentDto> GetComments(int Id)
+        {
+            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActComments] WHERE ActId = " + Id.ToString() + " ORDER BY CreateDate";
+
+
+            IQuery query = CreateActCommentQuery(sqlQuery);
+            IList<GpdActCommentDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActCommentDto))).List<GpdActCommentDto>();
+            return documentList;
+        }
+        /// <summary>
+        /// Создание запроса для комментариев к акту.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateActCommentQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("UserId", NHibernateUtil.Int32).
+                AddScalar("ActId", NHibernateUtil.Int32).
+                AddScalar("Comment", NHibernateUtil.String).
+                AddScalar("CreateDate", NHibernateUtil.DateTime).
+                AddScalar("Creator", NHibernateUtil.String);
         }
     }
 }

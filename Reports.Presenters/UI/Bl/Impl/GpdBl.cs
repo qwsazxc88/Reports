@@ -642,6 +642,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            model.Comments = GpdActDao.GetComments(model.Id);
+
             return model;
         }
         /// <summary>
@@ -743,6 +745,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdAct.StatusID = model.StatusID;
                 }
 
+                AddComment(gpdAct, model);
                 GpdActDao.SaveAndFlush(gpdAct);
                 model.Id = gpdAct.Id;
                 return true;
@@ -790,8 +793,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd = today;
             }
 
-            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.SortBy, model.SortDescending);//список статусов
+            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.SortBy, model.SortDescending);
             
+        }
+        /// <summary>
+        /// Добавляем комментарий.
+        /// </summary>
+        /// <param name="entity">Редактируемый акт.</param>
+        /// <param name="model">Модель редактируемого акта.</param>
+        protected void AddComment(GpdAct entity, GpdActEditModel model)
+        {
+            if (model.CommentStr != null && model.CommentStr.Trim().Length != 0)
+            {
+                GpdActComment ActComment = new GpdActComment
+                {
+                    UserId = UserDao.Load(AuthenticationService.CurrentUser.Id),
+                    Comment = model.CommentStr,
+                    CreateDate = DateTime.Now,
+                    GpdActs = entity
+                };
+                entity.Comments.Add(ActComment);
+            }
         }
         #endregion
     }

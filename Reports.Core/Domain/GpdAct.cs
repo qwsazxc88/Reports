@@ -19,5 +19,7 @@ namespace Reports.Core.Domain
         public virtual string ESSSNum { get; set; }
         public virtual int StatusID { get; set; }
 
+        //комментарии
+        public virtual IList<GpdActComment> Comments { get; set; }
     }
 }
