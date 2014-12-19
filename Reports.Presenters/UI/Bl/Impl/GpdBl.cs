@@ -500,6 +500,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
             bool hasError = false;
+            GetPermission(model);
             SetGpdContractPersons(model, hasError);
             SetGpdContractChargingTypes(model, hasError);
             SetGpdContractDetails(model, hasError);
@@ -611,6 +612,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdContract = GpdContractDao.Get(model.Id);
                     if (gpdContract.StatusID != 4)
                     {
+                        gpdContract.StatusID = model.StatusID;
+
                         if (model.DateP.HasValue)
                         {
                             gpdContract.DateP = model.DateP.Value;
@@ -762,7 +765,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 {
                     model.Id = doc.Id;
                     model.ActDate = doc.ActDate;
-                    model.ActNumber = (Id == 0 ? doc.GCID.ToString() + "/" + doc.GCCount.ToString() : doc.ActNumber);
+                    model.ActNumber = (Id == 0 ? doc.NumContract.ToString() + "/" + doc.GCCount.ToString() : doc.ActNumber);
                     model.Surname = doc.Surname;
                     model.NameContract = doc.NameContract;
                     model.NumContract = doc.NumContract + (doc.ContractBeginDate.HasValue && doc.ContractEndDate.HasValue ? " с " + doc.ContractBeginDate.Value.ToShortDateString() + " по " + doc.ContractEndDate.Value.ToShortDateString() : "");
@@ -959,5 +962,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        public static string FormatDateMY(DateTime? date)
+        {
+            return date.HasValue ? date.Value.Month.ToString() + "." + date.Value.Year.ToString() : string.Empty;
+        }
+        public static string FormatDateMY(DateTime date)
+        {
+            return date.Month.ToString() + "." + date.Year.ToString();
+        }
     }
 }
