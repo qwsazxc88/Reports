@@ -20,6 +20,21 @@
                         <tr>
                             <td colspan="2">
                                 <b>Создание/редактирование договора ГПД</b>
+                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
+                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
+                                <input type="hidden" id="CTID" name="CTID" value="@Model.CTID" />
+                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
+                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
+                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
+                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
+                                <input type="hidden" id="GPDID" name="GPDID" value="@Model.GPDID" />
+                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
+                                <input type="hidden" id="Autor" name="Autor" value="@Model.Autor" />
+                                <input type="hidden" id="CreatorName" name="CreatorName" value="@Model.CreatorName" />
+                                <input type="hidden" id="CreateDate" name="CreateDate" value="@Model.CreateDate" />
+                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
+                                <input type="hidden" id="CTName" name="CTName" value="@Model.CTName" />
+                                <input type="hidden" id="StatusName" name="StatusName" value="@Model.StatusName" />
                             </td>
                         </tr>
                         <tr>
@@ -101,7 +116,7 @@
                                 else
                                 {
                                     <label id="DateBegin">@RequestBl.FormatDate(@Model.DateBegin)</label>
-                                    <input type="hidden" id="HiddenDateBegin" name="HiddenDateBegin" value="@Model.DateBegin" />
+                                    <input type="hidden" id="DateBegin" name="DateBegin" value="@Model.DateBegin" />
                                 }
                                 
                                 @Html.LabelFor(m => m.DateEnd):
@@ -112,7 +127,7 @@
                                 else
                                 {
                                     <label id="DateEnd">@RequestBl.FormatDate(@Model.DateEnd)</label>
-                                    <input type="hidden" id="HiddenDateEnd" name="HiddenDateEnd" value="@Model.DateEnd" />
+                                    <input type="hidden" id="DateEnd" name="DateEnd" value="@Model.DateEnd" />
                                 }
                                 @Html.ValidationMessageFor(model => model.DateBegin)
                                 @Html.ValidationMessageFor(model => model.DateEnd)
@@ -131,7 +146,7 @@
                                 else
                                 {
                                     <label id="DateP">@RequestBl.FormatDate(@Model.DateP)</label>
-                                    <input type="hidden" id="HiddenDateP" name="HiddenDateP" value="@Model.DatePOld" />
+                                    <input type="hidden" id="DateP" name="DateP" value="@Model.DatePOld" />
                                 }
                                 <input type="hidden" id="DatePOld" name="DatePOld" value="@Model.DatePOld" />
                             </td>

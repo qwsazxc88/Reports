@@ -7,7 +7,7 @@
     ViewBag.Title = "Редактирование актов.";
 }
 
-@using (Html.BeginForm("GpdActEdit", "GPD", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm())
 {
     <table style="width:100%">
         <tr>
@@ -20,24 +20,6 @@
                         <tr>
                             <td colspan="2">
                                 <b>Создание/редактирование акта ГПД</b>
-                                <input type="hidden" id="ContractBeginDate" name="ContractBeginDate" value="@Model.ContractBeginDate" />
-                                <input type="hidden" id="ContractEndDate" name="ContractEndDate" value="@Model.ContractEndDate" />
-                                <input type="hidden" id="ActNumber" name="ActNumber" value="@Model.ActNumber" />
-                                <input type="hidden" id="ActDate" name="ActDate" value="@Model.ActDate" />
-                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
-                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
-                                <input type="hidden" id="DepLevel3Name" name="DepLevel3Name" value="@Model.DepLevel3Name" />
-                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
-                                <input type="hidden" id="GCID" name="GCID" value="@Model.GCID" />
-                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
-                                <input type="hidden" id="IsCancel" name="IsCancel" value="@Model.IsCancel" />
-                                <input type="hidden" id="ChargingDate" name="ChargingDate" value="@Model.ChargingDate" />
-                                <input type="hidden" id="DateBegin" name="DateBegin" value="@Model.DateBegin" />
-                                <input type="hidden" id="DateEnd" name="DateEnd" value="@Model.DateEnd" />
-                                <input type="hidden" id="Amount" name="Amount" value="@Model.Amount" />
-                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
-                                <input type="hidden" id="ESSSNum" name="ESSSNum" value="@Model.ESSSNum" />
-                                
                             </td>
                         </tr>
                         <tr>
@@ -52,7 +34,7 @@
                                 }
                                 else
                                 {
-                                    <label id="ActDate">@RequestBl.FormatDate(@Model.ActDate)</label>
+                                    <label id="ActDate">@GpdBl.FormatDateMY(@Model.ActDate)</label>
                                 }
                             </td>
                         </tr>
@@ -103,12 +85,15 @@
                             <td>
                                 @if (Model.StatusID == 4 || Model.Id == 0)
                                 {
-                                    @Html.EditorFor(m => m.ChargingDate)
+                                    @*
+                                    @Html.EditorFor(m => m.ChargingDate, (object)new { onchange = @GpdBl.FormatDateMY(Model.ChargingDate) })
+                                    *@
+                                    @Html.EditorFor(m => m.ChargingDate, (object)new { onchange = "FormatDt(); }" })
                                     @Html.ValidationMessageFor(model => model.ChargingDate)
                                 }
                                 else
                                 {
-                                    <label id="ChargingDate">@Model.ChargingDate.Value.Month.ToString().@Model.ChargingDate.Value.Year.ToString()</label>
+                                    <label id="ChargingDate">@GpdBl.FormatDateMY(@Model.ChargingDate)</label>
                                 }
 
                             </td>
@@ -214,6 +199,27 @@
                                 <label id="StatusNameLabel">@Model.StatusName</label>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" id="ContractBeginDate" name="ContractBeginDate" value="@Model.ContractBeginDate" />
+                                <input type="hidden" id="ContractEndDate" name="ContractEndDate" value="@Model.ContractEndDate" />
+                                <input type="hidden" id="ActNumber" name="ActNumber" value="@Model.ActNumber" />
+                                <input type="hidden" id="ActDate" name="ActDate" value="@Model.ActDate" />
+                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
+                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
+                                <input type="hidden" id="DepLevel3Name" name="DepLevel3Name" value="@Model.DepLevel3Name" />
+                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
+                                <input type="hidden" id="GCID" name="GCID" value="@Model.GCID" />
+                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
+                                <input type="hidden" id="IsCancel" name="IsCancel" value="@Model.IsCancel" />
+                                <input type="hidden" id="ChargingDate" name="ChargingDate" value="@Model.ChargingDate" />
+                                <input type="hidden" id="DateBegin" name="DateBegin" value="@Model.DateBegin" />
+                                <input type="hidden" id="DateEnd" name="DateEnd" value="@Model.DateEnd" />
+                                <input type="hidden" id="Amount" name="Amount" value="@Model.Amount" />
+                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
+                                <input type="hidden" id="ESSSNum" name="ESSSNum" value="@Model.ESSSNum" />
+                            </td>
+                        </tr>
                     </table>
                 </div>
             </td>
@@ -281,12 +287,14 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
     $(document).ready(function () {
         $("#ActDate").datepicker();
         $("#DateBegin").datepicker();
         $("#DateEnd").datepicker();
-        $("#ChargingDate").datepicker();
+        $("#ChargingDate").datepicker();        
         $(".hasDatepicker").width("75px");
+
         setActiveMenuItem("moAct");
     });
 
@@ -309,6 +317,12 @@
 
     function OnAddComment()
     {
+        return true;
+    }
+
+    function FormatDt()
+    {
+        //$("#ChargingDate")..toString('Y');
     }
 
 </script>   
