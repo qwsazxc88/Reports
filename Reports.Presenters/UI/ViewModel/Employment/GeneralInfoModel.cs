@@ -96,8 +96,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
-        
-        [Display(Name = "Согласен на обработку своих персональных данных")]
+
+        [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         public HttpPostedFileBase PhotoFile { get; set; }

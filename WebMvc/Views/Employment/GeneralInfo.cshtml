@@ -5,6 +5,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
 
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {    
@@ -14,7 +15,7 @@
     <fieldset class="bordered doc-wrap panel">
     <legend>Общая информация</legend>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)&nbsp;@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
+            @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)
             @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
         </div>
         <div class="formfield clearleft" style="float:right">

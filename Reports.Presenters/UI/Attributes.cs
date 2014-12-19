@@ -70,6 +70,16 @@ namespace Reports.Presenters.UI
 	        }
 
 	}
+    public class RequiredTrueAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object value)
+        {
+            if (value == null) return false;
+            if (value.GetType() != typeof(bool)) throw new InvalidOperationException("Can only be used on bool props.");
+
+            return (bool)value == true;
+        }
+    }
     public abstract class MetadataAttribute : Attribute
     {
         /// <summary>

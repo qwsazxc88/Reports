@@ -21,13 +21,18 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class EmploymentBl : RequestBl, IEmploymentBl
     {
+        #region Constants
+
         public const string StrIncorrectManagerLevel = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
         public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
+        public const string StrNotAgreedToPersonalDataProcessing = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.";
 
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
         public int RUSSIAN_FEDERATION = 643;
+
+        #endregion
 
         #region Dependencies
 
@@ -690,12 +695,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 // пытаемся подтянуть его из временной учетной записи соответствующего пользователя
                 model.DepartmentId = entity.Department != null
                     ? entity.Department.Id
-                    : (entity.Candidate.User.Department.Id != null
+                    : (entity.Candidate.User.Department != null
                         ? entity.Candidate.User.Department.Id
                         : 0);
                 model.DepartmentName = entity.Department != null
                     ? entity.Department.Name
-                    : (entity.Candidate.User.Department.Id != null
+                    : (entity.Candidate.User.Department != null
                         ? entity.Candidate.User.Department.Name
                         : string.Empty);
 
@@ -763,6 +768,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.InsurableExperienceMonths = entity.InsurableExperienceMonths;
                 model.InsurableExperienceYears = entity.InsurableExperienceYears;
                 model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
+                model.Level = entity.Candidate.User.Level;
                 model.NorthernAreaAddition = entity.NorthernAreaAddition;
                 model.OverallExperienceDays = entity.OverallExperienceDays;
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
@@ -1471,68 +1477,50 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             switch (entity.GetType().Name)
             {
-                case "GeneralInfo":
-                    SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel);
-                    error = string.Empty;
-                    return true;
-                case "Passport":
-                    SetPassportEntity(entity as Passport, viewModel as PassportModel);
-                    error = string.Empty;
-                    return true;
-                case "Education":
-                    SetEducationEntity(entity as Education, viewModel as EducationModel);
-                    error = string.Empty;
-                    return true;
-                case "Family":
-                    SetFamilyEntity(entity as Family, viewModel as FamilyModel);
-                    error = string.Empty;
-                    return true;
-                case "MilitaryService":
-                    SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel);
-                    error = string.Empty;
-                    return true;
-                case "Experience":
-                    SetExperienceEntity(entity as Experience, viewModel as ExperienceModel);
-                    error = string.Empty;
-                    return true;
-                case "Contacts":
-                    SetContactsEntity(entity as Contacts, viewModel as ContactsModel);
-                    error = string.Empty;
-                    return true;
-                case "BackgroundCheck":
-                    SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel);
-                    error = string.Empty;
-                    return true;
-                //case "OnsiteTraining":
-                //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
-                //    break;
-                case "Managers":
-                    return SetManagersEntity(entity as Managers, viewModel as ManagersModel, out error);
-                case "PersonnelManagers":
-                    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
-                    error = string.Empty;
-                    return true;
+                case "GeneralInfo": return SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel, out error);
+                case "Passport": return SetPassportEntity(entity as Passport, viewModel as PassportModel, out error);
+                case "Education": return SetEducationEntity(entity as Education, viewModel as EducationModel, out error);
+                case "Family": return SetFamilyEntity(entity as Family, viewModel as FamilyModel, out error);
+                case "MilitaryService": return SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel, out error);
+                case "Experience": return SetExperienceEntity(entity as Experience, viewModel as ExperienceModel, out error);
+                case "Contacts": return SetContactsEntity(entity as Contacts, viewModel as ContactsModel, out error);
+                case "BackgroundCheck": return SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel, out error);
+                //case "OnsiteTraining": return SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel, out error);
+                case "Managers": return SetManagersEntity(entity as Managers, viewModel as ManagersModel, out error);
+                case "PersonnelManagers": return SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel, out error);
                 default:
                     error = "Неизвестный тип документа";
                     return false;
             }            
         }
 
-        protected void SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel)
+        protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
-            entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
+            error = string.Empty;
+
+            if (viewModel.AgreedToPersonalDataProcessing)
+            {
+                entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
+            }
+            else
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.GeneralInfo = entity;
             entity.Citizenship = CountryDao.Load(viewModel.CitizenshipId);
             entity.CityOfBirth = viewModel.CityOfBirth;
             entity.DateOfBirth = viewModel.DateOfBirth;
-                        
+
             entity.DisabilityCertificateDateOfIssue = viewModel.DisabilityCertificateDateOfIssue;
             entity.DisabilityCertificateExpirationDate = viewModel.DisabilityCertificateExpirationDate;
             entity.DisabilityCertificateNumber = viewModel.DisabilityCertificateNumber;
             entity.DisabilityCertificateSeries = viewModel.DisabilityCertificateSeries;
             entity.DisabilityDegree = viewModel.DisabilityDegreeId.HasValue ? DisabilityDegreeDao.Load(viewModel.DisabilityDegreeId.Value) : null;
-            
+
             entity.DistrictOfBirth = viewModel.DistrictOfBirth;
             entity.FirstName = viewModel.FirstName;
 
@@ -1575,11 +1563,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Patronymic = viewModel.IsPatronymicAbsent ? String.Empty : viewModel.Patronymic;
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
-            entity.Status = viewModel.StatusId;            
+            entity.Status = viewModel.StatusId;
+            #endregion
+
+            return true;
         }
 
-        protected void SetPassportEntity(Passport entity, PassportModel viewModel)
+        protected bool SetPassportEntity(Passport entity, PassportModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
             entity.Candidate = GetCandidate(viewModel.UserId);
@@ -1602,10 +1602,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.ZipCode = viewModel.ZipCode;
+            #endregion
+
+            return true;
         }
 
-        protected void SetEducationEntity(Education entity, EducationModel viewModel)
+        protected bool SetEducationEntity(Education entity, EducationModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Education = entity;
 
@@ -1683,13 +1695,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             entity.IsFinal = !viewModel.IsDraft;
+            #endregion
+
+            return true;
         }
 
-        protected void SetFamilyEntity(Family entity, FamilyModel viewModel)
+        protected bool SetFamilyEntity(Family entity, FamilyModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Family = entity;
-            
+
             entity.Cohabitants = viewModel.Cohabitants;
 
             if (entity.FamilyMembers == null)
@@ -1738,37 +1762,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), FamilyRelationship.CHILD, viewModel.Children[lastIndex]));
             }
 
-            entity.IsFinal = !viewModel.IsDraft;
-        }
+            entity.IsFinal = !viewModel.IsDraft; 
+            #endregion
 
-        protected FamilyMember GetFamilyMemberByRelationship(IList<FamilyMember> familyMembers, FamilyRelationship relationship)
+            return true;
+        }
+        
+        protected bool SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel, out string error)
         {
-            FamilyMember result = null;
-            for (var i = 0; i < familyMembers.Count; i++)
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
-                if (familyMembers[i].RelationshipId == relationship)
-                {
-                    result = familyMembers[i];
-                    break;
-                }
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
             }
-            return result;
-        }
 
-        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
-        {
-            familyMember.Contacts = data.Contacts;
-            familyMember.DateOfBirth = data.DateOfBirth;
-            familyMember.Name = data.Name;
-            familyMember.PassportData = data.PassportData;
-            familyMember.PlaceOfBirth = data.PlaceOfBirth;
-            familyMember.WorksAt = data.WorksAt;
-            familyMember.RelationshipId = relationship;
-            return familyMember;
-        }
-
-        protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
-        {
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.MilitaryService = entity;
             entity.CombatFitness = viewModel.CombatFitness;
@@ -1790,11 +1800,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.RegistrationExpiration = viewModel.RegistrationExpiration;
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategory = viewModel.SpecialityCategory;
-            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
+            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetExperienceEntity(Experience entity, ExperienceModel viewModel)
+        protected bool SetExperienceEntity(Experience entity, ExperienceModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Experience = entity;
 
@@ -1817,14 +1839,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsFinal = !viewModel.IsDraft;
             entity.WorkBookDateOfIssue = viewModel.WorkBookDateOfIssue;
             entity.WorkBookNumber = viewModel.WorkBookNumber;
-            entity.WorkBookSeries = viewModel.WorkBookSeries;            
+            entity.WorkBookSeries = viewModel.WorkBookSeries;
             entity.WorkBookSupplementDateOfIssue = viewModel.WorkBookSupplementDateOfIssue;
             entity.WorkBookSupplementNumber = viewModel.WorkBookSupplementNumber;
-            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries;
+            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetContactsEntity(Contacts entity, ContactsModel viewModel)
+        protected bool SetContactsEntity(Contacts entity, ContactsModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
             entity.Candidate = GetCandidate(viewModel.UserId);
@@ -1839,11 +1873,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.WorkPhone = viewModel.WorkPhone;
-            entity.ZipCode = viewModel.ZipCode;
+            entity.ZipCode = viewModel.ZipCode; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetBackgroundCheckEntity(BackgroundCheck entity, BackgroundCheckModel viewModel)
+        protected bool SetBackgroundCheckEntity(BackgroundCheck entity, BackgroundCheckModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.AutomobileLicensePlateNumber = viewModel.AutomobileLicensePlateNumber;
             entity.AutomobileMake = viewModel.AutomobileMake;
             entity.AverageSalary = viewModel.AverageSalary;
@@ -1892,7 +1938,10 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (entity.IsFinal)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
-            }
+            } 
+            #endregion
+
+            return true;
         }
 
         #region Deleted
@@ -1950,9 +1999,18 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             return true;
         }
-                
-        protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
+
+        protected bool SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
             //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
             entity.AreaAddition = viewModel.AreaAddition;
@@ -1960,6 +2018,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.PersonnelManagers = entity;
             entity.Candidate.User.Grade = viewModel.Grade;
+            entity.Candidate.User.Level = viewModel.Level;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
             entity.ContractDate = viewModel.ContractDate;
             entity.ContractNumber = viewModel.ContractNumber;
@@ -1976,9 +2035,42 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
             entity.PersonalAccount = viewModel.PersonalAccount;
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
-            entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+            entity.TravelRelatedAddition = viewModel.TravelRelatedAddition; 
+            #endregion
+
+            return true;
         }
-        
+
+        #endregion
+
+        #region SetEntityHelpers
+
+        protected FamilyMember GetFamilyMemberByRelationship(IList<FamilyMember> familyMembers, FamilyRelationship relationship)
+        {
+            FamilyMember result = null;
+            for (var i = 0; i < familyMembers.Count; i++)
+            {
+                if (familyMembers[i].RelationshipId == relationship)
+                {
+                    result = familyMembers[i];
+                    break;
+                }
+            }
+            return result;
+        }
+
+        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
+        {
+            familyMember.Contacts = data.Contacts;
+            familyMember.DateOfBirth = data.DateOfBirth;
+            familyMember.Name = data.Name;
+            familyMember.PassportData = data.PassportData;
+            familyMember.PlaceOfBirth = data.PlaceOfBirth;
+            familyMember.WorksAt = data.WorksAt;
+            familyMember.RelationshipId = relationship;
+            return familyMember;
+        }
+
         protected EmploymentCandidate GetCandidate(int userId)
         {
             return EmploymentCommonDao.GetCandidateByUserId(userId);
@@ -2270,7 +2362,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error)
         {
             error = string.Empty;
-
+            
             IUser current = AuthenticationService.CurrentUser;
             if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
@@ -2285,6 +2377,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity = new PersonnelManagers();
                 }
 
+                if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                {
+                    error = StrNotAgreedToPersonalDataProcessing;
+                    return false;
+                }
+
                 EmploymentStatus candidateStatus = GetCandidate(viewModel.UserId).Status;
 
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
@@ -2297,6 +2395,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate = GetCandidate(viewModel.UserId);
                     entity.Candidate.PersonnelManagers = entity;
                     entity.Candidate.User.Grade = viewModel.Grade;
+                    entity.Candidate.User.Level = viewModel.Level;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
                     entity.ContractDate = viewModel.ContractDate;
                     entity.ContractEndDate = viewModel.ContractEndDate;

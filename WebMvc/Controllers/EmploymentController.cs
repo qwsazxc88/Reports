@@ -784,6 +784,10 @@ namespace WebMvc.Controllers
             {
                 ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
             }
+            if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
+            {
+                ModelState.AddModelError("Level", "Требуется число от 2 до 7");
+            }
             return ModelState.IsValid;
         }
 
