@@ -685,8 +685,20 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 model.Bonus = entity.Bonus;
                 model.DailySalaryBasis = entity.DailySalaryBasis;
-                model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.DepartmentName = entity.Department != null ? entity.Department.Name : string.Empty;
+
+                // Если подразделение еще не заполнено,
+                // пытаемся подтянуть его из временной учетной записи соответствующего пользователя
+                model.DepartmentId = entity.Department != null
+                    ? entity.Department.Id
+                    : (entity.Candidate.User.Department.Id != null
+                        ? entity.Candidate.User.Department.Id
+                        : 0);
+                model.DepartmentName = entity.Department != null
+                    ? entity.Department.Name
+                    : (entity.Candidate.User.Department.Id != null
+                        ? entity.Candidate.User.Department.Name
+                        : string.Empty);
+
                 model.EmploymentConditions = entity.EmploymentConditions;
                 model.HourlySalaryBasis = entity.HourlySalaryBasis;
                 model.IsFront = entity.IsFront;
@@ -1145,10 +1157,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 return null;
             }
 
-            // TODO: EMPL Проверка прав руководителя на подразделение при создании кандидата
-            // Если руководитель, добавляющий кандидата (руководитель, за которого добавляют кандидата)
-            // не состоит по должности и не привязан вручную к выбранному подразделению или одному из его вышележащих подразделений,
-            // то ошибка
+            // Проверка прав руководителя на подразделение
             if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
             {
                 error = "Необходимо выбрать подчиненное подразделение.";
