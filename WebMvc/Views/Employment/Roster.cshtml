@@ -237,7 +237,7 @@
             </td>
 
             <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value) {<text>style="background-color:yellow"</text>}>
-                &nbsp;@candidate.ContractEndDate
+                &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
             </td>
 
             @* Вид работы (осн./совм.) *@
