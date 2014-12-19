@@ -67,10 +67,12 @@
             @Html.RadioButtonFor(m => m.IsFront, true, new { @id = "IsFrontTrue" })<label for="IsFrontTrue">Фронт</label>
             @Html.RadioButtonFor(m => m.IsFront, false, new { @id = "IsFrontFalse" })<label for="IsFrontFalse">Бэк</label>
         </div>
+        @*
         <div class="formfield clear">
             @Html.LabelFor(m => m.Bonus)&nbsp;@Html.ValidationMessageFor(m => m.Bonus)<br />
             @Html.EditorFor(m => m.Bonus)
         </div>
+        *@
         <div class="formfield clear">
             @Html.EditorFor(m => m.IsLiable)@Html.LabelFor(m => m.IsLiable)
         </div>
