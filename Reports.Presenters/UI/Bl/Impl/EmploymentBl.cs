@@ -1160,7 +1160,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Проверка прав руководителя на подразделение
             if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
             {
-                error = "Необходимо выбрать подчиненное подразделение.";
+                error = "Отсутствуют права на выбранное подразделение.";
                 return null;
             }
             
@@ -1283,9 +1283,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 user = UserDao.Load(model.UserId);
-                    SetEntity<TVM, TE>(entity, model);
-                    EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
-                    SaveAttachments<TVM>(model);
+
+                if (!SetEntity<TVM, TE>(entity, model, out error))
+                {
+                    return false;
+                }
+                
+                EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
+                SaveAttachments<TVM>(model);
             }
             catch (Exception)
             {
@@ -1312,6 +1317,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
+        #region SaveAttachments
         public void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel
         {
@@ -1325,7 +1331,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "PassportModel":
                     SavePassportAttachments(viewModel as PassportModel, candidateId);
                     break;
-                    
+
                 case "FamilyModel":
                     SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
                     break;
@@ -1344,7 +1350,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     break;
             }
-        }        
+        }
 
         protected void SaveGeneralInfoAttachments(GeneralInfoModel model, int candidateId)
         {
@@ -1454,51 +1460,61 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
             }
-        }
+        } 
+        #endregion
 
         #endregion        
 
         #region SetEntity
 
-        protected void SetEntity<TVM, TE>(TE entity, TVM viewModel)
+        protected bool SetEntity<TVM, TE>(TE entity, TVM viewModel, out string error)
         {
             switch (entity.GetType().Name)
             {
                 case "GeneralInfo":
                     SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "Passport":
                     SetPassportEntity(entity as Passport, viewModel as PassportModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "Education":
                     SetEducationEntity(entity as Education, viewModel as EducationModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "Family":
                     SetFamilyEntity(entity as Family, viewModel as FamilyModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "MilitaryService":
                     SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "Experience":
                     SetExperienceEntity(entity as Experience, viewModel as ExperienceModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "Contacts":
                     SetContactsEntity(entity as Contacts, viewModel as ContactsModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 case "BackgroundCheck":
                     SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 //case "OnsiteTraining":
                 //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
                 //    break;
                 case "Managers":
-                    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
-                    break;
+                    return SetManagersEntity(entity as Managers, viewModel as ManagersModel, out error);
                 case "PersonnelManagers":
                     SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
-                    break;
+                    error = string.Empty;
+                    return true;
                 default:
-                    break;
+                    error = "Неизвестный тип документа";
+                    return false;
             }            
         }
 
@@ -1897,8 +1913,20 @@ namespace Reports.Presenters.UI.Bl.Impl
         */
         #endregion
 
-        protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
+        protected bool SetManagersEntity(Managers entity, ManagersModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            User currentUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            Department department = DepartmentDao.Get(viewModel.DepartmentId);            
+
+            // Проверка прав руководителя на подразделение
+            if (!IsUserManagerForDepartment(department, currentUser))
+            {
+                error = "Отсутствуют права на выбранное подразделение.";
+                return false;
+            }
+
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
@@ -1919,10 +1947,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
             }
             entity.WorkCity = viewModel.WorkCity;
+            
+            return true;
         }
-        
-
-        
+                
         protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
         {
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
