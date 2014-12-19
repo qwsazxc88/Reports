@@ -282,7 +282,8 @@
             </tr>   
             }
         }
-</table>
+    </table>
+
     </div>
 }
 
@@ -294,9 +295,10 @@
         $("#ActDate").datepicker();
         $("#DateBegin").datepicker();
         $("#DateEnd").datepicker();
-        $("#ChargingDate").datepicker();        
+        $("#ChargingDate").datepicker({dateFormat: "mm.yy"});      
         $(".hasDatepicker").width("75px");
-
+        //$("#ChargingDate").val($.datepicker.formateDate('yyyy-mm-dd'));      
+        
         setActiveMenuItem("moAct");
     });
 
@@ -320,15 +322,6 @@
     function OnAddComment()
     {
         return true;
-    }
-
-    function FormatDt()
-    {
-        //var date = new Date();
-        //date = $("#ChargingDate").val();
-        
-        //var formated_date = date.format("yyyy-mm-dd");
-        //alert($("#ChargingDate").val().format('yyyy-mm-dd'));
     }
 
 </script>   
