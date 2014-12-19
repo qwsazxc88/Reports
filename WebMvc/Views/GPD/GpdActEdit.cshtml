@@ -87,9 +87,11 @@
                                 {
                                     @*
                                     @Html.EditorFor(m => m.ChargingDate, (object)new { onchange = @GpdBl.FormatDateMY(Model.ChargingDate) })
+                                    <input type=text onmousedown
                                     *@
-                                    @Html.EditorFor(m => m.ChargingDate, (object)new { onchange = "FormatDt(); }" })
+                                    @Html.EditorFor(m => m.ChargingDate)
                                     @Html.ValidationMessageFor(model => model.ChargingDate)
+                                    
                                 }
                                 else
                                 {
@@ -322,7 +324,11 @@
 
     function FormatDt()
     {
-        //$("#ChargingDate")..toString('Y');
+        //var date = new Date();
+        //date = $("#ChargingDate").val();
+        
+        //var formated_date = date.format("yyyy-mm-dd");
+        //alert($("#ChargingDate").val().format('yyyy-mm-dd'));
     }
 
 </script>   
