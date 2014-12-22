@@ -90,7 +90,8 @@
         }
         @if (Model.ManagerApprovalStatus != null)
         {
-            <span class="fakeFormField">@Model.ApprovingManagerName</span>
+            <span class="fakeFormField">@Model.ApprovingManagerName
+                @(Model.ManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.ManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
         }
         @if (Model.IsApproveByManagerAvailable)
         {
@@ -110,7 +111,8 @@
         }
         @if (Model.HigherManagerApprovalStatus != null)
         {
-            <span class="fakeFormField">@Model.ApprovingHigherManagerName</span>
+            <span class="fakeFormField">@Model.ApprovingHigherManagerName
+                @(Model.HigherManagerApprovalDate.HasValue ? string.Format(" ({0})", Model.HigherManagerApprovalDate.Value.ToShortDateString()) : string.Empty)</span>
         }
         @if (Model.IsApproveByHigherManagerAvailable)
         {
