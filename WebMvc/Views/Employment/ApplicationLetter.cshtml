@@ -12,9 +12,13 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>
-        <div class="formfield clear">
-            Выбрать скан для загрузки<br /><input type="file" name="ApplicationLetterScanFile" />
-        </div>
+        @if (string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+        {
+            <div class="formfield clear">
+                Выбрать скан для загрузки<br /><input type="file" name="ApplicationLetterScanFile" />
+                <button type="submit">Отправить</button>
+            </div>
+        }
         
         @if (!string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
         {
@@ -24,23 +28,13 @@
                     @Model.ApplicationLetterScanAttachmentFilename
                 </a>
             </div>
-            @*
-            <div class="formfield">
-                <br /><input type="button" id="DeleteScanBtn" value="Удалить скан" onclick="deleteAttachment(@Model.ApplicationLetterScanAttachmentId);" />
-            </div>
-            *@
         }
 
         <div class="letter clear" style="text-align: center">
             <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
-            <img src="@Url.Content("~/Content/files/Образец заявления о приеме.jpg")" alt="Образец заявления о приеме" />
+            <img src="@Url.Content("~/Content/files/Образец заявления о приеме.png")" alt="Образец заявления о приеме" />
         </div>
     </fieldset>
-    
-    <div class="clear">
-        @*Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)*@
-        <button type="submit">Сохранить</button>
-    </div>
 }  
 
 <script>
