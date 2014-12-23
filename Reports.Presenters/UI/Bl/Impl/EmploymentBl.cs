@@ -653,10 +653,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Type = entity.Type;
 
                 model.ApproverName = entity.Approver != null ? entity.Approver.Name : string.Empty;
-                model.ApprovalStatus = entity.IsComplete;
-                model.IsApproveByTrainerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer);
+                model.IsApproveByTrainerAvailable = ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer
+                    && !entity.IsFinal);
+
+                model.IsDraft = true;
+                model.IsFinal = entity.IsFinal;
             }
+            else
+            {
+                model.IsDraft = true;
+                model.IsFinal = false;
+                model.IsApproveByTrainerAvailable = true;
+            }
+
             LoadDictionaries(model);
             return model;
         }
@@ -954,7 +963,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(OnsiteTrainingModel model)
         {
-            model.ApprovalStatuses = GetOnsiteTrainingStatuses();
+            //
         }
         public void LoadDictionaries(ManagersModel model)
         {
@@ -1135,15 +1144,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 new SelectListItem {Text = "Согласен на прием", Value = "true"},
                 new SelectListItem {Text = "Отклонить прием", Value = "false"}
-            };
-        }
-
-        public IEnumerable<SelectListItem> GetOnsiteTrainingStatuses()
-        {
-            return new List<SelectListItem>
-            {
-                new SelectListItem {Text = "Обучение пройдено", Value = "true"},
-                new SelectListItem {Text = "Обучение не пройдено", Value = "false"}
             };
         }
 
@@ -2135,7 +2135,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Approver = UserDao.Get(current.Id);
                         if (approvalStatus == true)
                         {
-                            entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                            entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         }
                         else if (approvalStatus == false)
                         {
@@ -2184,19 +2184,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity = new OnsiteTraining();
                     entity.Candidate = GetCandidate(viewModel.UserId);
                 }
-                if (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
-                {
-                    entity.BeginningDate = viewModel.BeginningDate;                    
-                    entity.Candidate.OnsiteTraining = entity;
-                    entity.Comments = viewModel.Comments;
-                    entity.Description = viewModel.Description;
-                    entity.EndDate = viewModel.EndDate;
-                    entity.IsComplete = viewModel.IsComplete;
-                    entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
-                    entity.Results = viewModel.Results;
-                    entity.Type = viewModel.Type;
 
-                    entity.Approver = UserDao.Get(current.Id);
+                entity.BeginningDate = viewModel.BeginningDate;
+                entity.Candidate.OnsiteTraining = entity;
+                entity.Comments = viewModel.Comments;
+                entity.Description = viewModel.Description;
+                entity.EndDate = viewModel.EndDate;
+                entity.IsComplete = viewModel.IsComplete;
+                entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
+                entity.Results = viewModel.Results;
+                entity.Type = viewModel.Type;
+                entity.IsFinal = !viewModel.IsDraft;
+
+                entity.Approver = UserDao.Get(current.Id);
+
+                #region Удалено. Причина: согласование тренером больше не является обязательным этапом приема и не влияет на последовательность смены статусов
+                /*
                     if (viewModel.IsComplete == true)
                     {
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -2204,18 +2207,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (viewModel.IsComplete == false)
                     {
                         entity.Candidate.Status = EmploymentStatus.REJECTED;
-                    }
-                    if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
-                    {
-                        error = "Ошибка сохранения.";
-                        return false;
-                    }
-                    return true;
-                }
-                else
+                    }*/
+
+                #endregion
+
+                if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
                 {
-                    error = "Невозможно сохранить документ на данном этапе.";
+                    error = "Ошибка сохранения.";
+                    return false;
                 }
+                return true;
             }
             else
             {

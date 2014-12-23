@@ -21,6 +21,8 @@ namespace Reports.Core.Domain
         public virtual string Results { get; set; } //ok
         public virtual string Comments { get; set; } //ok
         public virtual User Approver { get; set; }
+
+        public virtual bool IsFinal { get; set; }
         #endregion
 
         #region Constructors
