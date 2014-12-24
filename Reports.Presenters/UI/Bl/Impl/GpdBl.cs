@@ -163,15 +163,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 20)
                 ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
-            if (model.DTID == 2)
-            {
-                if (model.Code == null)
-                    ms.AddModelError(ModelName + "Code", "Заполните поле 'Код банка'");
-                if (model.Code != null && model.Code.Trim().Length > 9)
-                    ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
-            }
-            else
-                model.Code = null;
+            //if (model.DTID == 2)
+            //{
+            //    if (model.Code == null)
+            //        ms.AddModelError(ModelName + "Code", "Заполните поле 'Код банка'");
+            //    if (model.Code != null && model.Code.Trim().Length > 9)
+            //        ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
+            //}
+            //else
+            //    model.Code = null;
 
             if (ms.Count != 0)
                 model.StatusID = 4;
