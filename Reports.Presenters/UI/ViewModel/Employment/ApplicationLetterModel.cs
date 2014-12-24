@@ -13,6 +13,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ApplicationLetterScanAttachmentFilename { get; set; }
         public int ApplicationLetterScanAttachmentId { get; set; }
 
+        public bool IsApplicationLetterUploadAvailable { get; set; }
+
         public ApplicationLetterModel()
         {
             this.Version = 0;

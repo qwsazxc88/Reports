@@ -1791,7 +1791,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Dismissal entity in entities)
             {
-                // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 DismissalDao.SaveAndFlush(entity);
             }
@@ -1802,7 +1801,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Dismissal> entities = DismissalDao.LoadForIdsList(idsToApplyPersonnelFileSentToArchive).ToList();
             foreach (Dismissal entity in entities)
             {
-                // TODO SL: реализовать сохранение состояния свойства
                 entity.IsPersonnelFileSentToArchive = true;
                 DismissalDao.SaveAndFlush(entity);
             }
@@ -2551,7 +2549,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 throw new ArgumentException(string.Format("Обходной лист (id {0}) не найден в базе данных.", id));
             foreach (var approval in clearanceChecklist.ClearanceChecklistApprovals)
             {
-                // TODO: CCL Roles
                 IList<string> roleAuthorities = clearanceChecklistDao.GetClearanceChecklistRoleAuthorities(approval.ClearanceChecklistRole)
                     .Select<User, string>(roleAuthority => roleAuthority.FullName).ToList<string>();
 
@@ -2564,12 +2561,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ApprovedBy = approval.ApprovedBy!=null ? approval.ApprovedBy.FullName : string.Empty,
                         ApprovalDate = approval.ApprovalDate.HasValue ? approval.ApprovalDate.Value.ToString("dd.MM.yyyy") : "",
                         Comment = approval.Comment,
+
                         // Checking if the authenticated user has the extended role for approval
                         // and that the user's department is allowed to approve today.
                         // If both are OK the Active property is set
                         // and the view will output the approval link in the corresponding row
-
-                        // TODO: CCL Roles
                         Active = (this.IsRoleOwner(currentUser, approval.ClearanceChecklistRole) ? true : false) &&
                             DateTime.Now >= clearanceChecklist.EndDate.AddDays(
                                 approval.ClearanceChecklistRole.DaysForApproval == null ? -MAX_DAYS_BEFORE_DISMISSAL : -(int)approval.ClearanceChecklistRole.DaysForApproval)
@@ -2603,7 +2599,7 @@ namespace Reports.Presenters.UI.Bl.Impl
       
         public bool SaveClearanceChecklistEditModel(ClearanceChecklistEditModel model, out string error)
         {
-            // TODO Implementation for SaveClearanceChecklistEditModel
+            // STUB: CCL SaveClearanceChecklistEditModel
             error = "";
             return false;
         }
@@ -2611,8 +2607,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SetClearanceChecklistApproval(int approvalId, int approvedBy, out ClearanceChecklistApprovalDto modifiedApproval, out string error)
         {
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            // TODO: CCL Roles ?
-            //if(!user.ClearanceChecklistRoleRecords.Contains<ClearanceChecklistRole>(ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
+            
             if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
@@ -2635,7 +2630,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             error = String.Empty;
 
             User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
-            // TODO: CCL Roles ?
+
             if (!IsRoleOwner(user, ClearanceChecklistDao.GetApprovalById(approvalId).ClearanceChecklistRole))
             {
                 throw new ArgumentException("Доступ запрещен.");
@@ -2665,7 +2660,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
             
             // Field format checks
-            // TODO: Replace with implementation
             if (!oKTMORegEx.IsMatch(oKTMO))
             {
                 error += OKTMOFormatError;
@@ -3651,7 +3645,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Sicklist> entities = SicklistDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Sicklist entity in entities)
             {
-                // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 SicklistDao.SaveAndFlush(entity);
             }
@@ -4914,7 +4907,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<Vacation> entities = VacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (Vacation entity in entities)
             {
-                // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 VacationDao.SaveAndFlush(entity);
             }
@@ -5657,7 +5649,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             User currentUserOrManagerAccount = managerAccount ?? user;
             mainManagers = DepartmentDao.GetDepartmentManagers(currentUserOrManagerAccount.Department != null ? currentUserOrManagerAccount.Department.Id : 0, true)
                 .Where<User>(manager => (currentUserOrManagerAccount.Department.ItemLevel ?? 0) > (manager.Department.ItemLevel ?? 0)
-                && (minManagerLevel != null && manager.Department.ItemLevel != null) ? manager.Department.ItemLevel >= minManagerLevel : true)
+                && ((minManagerLevel != null && manager.Department.ItemLevel != null) ? manager.Department.ItemLevel >= minManagerLevel : true))
                 .ToList<User>();
 
             foreach (var mainManager in mainManagers)
@@ -5768,7 +5760,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<ChildVacation> entities = ChildVacationDao.LoadForIdsList(idsToApplyReceivedOriginals).ToList();
             foreach (ChildVacation entity in entities)
             {
-                // TODO SL: реализовать сохранение состояния свойства
                 entity.IsOriginalReceived = true;
                 ChildVacationDao.SaveAndFlush(entity);
             }
@@ -9142,7 +9133,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                       Country = country,
                                       CreateDate = DateTime.Now,
                                       Creator = entity.Creator,
-                                      //todo ???
                                       DaysCount = entity.EndDate.Value.Subtract(entity.BeginDate.Value).Days + 1,
                                       EndDate = entity.EndDate.Value,
                                       FinancesSource = entity.User.Organization == null? string.Empty:entity.User.Organization.Name,
@@ -9528,6 +9518,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             // Если ручные привязки найдены
             canEdit = (relevantRoleRecordsCount > 0) ? true : false;
             return canEdit;
+        }
+
+        protected bool IsUserManagerForDepartment(Department department, User user, UserManualRole manualRole = UserManualRole.ApprovesCommonRequests)
+        {
+            return
+                (
+                    (
+                    // Подчиненность подразделения по должности
+                        (user.UserRole & UserRole.Manager) == UserRole.Manager
+                        && user.Level > 3
+                        && user.Department != null
+                        && department.Path.StartsWith(user.Department.Path)
+                    )
+                    ||
+                    (
+                    // Подчиненность подразделения по ручным привязкам
+                        user.ManualRoleRecords
+                            .Where(roleRecord =>
+                                roleRecord.Role.Id == (int)manualRole
+                                && roleRecord.TargetDepartment != null
+                                && department.Path.StartsWith(roleRecord.TargetDepartment.Path)
+                            )
+                            .Count() > 0
+                    )
+                );
         }
 
         protected void LoadDictionaries(MissionOrderEditModel model)

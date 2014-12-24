@@ -84,9 +84,20 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // Скан заявления на вычет
 
         [Display(Name = "Группа доступа"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
+
+        [Display(Name = "Уровень"),
+            Required(ErrorMessage = "*"),
+            Range(2, 7, ErrorMessage = "Требуется число от 2 до 7")]
+        public int? Level { get; set; }
+
+        public bool? IsFixedTermContract { get; set; }
+
+        [Display(Name = "Окончание ТД"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ContractEndDate { get; set; }        
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]

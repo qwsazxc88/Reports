@@ -24,7 +24,11 @@ namespace WebMvc.Controllers
     {
         //public const int MaxFileSize = 2 * 1024 * 1024;
 
-        protected int RUSSIAN_FEDERATION = 643;        
+        #region Constants
+        protected int RUSSIAN_FEDERATION = 643; 
+        #endregion
+        
+        #region Dependencies
         protected IEmploymentBl employmentBl;
 
         public IEmploymentBl EmploymentBl
@@ -34,19 +38,22 @@ namespace WebMvc.Controllers
                 employmentBl = Ioc.Resolve<IEmploymentBl>();
                 return Validate.Dependency(employmentBl);
             }
-        }
+        } 
+        #endregion
 
-        //
-        // GET: /Employment/
+        #region Main Actions
+
+        #region Index
         [HttpGet]
         [ActionName("Index")]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Index()
         {
             return RedirectToAction(EmploymentBl.GetStartView());
-        }
-
-        // Create new candidate
+        } 
+        #endregion
+        
+        #region Create new candidate
         [HttpGet]
         public ActionResult CreateCandidate()
         {
@@ -67,12 +74,12 @@ namespace WebMvc.Controllers
 
             if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = error;                
+                ViewBag.Error = error;
             }
 
             return View(model);
         }
-        
+
         public ActionResult PrintCreatedCandidate(int userId)
         {
             string error = string.Empty;
@@ -83,8 +90,9 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
-        
-        // General Info
+        #endregion
+
+        #region General Info
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult GeneralInfo(int? id)
@@ -92,7 +100,7 @@ namespace WebMvc.Controllers
             var model = EmploymentBl.GetGeneralInfoModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
         }
-        
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfo(GeneralInfoModel model)
@@ -137,8 +145,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetGeneralInfoModel();
             return Json(model.ForeignLanguages);
         }
+        #endregion
 
-        // Passport
+        #region Passport
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Passport(int? id)
@@ -161,8 +170,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetPassportModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
+        #endregion
 
-        // Education
+        #region Education
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Education(int? id)
@@ -241,8 +251,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetEducationModel();
             return View("Education", model);
         }
+        #endregion
 
-        // Family
+        #region Family
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Family(int? id)
@@ -268,7 +279,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult FamilyAddChild (FamilyMemberDto itemToAdd)
+        public ActionResult FamilyAddChild(FamilyMemberDto itemToAdd)
         {
             string error = String.Empty;
 
@@ -279,8 +290,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetFamilyModel();
             return Json(model.Children);
         }
+        #endregion
 
-        // Military Service
+        #region Military Service
         [HttpGet]
         public ActionResult MilitaryService(int? id)
         {
@@ -302,8 +314,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetMilitaryServiceModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
         }
+        #endregion
 
-        // Experience
+        #region Experience
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Experience(int? id)
@@ -340,8 +353,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetExperienceModel();
             return Json(model.ExperienceItems);
         }
+        #endregion
 
-        // Contacts
+        #region Contacts
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Contacts(int? id)
@@ -364,8 +378,9 @@ namespace WebMvc.Controllers
             model = EmploymentBl.GetContactsModel();
             return model.IsFinal && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
+        #endregion
 
-        // Background Check
+        #region Background Check
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult BackgroundCheck(int? id)
@@ -422,14 +437,15 @@ namespace WebMvc.Controllers
                 return RedirectToAction("Roster");
             }
         }
+        #endregion
 
-        // Onsite Training
+        #region Onsite Training
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult OnsiteTraining(int? id)
         {
             var model = EmploymentBl.GetOnsiteTrainingModel(id);
-            return model.ApprovalStatus.HasValue ? View("OnsiteTrainingReadOnly", model) : View(model);
+            return model.IsFinal ? View("OnsiteTrainingReadOnly", model) : View(model);
         }
 
         [HttpPost]
@@ -455,8 +471,9 @@ namespace WebMvc.Controllers
 
             return View(model);
         }
+        #endregion
 
-        // Application Letter
+        #region Application Letter
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult ApplicationLetter(int? id)
@@ -477,8 +494,9 @@ namespace WebMvc.Controllers
             }
             return View(model);
         }
+        #endregion
 
-        // Filled out by managers
+        #region Managers
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Managers(int? id)
@@ -526,8 +544,9 @@ namespace WebMvc.Controllers
                 return RedirectToAction("Roster");
             }
         }
+        #endregion
 
-        // Filled out by personnel managers
+        #region PersonnelManagers
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult PersonnelManagers(int? id)
@@ -546,8 +565,8 @@ namespace WebMvc.Controllers
             {
                 EmploymentBl.SavePersonnelManagersReport(model, out error);
             }
-            model = EmploymentBl.GetPersonnelManagersModel();
-            if (!string.IsNullOrEmpty(error))
+            model = EmploymentBl.GetPersonnelManagersModel(model.UserId);
+            if (!string.IsNullOrEmpty(error) || !ModelState.IsValid)
             {
                 ViewBag.Error = error;
                 return View(model);
@@ -557,8 +576,9 @@ namespace WebMvc.Controllers
                 return RedirectToAction("Roster");
             }
         }
+        #endregion
 
-        // Employment roster
+        #region Roster
         [HttpGet]
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Roster()
@@ -588,7 +608,7 @@ namespace WebMvc.Controllers
         public ActionResult RosterBulkApprove(IList<CandidateApprovalDto> roster)
         {
             string error = string.Empty;
-            
+
             if (EmploymentBl.SaveApprovals(roster, out error))
             {
                 return Json(new { ok = true });
@@ -598,6 +618,7 @@ namespace WebMvc.Controllers
                 return Json(new { ok = false, error = error });
             }
         }
+        #endregion
 
         // Custom report
         /*
@@ -615,7 +636,7 @@ namespace WebMvc.Controllers
         }
         */
 
-        // Signers
+        #region Signers
         [HttpGet]
         public ActionResult Signers()
         {
@@ -629,6 +650,9 @@ namespace WebMvc.Controllers
         {
             return View(model);
         }
+        #endregion 
+
+        #endregion
 
         #region Model Validation
 
@@ -651,7 +675,9 @@ namespace WebMvc.Controllers
 
         protected bool ValidateModel(CreateCandidateModel model)
         {
-            int numberOfFilledFields = 0;
+            const int minimumAge = 14;
+
+            int numberOfFilledFields = 0;            
 
             numberOfFilledFields += string.IsNullOrEmpty(model.PassportData) ? 0 : 1;
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
@@ -659,7 +685,12 @@ namespace WebMvc.Controllers
 
             if (numberOfFilledFields < 2)
             {
-                ModelState.AddModelError(null, "Необходимо заполнить хотя бы 2 поля личных данных.");
+                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных.");
+            }
+
+            if (model.DateOfBirth > DateTime.Now.AddYears(-minimumAge))
+            {
+                ModelState.AddModelError("DateOfBirth", "Некорректная дата рождения.");
             }
 
             return ModelState.IsValid;
@@ -768,7 +799,19 @@ namespace WebMvc.Controllers
         [NonAction]
         protected bool ValidateModel(PersonnelManagersModel model)
         {
-
+            bool isFixedTermContract = EmploymentBl.IsFixedTermContract(model.UserId);
+            if (model.ContractEndDate == null && isFixedTermContract)
+            {
+                ModelState.AddModelError("ContractEndDate", "*");
+            }
+            if (model.ContractEndDate != null && !isFixedTermContract)
+            {
+                ModelState.AddModelError("ContractEndDate", "Не заполняется при бессрочном ТД");
+            }
+            if (!model.Level.HasValue || model.Level > 7 || model.Level < 2)
+            {
+                ModelState.AddModelError("Level", "Требуется число от 2 до 7");
+            }
             return ModelState.IsValid;
         }
 

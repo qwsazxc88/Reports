@@ -59,7 +59,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
         IEnumerable<SelectListItem> GetApprovalStatuses();
-        IEnumerable<SelectListItem> GetOnsiteTrainingStatuses();
 
         int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
@@ -81,6 +80,8 @@ namespace Reports.Presenters.UI.Bl
 
         string GetStartView();
         AttachmentModel GetFileContext(int id);
-        bool DeleteAttachment(DeleteAttacmentModel model);        
+        bool DeleteAttachment(DeleteAttacmentModel model);
+
+        bool IsFixedTermContract(int userId);
     }
 }

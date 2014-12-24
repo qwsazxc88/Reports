@@ -44,6 +44,7 @@
     <property name="Grade" not-null="false" />
 
     <property name="ExperienceIn1C" not-null="false" />
+    <property name="IsFixedTermContract" not-null="false" />
 
     <property name="IsMainManager" not-null="true" />
     

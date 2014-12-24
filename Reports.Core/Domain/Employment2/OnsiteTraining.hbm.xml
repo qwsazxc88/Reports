@@ -16,6 +16,8 @@
     <property name="Results" length="200" not-null="false"/>
     <property name="Comments" length="200" not-null="false"/>
     <many-to-one name="Approver" class="User" column="ApproverId" foreign-key="FK_OnsiteTraining_Approver" index="OnsiteTraining_Approver" not-null="false"/>
+
+    <property name="IsFinal" not-null="true"/>
     
   </class>
 </hibernate-mapping>

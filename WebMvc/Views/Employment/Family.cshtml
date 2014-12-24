@@ -141,19 +141,24 @@
             }
         </tbody>
         </table>
-    <a href="" id="add-child">Добавить запись о ребенке</a>
+
+        <div>
+            <a href="" id="add-child">Добавить запись о ребенке</a>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.Cohabitants)<br />
+            @Html.TextAreaFor(m => m.Cohabitants, new { cols = 50 })
+        </div>
     </fieldset>
     
-    <div class="formfield">
-        @Html.LabelFor(m => m.Cohabitants)
-        @Html.TextAreaFor(m => m.Cohabitants)
-    </div>
+    <fieldset>
 
     <div class="formfield clear">
         Выбрать для загрузки скан свидетельства о браке<br /><input type="file" name=".MarriageCertificateScanFile" /> @Html.ValidationMessageFor(m => m.MarriageCertificateScanFile)
     </div>
 
-    if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
+    @if (!string.IsNullOrEmpty(Model.MarriageCertificateScanAttachmentFilename))
     {
         <div class="formfield">
             <br />Скан:
@@ -181,6 +186,8 @@
         @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
         <button type="submit">Сохранить</button>
     </div>
+
+    </fieldset>
 }
 
 <div id="add-child-dialog" title="Добавление записи о ребенке">
@@ -203,9 +210,10 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empFamily");
-        attachDatepickerToInputs($('#Spouse_DateOfBirth, #Father_DateOfBirth, #Mother_DateOfBirth, #DateOfBirth'), "-120:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#Spouse_DateOfBirth, #Father_DateOfBirth, #Mother_DateOfBirth'), "-120:+0;-120Y;-14Y", true);
+        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-100:+0", true);
 
-        handleCheckboxState($("#IsMarried"),
+        UIHelpers.handleCheckboxState($("#IsMarried"),
             {
                 $target: $("#spouse-row"),
                 act: function () {
@@ -255,7 +263,7 @@
                         "<tr><td>Ребенок</td><td>" +
                         (dataReceived[i].Name ? dataReceived[i].Name : "") + "</td><td>" +
                         (dataReceived[i].PassportData ? dataReceived[i].PassportData : "") + "</td><td>" +
-                        convertMSJsonDateToShortDateString(dataReceived[i].DateOfBirth) + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].DateOfBirth) + "</td><td>" +
                         (dataReceived[i].PlaceOfBirth ? dataReceived[i].PlaceOfBirth : "") + "</td><td>" +
                         (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
                         (dataReceived[i].Contacts ? dataReceived[i].Contacts : "") + 

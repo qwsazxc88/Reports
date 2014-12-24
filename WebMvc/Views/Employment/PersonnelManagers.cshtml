@@ -4,6 +4,8 @@
     ViewBag.Title = "Прием - Кадры";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
@@ -30,6 +32,13 @@
             @Html.LabelFor(m => m.ContractNumber)&nbsp;@Html.ValidationMessageFor(m => m.ContractNumber)<br />
             @Html.TextBoxFor(m => m.ContractNumber, new { @class = "halfwidth" })
         </div>
+        @if (Model.IsFixedTermContract.HasValue && Model.IsFixedTermContract.Value)
+        {
+            <div class="formfield">
+                @Html.LabelFor(m => m.ContractEndDate)&nbsp;@Html.ValidationMessageFor(m => m.ContractEndDate)<br />
+                @Html.EditorFor(m => m.ContractEndDate)
+            </div>
+        }
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
@@ -123,6 +132,11 @@
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
             @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroups)
         </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.Level)&nbsp;@Html.ValidationMessageFor(m => m.Level)<br />
+            @Html.TextBoxFor(m => m.Level, new { @class = "calc halfwidth" })
+        </div>
+
         <div class="formfield clearleft">
             <button type="submit">Сохранить</button>                
         </div>            
@@ -145,6 +159,7 @@
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empPersonnelManagers");
-        attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
     });
 </script>

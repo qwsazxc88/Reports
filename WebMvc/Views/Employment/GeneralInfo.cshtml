@@ -5,6 +5,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
 
 @using (Html.BeginForm("GeneralInfo", "Employment", FormMethod.Post, new { enctype = "multipart/form-data", id = "general-info-form" }))
 {    
@@ -13,6 +14,10 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Общая информация</legend>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)
+            @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
+        </div>
         <div class="formfield clearleft" style="float:right">
             <fieldset class="bordered nomargin clear"><legend class="level2">Фото</legend>
                 <div style="width: 96px; height: 96px; background: gray;"></div>
@@ -247,11 +252,7 @@
         <div class="formfield clear">
             @Html.LabelFor(m => m.StatusId)&nbsp;@Html.ValidationMessageFor(m => m.StatusId)<br />
             @Html.DropDownListFor(m => m.StatusId, Model.StatusItems, string.Empty)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.AgreedToPersonalDataProcessing)&nbsp;@Html.ValidationMessageFor(m => m.AgreedToPersonalDataProcessing)
-            @Html.EditorFor(m => m.AgreedToPersonalDataProcessing)
-        </div>
+        </div>        
         
     </fieldset>
     
@@ -312,10 +313,10 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empGeneralInfo");
-        attachDatepickerToInputs($('#DateOfBirth'), "-100:-14", true);
-        attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
-        attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
-        $('#gender').buttonset();
+        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
+        UIHelpers.attachDatepickerToInputs($('#DateOfNameChange, #DisabilityCertificateDateOfIssue'), "-100:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#DisabilityCertificateExpirationDate'), "-0:+60", true);
+        $('#gender').buttonset();        
 
         var $addNameChangeDialog = $('#add-name-change-dialog').dialog(
         {
@@ -349,7 +350,7 @@
                     $table.append(
                         "<tr class=\"name-change-row\"><td>" +
                         (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
-                        convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
                         (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
                         (dataReceived[i].Reason ? dataReceived[i].Place : "") + 
                         "</td></tr>"
@@ -413,7 +414,7 @@
             e.preventDefault();
         });
 
-        handleCheckboxState($("#IsPatronymicAbsent"),
+        UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
             {
                 $target: $("#Patronymic"),
                 act: function () {
@@ -429,5 +430,31 @@
             },
             true
         );
+
+        UIHelpers.handleSelectStates($("#CitizenshipId"), [
+                {
+                    text: "РОССИЯ",
+                    actOnSelect: function(){
+                        $("#InsuredPersonTypeId").val("");
+                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+                    },
+                    actOnDeselect: function(){
+                        $("#InsuredPersonTypeId").removeAttr("disabled");
+                    }
+                },
+                {
+                    value: "",
+                    actOnSelect: function(){
+                        $("#InsuredPersonTypeId").val("");
+                        $("#InsuredPersonTypeId").attr("disabled", "disabled");
+                    },
+                    actOnDeselect: function(){
+                        $("#InsuredPersonTypeId").removeAttr("disabled");
+                    }
+                }
+            ],        
+            true
+        );
+
     });
-</script>
+</script> 

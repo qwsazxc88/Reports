@@ -198,10 +198,7 @@ namespace Reports.Core.Dao.Impl
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
             whereString = GetNumberWhere(whereString, number);
-            //
-            // whereString += String.Format(" or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
-            // whereString += String.Format(" or u.DepartmentId in (select mrr.TargetDepartmentId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0})", userId);
-            //
+
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -326,8 +323,8 @@ namespace Reports.Core.Dao.Impl
                 #region Managers
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
-                    if(currentUser == null)
-                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
+                    if (currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
                     
                     string sqlQueryPart = string.Empty;
                     string sqlFlag = string.Empty;
@@ -391,7 +388,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                       on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
-                                    and employeeManagerAccount.Id is null
+                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
@@ -399,7 +396,7 @@ namespace Reports.Core.Dao.Impl
                                             and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         default:
-                            throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, userId, currentUser.Level));
                     }
 
                     sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);

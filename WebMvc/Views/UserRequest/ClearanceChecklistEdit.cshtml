@@ -146,23 +146,13 @@
     </form>            
 }
 
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     
     function ApprovalSuccess()
     {
         $(this).ReplaceWith("<span style='color:Green'>Cогласовано</span>");
-    }
-
-    function showInputActionResult(inputs, isOk) {
-        var color = isOk ? "lightgreen" : "pink";
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].css("background-color", color);
-        }
-        setTimeout(function () {
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].css("background-color", "white");
-            }
-        }, 700);
     }
 
     $(document).ready(function () {
@@ -195,7 +185,7 @@
                 },
                 function (data) {
                     if (data.ok === true) {
-                        showInputActionResult([$currentCommentInput], true);
+                        UIHelpers.showInputActionResult([$currentCommentInput], true);
                     }
                 }
             );
@@ -223,10 +213,10 @@
                 },
                 function (data) {
                     if (data.ok === true) {
-                        showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], true);
+                        UIHelpers.showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], true);
                     }
                     else {
-                        showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], false);
+                        UIHelpers.showInputActionResult([$registryNumberInput, $personalIncomeTaxInput, $oKTMOInput], false);
                     }
                 }
             );
