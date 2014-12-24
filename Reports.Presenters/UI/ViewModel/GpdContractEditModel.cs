@@ -76,14 +76,29 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Состояние")]
         public string StatusName { get; set; }
 
+        [Display(Name = "Оплата")]
+        public IList<GpdContractStatusesDto> PaymentPeriods { get; set; }
+        public int PaymentPeriodID { get; set; }
+
+        [Display(Name = "Стоимость")]
+        [DisplayFormat(DataFormatString = "{0:### ### ### ###.##}", ApplyFormatInEditMode = true)]
+        public System.Decimal Amount { get; set; }
+
         public IList<GpdContractDto> Contracts { get; set; }
         public bool hasErrors { get; set; }
         public string CreatorName { get; set; }
         public System.DateTime CreateDate { get; set; }
         public bool IsFind { get; set; }
         public bool IsLong { get; set; }
+        public int Operation { get; set; }
+        public string SNILS { get; set; }
+        public string BankName { get; set; }
+        public string Account { get; set; }
+        public int DetailStatusID { get; set; }
 
         //права
         public IList<GpdPermissionDto> Permissions { get; set; }
+        //справочник реквизитов
+        public GpdRefDetailEditModel DetailEdit { get; set; }
     }
 }

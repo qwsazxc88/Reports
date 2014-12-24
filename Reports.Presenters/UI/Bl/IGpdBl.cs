@@ -14,10 +14,10 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdRefDetailView(GpdRefDetailModel model, bool hasError);
         void SetGpdRefDetailTypes(GpdRefDetailEditModel model);
         void SetGpdRefDetailTypes(GpdRefDetailModel model);
-        void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms);
+        void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms, bool flgFromContract);
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
-        GpdRefDetailEditModel SetRefDetailEditModel(int id, bool hasError);
+        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, bool hasError);
         void GetPermission(GpdRefDetailModel model);
         void GetPermission(GpdRefDetailEditModel model);
         #endregion
@@ -36,6 +36,8 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContract(GpdContractModel model);
         void GetPermission(GpdContractModel model);
         void GetPermission(GpdContractEditModel model);
+        void SetGpdContractEditDropDowns(GpdContractEditModel model, bool hasError);
+        GpdContractEditModel EditDetailsFromContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
         #endregion
 
         #region Акты

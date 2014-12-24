@@ -24,26 +24,16 @@ namespace Reports.Core.Dao
         /// <param name="Id"></param>
         /// <param name="Name"></param>
         /// <param name="DTID"></param>
-        /// <param name="INN"></param>
-        /// <param name="KPP"></param>
-        /// <param name="Account"></param>
-        /// <param name="BankName"></param>
-        /// <param name="BankBIK"></param>
-        /// <param name="CorrAccount"></param>
-        /// <param name="CreatorID"></param>
+        /// <param name="SortBy">Номер поля по которому будет проводится сортировка.</param>
+        /// <param name="SortDescending">Направление сортировки.</param>
         /// <returns></returns>
         IList<GpdRefDetailFullDto> GetRefDetail(UserRole role,
-                                                int Id,
-                                                string Name,
-                                                int DTID,
-                                                string INN,
-                                                string KPP,
-                                                string Account,
-                                                string BankName,
-                                                string BankBIK,
-                                                string CorrAccount,
-                                                int CreatorID,
-                                                string Code);
+            int Id,
+            string Name,
+            int DTID,
+            int SortBy,
+            bool? SortDescending
+            );
         /// <summary>
         /// Права.
         /// </summary>

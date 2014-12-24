@@ -18,6 +18,11 @@ namespace Reports.Core.Dao
                                                     int Id,
                                                     string Name);
         /// <summary>
+        /// Список сроков оплаты.
+        /// </summary>
+        /// <returns></returns>
+        IList<GpdContractStatusesDto> GetPaymentPeriods();
+        /// <summary>
         /// Виды начисления.
         /// </summary>
         /// <param name="role"></param>
@@ -42,13 +47,13 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <param name="role"></param>
         /// <param name="DTID">ID типа реквизитов.</param>
-        /// <param name="Id"></param>
-        /// <param name="Name"></param>
+        /// <param name="PersonID">ID физического лица.</param>
+        /// <param name="Operation">Операция, по которой определяем способ загрузки получателей</param>
         /// <returns></returns>
         IList<GpdContractDetailDto> GetDetails(UserRole role,
                                                     int DTID,
-                                                    int Id,
-                                                    string Name);
+                                                    int PersonID,
+                                                    int Operation);
         /// <summary>
         /// Договора.
         /// </summary>

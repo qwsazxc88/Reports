@@ -120,6 +120,12 @@
                                             <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата пролонгации</a></div>
                                         </th>
                                         <th>
+                                            <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Плательщик</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort12" style="min-width:130px"><a href="#" onclick = "SortChanged(12);">Получатель</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Дирекция 3 ур.</a></div>
                                         </th>
                                         <th>
@@ -142,6 +148,8 @@
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
+                                                <td>@doc.PayerName</td>
+                                                <td>@doc.PayeeName</td>
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@doc.StatusName</td>

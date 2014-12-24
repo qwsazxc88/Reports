@@ -23,6 +23,17 @@
                             </td>
                         </tr>
                         <tr>
+                            <td colspan="2">
+                                @if (@Model.StatusID == 1 || @Model.StatusID == 2)
+                                {
+                                    if (Model.Permissions[0].IsCreateAct)
+                                    {
+                                        <input type="button" value="Копировать" title="Создать новый акт на основе текущего" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.GCID })'"/>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
                             <td style="width:300px">
                                 @Html.LabelFor(m => m.ActDate):
                             </td>
@@ -297,7 +308,6 @@
         $("#DateEnd").datepicker();
         $("#ChargingDate").datepicker({dateFormat: "mm.yy"});      
         $(".hasDatepicker").width("75px");
-        //$("#ChargingDate").val($.datepicker.formateDate('yyyy-mm-dd'));      
         
         setActiveMenuItem("moAct");
     });

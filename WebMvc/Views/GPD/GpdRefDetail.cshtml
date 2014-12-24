@@ -62,11 +62,47 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td colspan="2">
+                <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+                <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
                 <table class="grid">
                     <tr>
-                        <th>Код</th>
-                        <th>Наименование</th>
+                        <th>
+                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Код</a></div>
+                        </th>
+                        <th>
+                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Наименование</a></div>
+                        </th>
+                        <th>
+                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Дата <br />создания</a></div>
+                        </th>
+                        <th>
+                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">ФИО (при <br />создании)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Должность <br />(при создании)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Подразделение 3 ур.<br />(при создании)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Подразделение 7 ур. <br />(прр создании)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Дата изменения</a></div>
+                        </th>
+                        <th>
+                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">ФИО (при <br />изменении)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">Должность <br />(при изменении)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Подразделение 3 ур.<br />(при изменении)</a></div>
+                        </th>
+                        <th>
+                            <div id="sort12" style="min-width:130px"><a href="#" onclick = "SortChanged(12);">Подразделение 7 ур. <br />(прр изменении)</a></div>
+                        </th>
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
@@ -76,11 +112,16 @@
                                 
                                 <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Id</a></td>
                                 <td>@doc.Name</td>
-                                @*
-                                <td>@doc.Id</td>
-                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = doc.Id, Name = doc.Name, Account = doc.Account, flgNew = false })' style="cursor:hand">Редактировать</a></td>
-                                <td><a class="ui-notify-close" href='@Url.Action("MissionHotelsEdit", new { id = 0, Name = "", Account = "", flgNew = true })' style="cursor:hand">Создать</a></td>
-                                *@
+                                <td>@doc.CreateDate.ToShortDateString() - @doc.CreateDate.ToShortTimeString()</td>
+                                <td>@doc.CreatorName</td>
+                                <td>@doc.CreatePositionName</td>
+                                <td>@doc.CrDep3Level</td>
+                                <td>@doc.CrDep7Level</td>
+                                <td>@doc.EditDate.ToShortDateString() - @doc.EditDate.ToShortTimeString()</td>
+                                <td>@doc.EditorName</td>
+                                <td>@doc.EditPositionName</td>
+                                <td>@doc.EDep3Level</td>
+                                <td>@doc.EDep7Level</td>
                             </tr>
                         }
                     }
@@ -91,12 +132,11 @@
 
 }
 
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
-        //$("#BeginDate").datepicker();
-        //$("#EndDate").datepicker();
-        //$(".hasDatepicker").width("75px");
-        //setSortFields();
+        setSortFields();
         setActiveMenuItem("moGpdRefDetail");
     });
 
