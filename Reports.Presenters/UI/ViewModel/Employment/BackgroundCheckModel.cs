@@ -89,6 +89,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public bool IsApproveBySecurityAvailable { get; set; }
 
         [Display(Name = "Согласование")]
+        public bool IsApprovalSkipped { get; set; }
         public bool? ApprovalStatus { get; set; }
         public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
         public string ApproverName { get; set; }

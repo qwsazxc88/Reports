@@ -12,7 +12,7 @@
     
     <fieldset class="bordered doc-wrap panel">
     <legend>Заявление о приеме</legend>
-        @if (string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+        @if (Model.IsApplicationLetterUploadAvailable)
         {
             <div class="formfield clear">
                 Выбрать скан для загрузки<br /><input type="file" name="ApplicationLetterScanFile" />
@@ -20,7 +20,7 @@
             </div>
         }
         
-        @if (!string.IsNullOrEmpty(Model.ApplicationLetterScanAttachmentFilename))
+        @if (Model.ApplicationLetterScanAttachmentId > 0)
         {
             <div class="formfield">
                 <br />Скан:

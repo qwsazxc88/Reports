@@ -673,13 +673,15 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ApplicationLetterModel GetApplicationLetterModel(int? userId = null)
         {
             userId = userId ?? AuthenticationService.CurrentUser.Id;
+            EmploymentCandidate candidate = GetCandidate(userId.Value);
             ApplicationLetterModel model = new ApplicationLetterModel { UserId = userId.Value };
 
             int attachmentId = 0;
             string attachmentFilename = string.Empty;
-            GetAttachmentData(ref attachmentId, ref attachmentFilename, GetCandidate(userId.Value).Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
+            GetAttachmentData(ref attachmentId, ref attachmentFilename, candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
             model.ApplicationLetterScanAttachmentId = attachmentId;
             model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
+            model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
 
             return model;
         }
@@ -1247,12 +1249,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Candidate = candidate,
                 IsReadyForBusinessTrips = false,
-                IsFinal = false
+                IsFinal = false,
+                IsApprovalSkipped = false
             };
 
             candidate.OnsiteTraining = new OnsiteTraining
             {
-                Candidate = candidate
+                Candidate = candidate,
+                IsFinal = false
             };
 
             candidate.Managers = new Managers
