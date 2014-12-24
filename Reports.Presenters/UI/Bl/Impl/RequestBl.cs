@@ -7835,10 +7835,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if(tg == null)
                     throw new ArgumentException(string.Format("Точка (ID {0}) отсутствует в базе данных", model.Id));
             }
+
+            // Если дата точки не больше текущей даты, Факт заполняется значениями, внесенными пользователем
             if (model.TpDay.Date < DateTime.Today)
             {
                 tg.FactPointId = model.FactPointId == 0 ? new int?() : model.FactPointId;
                 tg.FactHours = string.IsNullOrEmpty(model.FactHours) ? new decimal?() : model.TpFactHours;
+                tg.IsFactCreditAvailable = GetIsCreditAvailable(model.IsFactCreditAvailable);
             }
             else
             {
