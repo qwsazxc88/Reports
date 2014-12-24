@@ -915,7 +915,7 @@ AFTER INSERT, UPDATE
 AS
 	IF EXISTS(SELECT * FROM GpdContract as A
 						INNER JOIN inserted as B ON B.id = A.id
-						WHERE A.SendTo1C is not null and A.StatusID <> 1)
+						WHERE A.SendTo1C is not null and isnull(A.StatusID, 0) <> 1)
 	BEGIN
 		UPDATE GpdContract SET StatusID = 1 
 		FROM GpdContract as A
@@ -936,7 +936,7 @@ AFTER INSERT, UPDATE
 AS
 	IF EXISTS(SELECT * FROM GpdAct as A
 						INNER JOIN inserted as B ON B.id = A.id
-						WHERE A.SendTo1C is not null and A.StatusID <> 1)
+						WHERE A.SendTo1C is not null and isnull(A.StatusID, 0) <> 1)
 	BEGIN
 		UPDATE GpdAct SET StatusID = 1 
 		FROM GpdAct as A
