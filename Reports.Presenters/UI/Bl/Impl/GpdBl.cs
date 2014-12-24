@@ -214,7 +214,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         BankBIK = model.BankBIK,
                         CorrAccount = model.CorrAccount,
                         CreatorID = currentUseId.Id,
-                        Code = model.Code,
+                        //Code = model.Code,
                         EditorID = currentUseId.Id,
                         EditDate = DateTime.Now
                     };
@@ -231,7 +231,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdrefDetail.BankBIK = model.BankBIK;
                     gpdrefDetail.CorrAccount = model.CorrAccount;
                     gpdrefDetail.CreatorID = model.CreatorID;
-                    gpdrefDetail.Code = model.Code;
+                    //gpdrefDetail.Code = model.Code;
                     gpdrefDetail.EditorID = currentUseId.Id;
                     gpdrefDetail.EditDate = DateTime.Now;
                 }

@@ -280,6 +280,7 @@
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.Name)
                                             </td>
                                         </tr>
+                                        @*
                                         <tr>
                                             <td>
                                                 @Html.LabelFor(model => model.DetailEdit.Code):
@@ -289,6 +290,7 @@
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.Code)
                                             </td>
                                         </tr>
+                                        *@
                                         <tr>
                                             <td>
                                                 @Html.LabelFor(model => model.DetailEdit.INN):
@@ -455,7 +457,7 @@
             var url = $(this).attr('href');
             $('#testShow').load(url);
         });*@
-
+        document
         //SelectPerson();
     });
 
