@@ -13,7 +13,7 @@
     <property name="BankName" not-null="false"/>
     <property name="BankBIK" not-null="false"/>
     <property name="CorrAccount" not-null="false"/>
-    <property name="Code" not-null="false"/>
+    <!--<property name="Code" not-null="false"/>-->
     <property name="EditDate" not-null="false"/>
     <property name="EditorID" not-null="false"/>
   </class>
