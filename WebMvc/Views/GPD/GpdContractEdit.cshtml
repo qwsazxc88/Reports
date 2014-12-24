@@ -98,7 +98,7 @@
                                 @Html.LabelFor(m => m.NameContract):
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "50" } : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.NameContract)
                             </td>
                         </tr>

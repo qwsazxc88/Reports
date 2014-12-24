@@ -388,7 +388,7 @@ CREATE TABLE [dbo].[GpdContract](
 	[CTID] [int] NULL,
 	[StatusID] [int] NULL,
 	[NumContract] [nvarchar](30) NULL,
-	[NameContract] [nvarchar](50) NULL,
+	[NameContract] [nvarchar](100) NULL,
 	[DateBegin] [datetime] NULL,
 	[DateEnd] [datetime] NULL,
 	[PayeeID] [int] NULL,
