@@ -21,12 +21,13 @@
                             <td colspan="2">
                                 <b>Создание/редактирование договора ГПД</b>
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
-                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
+                                <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                                @*<input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
+                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
+                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
                                 <input type="hidden" id="CTID" name="CTID" value="@Model.CTID" />
                                 <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
                                 <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
-                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
-                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
                                 <input type="hidden" id="GPDID" name="GPDID" value="@Model.GPDID" />
                                 <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
                                 <input type="hidden" id="Autor" name="Autor" value="@Model.Autor" />
@@ -35,6 +36,9 @@
                                 <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
                                 <input type="hidden" id="CTName" name="CTName" value="@Model.CTName" />
                                 <input type="hidden" id="StatusName" name="StatusName" value="@Model.StatusName" />
+                                <input type="hidden" id="SNILS" name="SNILS" value="@Model.SNILS" />
+                                <input type="hidden" id="BankName" name="BankName" value="@Model.BankName" />
+                                <input type="hidden" id="Account" name="Account" value="@Model.Account" />*@
                             </td>
                         </tr>
                         <tr>
@@ -64,7 +68,7 @@
                             <td colspan="2">
                                 @if ((Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsWrite || Model.Permissions[0].IsDraft))
                                 {
-                                    <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                                    <input type="button" value="Выбрать" title="Выбрать подразделение" onclick="changeDepartment();"/>
                                 }
                             </td>
                         </tr>
@@ -73,8 +77,11 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PersonID)
+                                <label>СНИЛС:</label>
+                                <label>@Model.SNILS</label>
+
                             </td>
                         </tr>
                         <tr>
@@ -109,7 +116,7 @@
                                 @Html.LabelFor(m => m.DateBegin):
                             </td>
                             <td>
-                                @if(Model.StatusID == 4 || Model.Id == 0)
+                                @if (Model.StatusID == 4 || Model.Id == 0)
                                 {
                                     @Html.EditorFor(m => m.DateBegin)
                                 }
@@ -153,6 +160,31 @@
                         </tr>
                         <tr>
                             <td>
+                                @Html.LabelFor(m => m.PaymentPeriods)
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PaymentPeriodID, new SelectList(Model.PaymentPeriods, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PaymentPeriodID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Amount):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.TextBoxFor(m => m.Amount, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.Amount)
+                                }
+                                else
+                                {
+                                    <label id="Amount">@RequestBl.FormatSum(@Model.Amount)</label>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 @Html.LabelFor(m => m.PayerID):
                             </td>
                             <td>
@@ -165,10 +197,175 @@
                                 @Html.LabelFor(m => m.PayeeID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPayeed(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayeeID)
+                                @if (@Model.Permissions[0].IsWrite && @Model.StatusID == 4)
+                                {
+                                    if (Model.Operation == 0)
+                                    {
+                                        <input type="submit" value="Добавить" title="Добавить новые реквизиты" id="refDetailAdd" onclick="AddRefDetails();"/>
+                                    }
+                                    if (Model.Id != 0 && Model.Operation == 0)
+                                    {
+                                        <input type="submit" value="Изменить" title="Изменить текущие реквизиты" id="refDetailEdit" onclick="EditRefDetails();"/>
+                                    }
+                                    if (Model.Operation == 0)
+                                    {
+                                        <input type="submit" value="Выбрать из справочника" title="Загрузить в выпадающий список весь справочник реквизитов" id="refDetailList" onclick="RefDetails();"/>
+                                    }
+                                }
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+                                <label>Банк получателя:</label>
+                            </td>
+                            <td>
+                                <label>@Model.BankName</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>Расчетный счет получателя:</label>
+                            </td>
+                            <td>
+                                <label>@Model.Account</label>
+                            </td>
+                        </tr>
+                        <!--справочник реквизитов начало-->
+                        <tr id="refDetailRow" style="background:silver">
+                            <td colspan="2">
+                                <h5 >
+                                    <label id="errorMessage" style="color:red">@Model.DetailEdit.errorMessage</label>
+                                    @Html.ValidationMessageFor(model => model.DetailEdit.errorMessage)
+                                </h5>
+                                <div class="doc-wrap">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td colspan="2">
+                                                <b>Создание/редактирование записи в справочнике реквизитов</b>
+                                                <input type="hidden" id="Id" name="Id" value="@Model.DetailEdit.Id" />
+                                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.DetailEdit.CreatorID" />
+                                                @*
+                                                <input type="hidden" id="DTID" name="DTID" value="@Model.DetailEdit.DTID" />
+                                                <input type="hidden" id="Name" name="Name" value="@Model.DetailEdit.Name" />
+                                                <input type="hidden" id="Code" name="Code" value="@Model.DetailEdit.Code" />
+                                                <input type="hidden" id="INN" name="INN" value="@Model.DetailEdit.INN" />
+                                                <input type="hidden" id="KPP" name="KPP" value="@Model.DetailEdit.KPP" />
+                                                <input type="hidden" id="Account" name="Account" value="@Model.DetailEdit.Account" />
+                                                <input type="hidden" id="BankName" name="BankName" value="@Model.DetailEdit.BankName" />
+                                                <input type="hidden" id="BankBIK" name="BankBIK" value="@Model.DetailEdit.BankBIK" />
+                                                <input type="hidden" id="CorrAccount" name="CorrAccount" value="@Model.DetailEdit.CorrAccount" />
+                                                *@
+                                                <input type="hidden" id="DetailStatusID" name="DetailStatusID" value="@Model.DetailStatusID" />
+                                            </td>
+                                        </tr>
+                                        @*
+                                        <tr>
+                                            <td style="width:220px">
+                                                @Html.LabelFor(m => m.DetailEdit.DTID):
+                                            </td>
+                                            <td>
+                                                @Html.DropDownListFor(model => model.DetailEdit.DTID, new SelectList(Model.DetailEdit.DetailTypes, "ID", "Name"), Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" }) 
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.DTID)
+                                            </td>
+                                        </tr>
+                                        *@
+                                        <tr>
+                                            <td style="width:220px">
+                                                @Html.LabelFor(model => model.DetailEdit.Name):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.Name, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.Name)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.Code):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.Code, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.Code)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.INN):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.INN, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.INN)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.KPP):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.KPP, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.KPP)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.Account):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.Account, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.Account)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.BankName):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.BankName, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.BankName)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.BankBIK):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.BankBIK, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.BankBIK)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                @Html.LabelFor(model => model.DetailEdit.CorrAccount):
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DetailEdit.CorrAccount, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.DetailEdit.CorrAccount)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                @if (@Model.Permissions[0].IsWrite)
+                                                {
+                                                    if (@Model.DetailStatusID == 4)
+                                                    {
+                                                        <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных" onclick="EditModeOff();"/>
+                                                    }
+                                                    if (@Model.DetailStatusID == 2)
+                                                    {
+                                                        <input type="submit" value="Редактировать" title="Перейти в режим редактирования текущего реквизита" onclick="EditModeOn();"/>
+                                                    }
+                                                    <input type="submit" value="Отменить" title="Перейти в режим просмотра текущего реквизита" onclick="CancelEditMode();"/>
+                                                }
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+        
+                            
+                        <!--справочник реквизитов конец-->
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.GPDID):
@@ -248,13 +445,18 @@
         $("#DateEnd").datepicker();
         $("#DateP").datepicker();
         $(".hasDatepicker").width("75px");
-        //setSortFields();
         setActiveMenuItem("moContract");
-//        if($("#IsDraft") == false)
-//        {
-//            $(".hasDatepicker").readonly('True');
-//            //$("#DateEnd").readonly('True');
-//        }
+
+        if ($("#Operation").val() == 0)
+            $('#refDetailRow').hide();
+
+        @*$('#testlink').click(function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+            $('#testShow').load(url);
+        });*@
+
+        //SelectPerson();
     });
 
     function SaveDraft()
@@ -269,7 +471,53 @@
     }
     function RejectContract()
     {
-        $("#StatusID").val('4')
+        $("#StatusID").val('3')
         return true;
+    }
+    function SelectPerson()
+    {
+        $("#Operation").val('1');
+        return true;
+    }
+    function SelectPayeed()
+    {
+        $("#Operation").val('5');
+        return true;
+    }
+    function AddRefDetails()
+    {
+        $('#refDetailRow').show();
+        $("#Operation").val(2);
+        $("#DetailStatusID").val('4');
+        return true;
+    }
+    function EditRefDetails()
+    {
+        $("#Operation").val(3);
+        $('#refDetailRow').show();
+        $("#DetailStatusID").val('2');
+        return true;
+    }
+    function EditModeOn() {
+        $('#refDetailRow').show();
+        $("#Operation").val(3);
+        $("#DetailStatusID").val('4');
+        return true;
+    }
+    function EditModeOff() {
+        $("#Operation").val('4');
+        $("#DetailStatusID").val('2');
+        return true;
+    }
+    function CancelEditMode() {
+        $("#Operation").val('0');
+        $("#DetailStatusID").val('2');
+        $("#StatusID").val('5')
+        $('#refDetailRow').hide();
+        return true;
+    }
+    function RefDetails(){
+        $("#Operation").val('5');
+        $('#refDetailRow').hide();
     }
 </script>   

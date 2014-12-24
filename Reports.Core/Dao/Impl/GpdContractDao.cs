@@ -58,6 +58,18 @@ namespace Reports.Core.Dao.Impl
             return documentList;
         }
         /// <summary>
+        /// Список сроков оплаты.
+        /// </summary>
+        /// <returns></returns>
+        public IList<GpdContractStatusesDto> GetPaymentPeriods()
+        {
+            string sqlQuery = @"SELECT * FROM dbo.vwGpdPaymentPeriod";
+
+            IQuery query = CreateRefQuery(sqlQuery);
+            IList<GpdContractStatusesDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractStatusesDto))).List<GpdContractStatusesDto>();
+            return documentList;
+        }
+        /// <summary>
         /// Создание запроса для простых справочников.
         /// </summary>
         /// <param name="sqlQuery"></param>
@@ -98,20 +110,58 @@ namespace Reports.Core.Dao.Impl
         {
             string sqlQuery = @"SELECT * FROM vwGpdRefPersons ORDER BY Name";
 
-            IQuery query = CreateRefQuery(sqlQuery);
+            IQuery query = CreatePersonQuery(sqlQuery);
             IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
             return documentList;
         }
+        /// <summary>
+        /// Создание запроса физических лиц.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreatePersonQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("SNILS", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Формируем списки получателей и плательщиков.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="DTID">ID типа реквизитов.</param>
+        /// <param name="PersonID">ID физического лица.</param>
+        /// <param name="Operation">Операция, по которой определяем способ загрузки получателей</param>
+        /// <returns></returns>
         public IList<GpdContractDetailDto> GetDetails(UserRole role,
                                                     int DTID,
-                                                    int Id,
-                                                    string Name)
+                                                    int PersonID,
+                                                    int Operation)
         {
-            string sqlQuery = @"SELECT * FROM vwGpdRefDetail WHERE DTID = " + (DTID == 0 ? "" : DTID.ToString()) + " ORDER BY Name";
+            string sqlQuery = "";
+            //if ((Operation == 0 || Operation == 1) && DTID == 1)
+            if (Operation != 3 && Operation != 4 && Operation != 5 && DTID == 1)
+                sqlQuery = "SELECT * FROM dbo.fncGetPayeersByContract(" + PersonID.ToString() + ")";
+            else
+                sqlQuery = @"SELECT * FROM vwGpdRefDetail WHERE DTID = " + (DTID == 0 ? "" : DTID.ToString()) + " ORDER BY Name";
 
-            IQuery query = CreateRefQuery(sqlQuery);
+            IQuery query = CreateDetailQuery(sqlQuery);
             IList<GpdContractDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractDetailDto))).List<GpdContractDetailDto>();
             return documentList;
+        }
+        /// <summary>
+        /// Создание запроса реквизитов получателей и плательщиков.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateDetailQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("BankName", NHibernateUtil.String).
+                AddScalar("Account", NHibernateUtil.String);
         }
         /// <summary>
         /// Список договоров.
@@ -191,6 +241,10 @@ namespace Reports.Core.Dao.Impl
                     return " ORDER BY DepLevel7Name " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
                 case 10:
                     return " ORDER BY StatusName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
+                case 11:
+                    return " ORDER BY PayerName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
+                case 12:
+                    return " ORDER BY PayeeName " + (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
             }
             return "";
         }
@@ -227,7 +281,11 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Autor", NHibernateUtil.String).
                 AddScalar("DepLevel3Name", NHibernateUtil.String).
                 AddScalar("DepLevel7Name", NHibernateUtil.String).
-                AddScalar("IsLong", NHibernateUtil.Boolean);
+                AddScalar("IsLong", NHibernateUtil.Boolean).
+                AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayeeName", NHibernateUtil.String).
+                AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
+                AddScalar("Amount", NHibernateUtil.Decimal);
         }
         /// <summary>
         /// Достаем уровень подразделения.

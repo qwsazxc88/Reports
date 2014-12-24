@@ -24,6 +24,7 @@ namespace Reports.Core.Dto
     /// </summary>
     public class GpdContractSurnameDto : GpdContractStatusesDto
     {
+        public string SNILS { get; set; }
     }
     /// <summary>
     /// Списосок договоров.
@@ -56,12 +57,18 @@ namespace Reports.Core.Dto
         public string DepLevel3Name { get; set; }
         public string DepLevel7Name { get; set; }
         public bool IsLong {get;set;}
+        public string PayerName { get; set; }
+        public string PayeeName { get; set; }
+        public int PaymentPeriodID { get; set; }
+        public decimal Amount { get; set; }
     }
     /// <summary>
     /// Список реквизитов.
     /// </summary>
     public class GpdContractDetailDto : GpdContractStatusesDto
     {
-        public virtual int DTID { get; set; }
+        public int DTID { get; set; }
+        public string BankName { get; set; }
+        public string Account { get; set; }
     }
 }

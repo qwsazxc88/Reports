@@ -44,6 +44,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }
         public bool hasErrors { get; set; }
+        public int StatusID { get; set; }
 
         public IList<GpdRefDetailFullDto> Documents { get; set; }
 
