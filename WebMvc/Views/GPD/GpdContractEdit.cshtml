@@ -81,7 +81,10 @@
                                 @Html.ValidationMessageFor(model => model.PersonID)
                                 <label>СНИЛС:</label>
                                 <label>@Model.SNILS</label>
-
+                                @*
+                                <input type="text" name="Surname" id="Surname" onchange="SelectPerson();" onblur="this.form.submit();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                <input type="hidden" id="PersonID" name="PersonID"/>
+                                *@
                             </td>
                         </tr>
                         <tr>
@@ -98,7 +101,7 @@
                                 @Html.LabelFor(m => m.NameContract):
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.NameContract)
                             </td>
                         </tr>
@@ -276,7 +279,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.Name):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.Name, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.Name, Model.DetailStatusID == 4 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.Name)
                                             </td>
                                         </tr>
@@ -296,7 +299,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.INN):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.INN, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.INN, Model.DetailStatusID == 4 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.INN)
                                             </td>
                                         </tr>
@@ -305,7 +308,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.KPP):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.KPP, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.KPP, Model.DetailStatusID == 4 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.KPP)
                                             </td>
                                         </tr>
@@ -314,7 +317,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.Account):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.Account, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.Account, Model.DetailStatusID == 4 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.Account)
                                             </td>
                                         </tr>
@@ -323,7 +326,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.BankName):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.BankName, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.BankName, Model.DetailStatusID == 4 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.BankName)
                                             </td>
                                         </tr>
@@ -332,7 +335,7 @@
                                                 @Html.LabelFor(model => model.DetailEdit.BankBIK):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.BankBIK, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.BankBIK, Model.DetailStatusID == 4 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.BankBIK)
                                             </td>
                                         </tr>
@@ -341,13 +344,13 @@
                                                 @Html.LabelFor(model => model.DetailEdit.CorrAccount):
                                             </td>
                                             <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.CorrAccount, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                                @Html.TextBoxFor(model => model.DetailEdit.CorrAccount, Model.DetailStatusID == 4 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.CorrAccount)
                                             </td>
                                         </tr>
                                         <tr>
                                             <td colspan="2">
-                                                @if (@Model.Permissions[0].IsWrite)
+                                                @if (@Model.DetailEdit.Permissions[0].IsWrite)
                                                 {
                                                     if (@Model.DetailStatusID == 4)
                                                     {
@@ -452,14 +455,29 @@
         if ($("#Operation").val() == 0)
             $('#refDetailRow').hide();
 
-        @*$('#testlink').click(function (event) {
-            event.preventDefault();
-            var url = $(this).attr('href');
-            $('#testShow').load(url);
-        });*@
         //alert(document.body.scrollLeft);
         //SelectPerson();
     });
+
+//    $(function () 
+//    {
+//        $("[data-autocomplete-source]").each(
+//            function () 
+//            {
+//                var target = $(this);
+//                target.autocomplete({ source: target.attr("data-autocomplete-source"),
+//                                      select : function(event, ui) 
+//                                                {
+//                                                    //var PersonID = parseInt(ui.item.value, 1);
+//                                                    $("#Surname").val(ui.item.label);
+//                                                    $("#PersonID").val(ui.item.value);
+//                                                    $("#SNILS").val(ui.item.snils);
+//                                                    return false;
+//                                                }
+//                                     });
+//              });
+//    });
+
 
     function SaveDraft()
     {

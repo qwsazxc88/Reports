@@ -48,7 +48,7 @@
                                 @Html.LabelFor(model => model.Name):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.Name, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.Name, Model.StatusID == 4 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.Name)
                             </td>
                         </tr>
@@ -68,7 +68,7 @@
                                 @Html.LabelFor(model => model.INN):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.INN, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.INN, Model.StatusID == 4 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.INN)
                             </td>
                         </tr>
@@ -77,7 +77,7 @@
                                 @Html.LabelFor(model => model.KPP):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.KPP, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.KPP, Model.StatusID == 4 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.KPP)
                             </td>
                         </tr>
@@ -86,7 +86,7 @@
                                 @Html.LabelFor(model => model.Account):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.Account, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.Account, Model.StatusID == 4 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.Account)
                             </td>
                         </tr>
@@ -95,7 +95,7 @@
                                 @Html.LabelFor(model => model.BankName):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.BankName, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.BankName, Model.StatusID == 4 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.BankName)
                             </td>
                         </tr>
@@ -104,7 +104,7 @@
                                 @Html.LabelFor(model => model.BankBIK):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.BankBIK, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.BankBIK, Model.StatusID == 4 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.BankBIK)
                             </td>
                         </tr>
@@ -113,7 +113,7 @@
                                 @Html.LabelFor(model => model.CorrAccount):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.CorrAccount, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(model => model.CorrAccount, Model.StatusID == 4 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.CorrAccount)
                             </td>
                         </tr>

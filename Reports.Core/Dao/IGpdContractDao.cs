@@ -42,6 +42,7 @@ namespace Reports.Core.Dao
         IList<GpdContractSurnameDto> GetPersons(UserRole role,
                                                     int Id,
                                                     string Name);
+        IList<GpdContractSurnameDto> GetAutocompletePersons(string Name);
         /// <summary>
         /// Плательщики/получатели, определяем по полю DTID
         /// </summary>
