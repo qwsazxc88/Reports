@@ -115,59 +115,66 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetGpdRefDetailTypes(model);
             UserRole role = CurrentUser.UserRole;
             GetPermission(model);
-            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, model.INN, model.KPP, model.Account, model.BankName, model.BankBIK, model.CorrAccount, model.CreatorID, model.Code);
+            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, model.SortBy, model.SortDescending);
         }
         /// <summary>
         /// Проверяем правильность заполнения полей.
         /// </summary>
         /// <param name="model">Проверяемая модель.</param>
         /// <param name="ms">Словарь для сообщений об ошибках.</param>
-        public void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms)
+        /// <param name="flgFromContract">Признак проверки модели заполняемой в договорах.</param>
+        public void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms, bool flgFromContract)
         {
+            string ModelName = flgFromContract ? "DetailEdit." : "";
+            GetPermission(model);
+            
             if (model.Name == null)
-                ms.AddModelError("Name", "Заполните поле 'Наименование'");
+                ms.AddModelError(ModelName + "Name", "Заполните поле 'Наименование'");
             if (model.Name != null && model.Name.Trim().Length > 50)
-                ms.AddModelError("Name", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
             if (model.INN == null)
-                ms.AddModelError("INN", "Заполните поле 'ИНН'");
+                ms.AddModelError(ModelName + "INN", "Заполните поле 'ИНН'");
             if (model.INN != null && model.INN.Trim().Length > 12)
-                ms.AddModelError("INN", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "INN", "Превышено допустимое количество символов!");
 
             if (model.KPP == null)
-                ms.AddModelError("KPP", "Заполните поле 'КПП'");
+                ms.AddModelError(ModelName + "KPP", "Заполните поле 'КПП'");
             if (model.KPP != null && model.KPP.Trim().Length > 9)
-                ms.AddModelError("KPP", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "KPP", "Превышено допустимое количество символов!");
 
             if (model.Account == null)
-                ms.AddModelError("Account", "Заполните поле 'Расчетный счет'");
+                ms.AddModelError(ModelName + "Account", "Заполните поле 'Расчетный счет'");
             if (model.Account != null && model.Account.Trim().Length > 20)
-                ms.AddModelError("Account", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "Account", "Превышено допустимое количество символов!");
 
             if (model.BankName == null)
-                ms.AddModelError("BankName", "Заполните поле 'Банк'");
+                ms.AddModelError(ModelName + "BankName", "Заполните поле 'Банк'");
             if (model.BankName != null && model.BankName.Trim().Length > 50)
-                ms.AddModelError("BankName", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "BankName", "Превышено допустимое количество символов!");
 
             if (model.BankBIK == null)
-                ms.AddModelError("BankBIK", "Заполните поле 'Банк БИК'");
+                ms.AddModelError(ModelName + "BankBIK", "Заполните поле 'Банк БИК'");
             if (model.BankBIK != null && model.BankBIK.Trim().Length > 9)
-                ms.AddModelError("BankBIK", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "BankBIK", "Превышено допустимое количество символов!");
 
             if (model.CorrAccount == null)
-                ms.AddModelError("CorrAccount", "Заполните поле 'Банк кор/счет'");
+                ms.AddModelError(ModelName + "CorrAccount", "Заполните поле 'Банк кор/счет'");
             if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 20)
-                ms.AddModelError("Name", "Превышено допустимое количество символов!");
+                ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
-            if (model.DTID == 2)
-            {
-                if (model.Code == null)
-                    ms.AddModelError("Code", "Заполните поле 'Код банка'");
-                if (model.Code != null && model.Code.Trim().Length > 9)
-                    ms.AddModelError("Name", "Превышено допустимое количество символов!");
-            }
-            else
-                model.Code = null;
+            //if (model.DTID == 2)
+            //{
+            //    if (model.Code == null)
+            //        ms.AddModelError(ModelName + "Code", "Заполните поле 'Код банка'");
+            //    if (model.Code != null && model.Code.Trim().Length > 9)
+            //        ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
+            //}
+            //else
+            //    model.Code = null;
+
+            if (ms.Count != 0)
+                model.StatusID = 4;
 
             UserRole role = CurrentUser.UserRole;
             model.DetailTypes = GpdRefDetailDao.GetDetailTypes(role,
@@ -182,6 +189,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error)
         {
             error = string.Empty;
+
+            if (model.StatusID == 3)
+                return true;
+
             //UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             IUser currentUseId = AuthenticationService.CurrentUser;
 
@@ -203,7 +214,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                         BankBIK = model.BankBIK,
                         CorrAccount = model.CorrAccount,
                         CreatorID = currentUseId.Id,
-                        Code = model.Code
+                        //Code = model.Code,
+                        EditorID = currentUseId.Id,
+                        EditDate = DateTime.Now
                     };
                 }
                 else
@@ -218,10 +231,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdrefDetail.BankBIK = model.BankBIK;
                     gpdrefDetail.CorrAccount = model.CorrAccount;
                     gpdrefDetail.CreatorID = model.CreatorID;
-                    gpdrefDetail.Code = model.Code;
+                    //gpdrefDetail.Code = model.Code;
+                    gpdrefDetail.EditorID = currentUseId.Id;
+                    gpdrefDetail.EditDate = DateTime.Now;
                 }
                 GpdRefDetailDao.SaveAndFlush(gpdrefDetail);
                 model.Id = gpdrefDetail.Id;
+                model.StatusID = 2;
                 return true;
             }
             catch (Exception ex)
@@ -242,17 +258,20 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <summary>
         /// Заполняем модель для редактирования по указанному ID.
         /// </summary>
-        /// <param name="id">Значение ID.</param>
+        /// <param name="Id">Значение ID.</param>
+        /// <param name="StatusID">Статус записи.</param>
         /// <param name="hasError">Признак ошибки.</param>
         /// <returns></returns>
-        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, bool hasError)
+        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, bool hasError)
         {
             GpdRefDetailEditModel model = new GpdRefDetailEditModel();
             GetPermission(model);
             SetGpdRefDetailTypes(model);
             model.Id = Id;
+            model.StatusID = StatusID == 3 ? 2 : StatusID;
+
             UserRole role = CurrentUser.UserRole;
-            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, model.INN, model.KPP, model.Account, model.BankName, model.BankBIK, model.CorrAccount, model.CreatorID, model.Code);
+            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, 0, null);
             if (model.Documents.Count > 0)
             {
                 foreach (var doc in model.Documents)
@@ -268,9 +287,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.CorrAccount = doc.CorrAccount;
                     model.CreatorID = doc.CreatorID;
                     model.Code = doc.Code;
+                    model.StatusID = StatusID == 3 ? 2 : StatusID;
                 }
             }
-
 
             return model;
         }
@@ -358,11 +377,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             GpdContractEditModel model = new GpdContractEditModel();
             model.Id = Id;
-            GetPermission(model);
-            SetGpdContractPersons(model, hasError);
-            SetGpdContractChargingTypes(model, hasError);
-            SetGpdContractDetails(model, hasError);
-            SetGpdContractStatuses(model, hasError);
 
             UserRole role = CurrentUser.UserRole;
             model.Contracts = GpdContractDao.GetContracts(role, 
@@ -393,6 +407,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DatePOld = doc.DatePOld;
                     model.PayeeID = doc.PayeeID;
                     model.PayerID = doc.PayerID;
+                    model.PayeeName = doc.PayeeName;
+                    model.PayerName = doc.PayerName;
                     model.GPDID = doc.GPDID;
                     model.PurposePayment = doc.PurposePayment;
                     if (doc.CreateDate == null)
@@ -404,12 +420,54 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Surname = doc.Surname;
                     model.CTName = doc.CTName;
                     model.StatusName = doc.StatusName;
+                    model.PaymentPeriodID = doc.PaymentPeriodID;
+                    model.Amount = doc.Amount;
                 }
             }
             else
                 model.StatusID = 4;
 
+
+            SetGpdContractEditDropDowns(model, hasError);
+            model.DetailEdit = SetRefDetailEditModel(model.PayeeID, model.PayeeID == 0 ? 4 : 2, hasError);
             return model;
+        }
+        /// <summary>
+        /// Заполняем выпадающие списки для модели редактирования договоров ГПД.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="hasError"></param>
+        public void SetGpdContractEditDropDowns(GpdContractEditModel model, bool hasError)
+        {
+            GetPermission(model);
+            SetGpdContractPersons(model, hasError);
+            SetGpdContractChargingTypes(model, hasError);
+            SetGpdContractDetails(model, hasError);
+            SetGpdContractStatuses(model, hasError);
+            SetGpdPaymentPeriods(model, hasError);
+
+            if (model.Persons != null && model.Persons.Count != 0)
+            {
+                try
+                {
+                    model.SNILS = model.PersonID == 0 ? model.Persons[0].SNILS : model.Persons.Where(x => x.Id == model.PersonID).ElementAt(0).SNILS;
+                }
+                catch
+                {
+                }
+            }
+
+            if (model.Payeers != null && model.Payeers.Count != 0)
+            {
+                try
+                {
+                    model.BankName = model.PayeeID == 0 ? model.Payeers[0].BankName : model.Payeers.Where(x => x.Id == model.PayeeID).ElementAt(0).BankName;
+                    model.Account = model.PayeeID == 0 ? model.Payeers[0].Account : model.Payeers.Where(x => x.Id == model.PayeeID).ElementAt(0).Account;
+                }
+                catch
+                {
+                }
+            }
         }
         /// <summary>
         /// Создаем список статусов договоров для модели просмотра.
@@ -430,6 +488,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = CurrentUser.UserRole;
             model.Statuses = GpdContractDao.GetStatuses(role, model.StatusID, model.StatusName);
+        }
+        /// <summary>
+        /// Создаем список сроков оплаты.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="hasError"></param>
+        public void SetGpdPaymentPeriods(GpdContractEditModel model, bool hasError)
+        {
+            UserRole role = CurrentUser.UserRole;
+            model.PaymentPeriods = GpdContractDao.GetPaymentPeriods();
         }
         /// <summary>
         /// Создаем список видов начисления для модели просмотра.
@@ -470,9 +538,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = CurrentUser.UserRole;
             //плательщики
-            model.Payers = GpdContractDao.GetDetails(role, 2, model.PayerID, model.PayerName);
+            model.Payers = GpdContractDao.GetDetails(role, 2, 0, 0);
             //получатели
-            model.Payeers = GpdContractDao.GetDetails(role, 1, model.PayeeID, model.PayeeName);
+            model.Payeers = GpdContractDao.GetDetails(role, 1, model.PersonID, model.Operation);
         }
         /// <summary>
         /// Достаем список договоров.
@@ -500,11 +568,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         public void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
             bool hasError = false;
-            GetPermission(model);
-            SetGpdContractPersons(model, hasError);
-            SetGpdContractChargingTypes(model, hasError);
-            SetGpdContractDetails(model, hasError);
-            SetGpdContractStatuses(model, hasError);
 
             if (model.StatusID != 4 && model.Id != 0)
             {
@@ -561,13 +624,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PayeeID == 0)
                     ms.AddModelError("PayeeID", "Выберите получателя из списка!");
 
+                if (model.PaymentPeriodID == 0)
+                    ms.AddModelError("PaymentPeriodID", "Укажите срок оплаты!");
 
                 if (model.GPDID == null)
                     ms.AddModelError("GPDID", "Заполните поле 'ID ГПД в ЭССС'!");
 
                 if (model.PurposePayment == null)
                     ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
+
+                if (model.Amount == 0)
+                    ms.AddModelError("Amount", "Сумма не должна быть равна нулю!");
             }
+
+            SetGpdContractEditDropDowns(model, hasError);
         }
         /// <summary>
         /// Процедура сохранения договора в базе данных.
@@ -604,6 +674,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         PurposePayment = model.PurposePayment,
                         DateP = model.DateP,                        
                         IsLong = model.DateP.HasValue ? true : false,
+                        PaymentPeriodID = model.PaymentPeriodID,
+                        Amount = model.Amount,
                         MagEntities = new List<GpdMagProlongation>()
                     };
                 }
@@ -612,9 +684,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdContract = GpdContractDao.Get(model.Id);
                     if (gpdContract.StatusID != 4)
                     {
-                        gpdContract.StatusID = model.StatusID;
+                        gpdContract.StatusID = model.StatusID == 3 ? 4 : model.StatusID;
 
-                        if (model.DateP.HasValue)
+                        if (model.DateP.HasValue && model.DatePOld.Value != model.DateP.Value)
                         {
                             gpdContract.DateP = model.DateP.Value;
                             gpdContract.IsLong = model.DateP.HasValue ? true : false;
@@ -635,6 +707,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.PayerID = model.PayerID;
                         gpdContract.GPDID = model.GPDID;
                         gpdContract.PurposePayment = model.PurposePayment;
+                        gpdContract.PaymentPeriodID = model.PaymentPeriodID;
+                        gpdContract.Amount = model.Amount;
                         if (model.DateP.HasValue)
                         {
                             gpdContract.DateP = model.DateP.Value;
@@ -683,6 +757,115 @@ namespace Reports.Presenters.UI.Bl.Impl
                     GpdContracts = entity
                 };
                 entity.MagEntities.Add(MagProlong);
+            }
+        }
+        /// <summary>
+        /// Создание/редактирование реквизитов.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="ms"></param>
+        /// <returns></returns>
+        public GpdContractEditModel EditDetailsFromContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms)
+        {
+            bool hasError = false;
+            if (model.Operation == 1 || model.Operation == 5) //подгружаем весь справочник реквизитов
+            {
+                SetGpdContractEditDropDowns(model, hasError);
+                model.DetailEdit = SetRefDetailEditModel(0, 4, hasError);
+                model.Operation = 0;
+                return model;
+            }
+
+            //для справочника реквизитов
+            if (model.Operation != 0)
+            {
+                SetGpdContractEditDropDowns(model, hasError);
+
+                //справочник реквизитов в режиме создания новой строки
+                if (model.DetailStatusID == 4 && model.Operation == 2)
+                {
+                    model.DetailEdit = SetRefDetailEditModel(0, 4, hasError);
+                    model.DetailEdit.StatusID = model.DetailStatusID;
+                }
+                //справочник реквизитов в режиме редактирования/просмотра
+                if (model.Operation == 3)
+                {
+                    model.DetailEdit = SetRefDetailEditModel(model.PayeeID, model.PayeeID == 0 ? 4 : 2, hasError);
+                    model.DetailEdit.StatusID = model.DetailStatusID;
+                }
+
+                //сохранение справочника реквизитов
+                if (model.DetailStatusID == 2 && model.Operation != 3)
+                {
+                    model.DetailEdit.DTID = 1;
+                    //проверка правильного ввода данных в справочник реквизитов
+                    CheckFillFieldsForGpdRefDetail(model.DetailEdit, ms, true);
+                    if (ms.Count != 0)
+                    {
+                        model.DetailStatusID = 4;
+                        return model;
+                    }
+                    else //сохраняем реквизит
+                    {
+                        model.DetailEdit.Id = model.PayeeID;
+                        string error;
+                        if (SaveGpdRefDetail(model.DetailEdit, out error))
+                        {
+                            if (model.DetailEdit.StatusID == 2)//запись сохранена
+                            {
+                                model.DetailStatusID = 2;
+                                model.PayeeID = model.DetailEdit.Id;
+                                SetGpdContractDetails(model, hasError);
+                                model.Operation = 0;
+                            }
+                            model.DetailEdit = SetRefDetailEditModel(model.DetailEdit.Id, model.DetailStatusID, hasError);
+                            return model;
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(error))
+                                ms.AddModelError("DetailEdit.errorMessage", "Справочник реквизитов - " + error);
+                            return model;
+                        }
+                    }
+                }
+                return model;
+            }
+
+            if (model.StatusID == 5)  //отмена режима редактирования справочника реквизитов
+            {
+                //model = GpdBl.SetGpdContractEdit(model.Id, hasError);
+                SetGpdContractEditDropDowns(model, hasError);
+                model.DetailEdit = SetRefDetailEditModel(0, 4, hasError);
+                model.DetailEdit.StatusID = model.DetailStatusID;
+                model.StatusID = 4;
+                return model;
+            }
+
+
+            if (model.StatusID != 3)//проверка 
+            {
+                CheckFillFieldsForGpdContract(model, ms);
+            }
+
+
+            if (ms.Count != 0)
+                return model;
+            else
+            {
+                string error;
+                //сохранение договора
+                if (SaveGpdContract(model, out error))
+                {
+                    model = SetGpdContractEdit(model.Id, hasError);
+                    return model;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(error))
+                        ms.AddModelError("errorMessage", error);
+                    return model;
+                }
             }
         }
         #endregion
@@ -799,6 +982,8 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="ms">Словарь.</param>
         public void CheckFillFieldsForGpdAct(GpdActEditModel model, System.Web.Mvc.ModelStateDictionary ms)
         {
+            GetPermission(model);
+
             if (model.ActDate == null)
                 ms.AddModelError("ActDate", "Укажите дату акта!");
             else

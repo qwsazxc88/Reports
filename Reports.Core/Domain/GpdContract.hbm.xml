@@ -19,6 +19,8 @@
     <property name="GPDID" not-null="false"/>
     <property name="PurposePayment" not-null="false"/>
     <property name="IsLong" not-null="false"/>
+    <property name="PaymentPeriodID" not-null="false"/>
+    <property name="Amount" not-null="false"/>
 
     <bag name="MagEntities" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract"/>

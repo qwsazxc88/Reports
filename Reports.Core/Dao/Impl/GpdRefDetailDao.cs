@@ -70,29 +70,22 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Id">ID записи</param>
         /// <param name="Name">Наименование</param>
         /// <param name="DTID">ID типа реквизитов</param>
-        /// <param name="INN">ИНН</param>
-        /// <param name="KPP">КПП</param>
-        /// <param name="Account">Расчетный счет</param>
-        /// <param name="BankName">Банк</param>
-        /// <param name="BankBIK">Банк БИК</param>
-        /// <param name="CorrAccount">Банк кор/счет</param>
-        /// <param name="CreatorID">ID Пользователя</param>
+        /// <param name="SortBy">Номер поля по которому будет проводится сортировка.</param>
+        /// <param name="SortDescending">Направление сортировки.</param>
         /// <returns></returns>
         public IList<GpdRefDetailFullDto> GetRefDetail(UserRole role,
             int Id,
             string Name,
             int DTID,
-            string INN,
-            string KPP,
-            string Account,
-            string BankName,
-            string BankBIK,
-            string CorrAccount,
-            int CreatorID,
-            string Code)
+            int SortBy,
+            bool? SortDescending
+            )
         {
             string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetailList] 
                                 WHERE " + (Id == 0 ? ("DTID = " + DTID.ToString() + (Name == null || Name.Trim().Length == 0 ? "" : " and Name like '" + Name + "%'")) : "ID = " + Id.ToString());
+
+
+            sqlQuery += RefDetailListSqlOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateGRDQuery(sqlQuery);
             IList<GpdRefDetailFullDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdRefDetailFullDto))).List<GpdRefDetailFullDto>();
@@ -110,8 +103,71 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("BankName", NHibernateUtil.String).
                 AddScalar("BankBIK", NHibernateUtil.String).
                 AddScalar("CorrAccount", NHibernateUtil.String).
+                AddScalar("Code", NHibernateUtil.String).
                 AddScalar("CreatorID", NHibernateUtil.Int32).
-                AddScalar("Code", NHibernateUtil.String);
+                AddScalar("CreateDate", NHibernateUtil.DateTime).
+                AddScalar("CreatorName", NHibernateUtil.String).
+                AddScalar("CreatePositionName", NHibernateUtil.String).
+                AddScalar("CrDep7Level", NHibernateUtil.String).
+                AddScalar("CrDep3Level", NHibernateUtil.String).
+                AddScalar("EditorID", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("EditorName", NHibernateUtil.String).
+                AddScalar("EditPositionName", NHibernateUtil.String).
+                AddScalar("EDep7Level", NHibernateUtil.String).
+                AddScalar("EDep3Level", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Составляем вид сортировки.
+        /// </summary>
+        /// <param name="SortBy">Переключатель для поля сортировки.</param>
+        /// <param name="SortDescending">Направление сортировки.</param>
+        /// <returns></returns>
+        private string RefDetailListSqlOrderBy(int SortBy, bool? SortDescending)
+        {
+            if (SortBy == 0) return "";
+
+            string SqlOrderBy = " ORDER BY ";
+            switch (SortBy)
+            {
+                case 1:
+                    SqlOrderBy += "Id";
+                    break;
+                case 2:
+                    SqlOrderBy += "Name";
+                    break;
+                case 3:
+                    SqlOrderBy += "CreateDate";
+                    break;
+                case 4:
+                    SqlOrderBy += "CreatorName";
+                    break;
+                case 5:
+                    SqlOrderBy += "CreatePositionName";
+                    break;
+                case 6:
+                    SqlOrderBy += "CrDep3Level";
+                    break;
+                case 7:
+                    SqlOrderBy += "CrDep7Level";
+                    break;
+                case 8:
+                    SqlOrderBy += "EditDate";
+                    break;
+                case 9:
+                    SqlOrderBy += "EditorName";
+                    break;
+                case 10:
+                    SqlOrderBy += "EditPositionName";
+                    break;
+                case 11:
+                    SqlOrderBy += "EDep3Level";
+                    break;
+                case 12:
+                    SqlOrderBy += "EDep7Level";
+                    break;
+            }
+            return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
     }
 }

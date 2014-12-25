@@ -22,6 +22,8 @@ namespace Reports.Core.Domain
         public virtual int CreatorID { get; set; }
         public virtual DateTime? DateP { get; set; }
         public virtual bool IsLong { get; set; }
+        public virtual int PaymentPeriodID { get; set; }
+        public virtual decimal Amount { get; set; }
 
         //журнал изменений даты пролонгации
         public virtual IList<GpdMagProlongation> MagEntities { get; set; }

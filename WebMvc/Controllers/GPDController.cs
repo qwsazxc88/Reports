@@ -90,26 +90,8 @@ namespace WebMvc.Controllers
             bool hasError = false;
             ModelState.Clear();
 
-            
-            GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
-
-            if (ModelState.Count != 0)
-                return View(model);
-            else
-            {
-                string error;
-                if (GpdBl.SaveGpdContract(model, out error))
-                {
-                    model = GpdBl.SetGpdContractEdit(model.Id, hasError);
-                    return View(model);
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(error))
-                        ModelState.AddModelError("errorMessage", error);
-                    return View(model);
-                }
-            }
+            model = GpdBl.EditDetailsFromContract(model, ModelState);
+            return View(model);
         }
         /// <summary>
         /// Просмотр справочника реквизитов.
@@ -150,7 +132,7 @@ namespace WebMvc.Controllers
         public ActionResult GpdRefDetailEdit(int Id)
         {
             bool hasError = false;
-            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, hasError);
+            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, hasError);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -166,25 +148,34 @@ namespace WebMvc.Controllers
         {
             bool hasError = false;
             ModelState.Clear();
-            GpdBl.CheckFillFieldsForGpdRefDetail(model, ModelState);
-            if (ModelState.Count != 0)
+            if (model.StatusID != 2)
+            {
+                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, hasError);
                 return View(model);
+            }
             else
             {
-                string error;
-                if (GpdBl.SaveGpdRefDetail(model, out error))
-                {
-                    //думал, что после сохранения нужно возвращаться к списку
-                    //return RedirectToAction("GpdRefDetail");
-                    model = GpdBl.SetRefDetailEditModel(model.Id, hasError);
-                    model.errorMessage = "Запись сохранена!";
+                GpdBl.CheckFillFieldsForGpdRefDetail(model, ModelState, false);
+                if (ModelState.Count != 0)
                     return View(model);
-                }
                 else
                 {
-                    if (!string.IsNullOrEmpty(error))
-                        ModelState.AddModelError("errorMessage", error);
-                    return View(model);
+                    string error;
+                    if (GpdBl.SaveGpdRefDetail(model, out error))
+                    {
+                        //думал, что после сохранения нужно возвращаться к списку
+                        //return RedirectToAction("GpdRefDetail");
+                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, hasError);
+                        if (model.StatusID == 2)
+                            model.errorMessage = "Запись сохранена!";
+                        return View(model);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(error))
+                            ModelState.AddModelError("errorMessage", error);
+                        return View(model);
+                    }
                 }
             }
         }

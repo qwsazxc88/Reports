@@ -18,7 +18,20 @@
                         <tr>
                             <td colspan="2">
                                 <b>Создание/редактирование записи в справочнике реквизитов</b>
+                                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
+                                @*
+                                <input type="hidden" id="DTID" name="DTID" value="@Model.DTID" />
+                                <input type="hidden" id="Name" name="Name" value="@Model.Name" />
+                                <input type="hidden" id="Code" name="Code" value="@Model.Code" />
+                                <input type="hidden" id="INN" name="INN" value="@Model.INN" />
+                                <input type="hidden" id="KPP" name="KPP" value="@Model.KPP" />
+                                <input type="hidden" id="Account" name="Account" value="@Model.Account" />
+                                <input type="hidden" id="BankName" name="BankName" value="@Model.BankName" />
+                                <input type="hidden" id="BankBIK" name="BankBIK" value="@Model.BankBIK" />
+                                <input type="hidden" id="CorrAccount" name="CorrAccount" value="@Model.CorrAccount" />
+                                *@
+                                <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
                             </td>
                         </tr>
                         <tr>
@@ -26,7 +39,7 @@
                                 @Html.LabelFor(m => m.DTID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name")) 
+                                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name"), Model.StatusID == 4 ? null : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.DTID)
                             </td>
                         </tr>
@@ -35,25 +48,27 @@
                                 @Html.LabelFor(model => model.Name):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.Name)
+                                @Html.TextBoxFor(model => model.Name, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.Name)
                             </td>
                         </tr>
+                        @*
                         <tr>
                             <td>
                                 @Html.LabelFor(model => model.Code):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.Code)
+                                @Html.TextBoxFor(model => model.Code, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.Code)
                             </td>
                         </tr>
+                        *@
                         <tr>
                             <td>
                                 @Html.LabelFor(model => model.INN):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.INN)
+                                @Html.TextBoxFor(model => model.INN, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.INN)
                             </td>
                         </tr>
@@ -62,7 +77,7 @@
                                 @Html.LabelFor(model => model.KPP):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.KPP)
+                                @Html.TextBoxFor(model => model.KPP, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.KPP)
                             </td>
                         </tr>
@@ -71,7 +86,7 @@
                                 @Html.LabelFor(model => model.Account):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.Account)
+                                @Html.TextBoxFor(model => model.Account, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.Account)
                             </td>
                         </tr>
@@ -80,7 +95,7 @@
                                 @Html.LabelFor(model => model.BankName):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.BankName)
+                                @Html.TextBoxFor(model => model.BankName, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.BankName)
                             </td>
                         </tr>
@@ -89,7 +104,7 @@
                                 @Html.LabelFor(model => model.BankBIK):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.BankBIK)
+                                @Html.TextBoxFor(model => model.BankBIK, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.BankBIK)
                             </td>
                         </tr>
@@ -98,7 +113,7 @@
                                 @Html.LabelFor(model => model.CorrAccount):
                             </td>
                             <td>
-                                @Html.TextBoxFor(model => model.CorrAccount)
+                                @Html.TextBoxFor(model => model.CorrAccount, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.CorrAccount)
                             </td>
                         </tr>
@@ -111,7 +126,18 @@
             <td colspan="2">
                 @if (@Model.Permissions[0].IsWrite)
                 {
-                    <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных"/>
+                    if (@Model.StatusID == 4)
+                    {
+                        <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных" onclick="EditModeOff();"/>
+                        if (@Model.Id != 0)
+                        {
+                            <input type="submit" value="Отменить" title="Перейти в режим просмотра текущего реквизита" onclick="CancelEditMode();"/>
+                        }
+                    }
+                    if (@Model.StatusID == 2)
+                    {
+                        <input type="submit" value="Редактировать" title="Перейти в режим редактирования текущего реквизита" onclick="EditModeOn();"/>
+                    }
                 }
             </td>
         </tr>
@@ -127,5 +153,18 @@
         //setSortFields();
         setActiveMenuItem("moGpdRefDetail");
     });
+
+    function EditModeOn() {
+        $("#StatusID").val('4');
+        return true;
+    }
+    function EditModeOff() {
+        $("#StatusID").val('2');
+        return true;
+    }
+    function CancelEditMode() {
+        $("#StatusID").val('3');
+        return true;
+    }
  </script>   
 

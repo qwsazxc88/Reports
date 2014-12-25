@@ -27,6 +27,17 @@ namespace Reports.Core.Dto
         public virtual string CorrAccount { get; set; }
         public virtual int CreatorID { get; set; }
         public virtual string Code { get; set; }
+        public virtual DateTime CreateDate { get; set; }
+        public virtual string CreatorName { get; set; }
+        public virtual string CreatePositionName { get; set; }
+        public virtual string CrDep7Level { get; set; }
+        public virtual string CrDep3Level { get; set; }
+        public virtual int EditorID { get; set; }
+        public virtual DateTime EditDate { get; set; }
+        public virtual string EditorName { get; set; }
+        public virtual string EditPositionName { get; set; }
+        public virtual string EDep7Level { get; set; }
+        public virtual string EDep3Level { get; set; }
     }
     /// <summary>
     /// Для прав доступа к операциям 

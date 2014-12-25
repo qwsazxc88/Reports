@@ -31,6 +31,8 @@ DROP TABLE [dbo].[GpdDetailType]
 GO
 DROP TABLE [dbo].[GpdChargingType]
 GO
+DROP TABLE [dbo].[GpdRefPaymentPeriod]
+GO
 
 */
 
@@ -45,6 +47,33 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
+CREATE TABLE [dbo].[GpdRefPaymentPeriod](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NULL,
+ CONSTRAINT [PK_GpdRefPaymentPeriod] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefPaymentPeriod', @level2type=N'COLUMN',@level2name=N'Id'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Название' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefPaymentPeriod', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник сроков оплат' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefPaymentPeriod'
+GO
+
+
+
+
+
+
+
 
 CREATE TABLE [dbo].[GpdChargingType](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
@@ -181,8 +210,9 @@ CREATE TABLE [dbo].[GpdRefDetail](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Version] [int] NOT NULL CONSTRAINT [DF_GpdRefDetail_Version]  DEFAULT ((1)),
 	[CreateDate] [datetime] NULL CONSTRAINT [DF_GpdRefDetail_CreateDate]  DEFAULT (getdate()),
-	[EditDate] [datetime] NULL CONSTRAINT [DF_GpdRefDetail_EditDate]  DEFAULT (getdate()),
 	[CreatorID] [int] NULL,
+	[EditDate] [datetime] NULL CONSTRAINT [DF_GpdRefDetail_EditDate]  DEFAULT (getdate()),
+	[EditorID] [int] NULL,
 	[DTID] [int] NULL,
 	[Name] [nvarchar](50) NULL,
 	[INN] [nvarchar](12) NULL,
@@ -191,7 +221,7 @@ CREATE TABLE [dbo].[GpdRefDetail](
 	[BankName] [nvarchar](50) NULL,
 	[BankBIK] [nvarchar](9) NULL,
 	[CorrAccount] [nvarchar](20) NULL,
-	[Code] [nvarchar](9) NULL,
+	[Code] [nvarchar](9) NULL	
  CONSTRAINT [PK_GpdRefDetail] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -207,6 +237,7 @@ GO
 ALTER TABLE [dbo].[GpdRefDetail] CHECK CONSTRAINT [FK_GpdRefDetail_GpdDetailType]
 GO
 
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'Id'
 GO
 
@@ -216,10 +247,13 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'CreateDate'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'EditDate'
 GO
 
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'CreatorID'
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'EditorID'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID типа реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdRefDetail', @level2type=N'COLUMN',@level2name=N'DTID'
@@ -354,7 +388,7 @@ CREATE TABLE [dbo].[GpdContract](
 	[CTID] [int] NULL,
 	[StatusID] [int] NULL,
 	[NumContract] [nvarchar](30) NULL,
-	[NameContract] [nvarchar](50) NULL,
+	[NameContract] [nvarchar](100) NULL,
 	[DateBegin] [datetime] NULL,
 	[DateEnd] [datetime] NULL,
 	[PayeeID] [int] NULL,
@@ -364,6 +398,9 @@ CREATE TABLE [dbo].[GpdContract](
 	[DateP] [datetime] NULL,
 	[IsLong] [bit] NULL CONSTRAINT [DF_GpdContract_IsLong]  DEFAULT ((0)),
 	[SendTo1C] [date] NULL,
+	[PaymentPeriodID] [int] NULL,
+	[Amount] [numeric](18, 2) NULL CONSTRAINT [DF_GpdContract_Amount]  DEFAULT ((0)),
+	[GUID] [nvarchar](40) NULL,
  CONSTRAINT [PK_GpdContract] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -405,6 +442,13 @@ REFERENCES [dbo].[RefPeople] ([Id])
 GO
 
 ALTER TABLE [dbo].[GpdContract] CHECK CONSTRAINT [FK_GpdContract_RefPeople]
+GO
+
+ALTER TABLE [dbo].[GpdContract]  WITH CHECK ADD  CONSTRAINT [FK_GpdContract_GpdRefPaymentPeriod] FOREIGN KEY([PaymentPeriodID])
+REFERENCES [dbo].[GpdRefPaymentPeriod] ([Id])
+GO
+
+ALTER TABLE [dbo].[GpdContract] CHECK CONSTRAINT [FK_GpdContract_GpdRefPaymentPeriod]
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'Id'
@@ -465,6 +509,12 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Признак пролон
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата выгрузки в 1С' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'SendTo1C'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID срока оплаты' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'PaymentPeriodID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Стоимость' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'Amount'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Договора (ГПД)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract'
@@ -865,7 +915,7 @@ AFTER INSERT, UPDATE
 AS
 	IF EXISTS(SELECT * FROM GpdContract as A
 						INNER JOIN inserted as B ON B.id = A.id
-						WHERE A.SendTo1C is not null and A.StatusID <> 1)
+						WHERE A.SendTo1C is not null and isnull(A.StatusID, 0) <> 1)
 	BEGIN
 		UPDATE GpdContract SET StatusID = 1 
 		FROM GpdContract as A
@@ -886,7 +936,7 @@ AFTER INSERT, UPDATE
 AS
 	IF EXISTS(SELECT * FROM GpdAct as A
 						INNER JOIN inserted as B ON B.id = A.id
-						WHERE A.SendTo1C is not null and A.StatusID <> 1)
+						WHERE A.SendTo1C is not null and isnull(A.StatusID, 0) <> 1)
 	BEGIN
 		UPDATE GpdAct SET StatusID = 1 
 		FROM GpdAct as A
@@ -947,6 +997,12 @@ BEGIN
 	SELECT Id, 256, 1, 1, 1, 1, 1, 1 FROM dbo.GpdMenu 
 END
 
+
+IF NOT EXISTS (SELECT * FROM dbo.GpdRefPaymentPeriod)
+BEGIN
+	INSERT INTO dbo.GpdRefPaymentPeriod (Name) VALUES ('Ежемесячно')
+	INSERT INTO dbo.GpdRefPaymentPeriod (Name) VALUES ('Однократно в конце срока')
+END
 GO
 
 
@@ -958,23 +1014,21 @@ GO
 
 CREATE VIEW [dbo].[vwGpdContractList]
 AS
-SELECT     A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
-					 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
-           C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, A.DateEnd, 
-					 A.PayeeID, A.PayerID, A.GPDID, 
-           A.PurposePayment, A.DateP as DateP, A.DateP AS DatePOld, A.IsLong, F.Name AS CreatorName, A.CreateDate, F.Name AS Autor, dep3.Name AS DepLevel3Name, 
-           G.Name AS DepLevel7Name
-FROM         dbo.GpdContract AS A INNER JOIN
-                      dbo.RefPeople AS B ON B.Id = A.PersonID INNER JOIN
-                      dbo.GpdChargingType AS C ON C.Id = A.CTID INNER JOIN
-                      dbo.GpdRefStatus AS E ON E.Id = A.StatusID LEFT OUTER JOIN
-                      dbo.Users AS F ON F.Id = A.CreatorID 
-											INNER JOIN dbo.Department AS G ON G.Id = A.DepartmentId 
-											--LEFT OUTER JOIN dbo.Department AS H ON H.Code = G.ParentId 
-											--LEFT OUTER JOIN dbo.Department AS I ON I.Code = H.ParentId 
-											--LEFT OUTER JOIN dbo.Department AS J ON J.Code = I.ParentId 
-											--LEFT OUTER JOIN dbo.Department AS K ON K.Code = J.ParentId
-											LEFT JOIN dbo.Department as dep3 ON G.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
+SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
+			 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
+       C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, A.DateEnd, 
+			 A.PayeeID, A.PayerID, A.GPDID, 
+       A.PurposePayment, A.DateP as DateP, A.DateP AS DatePOld, A.IsLong, F.Name AS CreatorName, A.CreateDate, F.Name AS Autor, dep3.Name AS DepLevel3Name, 
+       G.Name AS DepLevel7Name, H.[Name] as PayerName, I.[Name] as PayeeName, A.PaymentPeriodID, A.Amount
+FROM dbo.GpdContract AS A 
+		 INNER JOIN dbo.RefPeople AS B ON B.Id = A.PersonID 
+		 INNER JOIN dbo.GpdChargingType AS C ON C.Id = A.CTID 
+		 INNER JOIN dbo.GpdRefStatus AS E ON E.Id = A.StatusID 
+		 LEFT JOIN dbo.Users AS F ON F.Id = A.CreatorID 
+		 INNER JOIN dbo.Department AS G ON G.Id = A.DepartmentId 
+		 LEFT JOIN dbo.Department as dep3 ON G.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
+		 INNER JOIN dbo.GpdRefDetail as H ON H.Id = A.PayerID
+		 INNER JOIN dbo.GpdRefDetail as I ON I.id = A.PayeeID
 
 GO
 
@@ -1066,7 +1120,7 @@ GO
 
 CREATE VIEW [dbo].[vwGpdRefPersons]
 AS
-SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS as Name, SNILS
+SELECT Id as Id, LastName + ' ' + FirstName + ' ' + SecondName /*+ ' - ' + SNILS*/ as Name, SNILS
 FROM RefPeople 
 --ORDER BY LastName + ' ' + FirstName + ' ' + SecondName + ' - ' + SNILS
 GO
@@ -1078,7 +1132,7 @@ GO
 
 CREATE VIEW [dbo].[vwGpdRefDetail]
 AS
-SELECT DTID as DTID, Id as Id, Name as Name FROM GpdRefDetail
+SELECT * FROM GpdRefDetail
 
 GO
 
@@ -1089,8 +1143,18 @@ GO
 
 CREATE VIEW [dbo].[vwGpdRefDetailList]
 AS
-SELECT Id as Id, Name as Name, DTID as DTID, INN as INN, KPP as KPP, Account as Account, BankName as BankName, BankBIK as BankBIK, CorrAccount as CorrAccount, CreatorID as CreatorID, Code as Code
-FROM dbo.GpdRefDetail
+SELECT A.Id, A.Name, A.DTID, A.INN, A.KPP, A.Account, A.BankName, A.BankBIK, A.CorrAccount, A.Code, 
+			 A.CreatorID, A.CreateDate, B.[Name] as CreatorName, C.[Name] as CreatePositionName, D.[Name] as CrDep7Level, Crdep3.[Name] as CrDep3Level,
+			 A.EditorID, A.EditDate, E.[Name] as EditorName, F.[Name] as EditPositionName, G.[Name] as EDep7Level, Edep3.[Name] as EDep3Level
+FROM dbo.GpdRefDetail as A
+LEFT JOIN dbo.Users as B ON B.Id = A.CreatorID
+LEFT JOIN dbo.Position as C ON C.Id = B.PositionId
+LEFT JOIN dbo.Department AS D ON D.Id = B.DepartmentId 
+LEFT JOIN dbo.Department as Crdep3 ON D.[Path] like Crdep3.[Path] + N'%' and Crdep3.ItemLevel = 3 
+LEFT JOIN dbo.Users as E ON E.Id = A.EditorID
+LEFT JOIN dbo.Position as F ON F.Id = E.PositionId
+LEFT JOIN dbo.Department AS G ON G.Id = E.DepartmentId 
+LEFT JOIN dbo.Department as Edep3 ON G.[Path] like Edep3.[Path] + N'%' and Edep3.ItemLevel = 3 
 
 GO
 
@@ -1103,7 +1167,7 @@ GO
 CREATE VIEW [dbo].[vwGpdActComments]
 AS
 SELECT A.Id, A.UserId, A.ActId, A.Comment, A.CreateDate, B.Name as Creator
-FROM GpdМаgComments as A
+FROM dbo.GpdМаgComments as A
 INNER JOIN Users as B ON B.Id = A.UserId
 
 GO
@@ -1122,3 +1186,61 @@ INNER JOIN GpdMenu as B ON B.ID = A.MenuID
 
 GO
 
+
+
+IF OBJECT_ID ('vwGpdPaymentPeriod', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdPaymentPeriod]
+GO
+
+CREATE VIEW [dbo].[vwGpdPaymentPeriod]
+AS
+SELECT * FROM dbo.GpdRefPaymentPeriod
+
+GO
+
+
+
+
+--ФУНКЦИИ
+DROP FUNCTION [dbo].[fncGetPayeersByContract]
+GO
+
+CREATE FUNCTION [dbo].[fncGetPayeersByContract]
+(
+	--функция достает получателей по имени физического лица и всех получателей связанных с ним договорами
+	@PersonID int
+)
+RETURNS 
+@Ret TABLE 
+(
+	Id int, Version int, CreateDate datetime, CreatorID int, EditDate datetime, EditorID int, DTID int, Name nvarchar(50), INN nvarchar(12), KPP nvarchar(9), Account nvarchar(20),
+	BankName nvarchar(50), BankBIK nvarchar(9), CorrAccount nvarchar(20), Code nvarchar(9)
+)
+AS
+BEGIN
+	DECLARE @Surname nvarchar(250)
+
+	SET @Surname = (SELECT Name FROM dbo.vwGpdRefPersons WHERE Id = @PersonID)
+
+	IF NOT EXISTS (SELECT * FROM dbo.GpdRefDetail WHERE DTID = 1 and Name = @Surname
+									UNION ALL
+									SELECT distinct B.* FROM dbo.GpdContract as A
+									INNER JOIN dbo.GpdRefDetail as B ON B.id = A.PayeeID and B.DTID = 1
+									WHERE A.PersonID = @PersonID)
+	BEGIN
+		INSERT INTO @ret (Id, Name, BankName, Account) VALUES (0, N'Нет данных', 'нет', 'нет')
+	END
+	ELSE
+	BEGIN
+		INSERT @ret
+		SELECT * FROM dbo.GpdRefDetail WHERE DTID = 1 and Name = @Surname
+		UNION ALL
+		SELECT distinct B.* FROM dbo.GpdContract as A
+		INNER JOIN dbo.GpdRefDetail as B ON B.id = A.PayeeID and B.DTID = 1
+		WHERE A.PersonID = @PersonID
+	END
+	
+	RETURN 
+	--SELECT * FROM [dbo].[fncGetPayeersByContract] (29458)
+END
+GO
