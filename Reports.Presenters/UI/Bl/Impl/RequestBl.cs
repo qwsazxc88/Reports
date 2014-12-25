@@ -7976,6 +7976,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 TerraGraphic tg = TerraGraphicDao.Load(model.Id);
                 model.Credit = GetCredits(tg.IsCreditAvailable);
+                model.FactCredit = GetCredits(tg.IsFactCreditAvailable);
                 // model.FactCredit = GetCredits(tg.IsFactCreditAvailable);
                 model.Day = tg.Day.ToString("dd.MM.yyyy");
                 model.IsEditable = true;
