@@ -38,6 +38,7 @@ namespace Reports.Presenters.UI.Bl
         void GetPermission(GpdContractEditModel model);
         void SetGpdContractEditDropDowns(GpdContractEditModel model, bool hasError);
         GpdContractEditModel EditDetailsFromContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
+        IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name);
         #endregion
 
         #region Акты

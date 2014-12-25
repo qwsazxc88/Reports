@@ -130,7 +130,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             if (model.Name == null)
                 ms.AddModelError(ModelName + "Name", "Заполните поле 'Наименование'");
-            if (model.Name != null && model.Name.Trim().Length > 50)
+            if (model.Name != null && model.Name.Trim().Length > 150)
                 ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
             if (model.INN == null)
@@ -150,7 +150,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (model.BankName == null)
                 ms.AddModelError(ModelName + "BankName", "Заполните поле 'Банк'");
-            if (model.BankName != null && model.BankName.Trim().Length > 50)
+            if (model.BankName != null && model.BankName.Trim().Length > 100)
                 ms.AddModelError(ModelName + "BankName", "Превышено допустимое количество символов!");
 
             if (model.BankBIK == null)
@@ -850,7 +850,11 @@ namespace Reports.Presenters.UI.Bl.Impl
 
 
             if (ms.Count != 0)
+            {
+                model.DetailEdit = SetRefDetailEditModel(model.PayeeID, model.PayeeID == 0 ? 4 : 2, hasError);
+                model.DetailEdit.StatusID = model.DetailStatusID;
                 return model;
+            }
             else
             {
                 string error;
@@ -867,6 +871,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return model;
                 }
             }
+        }
+        public IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name)
+        {
+            return GpdContractDao.GetAutocompletePersons(Name);
         }
         #endregion
 
