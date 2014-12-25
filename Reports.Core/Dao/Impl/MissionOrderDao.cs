@@ -161,6 +161,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
+                                        and uManagerAccount.Login like u.Login+N'R'
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId

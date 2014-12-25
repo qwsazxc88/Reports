@@ -622,6 +622,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
 
+                model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
@@ -2118,7 +2119,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Approve
 
-        public bool ApproveBackgroundCheck(int userId, bool? approvalStatus, out string error)
+        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, out string error)
         {
             error = string.Empty;
 
@@ -2133,8 +2134,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
-                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
-                    {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !IsApprovalSkipped)
+                    {                            
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
                         if (approvalStatus == true)
@@ -2148,6 +2149,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка согласования.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
+                    {
+                        entity.ApprovalStatus = approvalStatus;
+                        entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка изменения статуса.";
                             return false;
                         }
                         return true;

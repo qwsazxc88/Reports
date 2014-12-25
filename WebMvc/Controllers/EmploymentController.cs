@@ -420,11 +420,11 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckApprove(int userId, bool? approvalStatus)
+        public ActionResult BackgroundCheckApprove(int userId, bool isApprovalSkipped, bool? approvalStatus)
         {
             string error = String.Empty;
 
-            EmploymentBl.ApproveBackgroundCheck(userId, approvalStatus, out error);
+            EmploymentBl.ApproveBackgroundCheck(userId, isApprovalSkipped, approvalStatus, out error);
 
             if (!string.IsNullOrEmpty(error))
             {
