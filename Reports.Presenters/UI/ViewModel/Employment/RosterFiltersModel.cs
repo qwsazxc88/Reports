@@ -6,7 +6,7 @@ using Reports.Core.Dto.Employment2;
 
 namespace Reports.Presenters.UI.ViewModel.Employment2
 {
-    public class RosterFiltersModel
+    public class RosterFiltersModel : SortableModel
     {
         // Фильтры
         public int DepartmentId { get; set; }

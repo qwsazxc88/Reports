@@ -69,10 +69,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Согласование (Руководитель)")]
         public bool? ManagerApprovalStatus { get; set; }
         public string ApprovingManagerName { get; set; }
+        public DateTime? ManagerApprovalDate { get; set; }
 
         [Display(Name = "Согласование (Вышестоящий руководитель)")]
         public bool? HigherManagerApprovalStatus { get; set; }
         public string ApprovingHigherManagerName { get; set; }
+        public DateTime? HigherManagerApprovalDate { get; set; }
 
         public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
 

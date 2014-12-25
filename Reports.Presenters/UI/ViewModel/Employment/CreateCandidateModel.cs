@@ -25,6 +25,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }
 
+        [Display(Name = "Вид ТД")]
+        public bool IsFixedTermContract { get; set; }
+        
         public int? OnBehalfOfManagerId { get; set; }
         [Display(Name = "За руководителя")]
         public string OnBehalfOfManagerName { get; set; }

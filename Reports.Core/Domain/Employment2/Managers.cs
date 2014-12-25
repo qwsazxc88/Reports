@@ -1,3 +1,5 @@
+using System;
+
 namespace Reports.Core.Domain
 {
     public class Managers : AbstractEntityWithVersion, IEmploymentInfoSection
@@ -18,7 +20,7 @@ namespace Reports.Core.Domain
         public virtual decimal? DailySalaryBasis { get; set; }
         public virtual decimal? HourlySalaryBasis { get; set; }
         public virtual decimal? SalaryMultiplier { get; set; }
-        // TODO: EMPL несколько окладов и ставка
+        // TODO: EMPL Несколько окладов и ставка
         // public virtual decimal SalaryBasis { get; set; }
         public virtual string WorkCity { get; set; } //ok
         public virtual decimal? PersonalAddition { get; set; } //ok
@@ -30,10 +32,12 @@ namespace Reports.Core.Domain
 
         public virtual bool? ManagerApprovalStatus { get; set; }
         public virtual User ApprovingManager { get; set; }
+        public virtual DateTime? ManagerApprovalDate { get; set; }
         public virtual string ManagerRejectionReason { get; set; }
 
         public virtual bool? HigherManagerApprovalStatus { get; set; }
         public virtual User ApprovingHigherManager { get; set; }
+        public virtual DateTime? HigherManagerApprovalDate { get; set; }
         public virtual string HigherManagerRejectionReason { get; set; }
 
         public virtual User RejectingChief { get; set; }

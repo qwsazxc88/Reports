@@ -30,6 +30,10 @@ namespace Reports.Core.Dto.Employment2
 
         public DateTime? ContractDate { get; set; }
 
+        public DateTime? ContractEndDate { get; set; }
+
+        public bool? IsFixedTermContract { get; set; }
+
         //public bool IsFulltime { get; set; }
 
         //public bool IsTemporary { get; set; }
