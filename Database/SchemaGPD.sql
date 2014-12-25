@@ -1214,7 +1214,7 @@ RETURNS
 @Ret TABLE 
 (
 	Id int, Version int, CreateDate datetime, CreatorID int, EditDate datetime, EditorID int, DTID int, Name nvarchar(50), INN nvarchar(12), KPP nvarchar(9), Account nvarchar(20),
-	BankName nvarchar(50), BankBIK nvarchar(9), CorrAccount nvarchar(20), Code nvarchar(9)
+	BankName nvarchar(150), BankBIK nvarchar(9), CorrAccount nvarchar(20), Code nvarchar(9)
 )
 AS
 BEGIN

@@ -1022,8 +1022,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
 
-            if (model.Amount == 0)
-                ms.AddModelError("Amount", "Сумма не должна быть равна нулю!");
+            if (model.Amount < 0)
+                ms.AddModelError("Amount", "Сумма не должна быть меньше нуля!");
 
             if (model.PurposePayment == null)
                 ms.AddModelError("PurposePayment", "Укажите Назначение договора!");

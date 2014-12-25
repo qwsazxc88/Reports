@@ -22,7 +22,8 @@
                                 <b>Создание/редактирование договора ГПД</b>
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
-                                @*<input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
+                                @*
+                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
                                 <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
                                 <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
                                 <input type="hidden" id="CTID" name="CTID" value="@Model.CTID" />
@@ -82,8 +83,8 @@
                                 <label>СНИЛС:</label>
                                 <label>@Model.SNILS</label>
                                 @*
-                                <input type="text" name="Surname" id="Surname" onchange="SelectPerson();" onblur="this.form.submit();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
-                                <input type="hidden" id="PersonID" name="PersonID"/>
+                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" onchange="SelectPerson();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 *@
                             </td>
                         </tr>
@@ -497,6 +498,7 @@
     function SelectPerson()
     {
         $("#Operation").val('1');
+        //alert($("#PersonID").text());
         return true;
     }
     function SelectPayeed()
