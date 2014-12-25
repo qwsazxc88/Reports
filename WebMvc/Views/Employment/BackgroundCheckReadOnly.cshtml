@@ -253,13 +253,13 @@
 {
     @Html.HiddenFor(m => m.UserId)
     <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
+        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
         {
             @Html.LabelFor(m => m.ApprovalStatus)<br />
             @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />            
             @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, string.Empty, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
         }
-        @if (Model.ApprovalStatus != null)
+        @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
         {
             <span class="fakeFormField">@Model.ApproverName</span>
         }
