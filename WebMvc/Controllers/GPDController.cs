@@ -87,7 +87,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
-            bool hasError = false;
+            //bool hasError = false;
             ModelState.Clear();
 
             model = GpdBl.EditDetailsFromContract(model, ModelState);
@@ -251,6 +251,14 @@ namespace WebMvc.Controllers
                     return View(model);
                 }
             }
+        }
+        public ActionResult AutocompletePersonSearch(string term)
+        {
+            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term);
+            var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { value = a.Id, label = a.Name, snils = a.SNILS }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
+            //return Json(Persons, JsonRequestBehavior.AllowGet);
         }
     }
 }

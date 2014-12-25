@@ -115,6 +115,21 @@ namespace Reports.Core.Dao.Impl
             return documentList;
         }
         /// <summary>
+        /// Список физических лиц.
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="Id"></param>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        public IList<GpdContractSurnameDto> GetAutocompletePersons(string Name)
+        {
+            string sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE Name like '" + (Name == null ? "" : Name) + "%' ORDER BY Name";
+
+            IQuery query = CreatePersonQuery(sqlQuery);
+            IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
+            return documentList;
+        }
+        /// <summary>
         /// Создание запроса физических лиц.
         /// </summary>
         /// <param name="sqlQuery"></param>
