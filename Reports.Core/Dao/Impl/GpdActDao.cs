@@ -65,6 +65,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DepartmentId">ID подразделения в договоре.</param>
         /// <param name="Surname">ФИО физического лица.</param>
         /// <param name="StatusID">ID статуса акта.</param>
+        /// <param name="ActNumber">№ акта.</param>
         /// <param name="SortBy">Переменная определяет поле сортировки.</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
@@ -76,6 +77,7 @@ namespace Reports.Core.Dao.Impl
                                         int DepartmentId, 
                                         string Surname, 
                                         int StatusID,
+                                        string ActNumber,
                                         int SortBy, 
                                         bool? SortDescending)
         {
@@ -84,7 +86,7 @@ namespace Reports.Core.Dao.Impl
             if (!IsFind)
                 sqlQuery += "WHERE Id = " + ID.ToString();
             else
-                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID) + ActListSqlOrderBy(SortBy, SortDescending);
+                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber) + ActListSqlOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateActQuery(sqlQuery);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
@@ -161,8 +163,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="DepartmentId">ID подразделения.</param>
         /// <param name="Surname">ФИО физического лица.</param>
         /// <param name="StatusID">ID статуса акта.</param>
+        /// <param name="ActNumber">№ акта</param>
         /// <returns></returns>
-        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID)
+        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID, string ActNumber)
         {
             string SqlWhere = "";
             if (DateBegin.HasValue && DateEnd.HasValue)
@@ -176,6 +179,9 @@ namespace Reports.Core.Dao.Impl
 
             if (StatusID != 0)
                 SqlWhere += SqlWhere.Length == 0 ? "  WHERE  StatusID = " + StatusID.ToString() : " and StatusID = " + StatusID.ToString();
+
+            if (ActNumber != null && ActNumber.Trim().Length != 0)
+                SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ActNumber = '" + ActNumber + "'" : " and ActNumber = '" + ActNumber + "'";
 
             return SqlWhere;
         }

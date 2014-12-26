@@ -26,6 +26,7 @@ namespace Reports.Core.Dao
         /// <param name="DepartmentId">ID подразделения в договоре.</param>
         /// <param name="Surname">ФИО физического лица.</param>
         /// <param name="StatusID">ID статуса акта.</param>
+        /// /// <param name="ActNumber">№ акта.</param>
         /// <param name="SortBy">Переменная определяет поле сортировки.</param>
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
@@ -37,6 +38,7 @@ namespace Reports.Core.Dao
                                         int DepartmentId,
                                         string Surname,
                                         int StatusID,
+                                        string ActNumber,
                                         int SortBy,
                                         bool? SortDescending);
         /// <summary>

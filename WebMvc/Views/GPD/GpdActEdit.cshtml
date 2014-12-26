@@ -309,6 +309,7 @@
         $("#ChargingDate").datepicker({dateFormat: "mm.yy"});      
         $(".hasDatepicker").width("75px");
         
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
         setActiveMenuItem("moAct");
     });
 

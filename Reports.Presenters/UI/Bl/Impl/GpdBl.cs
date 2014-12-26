@@ -384,7 +384,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DepartmentId, 
                 model.CTID, 
                 null, null,
-                model.Surname, 
+                model.Surname,
+                model.NumContract,
                 model.IsFind,
                 0, null);
 
@@ -556,6 +557,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateBegin,
                 model.DateEnd,
                 model.Surname,
+                model.NumContract,
                 model.IsFind,
                 model.SortBy,
                 model.SortDescending);
@@ -948,7 +950,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (Id == 0)
                 document = GpdActDao.GetNewAct(role, GCID);
             else //редактирование существующего
-                document = GpdActDao.GetAct(role, Id, false, model.DateBegin, model.DateEnd, 0, null, 0, 0, false);
+                document = GpdActDao.GetAct(role, Id, false, model.DateBegin, model.DateEnd, 0, null, 0, null, 0, false);
 
             if (document.Count > 0)
             {
@@ -1132,7 +1134,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.DateEnd = today;
             }
             GetPermission(model);
-            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.SortBy, model.SortDescending);
+            model.Documents = GpdActDao.GetAct(role, model.Id, model.IsFind, model.DateBegin, model.DateEnd, model.DepartmentId, model.Surname, model.StatusID, model.ActNumber, model.SortBy, model.SortDescending);
             
         }
         /// <summary>
