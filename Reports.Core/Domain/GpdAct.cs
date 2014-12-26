@@ -7,7 +7,7 @@ namespace Reports.Core.Domain
     {
         public virtual int CreatorID { get; set; }
         public virtual DateTime? EditDate { get; set; }
-        public virtual int EditorID { get; set; }
+        public virtual int? EditorID { get; set; }
         public virtual string ActNumber { get; set; }
         public virtual DateTime? ActDate { get; set; }
         public virtual int GCID { get; set; }

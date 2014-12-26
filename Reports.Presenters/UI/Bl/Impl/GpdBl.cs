@@ -215,8 +215,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         CorrAccount = model.CorrAccount,
                         CreatorID = currentUseId.Id,
                         //Code = model.Code,
-                        EditorID = currentUseId.Id,
-                        EditDate = DateTime.Now
+                        //EditorID = currentUseId.Id,
+                        //EditDate = DateTime.Now
                     };
                 }
                 else
@@ -678,6 +678,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         IsLong = model.DateP.HasValue ? true : false,
                         PaymentPeriodID = model.PaymentPeriodID,
                         Amount = model.Amount,
+                        //EditDate = DateTime.Now,
+                        //EditorID = currentUseId.Id,
                         MagEntities = new List<GpdMagProlongation>()
                     };
                 }
@@ -692,6 +694,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             gpdContract.DateP = model.DateP.Value;
                             gpdContract.IsLong = model.DateP.HasValue ? true : false;
+                            gpdContract.EditDate = DateTime.Now;
+                            gpdContract.EditorID = currentUseId.Id;
                         }
                     }
                     else
@@ -711,6 +715,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.PurposePayment = model.PurposePayment;
                         gpdContract.PaymentPeriodID = model.PaymentPeriodID;
                         gpdContract.Amount = model.Amount;
+                        gpdContract.EditDate = DateTime.Now;
+                        gpdContract.EditorID = currentUseId.Id;
                         if (model.DateP.HasValue)
                         {
                             gpdContract.DateP = model.DateP.Value;
@@ -1054,8 +1060,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdAct = new GpdAct
                     {
                         CreatorID = currentUseId.Id,
-                        EditDate = DateTime.Now,
-                        EditorID = currentUseId.Id,
+                        //EditDate = DateTime.Now,
+                        //EditorID = currentUseId.Id,
                         ActNumber = model.ActNumber,
                         ActDate = model.ActDate,
                         GCID = model.GCID,
