@@ -17,8 +17,8 @@ namespace Reports.Core.Domain
         public virtual string BankBIK { get; set; }
         public virtual string CorrAccount { get; set; }
         //public virtual string Code { get; set; }
-        public virtual DateTime EditDate { get; set; }
-        public virtual int EditorID { get; set; }
+        public virtual DateTime? EditDate { get; set; }
+        public virtual int? EditorID { get; set; }
 
         //public virtual IList<GpdRefDetailTypes> DetailTypes { get; set; }
         #endregion

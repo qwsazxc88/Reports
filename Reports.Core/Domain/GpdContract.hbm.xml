@@ -21,6 +21,8 @@
     <property name="IsLong" not-null="false"/>
     <property name="PaymentPeriodID" not-null="false"/>
     <property name="Amount" not-null="false"/>
+    <property name="EditDate" not-null="false"/>
+    <property name="EditorID" not-null="false"/>
 
     <bag name="MagEntities" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract"/>
