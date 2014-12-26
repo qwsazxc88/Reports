@@ -42,9 +42,11 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
 
+        [Display(Name = "Поиск по № договора")]
+        public string NumContract { get; set; }
+
         public IList<GpdContractDto> Contracts { get; set; }
         public int PersonID { get; set; }
-        public string NumContract { get; set; }
         public string NameContract { get; set; }
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime DateP { get; set; }

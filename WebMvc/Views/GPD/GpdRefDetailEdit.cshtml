@@ -152,6 +152,7 @@
         //$(".hasDatepicker").width("75px");
         //setSortFields();
         setActiveMenuItem("moGpdRefDetail");
+        $(":text").bind("keydown", function (e) { if (e.keyCode == 13) return false; });
     });
 
     function EditModeOn() {

@@ -78,11 +78,12 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson();", onblur = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PersonID)
                                 <label>СНИЛС:</label>
                                 <label>@Model.SNILS</label>
                                 @*
+                                
                                 <input type="text" name="Surname" id="Surname" value="@Model.Surname" onchange="SelectPerson();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
                                 <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 *@
@@ -201,7 +202,7 @@
                                 @Html.LabelFor(m => m.PayeeID):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPayeed(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPayeed();", onblur = "SelectPayeed(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayeeID)
                                 @if (@Model.Permissions[0].IsWrite && @Model.StatusID == 4)
                                 {
@@ -456,8 +457,10 @@
         if ($("#Operation").val() == 0)
             $('#refDetailRow').hide();
 
-        //alert(document.body.scrollLeft);
-        //SelectPerson();
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
+        $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
+        $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
+
     });
 
 //    $(function () 
@@ -503,7 +506,7 @@
     }
     function SelectPayeed()
     {
-        $("#Operation").val('5');
+        $("#Operation").val('1');
         return true;
     }
     function AddRefDetails()
@@ -541,5 +544,6 @@
     function RefDetails(){
         $("#Operation").val('5');
         $('#refDetailRow').hide();
+        return true;
     }
 </script>   

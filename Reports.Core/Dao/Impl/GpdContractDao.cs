@@ -199,6 +199,7 @@ namespace Reports.Core.Dao.Impl
                                             DateTime? DateBegin,
                                             DateTime? DateEnd,
                                             string Surname,
+                                            string NumContract,
                                             bool IsFind,
                                             int SortBy,
                                             bool? SortDescending)
@@ -218,6 +219,8 @@ namespace Reports.Core.Dao.Impl
                 
                 if (Surname != null)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (Surname.Trim().Length != 0 ? " Surname like '" + Surname + "%'" : "");//по фио
+                if (NumContract != null)
+                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (NumContract.Trim().Length != 0 ? " NumContract = '" + NumContract + "'" : "");//по фио
             }
 
             sqlQuery = sqlQuery + (SqlWhere.Length != 0 ? " WHERE " + SqlWhere : "") + SqlOrderBy(SortBy, SortDescending);

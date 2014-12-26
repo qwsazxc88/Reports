@@ -1016,7 +1016,7 @@ CREATE VIEW [dbo].[vwGpdContractList]
 AS
 SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
 			 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
-       C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, A.DateEnd, 
+       C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, isnull(J.DateP, A.DateEnd) as DateEnd, 
 			 A.PayeeID, A.PayerID, A.GPDID, 
        A.PurposePayment, A.DateP as DateP, A.DateP AS DatePOld, A.IsLong, F.Name AS CreatorName, A.CreateDate, F.Name AS Autor, dep3.Name AS DepLevel3Name, 
        G.Name AS DepLevel7Name, H.[Name] as PayerName, I.[Name] as PayeeName, A.PaymentPeriodID, A.Amount
@@ -1029,6 +1029,7 @@ FROM dbo.GpdContract AS A
 		 LEFT JOIN dbo.Department as dep3 ON G.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
 		 INNER JOIN dbo.GpdRefDetail as H ON H.Id = A.PayerID
 		 INNER JOIN dbo.GpdRefDetail as I ON I.id = A.PayeeID
+		 LEFT JOIN (SELECT GCID, max(DateP) as DateP FROM dbo.GpdMagProlongation GROUP BY GCID) as J ON J.GCID = A.Id
 
 GO
 
@@ -1233,11 +1234,12 @@ BEGIN
 	ELSE
 	BEGIN
 		INSERT @ret
-		SELECT * FROM dbo.GpdRefDetail WHERE DTID = 1 and Name = @Surname
-		UNION ALL
-		SELECT distinct B.* FROM dbo.GpdContract as A
-		INNER JOIN dbo.GpdRefDetail as B ON B.id = A.PayeeID and B.DTID = 1
-		WHERE A.PersonID = @PersonID
+		SELECT DISTINCT *
+		FROM (SELECT * FROM dbo.GpdRefDetail WHERE DTID = 1 and Name = @Surname
+					UNION ALL
+					SELECT distinct B.* FROM dbo.GpdContract as A
+					INNER JOIN dbo.GpdRefDetail as B ON B.id = A.PayeeID and B.DTID = 1
+					WHERE A.PersonID = @PersonID) as A
 	END
 	
 	RETURN 

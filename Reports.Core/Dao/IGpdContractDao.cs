@@ -76,6 +76,7 @@ namespace Reports.Core.Dao
                                             DateTime? DateBegin,
                                             DateTime? DateEnd,
                                             string Surname,
+                                            string NumContract,
                                             bool IsFind,
                                             int SortBy,
                                             bool? SortDescending);

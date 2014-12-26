@@ -30,6 +30,9 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
 
+        [Display(Name = "Поиск по № акта")]
+        public string ActNumber { get; set; }
+
         public IList<GpdActDto> Documents { get; set; }
 
         public string errorMessage { get; set; }
