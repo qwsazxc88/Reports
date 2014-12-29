@@ -209,6 +209,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlUManagerAccountJoin = @"left join [dbo].[Users] uManagerAccount
                                                             on (uManagerAccount.RoleId & 4) > 0
                                                                 and u.Email = uManagerAccount.Email
+                                                                and uManagerAccount.Login like u.Login+N'R'
                                                                 and uManagerAccount.IsActive = 1";
 
         protected const string sqlCurrentUserJoin = @"inner join dbo.Users currentUser
@@ -514,7 +515,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                     on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
-                                    and employeeManagerAccount.Id is null
+                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
