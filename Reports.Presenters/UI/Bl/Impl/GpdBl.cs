@@ -34,7 +34,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="hasError">Признак наличия ошибки.</param>
         public void SetGpdRefDetailView(GpdRefDetailModel model, bool hasError)
         {
-            SetGpdRefDetailTypes(model);
             GetPermission(model);
         }
         /// <summary>
@@ -89,10 +88,10 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="model">Заполняемая модель</param>
         public void SetGpdRefDetailTypes(GpdRefDetailModel model)
         {
-            UserRole role = CurrentUser.UserRole;
-            model.DetailTypes = GpdRefDetailDao.GetDetailTypes(role,
-                model.DTID,
-                model.TypeName);
+            //UserRole role = CurrentUser.UserRole;
+            //model.DetailTypes = GpdRefDetailDao.GetDetailTypes(role,
+            //    model.DTID,
+            //    model.TypeName);
         }
         /// <summary>
         /// Создаем список типов реквизитов для модели редактирования.
@@ -112,10 +111,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="hasError"></param>
         public void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError)
         {
-            SetGpdRefDetailTypes(model);
             UserRole role = CurrentUser.UserRole;
             GetPermission(model);
-            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, model.SortBy, model.SortDescending);
+            model.Documents = GpdRefDetailDao.GetDetailSetList(0, model.Name, model.Surname, model.PayerName, model.PayeeName, model.SortBy, model.SortDescending);
         }
         /// <summary>
         /// Проверяем правильность заполнения полей.
@@ -128,58 +126,58 @@ namespace Reports.Presenters.UI.Bl.Impl
             string ModelName = flgFromContract ? "DetailEdit." : "";
             GetPermission(model);
             
-            if (model.Name == null)
-                ms.AddModelError(ModelName + "Name", "Заполните поле 'Наименование'");
-            if (model.Name != null && model.Name.Trim().Length > 150)
-                ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
+            //if (model.Name == null)
+            //    ms.AddModelError(ModelName + "Name", "Заполните поле 'Наименование'");
+            //if (model.Name != null && model.Name.Trim().Length > 150)
+            //    ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
-            if (model.INN == null)
-                ms.AddModelError(ModelName + "INN", "Заполните поле 'ИНН'");
-            if (model.INN != null && model.INN.Trim().Length > 12)
-                ms.AddModelError(ModelName + "INN", "Превышено допустимое количество символов!");
+            //if (model.INN == null)
+            //    ms.AddModelError(ModelName + "INN", "Заполните поле 'ИНН'");
+            //if (model.INN != null && model.INN.Trim().Length > 12)
+            //    ms.AddModelError(ModelName + "INN", "Превышено допустимое количество символов!");
 
-            if (model.KPP == null)
-                ms.AddModelError(ModelName + "KPP", "Заполните поле 'КПП'");
-            if (model.KPP != null && model.KPP.Trim().Length > 9)
-                ms.AddModelError(ModelName + "KPP", "Превышено допустимое количество символов!");
+            //if (model.KPP == null)
+            //    ms.AddModelError(ModelName + "KPP", "Заполните поле 'КПП'");
+            //if (model.KPP != null && model.KPP.Trim().Length > 9)
+            //    ms.AddModelError(ModelName + "KPP", "Превышено допустимое количество символов!");
 
-            if (model.Account == null)
-                ms.AddModelError(ModelName + "Account", "Заполните поле 'Расчетный счет'");
-            if (model.Account != null && model.Account.Trim().Length > 20)
-                ms.AddModelError(ModelName + "Account", "Превышено допустимое количество символов!");
+            //if (model.Account == null)
+            //    ms.AddModelError(ModelName + "Account", "Заполните поле 'Расчетный счет'");
+            //if (model.Account != null && model.Account.Trim().Length > 20)
+            //    ms.AddModelError(ModelName + "Account", "Превышено допустимое количество символов!");
 
-            if (model.BankName == null)
-                ms.AddModelError(ModelName + "BankName", "Заполните поле 'Банк'");
-            if (model.BankName != null && model.BankName.Trim().Length > 100)
-                ms.AddModelError(ModelName + "BankName", "Превышено допустимое количество символов!");
+            //if (model.BankName == null)
+            //    ms.AddModelError(ModelName + "BankName", "Заполните поле 'Банк'");
+            //if (model.BankName != null && model.BankName.Trim().Length > 100)
+            //    ms.AddModelError(ModelName + "BankName", "Превышено допустимое количество символов!");
 
-            if (model.BankBIK == null)
-                ms.AddModelError(ModelName + "BankBIK", "Заполните поле 'Банк БИК'");
-            if (model.BankBIK != null && model.BankBIK.Trim().Length > 9)
-                ms.AddModelError(ModelName + "BankBIK", "Превышено допустимое количество символов!");
+            //if (model.BankBIK == null)
+            //    ms.AddModelError(ModelName + "BankBIK", "Заполните поле 'Банк БИК'");
+            //if (model.BankBIK != null && model.BankBIK.Trim().Length > 9)
+            //    ms.AddModelError(ModelName + "BankBIK", "Превышено допустимое количество символов!");
 
-            if (model.CorrAccount == null)
-                ms.AddModelError(ModelName + "CorrAccount", "Заполните поле 'Банк кор/счет'");
-            if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 20)
-                ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
+            //if (model.CorrAccount == null)
+            //    ms.AddModelError(ModelName + "CorrAccount", "Заполните поле 'Банк кор/счет'");
+            //if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 20)
+            //    ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
 
-            //if (model.DTID == 2)
-            //{
-            //    if (model.Code == null)
-            //        ms.AddModelError(ModelName + "Code", "Заполните поле 'Код банка'");
-            //    if (model.Code != null && model.Code.Trim().Length > 9)
-            //        ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
-            //}
-            //else
-            //    model.Code = null;
+            ////if (model.DTID == 2)
+            ////{
+            ////    if (model.Code == null)
+            ////        ms.AddModelError(ModelName + "Code", "Заполните поле 'Код банка'");
+            ////    if (model.Code != null && model.Code.Trim().Length > 9)
+            ////        ms.AddModelError(ModelName + "Name", "Превышено допустимое количество символов!");
+            ////}
+            ////else
+            ////    model.Code = null;
 
-            if (ms.Count != 0)
-                model.StatusID = 4;
+            //if (ms.Count != 0)
+            //    model.StatusID = 4;
 
-            UserRole role = CurrentUser.UserRole;
-            model.DetailTypes = GpdRefDetailDao.GetDetailTypes(role,
-                model.DTID,
-                model.TypeName);
+            //UserRole role = CurrentUser.UserRole;
+            //model.DetailTypes = GpdRefDetailDao.GetDetailTypes(role,
+            //    model.DTID,
+            //    model.TypeName);
         }
         /// <summary>
         /// Процедура сохранения записи в базе данных.
@@ -196,64 +194,65 @@ namespace Reports.Presenters.UI.Bl.Impl
             //UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             IUser currentUseId = AuthenticationService.CurrentUser;
 
-            try
-            {
-                GpdRefDetail gpdrefDetail = GpdRefDetailDao.Get(model.Id);
+            //try
+            //{
+            //    GpdRefDetail gpdrefDetail = GpdRefDetailDao.Get(model.Id);
 
-                if (gpdrefDetail == null)
-                {
-                    gpdrefDetail = new GpdRefDetail
-                    {
-                        //Id = model.Id,
-                        Name = model.Name,
-                        DTID = model.DTID,
-                        INN = model.INN,
-                        KPP = model.KPP,
-                        Account = model.Account,
-                        BankName = model.BankName,
-                        BankBIK = model.BankBIK,
-                        CorrAccount = model.CorrAccount,
-                        CreatorID = currentUseId.Id,
-                        //Code = model.Code,
-                        //EditorID = currentUseId.Id,
-                        //EditDate = DateTime.Now
-                    };
-                }
-                else
-                {
-                    //gpdrefDetail.Id = model.Id;
-                    gpdrefDetail.Name = model.Name;
-                    gpdrefDetail.DTID = model.DTID;
-                    gpdrefDetail.INN = model.INN;
-                    gpdrefDetail.KPP = model.KPP;
-                    gpdrefDetail.Account = model.Account;
-                    gpdrefDetail.BankName = model.BankName;
-                    gpdrefDetail.BankBIK = model.BankBIK;
-                    gpdrefDetail.CorrAccount = model.CorrAccount;
-                    gpdrefDetail.CreatorID = model.CreatorID;
-                    //gpdrefDetail.Code = model.Code;
-                    gpdrefDetail.EditorID = currentUseId.Id;
-                    gpdrefDetail.EditDate = DateTime.Now;
-                }
-                GpdRefDetailDao.SaveAndFlush(gpdrefDetail);
-                model.Id = gpdrefDetail.Id;
-                model.StatusID = 2;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                GpdRefDetailDao.RollbackTran();
-                Log.Error("Error on SaveMissionOrderEditModel:", ex);
-                error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
-                return false;
-            }
-            finally
-            {
-                //SetUserInfoModel(user, model);
-                //SetStaticFields(model, missionHotels);
-                //LoadDictionaries(model);
-                //SetHiddenFields(model);
-            }
+            //    if (gpdrefDetail == null)
+            //    {
+            //        gpdrefDetail = new GpdRefDetail
+            //        {
+            //            //Id = model.Id,
+            //            Name = model.Name,
+            //            DTID = model.DTID,
+            //            INN = model.INN,
+            //            KPP = model.KPP,
+            //            Account = model.Account,
+            //            BankName = model.BankName,
+            //            BankBIK = model.BankBIK,
+            //            CorrAccount = model.CorrAccount,
+            //            CreatorID = currentUseId.Id,
+            //            //Code = model.Code,
+            //            //EditorID = currentUseId.Id,
+            //            //EditDate = DateTime.Now
+            //        };
+            //    }
+            //    else
+            //    {
+            //        //gpdrefDetail.Id = model.Id;
+            //        gpdrefDetail.Name = model.Name;
+            //        gpdrefDetail.DTID = model.DTID;
+            //        gpdrefDetail.INN = model.INN;
+            //        gpdrefDetail.KPP = model.KPP;
+            //        gpdrefDetail.Account = model.Account;
+            //        gpdrefDetail.BankName = model.BankName;
+            //        gpdrefDetail.BankBIK = model.BankBIK;
+            //        gpdrefDetail.CorrAccount = model.CorrAccount;
+            //        gpdrefDetail.CreatorID = model.CreatorID;
+            //        //gpdrefDetail.Code = model.Code;
+            //        gpdrefDetail.EditorID = currentUseId.Id;
+            //        gpdrefDetail.EditDate = DateTime.Now;
+            //    }
+            //    GpdRefDetailDao.SaveAndFlush(gpdrefDetail);
+            //    model.Id = gpdrefDetail.Id;
+            //    model.StatusID = 2;
+            //    return true;
+            //}
+            //catch (Exception ex)
+            //{
+            //    GpdRefDetailDao.RollbackTran();
+            //    Log.Error("Error on SaveMissionOrderEditModel:", ex);
+            //    error = string.Format("Исключение:{0}", ex.GetBaseException().Message);
+            //    return false;
+            //}
+            //finally
+            //{
+            //    //SetUserInfoModel(user, model);
+            //    //SetStaticFields(model, missionHotels);
+            //    //LoadDictionaries(model);
+            //    //SetHiddenFields(model);
+            //}
+            return true;
         }
         /// <summary>
         /// Заполняем модель для редактирования по указанному ID.
@@ -269,27 +268,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetGpdRefDetailTypes(model);
             model.Id = Id;
             model.StatusID = StatusID == 3 ? 2 : StatusID;
+            model.SetInfo = GpdRefDetailDao.GetDetailSetList(model.Id, null, null, null, null, 0, null);
 
             UserRole role = CurrentUser.UserRole;
-            model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, 0, null);
-            if (model.Documents.Count > 0)
-            {
-                foreach (var doc in model.Documents)
-                {
-                    model.Id = doc.Id;
-                    model.Name = doc.Name;
-                    model.DTID = doc.DTID;
-                    model.INN = doc.INN;
-                    model.KPP = doc.KPP;
-                    model.Account = doc.Account;
-                    model.BankName = doc.BankName;
-                    model.BankBIK = doc.BankBIK;
-                    model.CorrAccount = doc.CorrAccount;
-                    model.CreatorID = doc.CreatorID;
-                    model.Code = doc.Code;
-                    model.StatusID = StatusID == 3 ? 2 : StatusID;
-                }
-            }
+            //model.Documents = GpdRefDetailDao.GetRefDetail(role, model.Id, model.Name, model.DTID, 0, null);
+            //if (model.Documents.Count > 0)
+            //{
+            //    foreach (var doc in model.Documents)
+            //    {
+            //        model.Id = doc.Id;
+            //        model.Name = doc.Name;
+            //        model.DTID = doc.DTID;
+            //        model.INN = doc.INN;
+            //        model.KPP = doc.KPP;
+            //        model.Account = doc.Account;
+            //        model.BankName = doc.BankName;
+            //        model.BankBIK = doc.BankBIK;
+            //        model.CorrAccount = doc.CorrAccount;
+            //        model.CreatorID = doc.CreatorID;
+            //        model.Code = doc.Code;
+            //        model.StatusID = StatusID == 3 ? 2 : StatusID;
+            //    }
+            //}
 
             return model;
         }
@@ -452,6 +452,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 try
                 {
                     model.SNILS = model.PersonID == 0 ? model.Persons[0].SNILS : model.Persons.Where(x => x.Id == model.PersonID).ElementAt(0).SNILS;
+                    model.Surname = model.PersonID == 0 ? model.Persons[0].SNILS : model.Persons.Where(x => x.Id == model.PersonID).ElementAt(0).Name;
                 }
                 catch
                 {

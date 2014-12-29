@@ -108,7 +108,7 @@ namespace Reports.Core.Dao.Impl
                                                     int Id,
                                                     string Name)
         {
-            string sqlQuery = @"SELECT * FROM vwGpdRefPersons ORDER BY Name";
+            string sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE Id = " + Id.ToString() + " ORDER BY Name";
 
             IQuery query = CreatePersonQuery(sqlQuery);
             IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();

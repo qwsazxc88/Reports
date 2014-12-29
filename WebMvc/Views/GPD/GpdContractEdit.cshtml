@@ -37,7 +37,7 @@
                                 <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
                                 <input type="hidden" id="CTName" name="CTName" value="@Model.CTName" />
                                 <input type="hidden" id="StatusName" name="StatusName" value="@Model.StatusName" />
-                                <input type="hidden" id="SNILS" name="SNILS" value="@Model.SNILS" />
+                                
                                 <input type="hidden" id="BankName" name="BankName" value="@Model.BankName" />
                                 <input type="hidden" id="Account" name="Account" value="@Model.Account" />*@
                             </td>
@@ -78,15 +78,15 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
+                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:450px"  onchange="SelectPerson();" onblur = "SelectPerson();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
+                                <input type="hidden" id="SNILS" name="SNILS" value="@Model.SNILS" />
+                            @*
                                 @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson();", onblur = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                *@
                                 @Html.ValidationMessageFor(model => model.PersonID)
                                 <label>СНИЛС:</label>
                                 <label>@Model.SNILS</label>
-                                @*
-                                
-                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" onchange="SelectPerson();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
-                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
-                                *@
                             </td>
                         </tr>
                         <tr>
@@ -237,6 +237,7 @@
                                 <label>@Model.Account</label>
                             </td>
                         </tr>
+@*                        
                         <!--справочник реквизитов начало-->
                         <tr id="refDetailRow" style="background:silver">
                             <td colspan="2">
@@ -251,31 +252,9 @@
                                                 <b>Создание/редактирование записи в справочнике реквизитов</b>
                                                 <input type="hidden" id="Id" name="Id" value="@Model.DetailEdit.Id" />
                                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.DetailEdit.CreatorID" />
-                                                @*
-                                                <input type="hidden" id="DTID" name="DTID" value="@Model.DetailEdit.DTID" />
-                                                <input type="hidden" id="Name" name="Name" value="@Model.DetailEdit.Name" />
-                                                <input type="hidden" id="Code" name="Code" value="@Model.DetailEdit.Code" />
-                                                <input type="hidden" id="INN" name="INN" value="@Model.DetailEdit.INN" />
-                                                <input type="hidden" id="KPP" name="KPP" value="@Model.DetailEdit.KPP" />
-                                                <input type="hidden" id="Account" name="Account" value="@Model.DetailEdit.Account" />
-                                                <input type="hidden" id="BankName" name="BankName" value="@Model.DetailEdit.BankName" />
-                                                <input type="hidden" id="BankBIK" name="BankBIK" value="@Model.DetailEdit.BankBIK" />
-                                                <input type="hidden" id="CorrAccount" name="CorrAccount" value="@Model.DetailEdit.CorrAccount" />
-                                                *@
                                                 <input type="hidden" id="DetailStatusID" name="DetailStatusID" value="@Model.DetailStatusID" />
                                             </td>
                                         </tr>
-                                        @*
-                                        <tr>
-                                            <td style="width:220px">
-                                                @Html.LabelFor(m => m.DetailEdit.DTID):
-                                            </td>
-                                            <td>
-                                                @Html.DropDownListFor(model => model.DetailEdit.DTID, new SelectList(Model.DetailEdit.DetailTypes, "ID", "Name"), Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" }) 
-                                                @Html.ValidationMessageFor(model => model.DetailEdit.DTID)
-                                            </td>
-                                        </tr>
-                                        *@
                                         <tr>
                                             <td style="width:220px">
                                                 @Html.LabelFor(model => model.DetailEdit.Name):
@@ -285,17 +264,6 @@
                                                 @Html.ValidationMessageFor(model => model.DetailEdit.Name)
                                             </td>
                                         </tr>
-                                        @*
-                                        <tr>
-                                            <td>
-                                                @Html.LabelFor(model => model.DetailEdit.Code):
-                                            </td>
-                                            <td>
-                                                @Html.TextBoxFor(model => model.DetailEdit.Code, Model.DetailStatusID == 4 ? null : (object)new { disabled = "disabled" })
-                                                @Html.ValidationMessageFor(model => model.DetailEdit.Code)
-                                            </td>
-                                        </tr>
-                                        *@
                                         <tr>
                                             <td>
                                                 @Html.LabelFor(model => model.DetailEdit.INN):
@@ -371,7 +339,7 @@
                             </td>
                         </tr>
         
-                            
+        *@                    
                         <!--справочник реквизитов конец-->
                         <tr>
                             <td>
@@ -457,30 +425,40 @@
         if ($("#Operation").val() == 0)
             $('#refDetailRow').hide();
 
+        
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
         $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
         $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
+        $("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == -1) {$("#Operation").val('1'); this.form.submit();} else {$("#Operation").val('-1');} } } );
 
+        
+        
+        $(function () 
+        {
+            $("[data-autocomplete-source]").each(
+                function () 
+                {
+                    var target = $(this);
+                    //SelectPerson();
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                          select : function(event, ui) 
+                                                    {
+                                                        $("#Surname").val(ui.item.label);
+                                                        $("#PersonID").val(ui.item.PersonID);
+                                                        $("#SNILS").val(ui.item.snils);
+                                                        //SelectPerson();
+                                                        $("#Surname").focus();
+                                                        $("#Operation").val('-1');
+                                                        //$("#Surname").focus();
+                                                        //$("#Surname").form.submit();
+                                                        return true;
+                                                    }
+                                         });
+                  });
+        });
     });
 
-//    $(function () 
-//    {
-//        $("[data-autocomplete-source]").each(
-//            function () 
-//            {
-//                var target = $(this);
-//                target.autocomplete({ source: target.attr("data-autocomplete-source"),
-//                                      select : function(event, ui) 
-//                                                {
-//                                                    //var PersonID = parseInt(ui.item.value, 1);
-//                                                    $("#Surname").val(ui.item.label);
-//                                                    $("#PersonID").val(ui.item.value);
-//                                                    $("#SNILS").val(ui.item.snils);
-//                                                    return false;
-//                                                }
-//                                     });
-//              });
-//    });
+
 
 
     function SaveDraft()

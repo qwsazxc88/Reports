@@ -84,9 +84,6 @@ namespace Reports.Core.Dao.Impl
             string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetailList] 
                                 WHERE " + (Id == 0 ? ("DTID = " + DTID.ToString() + (Name == null || Name.Trim().Length == 0 ? "" : " and Name like '" + Name + "%'")) : "ID = " + Id.ToString());
 
-
-            sqlQuery += RefDetailListSqlOrderBy(SortBy, SortDescending);
-
             IQuery query = CreateGRDQuery(sqlQuery);
             IList<GpdRefDetailFullDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdRefDetailFullDto))).List<GpdRefDetailFullDto>();
             return documentList;
@@ -118,12 +115,93 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("EDep3Level", NHibernateUtil.String);
         }
         /// <summary>
+        /// Запрос для наборов реквизитов.
+        /// </summary>
+        /// <param name="ID">ID набора.</param>
+        /// <param name="Name">Название набора реквизитов</param>
+        /// <param name="Surname">ФИО физического лица</param>
+        /// <param name="PayerName">Плательщик</param>
+        /// <param name="PayeeName">Получатель</param>
+        /// <param name="SortBy">Номер поля для сортировки</param>
+        /// <param name="SortDescending">Направление сортировки</param>
+        /// <returns></returns>
+        public IList<GpdDetailSetsListDto> GetDetailSetList(int ID,
+            string Name,
+            string Surname,
+            string PayerName,
+            string PayeeName,
+            int SortBy,
+            bool? SortDescending)
+        {
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdDetailSetList]";
+
+
+
+            sqlQuery += DetailSetWhere(ID, Name, Surname, PayerName, PayeeName) + DetailSetOrderBy(SortBy, SortDescending);
+
+            IQuery query = CreateSQLDSQuery(sqlQuery);
+            IList<GpdDetailSetsListDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailSetsListDto))).List<GpdDetailSetsListDto>();
+            return documentList;
+        }
+        public virtual IQuery CreateSQLDSQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("Surname", NHibernateUtil.String).
+                AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayeeName", NHibernateUtil.String).
+                AddScalar("Account", NHibernateUtil.String).
+                AddScalar("CreatorID", NHibernateUtil.Int32).
+                AddScalar("CreateDate", NHibernateUtil.DateTime).
+                AddScalar("CreatorName", NHibernateUtil.String).
+                AddScalar("EditorID", NHibernateUtil.Int32).
+                AddScalar("EditDate", NHibernateUtil.DateTime).
+                AddScalar("EditorName", NHibernateUtil.String).
+                AddScalar("PersonID", NHibernateUtil.Int32).
+                AddScalar("PayerID", NHibernateUtil.Int32).
+                AddScalar("PayeeID", NHibernateUtil.Int32);
+        }
+        /// <summary>
+        /// Составляем условие запроса.
+        /// </summary>
+        /// <param name="ID">ID набора.</param>
+        /// <param name="Name">Название набора реквизитов</param>
+        /// <param name="Surname">ФИО физического лица</param>
+        /// <param name="PayerName">Плательщик</param>
+        /// <param name="PayeeName">Получатель</param>
+        /// <returns></returns>
+        private string DetailSetWhere(int ID,
+            string Name,
+            string Surname,
+            string PayerName,
+            string PayeeName)
+        {
+            string SqlWehere = "";
+            if (ID != 0)
+                SqlWehere += " ID = " + ID.ToString();
+
+            if (Name != null && Name.Trim().Length != 0)
+                SqlWehere += " Name like '" + Name + "%'";
+
+            if (Surname != null && Surname.Trim().Length != 0)
+                SqlWehere += (SqlWehere.Length != 0 ? " and " : "") + " Surname like '" + Surname + "%'";
+
+            if (PayerName != null && PayerName.Trim().Length != 0)
+                SqlWehere += (SqlWehere.Length != 0 ? " and " : "") + " PayerName like '" + PayerName + "%'";
+
+            if (PayeeName != null && PayeeName.Trim().Length != 0)
+                SqlWehere += (SqlWehere.Length != 0 ? " and " : "") + " PayeeName like '" + PayeeName + "%'";
+
+            return SqlWehere.Trim().Length != 0 ? " WHERE " + SqlWehere : "";
+        }
+        /// <summary>
         /// Составляем вид сортировки.
         /// </summary>
         /// <param name="SortBy">Переключатель для поля сортировки.</param>
         /// <param name="SortDescending">Направление сортировки.</param>
         /// <returns></returns>
-        private string RefDetailListSqlOrderBy(int SortBy, bool? SortDescending)
+        private string DetailSetOrderBy(int SortBy, bool? SortDescending)
         {
             if (SortBy == 0) return "";
 
@@ -137,34 +215,28 @@ namespace Reports.Core.Dao.Impl
                     SqlOrderBy += "Name";
                     break;
                 case 3:
-                    SqlOrderBy += "CreateDate";
+                    SqlOrderBy += "Surname";
                     break;
                 case 4:
-                    SqlOrderBy += "CreatorName";
+                    SqlOrderBy += "PayerName";
                     break;
                 case 5:
-                    SqlOrderBy += "CreatePositionName";
+                    SqlOrderBy += "PayeeName";
                     break;
                 case 6:
-                    SqlOrderBy += "CrDep3Level";
+                    SqlOrderBy += "Account";
                     break;
                 case 7:
-                    SqlOrderBy += "CrDep7Level";
+                    SqlOrderBy += "CreateDate";
                     break;
                 case 8:
-                    SqlOrderBy += "EditDate";
+                    SqlOrderBy += "CreatorName";
                     break;
                 case 9:
-                    SqlOrderBy += "EditorName";
+                    SqlOrderBy += "EditDate";
                     break;
                 case 10:
-                    SqlOrderBy += "EditPositionName";
-                    break;
-                case 11:
-                    SqlOrderBy += "EDep3Level";
-                    break;
-                case 12:
-                    SqlOrderBy += "EDep7Level";
+                    SqlOrderBy += "EditorName";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");

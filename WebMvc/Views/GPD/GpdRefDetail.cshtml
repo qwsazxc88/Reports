@@ -25,18 +25,34 @@
         </tr>
         <tr>
             <td style="width:220px">
-                @Html.LabelFor(m => m.DTID):
+                @Html.LabelFor(m => m.Name):
             </td>
             <td>
-                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name")) 
+                @Html.TextBoxFor(m => Model.Name)
             </td>
         </tr>
         <tr>
             <td>
-                @Html.LabelFor(model => model.Name):
+                @Html.LabelFor(model => model.Surname):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.Name)
+                @Html.TextBoxFor(model => model.Surname)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.PayerName):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PayerName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.PayeeName):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PayeeName)
             </td>
         </tr>
         <tr>
@@ -70,38 +86,34 @@
                         <th>
                             <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Код</a></div>
                         </th>
+                        @*
                         <th>
                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Наименование</a></div>
                         </th>
+                        *@
                         <th>
-                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Дата <br />создания</a></div>
+                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Фактический получатель</a></div>
                         </th>
                         <th>
-                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">ФИО (при <br />создании)</a></div>
+                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Плательщик</a></div>
                         </th>
                         <th>
-                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Должность <br />(при создании)</a></div>
+                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Получатель</a></div>
                         </th>
                         <th>
-                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Подразделение 3 ур.<br />(при создании)</a></div>
+                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Расчетный/лицевой <br />счет</a></div>
                         </th>
                         <th>
-                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Подразделение 7 ур. <br />(прр создании)</a></div>
+                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата <br />создания</a></div>
                         </th>
                         <th>
-                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Дата изменения</a></div>
+                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">ФИО создавшего</a></div>
                         </th>
                         <th>
-                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">ФИО (при <br />изменении)</a></div>
+                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Дата изменения</a></div>
                         </th>
                         <th>
-                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">Должность <br />(при изменении)</a></div>
-                        </th>
-                        <th>
-                            <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Подразделение 3 ур.<br />(при изменении)</a></div>
-                        </th>
-                        <th>
-                            <div id="sort12" style="min-width:130px"><a href="#" onclick = "SortChanged(12);">Подразделение 7 ур. <br />(прр изменении)</a></div>
+                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">ФИО изменившего</a></div>
                         </th>
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -110,18 +122,30 @@
                         {
                             <tr>
                                 
-                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Id</a></td>
-                                <td>@doc.Name</td>
-                                <td>@doc.CreateDate.ToShortDateString() - @doc.CreateDate.ToShortTimeString()</td>
+                                <td>@doc.Id</td>
+                                @*<td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Name</a></td>*@
+                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Surname</a></td>
+                                <td>@doc.PayerName</td>
+                                <td>@doc.PayeeName</td>
+                                <td>@doc.Account</td>
+                                @if(@doc.CreateDate.HasValue)
+                                {
+                                    <td>@doc.CreateDate.Value.ToShortDateString() - @doc.CreateDate.Value.ToShortTimeString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
                                 <td>@doc.CreatorName</td>
-                                <td>@doc.CreatePositionName</td>
-                                <td>@doc.CrDep3Level</td>
-                                <td>@doc.CrDep7Level</td>
-                                <td>@doc.EditDate.ToShortDateString() - @doc.EditDate.ToShortTimeString()</td>
+                                @if(@doc.EditDate.HasValue)
+                                {
+                                    <td>@doc.EditDate.Value.ToShortDateString() - @doc.EditDate.Value.ToShortTimeString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
                                 <td>@doc.EditorName</td>
-                                <td>@doc.EditPositionName</td>
-                                <td>@doc.EDep3Level</td>
-                                <td>@doc.EDep7Level</td>
                             </tr>
                         }
                     }
@@ -141,10 +165,10 @@
     });
 
     function resetFilter() {
-        //$("#TypeId").val('0');
-        $("#DTID").val('1');
         $("#Name").val('');
-
+        $("#Surname").val('');
+        $("#PayerName").val('');
+        $("#PayeeName").val('');
     }
  </script>   
 

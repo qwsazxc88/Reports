@@ -19,8 +19,8 @@
                             <td colspan="2">
                                 <b>Создание/редактирование записи в справочнике реквизитов</b>
                                 <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 @*
+                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="DTID" name="DTID" value="@Model.DTID" />
                                 <input type="hidden" id="Name" name="Name" value="@Model.Name" />
                                 <input type="hidden" id="Code" name="Code" value="@Model.Code" />
@@ -34,6 +34,97 @@
                                 <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
                             </td>
                         </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => Model.Name)
+                            </td>
+                            <td colspan="2">
+                                @Html.TextBoxFor(m => Model.Name, Model.StatusID == 4 ? (object)new { maxlength = "250" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label>Плательщик</label></td>
+                            <td><label>Получатель</label></td>
+                            <td>@Html.LabelFor(m => Model.Account)</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @if (@Model.PayerInfo != null && @Model.PayerInfo.Count != 0)
+                                {
+                                    <table>
+                                        <tr>
+                                            <td><label>Наименование:</label></td>
+                                            <td><label>@Model.PayerInfo[0].Name</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>ИНН:</label></td>
+                                            <td><label>@Model.PayerInfo[0].INN</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>КПП:</label></td>
+                                            <td><label>@Model.PayerInfo[0].KPP</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Расчетный счет:</label></td>
+                                            <td><label>@Model.PayerInfo[0].Account</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк:</label></td>
+                                            <td><label>@Model.PayerInfo[0].BankName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк БИК:</label></td>
+                                            <td><label>@Model.PayerInfo[0].BankBIK</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк корр/счет:</label></td>
+                                            <td><label>@Model.PayerInfo[0].CorrAccount</label></td>
+                                        </tr>
+                                    </table>
+                                }
+                            </td>
+                            <td>
+                                @if (@Model.PayeerInfo != null && @Model.PayeerInfo.Count != 0)
+                                {
+                                    <table>
+                                        <tr>
+                                            <td><label>Наименование:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].Name</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>ИНН:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].INN</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>КПП:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].KPP</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Расчетный счет:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].Account</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].BankName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк БИК:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].BankBIK</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк корр/счет:</label></td>
+                                            <td><label>@Model.PayeerInfo[0].CorrAccount</label></td>
+                                        </tr>
+                                    </table>
+                                }
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => Model.Account, Model.StatusID == 4 ? (object)new { maxlength = "25" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.Account)
+                            </td>
+                        </tr>
+                        @*
                         <tr>
                             <td style="width:220px">
                                 @Html.LabelFor(m => m.DTID):
@@ -52,17 +143,6 @@
                                 @Html.ValidationMessageFor(model => model.Name)
                             </td>
                         </tr>
-                        @*
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.Code):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.Code, Model.StatusID == 4 ? null : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.Code)
-                            </td>
-                        </tr>
-                        *@
                         <tr>
                             <td>
                                 @Html.LabelFor(model => model.INN):
@@ -117,6 +197,7 @@
                                 @Html.ValidationMessageFor(model => model.CorrAccount)
                             </td>
                         </tr>
+                        *@
                     </table>
                 </div>
             </td>

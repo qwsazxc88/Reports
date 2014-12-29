@@ -255,7 +255,8 @@ namespace WebMvc.Controllers
         public ActionResult AutocompletePersonSearch(string term)
         {
             IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term);
-            var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { value = a.Id, label = a.Name, snils = a.SNILS }).Distinct();
+            //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
 
             return Json(PersonList, JsonRequestBehavior.AllowGet);
             //return Json(Persons, JsonRequestBehavior.AllowGet);

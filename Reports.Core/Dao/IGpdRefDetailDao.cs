@@ -40,5 +40,23 @@ namespace Reports.Core.Dao
         /// <param name="role"></param>
         /// <returns></returns>
         IList<GpdPermissionDto> GetPermission(UserRole role);
+        /// <summary>
+        /// Запрос для наборов реквизитов.
+        /// </summary>
+        /// <param name="ID">ID набора.</param>
+        /// <param name="Name">Название набора реквизитов</param>
+        /// <param name="Surname">ФИО физического лица</param>
+        /// <param name="PayerName">Плательщик</param>
+        /// <param name="PayeeName">Получатель</param>
+        /// <param name="SortBy">Номер поля для сортировки</param>
+        /// <param name="SortDescending">Направление сортировки</param>
+        /// <returns></returns>
+        IList<GpdDetailSetsListDto> GetDetailSetList(int ID,
+            string Name,
+            string Surname,
+            string PayerName,
+            string PayeeName,
+            int SortBy,
+            bool? SortDescending);
     }
 }

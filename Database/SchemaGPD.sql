@@ -17,6 +17,8 @@ DROP TABLE [dbo].[GpdAct]
 GO
 DROP TABLE [dbo].[GpdContract]
 GO
+DROP TABLE [dbo].[GpdDetailSets]
+GO
 DROP TABLE [dbo].[RefPeople]
 GO
 DROP TABLE [dbo].[GpdPermission]
@@ -312,6 +314,7 @@ CREATE TABLE [dbo].[RefPeople](
 	[FirstName] [nvarchar](50) NULL,
 	[SecondName] [nvarchar](50) NULL,
 	[SNILS] [nvarchar](15) NULL,
+	[DepCode] [nvarchar](10) NULL,
  CONSTRAINT [PK_GpdRefPersons] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -344,27 +347,97 @@ GO
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник физических лиц (ГПД)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefPeople'
 GO
 
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Код подразделения' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'RefPeople', @level2type=N'COLUMN',@level2name=N'DepCode'
+GO
 
 
 
 
 
-
-
---ALTER TABLE [dbo].[GpdContract] DROP CONSTRAINT [FK_GpdContract_RefPeople]
+--DROP TABLE [dbo].[GpdDetailSets]
 --GO
 
---ALTER TABLE [dbo].[GpdContract] DROP CONSTRAINT [FK_GpdContract_GpdRefStatus]
---GO
+CREATE TABLE [dbo].[GpdDetailSets](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Version] [int] NOT NULL CONSTRAINT [DF_GpdDetailSets_Version]  DEFAULT ((1)),
+	[CreateDate] [datetime] NULL CONSTRAINT [DF_GpdDetailSets_CreateDate]  DEFAULT (getdate()),
+	[CreatorID] [int] NULL,
+	[EditDate] [datetime] NULL,
+	[EditorID] [int] NULL,
+	[Name] [nvarchar](250) NULL,
+	[PersonID] [int] NULL,
+	[PayerID] [int] NULL,
+	[PayeeID] [int] NULL,
+	[Account] [nvarchar](25) NULL,
+ CONSTRAINT [PK_GpdDetailSets] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
---ALTER TABLE [dbo].[GpdContract] DROP CONSTRAINT [FK_GpdContract_GpdRefDetail1]
---GO
+GO
 
---ALTER TABLE [dbo].[GpdContract] DROP CONSTRAINT [FK_GpdContract_GpdRefDetail]
---GO
+ALTER TABLE [dbo].[GpdDetailSets]  WITH CHECK ADD  CONSTRAINT [FK_GpdDetailSets_GpdRefDetail] FOREIGN KEY([PayerID])
+REFERENCES [dbo].[GpdRefDetail] ([Id])
+GO
 
---ALTER TABLE [dbo].[GpdContract] DROP CONSTRAINT [FK_GpdContract_GpdChargingType]
---GO
+ALTER TABLE [dbo].[GpdDetailSets] CHECK CONSTRAINT [FK_GpdDetailSets_GpdRefDetail]
+GO
+
+ALTER TABLE [dbo].[GpdDetailSets]  WITH CHECK ADD  CONSTRAINT [FK_GpdDetailSets_GpdRefDetail1] FOREIGN KEY([PayeeID])
+REFERENCES [dbo].[GpdRefDetail] ([Id])
+GO
+
+ALTER TABLE [dbo].[GpdDetailSets] CHECK CONSTRAINT [FK_GpdDetailSets_GpdRefDetail1]
+GO
+
+ALTER TABLE [dbo].[GpdDetailSets]  WITH CHECK ADD  CONSTRAINT [FK_GpdDetailSets_RefPeople] FOREIGN KEY([PersonID])
+REFERENCES [dbo].[RefPeople] ([Id])
+GO
+
+ALTER TABLE [dbo].[GpdDetailSets] CHECK CONSTRAINT [FK_GpdDetailSets_RefPeople]
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'ID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Версия записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'Version'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата создания записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'CreateDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID создателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'CreatorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата последнего редактирования записи' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'EditDate'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID редактора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'EditorID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Наименование' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'Name'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID физического лица' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'PersonID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID плательщика' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'PayerID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID получателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'PayeeID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Расчетный/лицевой счет получателя' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets', @level2type=N'COLUMN',@level2name=N'Account'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Справочник наборов реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdDetailSets'
+GO
+
+
+
+
+
 
 /****** Object:  Table [dbo].[GpdContract]    Script Date: 18.12.2014 12:37:03 ******/
 --DROP TABLE [dbo].[GpdContract]
@@ -385,6 +458,7 @@ CREATE TABLE [dbo].[GpdContract](
 	[CreatorID] [int] NULL,
 	[DepartmentId] [int] NULL,
 	[PersonID] [int] NULL,
+	[DSID] [int] NULL,
 	[CTID] [int] NULL,
 	[StatusID] [int] NULL,
 	[NumContract] [nvarchar](30) NULL,
@@ -414,6 +488,13 @@ REFERENCES [dbo].[GpdChargingType] ([Id])
 GO
 
 ALTER TABLE [dbo].[GpdContract] CHECK CONSTRAINT [FK_GpdContract_GpdChargingType]
+GO
+
+ALTER TABLE [dbo].[GpdContract]  WITH CHECK ADD  CONSTRAINT [FK_GpdContract_GpdDetailSets] FOREIGN KEY([DSID])
+REFERENCES [dbo].[GpdDetailSets] ([ID])
+GO
+
+ALTER TABLE [dbo].[GpdContract] CHECK CONSTRAINT [FK_GpdContract_GpdDetailSets]
 GO
 
 ALTER TABLE [dbo].[GpdContract]  WITH CHECK ADD  CONSTRAINT [FK_GpdContract_GpdRefDetail] FOREIGN KEY([PayeeID])
@@ -470,6 +551,9 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID подразделен
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID физического лица' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'PersonID'
+GO
+
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID набора реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'DSID'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID вида начисления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdContract', @level2type=N'COLUMN',@level2name=N'CTID'
@@ -954,6 +1038,7 @@ IF NOT EXISTS (SELECT * FROM dbo.GpdDetailType)
 BEGIN
 	insert into dbo.GpdDetailType ([Name]) values ('Получатель')
 	insert into dbo.GpdDetailType ([Name]) values ('Плательщик')
+	--insert into dbo.GpdDetailType ([Name]) values ('Фактический получатель')
 END
 
 IF NOT EXISTS (SELECT * FROM dbo.GpdRefStatus)
@@ -1144,6 +1229,7 @@ GO
 
 CREATE VIEW [dbo].[vwGpdRefDetailList]
 AS
+
 SELECT A.Id, A.Name, A.DTID, A.INN, A.KPP, A.Account, A.BankName, A.BankBIK, A.CorrAccount, A.Code, 
 			 A.CreatorID, A.CreateDate, B.[Name] as CreatorName, C.[Name] as CreatePositionName, D.[Name] as CrDep7Level, Crdep3.[Name] as CrDep3Level,
 			 A.EditorID, A.EditDate, E.[Name] as EditorName, F.[Name] as EditPositionName, G.[Name] as EDep7Level, Edep3.[Name] as EDep3Level
@@ -1159,6 +1245,24 @@ LEFT JOIN dbo.Department as Edep3 ON G.[Path] like Edep3.[Path] + N'%' and Edep3
 
 GO
 
+IF OBJECT_ID ('vwGpdDetailSetList', 'V') IS NOT NULL
+	DROP VIEW [dbo].[vwGpdDetailSetList]
+GO
+
+CREATE VIEW [dbo].[vwGpdDetailSetList]
+AS
+
+SELECT A.ID, A.Name, A.PersonID, B.Name as Surname, A.PayerID, C.Name as PayerName, A.PayeeID, D.Name as PayeeName, A.Account,
+			 A.CreatorID, A.CreateDate, E.[Name] as CreatorName,
+			 A.EditorID, A.EditDate, F.[Name] as EditorName
+FROM dbo.GpdDetailSets as A
+INNER JOIN dbo.vwGpdRefPersons as B ON B.Id = A.PersonID
+INNER JOIN dbo.GpdRefDetail as C ON C.Id = A.PayerID
+INNER JOIN dbo.GpdRefDetail as D ON D.Id = A.PayeeID
+LEFT JOIN dbo.Users as E ON E.Id = A.CreatorID
+LEFT JOIN dbo.Users as F ON F.Id = A.EditorID
+
+GO
 
 
 IF OBJECT_ID ('vwGpdActComments', 'V') IS NOT NULL
