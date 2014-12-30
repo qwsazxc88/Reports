@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
@@ -16,6 +17,8 @@ namespace Reports.Core.Domain
         public virtual string EmploymentOrderNumber { get; set; } //ok
         public virtual DateTime? EmploymentDate { get; set; } //ok
         public virtual DateTime? ContractDate { get; set; } //ok
+        public virtual DateTime? ContractEndDate { get; set; }
+        public virtual IList<SupplementaryAgreement> SupplementaryAgreements { get; set; }
         public virtual string ContractNumber { get; set; } //ok
         public virtual decimal? NorthernAreaAddition { get; set; } //ok
         public virtual decimal? AreaMultiplier { get; set; } //ok
@@ -37,11 +40,16 @@ namespace Reports.Core.Domain
         // TODO: EMPL Заявление на вычет
         // TODO: EMPL Скан заявления на вычет
         public virtual AccessGroup AccessGroup { get; set; }
-        public virtual DateTime? ContractEndDate { get; set; }
         public virtual User ApprovedByPersonnelManager { get; set; } //ok
         #endregion
 
         #region Constructors
+
+        public PersonnelManagers()
+        {
+            SupplementaryAgreements = new List<SupplementaryAgreement>();
+        }
+
         #endregion
 
         #region Methods

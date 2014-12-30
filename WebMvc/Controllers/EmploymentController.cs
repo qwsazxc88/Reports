@@ -618,9 +618,26 @@ namespace WebMvc.Controllers
                 return Json(new { ok = false, error = error });
             }
         }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director)]
+        public ActionResult RosterBulkChangeContractToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster)
+        {
+            string error = string.Empty;
+
+            if (EmploymentBl.SaveContractChangesToIndefinite(roster, out error))
+            {
+                return Json(new { ok = true });
+            }
+            else
+            {
+                return Json(new { ok = false, error = error });
+            }
+        }
+        
         #endregion
 
-        // Custom report
+        #region // Custom report
         /*
         [HttpGet]
         public ActionResult CustomReport()
@@ -635,6 +652,7 @@ namespace WebMvc.Controllers
             return View(model);
         }
         */
+        #endregion
 
         #region Signers
         [HttpGet]

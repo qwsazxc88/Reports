@@ -39,6 +39,27 @@
                 @Html.EditorFor(m => m.ContractEndDate)
             </div>
         }
+        
+        @if (Model.IsContractChangedToIndefinite)
+        {
+            <div class="formfield">
+                @Html.LabelFor(m => m.SupplementaryAgreementCreateDate)&nbsp;@Html.ValidationMessageFor(m => m.SupplementaryAgreementCreateDate)<br />
+                @Html.EditorFor(m => m.SupplementaryAgreementCreateDate)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.SupplementaryAgreementNumber)&nbsp;@Html.ValidationMessageFor(m => m.SupplementaryAgreementNumber)<br />
+                @Html.EditorFor(m => m.SupplementaryAgreementNumber)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.ChangeContractToIndefiniteOrderCreateDate)&nbsp;@Html.ValidationMessageFor(m => m.ChangeContractToIndefiniteOrderCreateDate)<br />
+                @Html.EditorFor(m => m.ChangeContractToIndefiniteOrderCreateDate)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.ChangeContractToIndefiniteOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.ChangeContractToIndefiniteOrderNumber)<br />
+                @Html.EditorFor(m => m.ChangeContractToIndefiniteOrderNumber)
+            </div>
+        }
+
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
@@ -161,5 +182,6 @@
         setActiveMenuItem("empPersonnelManagers");
         UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+        UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
     });
 </script>

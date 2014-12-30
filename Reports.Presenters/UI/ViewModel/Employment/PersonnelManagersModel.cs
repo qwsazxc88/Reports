@@ -94,10 +94,25 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public int? Level { get; set; }
 
         public bool? IsFixedTermContract { get; set; }
+        public bool IsContractChangedToIndefinite { get; set; }
 
         [Display(Name = "Окончание ТД"),
             DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime? ContractEndDate { get; set; }        
+        public DateTime? ContractEndDate { get; set; }
+
+        [Display(Name = "Дата ДС"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? SupplementaryAgreementCreateDate { get; set; }
+
+        [Display(Name = "Номер ДС")]
+        public int? SupplementaryAgreementNumber { get; set; }
+
+        [Display(Name = "Дата приказа"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ChangeContractToIndefiniteOrderCreateDate { get; set; }
+
+        [Display(Name = "Номер приказа")]
+        public int? ChangeContractToIndefiniteOrderNumber { get; set; }
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]

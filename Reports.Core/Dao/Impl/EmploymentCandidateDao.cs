@@ -70,6 +70,20 @@ namespace Reports.Core.Dao.Impl
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
                 , managers.HigherManagerApprovalStatus IsApprovedByHigherManager
+                , supplementaryAgreement.CreateDate SupplementaryAgreementCreateDate
+                , supplementaryAgreement.Number SupplementaryAgreementNumber
+                , supplementaryAgreement.OrderCreateDate IndefiniteContractOrderCreateDate
+                , supplementaryAgreement.OrderNumber IndefiniteContractOrderNumber
+                , case
+                    when supplementaryAgreement.Id > 0
+                        then 1
+                    else 0
+                    end IsContractChangedToIndefinite
+                , case
+                    when candidate.AppointmentCreatorId = :currentId and candidateUser.IsFixedTermContract = 0
+                        then 1
+                    else 0
+                    end IsChangeContractToIndefiniteAvailable
 				, case
 					when candidate.Status = 3 and candidate.AppointmentCreatorId = :currentId 
 						then 1
@@ -83,6 +97,7 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
+                left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
                 left join dbo.Department department on managers.DepartmentId = department.Id
                 left join dbo.Position position on managers.PositionId = position.Id
                 left join dbo.Schedule schedule on managers.ScheduleId = schedule.Id
@@ -313,10 +328,17 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("Disabilities", NHibernateUtil.String)
                 .AddScalar("Grade", NHibernateUtil.Int32)
                 .AddScalar("Status", NHibernateUtil.String)
+                .AddScalar("IsChangeContractToIndefiniteAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApprovedByManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApprovedByHigherManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByManagerAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByHigherManagerAvailable", NHibernateUtil.Boolean)
+
+                .AddScalar("IsContractChangedToIndefinite", NHibernateUtil.Boolean)
+                .AddScalar("SupplementaryAgreementCreateDate", NHibernateUtil.DateTime)
+                .AddScalar("SupplementaryAgreementNumber", NHibernateUtil.Int32)
+                .AddScalar("IndefiniteContractOrderCreateDate", NHibernateUtil.DateTime)
+                .AddScalar("IndefiniteContractOrderNumber", NHibernateUtil.Int32)
                 ;
 
             return query;
