@@ -22,7 +22,7 @@ namespace ReportsTaskRunner
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="WebAppSKB")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="WebAppTest")]
 	public partial class ReportsDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -51,6 +51,12 @@ namespace ReportsTaskRunner
     partial void InsertSettings(Settings instance);
     partial void UpdateSettings(Settings instance);
     partial void DeleteSettings(Settings instance);
+    partial void InsertEmploymentCandidate(EmploymentCandidate instance);
+    partial void UpdateEmploymentCandidate(EmploymentCandidate instance);
+    partial void DeleteEmploymentCandidate(EmploymentCandidate instance);
+    partial void InsertPersonnelManagers(PersonnelManagers instance);
+    partial void UpdatePersonnelManagers(PersonnelManagers instance);
+    partial void DeletePersonnelManagers(PersonnelManagers instance);
     #endregion
 		
 		public ReportsDataContext() : 
@@ -136,6 +142,22 @@ namespace ReportsTaskRunner
 			get
 			{
 				return this.GetTable<Settings>();
+			}
+		}
+		
+		public System.Data.Linq.Table<EmploymentCandidate> EmploymentCandidate
+		{
+			get
+			{
+				return this.GetTable<EmploymentCandidate>();
+			}
+		}
+		
+		public System.Data.Linq.Table<PersonnelManagers> PersonnelManagers
+		{
+			get
+			{
+				return this.GetTable<PersonnelManagers>();
 			}
 		}
 	}
@@ -900,6 +922,8 @@ namespace ReportsTaskRunner
 		
 		private string _Address;
 		
+		private System.Nullable<bool> _IsFixedTermContract;
+		
 		private EntitySet<Dismissal> _Dismissal;
 		
 		private EntitySet<Dismissal> _Dismissal1;
@@ -911,6 +935,12 @@ namespace ReportsTaskRunner
 		private EntitySet<ClearanceChecklistRoleRecords> _ClearanceChecklistRoleRecords;
 		
 		private EntitySet<ClearanceChecklistApproval> _ClearanceChecklistApproval;
+		
+		private EntitySet<EmploymentCandidate> _EmploymentCandidate;
+		
+		private EntitySet<EmploymentCandidate> _Candidate;
+		
+		private EntitySet<PersonnelManagers> _PersonnelManagers;
 		
 		private EntityRef<User> _Users1;
 		
@@ -974,6 +1004,8 @@ namespace ReportsTaskRunner
     partial void OnExperienceIn1CChanged();
     partial void OnAddressChanging(string value);
     partial void OnAddressChanged();
+    partial void OnIsFixedTermContractChanging(System.Nullable<bool> value);
+    partial void OnIsFixedTermContractChanged();
     #endregion
 		
 		public User()
@@ -984,6 +1016,9 @@ namespace ReportsTaskRunner
 			this._TargetUserClearanceChecklistRoleRecords = new EntitySet<ClearanceChecklistRoleRecords>(new Action<ClearanceChecklistRoleRecords>(this.attach_TargetUserClearanceChecklistRoleRecords), new Action<ClearanceChecklistRoleRecords>(this.detach_TargetUserClearanceChecklistRoleRecords));
 			this._ClearanceChecklistRoleRecords = new EntitySet<ClearanceChecklistRoleRecords>(new Action<ClearanceChecklistRoleRecords>(this.attach_ClearanceChecklistRoleRecords), new Action<ClearanceChecklistRoleRecords>(this.detach_ClearanceChecklistRoleRecords));
 			this._ClearanceChecklistApproval = new EntitySet<ClearanceChecklistApproval>(new Action<ClearanceChecklistApproval>(this.attach_ClearanceChecklistApproval), new Action<ClearanceChecklistApproval>(this.detach_ClearanceChecklistApproval));
+			this._EmploymentCandidate = new EntitySet<EmploymentCandidate>(new Action<EmploymentCandidate>(this.attach_EmploymentCandidate), new Action<EmploymentCandidate>(this.detach_EmploymentCandidate));
+			this._Candidate = new EntitySet<EmploymentCandidate>(new Action<EmploymentCandidate>(this.attach_Candidate), new Action<EmploymentCandidate>(this.detach_Candidate));
+			this._PersonnelManagers = new EntitySet<PersonnelManagers>(new Action<PersonnelManagers>(this.attach_PersonnelManagers), new Action<PersonnelManagers>(this.detach_PersonnelManagers));
 			this._Users1 = default(EntityRef<User>);
 			this._Department = default(EntityRef<Department>);
 			OnCreated();
@@ -1537,6 +1572,26 @@ namespace ReportsTaskRunner
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IsFixedTermContract", DbType="Bit NULL")]
+		public System.Nullable<bool> IsFixedTermContract
+		{
+			get
+			{
+				return this._IsFixedTermContract;
+			}
+			set
+			{
+				if ((this._IsFixedTermContract != value))
+				{
+					this.OnIsFixedTermContractChanging(value);
+					this.SendPropertyChanging();
+					this._IsFixedTermContract = value;
+					this.SendPropertyChanged("IsFixedTermContract");
+					this.OnIsFixedTermContractChanged();
+				}
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_Dismissal", Storage="_Dismissal", ThisKey="Id", OtherKey="CreatorId")]
 		public EntitySet<Dismissal> Dismissal
 		{
@@ -1612,6 +1667,45 @@ namespace ReportsTaskRunner
 			set
 			{
 				this._ClearanceChecklistApproval.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_EmploymentCandidate", Storage="_EmploymentCandidate", ThisKey="Id", OtherKey="AppointmentCreatorId")]
+		public EntitySet<EmploymentCandidate> EmploymentCandidate
+		{
+			get
+			{
+				return this._EmploymentCandidate;
+			}
+			set
+			{
+				this._EmploymentCandidate.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_EmploymentCandidate1", Storage="_Candidate", ThisKey="Id", OtherKey="UserId")]
+		public EntitySet<EmploymentCandidate> Candidate
+		{
+			get
+			{
+				return this._Candidate;
+			}
+			set
+			{
+				this._Candidate.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_PersonnelManagers", Storage="_PersonnelManagers", ThisKey="Id", OtherKey="ApprovedByPersonnelManagerId")]
+		public EntitySet<PersonnelManagers> PersonnelManagers
+		{
+			get
+			{
+				return this._PersonnelManagers;
+			}
+			set
+			{
+				this._PersonnelManagers.Assign(value);
 			}
 		}
 		
@@ -1773,6 +1867,42 @@ namespace ReportsTaskRunner
 		{
 			this.SendPropertyChanging();
 			entity.User = null;
+		}
+		
+		private void attach_EmploymentCandidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.AppointmentCreator = this;
+		}
+		
+		private void detach_EmploymentCandidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.AppointmentCreator = null;
+		}
+		
+		private void attach_Candidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.CandidateUser = this;
+		}
+		
+		private void detach_Candidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.CandidateUser = null;
+		}
+		
+		private void attach_PersonnelManagers(PersonnelManagers entity)
+		{
+			this.SendPropertyChanging();
+			entity.ApprovedByPersonnelManager = this;
+		}
+		
+		private void detach_PersonnelManagers(PersonnelManagers entity)
+		{
+			this.SendPropertyChanging();
+			entity.ApprovedByPersonnelManager = null;
 		}
 	}
 	
@@ -3487,6 +3617,1351 @@ namespace ReportsTaskRunner
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.EmploymentCandidate")]
+	public partial class EmploymentCandidate : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private int _Version;
+		
+		private System.Nullable<int> _UserId;
+		
+		private System.Nullable<int> _GeneralInfoId;
+		
+		private System.Nullable<int> _PassportId;
+		
+		private System.Nullable<int> _EducationId;
+		
+		private System.Nullable<int> _FamilyId;
+		
+		private System.Nullable<int> _MilitaryServiceId;
+		
+		private System.Nullable<int> _ExperienceId;
+		
+		private System.Nullable<int> _ContactsId;
+		
+		private System.Nullable<int> _BackgroundCheckId;
+		
+		private System.Nullable<int> _OnsiteTrainingId;
+		
+		private System.Nullable<int> _ManagersId;
+		
+		private System.Nullable<int> _PersonnelManagersId;
+		
+		private System.Nullable<int> _Status;
+		
+		private System.Nullable<System.DateTime> _QuestionnaireDate;
+		
+		private System.Nullable<int> _AppointmentCreatorId;
+		
+		private EntitySet<PersonnelManagers> _PersonnelManagers1;
+		
+		private EntityRef<User> _AppointmentCreator;
+		
+		private EntityRef<User> _CandidateUser;
+		
+		private EntityRef<PersonnelManagers> _PersonnelManagers;
+		
+    #region Определения метода расширяемости
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    partial void OnVersionChanging(int value);
+    partial void OnVersionChanged();
+    partial void OnUserIdChanging(System.Nullable<int> value);
+    partial void OnUserIdChanged();
+    partial void OnGeneralInfoIdChanging(System.Nullable<int> value);
+    partial void OnGeneralInfoIdChanged();
+    partial void OnPassportIdChanging(System.Nullable<int> value);
+    partial void OnPassportIdChanged();
+    partial void OnEducationIdChanging(System.Nullable<int> value);
+    partial void OnEducationIdChanged();
+    partial void OnFamilyIdChanging(System.Nullable<int> value);
+    partial void OnFamilyIdChanged();
+    partial void OnMilitaryServiceIdChanging(System.Nullable<int> value);
+    partial void OnMilitaryServiceIdChanged();
+    partial void OnExperienceIdChanging(System.Nullable<int> value);
+    partial void OnExperienceIdChanged();
+    partial void OnContactsIdChanging(System.Nullable<int> value);
+    partial void OnContactsIdChanged();
+    partial void OnBackgroundCheckIdChanging(System.Nullable<int> value);
+    partial void OnBackgroundCheckIdChanged();
+    partial void OnOnsiteTrainingIdChanging(System.Nullable<int> value);
+    partial void OnOnsiteTrainingIdChanged();
+    partial void OnManagersIdChanging(System.Nullable<int> value);
+    partial void OnManagersIdChanged();
+    partial void OnPersonnelManagersIdChanging(System.Nullable<int> value);
+    partial void OnPersonnelManagersIdChanged();
+    partial void OnStatusChanging(System.Nullable<int> value);
+    partial void OnStatusChanged();
+    partial void OnQuestionnaireDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnQuestionnaireDateChanged();
+    partial void OnAppointmentCreatorIdChanging(System.Nullable<int> value);
+    partial void OnAppointmentCreatorIdChanged();
+    #endregion
+		
+		public EmploymentCandidate()
+		{
+			this._PersonnelManagers1 = new EntitySet<PersonnelManagers>(new Action<PersonnelManagers>(this.attach_PersonnelManagers1), new Action<PersonnelManagers>(this.detach_PersonnelManagers1));
+			this._AppointmentCreator = default(EntityRef<User>);
+			this._CandidateUser = default(EntityRef<User>);
+			this._PersonnelManagers = default(EntityRef<PersonnelManagers>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Version", DbType="Int NOT NULL")]
+		public int Version
+		{
+			get
+			{
+				return this._Version;
+			}
+			set
+			{
+				if ((this._Version != value))
+				{
+					this.OnVersionChanging(value);
+					this.SendPropertyChanging();
+					this._Version = value;
+					this.SendPropertyChanged("Version");
+					this.OnVersionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UserId", DbType="Int")]
+		public System.Nullable<int> UserId
+		{
+			get
+			{
+				return this._UserId;
+			}
+			set
+			{
+				if ((this._UserId != value))
+				{
+					if (this._CandidateUser.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnUserIdChanging(value);
+					this.SendPropertyChanging();
+					this._UserId = value;
+					this.SendPropertyChanged("UserId");
+					this.OnUserIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_GeneralInfoId", DbType="Int")]
+		public System.Nullable<int> GeneralInfoId
+		{
+			get
+			{
+				return this._GeneralInfoId;
+			}
+			set
+			{
+				if ((this._GeneralInfoId != value))
+				{
+					this.OnGeneralInfoIdChanging(value);
+					this.SendPropertyChanging();
+					this._GeneralInfoId = value;
+					this.SendPropertyChanged("GeneralInfoId");
+					this.OnGeneralInfoIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PassportId", DbType="Int")]
+		public System.Nullable<int> PassportId
+		{
+			get
+			{
+				return this._PassportId;
+			}
+			set
+			{
+				if ((this._PassportId != value))
+				{
+					this.OnPassportIdChanging(value);
+					this.SendPropertyChanging();
+					this._PassportId = value;
+					this.SendPropertyChanged("PassportId");
+					this.OnPassportIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EducationId", DbType="Int")]
+		public System.Nullable<int> EducationId
+		{
+			get
+			{
+				return this._EducationId;
+			}
+			set
+			{
+				if ((this._EducationId != value))
+				{
+					this.OnEducationIdChanging(value);
+					this.SendPropertyChanging();
+					this._EducationId = value;
+					this.SendPropertyChanged("EducationId");
+					this.OnEducationIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FamilyId", DbType="Int")]
+		public System.Nullable<int> FamilyId
+		{
+			get
+			{
+				return this._FamilyId;
+			}
+			set
+			{
+				if ((this._FamilyId != value))
+				{
+					this.OnFamilyIdChanging(value);
+					this.SendPropertyChanging();
+					this._FamilyId = value;
+					this.SendPropertyChanged("FamilyId");
+					this.OnFamilyIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MilitaryServiceId", DbType="Int")]
+		public System.Nullable<int> MilitaryServiceId
+		{
+			get
+			{
+				return this._MilitaryServiceId;
+			}
+			set
+			{
+				if ((this._MilitaryServiceId != value))
+				{
+					this.OnMilitaryServiceIdChanging(value);
+					this.SendPropertyChanging();
+					this._MilitaryServiceId = value;
+					this.SendPropertyChanged("MilitaryServiceId");
+					this.OnMilitaryServiceIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ExperienceId", DbType="Int")]
+		public System.Nullable<int> ExperienceId
+		{
+			get
+			{
+				return this._ExperienceId;
+			}
+			set
+			{
+				if ((this._ExperienceId != value))
+				{
+					this.OnExperienceIdChanging(value);
+					this.SendPropertyChanging();
+					this._ExperienceId = value;
+					this.SendPropertyChanged("ExperienceId");
+					this.OnExperienceIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ContactsId", DbType="Int")]
+		public System.Nullable<int> ContactsId
+		{
+			get
+			{
+				return this._ContactsId;
+			}
+			set
+			{
+				if ((this._ContactsId != value))
+				{
+					this.OnContactsIdChanging(value);
+					this.SendPropertyChanging();
+					this._ContactsId = value;
+					this.SendPropertyChanged("ContactsId");
+					this.OnContactsIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BackgroundCheckId", DbType="Int")]
+		public System.Nullable<int> BackgroundCheckId
+		{
+			get
+			{
+				return this._BackgroundCheckId;
+			}
+			set
+			{
+				if ((this._BackgroundCheckId != value))
+				{
+					this.OnBackgroundCheckIdChanging(value);
+					this.SendPropertyChanging();
+					this._BackgroundCheckId = value;
+					this.SendPropertyChanged("BackgroundCheckId");
+					this.OnBackgroundCheckIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OnsiteTrainingId", DbType="Int")]
+		public System.Nullable<int> OnsiteTrainingId
+		{
+			get
+			{
+				return this._OnsiteTrainingId;
+			}
+			set
+			{
+				if ((this._OnsiteTrainingId != value))
+				{
+					this.OnOnsiteTrainingIdChanging(value);
+					this.SendPropertyChanging();
+					this._OnsiteTrainingId = value;
+					this.SendPropertyChanged("OnsiteTrainingId");
+					this.OnOnsiteTrainingIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ManagersId", DbType="Int")]
+		public System.Nullable<int> ManagersId
+		{
+			get
+			{
+				return this._ManagersId;
+			}
+			set
+			{
+				if ((this._ManagersId != value))
+				{
+					this.OnManagersIdChanging(value);
+					this.SendPropertyChanging();
+					this._ManagersId = value;
+					this.SendPropertyChanged("ManagersId");
+					this.OnManagersIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PersonnelManagersId", DbType="Int")]
+		public System.Nullable<int> PersonnelManagersId
+		{
+			get
+			{
+				return this._PersonnelManagersId;
+			}
+			set
+			{
+				if ((this._PersonnelManagersId != value))
+				{
+					if (this._PersonnelManagers.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnPersonnelManagersIdChanging(value);
+					this.SendPropertyChanging();
+					this._PersonnelManagersId = value;
+					this.SendPropertyChanged("PersonnelManagersId");
+					this.OnPersonnelManagersIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Status", DbType="Int")]
+		public System.Nullable<int> Status
+		{
+			get
+			{
+				return this._Status;
+			}
+			set
+			{
+				if ((this._Status != value))
+				{
+					this.OnStatusChanging(value);
+					this.SendPropertyChanging();
+					this._Status = value;
+					this.SendPropertyChanged("Status");
+					this.OnStatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_QuestionnaireDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> QuestionnaireDate
+		{
+			get
+			{
+				return this._QuestionnaireDate;
+			}
+			set
+			{
+				if ((this._QuestionnaireDate != value))
+				{
+					this.OnQuestionnaireDateChanging(value);
+					this.SendPropertyChanging();
+					this._QuestionnaireDate = value;
+					this.SendPropertyChanged("QuestionnaireDate");
+					this.OnQuestionnaireDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AppointmentCreatorId", DbType="Int")]
+		public System.Nullable<int> AppointmentCreatorId
+		{
+			get
+			{
+				return this._AppointmentCreatorId;
+			}
+			set
+			{
+				if ((this._AppointmentCreatorId != value))
+				{
+					if (this._AppointmentCreator.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnAppointmentCreatorIdChanging(value);
+					this.SendPropertyChanging();
+					this._AppointmentCreatorId = value;
+					this.SendPropertyChanged("AppointmentCreatorId");
+					this.OnAppointmentCreatorIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="EmploymentCandidate_PersonnelManagers", Storage="_PersonnelManagers1", ThisKey="Id", OtherKey="CandidateId")]
+		public EntitySet<PersonnelManagers> PersonnelManagers1
+		{
+			get
+			{
+				return this._PersonnelManagers1;
+			}
+			set
+			{
+				this._PersonnelManagers1.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_EmploymentCandidate", Storage="_AppointmentCreator", ThisKey="AppointmentCreatorId", OtherKey="Id", IsForeignKey=true)]
+		public User AppointmentCreator
+		{
+			get
+			{
+				return this._AppointmentCreator.Entity;
+			}
+			set
+			{
+				User previousValue = this._AppointmentCreator.Entity;
+				if (((previousValue != value) 
+							|| (this._AppointmentCreator.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._AppointmentCreator.Entity = null;
+						previousValue.EmploymentCandidate.Remove(this);
+					}
+					this._AppointmentCreator.Entity = value;
+					if ((value != null))
+					{
+						value.EmploymentCandidate.Add(this);
+						this._AppointmentCreatorId = value.Id;
+					}
+					else
+					{
+						this._AppointmentCreatorId = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("AppointmentCreator");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_EmploymentCandidate1", Storage="_CandidateUser", ThisKey="UserId", OtherKey="Id", IsForeignKey=true)]
+		public User CandidateUser
+		{
+			get
+			{
+				return this._CandidateUser.Entity;
+			}
+			set
+			{
+				User previousValue = this._CandidateUser.Entity;
+				if (((previousValue != value) 
+							|| (this._CandidateUser.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._CandidateUser.Entity = null;
+						previousValue.Candidate.Remove(this);
+					}
+					this._CandidateUser.Entity = value;
+					if ((value != null))
+					{
+						value.Candidate.Add(this);
+						this._UserId = value.Id;
+					}
+					else
+					{
+						this._UserId = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("CandidateUser");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PersonnelManagers_EmploymentCandidate", Storage="_PersonnelManagers", ThisKey="PersonnelManagersId", OtherKey="Id", IsForeignKey=true)]
+		public PersonnelManagers PersonnelManagers
+		{
+			get
+			{
+				return this._PersonnelManagers.Entity;
+			}
+			set
+			{
+				PersonnelManagers previousValue = this._PersonnelManagers.Entity;
+				if (((previousValue != value) 
+							|| (this._PersonnelManagers.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._PersonnelManagers.Entity = null;
+						previousValue.EmploymentCandidate.Remove(this);
+					}
+					this._PersonnelManagers.Entity = value;
+					if ((value != null))
+					{
+						value.EmploymentCandidate.Add(this);
+						this._PersonnelManagersId = value.Id;
+					}
+					else
+					{
+						this._PersonnelManagersId = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("PersonnelManagers");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_PersonnelManagers1(PersonnelManagers entity)
+		{
+			this.SendPropertyChanging();
+			entity.Candidate = this;
+		}
+		
+		private void detach_PersonnelManagers1(PersonnelManagers entity)
+		{
+			this.SendPropertyChanging();
+			entity.Candidate = null;
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.PersonnelManagers")]
+	public partial class PersonnelManagers : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _Id;
+		
+		private int _Version;
+		
+		private System.Nullable<System.DateTime> _EmploymentOrderDate;
+		
+		private string _EmploymentOrderNumber;
+		
+		private System.Nullable<System.DateTime> _EmploymentDate;
+		
+		private System.Nullable<System.DateTime> _ContractDate;
+		
+		private string _ContractNumber;
+		
+		private System.Nullable<decimal> _NorthernAreaAddition;
+		
+		private System.Nullable<decimal> _AreaMultiplier;
+		
+		private System.Nullable<decimal> _AreaAddition;
+		
+		private System.Nullable<decimal> _TravelRelatedAddition;
+		
+		private System.Nullable<decimal> _CompetenceAddition;
+		
+		private System.Nullable<decimal> _FrontOfficeExperienceAddition;
+		
+		private System.Nullable<int> _InsurableExperienceYears;
+		
+		private System.Nullable<int> _InsurableExperienceMonths;
+		
+		private System.Nullable<int> _InsurableExperienceDays;
+		
+		private string _PersonalAccount;
+		
+		private int _CandidateId;
+		
+		private System.Nullable<int> _OverallExperienceYears;
+		
+		private System.Nullable<int> _OverallExperienceMonths;
+		
+		private System.Nullable<int> _OverallExperienceDays;
+		
+		private System.Nullable<int> _ApprovedByPersonnelManagerId;
+		
+		private System.Nullable<int> _AccessGroupId;
+		
+		private System.Nullable<int> _PersonalAccountContractorId;
+		
+		private System.Nullable<System.DateTime> _ContractEndDate;
+		
+		private EntitySet<EmploymentCandidate> _EmploymentCandidate;
+		
+		private EntityRef<User> _ApprovedByPersonnelManager;
+		
+		private EntityRef<EmploymentCandidate> _Candidate;
+		
+    #region Определения метода расширяемости
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdChanging(int value);
+    partial void OnIdChanged();
+    partial void OnVersionChanging(int value);
+    partial void OnVersionChanged();
+    partial void OnEmploymentOrderDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnEmploymentOrderDateChanged();
+    partial void OnEmploymentOrderNumberChanging(string value);
+    partial void OnEmploymentOrderNumberChanged();
+    partial void OnEmploymentDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnEmploymentDateChanged();
+    partial void OnContractDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnContractDateChanged();
+    partial void OnContractNumberChanging(string value);
+    partial void OnContractNumberChanged();
+    partial void OnNorthernAreaAdditionChanging(System.Nullable<decimal> value);
+    partial void OnNorthernAreaAdditionChanged();
+    partial void OnAreaMultiplierChanging(System.Nullable<decimal> value);
+    partial void OnAreaMultiplierChanged();
+    partial void OnAreaAdditionChanging(System.Nullable<decimal> value);
+    partial void OnAreaAdditionChanged();
+    partial void OnTravelRelatedAdditionChanging(System.Nullable<decimal> value);
+    partial void OnTravelRelatedAdditionChanged();
+    partial void OnCompetenceAdditionChanging(System.Nullable<decimal> value);
+    partial void OnCompetenceAdditionChanged();
+    partial void OnFrontOfficeExperienceAdditionChanging(System.Nullable<decimal> value);
+    partial void OnFrontOfficeExperienceAdditionChanged();
+    partial void OnInsurableExperienceYearsChanging(System.Nullable<int> value);
+    partial void OnInsurableExperienceYearsChanged();
+    partial void OnInsurableExperienceMonthsChanging(System.Nullable<int> value);
+    partial void OnInsurableExperienceMonthsChanged();
+    partial void OnInsurableExperienceDaysChanging(System.Nullable<int> value);
+    partial void OnInsurableExperienceDaysChanged();
+    partial void OnPersonalAccountChanging(string value);
+    partial void OnPersonalAccountChanged();
+    partial void OnCandidateIdChanging(int value);
+    partial void OnCandidateIdChanged();
+    partial void OnOverallExperienceYearsChanging(System.Nullable<int> value);
+    partial void OnOverallExperienceYearsChanged();
+    partial void OnOverallExperienceMonthsChanging(System.Nullable<int> value);
+    partial void OnOverallExperienceMonthsChanged();
+    partial void OnOverallExperienceDaysChanging(System.Nullable<int> value);
+    partial void OnOverallExperienceDaysChanged();
+    partial void OnApprovedByPersonnelManagerIdChanging(System.Nullable<int> value);
+    partial void OnApprovedByPersonnelManagerIdChanged();
+    partial void OnAccessGroupIdChanging(System.Nullable<int> value);
+    partial void OnAccessGroupIdChanged();
+    partial void OnPersonalAccountContractorIdChanging(System.Nullable<int> value);
+    partial void OnPersonalAccountContractorIdChanged();
+    partial void OnContractEndDateChanging(System.Nullable<System.DateTime> value);
+    partial void OnContractEndDateChanged();
+    #endregion
+		
+		public PersonnelManagers()
+		{
+			this._EmploymentCandidate = new EntitySet<EmploymentCandidate>(new Action<EmploymentCandidate>(this.attach_EmploymentCandidate), new Action<EmploymentCandidate>(this.detach_EmploymentCandidate));
+			this._ApprovedByPersonnelManager = default(EntityRef<User>);
+			this._Candidate = default(EntityRef<EmploymentCandidate>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Id", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int Id
+		{
+			get
+			{
+				return this._Id;
+			}
+			set
+			{
+				if ((this._Id != value))
+				{
+					this.OnIdChanging(value);
+					this.SendPropertyChanging();
+					this._Id = value;
+					this.SendPropertyChanged("Id");
+					this.OnIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Version", DbType="Int NOT NULL")]
+		public int Version
+		{
+			get
+			{
+				return this._Version;
+			}
+			set
+			{
+				if ((this._Version != value))
+				{
+					this.OnVersionChanging(value);
+					this.SendPropertyChanging();
+					this._Version = value;
+					this.SendPropertyChanged("Version");
+					this.OnVersionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EmploymentOrderDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> EmploymentOrderDate
+		{
+			get
+			{
+				return this._EmploymentOrderDate;
+			}
+			set
+			{
+				if ((this._EmploymentOrderDate != value))
+				{
+					this.OnEmploymentOrderDateChanging(value);
+					this.SendPropertyChanging();
+					this._EmploymentOrderDate = value;
+					this.SendPropertyChanged("EmploymentOrderDate");
+					this.OnEmploymentOrderDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EmploymentOrderNumber", DbType="NVarChar(20)")]
+		public string EmploymentOrderNumber
+		{
+			get
+			{
+				return this._EmploymentOrderNumber;
+			}
+			set
+			{
+				if ((this._EmploymentOrderNumber != value))
+				{
+					this.OnEmploymentOrderNumberChanging(value);
+					this.SendPropertyChanging();
+					this._EmploymentOrderNumber = value;
+					this.SendPropertyChanged("EmploymentOrderNumber");
+					this.OnEmploymentOrderNumberChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EmploymentDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> EmploymentDate
+		{
+			get
+			{
+				return this._EmploymentDate;
+			}
+			set
+			{
+				if ((this._EmploymentDate != value))
+				{
+					this.OnEmploymentDateChanging(value);
+					this.SendPropertyChanging();
+					this._EmploymentDate = value;
+					this.SendPropertyChanged("EmploymentDate");
+					this.OnEmploymentDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ContractDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> ContractDate
+		{
+			get
+			{
+				return this._ContractDate;
+			}
+			set
+			{
+				if ((this._ContractDate != value))
+				{
+					this.OnContractDateChanging(value);
+					this.SendPropertyChanging();
+					this._ContractDate = value;
+					this.SendPropertyChanged("ContractDate");
+					this.OnContractDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ContractNumber", DbType="NVarChar(20)")]
+		public string ContractNumber
+		{
+			get
+			{
+				return this._ContractNumber;
+			}
+			set
+			{
+				if ((this._ContractNumber != value))
+				{
+					this.OnContractNumberChanging(value);
+					this.SendPropertyChanging();
+					this._ContractNumber = value;
+					this.SendPropertyChanged("ContractNumber");
+					this.OnContractNumberChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NorthernAreaAddition", DbType="Decimal(19,2)")]
+		public System.Nullable<decimal> NorthernAreaAddition
+		{
+			get
+			{
+				return this._NorthernAreaAddition;
+			}
+			set
+			{
+				if ((this._NorthernAreaAddition != value))
+				{
+					this.OnNorthernAreaAdditionChanging(value);
+					this.SendPropertyChanging();
+					this._NorthernAreaAddition = value;
+					this.SendPropertyChanged("NorthernAreaAddition");
+					this.OnNorthernAreaAdditionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AreaMultiplier", DbType="Decimal(19,2)")]
+		public System.Nullable<decimal> AreaMultiplier
+		{
+			get
+			{
+				return this._AreaMultiplier;
+			}
+			set
+			{
+				if ((this._AreaMultiplier != value))
+				{
+					this.OnAreaMultiplierChanging(value);
+					this.SendPropertyChanging();
+					this._AreaMultiplier = value;
+					this.SendPropertyChanged("AreaMultiplier");
+					this.OnAreaMultiplierChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AreaAddition", DbType="Decimal(19,2)")]
+		public System.Nullable<decimal> AreaAddition
+		{
+			get
+			{
+				return this._AreaAddition;
+			}
+			set
+			{
+				if ((this._AreaAddition != value))
+				{
+					this.OnAreaAdditionChanging(value);
+					this.SendPropertyChanging();
+					this._AreaAddition = value;
+					this.SendPropertyChanged("AreaAddition");
+					this.OnAreaAdditionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TravelRelatedAddition", DbType="Decimal(15,2)")]
+		public System.Nullable<decimal> TravelRelatedAddition
+		{
+			get
+			{
+				return this._TravelRelatedAddition;
+			}
+			set
+			{
+				if ((this._TravelRelatedAddition != value))
+				{
+					this.OnTravelRelatedAdditionChanging(value);
+					this.SendPropertyChanging();
+					this._TravelRelatedAddition = value;
+					this.SendPropertyChanged("TravelRelatedAddition");
+					this.OnTravelRelatedAdditionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CompetenceAddition", DbType="Decimal(15,2)")]
+		public System.Nullable<decimal> CompetenceAddition
+		{
+			get
+			{
+				return this._CompetenceAddition;
+			}
+			set
+			{
+				if ((this._CompetenceAddition != value))
+				{
+					this.OnCompetenceAdditionChanging(value);
+					this.SendPropertyChanging();
+					this._CompetenceAddition = value;
+					this.SendPropertyChanged("CompetenceAddition");
+					this.OnCompetenceAdditionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FrontOfficeExperienceAddition", DbType="Decimal(15,2)")]
+		public System.Nullable<decimal> FrontOfficeExperienceAddition
+		{
+			get
+			{
+				return this._FrontOfficeExperienceAddition;
+			}
+			set
+			{
+				if ((this._FrontOfficeExperienceAddition != value))
+				{
+					this.OnFrontOfficeExperienceAdditionChanging(value);
+					this.SendPropertyChanging();
+					this._FrontOfficeExperienceAddition = value;
+					this.SendPropertyChanged("FrontOfficeExperienceAddition");
+					this.OnFrontOfficeExperienceAdditionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InsurableExperienceYears", DbType="Int")]
+		public System.Nullable<int> InsurableExperienceYears
+		{
+			get
+			{
+				return this._InsurableExperienceYears;
+			}
+			set
+			{
+				if ((this._InsurableExperienceYears != value))
+				{
+					this.OnInsurableExperienceYearsChanging(value);
+					this.SendPropertyChanging();
+					this._InsurableExperienceYears = value;
+					this.SendPropertyChanged("InsurableExperienceYears");
+					this.OnInsurableExperienceYearsChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InsurableExperienceMonths", DbType="Int")]
+		public System.Nullable<int> InsurableExperienceMonths
+		{
+			get
+			{
+				return this._InsurableExperienceMonths;
+			}
+			set
+			{
+				if ((this._InsurableExperienceMonths != value))
+				{
+					this.OnInsurableExperienceMonthsChanging(value);
+					this.SendPropertyChanging();
+					this._InsurableExperienceMonths = value;
+					this.SendPropertyChanged("InsurableExperienceMonths");
+					this.OnInsurableExperienceMonthsChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_InsurableExperienceDays", DbType="Int")]
+		public System.Nullable<int> InsurableExperienceDays
+		{
+			get
+			{
+				return this._InsurableExperienceDays;
+			}
+			set
+			{
+				if ((this._InsurableExperienceDays != value))
+				{
+					this.OnInsurableExperienceDaysChanging(value);
+					this.SendPropertyChanging();
+					this._InsurableExperienceDays = value;
+					this.SendPropertyChanged("InsurableExperienceDays");
+					this.OnInsurableExperienceDaysChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PersonalAccount", DbType="NVarChar(23)")]
+		public string PersonalAccount
+		{
+			get
+			{
+				return this._PersonalAccount;
+			}
+			set
+			{
+				if ((this._PersonalAccount != value))
+				{
+					this.OnPersonalAccountChanging(value);
+					this.SendPropertyChanging();
+					this._PersonalAccount = value;
+					this.SendPropertyChanged("PersonalAccount");
+					this.OnPersonalAccountChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CandidateId", DbType="Int NOT NULL")]
+		public int CandidateId
+		{
+			get
+			{
+				return this._CandidateId;
+			}
+			set
+			{
+				if ((this._CandidateId != value))
+				{
+					if (this._Candidate.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnCandidateIdChanging(value);
+					this.SendPropertyChanging();
+					this._CandidateId = value;
+					this.SendPropertyChanged("CandidateId");
+					this.OnCandidateIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OverallExperienceYears", DbType="Int")]
+		public System.Nullable<int> OverallExperienceYears
+		{
+			get
+			{
+				return this._OverallExperienceYears;
+			}
+			set
+			{
+				if ((this._OverallExperienceYears != value))
+				{
+					this.OnOverallExperienceYearsChanging(value);
+					this.SendPropertyChanging();
+					this._OverallExperienceYears = value;
+					this.SendPropertyChanged("OverallExperienceYears");
+					this.OnOverallExperienceYearsChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OverallExperienceMonths", DbType="Int")]
+		public System.Nullable<int> OverallExperienceMonths
+		{
+			get
+			{
+				return this._OverallExperienceMonths;
+			}
+			set
+			{
+				if ((this._OverallExperienceMonths != value))
+				{
+					this.OnOverallExperienceMonthsChanging(value);
+					this.SendPropertyChanging();
+					this._OverallExperienceMonths = value;
+					this.SendPropertyChanged("OverallExperienceMonths");
+					this.OnOverallExperienceMonthsChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OverallExperienceDays", DbType="Int")]
+		public System.Nullable<int> OverallExperienceDays
+		{
+			get
+			{
+				return this._OverallExperienceDays;
+			}
+			set
+			{
+				if ((this._OverallExperienceDays != value))
+				{
+					this.OnOverallExperienceDaysChanging(value);
+					this.SendPropertyChanging();
+					this._OverallExperienceDays = value;
+					this.SendPropertyChanged("OverallExperienceDays");
+					this.OnOverallExperienceDaysChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ApprovedByPersonnelManagerId", DbType="Int")]
+		public System.Nullable<int> ApprovedByPersonnelManagerId
+		{
+			get
+			{
+				return this._ApprovedByPersonnelManagerId;
+			}
+			set
+			{
+				if ((this._ApprovedByPersonnelManagerId != value))
+				{
+					if (this._ApprovedByPersonnelManager.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnApprovedByPersonnelManagerIdChanging(value);
+					this.SendPropertyChanging();
+					this._ApprovedByPersonnelManagerId = value;
+					this.SendPropertyChanged("ApprovedByPersonnelManagerId");
+					this.OnApprovedByPersonnelManagerIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_AccessGroupId", DbType="Int")]
+		public System.Nullable<int> AccessGroupId
+		{
+			get
+			{
+				return this._AccessGroupId;
+			}
+			set
+			{
+				if ((this._AccessGroupId != value))
+				{
+					this.OnAccessGroupIdChanging(value);
+					this.SendPropertyChanging();
+					this._AccessGroupId = value;
+					this.SendPropertyChanged("AccessGroupId");
+					this.OnAccessGroupIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PersonalAccountContractorId", DbType="Int")]
+		public System.Nullable<int> PersonalAccountContractorId
+		{
+			get
+			{
+				return this._PersonalAccountContractorId;
+			}
+			set
+			{
+				if ((this._PersonalAccountContractorId != value))
+				{
+					this.OnPersonalAccountContractorIdChanging(value);
+					this.SendPropertyChanging();
+					this._PersonalAccountContractorId = value;
+					this.SendPropertyChanged("PersonalAccountContractorId");
+					this.OnPersonalAccountContractorIdChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_ContractEndDate", DbType="DateTime")]
+		public System.Nullable<System.DateTime> ContractEndDate
+		{
+			get
+			{
+				return this._ContractEndDate;
+			}
+			set
+			{
+				if ((this._ContractEndDate != value))
+				{
+					this.OnContractEndDateChanging(value);
+					this.SendPropertyChanging();
+					this._ContractEndDate = value;
+					this.SendPropertyChanged("ContractEndDate");
+					this.OnContractEndDateChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="PersonnelManagers_EmploymentCandidate", Storage="_EmploymentCandidate", ThisKey="Id", OtherKey="PersonnelManagersId")]
+		public EntitySet<EmploymentCandidate> EmploymentCandidate
+		{
+			get
+			{
+				return this._EmploymentCandidate;
+			}
+			set
+			{
+				this._EmploymentCandidate.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="User_PersonnelManagers", Storage="_ApprovedByPersonnelManager", ThisKey="ApprovedByPersonnelManagerId", OtherKey="Id", IsForeignKey=true)]
+		public User ApprovedByPersonnelManager
+		{
+			get
+			{
+				return this._ApprovedByPersonnelManager.Entity;
+			}
+			set
+			{
+				User previousValue = this._ApprovedByPersonnelManager.Entity;
+				if (((previousValue != value) 
+							|| (this._ApprovedByPersonnelManager.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._ApprovedByPersonnelManager.Entity = null;
+						previousValue.PersonnelManagers.Remove(this);
+					}
+					this._ApprovedByPersonnelManager.Entity = value;
+					if ((value != null))
+					{
+						value.PersonnelManagers.Add(this);
+						this._ApprovedByPersonnelManagerId = value.Id;
+					}
+					else
+					{
+						this._ApprovedByPersonnelManagerId = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("ApprovedByPersonnelManager");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="EmploymentCandidate_PersonnelManagers", Storage="_Candidate", ThisKey="CandidateId", OtherKey="Id", IsForeignKey=true)]
+		public EmploymentCandidate Candidate
+		{
+			get
+			{
+				return this._Candidate.Entity;
+			}
+			set
+			{
+				EmploymentCandidate previousValue = this._Candidate.Entity;
+				if (((previousValue != value) 
+							|| (this._Candidate.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._Candidate.Entity = null;
+						previousValue.PersonnelManagers1.Remove(this);
+					}
+					this._Candidate.Entity = value;
+					if ((value != null))
+					{
+						value.PersonnelManagers1.Add(this);
+						this._CandidateId = value.Id;
+					}
+					else
+					{
+						this._CandidateId = default(int);
+					}
+					this.SendPropertyChanged("Candidate");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		private void attach_EmploymentCandidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.PersonnelManagers = this;
+		}
+		
+		private void detach_EmploymentCandidate(EmploymentCandidate entity)
+		{
+			this.SendPropertyChanging();
+			entity.PersonnelManagers = null;
 		}
 	}
 }

@@ -48,6 +48,7 @@
     <Compile Include="DAL\ClearanceChecklistDAL.cs" />
     <Compile Include="DAL\MainDAL.cs" />
     <Compile Include="DAL\SettingsDAL.cs" />
+    <Compile Include="DAL\FixedTermContractDAL.cs" />
     <Compile Include="Helpers\Mailer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
