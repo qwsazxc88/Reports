@@ -74,6 +74,7 @@ namespace Reports.Presenters.UI.Bl
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
+        bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
         bool IsUnlimitedEditAvailable();

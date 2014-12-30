@@ -11,7 +11,12 @@
     <property name="EmploymentOrderNumber" length="20" not-null="false"/>
     <property name="EmploymentDate" not-null="false"/>
     <property name="ContractDate" not-null="false"/>
+    <property name="ContractEndDate" not-null="false"/>
     <property name="ContractNumber" length="20" not-null="false"/>
+    <bag name="SupplementaryAgreements" lazy="true" inverse="true" cascade="all-delete-orphan">
+		  <key column="PersonnelManagersId" foreign-key="FK_SupplementaryAgreement_PersonnelManagers"/>
+		  <one-to-many class="SupplementaryAgreement"/>
+	  </bag>
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
@@ -28,8 +33,7 @@
     <!-- Ознакомлен с регламентными документами -->
     <property name="PersonalAccount" length="23" not-null="false"/>
     <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="false"/>
-    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>
-    <property name="ContractEndDate" not-null="false"/>
+    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>    
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     
   </class>

@@ -781,7 +781,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.InsurableExperienceDays = entity.InsurableExperienceDays;
                 model.InsurableExperienceMonths = entity.InsurableExperienceMonths;
                 model.InsurableExperienceYears = entity.InsurableExperienceYears;
+
                 model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
+                model.IsContractChangedToIndefinite = entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0;
+                if (entity.SupplementaryAgreements != null)
+                {
+                    model.SupplementaryAgreementCreateDate = entity.SupplementaryAgreements[0].CreateDate;
+                    model.SupplementaryAgreementNumber = entity.SupplementaryAgreements[0].Number;
+                    model.ChangeContractToIndefiniteOrderCreateDate = entity.SupplementaryAgreements[0].OrderCreateDate;
+                    model.ChangeContractToIndefiniteOrderNumber = entity.SupplementaryAgreements[0].OrderNumber;
+                }
+
                 model.Level = entity.Candidate.User.Level;
                 model.NorthernAreaAddition = entity.NorthernAreaAddition;
                 model.OverallExperienceDays = entity.OverallExperienceDays;
@@ -849,9 +859,10 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             LoadDictionaries(model);
 
+            model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
             model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
-
+                                    
             return model;
         }
 
@@ -1580,7 +1591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1618,7 +1629,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1711,7 +1722,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1779,7 +1790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1817,7 +1828,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1859,7 +1870,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -1890,7 +1901,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -2011,7 +2022,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
                 error = StrNotAgreedToPersonalDataProcessing;
                 return false;
@@ -2042,7 +2053,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
             entity.PersonalAccount = viewModel.PersonalAccount;
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
-            entity.TravelRelatedAddition = viewModel.TravelRelatedAddition; 
+            entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+            if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
+            {
+                entity.SupplementaryAgreements[0].CreateDate = viewModel.SupplementaryAgreementCreateDate;
+                entity.SupplementaryAgreements[0].Number = viewModel.SupplementaryAgreementNumber;
+                entity.SupplementaryAgreements[0].OrderCreateDate = viewModel.ChangeContractToIndefiniteOrderCreateDate;
+                entity.SupplementaryAgreements[0].OrderNumber = viewModel.ChangeContractToIndefiniteOrderNumber;
+            }
             #endregion
 
             return true;
@@ -2389,6 +2407,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 PersonnelManagers entity = null;
+                EmploymentCandidate candidate = GetCandidate(viewModel.UserId);
+
                 int? id = EmploymentCommonDao.GetDocumentId<PersonnelManagers>(viewModel.UserId);
                 if (id.HasValue)
                 {
@@ -2396,16 +2416,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity == null)
                 {
-                    entity = new PersonnelManagers();
+                    entity = new PersonnelManagers { Candidate = candidate };
                 }
 
-                if (!entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
                 {
                     error = StrNotAgreedToPersonalDataProcessing;
                     return false;
                 }
 
-                EmploymentStatus candidateStatus = GetCandidate(viewModel.UserId).Status;
+                EmploymentStatus candidateStatus = candidate.Status;
 
                 if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
                     || candidateStatus == EmploymentStatus.COMPLETE)
@@ -2436,6 +2456,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.PersonalAccount = viewModel.PersonalAccount;
                     entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
                     entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+
+                    if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
+                    {
+                        entity.SupplementaryAgreements[0].CreateDate = viewModel.SupplementaryAgreementCreateDate;
+                        entity.SupplementaryAgreements[0].Number = viewModel.SupplementaryAgreementNumber;
+                        entity.SupplementaryAgreements[0].OrderCreateDate = viewModel.ChangeContractToIndefiniteOrderCreateDate;
+                        entity.SupplementaryAgreements[0].OrderNumber = viewModel.ChangeContractToIndefiniteOrderNumber;
+                    }
 
                     //entity.Approver = UserDao.Get(current.Id);
                     entity.Candidate.Status = EmploymentStatus.COMPLETE;
@@ -2482,7 +2510,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
                     entity.Managers.ApprovingManager = current;
                     entity.Managers.ManagerApprovalStatus = true;
-                    EmploymentCandidateDao.SaveAndFlush(entity);
+                    EmploymentCandidateDao.Save(entity);
                 }
 
                 entities = EmploymentCandidateDao.LoadForIdsList(idsToApproveByHigherManager).ToList();
@@ -2491,8 +2519,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
                     entity.Managers.ApprovingHigherManager = current;
                     entity.Managers.HigherManagerApprovalStatus = true;
-                    EmploymentCandidateDao.SaveAndFlush(entity);
+                    EmploymentCandidateDao.Save(entity);
                 }
+                EmploymentCandidateDao.Flush();
             }
 
             
@@ -2501,6 +2530,43 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
+        public bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error)
+        {
+            error = string.Empty;
+
+            IList<int> idsToChangeContractToIndefinite;
+
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
+                                          (current.UserRole & UserRole.Chief) == UserRole.Chief ||
+                                          (current.UserRole & UserRole.Director) == UserRole.Director))
+            {
+                idsToChangeContractToIndefinite = roster.Where(x => x.IsContractChangedToIndefinite == true).Select(x => x.Id).ToList();
+
+                List<EmploymentCandidate> entities = EmploymentCandidateDao.LoadForIdsList(idsToChangeContractToIndefinite).ToList();
+                foreach (EmploymentCandidate entity in entities)
+                {
+                    if (entity.PersonnelManagers == null)
+                    {
+                        entity.PersonnelManagers = new PersonnelManagers { Candidate = entity };
+                    }
+
+                    if (entity.PersonnelManagers.SupplementaryAgreements.Count == 0)
+                    {
+                        entity.PersonnelManagers.SupplementaryAgreements.Add(new SupplementaryAgreement { PersonnelManagers = entity.PersonnelManagers });
+                        EmploymentCandidateDao.Save(entity);
+                    }
+
+                    entity.User.IsFixedTermContract = true;
+                    entity.PersonnelManagers.ContractEndDate = null;
+                }
+                EmploymentCandidateDao.Flush();
+            }
+
+            return true;
+        }
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {

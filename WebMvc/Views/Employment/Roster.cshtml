@@ -72,20 +72,19 @@
                 </div>
             </td>
         </tr>
-        <tr>
-            <td colspan="2" style = "text-align:right">
-                @if (Model.IsBulkApproveByManagerAvailable || Model.IsBulkApproveByHigherManagerAvailable)
-                {
-                    <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
-                    <button id="SaveApprovals">Записать</button>
-                }
-            </td>
-        </tr>
     </table>
 
     @* END Выбор параметров *@
     
     <div style="margin: 10px;"><span class="buttonLink">@Html.ActionLink("Добавить кандидата", "CreateCandidate")</span></div>
+    
+    <div style="text-align: right;">
+        @if (Model.IsBulkApproveByManagerAvailable || Model.IsBulkApproveByHigherManagerAvailable)
+        {
+            <input type="hidden" id="IsApproveModified" name="isApproveModified" value="false" />                    
+            <button id="SaveRosterButton" style="margin: 5px;">Записать</button>
+        }
+    </div>
     
     @* END CreateCandidate *@
 
@@ -141,6 +140,13 @@
 
         <th>
             Дата<br />окончания<br />СТД
+        </th>
+        <th>
+            Сотрудник<br />переведен на<br />бессрочный ТД<br />
+            @if (Model.IsBulkChangeContractToIndefiniteAvailable)
+            {
+                <input type="checkbox" id="setAllToChangeContractToIndefinite" />
+            }
         </th>
 
         @* Вид работы (осн./совм.) *@
@@ -236,8 +242,20 @@
                 &nbsp;@candidate.ContractNumber
             </td>
 
-            <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value) {<text>style="background-color:yellow"</text>}>
+            <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
+                {<text>style="background-color:yellow"</text>}>
                 &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td class="centered">
+                @if (Model.Roster[i - 1].IsChangeContractToIndefiniteAvailable)
+                {
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { @class = "selcheckContractToIndefinite", dataId = Model.Roster[i - 1].Id })
+                }
+                else
+                {
+                    @Html.CheckBoxFor(m => m.Roster[i - 1].IsContractChangedToIndefinite, new { disabled = "disabled" })
+                }
             </td>
 
             @* Вид работы (осн./совм.) *@
@@ -290,7 +308,7 @@
             @{i++;}
         </tr>
         <tr>
-            <td colspan="14" style="padding: 0;">
+            <td colspan="15" style="padding: 0;">
                 <div style="display:none;">
                     @if (Model.IsCandidateInfoAvailable)
                     {
@@ -340,11 +358,36 @@
 <script type="text/javascript">
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+        
+    var isApproveByManagerChanged = false;
+    var isApproveByHigherManagerChanged = false;
+    var isChangeContractToIndefiniteChanged = false;
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
         UIHelpers.attachDatepickerToInputs($('#BeginDate, #EndDate'), "-1:+0", true);
 
+        $(".selcheckByManager, #setAllByManager").click(function(){
+	        isApproveByManagerChanged = true;
+        });
+        $(".selcheckByHigherManager, #setAllByHigherManager").click(function(){
+	        isApproveByHigherManagerChanged = true;
+        });
+        $(".selcheckContractToIndefinite, #setAllToChangeContractToIndefinite").click(function(){
+	        isChangeContractToIndefiniteChanged = true;
+        });
+
+        $("#setAllToChangeContractToIndefinite").click(function(){
+            if ($(this).is(':checked'))
+            {
+                $(".selcheckContractToIndefinite").attr('checked','checked');
+            }
+            else
+            {
+                $(".selcheckContractToIndefinite").removeAttr('checked');
+            }
+        });
+        
         $("#setAllByManager").click(function(){
             if ($(this).is(':checked'))
             {
@@ -367,10 +410,21 @@
         }
         });
 
-        $("#SaveApprovals").click(function(e){
+        $("#SaveRosterButton").click(function(e){
             $("#IsApproveModified").val("true");
-            
-            $.post("/Employment/RosterBulkApprove",                
+            var url = "";
+
+            if (isApproveByManagerChanged || isApproveByHigherManagerChanged)
+            {
+                url = "/Employment/RosterBulkApprove";
+            }
+
+            if (isChangeContractToIndefiniteChanged)
+            {
+                url = "/Employment/RosterBulkChangeContractToIndefinite";
+            }
+
+            $.post(url,
                 $("#mainForm").serialize(),
                 function (data) {
                     if (data.ok === true) {
@@ -381,6 +435,7 @@
                     }
                 }
             );
+            
             e.preventDefault();
         });
 

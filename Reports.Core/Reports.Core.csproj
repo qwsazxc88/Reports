@@ -396,6 +396,7 @@
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
     <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
+    <Compile Include="Domain\Employment2\SupplementaryAgreement.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
@@ -532,6 +533,7 @@
     <Compile Include="Dto\Employment2\ReferenceDto.cs" />
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateChangeContractToIndefiniteDto.cs" />
     <Compile Include="Dto\GpdActDto.cs" />
     <Compile Include="Dto\GpdContractDto.cs" />
     <Compile Include="Dto\GpdRefDetailDto.cs" />
@@ -1075,6 +1077,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\SupplementaryAgreement.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdMagProlongation.hbm.xml">
