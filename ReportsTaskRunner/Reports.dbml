@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="WebAppSKB" Class="ReportsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=WEBSRV\SQLEXPRESS;Initial Catalog=WebAppSKB;Persist Security Info=True;User ID=sa" SettingsObjectName="ReportsTaskRunner.Properties.Settings" SettingsPropertyName="WebAppDBConnectionString" Provider="System.Data.SqlClient" />
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="WebAppTest" Class="ReportsDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=WEBSRV\SQLEXPRESS;Initial Catalog=WebAppTest;Persist Security Info=True;User ID=sa" SettingsObjectName="ReportsTaskRunner.Properties.Settings" SettingsPropertyName="WebAppDBConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Dismissal" Member="Dismissal">
     <Type Name="Dismissal">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -59,12 +59,16 @@
       <Column Name="Grade" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ExperienceIn1C" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
       <Column Name="Address" Type="System.String" DbType="NVarChar(256)" CanBeNull="true" />
+      <Column Name="IsFixedTermContract" Type="System.Boolean" DbType="Bit NULL" CanBeNull="true" />
       <Association Name="User_Dismissal" Member="Dismissal" ThisKey="Id" OtherKey="CreatorId" Type="Dismissal" />
       <Association Name="User_Dismissal1" Member="Dismissal1" ThisKey="Id" OtherKey="UserId" Type="Dismissal" />
       <Association Name="User_User" Member="User1" Storage="_Users2" ThisKey="Id" OtherKey="ManagerId" Type="User" />
       <Association Name="User_ClearanceChecklistRoleRecords" Member="TargetUserClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="TargetUserId" Type="ClearanceChecklistRoleRecords" />
       <Association Name="User_ClearanceChecklistRoleRecords1" Member="ClearanceChecklistRoleRecords" ThisKey="Id" OtherKey="UserId" Type="ClearanceChecklistRoleRecords" />
       <Association Name="User_ClearanceChecklistApproval" Member="ClearanceChecklistApproval" ThisKey="Id" OtherKey="ApprovedById" Type="ClearanceChecklistApproval" />
+      <Association Name="User_EmploymentCandidate" Member="EmploymentCandidate" ThisKey="Id" OtherKey="AppointmentCreatorId" Type="EmploymentCandidate" />
+      <Association Name="User_EmploymentCandidate1" Member="Candidate" ThisKey="Id" OtherKey="UserId" Type="EmploymentCandidate" />
+      <Association Name="User_PersonnelManagers" Member="PersonnelManagers" ThisKey="Id" OtherKey="ApprovedByPersonnelManagerId" Type="PersonnelManagers" />
       <Association Name="User_User" Member="Users1" ThisKey="ManagerId" OtherKey="Id" Type="User" IsForeignKey="true" />
       <Association Name="Department_User" Member="Department" ThisKey="DepartmentId" OtherKey="Id" Type="Department" IsForeignKey="true" />
     </Type>
@@ -144,6 +148,63 @@
       <Column Name="BillingPort" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="BillingLogin" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
       <Column Name="BillingPassword" Type="System.String" DbType="NVarChar(32) NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.EmploymentCandidate" Member="EmploymentCandidate">
+    <Type Name="EmploymentCandidate">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UserId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="GeneralInfoId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PassportId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EducationId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FamilyId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="MilitaryServiceId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ExperienceId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ContactsId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="BackgroundCheckId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OnsiteTrainingId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ManagersId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PersonnelManagersId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Status" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="QuestionnaireDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="AppointmentCreatorId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="EmploymentCandidate_PersonnelManagers" Member="PersonnelManagers1" ThisKey="Id" OtherKey="CandidateId" Type="PersonnelManagers" />
+      <Association Name="User_EmploymentCandidate" Member="AppointmentCreator" ThisKey="AppointmentCreatorId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="User_EmploymentCandidate1" Member="CandidateUser" ThisKey="UserId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="PersonnelManagers_EmploymentCandidate" Member="PersonnelManagers" ThisKey="PersonnelManagersId" OtherKey="Id" Type="PersonnelManagers" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.PersonnelManagers" Member="PersonnelManagers">
+    <Type Name="PersonnelManagers">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="EmploymentOrderDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="EmploymentOrderNumber" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="EmploymentDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ContractDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ContractNumber" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="NorthernAreaAddition" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="AreaMultiplier" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="AreaAddition" Type="System.Decimal" DbType="Decimal(19,2)" CanBeNull="true" />
+      <Column Name="TravelRelatedAddition" Type="System.Decimal" DbType="Decimal(15,2)" CanBeNull="true" />
+      <Column Name="CompetenceAddition" Type="System.Decimal" DbType="Decimal(15,2)" CanBeNull="true" />
+      <Column Name="FrontOfficeExperienceAddition" Type="System.Decimal" DbType="Decimal(15,2)" CanBeNull="true" />
+      <Column Name="InsurableExperienceYears" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="InsurableExperienceMonths" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="InsurableExperienceDays" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PersonalAccount" Type="System.String" DbType="NVarChar(23)" CanBeNull="true" />
+      <Column Name="CandidateId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="OverallExperienceYears" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OverallExperienceMonths" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="OverallExperienceDays" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ApprovedByPersonnelManagerId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="AccessGroupId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PersonalAccountContractorId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ContractEndDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="PersonnelManagers_EmploymentCandidate" Member="EmploymentCandidate" ThisKey="Id" OtherKey="PersonnelManagersId" Type="EmploymentCandidate" />
+      <Association Name="User_PersonnelManagers" Member="ApprovedByPersonnelManager" ThisKey="ApprovedByPersonnelManagerId" OtherKey="Id" Type="User" IsForeignKey="true" />
+      <Association Name="EmploymentCandidate_PersonnelManagers" Member="Candidate" ThisKey="CandidateId" OtherKey="Id" Type="EmploymentCandidate" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>

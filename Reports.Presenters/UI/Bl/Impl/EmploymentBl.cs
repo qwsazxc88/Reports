@@ -932,6 +932,31 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
+        {
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IList<CandidateDto> model = null;
+
+            if (filters == null)
+            {
+                model = new List<CandidateDto>();
+            }
+            else
+            {
+                model = EmploymentCandidateDao.GetCandidates(current.Id,
+                    current.UserRole,
+                    filters != null ? filters.DepartmentId : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
+                    filters != null ? filters.BeginDate : null,
+                    filters != null ? filters.EndDate : null,
+                    filters != null ? filters.UserName : null,
+                    filters.SortBy,
+                    filters.SortDescending);
+            }
+
+            return model;
+        }
+
         #endregion        
 
         #region LoadDictionaries
