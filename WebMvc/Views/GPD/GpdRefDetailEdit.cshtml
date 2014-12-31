@@ -1,0 +1,335 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Редактирование справочника реквизитов";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    <label id="errorMessage" style="color:red">@Model.errorMessage</label>
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="doc-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Создание/редактирование набора реквизитов</b>
+                                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                                <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
+                                <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
+                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
+                                <input type="hidden" id="DetailCreatorID" name="DetailCreatorID" value="@Model.DetailCreatorID" />
+                                <input type="hidden" id="NewRow" name="NewRow" value="@Model.NewRow" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => Model.Name)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => Model.Name, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "250" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.Name)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => Model.PersonID)
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "LongName"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PersonID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (Model.Id != 0 && Model.Operation == 0)
+                                {
+                                    <input type="button" value="Создать договор" title="Создать договор с текущим набором реквизитов" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0, PersonID = Model.PersonID })'"/>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@*@Html.LabelFor(m => Model.PayerID)*@ <b>Плательщик</b></td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PayerID, new SelectList(Model.PayerInfo, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PayerID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (@Model.PayerInfo != null && @Model.PayerInfo.Count != 0)
+                                {
+                                    <table>
+                                        <tr>
+                                            <td><label>Наименование:</label></td>
+                                            <td><label>@Model.PayerName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>ИНН:</label></td>
+                                            <td><label>@Model.PayerINN</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>КПП:</label></td>
+                                            <td><label>@Model.PayerKPP</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Расчетный счет:</label></td>
+                                            <td><label>@Model.PayerAccount</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк:</label></td>
+                                            <td><label>@Model.PayerBankName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк БИК:</label></td>
+                                            <td><label>@Model.PayerBankBIK</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк корр/счет:</label></td>
+                                            <td><label>@Model.PayerCorrAccount</label></td>
+                                        </tr>
+                                    </table>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>@*@Html.LabelFor(m => Model.PayeeID)*@ <b>Получатель</b></td>
+                            <td>
+                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.PayeerInfo, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PayeeID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (@Model.PayeerInfo != null && @Model.PayeerInfo.Count != 0)
+                                {
+                                    <table>
+                                        <tr>
+                                            <td><label>Наименование:</label></td>
+                                            <td><label>@Model.PayeerName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>ИНН:</label></td>
+                                            <td><label>@Model.PayeerINN</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>КПП:</label></td>
+                                            <td><label>@Model.PayeerKPP</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Расчетный счет:</label></td>
+                                            <td><label>@Model.PayeerAccount</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк:</label></td>
+                                            <td><label>@Model.PayeerBankName</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк БИК:</label></td>
+                                            <td><label>@Model.PayeerBankBIK</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>Банк корр/счет:</label></td>
+                                            <td><label>@Model.PayeerCorrAccount</label></td>
+                                        </tr>
+                                    </table>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => Model.Account)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => Model.Account, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "25" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.Account)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (@Model.Permissions[0].IsWrite)
+                                {
+                                    if ((@Model.StatusID == 4 && @Model.Operation == 1) || @Model.Id == 0)
+                                    {
+                                        <input type="submit" value="Записать" title="Сохранить набор реквизитов" onclick="EditSetOff();"/>
+                                        if (@Model.Id != 0 && @Model.Operation == 1)
+                                        {
+                                            <input type="submit" value="Отменить" title="Перейти в режим просмотра текущего набора реквизитов" onclick="CancelEditSet();"/>
+                                        }
+                                    }
+                                    if (@Model.StatusID == 2)
+                                    {
+                                        <input type="submit" value="Редактировать" title="Перейти в режим редактирования текущего набора реквизитов" onclick="EditSetOn();"/>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <br />
+                                <b>Создание/редактирование реквизитов</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DTID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.DTID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DetailId):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.DetailId, new SelectList(Model.RefDetails, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.DetailId)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.DetailName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.DetailName, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.DetailName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.INN):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.INN, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.INN)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.KPP):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.KPP, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.KPP)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.DetailAccount):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.DetailAccount, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.DetailAccount)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.BankName):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.BankName, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.BankName)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.BankBIK):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.BankBIK, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.BankBIK)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(model => model.CorrAccount):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.CorrAccount, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.CorrAccount)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2">
+                @if (@Model.Permissions[0].IsWrite)
+                {
+                    if ((@Model.StatusID == 4 && @Model.Operation == 2) || @Model.Id == 0)
+                    {
+                        <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных" onclick="EditModeOff();"/>
+                        <input type="submit" value="Создать" title="Создать новый реквизит" onclick="NewDetail();"/>
+                        if (@Model.Operation == 2)
+                        {
+                            <input type="submit" value="Отменить" title="Перейти в режим просмотра текущего реквизита" onclick="CancelEditMode();"/>
+                        }
+                    }
+                    if (@Model.StatusID == 2)
+                    {
+                        <input type="submit" value="Редактировать" title="Перейти в режим редактирования текущего реквизита" onclick="EditModeOn();"/>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$("#BeginDate").datepicker();
+        //$("#EndDate").datepicker();
+        //$(".hasDatepicker").width("75px");
+        //setSortFields();
+        setActiveMenuItem("moGpdRefDetail");
+        $(":text").bind("keydown", function (e) { if (e.keyCode == 13) return false; });
+    });
+
+    function EditSetOn() {
+        $("#StatusID").val('4');
+        $("#Operation").val('1');
+        return true;
+    }
+    function EditSetOff() {
+        $("#StatusID").val('2');
+        $("#Operation").val('1');
+        return true;
+    }
+    function CancelEditSet() {
+        $("#StatusID").val('3');
+        $("#Operation").val('0');
+        return true;
+    }
+
+    function EditModeOn() {
+        $("#StatusID").val('4');
+        $("#Operation").val('2');
+        return true;
+    }
+    function EditModeOff() {
+        $("#StatusID").val('2');
+        $("#Operation").val('2');
+        return true;
+    }
+    function NewDetail() {
+        $("#StatusID").val('2');
+        $("#NewRow").val('1');
+        $("#Operation").val('2');
+        return true;
+    }
+    function CancelEditMode() {
+        $("#StatusID").val('3');
+        $("#Operation").val('0');
+        return true;
+    }
+ </script>   
+

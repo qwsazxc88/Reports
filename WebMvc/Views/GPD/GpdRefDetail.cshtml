@@ -1,0 +1,174 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Справочник реквизитов";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Справочник реквизитов</b>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width:220px">
+                @Html.LabelFor(m => m.Name):
+            </td>
+            <td>
+                @Html.TextBoxFor(m => Model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Surname):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Surname)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.PayerName):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PayerName)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.PayeeName):
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.PayeeName)
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам"/>
+                <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="action-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td>
+                                @if (@Model.Permissions[0].IsCreate)
+                                {
+                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+                <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+                <table class="grid">
+                    <tr>
+                        <th>
+                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Код</a></div>
+                        </th>
+                        @*
+                        <th>
+                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Наименование</a></div>
+                        </th>
+                        *@
+                        <th>
+                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Фактический получатель</a></div>
+                        </th>
+                        <th>
+                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Плательщик</a></div>
+                        </th>
+                        <th>
+                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Получатель</a></div>
+                        </th>
+                        <th>
+                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Расчетный/лицевой <br />счет факт. получателя</a></div>
+                        </th>
+                        <th>
+                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата <br />создания</a></div>
+                        </th>
+                        <th>
+                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">ФИО создавшего</a></div>
+                        </th>
+                        <th>
+                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Дата изменения</a></div>
+                        </th>
+                        <th>
+                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">ФИО изменившего</a></div>
+                        </th>
+                    </tr>
+                    @if (Model.Documents != null && Model.Documents.Count > 0)
+                    {
+                        foreach (var doc in Model.Documents)
+                        {
+                            <tr>
+                                
+                                <td>@doc.Id</td>
+                                @*<td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Name</a></td>*@
+                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Surname</a></td>
+                                <td>@doc.PayerName</td>
+                                <td>@doc.PayeeName</td>
+                                <td>@doc.Account</td>
+                                @if(@doc.CreateDate.HasValue)
+                                {
+                                    <td>@doc.CreateDate.Value.ToShortDateString() - @doc.CreateDate.Value.ToShortTimeString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>@doc.CreatorName</td>
+                                @if(@doc.EditDate.HasValue)
+                                {
+                                    <td>@doc.EditDate.Value.ToShortDateString() - @doc.EditDate.Value.ToShortTimeString()</td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>@doc.EditorName</td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+
+}
+
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setSortFields();
+        setActiveMenuItem("moGpdRefDetail");
+    });
+
+    function resetFilter() {
+        $("#Name").val('');
+        $("#Surname").val('');
+        $("#PayerName").val('');
+        $("#PayeeName").val('');
+    }
+ </script>   
+
