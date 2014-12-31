@@ -738,6 +738,7 @@
     <Content Include="Views\Help\HelpQuestionEdit.cshtml" />
     <Content Include="Views\Help\QuestionRedirectDialog.cshtml" />
     <Content Include="Views\Help\QuestionRedirectDialogError.cshtml" />
+    <Content Include="Views\Employment\PrintRoster.cshtml" />
     <Content Include="Views\GPD\GpdActEdit.cshtml" />
     <Content Include="Views\GPD\GpdActList.cshtml" />
   </ItemGroup>

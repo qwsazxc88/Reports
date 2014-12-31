@@ -32,6 +32,16 @@ namespace Reports.Core.Dto.Employment2
 
         public DateTime? ContractEndDate { get; set; }
 
+
+        public DateTime? SupplementaryAgreementCreateDate { get; set; }
+
+        public int? SupplementaryAgreementNumber { get; set; }
+
+        public DateTime? IndefiniteContractOrderCreateDate { get; set; }
+
+        public int? IndefiniteContractOrderNumber { get; set; }
+
+
         public bool? IsFixedTermContract { get; set; }
 
         //public bool IsFulltime { get; set; }
@@ -50,6 +60,8 @@ namespace Reports.Core.Dto.Employment2
 
         public string Status { get; set; }
 
+        public bool IsChangeContractToIndefiniteAvailable { get; set; }
+
         public bool IsApprovedByManager { get; set; }
 
         public bool IsApprovedByHigherManager { get; set; }
@@ -57,6 +69,8 @@ namespace Reports.Core.Dto.Employment2
         public bool IsApproveByManagerAvailable { get; set; }
 
         public bool IsApproveByHigherManagerAvailable { get; set; }
+
+        public bool IsContractChangedToIndefinite { get; set; }
 
         /*
         [Display(Name = "Паспортные данные"),
