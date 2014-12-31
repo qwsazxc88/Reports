@@ -33,7 +33,7 @@ namespace Reports.Core.Dto
         public virtual string CrDep7Level { get; set; }
         public virtual string CrDep3Level { get; set; }
         public virtual int EditorID { get; set; }
-        public virtual DateTime EditDate { get; set; }
+        public virtual DateTime? EditDate { get; set; }
         public virtual string EditorName { get; set; }
         public virtual string EditPositionName { get; set; }
         public virtual string EDep7Level { get; set; }
@@ -50,5 +50,37 @@ namespace Reports.Core.Dto
         public virtual bool IsCancel { get; set; }
         public virtual bool IsComment { get; set; }
         public virtual bool IsCreateAct { get; set; }
+    }
+    /// <summary>
+    /// Для отображения списка наборов реквизитов
+    /// </summary>
+    public class GpdDetailSetsListDto : GpdRefDetailDto
+    {
+        public virtual string Surname { get; set; }
+        public virtual string PayerName { get; set; }
+        public virtual string PayeeName { get; set; }
+        public virtual string Account { get; set; }
+        public virtual int CreatorID { get; set; }
+        public virtual DateTime? CreateDate { get; set; }
+        public virtual string CreatorName { get; set; }
+        public virtual int EditorID { get; set; }
+        public virtual DateTime? EditDate { get; set; }
+        public virtual string EditorName { get; set; }
+        public virtual int PersonID { get; set; }
+        public virtual int PayerID { get; set; }
+        public virtual int PayeeID { get; set; }
+    }
+    /// <summary>
+    /// Для отображения списка наборов реквизитов
+    /// </summary>
+    public class GpdDetailDto : GpdRefDetailDto
+    {
+        public virtual int DTID { get; set; }
+        public virtual string INN { get; set; }
+        public virtual string KPP { get; set; }
+        public virtual string Account { get; set; }
+        public virtual string BankName { get; set; }
+        public virtual string BankBIK { get; set; }
+        public virtual string CorrAccount { get; set; }
     }
 }

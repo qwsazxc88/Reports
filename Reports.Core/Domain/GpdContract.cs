@@ -15,8 +15,8 @@ namespace Reports.Core.Domain
         public virtual string NameContract { get; set; }
         public virtual DateTime? DateBegin { get; set; }
         public virtual DateTime? DateEnd { get; set; }
-        public virtual int PayeeID { get; set; }
-        public virtual int PayerID { get; set; }
+        //public virtual int PayeeID { get; set; }
+        //public virtual int PayerID { get; set; }
         public virtual string GPDID { get; set; }
         public virtual string PurposePayment { get; set; }
         public virtual int CreatorID { get; set; }
@@ -26,6 +26,7 @@ namespace Reports.Core.Domain
         public virtual decimal Amount { get; set; }
         public virtual DateTime? EditDate { get; set; }
         public virtual int? EditorID { get; set; }
+        public virtual int DSID { get; set; }
 
         //журнал изменений даты пролонгации
         public virtual IList<GpdMagProlongation> MagEntities { get; set; }

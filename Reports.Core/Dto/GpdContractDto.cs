@@ -24,7 +24,13 @@ namespace Reports.Core.Dto
     /// </summary>
     public class GpdContractSurnameDto : GpdContractStatusesDto
     {
+        public int PersonID { get; set; }
         public string SNILS { get; set; }
+        public string LongName { get; set; }
+        public string PayerName { get; set; }
+        public string PayeeName { get; set; }
+        public string BankName { get; set; }
+        public string Account { get; set; }
     }
     /// <summary>
     /// Списосок договоров.
@@ -46,10 +52,9 @@ namespace Reports.Core.Dto
         public DateTime? DateEnd { get; set; }
         public DateTime? DateP { get; set; }
         public DateTime? DatePOld { get; set; }
-        public int PayeeID { get; set; }
-        public int PayerID { get; set; }
         public string GPDID { get; set; }
         public string PurposePayment { get; set; }
+        public string PurposePaymentPart { get; set; }
         public string CreatorName { get; set; }
         public DateTime CreateDate { get; set; }
         public string Surname { get; set; }
@@ -61,6 +66,9 @@ namespace Reports.Core.Dto
         public string PayeeName { get; set; }
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }
+        public string BankName { get; set; }
+        public string Account { get; set; }
+        public int DSID { get; set; }
     }
     /// <summary>
     /// Список реквизитов.

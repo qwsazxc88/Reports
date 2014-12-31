@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Reports.Core.Domain
 {
+    /// <summary>
+    /// реквизит
+    /// </summary>
     public class GpdRefDetail : AbstractEntityWithVersion
     {
         #region Fields
@@ -27,5 +30,19 @@ namespace Reports.Core.Domain
         #endregion
         #region Constructors
         #endregion
+    }
+    /// <summary>
+    /// набор
+    /// </summary>
+    public class GpdDetailSet : AbstractEntityWithVersion
+    {
+        public virtual int CreatorID { get; set; }
+        public virtual DateTime? EditDate { get; set; }
+        public virtual int? EditorID { get; set; }
+        public virtual string Name { get; set; }
+        public virtual int PersonID { get; set; }
+        public virtual int PayerID { get; set; }
+        public virtual int PayeeID { get; set; }
+        public virtual string Account { get; set; }
     }
 }

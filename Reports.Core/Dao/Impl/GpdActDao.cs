@@ -252,6 +252,9 @@ namespace Reports.Core.Dao.Impl
                 case 18:
                     SqlOrderBy += "StatusName";
                     break;
+                case 19:
+                    SqlOrderBy += "Amount";
+                    break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }

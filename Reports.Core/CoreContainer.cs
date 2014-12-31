@@ -495,6 +495,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IGpdRefDetailDao)).
              ImplementedBy(typeof(GpdRefDetailDao)).
              LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdDetailSetDao)).
+             ImplementedBy(typeof(GpdDetailSetDao)).
+             LifeStyle.Is(type));
             Register(Component.For(typeof(IGpdContractDao)).
              ImplementedBy(typeof(GpdContractDao)).
              LifeStyle.Is(type));

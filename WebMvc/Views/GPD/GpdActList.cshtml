@@ -125,6 +125,9 @@
                                             <div id="sort14" style="min-width:130px"><a href="#" onclick = "SortChanged(14);">Оплата за период</a></div>
                                         </th>
                                         <th>
+                                            <div id="sort19" style="min-width:130px"><a href="#" onclick = "SortChanged(19);">Сумма начисленная</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort15" style="min-width:130px"><a href="#" onclick = "SortChanged(15);">Сумма к выплате</a></div>
                                         </th>
                                         <th>
@@ -157,6 +160,7 @@
                                                 <td>@RequestBl.FormatDate(@doc.POrderDate)</td>
                                                 <td>@GpdBl.FormatDateMY(@doc.ChargingDate)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin) @RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                <td>@RequestBl.FormatSum(@doc.Amount)</td>
                                                 <td>@RequestBl.FormatSum(@doc.AmountPayment)</td>
                                                 <td>@doc.GPDID</td>
                                                 <td>@doc.ESSSNum</td>

@@ -17,28 +17,26 @@ namespace Reports.Presenters.UI.Bl
         void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms, bool flgFromContract);
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
-        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, bool hasError);
+        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID);
         void GetPermission(GpdRefDetailModel model);
         void GetPermission(GpdRefDetailEditModel model);
         #endregion
 
         #region Договоры
-        void SetGpdContractView(GpdContractModel model, bool hasError);
-        void SetGpdContractStatuses(GpdContractModel model, bool hasError);
-        void SetGpdContractChargingTypes(GpdContractModel model, bool hasError);
-        void SetGpdContractChargingTypes(GpdContractEditModel model, bool hasError);
-        void SetGpdContractPersons(GpdContractEditModel model, bool hasError);
-        GpdContractEditModel SetGpdContractEdit(int Id, bool hasError);
-        void SetGpdContractDetails(GpdContractEditModel model, bool hasError);
+        void SetGpdContractView(GpdContractModel model);
+        void SetGpdContractStatuses(GpdContractModel model);
+        void SetGpdContractChargingTypes(GpdContractModel model);
+        void SetGpdContractChargingTypes(GpdContractEditModel model);
+        void SetGpdContractPersons(GpdContractEditModel model);
+        GpdContractEditModel SetGpdContractEdit(int Id, int PersonID, int DepId, string DepName);
         void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
-        void SetGpdContractStatuses(GpdContractEditModel model, bool hasError);
+        void SetGpdContractStatuses(GpdContractEditModel model);
         bool SaveGpdContract(GpdContractEditModel model, out string error);
         void SetGpdContract(GpdContractModel model);
         void GetPermission(GpdContractModel model);
         void GetPermission(GpdContractEditModel model);
-        void SetGpdContractEditDropDowns(GpdContractEditModel model, bool hasError);
-        GpdContractEditModel EditDetailsFromContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
-        IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name);
+        void SetGpdContractEditDropDowns(GpdContractEditModel model);
+        IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name, int PersonID);
         #endregion
 
         #region Акты

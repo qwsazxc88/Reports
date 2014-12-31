@@ -92,7 +92,7 @@
                                             <td>
                                                 @if (@Model.Permissions[0].IsCreate)
                                                 {
-                                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0 })'"/>    
+                                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0, PersonID = 0 })'"/>    
                                                 }
                                             </td>
                                         </tr>
@@ -152,7 +152,7 @@
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <!--<td>@doc.NumContract</td>-->
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.NumContract</a></td>
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
