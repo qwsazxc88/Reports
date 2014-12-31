@@ -8,6 +8,7 @@ using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Dto.Employment2;
 using Reports.Core;
 using Reports.Core.Domain;
+using Reports.Core.Dto.Employment2;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
@@ -905,6 +906,12 @@ namespace WebMvc.Controllers
             return GetPrintForm("PrintEmploymentOrder", userId);
         }
 
+        [HttpGet]
+        public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
+        {
+            return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
+        }
+
         // Обработка запросов от конвертера PDF
 
         [HttpGet]
@@ -918,6 +925,13 @@ namespace WebMvc.Controllers
         public ActionResult PrintEmploymentOrder(int userId)
         {
             PrintEmploymentOrderModel model = EmploymentBl.GetPrintEmploymentOrderModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
+        {
+            IList<CandidateDto> model = EmploymentBl.GetPrintRosterModel(filters, sortBy, sortDescending);
             return View(model);
         }
 
@@ -987,13 +1001,105 @@ namespace WebMvc.Controllers
         }
 
         [NonAction]
-        protected virtual string GetConverterCommandParam(string actionName, int userId)
+        public ActionResult GetListPrintForm(
+            string actionName, RosterFiltersModel filters,
+            int? sortBy, bool? sortDescending, bool isLandscape = false)
+        {
+            string filePath = null;
+            try
+            {
+                var folderPath = ConfigurationManager.AppSettings["PresentationFolderPath"];
+                var fileName = string.Format("{0}.pdf", Guid.NewGuid());
+
+                folderPath = HttpContext.Server.MapPath(folderPath);
+                if (!Directory.Exists(folderPath))
+                    Directory.CreateDirectory(folderPath);
+                filePath = Path.Combine(folderPath, fileName);
+
+                var arguments = new StringBuilder();
+
+                var cookieName = FormsAuthentication.FormsCookieName;
+                var authCookie = Request.Cookies[cookieName];
+                if (authCookie == null || authCookie.Value == null)
+                    throw new ArgumentException("Ошибка авторизации.");
+                if (isLandscape)
+                    arguments.AppendFormat(" --orientation Landscape {0}  --cookie {1} {2}",
+                        GetConverterCommandParam(actionName, filters, sortBy, sortDescending), cookieName, authCookie.Value);
+                else
+                    arguments.AppendFormat("{0} --cookie {1} {2}",
+                        GetConverterCommandParam(actionName, filters, sortBy, sortDescending), cookieName, authCookie.Value);
+                arguments.AppendFormat(" \"{0}\"", filePath);
+                var serverSideProcess = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = ConfigurationManager.AppSettings["PdfConverterCommandLineTemplate"],
+                        Arguments = arguments.ToString(),
+                        UseShellExecute = true,
+                    },
+                    EnableRaisingEvents = true,
+
+                };
+                serverSideProcess.Start();
+                serverSideProcess.WaitForExit();
+                return GetFile(Response, Request, Server, filePath, fileName, @"application/pdf", actionName + ".pdf");
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception on GetPrintForm", ex);
+                throw;
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(filePath) && System.IO.File.Exists(filePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warn(string.Format("Exception on delete file {0}", filePath), ex);
+                    }
+                }
+            }
+        }
+
+        [NonAction]
+        protected string GetConverterCommandParam(string actionName, int userId)
         {
             var localhostUrl = ConfigurationManager.AppSettings["localhost"];
             string urlTemplate = string.Format("Employment/{0}?userId={1}", actionName, userId);
             return !string.IsNullOrEmpty(localhostUrl)
                 ? string.Format(@"{0}/{1}", localhostUrl, urlTemplate)
                 : Url.Content(string.Format(@"{0}", urlTemplate));
+        }
+
+        [NonAction]
+        protected string GetConverterCommandParam(
+            string actionName, RosterFiltersModel filters,
+            int? sortBy, bool? sortDescending)
+        {
+            var localhostUrl = ConfigurationManager.AppSettings["localhost"];
+
+            string args = string.Format(@"{0}{1}{2}{3}{4}{5}{6}",
+                filters.BeginDate.HasValue ? string.Format("beginDate={0}&", filters.BeginDate.Value.ToShortDateString()) : string.Empty,
+                filters.EndDate.HasValue ? string.Format("endDate={0}&", filters.EndDate.Value.ToShortDateString()) : string.Empty,
+                filters.DepartmentId,
+                filters.StatusId.HasValue ? string.Format("statusId={0}&", filters.StatusId.Value) : string.Empty,
+                !string.IsNullOrEmpty(filters.UserName) ? string.Format("userName={0}&", Server.UrlEncode(filters.UserName)) : string.Empty,
+                sortBy.HasValue ? string.Format("sortBy={0}&", sortBy.Value) : string.Empty,
+                sortDescending.HasValue ? string.Format("sortDescending={0}&", sortDescending.Value) : string.Empty
+            );
+
+            if (!string.IsNullOrEmpty(args))
+            {
+                args = args.Substring(0, args.Length - 1);
+            }
+
+            return !string.IsNullOrEmpty(localhostUrl)
+                       ? string.Format(@"{0}/{1}/{2}?{2}", localhostUrl, "Employment", actionName, args)
+                       : Url.Content(string.Format(@"{0}/{1}?{2}", "Employment", actionName, args));
         }
 
         // Получение созданного PDF
