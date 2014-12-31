@@ -84,7 +84,7 @@
                 <table class="grid">
                     <tr>
                         <th>
-                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Код</a></div>
+                            @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
                         </th>
                         @*
                         <th>
@@ -118,11 +118,12 @@
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
                     {
+                        int i = 1;
                         foreach (var doc in Model.Documents)
                         {
                             <tr>
-                                
-                                <td>@doc.Id</td>
+                                <td>@i.ToString()</td>
+                                @*<td>@doc.Id</td>*@
                                 @*<td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Name</a></td>*@
                                 <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Surname</a></td>
                                 <td>@doc.PayerName</td>
@@ -147,6 +148,7 @@
                                 }
                                 <td>@doc.EditorName</td>
                             </tr>
+                            i += 1;
                         }
                     }
                 </table>
