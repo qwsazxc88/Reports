@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="CoreContainer.cs" />
     <Compile Include="Dao\IGpdActDao.cs" />
+    <Compile Include="Dao\IGpdDetailSetDao.cs" />
     <Compile Include="Dao\IHelpFaqDao.cs" />
     <Compile Include="Dao\IHelpQuestionRequestDao.cs" />
     <Compile Include="Dao\IHelpQuestionSubtypeDao.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="Dao\Impl\AppointmentReasonDao.cs" />
     <Compile Include="Dao\Impl\GpdActDao.cs" />
     <Compile Include="Dao\Impl\GpdContractDao.cs" />
+    <Compile Include="Dao\Impl\GpdDetailSetDao.cs" />
     <Compile Include="Dao\Impl\GpdRefDetailDao.cs" />
     <Compile Include="Dao\Impl\MissionHotelsDao.cs" />
     <Compile Include="Dao\Impl\ManualRoleRecordDao.cs" />
@@ -1086,6 +1088,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdActComment.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\GpdDetailSet.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

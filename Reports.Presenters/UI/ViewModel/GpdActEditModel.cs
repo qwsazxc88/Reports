@@ -42,7 +42,7 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateEnd { get; set; }
 
-        [Display(Name = "Сумма в рублях")]
+        [Display(Name = "Сумма начисленная")]
         [DisplayFormat(DataFormatString = "{0:### ### ### ###.##}", ApplyFormatInEditMode = true)]
         public System.Decimal Amount { get; set; }
 

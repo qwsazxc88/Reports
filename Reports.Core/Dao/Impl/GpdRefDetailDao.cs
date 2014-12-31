@@ -67,25 +67,26 @@ namespace Reports.Core.Dao.Impl
         /// Список записей справочника.
         /// </summary>
         /// <param name="role">Группа пользователя.</param>
-        /// <param name="Id">ID записи</param>
-        /// <param name="Name">Наименование</param>
-        /// <param name="DTID">ID типа реквизитов</param>
-        /// <param name="SortBy">Номер поля по которому будет проводится сортировка.</param>
-        /// <param name="SortDescending">Направление сортировки.</param>
+        /// <param name="Id">ID реквизита</param>
+        /// <param name="DTID">Тип реквизита</param>
         /// <returns></returns>
-        public IList<GpdRefDetailFullDto> GetRefDetail(UserRole role,
+        public IList<GpdDetailDto> GetRefDetail(UserRole role,
             int Id,
-            string Name,
-            int DTID,
-            int SortBy,
-            bool? SortDescending
-            )
+            int DTID)
         {
-            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetailList] 
-                                WHERE " + (Id == 0 ? ("DTID = " + DTID.ToString() + (Name == null || Name.Trim().Length == 0 ? "" : " and Name like '" + Name + "%'")) : "ID = " + Id.ToString());
+            string sqlWhere = "";
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetail] ";
+
+            if (Id != 0)
+                sqlWhere = "ID = " + Id.ToString();
+            if (DTID != 0)
+                sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "DTID = " + DTID.ToString();
+
+            sqlQuery += (sqlWhere.Length != 0 ? " WHERE " + sqlWhere : "");
+            sqlQuery += " ORDER BY Name";
 
             IQuery query = CreateGRDQuery(sqlQuery);
-            IList<GpdRefDetailFullDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdRefDetailFullDto))).List<GpdRefDetailFullDto>();
+            IList<GpdDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailDto))).List<GpdDetailDto>();
             return documentList;
         }
         public virtual IQuery CreateGRDQuery(string sqlQuery)
@@ -99,20 +100,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Account", NHibernateUtil.String).
                 AddScalar("BankName", NHibernateUtil.String).
                 AddScalar("BankBIK", NHibernateUtil.String).
-                AddScalar("CorrAccount", NHibernateUtil.String).
-                AddScalar("Code", NHibernateUtil.String).
-                AddScalar("CreatorID", NHibernateUtil.Int32).
-                AddScalar("CreateDate", NHibernateUtil.DateTime).
-                AddScalar("CreatorName", NHibernateUtil.String).
-                AddScalar("CreatePositionName", NHibernateUtil.String).
-                AddScalar("CrDep7Level", NHibernateUtil.String).
-                AddScalar("CrDep3Level", NHibernateUtil.String).
-                AddScalar("EditorID", NHibernateUtil.Int32).
-                AddScalar("EditDate", NHibernateUtil.DateTime).
-                AddScalar("EditorName", NHibernateUtil.String).
-                AddScalar("EditPositionName", NHibernateUtil.String).
-                AddScalar("EDep7Level", NHibernateUtil.String).
-                AddScalar("EDep3Level", NHibernateUtil.String);
+                AddScalar("CorrAccount", NHibernateUtil.String);
         }
         /// <summary>
         /// Запрос для наборов реквизитов.
@@ -122,6 +110,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Surname">ФИО физического лица</param>
         /// <param name="PayerName">Плательщик</param>
         /// <param name="PayeeName">Получатель</param>
+        /// <param name="flgView">Признак просмотра списка наборов</param>
         /// <param name="SortBy">Номер поля для сортировки</param>
         /// <param name="SortDescending">Направление сортировки</param>
         /// <returns></returns>
@@ -130,6 +119,7 @@ namespace Reports.Core.Dao.Impl
             string Surname,
             string PayerName,
             string PayeeName,
+            bool flgView,
             int SortBy,
             bool? SortDescending)
         {
@@ -137,7 +127,7 @@ namespace Reports.Core.Dao.Impl
 
 
 
-            sqlQuery += DetailSetWhere(ID, Name, Surname, PayerName, PayeeName) + DetailSetOrderBy(SortBy, SortDescending);
+            sqlQuery += DetailSetWhere(ID, Name, Surname, PayerName, PayeeName, flgView) + DetailSetOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateSQLDSQuery(sqlQuery);
             IList<GpdDetailSetsListDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailSetsListDto))).List<GpdDetailSetsListDto>();
@@ -170,15 +160,17 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Surname">ФИО физического лица</param>
         /// <param name="PayerName">Плательщик</param>
         /// <param name="PayeeName">Получатель</param>
+        /// <param name="flgView">Признак просмотра списка</param>
         /// <returns></returns>
         private string DetailSetWhere(int ID,
             string Name,
             string Surname,
             string PayerName,
-            string PayeeName)
+            string PayeeName,
+            bool flgView)
         {
             string SqlWehere = "";
-            if (ID != 0)
+            if (!flgView)
                 SqlWehere += " ID = " + ID.ToString();
 
             if (Name != null && Name.Trim().Length != 0)
@@ -240,6 +232,27 @@ namespace Reports.Core.Dao.Impl
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
+        }
+        /// <summary>
+        /// Запрос для физических лиц.
+        /// </summary>
+        /// <returns></returns>
+        public IList<GpdContractSurnameDto> GetPersons(int Id)
+        {
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefPersons] ";
+            sqlQuery += (Id != 0 ? " WHERE Id = " + Id.ToString() : "") + " ORDER BY Name";
+
+            IQuery query = CreateSQLPersonQuery(sqlQuery);
+            IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
+            return documentList;
+        }
+        public virtual IQuery CreateSQLPersonQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("SNILS", NHibernateUtil.String).
+                AddScalar("LongName", NHibernateUtil.String);
         }
     }
 }

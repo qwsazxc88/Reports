@@ -19,7 +19,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string DepartmentName { get; set; }
         public int DepartmentId { get; set; }
 
-        [Display(Name = "ФИО")]
+        [Display(Name = "ФИО ГПД")]
         public int PersonID { get; set; }
         public string Surname { get; set; }
         public IList<GpdContractSurnameDto> Persons { get; set; }
@@ -51,20 +51,21 @@ namespace Reports.Presenters.UI.ViewModel
         public System.DateTime? DatePOld { get; set; }
 
         [Display(Name = "Плательщик")]
-        public int PayerID { get; set; }
+        //public int PayerID { get; set; }
         public string PayerName { get; set; }
-        public IList<GpdContractDetailDto> Payers { get; set; }
+        //public IList<GpdContractDetailDto> Payers { get; set; }
 
-        [Display(Name = "Получатель")]
-        public int PayeeID { get; set; }
+        [Display(Name = "Получатель по платежному поручению")]
+        //public int PayeeID { get; set; }
         public string PayeeName { get; set; }
-        public IList<GpdContractDetailDto> Payeers { get; set; }
+        //public IList<GpdContractDetailDto> Payeers { get; set; }
 
         [Display(Name = "ID ГПД в ЭССС")]
         public string GPDID { get; set; }
 
         [Display(Name = "Назначение платежа")]
         public string PurposePayment { get; set; }
+        public string PurposePaymentPart { get; set; }
 
         [Display(Name = "Автор")]
         public string Autor { get; set; }
@@ -80,7 +81,7 @@ namespace Reports.Presenters.UI.ViewModel
         public IList<GpdContractStatusesDto> PaymentPeriods { get; set; }
         public int PaymentPeriodID { get; set; }
 
-        [Display(Name = "Стоимость")]
+        [Display(Name = "Сумма договора")]
         [DisplayFormat(DataFormatString = "{0:### ### ### ###.##}", ApplyFormatInEditMode = true)]
         public System.Decimal Amount { get; set; }
 
@@ -91,14 +92,11 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsFind { get; set; }
         public bool IsLong { get; set; }
         public int Operation { get; set; }
-        public string SNILS { get; set; }
         public string BankName { get; set; }
         public string Account { get; set; }
-        public int DetailStatusID { get; set; }
+        public int DSID { get; set; }
 
         //права
         public IList<GpdPermissionDto> Permissions { get; set; }
-        //справочник реквизитов
-        public GpdRefDetailEditModel DetailEdit { get; set; }
     }
 }
