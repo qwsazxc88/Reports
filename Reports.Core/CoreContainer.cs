@@ -527,6 +527,9 @@ namespace Reports.Core
             Register(Component.For(typeof(IHelpQuestionSubtypeDao)).
                  ImplementedBy(typeof(HelpQuestionSubtypeDao)).
                  LifeStyle.Is(type));
+            Register(Component.For<IEmploymentSignersDao>()
+                .ImplementedBy<EmploymentSignersDao>()
+                .LifeStyle.Is(type));
 
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
