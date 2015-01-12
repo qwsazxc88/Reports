@@ -355,8 +355,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Id = doc.Id;
                     model.Name = doc.Name;
                     model.PersonID = doc.PersonID;
-                    model.PayerID = PayerID != doc.PayerID ? PayerID : doc.PayerID;
-                    model.PayeeID = PayeeID != doc.PayeeID ? PayeeID : doc.PayeeID;
+                    model.PayerID = doc.PayerID;//PayerID != doc.PayerID ? PayerID : doc.PayerID;
+                    model.PayeeID = doc.PayeeID;//PayeeID != doc.PayeeID ? PayeeID : doc.PayeeID;
                     model.Account = doc.Account;
                     model.CreatorID = doc.CreatorID;
                 }
@@ -370,7 +370,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             
             if (model.PayerInfo.Count != 0)
             {
-                model.PayerID = PayerID == 0 ? model.PayerInfo[0].Id : model.PayerID;
+                //model.PayerID = PayerID == 0 ? model.PayerInfo[0].Id : model.PayerID;
                 foreach (var doc in model.PayerInfo)
                 {
                     if (doc.Id == model.PayerID)
@@ -384,6 +384,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PayerCorrAccount = doc.CorrAccount;
                         break;
                     }
+                    else //если не указан плательщик, то берем первого из списка
+                    {
+                        if (model.PayerID == 0)
+                        {
+                            model.PayerName = doc.Name;
+                            model.PayerINN = doc.INN;
+                            model.PayerKPP = doc.KPP;
+                            model.PayerAccount = doc.Account;
+                            model.PayerBankName = doc.BankName;
+                            model.PayerBankBIK = doc.BankBIK;
+                            model.PayerCorrAccount = doc.CorrAccount;
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -391,7 +405,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 1);
             if (model.PayeerInfo.Count != 0)
             {
-                model.PayeeID = PayeeID == 0 ? model.PayeerInfo[0].Id : model.PayeeID;
+                //model.PayeeID = PayeeID == 0 ? model.PayeerInfo[0].Id : model.PayeeID;
                 foreach (var doc in model.PayeerInfo)
                 {
                     if (doc.Id == model.PayeeID)
@@ -404,6 +418,20 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PayeerBankBIK = doc.BankBIK;
                         model.PayeerCorrAccount = doc.CorrAccount;
                         break;
+                    }
+                    else //если не указан получатель, то берем первого из списка
+                    {
+                        if (model.PayeeID == 0)
+                        {
+                            model.PayeerName = doc.Name;
+                            model.PayeerINN = doc.INN;
+                            model.PayeerKPP = doc.KPP;
+                            model.PayeerAccount = doc.Account;
+                            model.PayeerBankName = doc.BankName;
+                            model.PayeerBankBIK = doc.BankBIK;
+                            model.PayeerCorrAccount = doc.CorrAccount;
+                            break;
+                        }
                     }
                 }
             }
