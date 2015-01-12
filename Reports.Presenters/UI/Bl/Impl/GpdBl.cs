@@ -606,7 +606,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
             else
+            {
                 model.StatusID = 4;
+                model.DepartmentId = DepId;
+                model.DepartmentName = DepName;
+            }
 
 
             SetGpdContractEditDropDowns(model);
@@ -634,6 +638,100 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                 }
             }
+
+
+            return model;
+        }
+        /// <summary>
+        /// Заполняем модель.
+        /// </summary>
+        /// <param name="model">Обрабатываемая модель с частично заполненными полями</param>
+        /// <returns></returns>
+        public GpdContractEditModel SetGpdContractEdit(GpdContractEditModel model)
+        {
+
+            UserRole role = CurrentUser.UserRole;
+            model.Contracts = GpdContractDao.GetContracts(role,
+                model.Id,
+                model.DepartmentId,
+                model.CTID,
+                null, null,
+                model.Surname,
+                model.NumContract,
+                model.IsFind,
+                0, null);
+
+            if (model.Contracts.Count > 0)
+            {
+                foreach (var doc in model.Contracts)
+                {
+                    model.CreatorID = doc.CreatorID;
+                    model.DepartmentId = doc.DepartmentId;
+                    model.DepartmentName = doc.DepartmentName;
+                    model.PersonID = doc.PersonID;
+                    model.CTID = doc.CTID;
+                    model.StatusID = doc.StatusID;
+                    model.NumContract = doc.NumContract;
+                    model.NameContract = doc.NameContract;
+                    model.DateBegin = doc.DateBegin;
+                    model.DateEnd = doc.DateEnd;
+                    model.DateP = doc.DateP;
+                    model.DatePOld = doc.DatePOld;
+                    model.PayeeName = doc.PayeeName;
+                    model.PayerName = doc.PayerName;
+                    model.GPDID = doc.GPDID;
+                    model.PurposePayment = doc.PurposePayment;
+                    if (doc.CreateDate == null)
+                        model.Autor = doc.Autor;
+                    else
+                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToShortDateString();
+                    model.CreatorName = doc.CreatorName;
+                    model.CreateDate = doc.CreateDate;
+                    model.Surname = doc.Surname;
+                    model.CTName = doc.CTName;
+                    model.StatusName = doc.StatusName;
+                    model.PaymentPeriodID = doc.PaymentPeriodID;
+                    model.Amount = doc.Amount;
+                    model.BankName = doc.BankName;
+                    model.Account = doc.Account;
+                    model.DSID = doc.DSID;
+                    model.PurposePaymentPart = doc.PurposePaymentPart;
+                }
+            }
+            else
+            {
+                model.StatusID = 4;
+                //model.DepartmentId = DepId;
+                //model.DepartmentName = DepName;
+            }
+
+
+            SetGpdContractEditDropDowns(model);
+
+            //заполняем поля после выбора фио в поле с автозаполнением
+            //если договор только зоздается и еще не сохранен, на странице уже могут выбрать подразделение
+            if (model.PersonID != 0 && model.Id == 0)
+            {
+                IList<GpdContractSurnameDto> Persons = GetPersonAutocomplete(null, model.PersonID);
+                if (Persons.Count != 0)
+                {
+                    foreach (var doc in Persons)
+                    {
+                        model.DSID = doc.Id;
+                        //model.DepartmentId = DepId;
+                        //model.DepartmentName = DepName;
+                        model.PersonID = doc.PersonID;
+                        model.Surname = doc.LongName;
+                        model.PayerName = doc.PayerName;
+                        model.PayeeName = doc.PayeeName;
+                        model.BankName = doc.BankName;
+                        model.Account = doc.Account;
+                        model.PurposePaymentPart = "Договор ГПХ # " + doc.Account + " ## " + doc.Name + " *";
+                        //model.PurposePayment = model.PurposePaymentPart + " " + model.PurposePayment; 
+                    }
+                }
+            }
+
 
             return model;
         }

@@ -29,6 +29,7 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContractChargingTypes(GpdContractEditModel model);
         void SetGpdContractPersons(GpdContractEditModel model);
         GpdContractEditModel SetGpdContractEdit(int Id, int PersonID, int DepId, string DepName);
+        GpdContractEditModel SetGpdContractEdit(GpdContractEditModel model);
         void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
         void SetGpdContractStatuses(GpdContractEditModel model);
         bool SaveGpdContract(GpdContractEditModel model, out string error);

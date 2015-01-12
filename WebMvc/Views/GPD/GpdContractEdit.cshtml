@@ -77,7 +77,7 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
-                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px"  onchange="SelectPerson();" onblur = "SelectPerson();" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
                                 <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 
                             @*
@@ -353,6 +353,8 @@
         $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
         //$("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == -1) {$("#Operation").val('1'); this.form.submit();} else {$("#Operation").val('-1');} } } );
         $("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        //onblur = "SelectPerson();  if(@Model.PersonID != 0) {this.form.submit();}"
+        $("#Surname").blur(function(){ SelectPerson(); if($("#PersonID").val() != 0) { this.form.submit();}});
 
 //        $('#PurposePayment').keydown(function () {
 //                if ($(this).val().indexOf($("#PurposePaymentPart").val()) != 0) {
@@ -385,9 +387,9 @@
                                                         $("#BankName").val(ui.item.BankName);
                                                         $("#Account").val(ui.item.Account);
                                                         $("#DSID").val(ui.item.DSID);
-                                                        $("#Surname").focus();
                                                         $("#Operation").val('1');
-                                                        return false;
+                                                        $("#Surname").focus();
+                                                        return true;
                                                     }
                                          });
                   });
@@ -399,16 +401,19 @@
 
     function SaveDraft()
     {
+        $("#Operation").val('0');
         $("#StatusID").val('4');
         return true;
     }
     function SaveContract()
     {
+        $("#Operation").val('0');
         $("#StatusID").val('2');
         return true;
     }
     function RejectContract()
     {
+        $("#Operation").val('0');
         $("#StatusID").val('3')
         return true;
     }
