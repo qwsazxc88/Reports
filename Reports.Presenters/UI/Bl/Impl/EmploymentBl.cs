@@ -890,45 +890,72 @@ namespace Reports.Presenters.UI.Bl.Impl
         public PrintContractFormModel GetPrintContractFormModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);
-            PrintContractFormModel model = new PrintContractFormModel
+            PrintContractFormModel model = new PrintContractFormModel();
+
+            if (candidate.GeneralInfo != null)
             {
-                ContractDate = candidate.PersonnelManagers.ContractDate,
-                Department = candidate.Managers.Department.Name,
-                EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + ".");
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
                     + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
-                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty,
-                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
-                EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
-                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + "."),
-                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
-                Number = candidate.PersonnelManagers.ContractNumber,
-                PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue,
-                PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy,
-                PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber,
-                Position = candidate.Managers.Position.Name,
-                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod,
-                WorkCity = candidate.Managers.WorkCity
-            };
+                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty;
+                model.PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.WorkCity = candidate.Managers.WorkCity;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.Number = candidate.PersonnelManagers.ContractNumber;
+            }
+            
             return model;
         }
 
         public PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);
-            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel
+            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel();
+
+            if (candidate.GeneralInfo != null)
             {
-                Addition = candidate.Managers.PositionAddition,
-                Conditions = candidate.Managers.EmploymentConditions,
-                ContractDate = candidate.PersonnelManagers.ContractDate,
-                ContractNumber = candidate.PersonnelManagers.ContractNumber,
-                Department = candidate.Managers.Department.Name,
-                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
-                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
-                OrderDate = candidate.PersonnelManagers.EmploymentOrderDate,
-                OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber,
-                Position = candidate.Managers.Position.Name,
-                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod
-            };
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.Addition = candidate.Managers.PositionAddition;
+                model.Conditions = candidate.Managers.EmploymentConditions;
+                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
+                model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
+            }
+
             return model;
         }
 
