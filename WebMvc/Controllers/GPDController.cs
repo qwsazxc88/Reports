@@ -47,8 +47,7 @@ namespace WebMvc.Controllers
         public ActionResult Index()
         {
             GpdContractModel model = new GpdContractModel();
-            bool hasError = false;
-            GpdBl.SetGpdContractView(model, hasError);
+            GpdBl.SetGpdContractView(model);
             return View(model);
         }
         /// <summary>
@@ -59,21 +58,19 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult Index(GpdContractModel model)
         {
-            //GpdContractModel model = new GpdContractModel();
-            bool hasError = false;
-            GpdBl.SetGpdContractView(model, hasError);
+            GpdBl.SetGpdContractView(model);
             return View(model);
         }
         /// <summary>
         /// Вызов страницы создания/редактирования договора.
         /// </summary>
         /// <param name="Id">ID записи.</param>
+        /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult GpdContractEdit(int Id)
+        public ActionResult GpdContractEdit(int Id, int PersonID)
         {
-            bool hasError = false;
-            GpdContractEditModel model = GpdBl.SetGpdContractEdit(Id, hasError);
+            GpdContractEditModel model = GpdBl.SetGpdContractEdit(Id, PersonID, 0, null);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -87,11 +84,29 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
-            //bool hasError = false;
             ModelState.Clear();
+            if (model.Operation == 1)
+            {
+                model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
+                return View(model);
+            }
 
-            model = GpdBl.EditDetailsFromContract(model, ModelState);
-            return View(model);
+            GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+            if (ModelState.Count != 0)
+                return View(model);
+            string error;
+            //сохранение договора
+            if (GpdBl.SaveGpdContract(model, out error))
+            {
+                model = GpdBl.SetGpdContractEdit(model.Id, 0, 0, null);
+                return View(model);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(error))
+                    ModelState.AddModelError("errorMessage", error);
+                return View(model);
+            }
         }
         /// <summary>
         /// Просмотр справочника реквизитов.
@@ -131,8 +146,8 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult GpdRefDetailEdit(int Id)
         {
-            bool hasError = false;
-            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, hasError);
+            //bool hasError = false;
+            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -146,11 +161,15 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdRefDetailEdit(GpdRefDetailEditModel model)
         {
-            bool hasError = false;
+            //bool hasError = false;
             ModelState.Clear();
             if (model.StatusID != 2)
             {
-                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, hasError);
+                string Name = model.Name;
+                int PersonID = model.PersonID;
+                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID);
+                model.Name = Name;
+                model.PersonID = PersonID;
                 return View(model);
             }
             else
@@ -165,7 +184,7 @@ namespace WebMvc.Controllers
                     {
                         //думал, что после сохранения нужно возвращаться к списку
                         //return RedirectToAction("GpdRefDetail");
-                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, hasError);
+                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID);
                         if (model.StatusID == 2)
                             model.errorMessage = "Запись сохранена!";
                         return View(model);
@@ -252,13 +271,18 @@ namespace WebMvc.Controllers
                 }
             }
         }
+        /// <summary>
+        /// Автозаполнение фио в создании договора ГПД.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
         public ActionResult AutocompletePersonSearch(string term)
         {
-            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term);
-            var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { value = a.Id, label = a.Name, snils = a.SNILS }).Distinct();
+            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term, 0);
+            //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
 
             return Json(PersonList, JsonRequestBehavior.AllowGet);
-            //return Json(Persons, JsonRequestBehavior.AllowGet);
         }
     }
 }

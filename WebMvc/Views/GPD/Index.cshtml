@@ -92,7 +92,7 @@
                                             <td>
                                                 @if (@Model.Permissions[0].IsCreate)
                                                 {
-                                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0 })'"/>    
+                                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0, PersonID = 0 })'"/>    
                                                 }
                                             </td>
                                         </tr>
@@ -107,7 +107,7 @@
                                 <table class="grid">
                                     <tr>
                                         <th>
-                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">№ п/п</a></div>
+                                            @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
                                         </th>
                                         <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
@@ -145,14 +145,16 @@
                                     </tr>
                                     @if (Model.Contracts != null && Model.Contracts.Count > 0)
                                     {
+                                        int i = 1;
                                         foreach (var doc in Model.Contracts)
                                         {
                                             <tr>
-                                                <td>@doc.Id</td>
+                                                <td>@i.ToString()</td>
+                                                <!--<td>@doc.Id</td>-->
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <!--<td>@doc.NumContract</td>-->
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.NumContract</a></td>
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
@@ -162,6 +164,7 @@
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@doc.StatusName</td>
                                             </tr>
+                                            i += 1;
                                         }
                                     }
                                 </table>
