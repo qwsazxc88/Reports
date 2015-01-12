@@ -147,7 +147,7 @@ namespace WebMvc.Controllers
         public ActionResult GpdRefDetailEdit(int Id)
         {
             //bool hasError = false;
-            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0);
+            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -167,7 +167,7 @@ namespace WebMvc.Controllers
             {
                 string Name = model.Name;
                 int PersonID = model.PersonID;
-                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID);
+                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId);
                 model.Name = Name;
                 model.PersonID = PersonID;
                 return View(model);
@@ -184,7 +184,7 @@ namespace WebMvc.Controllers
                     {
                         //думал, что после сохранения нужно возвращаться к списку
                         //return RedirectToAction("GpdRefDetail");
-                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID);
+                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId);
                         if (model.StatusID == 2)
                             model.errorMessage = "Запись сохранена!";
                         return View(model);

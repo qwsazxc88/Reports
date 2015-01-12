@@ -17,7 +17,7 @@ namespace Reports.Presenters.UI.Bl
         void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms, bool flgFromContract);
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
-        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID);
+        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId);
         void GetPermission(GpdRefDetailModel model);
         void GetPermission(GpdRefDetailEditModel model);
         #endregion
