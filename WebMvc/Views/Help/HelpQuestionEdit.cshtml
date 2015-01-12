@@ -145,6 +145,7 @@
   $(document).ready(function () {
       //SetControlStates();
       $("#ManagerNameRow").hide();
+      setActiveMenuItem("helpQuestionsRequests");
    });
 //    function Delete() {
 //        $("#IsDelete").val("true");
@@ -294,8 +295,8 @@
             bgiframe: true, 
             draggable: false,
             resizable: false,
-            width: 320,
-	        height: 230,
+            width: 450,
+	        height: 300,
             close: function (event, ui) {
                 $(this).dialog("destroy").remove();
             },

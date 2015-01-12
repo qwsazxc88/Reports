@@ -21,5 +21,6 @@ namespace Reports.Core.Dto
         public int StatusNumber { get; set; }
         public string Status { get; set; }
         public int Number { get; set; }
+        public string Dep3Name { get; set; }
     }
 }

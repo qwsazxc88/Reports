@@ -147,7 +147,7 @@
     <tr @if ((!Model.IsPersonnelFieldsEditable && !Model.IsTypeEditable) || (Model.Id == 0))
         {<text>style="display:none"</text>}>    
         <td>Прикрепить скан заявления на увольнение</td>
-        <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+        <td><input id="FileContext" type="file" name="file"/>&nbsp;<span style="color:Red">размер файла - не более 5 Мб</span></td>
     </tr>
 
     @* BEGIN Скан заявления на выдачу трудовой книжки *@
@@ -167,7 +167,7 @@
     {
         <tr>    
             <td>Прикрепить скан заявления на выдачу трудовой книжки</td>
-            <td><input id="WorkbookRequestScanFileContext" type="file" name="workbookRequestScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 2 Мб</span></td>
+            <td><input id="WorkbookRequestScanFileContext" type="file" name="workbookRequestScanFile"/>&nbsp;<span style="color:Red">размер файла - не более 5 Мб</span></td>
         </tr>
     }
 
@@ -380,7 +380,7 @@
                         @if (Model.IsUnsignedConfirmationAllowed)
                         {
                             <text>Прикрепить скан приказа на подпись</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="UnsignedOrderScanFileContext" type="file" name="unsignedOrderScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -391,7 +391,7 @@
                         @if (Model.IsUnsignedT2Allowed)
                         {
                             <text>Прикрепить скан Т-2 на подпись</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="UnsignedT2ScanFileContext" type="file" name="unsignedT2ScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -401,7 +401,7 @@
                         @if (Model.IsUnsignedDismissalAgreementAllowed)
                         {
                             <text>Прикрепить скан соглашения на подпись</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="UnsignedDismissalAgreementScanFileContext" type="file" name="unsignedDismissalAgreementScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -411,7 +411,7 @@
                         @if (Model.IsF182NAllowed)
                         {
                             <text>Прикрепить скан 182-Н</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="F182NScanFileContext" type="file" name="f182NScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -421,7 +421,7 @@
                         @if (Model.IsF2NDFLAllowed)
                         {
                             <text>Прикрепить скан 2-НДФЛ</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="F2NDFLScanFileContext" type="file" name="f2NDFLScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -511,7 +511,7 @@
                         @if (Model.IsConfirmationAllowed)
                         {
                             <text>Прикрепить скан подписанного приказа</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="OrderScanFileContext" type="file" name="orderScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -522,7 +522,7 @@
                         @if (Model.IsT2Allowed)
                         {
                             <text>Прикрепить скан подписанной Т-2</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="T2ScanFileContext" type="file" name="t2ScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }
@@ -533,7 +533,7 @@
                         @if (Model.IsDismissalAgreementAllowed)
                         {
                             <text>Прикрепить скан подписанного соглашения</text><br />
-                            <span style="color:Red">размер файла - не более 2 Мб</span><br />
+                            <span style="color:Red">размер файла - не более 5 Мб</span><br />
                             <input id="DismissalAgreementScanFileContext" type="file" name="dismissalAgreementScanFile"/>
                             <div><input type="submit" value="Сохранить" onclick="return ValidateForm();" /></div>
                         }

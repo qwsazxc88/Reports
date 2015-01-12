@@ -28,6 +28,7 @@ namespace Reports.Presenters.UI.Bl
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending);
         
         void LoadDictionaries(GeneralInfoModel model);
         void LoadDictionaries(PassportModel model);
@@ -59,7 +60,6 @@ namespace Reports.Presenters.UI.Bl
         IEnumerable<SelectListItem> GetAccessGroups();
         IEnumerable<SelectListItem> GetEmploymentStatuses();
         IEnumerable<SelectListItem> GetApprovalStatuses();
-        IEnumerable<SelectListItem> GetOnsiteTrainingStatuses();
 
         int? CreateCandidate(CreateCandidateModel model, out string error);
         bool ProcessSaving<TVM, TE>(TVM model, out string error)
@@ -69,18 +69,21 @@ namespace Reports.Presenters.UI.Bl
         void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel;
 
-        bool ApproveBackgroundCheck (int userId, bool? approvalStatus, out string error);
+        bool ApproveBackgroundCheck (int userId, bool IsApprovalSkipped, bool? approvalStatus, out string error);
         bool SaveOnsiteTrainingReport (OnsiteTrainingModel viewModel, out string error);
         bool ApproveCandidateByManager(ManagersModel viewModel, out string error);
         bool ApproveCandidateByHigherManager(int userId, bool? approvalStatus, out string error);
         bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error);
         bool SaveApprovals(IList<CandidateApprovalDto> roster, out string error);
+        bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error);
 
         bool IsCurrentUserChiefForCreator(User current, User creator);
         bool IsUnlimitedEditAvailable();
 
         string GetStartView();
         AttachmentModel GetFileContext(int id);
-        bool DeleteAttachment(DeleteAttacmentModel model);        
+        bool DeleteAttachment(DeleteAttacmentModel model);
+
+        bool IsFixedTermContract(int userId);
     }
 }

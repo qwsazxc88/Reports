@@ -4,6 +4,7 @@
 }
 
 <span style="color:red;">@ViewBag.Error</span>
+@Html.ValidationSummary()
 
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
@@ -32,6 +33,12 @@
         </div>
         <div class="formfield clear">
             <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+        </div>
+
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.IsFixedTermContract)<br />
+            @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
+            @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
         </div>
 
         @if (Model.IsOnBehalfOfManagerAvailable)
@@ -71,7 +78,7 @@
     var actionSelectManagerDialogUrl = "@Url.Action("SelectManagerDialog", "Appointment")";
 
     $(document).ready(function () {
-        attachDatepickerToInputs($('#DateOfBirth'), "-80:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#DateOfBirth'), "-80:-14;-80Y;-14Y", true);
     });
 
     function changeManager() {

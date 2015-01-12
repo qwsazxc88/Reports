@@ -390,6 +390,7 @@
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
     <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
+    <Compile Include="Domain\Employment2\SupplementaryAgreement.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
@@ -522,6 +523,7 @@
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
     <Compile Include="Dto\Employment2\SignerDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateChangeContractToIndefiniteDto.cs" />
     <Compile Include="Dto\GradeAmountDto.cs" />
     <Compile Include="Dto\HelpServiceDictionariesStatesModel.cs" />
     <Compile Include="Dto\HelpServiceQuestionDto.cs" />
@@ -1058,6 +1060,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\SupplementaryAgreement.hbm.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

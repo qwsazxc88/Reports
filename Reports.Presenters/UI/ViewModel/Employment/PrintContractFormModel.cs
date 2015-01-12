@@ -17,7 +17,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public DateTime? EmploymentDate { get; set; }
         public string WorkCity { get; set; }
         public string ProbationaryPeriod { get; set; }
-        // TODO: базовый должностной оклад
+        // TODO: EMPL Базовый должностной оклад
         // Schedule??? РАБОТНИКУ устанавливается следующий режим рабочего времени (указывается необходимый вариант):
         // Реквизиты подразделения
         public string PassportSeriesNumber { get; set; }

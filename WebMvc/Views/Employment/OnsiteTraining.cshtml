@@ -42,8 +42,18 @@
             <td>
                     @Html.EditorFor(m => m.EndDate)
             </td>
-        </tr>
+        </tr>    
         <tr>
+            <td>
+                @Html.LabelFor(m => m.Results)
+            </td>
+            <td>
+                    @Html.TextBoxFor(m => m.Results)
+            </td>
+        </tr>
+        
+        <tr>
+
             <td>
                 @Html.LabelFor(m => m.IsComplete)
             </td>
@@ -52,6 +62,10 @@
                     new SelectListItem {Text = "Нет", Value = "false"},
                     new SelectListItem {Text = "Да", Value = "true"}
                 })
+                @if (Model.IsComplete != null)
+                {
+                    <span class="fakeFormField">@Model.ApproverName</span>
+                }
             </td>
         </tr>
         <tr>
@@ -64,32 +78,6 @@
         </tr>
         <tr>
             <td>
-                @Html.LabelFor(m => m.Results)
-            </td>
-            <td>
-                    @Html.TextBoxFor(m => m.Results)
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="2">
-                @if (Model.IsApproveByTrainerAvailable || Model.ApprovalStatus != null)
-                {        
-                    @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveByTrainerAvailable ? null : new { disabled = "disabled" })
-                }
-                @if (Model.ApprovalStatus != null)
-                {
-                    <span class="fakeFormField">@Model.ApproverName</span>
-                }
-                @if (Model.IsApproveByTrainerAvailable)
-                {
-                    <button>Применить</button>
-                }
-            </td>
-        </tr>
-
-        <tr>
-            <td>
                 @Html.LabelFor(m => m.Comments)
             </td>
             <td>
@@ -99,18 +87,20 @@
     </table>
     </fieldset>
 
-@* *** Удалить блок в релизе *** *@
-    <div class="clear">
-        <button type="submit">Согласовать</button>
-    </div>
+    if (Model.IsApproveByTrainerAvailable)
+    {
+        <div class="clear">
+            @Html.EditorFor(m => m.IsDraft)@Html.LabelFor(m => m.IsDraft)
+            <button type="submit">Сохранить</button>
+        </div>
+    }
 }
-@* ***************************** *@
 
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empOnsiteTraining");
-        attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
     });
 </script>

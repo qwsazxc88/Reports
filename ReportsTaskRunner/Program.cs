@@ -12,7 +12,8 @@ namespace ReportsTaskRunner
     {
         private static IDictionary<string, Action> tasks = new Dictionary<string, Action>
         {
-            { "SendCCLNotifications", SendCCLNotifications }
+            { "SendCCLNotifications", SendCCLNotifications },
+            { "SendFixedTermContractNotifications", SendFixedTermContractNotifications}
         };
 
         private static void PrintHelp()
@@ -110,6 +111,39 @@ namespace ReportsTaskRunner
 
                 Mailer.SendNotification(toList, subject, body);
             }            
+        }
+
+        static void SendFixedTermContractNotifications()
+        {
+            // Список сотрудников с ТД с истекающим сроком
+            IList<EmploymentCandidate> employees = FixedTermContractDAL.GetEmployeesWithExpiringContracts();
+            IList<string> toList = new List<string>();
+            const string subject = @"Срочные ТД";
+            string body = @"Уведомляем Вас о том, что срочный трудовой договор №{0} от {1} г., 
+                заключенный с сотрудником [{2}],
+                будет прекращен по основанию, предусмотренному пунктом 2 части первой статьи 77 Трудового кодекса Российской Федерации
+                (истечение срока трудового договора).
+                В случае, если сотрудник [{2}] будет переведен на бессрочный договор,
+                просим непосредственнго руководителя зайти в программу «Прием»
+                и в реестре в колонке  «Сотрудник переведен на бессрочный ТД» нажать соответствующую галку.
+                В случае, если непосредственный руководитель не нажал галку в реестре в программе «Прием»,
+                трудовые отношения с сотрудником [{2}] будут прекращены.<br /><br />
+                <a href='https://ruscount.com:8002'>Кадровый портал</a>";
+            
+
+            foreach (var e in employees)
+            {
+                body = string.Format(body,
+                    !string.IsNullOrEmpty(e.PersonnelManagers.ContractNumber) ? e.PersonnelManagers.ContractNumber : "?",
+                    e.PersonnelManagers.ContractDate.HasValue ? e.PersonnelManagers.ContractDate.Value.ToShortDateString() : "?",
+                    e.CandidateUser.Name);
+                
+                toList.Add("RogozinaIE@sovcombank.ru");
+                toList.Add(e.CandidateUser.Email ?? string.Empty);
+                toList.Add(MainDAL.db.User.Where(u => u.Id == e.AppointmentCreator.Id).Single().Email ?? string.Empty);
+
+                Mailer.SendNotification(toList, subject, body);                
+            }
         }
     }
 }
