@@ -66,6 +66,7 @@ namespace Reports.Presenters.UI.Bl
             where TVM : AbstractEmploymentModel
             where TE : new();
         bool ProcessSaving(ApplicationLetterModel model, out string error);
+        bool ProcessSaving(SignerDto itemToSave, out string error);
         void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel;
 
