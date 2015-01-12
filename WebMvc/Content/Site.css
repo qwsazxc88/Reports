@@ -749,6 +749,13 @@ span.buttonLink a
     text-decoration: none;
 }
 
+span.anchorLink
+{
+    text-decoration: underline;
+    color: Blue;
+    cursor: pointer;
+}
+
 .announcement
 {
     border: 1px solid red;

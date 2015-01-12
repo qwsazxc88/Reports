@@ -891,8 +891,16 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public SignersModel GetSignersModel()
         {
-            // STUB: EMPL GetSignersModel
-            return new SignersModel();
+            var model = new SignersModel
+            {
+                SignerToAddOrEdit = new SignerDto { Id = 0 },
+                Signers = EmploymentSignersDao.LoadAllSorted().ToList()
+                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, PreamblePartyTemplate = x.PreamblePartyTemplate })
+                    .OrderBy(x => x.Name)
+                    .ToList()
+            };
+
+            return model;
         }
 
         public PrintContractFormModel GetPrintContractFormModel(int userId)
@@ -1404,6 +1412,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCommonDao.SaveOrUpdateDocument<EmploymentCandidate>(candidate);
 
             error = string.Empty;
+            return true;
+        }
+
+        public bool ProcessSaving(SignerDto itemToSave, out string error)
+        {
+            error = string.Empty;
+
+            Signer entity = EmploymentSignersDao.Get(itemToSave.Id) ?? new Signer();
+            entity.Name = itemToSave.Name;
+            entity.PreamblePartyTemplate = itemToSave.PreamblePartyTemplate;
+
+            EmploymentSignersDao.SaveAndFlush(entity);
+
             return true;
         }
 
