@@ -784,7 +784,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
                 model.IsContractChangedToIndefinite = entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0;
-                if (entity.SupplementaryAgreements != null)
+                if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                 {
                     model.SupplementaryAgreementCreateDate = entity.SupplementaryAgreements[0].CreateDate;
                     model.SupplementaryAgreementNumber = entity.SupplementaryAgreements[0].Number;
