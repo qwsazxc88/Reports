@@ -165,10 +165,10 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             if (model.StatusID != 2)
             {
-                string Name = model.Name;
+                //string Name = model.Name;
                 int PersonID = model.PersonID;
                 model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId);
-                model.Name = Name;
+                //model.Name = Name;
                 model.PersonID = PersonID;
                 return View(model);
             }
