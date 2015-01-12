@@ -46,7 +46,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                @if (Model.Id != 0 && Model.Operation == 0)
+                                @if (@Model.Permissions[0].IsWrite && Model.Id != 0 && Model.Operation == 0)
                                 {
                                     <input type="button" value="Создать договор" title="Создать договор с текущим набором реквизитов" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0, PersonID = Model.PersonID })'"/>
                                 }
@@ -188,7 +188,7 @@
                                 @Html.LabelFor(m => m.DetailId):
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.DetailId, new SelectList(Model.RefDetails, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.DropDownListFor(model => model.DetailId, new SelectList(Model.RefDetails, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.DetailId)
                             </td>
                         </tr>

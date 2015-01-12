@@ -334,8 +334,9 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="DTID">ID типа реквизита</param>
         /// <param name="PayerID">ID плательщика</param>
         /// <param name="PayeeID">ID получателя</param>
+        /// <param name="DetailId">ID реквизита</param>
         /// <returns></returns>
-        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID)
+        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId)
         {
             GpdRefDetailEditModel model = new GpdRefDetailEditModel();
             GetPermission(model);
@@ -346,6 +347,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.DTID = DTID;
             model.PayerID = PayerID;
             model.PayeeID = PayeeID;
+            model.DetailId = DetailId;
             model.SetInfo = GpdRefDetailDao.GetDetailSetList(model.Id, null, null, null, null, flgView, 0, null);
 
             if (model.SetInfo.Count != 0)
@@ -440,21 +442,29 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, DTID);
 
             //если входим в режим редактирования реквизита
-            if (model.Operation == 2 && model.StatusID == 4)
+            //if (model.Operation == 2 && model.StatusID == 4)
+            if (model.StatusID == 4)
             {
                 if (model.RefDetails.Count != 0)
                 {
                     foreach (var doc in model.RefDetails)
                     {
-                        model.DTID = DTID;
-                        model.DetailId = doc.Id;
-                        model.DetailName = doc.Name;
-                        model.INN = doc.INN;
-                        model.KPP = doc.KPP;
-                        model.DetailAccount = doc.Account;
-                        model.BankName = doc.BankName;
-                        model.BankBIK = doc.BankBIK;
-                        model.CorrAccount = doc.CorrAccount;
+                        if (doc.Id == model.DetailId || model.DetailId == 0 || model.RefDetails.Where(x => x.Id == model.DetailId).Count() == 0)
+                        {
+                            model.DTID = DTID;
+                            model.DetailId = doc.Id;
+                            model.DetailName = doc.Name;
+                            model.INN = doc.INN;
+                            model.KPP = doc.KPP;
+                            model.DetailAccount = doc.Account;
+                            model.BankName = doc.BankName;
+                            model.BankBIK = doc.BankBIK;
+                            model.CorrAccount = doc.CorrAccount;
+                            break;
+                        }
+                        else
+                        {
+                        }
                     }
                 }
             }
