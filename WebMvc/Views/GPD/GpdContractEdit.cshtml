@@ -77,7 +77,14 @@
                                 @Html.LabelFor(m => m.PersonID):
                             </td>
                             <td>
-                                <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                }
+                                else
+                                {
+                                    <label>@Model.Surname</label>
+                                }
                                 <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 
                             @*
@@ -347,7 +354,7 @@
         if ($("#Operation").val() == 0)
             $('#refDetailRow').hide();
 
-        
+
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
         $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
         $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
