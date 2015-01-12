@@ -443,7 +443,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             //если входим в режим редактирования реквизита
             //if (model.Operation == 2 && model.StatusID == 4)
-            if (model.StatusID == 4)
+            if (model.StatusID == 4 || model.StatusID == 2)
             {
                 if (model.RefDetails.Count != 0)
                 {
