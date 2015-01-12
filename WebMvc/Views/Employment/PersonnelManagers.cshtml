@@ -157,6 +157,10 @@
             @Html.LabelFor(m => m.Level)&nbsp;@Html.ValidationMessageFor(m => m.Level)<br />
             @Html.TextBoxFor(m => m.Level, new { @class = "calc halfwidth" })
         </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SignerId)&nbsp;@Html.ValidationMessageFor(m => m.SignerId)<br />
+            @Html.DropDownListFor(m => m.SignerId, Model.Signers, string.Empty)
+        </div>
 
         <div class="formfield clearleft">
             <button type="submit">Сохранить</button>                

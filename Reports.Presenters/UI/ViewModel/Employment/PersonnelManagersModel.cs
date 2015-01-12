@@ -118,6 +118,11 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]
         public string ApprovedByPersonnelManager { get; set; }
 
+        [Display(Name = "Подписант"),
+            Required(ErrorMessage = "*")]
+        public int SignerId { get; set; }
+        public IEnumerable<SelectListItem> Signers { get; set; }
+
         public PersonnelManagersModel()
         {
             this.Version = 0;

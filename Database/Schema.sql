@@ -94,6 +94,9 @@ alter table Sicklist  drop constraint FK_Sicklist_ApprovedByPersonnelManagerUser
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Sicklist_TimesheetStatus]') AND parent_object_id = OBJECT_ID('Sicklist'))
 alter table Sicklist  drop constraint FK_Sicklist_TimesheetStatus
 
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SupplementaryAgreement_PersonnelManagers]') AND parent_object_id = OBJECT_ID('SupplementaryAgreement'))
+alter table SupplementaryAgreement  drop constraint FK_SupplementaryAgreement_PersonnelManagers
+
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_HelpQuestionRequestHistoryEntity_HelpQuestionRequest]') AND parent_object_id = OBJECT_ID('HelpQuestionHistoryEntity'))
 alter table HelpQuestionHistoryEntity  drop constraint FK_HelpQuestionRequestHistoryEntity_HelpQuestionRequest
 
@@ -114,6 +117,9 @@ alter table PersonnelManagers  drop constraint FK_PersonnelManagers_PersonalAcco
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_AccessGroup]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
 alter table PersonnelManagers  drop constraint FK_PersonnelManagers_AccessGroup
+
+if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_Signer]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
+alter table PersonnelManagers  drop constraint FK_PersonnelManagers_Signer
 
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_PersonnelManagers_ApprovedByPersonnelManagerUser]') AND parent_object_id = OBJECT_ID('PersonnelManagers'))
 alter table PersonnelManagers  drop constraint FK_PersonnelManagers_ApprovedByPersonnelManagerUser
@@ -751,9 +757,6 @@ alter table Document  drop constraint FK_Document_EmployeeDocumentSubType
 if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Document_User]') AND parent_object_id = OBJECT_ID('Document'))
 alter table Document  drop constraint FK_Document_User
 
-if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_SupplementaryAgreement_PersonnelManagers]') AND parent_object_id = OBJECT_ID('SupplementaryAgreement'))
-alter table SupplementaryAgreement  drop constraint FK_SupplementaryAgreement_PersonnelManagers
-
 if exists (select * from dbo.sysobjects where id = object_id(N'Certification') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Certification
 if exists (select * from dbo.sysobjects where id = object_id(N'Family') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Family
 if exists (select * from dbo.sysobjects where id = object_id(N'DocumentType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table DocumentType
@@ -777,6 +780,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'RequestNextNumber
 if exists (select * from dbo.sysobjects where id = object_id(N'Information') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Information
 if exists (select * from dbo.sysobjects where id = object_id(N'Settings') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Settings
 if exists (select * from dbo.sysobjects where id = object_id(N'SicklistPaymentPercent') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SicklistPaymentPercent
+if exists (select * from dbo.sysobjects where id = object_id(N'SupplementaryAgreement') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SupplementaryAgreement
 if exists (select * from dbo.sysobjects where id = object_id(N'HelpQuestionHistoryEntity') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HelpQuestionHistoryEntity
 if exists (select * from dbo.sysobjects where id = object_id(N'HelpQuestionSubtype') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HelpQuestionSubtype
 if exists (select * from dbo.sysobjects where id = object_id(N'Schedule') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Schedule
@@ -796,6 +800,7 @@ if exists (select * from dbo.sysobjects where id = object_id(N'ChildVacationComm
 if exists (select * from dbo.sysobjects where id = object_id(N'Contacts') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Contacts
 if exists (select * from dbo.sysobjects where id = object_id(N'InsuredPersonType') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table InsuredPersonType
 if exists (select * from dbo.sysobjects where id = object_id(N'Deduction') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Deduction
+if exists (select * from dbo.sysobjects where id = object_id(N'Signer') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Signer
 if exists (select * from dbo.sysobjects where id = object_id(N'HelpServiceProductionTime') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HelpServiceProductionTime
 if exists (select * from dbo.sysobjects where id = object_id(N'Reference') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Reference
 if exists (select * from dbo.sysobjects where id = object_id(N'PostGraduateEducationDiploma') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table PostGraduateEducationDiploma
@@ -902,7 +907,6 @@ if exists (select * from dbo.sysobjects where id = object_id(N'[ManualRoleRecord
 if exists (select * from dbo.sysobjects where id = object_id(N'HolidayWork') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table HolidayWork
 if exists (select * from dbo.sysobjects where id = object_id(N'Attachment') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Attachment
 if exists (select * from dbo.sysobjects where id = object_id(N'Document') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table Document
-if exists (select * from dbo.sysobjects where id = object_id(N'SupplementaryAgreement') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table SupplementaryAgreement
 
 create table Certification (
  Id INT IDENTITY NOT NULL,
@@ -1185,6 +1189,15 @@ create table SicklistPaymentPercent (
   SortOrder INT null,
   constraint PK_SicklistPaymentPercent  primary key (Id)
 )
+create table SupplementaryAgreement (
+ Id INT IDENTITY NOT NULL,
+  CreateDate DATETIME null,
+  Number INT null,
+  OrderCreateDate DATETIME null,
+  OrderNumber INT null,
+  PersonnelManagersId INT not null,
+  constraint PK_SupplementaryAgreement  primary key (Id)
+)
 create table HelpQuestionHistoryEntity (
  Id INT IDENTITY NOT NULL,
   CreateDate DATETIME not null,
@@ -1241,6 +1254,7 @@ create table PersonnelManagers (
   PersonalAccount NVARCHAR(23) null,
   PersonalAccountContractorId INT null,
   AccessGroupId INT null,
+  SignerId INT null,
   ApprovedByPersonnelManagerId INT null,
   constraint PK_PersonnelManagers  primary key (Id)
 )
@@ -1392,6 +1406,13 @@ create table Deduction (
   DeleteAfterSendTo1C BIT not null,
   EmailSendToUserDate DATETIME null,
   constraint PK_Deduction  primary key (Id)
+)
+create table Signer (
+ Id INT IDENTITY NOT NULL,
+  Version INT not null,
+  Name NVARCHAR(50) null,
+  PreamblePartyTemplate NVARCHAR(500) null,
+  constraint PK_Signer  primary key (Id)
 )
 create table HelpServiceProductionTime (
  Id INT IDENTITY NOT NULL,
@@ -2628,15 +2649,6 @@ create table Document (
   SendEmailToBilling BIT not null,
   constraint PK_Document  primary key (Id)
 )
-create table SupplementaryAgreement (
- Id INT IDENTITY NOT NULL,
-  CreateDate DATETIME null,
-  Number INT null,
-  OrderCreateDate DATETIME null,
-  OrderNumber INT null,
-  PersonnelManagersId INT not null,
-  constraint PK_SupplementaryAgreement  primary key (Id)
-)
 alter table Certification add constraint FK_Certification_Education foreign key (EducationId) references Education
 create index Family_Candidate on Family (CandidateId)
 alter table Family add constraint FK_Family_Candidate foreign key (CandidateId) references EmploymentCandidate
@@ -2700,6 +2712,8 @@ alter table Sicklist add constraint FK_Sicklist_CreatorUser foreign key (Creator
 alter table Sicklist add constraint FK_Sicklist_ApprovedByManagerUser foreign key (ApprovedByManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 alter table Sicklist add constraint FK_Sicklist_TimesheetStatus foreign key (TimesheetStatusId) references TimesheetStatus
+create index IX_SupplementaryAgreement_PersonnelManagers on SupplementaryAgreement (PersonnelManagersId)
+alter table SupplementaryAgreement add constraint FK_SupplementaryAgreement_PersonnelManagers foreign key (PersonnelManagersId) references PersonnelManagers
 create index IX_HelpQuestionRequestHistoryEntity_HelpQuestionRequest on HelpQuestionHistoryEntity (HelpQuestionRequestId)
 create index IX_HelpQuestionHistoryEntity_CreatorUser_Id on HelpQuestionHistoryEntity (CreatorId)
 create index IX_HelpQuestionHistoryEntity_Consultant_Id on HelpQuestionHistoryEntity (ConsultantId)
@@ -2711,10 +2725,12 @@ alter table HelpQuestionSubtype add constraint FK_HelpQuestionSubtype_HelpQuesti
 create index PersonnelManagers_Candidate on PersonnelManagers (CandidateId)
 create index PersonnelManagers_PersonalAccountContractor on PersonnelManagers (PersonalAccountContractorId)
 create index PersonnelManagers_AccessGroup on PersonnelManagers (AccessGroupId)
+create index PersonnelManagers_Signer on PersonnelManagers (SignerId)
 create index IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id on PersonnelManagers (ApprovedByPersonnelManagerId)
 alter table PersonnelManagers add constraint FK_PersonnelManagers_Candidate foreign key (CandidateId) references EmploymentCandidate
 alter table PersonnelManagers add constraint FK_PersonnelManagers_PersonalAccountContractor foreign key (PersonalAccountContractorId) references PersonalAccountContractor
 alter table PersonnelManagers add constraint FK_PersonnelManagers_AccessGroup foreign key (AccessGroupId) references AccessGroup
+alter table PersonnelManagers add constraint FK_PersonnelManagers_Signer foreign key (SignerId) references Signer
 alter table PersonnelManagers add constraint FK_PersonnelManagers_ApprovedByPersonnelManagerUser foreign key (ApprovedByPersonnelManagerId) references [Users]
 create index IX_AcceptRequestDate_User_Id on AcceptRequestDate (UserId)
 alter table AcceptRequestDate add constraint FK_AcceptRequestDate_User foreign key (UserId) references [Users]
@@ -3126,8 +3142,6 @@ create index IX_Document_User_Id on Document (UserId)
 alter table Document add constraint FK_Document_EmployeeDocumentType foreign key (TypeId) references EmployeeDocumentType
 alter table Document add constraint FK_Document_EmployeeDocumentSubType foreign key (SubTypeId) references EmployeeDocumentSubType
 alter table Document add constraint FK_Document_User foreign key (UserId) references [Users]
-create index IX_SupplementaryAgreement_PersonnelManagers on SupplementaryAgreement (PersonnelManagersId)
-alter table SupplementaryAgreement add constraint FK_SupplementaryAgreement_PersonnelManagers foreign key (PersonnelManagersId) references PersonnelManagers
 
 set identity_insert  [Role] on
 INSERT INTO [Role] (Id,[Name],Version) values (1,'Администратор',1) 
