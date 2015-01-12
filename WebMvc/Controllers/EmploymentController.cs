@@ -657,21 +657,27 @@ namespace WebMvc.Controllers
 
         #region Signers
         [HttpGet]
+        [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult Signers()
         {
             // Get the current signers list
-            var model = new SignersModel();
+            var model = EmploymentBl.GetSignersModel();
 
             // Output the signers list for viewing/editing
             return View(model);
         }
 
         [HttpPost]
-        [ReportAuthorize(UserRole.Candidate)]
-        public ActionResult Signers(SignersModel model)
+        [ReportAuthorize(UserRole.PersonnelManager)]
+        public ActionResult SignersAddOrEditSigner(SignerDto itemToSave)
         {
+            string error = String.Empty;
 
-            return View(model);
+            EmploymentBl.ProcessSaving(itemToSave, out error);
+
+            var model = EmploymentBl.GetSignersModel();
+
+            return View("Signers", model);
         }
         #endregion 
 

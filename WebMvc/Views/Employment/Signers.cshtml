@@ -6,22 +6,28 @@
 
 <fieldset class="bordered doc-wrap panel">
 <legend>Справочник подписантов</legend>
-    <table>
+    <table class="grid">
+        <tr>
+            <th>ФИО</th>
+            <th>В преамбуле договора</th>
+        </tr>
         @foreach(var signer in @Model.Signers)
-        {
+        {            
             <tr>
-                <td>@signer.Name</td>
+                <td><span class="edit-signer anchorLink" data-id=@signer.Id>@signer.Name</span></td>
+                <td class="preamble-party-template" data-id=@signer.Id>@signer.PreamblePartyTemplate</td>
             </tr>
         }
     </table>
     <button id="add-signer">Добавить</button>
 </fieldset>
 
-<div id="add-signer-dialog" title="Добавление подписанта">
-    @using (Html.BeginForm("Signers", "Employment", FormMethod.Post))
+<div id="add-edit-signer-dialog" title="Добавление подписанта">
+    @using (Html.BeginForm("SignersAddOrEditSigner", "Employment", FormMethod.Post))
     {
-        <label for="Name" style="display:block;">ФИО</label><input type="text" name="Name" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
-        <label for="PreamblePartyTemplate" style="display:block;">Сторона в преамбуле договора</label><input type="text" name="PreamblePartyTemplate" value="" class="text ui-widget-content ui-corner-all" style="display:block;" />
+        <input type="hidden" name="Id" />
+        <label for="Name" style="display:block;">ФИО</label><input type="text" name="Name" value="" class="text ui-widget-content ui-corner-all" style="display:block;" /><br />
+        <label for="PreamblePartyTemplate" style="display:block;">В преамбуле договора</label><textarea rows="5" cols="30" name="PreamblePartyTemplate" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
  
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
         <input type="submit" tabindex="-1" style="position:absolute; top:-1000px" />
@@ -32,7 +38,7 @@
     $(document).ready(function () {
         setActiveMenuItem("empSigners");
 
-        var $addSignerDialog = $('#add-signer-dialog').dialog(
+        var $addOrEditSignerDialog = $('#add-edit-signer-dialog').dialog(
         {
             autoOpen: false,
             modal: true,
@@ -42,7 +48,7 @@
             buttons:
             {
                 "OK": function () {
-                    $('#add-signer-dialog form').submit();
+                    $('#add-edit-signer-dialog form').submit();
                     $(this).dialog("close");
                 },
                 "Отмена": function () {
@@ -52,8 +58,17 @@
         });
 
         $("#add-signer").click(function (e) {
-            $addSignerDialog.dialog("open");
+            $("input[name=Id]").val(0);
+            $("input[name=Name]").val("");
+            $addOrEditSignerDialog.dialog("open");
             e.preventDefault();
+        });
+
+        $(".edit-signer").click(function () {
+            $("input[name=Id]").val($(this).attr("data-id"));
+            $("input[name=Name]").val($(this).text());
+            $("textarea[name=PreamblePartyTemplate]").text($(this).parent().next("td").text());
+            $addOrEditSignerDialog.dialog("open");
         });
     });
 </script>
