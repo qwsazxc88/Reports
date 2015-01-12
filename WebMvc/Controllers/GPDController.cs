@@ -87,7 +87,8 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             if (model.Operation == 1)
             {
-                model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
+                //model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
+                model = GpdBl.SetGpdContractEdit(model);
                 return View(model);
             }
 
@@ -98,7 +99,8 @@ namespace WebMvc.Controllers
             //сохранение договора
             if (GpdBl.SaveGpdContract(model, out error))
             {
-                model = GpdBl.SetGpdContractEdit(model.Id, 0, 0, null);
+                //model = GpdBl.SetGpdContractEdit(model.Id, 0, 0, null);
+                model = GpdBl.SetGpdContractEdit(model);
                 return View(model);
             }
             else
