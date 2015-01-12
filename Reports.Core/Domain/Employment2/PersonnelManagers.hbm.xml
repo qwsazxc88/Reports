@@ -33,7 +33,8 @@
     <!-- Ознакомлен с регламентными документами -->
     <property name="PersonalAccount" length="23" not-null="false"/>
     <many-to-one name="PersonalAccountContractor" class="PersonalAccountContractor" column="PersonalAccountContractorId" foreign-key="FK_PersonnelManagers_PersonalAccountContractor" index="PersonnelManagers_PersonalAccountContractor" not-null="false"/>
-    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>    
+    <many-to-one name="AccessGroup" class="AccessGroup" column="AccessGroupId" foreign-key="FK_PersonnelManagers_AccessGroup" index="PersonnelManagers_AccessGroup"  not-null="false"/>
+    <many-to-one name="Signer" class="Signer" column="SignerId" foreign-key="FK_PersonnelManagers_Signer" index="PersonnelManagers_Signer"  not-null="false"/>
     <many-to-one name="ApprovedByPersonnelManager" class="User" column="ApprovedByPersonnelManagerId" foreign-key="FK_PersonnelManagers_ApprovedByPersonnelManagerUser" index="IX_PersonnelManagers_ApprovedByPersonnelManagerUser_Id"  not-null="false"/>
     
   </class>

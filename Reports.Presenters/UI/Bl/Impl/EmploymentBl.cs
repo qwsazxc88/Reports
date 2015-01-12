@@ -190,6 +190,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { missionOrderRoleRecordDao = value; }
         }
 
+        protected IEmploymentSignersDao employmentSignersDao;
+        public IEmploymentSignersDao EmploymentSignersDao
+        {
+            get { return Validate.Dependency(employmentSignersDao); }
+            set { employmentSignersDao = value; }
+        }
+
         #endregion
 
         #region Get Model
@@ -799,6 +806,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.OverallExperienceYears = entity.OverallExperienceYears;
                 model.PersonalAccount = entity.PersonalAccount;
                 model.PersonalAccountContractorId = entity.PersonalAccountContractor != null ? entity.PersonalAccountContractor.Id : 0;
+                model.SignerId = entity.Signer != null ? entity.Signer.Id : 0;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
 
@@ -1042,6 +1050,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.PersonalAccountContractors = GetPersonalAccountContractors();
             model.AccessGroups = GetAccessGroups();
+            model.Signers = GetSigners();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -1189,6 +1198,11 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             return AccessGroupDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
+
+        public IEnumerable<SelectListItem> GetSigners()
+        {
+            return EmploymentSignersDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Text);
+        }        
 
         public IEnumerable<SelectListItem> GetEmploymentStatuses()
         {
@@ -2105,6 +2119,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
             entity.PersonalAccount = viewModel.PersonalAccount;
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+            entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
             if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
             {
@@ -2507,6 +2522,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.OverallExperienceYears = viewModel.OverallExperienceYears;
                     entity.PersonalAccount = viewModel.PersonalAccount;
                     entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+                    entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
                     entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
 
                     if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)

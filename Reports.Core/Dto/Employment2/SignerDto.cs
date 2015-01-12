@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
 
 namespace Reports.Core.Dto.Employment2
 {
     public class SignerDto
     {
         public string Name { get; set; }
-        public string NameInGenitiveCase { get; set; }
+        public string PreamblePartyTemplate { get; set; } // Шаблон указания стороны в преамбуле договора
     }
 }

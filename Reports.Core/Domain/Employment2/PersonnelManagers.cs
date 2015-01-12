@@ -40,6 +40,7 @@ namespace Reports.Core.Domain
         // TODO: EMPL Заявление на вычет
         // TODO: EMPL Скан заявления на вычет
         public virtual AccessGroup AccessGroup { get; set; }
+        public virtual Signer Signer { get; set; }
         public virtual User ApprovedByPersonnelManager { get; set; } //ok
         #endregion
 
