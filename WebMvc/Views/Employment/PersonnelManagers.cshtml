@@ -60,6 +60,11 @@
             </div>
         }
 
+        <div class="formfield clear" id="isHourlySalaryBasisContainer">            
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, false, new { @id = "IsHourlySalaryBasisFalse" })<label for="IsHourlySalaryBasisFalse">Оклад по дням</label>
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label for="IsHourlySalaryBasisTrue">Оклад по часам</label>
+        </div>
+
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
@@ -187,5 +192,6 @@
         UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
         UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
         UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
+        $('#isHourlySalaryBasisContainer').buttonset();
     });
 </script>

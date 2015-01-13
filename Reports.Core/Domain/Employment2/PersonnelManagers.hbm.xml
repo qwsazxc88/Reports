@@ -17,6 +17,7 @@
 		  <key column="PersonnelManagersId" foreign-key="FK_SupplementaryAgreement_PersonnelManagers"/>
 		  <one-to-many class="SupplementaryAgreement"/>
 	  </bag>
+    <property name="IsHourlySalaryBasis" not-null="true" />
     <property name="NorthernAreaAddition" precision="19" scale="2" not-null="false"/>
     <property name="AreaMultiplier" precision="19" scale="2" not-null="false"/>
     <property name="AreaAddition" precision="19" scale="2" not-null="false"/>
