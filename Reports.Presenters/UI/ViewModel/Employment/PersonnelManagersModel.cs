@@ -28,6 +28,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
         public string ContractNumber { get; set; }
 
+        public bool IsHourlySalaryBasis { get; set; }
+
         [Display(Name = "Северная надбавка")]
         public decimal? NorthernAreaAddition { get; set; }
 
