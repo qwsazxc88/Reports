@@ -7,6 +7,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class PrintContractFormModel : AbstractEmploymentModel
     {
+        public string EmployerRepresentativeTemplate { get; set; }
         public string Number { get; set; }
         // public string City { get; set; }
         public DateTime? ContractDate { get; set; }
