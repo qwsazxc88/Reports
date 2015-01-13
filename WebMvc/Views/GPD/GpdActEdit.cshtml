@@ -258,7 +258,7 @@
     <br />
     <div class="comment-wrap">
         <table id="CommentsTable" style="width: 100%;">
-        @if (Model.Permissions[0].IsComment)
+        @if (Model.Permissions[0].IsComment && Model.Id != 0)
         {
             <tr>
                 <td>
@@ -268,7 +268,6 @@
             <tr>
                 <td>
                     <input type="submit" value="Добавить комментарий" id="AddComment" onclick="OnAddComment();"/>
-                    @* @if (Model.RequestId == 0) { <text>style = "display:none"</text>; } *@
                 </td>
             </tr>
         }
