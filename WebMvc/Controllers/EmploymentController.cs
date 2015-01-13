@@ -8,7 +8,6 @@ using Reports.Presenters.UI.ViewModel.Employment2;
 using Reports.Core.Dto.Employment2;
 using Reports.Core;
 using Reports.Core.Domain;
-using Reports.Core.Dto.Employment2;
 using Reports.Presenters.UI.Bl;
 using Reports.Presenters.UI.ViewModel;
 using WebMvc.Attributes;
