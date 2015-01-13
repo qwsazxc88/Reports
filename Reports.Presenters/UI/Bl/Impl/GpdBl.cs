@@ -1239,8 +1239,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdAct.ESSSNum = model.ESSSNum;
                     gpdAct.StatusID = model.StatusID;
                 }
-                
-                AddComment(gpdAct, model);  //добавление комментария
+
+                AddComment(gpdAct, model);  //добавление комментария                
                 GpdActDao.SaveAndFlush(gpdAct);
                 model.Id = gpdAct.Id;
                 return true;
