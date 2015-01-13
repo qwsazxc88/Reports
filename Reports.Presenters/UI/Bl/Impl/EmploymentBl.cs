@@ -938,9 +938,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.Number = candidate.PersonnelManagers.ContractNumber;
-                model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer != null && !string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.PreamblePartyTemplate)
+                model.EmployerRepresentativeTemplate = 
+                    candidate.PersonnelManagers.Signer != null && !string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.PreamblePartyTemplate)
                     ? candidate.PersonnelManagers.Signer.PreamblePartyTemplate
-                    : "в лице ___________________________________________________________________________________________________________________________";
+                    : string.Empty;
             }
             
             return model;
