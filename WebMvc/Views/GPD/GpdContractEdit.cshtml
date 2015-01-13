@@ -159,7 +159,7 @@
                                 @Html.LabelFor(m => m.DateP):
                             </td>
                             <td>
-                                @if (DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30))
+                                @if ((DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30)) && @Model.StatusID != 4)
                                 {
                                     @Html.EditorFor(m => m.DateP)
                                     @Html.ValidationMessageFor(model => model.DateP)
@@ -317,7 +317,7 @@
                     <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
                 }
                 
-                @if ((Model.Permissions[0].IsWrite && @Model.StatusID != 1) || (Model.Permissions[0].IsWrite && (DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30))))
+                @if ((Model.Permissions[0].IsWrite && @Model.StatusID != 1) || (Model.Permissions[0].IsWrite && Model.StatusID != 4 && (DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30))))
                 {
                     <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
                 }
