@@ -317,12 +317,14 @@
                     <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
                 }
                 
+                @if ((Model.Permissions[0].IsWrite && @Model.StatusID != 1) || (Model.Permissions[0].IsWrite && (DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30))))
+                {
+                    <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
+                }
+
                 @if (@Model.StatusID != 1)
                 {
-                    if (Model.Permissions[0].IsWrite)
-                    {
-                        <input type="submit" value="Записать" title="Сохранить договор в базе данных" onclick="SaveContract();"/>
-                    }
+                    
                     if (Model.Id != 0 && Model.StatusID != 4 && Model.Permissions[0].IsCancel)
                     {
                         <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
