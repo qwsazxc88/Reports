@@ -33,11 +33,11 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Период с")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public System.DateTime DateBegin { get; set; }
+        public System.DateTime? DateBegin { get; set; }
 
         [Display(Name = " по ")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
-        public System.DateTime DateEnd { get; set; }
+        public System.DateTime? DateEnd { get; set; }
 
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
