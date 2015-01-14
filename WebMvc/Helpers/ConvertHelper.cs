@@ -138,6 +138,11 @@ namespace WebMvc.Helpers
             } 
             #endregion
 
+            if (resultBuilder[0] == ' ')
+            {
+                resultBuilder.Remove(0, 1);
+            }
+
             return new MvcHtmlString(resultBuilder.ToString());
         }
     }
