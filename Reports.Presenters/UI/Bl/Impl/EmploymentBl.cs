@@ -918,9 +918,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Passport != null)
             {
-                model.EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
-                    + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
-                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
                 model.PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
                 model.PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
                 model.PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
@@ -945,7 +950,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Number = candidate.PersonnelManagers.ContractNumber;
                 if (candidate.PersonnelManagers.Signer != null)
                 {
-                    if (!!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
                     {
                         string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
                         if (employerRepresentativeNameParts.Length >= 2)
