@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     {
         public string OrderNumber { get; set; }
         public DateTime? OrderDate { get; set; }
-        public DateTime? EmploymentDate { get; set; }
+        public DateTime? EmploymentDate { get; set; }        
         public string EmployeeName { get; set; }
         public string Department { get; set; }
         public string Position { get; set; }
@@ -36,6 +36,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string ProbationaryPeriod { get; set; }
         public string ContractNumber { get; set; }
         public DateTime? ContractDate { get; set; }
+        public DateTime? ContractEndDate { get; set; }
         
         public PrintEmploymentOrderModel()
         {            

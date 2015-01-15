@@ -1002,6 +1002,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
                 model.CompetenceAddition = candidate.PersonnelManagers.CompetenceAddition;
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
