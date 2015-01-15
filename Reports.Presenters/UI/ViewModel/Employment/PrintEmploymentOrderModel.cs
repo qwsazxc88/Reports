@@ -34,9 +34,13 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public decimal? FrontOfficeExperienceAddition { get; set; }
 
         public string ProbationaryPeriod { get; set; }
+        public bool IsSecondaryJob { get; set; } 
         public string ContractNumber { get; set; }
         public DateTime? ContractDate { get; set; }
         public DateTime? ContractEndDate { get; set; }
+
+        public string EmployerRepresentativeNameShortened { get; set; }
+        public string EmployerRepresentativePosition { get; set; }        
         
         public PrintEmploymentOrderModel()
         {            
