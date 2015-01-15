@@ -896,7 +896,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SignerToAddOrEdit = new SignerDto { Id = 0 },
                 Signers = EmploymentSignersDao.LoadAllSorted().ToList()
-                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, PreamblePartyTemplate = x.PreamblePartyTemplate })
+                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, Position = x.Position, PreamblePartyTemplate = x.PreamblePartyTemplate })
                     .OrderBy(x => x.Name)
                     .ToList()
             };
@@ -992,6 +992,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionAddition = candidate.Managers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
                 model.SalaryBasis = candidate.Managers.SalaryBasis;
@@ -1004,14 +1005,33 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
                 model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
-                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.EmployerRepresentativeNameShortened = candidate.PersonnelManagers.Signer.Name;
+                model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;                
                 model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
                 model.NorthernAreaAddition = candidate.PersonnelManagers.NorthernAreaAddition;
                 model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
                 model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
                 model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
-            }
 
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+                }
+            }
+            
             return model;
         }
 
@@ -1461,6 +1481,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             Signer entity = EmploymentSignersDao.Get(itemToSave.Id) ?? new Signer();
             entity.Name = itemToSave.Name;
+            entity.Position = itemToSave.Position;
             entity.PreamblePartyTemplate = itemToSave.PreamblePartyTemplate;
 
             EmploymentSignersDao.SaveAndFlush(entity);
