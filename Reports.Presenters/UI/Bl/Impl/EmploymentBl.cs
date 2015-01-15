@@ -988,20 +988,27 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Managers != null)
             {
-                model.Addition = candidate.Managers.PositionAddition;
+                model.PersonalAddition = candidate.Managers.PersonalAddition;
+                model.PositionAddition = candidate.Managers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
             if (candidate.PersonnelManagers != null)
             {
+                model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
+                model.CompetenceAddition = candidate.PersonnelManagers.CompetenceAddition;
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
                 model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
+                model.NorthernAreaAddition = candidate.PersonnelManagers.NorthernAreaAddition;
                 model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
                 model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
+                model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
             }
 
             return model;
