@@ -168,6 +168,7 @@
                                 }
                             </td>
                         </tr>
+                        @*
                         <tr>
                             <td colspan="2">
                                 <br />
@@ -255,11 +256,12 @@
                                 @Html.ValidationMessageFor(model => model.CorrAccount)
                             </td>
                         </tr>
+                        *@
                     </table>
                 </div>
             </td>
         </tr>
-        
+        @*
         <tr>
             <td colspan="2">
                 @if (@Model.Permissions[0].IsWrite)
@@ -280,6 +282,7 @@
                 }
             </td>
         </tr>
+        *@
     </table>
 
 }
