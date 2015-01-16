@@ -9,12 +9,14 @@
     <table class="grid">
         <tr>
             <th>ФИО</th>
+            <th>Должность</th>
             <th>В преамбуле договора</th>
         </tr>
         @foreach(var signer in @Model.Signers)
         {            
             <tr>
                 <td><span class="edit-signer anchorLink" data-id=@signer.Id>@signer.Name</span></td>
+                <td class="signer-position" data-id=@signer.Id>@signer.Position</td>
                 <td class="preamble-party-template" data-id=@signer.Id>@signer.PreamblePartyTemplate</td>
             </tr>
         }
@@ -27,6 +29,7 @@
     {
         <input type="hidden" name="Id" />
         <label for="Name" style="display:block;">ФИО</label><input type="text" name="Name" value="" class="text ui-widget-content ui-corner-all" style="display:block;" /><br />
+        <label for="Position" style="display:block;">Должность</label><textarea rows="5" cols="30" name="Position" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea><br />
         <label for="PreamblePartyTemplate" style="display:block;">В преамбуле договора</label><textarea rows="5" cols="30" name="PreamblePartyTemplate" class="text ui-widget-content ui-corner-all" style="display:block;"></textarea>
  
         <!-- Allow form submission with keyboard without duplicating the dialog button -->
@@ -60,6 +63,8 @@
         $("#add-signer").click(function (e) {
             $("input[name=Id]").val(0);
             $("input[name=Name]").val("");
+            $("textarea[name=Position]").text("");
+            $("textarea[name=PreamblePartyTemplate]").text("");
             $addOrEditSignerDialog.dialog("open");
             e.preventDefault();
         });
@@ -67,7 +72,8 @@
         $(".edit-signer").click(function () {
             $("input[name=Id]").val($(this).attr("data-id"));
             $("input[name=Name]").val($(this).text());
-            $("textarea[name=PreamblePartyTemplate]").text($(this).parent().next("td").text());
+            $("textarea[name=Position]").text($(this).parent().next("td").text());
+            $("textarea[name=PreamblePartyTemplate]").text($(this).parent().next("td").next("td").text());
             $addOrEditSignerDialog.dialog("open");
         });
     });

@@ -7,6 +7,7 @@
     <version name="Version" column= "Version"/>
 
     <property name="Name" length="50" not-null="false"/>
+    <property name="Position" length="250" not-null="false"/>
     <property name="PreamblePartyTemplate" length="500" not-null="false"/>
     
   </class>

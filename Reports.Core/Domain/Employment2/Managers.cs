@@ -15,13 +15,11 @@ namespace Reports.Core.Domain
         public virtual Position Position { get; set; } //ok
         public virtual Department Department { get; set; } //ok
         public virtual string EmploymentConditions { get; set; } //ok
+        public virtual bool IsSecondaryJob { get; set; }
         public virtual Schedule Schedule { get; set; } // OK?
         public virtual string ProbationaryPeriod { get; set; } //ok
-        public virtual decimal? DailySalaryBasis { get; set; }
-        public virtual decimal? HourlySalaryBasis { get; set; }
-        public virtual decimal? SalaryMultiplier { get; set; }
-        // TODO: EMPL Несколько окладов и ставка
-        // public virtual decimal SalaryBasis { get; set; }
+        public virtual decimal? SalaryBasis { get; set; } // базовый должностной оклад
+        public virtual decimal? SalaryMultiplier { get; set; } // ставка        
         public virtual string WorkCity { get; set; } //ok
         public virtual decimal? PersonalAddition { get; set; } //ok
         public virtual decimal? PositionAddition { get; set; } //ok

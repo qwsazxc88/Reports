@@ -114,6 +114,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ConvertHelper.cs" />
     <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\UserRequestController.cs" />
@@ -739,6 +740,7 @@
     <Content Include="Views\Help\QuestionRedirectDialog.cshtml" />
     <Content Include="Views\Help\QuestionRedirectDialogError.cshtml" />
     <Content Include="Views\Employment\PrintRoster.cshtml" />
+    <Content Include="Views\Employment\PrintLiabilityContract.cshtml" />
     <Content Include="Views\GPD\GpdActEdit.cshtml" />
     <Content Include="Views\GPD\GpdActList.cshtml" />
   </ItemGroup>

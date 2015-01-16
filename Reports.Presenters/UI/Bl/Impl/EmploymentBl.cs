@@ -707,8 +707,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity != null)
             {
-                model.Bonus = entity.Bonus;
-                model.DailySalaryBasis = entity.DailySalaryBasis;
+                model.Bonus = entity.Bonus;                
 
                 // Если подразделение еще не заполнено,
                 // пытаемся подтянуть его из временной учетной записи соответствующего пользователя
@@ -724,7 +723,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         : string.Empty);
 
                 model.EmploymentConditions = entity.EmploymentConditions;
-                model.HourlySalaryBasis = entity.HourlySalaryBasis;
+                model.IsSecondaryJob = entity.IsSecondaryJob;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
                 model.PersonalAddition = entity.PersonalAddition;
@@ -732,6 +731,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
+                model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
                 model.WorkCity = entity.WorkCity;
@@ -790,6 +790,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.InsurableExperienceYears = entity.InsurableExperienceYears;
 
                 model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
+                model.IsHourlySalaryBasis = entity.IsHourlySalaryBasis;
                 model.IsContractChangedToIndefinite = entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0;
                 if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
                 {
@@ -895,7 +896,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 SignerToAddOrEdit = new SignerDto { Id = 0 },
                 Signers = EmploymentSignersDao.LoadAllSorted().ToList()
-                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, PreamblePartyTemplate = x.PreamblePartyTemplate })
+                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, Position = x.Position, PreamblePartyTemplate = x.PreamblePartyTemplate })
                     .OrderBy(x => x.Name)
                     .ToList()
             };
@@ -917,9 +918,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Passport != null)
             {
-                model.EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
-                    + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
-                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
                 model.PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
                 model.PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
                 model.PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
@@ -931,18 +937,37 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
                 model.WorkCity = candidate.Managers.WorkCity;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
+                model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
+                model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
             if (candidate.PersonnelManagers != null)
             {
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
                 model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
                 model.Number = candidate.PersonnelManagers.ContractNumber;
-                model.EmployerRepresentativeTemplate = 
-                    candidate.PersonnelManagers.Signer != null && !string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.PreamblePartyTemplate)
-                    ? candidate.PersonnelManagers.Signer.PreamblePartyTemplate
-                    : string.Empty;
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }                
             }
+
+            model.IsFixedTermContract = candidate.User.IsFixedTermContract;
             
             return model;
         }
@@ -960,20 +985,117 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (candidate.Managers != null)
             {
-                model.Addition = candidate.Managers.PositionAddition;
+                model.PersonalAddition = candidate.Managers.PersonalAddition;
+                model.PositionAddition = candidate.Managers.PositionAddition;
                 model.Conditions = candidate.Managers.EmploymentConditions;
                 model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
                 model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
                 model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.SalaryBasis = candidate.Managers.SalaryBasis;
             }
 
             if (candidate.PersonnelManagers != null)
             {
+                model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
+                model.CompetenceAddition = candidate.PersonnelManagers.CompetenceAddition;
                 model.ContractDate = candidate.PersonnelManagers.ContractDate;
-                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;
-                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
+                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;                
+                model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
+                model.NorthernAreaAddition = candidate.PersonnelManagers.NorthernAreaAddition;
                 model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
                 model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
+                model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
+
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    model.EmployerRepresentativeNameShortened = candidate.PersonnelManagers.Signer.Name;
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return model;
+        }
+
+        public PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintLiabilityContractModel model = new PrintLiabilityContractModel();
+
+            model.ContractDate = DateTime.Now;
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);                
+            }
+
+            if (candidate.Contacts != null)
+            {
+                model.EmployeePhone = candidate.Contacts.Mobile;
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeePassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+                model.EmployeePassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.EmployeePassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }
             }
 
             return model;
@@ -1425,6 +1547,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             Signer entity = EmploymentSignersDao.Get(itemToSave.Id) ?? new Signer();
             entity.Name = itemToSave.Name;
+            entity.Position = itemToSave.Position;
             entity.PreamblePartyTemplate = itemToSave.PreamblePartyTemplate;
 
             EmploymentSignersDao.SaveAndFlush(entity);
@@ -2088,17 +2211,17 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
-            entity.DailySalaryBasis = viewModel.DailySalaryBasis;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
-            entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
+            entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.PersonalAddition = viewModel.PersonalAddition;
             entity.Position = PositionDao.Load(viewModel.PositionId);
             entity.PositionAddition = viewModel.PositionAddition;
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
+            entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             if (viewModel.ScheduleId.HasValue)
             {
@@ -2138,6 +2261,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
             entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
             entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+            entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
             entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
             entity.OverallExperienceDays = viewModel.OverallExperienceDays;
             entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
@@ -2378,10 +2502,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Bonus = viewModel.Bonus;
                         entity.Candidate = GetCandidate(viewModel.UserId);
                         entity.Candidate.Managers = entity;
-                        entity.DailySalaryBasis = viewModel.DailySalaryBasis;
                         entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
-                        entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
                         entity.PersonalAddition = viewModel.PersonalAddition;
@@ -2389,6 +2511,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PositionAddition = viewModel.PositionAddition;
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
+                        entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
                         entity.WorkCity = viewModel.WorkCity;
@@ -2541,6 +2664,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
                     entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+                    entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
                     entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
                     entity.OverallExperienceDays = viewModel.OverallExperienceDays;
                     entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;

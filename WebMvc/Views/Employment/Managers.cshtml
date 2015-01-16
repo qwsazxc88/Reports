@@ -31,6 +31,13 @@
             @Html.LabelFor(m => m.EmploymentConditions)&nbsp;@Html.ValidationMessageFor(m => m.EmploymentConditions)<br />
             @Html.TextAreaFor(m => m.EmploymentConditions, new { @class = "doublewidth" })
         </div>
+
+        <div class="formfield clear" id="isSecondaryJobContainer">
+            @Html.LabelFor(m => m.IsSecondaryJob)
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, false, new { @id = "IsSecondaryJobFalse" })<label for="IsSecondaryJobFalse">Основная</label>
+            @Html.RadioButtonFor(m => m.IsSecondaryJob, true, new { @id = "IsSecondaryJobTrue" })<label for="IsSecondaryJobTrue">По совместительству</label>
+        </div>
+
         <div class="formfield clear">
             @Html.LabelFor(m => m.ScheduleId)&nbsp;@Html.ValidationMessageFor(m => m.ScheduleId)<br />
             @Html.DropDownListFor(m => m.ScheduleId, Model.Schedules, string.Empty)
@@ -40,12 +47,8 @@
             @Html.EditorFor(m => m.ProbationaryPeriod)
         </div>
         <div class="formfield clear">
-            @Html.LabelFor(m => m.DailySalaryBasis)@Html.ValidationMessageFor(m => m.DailySalaryBasis)<br />
-            @Html.TextBoxFor(m => m.DailySalaryBasis, new { @class = "calc" })
-        </div>
-        <div class="formfield">
-            @Html.LabelFor(m => m.HourlySalaryBasis)&nbsp;@Html.ValidationMessageFor(m => m.HourlySalaryBasis)<br />
-            @Html.TextBoxFor(m => m.HourlySalaryBasis, new { @class = "calc" })
+            @Html.LabelFor(m => m.SalaryBasis)@Html.ValidationMessageFor(m => m.SalaryBasis)<br />
+            @Html.TextBoxFor(m => m.SalaryBasis, new { @class = "calc" })
         </div>
         <div class="formfield">
             @Html.LabelFor(m => m.SalaryMultiplier)&nbsp;@Html.ValidationMessageFor(m => m.SalaryMultiplier)<br />
@@ -127,6 +130,7 @@
 
     $(document).ready(function () {
         setActiveMenuItem("empManagers");
+        $('#isSecondaryJobContainer').buttonset();
         $('#isFrontContainer').buttonset();
     });
 </script>

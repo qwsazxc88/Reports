@@ -20,6 +20,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? ContractEndDate { get; set; }
         public virtual IList<SupplementaryAgreement> SupplementaryAgreements { get; set; }
         public virtual string ContractNumber { get; set; } //ok
+        public virtual bool IsHourlySalaryBasis { get; set; }
         public virtual decimal? NorthernAreaAddition { get; set; } //ok
         public virtual decimal? AreaMultiplier { get; set; } //ok
         public virtual decimal? AreaAddition { get; set; } //ok
