@@ -108,11 +108,12 @@
                         @Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>
                 }*@
+                @* Спрятано временно
                 @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
-               
+                *@
                 @if (UserDto.IsHelpServiceAvailable(dto))
                     {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
@@ -157,7 +158,7 @@
                 <div class="portala-name">Кадровый портал</div>
                 <div class="portala-support">
                    Техническая поддержка: info@ruscount.ru<br>
-                   Общие вопросы: info@ruscount.ru
+                   @*Общие вопросы: info@ruscount.ru*@
                 </div>
                 <div class="portala-help">
                    <a href="/Content/user-manual-sotrudnik.pdf" target="_blank">Руководство по использованию</a>
