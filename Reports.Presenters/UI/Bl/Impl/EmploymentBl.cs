@@ -1101,6 +1101,64 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintPersonalDataAgreementModel model = new PrintPersonalDataAgreementModel();
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);  
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeePassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+                model.EmployeePassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.EmployeePassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.EmploymentContractDate = candidate.PersonnelManagers.ContractDate;
+                model.EmploymentContractNumber = candidate.PersonnelManagers.ContractNumber;
+
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }
+            }
+
+            model.AgreementDate = DateTime.Now;
+
+            return model;
+        }
+
         public PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);

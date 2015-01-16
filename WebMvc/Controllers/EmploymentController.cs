@@ -922,6 +922,12 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintPersonalDataAgreement(int userId)
+        {
+            return GetPrintForm("PrintPersonalDataAgreement", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintPersonalDataObligation(int userId)
         {
             return GetPrintForm("PrintPersonalDataObligation", userId);
@@ -955,6 +961,13 @@ namespace WebMvc.Controllers
         public ActionResult PrintLiabilityContract(int userId)
         {
             PrintLiabilityContractModel model = EmploymentBl.GetPrintLiabilityContractModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintPersonalDataAgreement(int userId)
+        {
+            PrintPersonalDataAgreementModel model = EmploymentBl.GetPrintPersonalDataAgreementModel(userId);
             return View(model);
         }
 
