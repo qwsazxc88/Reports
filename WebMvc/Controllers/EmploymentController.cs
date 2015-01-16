@@ -901,7 +901,7 @@ namespace WebMvc.Controllers
 
         #region Print Forms
 
-        // Обработка запросов на печать кадровых документов
+        #region Обработка запросов на печать кадровых документов
 
         [HttpGet]
         public ActionResult GetPrintContractForm(int userId)
@@ -916,12 +916,20 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintLiabilityContract(int userId)
+        {
+            return GetPrintForm("PrintLiabilityContract", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
-        }
+        } 
 
-        // Обработка запросов от конвертера PDF
+        #endregion
+
+        #region Обработка запросов от конвертера PDF
 
         [HttpGet]
         public ActionResult PrintContractForm(int userId)
@@ -929,11 +937,18 @@ namespace WebMvc.Controllers
             PrintContractFormModel model = EmploymentBl.GetPrintContractFormModel(userId);
             return View(model);
         }
-        
+
         [HttpGet]
         public ActionResult PrintEmploymentOrder(int userId)
         {
             PrintEmploymentOrderModel model = EmploymentBl.GetPrintEmploymentOrderModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintLiabilityContract(int userId)
+        {
+            PrintLiabilityContractModel model = EmploymentBl.GetPrintLiabilityContractModel(userId);
             return View(model);
         }
 
@@ -943,6 +958,8 @@ namespace WebMvc.Controllers
             IList<CandidateDto> model = EmploymentBl.GetPrintRosterModel(filters, sortBy, sortDescending);
             return View(model);
         }
+
+        #endregion
 
         // Создание PDF
 
