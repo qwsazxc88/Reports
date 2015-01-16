@@ -28,6 +28,7 @@ namespace Reports.Presenters.UI.Bl
         SignersModel GetSignersModel();
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
+        PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId);
         IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending);
         
         void LoadDictionaries(GeneralInfoModel model);
