@@ -922,6 +922,12 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintPersonalDataObligation(int userId)
+        {
+            return GetPrintForm("PrintPersonalDataObligation", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
@@ -949,6 +955,13 @@ namespace WebMvc.Controllers
         public ActionResult PrintLiabilityContract(int userId)
         {
             PrintLiabilityContractModel model = EmploymentBl.GetPrintLiabilityContractModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintPersonalDataObligation(int userId)
+        {
+            PrintPersonalDataObligationModel model = EmploymentBl.GetPrintPersonalDataObligationModel(userId);
             return View(model);
         }
 

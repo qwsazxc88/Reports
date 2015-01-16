@@ -1101,6 +1101,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             return model;
         }
 
+        public PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintPersonalDataObligationModel model = new PrintPersonalDataObligationModel();
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);
+            }
+
+            return model;
+        }
+
         public IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             User current = UserDao.Load(AuthenticationService.CurrentUser.Id);

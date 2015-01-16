@@ -175,11 +175,11 @@
     <div class="buttonpanel">
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
-        <button type="button">Печать<br />Т2</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>
-        <button type="button">Печать<br />ДС Персональные данные</button>
-        <button type="button">Печать<br />Обязательство конфиденциальность</button>
-        <button type="button">Печать<br />реестра личного дела</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать<br />ДС Персональные данные</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать<br />Обязательство конфиденциальность</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintProfile", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
     </div>
  
 }
