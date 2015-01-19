@@ -20,7 +20,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class GpdBl : BaseBl, IGpdBl
     {
-        #region Справочник реквизитов
+        #region Справочник наборов реквизитов
         public IGpdRefDetailDao gpdrefDetailDao;
         public IGpdRefDetailDao GpdRefDetailDao
         {
@@ -336,7 +336,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="PayeeID">ID получателя</param>
         /// <param name="DetailId">ID реквизита</param>
         /// <returns></returns>
-        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId)
+        public GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId, int PersonID)
         {
             GpdRefDetailEditModel model = new GpdRefDetailEditModel();
             GetPermission(model);
@@ -348,6 +348,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.PayerID = PayerID;
             model.PayeeID = PayeeID;
             model.DetailId = DetailId;
+            model.PersonID = PersonID;
             model.SetInfo = GpdRefDetailDao.GetDetailSetList(model.Id, null, null, null, null, flgView, 0, null);
 
             if (model.SetInfo.Count != 0)
@@ -364,9 +365,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
             }
 
+            if (model.PersonID != 0)
+            {
+                IList<GpdContractSurnameDto> Persons = GetPersonAutocomplete(null, model.PersonID);
+                if (Persons.Count != 0)
+                {
+                    model.PersonID = Persons[0].Id;
+                    model.Surname = Persons[0].LongName;
+                }
+            }
+
             UserRole role = CurrentUser.UserRole;
             //физики
-            model.Persons = GpdRefDetailDao.GetPersons(0);
+            //model.Persons = GpdRefDetailDao.GetPersons(0);
             //плательщики
             model.PayerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 2);
             
@@ -385,20 +396,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PayerBankBIK = doc.BankBIK;
                         model.PayerCorrAccount = doc.CorrAccount;
                         break;
-                    }
-                    else //если не указан плательщик, то берем первого из списка
-                    {
-                        if (model.PayerID == 0)
-                        {
-                            model.PayerName = doc.Name;
-                            model.PayerINN = doc.INN;
-                            model.PayerKPP = doc.KPP;
-                            model.PayerAccount = doc.Account;
-                            model.PayerBankName = doc.BankName;
-                            model.PayerBankBIK = doc.BankBIK;
-                            model.PayerCorrAccount = doc.CorrAccount;
-                            break;
-                        }
                     }
                 }
             }
@@ -421,54 +418,50 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.PayeerCorrAccount = doc.CorrAccount;
                         break;
                     }
-                    else //если не указан получатель, то берем первого из списка
-                    {
-                        if (model.PayeeID == 0)
-                        {
-                            model.PayeerName = doc.Name;
-                            model.PayeerINN = doc.INN;
-                            model.PayeerKPP = doc.KPP;
-                            model.PayeerAccount = doc.Account;
-                            model.PayeerBankName = doc.BankName;
-                            model.PayeerBankBIK = doc.BankBIK;
-                            model.PayeerCorrAccount = doc.CorrAccount;
-                            break;
-                        }
-                    }
                 }
             }
 
-            //список реквизитов
-            model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, DTID);
+            ////список реквизитов
+            //model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, DTID);
 
-            //если входим в режим редактирования реквизита
-            //if (model.Operation == 2 && model.StatusID == 4)
-            if (model.StatusID == 4 || model.StatusID == 2)
-            {
-                if (model.RefDetails.Count != 0)
-                {
-                    foreach (var doc in model.RefDetails)
-                    {
-                        if (doc.Id == model.DetailId || model.DetailId == 0 || model.RefDetails.Where(x => x.Id == model.DetailId).Count() == 0)
-                        {
-                            model.DTID = DTID;
-                            model.DetailId = doc.Id;
-                            model.DetailName = doc.Name;
-                            model.INN = doc.INN;
-                            model.KPP = doc.KPP;
-                            model.DetailAccount = doc.Account;
-                            model.BankName = doc.BankName;
-                            model.BankBIK = doc.BankBIK;
-                            model.CorrAccount = doc.CorrAccount;
-                            break;
-                        }
-                        else
-                        {
-                        }
-                    }
-                }
-            }
+            ////если входим в режим редактирования реквизита
+            ////if (model.Operation == 2 && model.StatusID == 4)
+            //if (model.StatusID == 4 || model.StatusID == 2)
+            //{
+            //    if (model.RefDetails.Count != 0)
+            //    {
+            //        foreach (var doc in model.RefDetails)
+            //        {
+            //            if (doc.Id == model.DetailId || model.DetailId == 0 || model.RefDetails.Where(x => x.Id == model.DetailId).Count() == 0)
+            //            {
+            //                model.DTID = DTID;
+            //                model.DetailId = doc.Id;
+            //                model.DetailName = doc.Name;
+            //                model.INN = doc.INN;
+            //                model.KPP = doc.KPP;
+            //                model.DetailAccount = doc.Account;
+            //                model.BankName = doc.BankName;
+            //                model.BankBIK = doc.BankBIK;
+            //                model.CorrAccount = doc.CorrAccount;
+            //                break;
+            //            }
+            //            else
+            //            {
+            //            }
+            //        }
+            //    }
+            //}
             return model;
+        }
+        /// <summary>
+        /// Автозаполнение физических лиц
+        /// </summary>
+        /// <param name="Name">ФИО физического лица</param>
+        /// <param name="PersonID">ID физического лица</param>
+        /// <returns></returns>
+        public IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name, int PersonID)
+        {
+            return GpdRefDetailDao.GetAutocompletePersons(Name, PersonID);
         }
         #endregion
 
@@ -620,7 +613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если договор только зоздается и еще не сохранен, на странице уже могут выбрать подразделение
             if (PersonID != 0 && Id == 0)
             {
-                IList<GpdContractSurnameDto> Persons = GetPersonAutocomplete(null, PersonID);
+                IList<GpdContractSurnameDto> Persons = GetPersonDSAutocomplete(null, PersonID);
                 if (Persons.Count != 0)
                 {
                     foreach (var doc in Persons)
@@ -713,7 +706,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             //если договор только зоздается и еще не сохранен, на странице уже могут выбрать подразделение
             if (model.PersonID != 0 && model.Id == 0)
             {
-                IList<GpdContractSurnameDto> Persons = GetPersonAutocomplete(null, model.PersonID);
+                IList<GpdContractSurnameDto> Persons = GetPersonDSAutocomplete(null, model.PersonID);
                 if (Persons.Count != 0)
                 {
                     foreach (var doc in Persons)
@@ -1028,7 +1021,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="Name">ФИО физического лица</param>
         /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
-        public IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name, int PersonID)
+        public IList<GpdContractSurnameDto> GetPersonDSAutocomplete(string Name, int PersonID)
         {
             return GpdContractDao.GetAutocompletePersons(Name, PersonID);
         }
@@ -1314,6 +1307,37 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         #endregion
 
+        #region Модальное окно создания/редактирования реквизитов
+        public GpdRefDetailDialogModel SetDetailDialog(int ID)
+        {
+            GpdRefDetailDialogModel model = new GpdRefDetailDialogModel();
+            if (ID != 0)
+            {
+                UserRole role = CurrentUser.UserRole;
+                IList<GpdDetailDto> PayeerInfo = GpdRefDetailDao.GetRefDetail(role, ID, 1);
+                //model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, ID, 1);
+                if (PayeerInfo.Count != 0)
+                {
+                    //model.PayeeID = PayeeID == 0 ? model.PayeerInfo[0].Id : model.PayeeID;
+                    foreach (var doc in PayeerInfo)
+                    {
+                        model.Id = doc.Id;
+                        model.DTID = doc.DTID;
+                        model.Name = doc.Name;
+                        model.INN = doc.INN;
+                        model.KPP = doc.KPP;
+                        model.Account = doc.Account;
+                        model.BankName = doc.BankName;
+                        model.BankBIK = doc.BankBIK;
+                        model.CorrAccount = doc.CorrAccount;
+                    }
+                }
+            }
+            else
+                model.DTID = 1;
+            return model;
+        }
+        #endregion
         public static string FormatDateMY(DateTime? date)
         {
             return date.HasValue ? date.Value.Month.ToString() + "." + date.Value.Year.ToString() : string.Empty;

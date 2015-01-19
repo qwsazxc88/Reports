@@ -79,7 +79,7 @@
                             <td>
                                 @if (Model.StatusID == 4 || @Model.Id == 0)
                                 {
-                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonDetSetSearch", "GPD")" />
                                 }
                                 else
                                 {

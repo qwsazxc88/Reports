@@ -9,7 +9,8 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdActListModel
     {
-        public int Id { get; set; }
+        [Display(Name = "№ документа")]
+        public int? Id { get; set; }
 
         [Display(Name = "Структурное подразделение")]
         public string DepartmentName { get; set; }

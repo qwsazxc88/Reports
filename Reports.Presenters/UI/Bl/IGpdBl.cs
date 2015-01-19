@@ -17,9 +17,10 @@ namespace Reports.Presenters.UI.Bl
         void CheckFillFieldsForGpdRefDetail(GpdRefDetailEditModel model, System.Web.Mvc.ModelStateDictionary ms, bool flgFromContract);
         bool SaveGpdRefDetail(GpdRefDetailEditModel model, out string error);
         void SetGpdRefDetailFind(GpdRefDetailModel model, bool hasError);
-        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId);
+        GpdRefDetailEditModel SetRefDetailEditModel(int Id, int StatusID, int Operation, bool flgView, int DTID, int PayerID, int PayeeID, int DetailId, int PersonID);
         void GetPermission(GpdRefDetailModel model);
         void GetPermission(GpdRefDetailEditModel model);
+        IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name, int PersonID);
         #endregion
 
         #region Договоры
@@ -37,7 +38,7 @@ namespace Reports.Presenters.UI.Bl
         void GetPermission(GpdContractModel model);
         void GetPermission(GpdContractEditModel model);
         void SetGpdContractEditDropDowns(GpdContractEditModel model);
-        IList<GpdContractSurnameDto> GetPersonAutocomplete(string Name, int PersonID);
+        IList<GpdContractSurnameDto> GetPersonDSAutocomplete(string Name, int PersonID);
         #endregion
 
         #region Акты
@@ -48,6 +49,10 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdActView(GpdActListModel model, bool hasError);
         void GetPermission(GpdActListModel model);
         void GetPermission(GpdActEditModel model);
+        #endregion
+
+        #region Модальное окно создания/редактирования реквизитов
+        GpdRefDetailDialogModel SetDetailDialog(int ID);
         #endregion
     }
 }

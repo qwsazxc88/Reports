@@ -31,7 +31,7 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         IList<GpdActDto> GetAct(UserRole role,
-                                        int ID,
+                                        int? ID,
                                         bool IsFind,
                                         DateTime? DateBegin,
                                         DateTime? DateEnd,

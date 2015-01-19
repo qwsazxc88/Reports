@@ -70,6 +70,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Id) 
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
                                 <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindAct();"/>
@@ -84,6 +92,9 @@
                                     <tr>
                                         <th>
                                             @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
+                                        </th>
+                                        <th>
+                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">№ документа</a></div>
                                         </th>
                                         <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
@@ -147,15 +158,17 @@
                                         foreach (var doc in Model.Documents)
                                         {
                                             <tr>
-                                                @*<td>@doc.Id</td>*@
                                                 <td>@i.ToString()</td>
+                                                <!--<td>@doc.Id</td>-->
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.Id</a></td>
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <td>@doc.NumContract</td>
                                                 <td>@RequestBl.FormatDate(@doc.ContractBeginDate)</td>
                                                 <td>@RequestBl.FormatDate(@doc.ContractEndDate)</td>
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>
+                                                <!--<td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>-->
+                                                <td>@doc.ActNumber</td>
                                                 <td>@RequestBl.FormatDate(@doc.ActDate)</td>
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
@@ -204,6 +217,9 @@
         $("#DepartmentNameLabel").text('');
         $("#StatusID").val('0');
         $("#IsFind").val('False');
+        $("#Surname").val('');
+        $("#ActNumber").val('');
+        $("#Id").val('');
     }
 
     function GetFindAct()

@@ -149,7 +149,7 @@ namespace WebMvc.Controllers
         public ActionResult GpdRefDetailEdit(int Id)
         {
             //bool hasError = false;
-            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0);
+            GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0, 0);
             ModelState.Clear();
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
@@ -169,7 +169,7 @@ namespace WebMvc.Controllers
             {
                 //string Name = model.Name;
                 int PersonID = model.PersonID;
-                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId);
+                model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId, model.PersonID);
                 //model.Name = Name;
                 model.PersonID = PersonID;
                 return View(model);
@@ -186,7 +186,7 @@ namespace WebMvc.Controllers
                     {
                         //думал, что после сохранения нужно возвращаться к списку
                         //return RedirectToAction("GpdRefDetail");
-                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId);
+                        model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId, model.PersonID);
                         if (model.StatusID == 2)
                             model.errorMessage = "Запись сохранена!";
                         return View(model);
@@ -274,7 +274,20 @@ namespace WebMvc.Controllers
             }
         }
         /// <summary>
-        /// Автозаполнение фио в создании договора ГПД.
+        /// Автозаполнение фио в создании договора ГПД (выбор из наборов реквизитов).
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompletePersonDetSetSearch(string term)
+        {
+            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonDSAutocomplete(term, 0);
+            //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Автозаполнение фио в создании набора реквизитов.
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
@@ -282,9 +295,53 @@ namespace WebMvc.Controllers
         {
             IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term, 0);
             //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
-            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PersonID = a.Id }).Distinct();
 
             return Json(PersonList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Всплывающее окно для создания/редактирования реквизита.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GpdRefDetailDialog(int id)
+        {
+            try
+            {
+                GpdRefDetailDialogModel model = GpdBl.SetDetailDialog(id);
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Exception", ex);
+                string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                return PartialView("DialogError", new DialogErrorModel { Error = error });
+            }
+        }
+        /// <summary>
+        /// Редактируем реквизит из диалогового окна.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ContentResult GpdRefDetailDialog(GpdRefDetailDialogModel model)
+        {
+            try
+            {
+                //GpdRefDetailDialogModel model = GpdBl.SetDetailDialog(id);
+                //return PartialView(model);
+                
+            }
+            catch (Exception ex)
+            {
+                //Log.Error("Exception", ex);
+                //string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
+                //return PartialView("DialogError", new DialogErrorModel { Error = error });
+            }
+            var jsonSerializer = new JavaScriptSerializer();
+            string jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
         }
     }
 }

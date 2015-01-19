@@ -35,6 +35,14 @@
                         </tr>
                         <tr>
                             <td style="width:300px">
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                <label id="Id">@Model.Id</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:300px">
                                 @Html.LabelFor(m => m.ActDate):
                             </td>
                             <td>
@@ -45,7 +53,7 @@
                                 }
                                 else
                                 {
-                                    <label id="ActDate">@GpdBl.FormatDateMY(@Model.ActDate)</label>
+                                    <label id="ActDate">@GpdBl.FormatDate(@Model.ActDate)</label>
                                 }
                             </td>
                         </tr>

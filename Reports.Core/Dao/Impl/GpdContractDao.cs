@@ -165,7 +165,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortDescending"></param>
         /// <returns></returns>
         public IList<GpdContractDto> GetContracts(UserRole role,
-                                            int Id,
+                                            int? Id,
                                             int DepartmentId,
                                             int CTID,
                                             DateTime? DateBegin,
@@ -193,7 +193,9 @@ namespace Reports.Core.Dao.Impl
                 if (Surname != null)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (Surname.Trim().Length != 0 ? " Surname like '" + Surname + "%'" : "");//по фио
                 if (NumContract != null)
-                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (NumContract.Trim().Length != 0 ? " NumContract = '" + NumContract + "'" : "");//по фио
+                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (NumContract.Trim().Length != 0 ? " NumContract = '" + NumContract + "'" : "");//по номеру договора
+                if (Id != null && Id != 0)
+                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " id = " + Id.ToString();//по номеру договора
             }
 
             sqlQuery = sqlQuery + (SqlWhere.Length != 0 ? " WHERE " + SqlWhere : "") + SqlOrderBy(SortBy, SortDescending);

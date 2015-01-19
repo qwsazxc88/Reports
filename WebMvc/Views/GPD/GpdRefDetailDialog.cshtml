@@ -1,0 +1,108 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailDialogModel
+
+<html>
+    <head>
+        <title/>
+    </head>
+    <body>
+        <h1 >
+            <label id="errorMessage" style="color:red">@Model.errorMessage</label>
+            @Html.ValidationMessageFor(model => model.errorMessage)
+        </h1>
+        <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:100px">
+            @*
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DTID):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name"), (object)new { onchange = "this.form.submit();" }) 
+                    @Html.ValidationMessageFor(model => model.DTID)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.DetailId):
+                </td>
+                <td>
+                    @Html.DropDownListFor(model => model.DetailId, new SelectList(Model.RefDetails, "ID", "Name"), (object)new { onchange = "this.form.submit();" }) 
+                    @Html.ValidationMessageFor(model => model.DetailId)
+                </td>
+            </tr>
+            *@
+            <tr>
+                <td colspan="2"><div id="SelectDepartmentError" style="color:Red;display:none;"/></td>
+             </tr>
+            <tr>
+                <td style="width:220px">
+                    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                    @Html.LabelFor(model => model.Name):
+                </td>
+                <td style="width:100%">
+                    @Html.TextBoxFor(model => model.Name, (object)new { maxlength = "150", style = "width:100%" })
+                    @Html.ValidationMessageFor(model => model.Name)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.INN):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.INN, (object)new { maxlength = "12" })
+                    @Html.ValidationMessageFor(model => model.INN)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.KPP):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.KPP, (object)new { maxlength = "9" })
+                    @Html.ValidationMessageFor(model => model.KPP)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.Account):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Account, (object)new { maxlength = "20" })
+                    @Html.ValidationMessageFor(model => model.Account)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.BankName):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.BankName, (object)new { maxlength = "100", style = "width:100%" })
+                    @Html.ValidationMessageFor(model => model.BankName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.BankBIK):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.BankBIK, (object)new { maxlength = "9" })
+                    @Html.ValidationMessageFor(model => model.BankBIK)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.CorrAccount):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.CorrAccount, (object)new { maxlength = "20" })
+                    @Html.ValidationMessageFor(model => model.CorrAccount)
+                </td>
+            </tr>
+            <tr>
+            <td colspan="2">
+                <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных"/>
+            </td>
+        </tr>
+        </table>
+    </body>
+</html>
+

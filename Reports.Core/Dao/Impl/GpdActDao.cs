@@ -70,7 +70,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         public IList<GpdActDto> GetAct(UserRole role, 
-                                        int ID, 
+                                        int? ID, 
                                         bool IsFind,
                                         DateTime? DateBegin,
                                         DateTime? DateEnd, 
@@ -86,7 +86,7 @@ namespace Reports.Core.Dao.Impl
             if (!IsFind)
                 sqlQuery += "WHERE Id = " + ID.ToString();
             else
-                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber) + ActListSqlOrderBy(SortBy, SortDescending);
+                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber, ID) + ActListSqlOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateActQuery(sqlQuery);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
@@ -164,8 +164,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Surname">ФИО физического лица.</param>
         /// <param name="StatusID">ID статуса акта.</param>
         /// <param name="ActNumber">№ акта</param>
+        /// <param name="id">ID акта</param>
         /// <returns></returns>
-        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID, string ActNumber)
+        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID, string ActNumber, int? ID)
         {
             string SqlWhere = "";
             if (DateBegin.HasValue && DateEnd.HasValue)
@@ -182,6 +183,9 @@ namespace Reports.Core.Dao.Impl
 
             if (ActNumber != null && ActNumber.Trim().Length != 0)
                 SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ActNumber = '" + ActNumber + "'" : " and ActNumber = '" + ActNumber + "'";
+
+            if (ID != null && ID != 0)
+                SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ID = " + ID.ToString() + "" : " and ID = " + ID.ToString() + "";
 
             return SqlWhere;
         }

@@ -9,7 +9,9 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractModel
     {
-        public int Id { get; set; }
+        [Display(Name = "№ документа")]
+        public int? Id { get; set; }
+
         public int CreatorID { get; set; }
         public string errorMessage { get; set; }
 

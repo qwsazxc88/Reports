@@ -254,5 +254,21 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("SNILS", NHibernateUtil.String).
                 AddScalar("LongName", NHibernateUtil.String);
         }
+
+        public IList<GpdContractSurnameDto> GetAutocompletePersons(string Name, int PersonID)
+        {
+
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefPersons] ";
+            //sqlQuery += (Id != 0 ? " WHERE Id = " + Id.ToString() : "") + " ORDER BY Name";
+
+            if (PersonID == 0)
+                sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE LongName like '" + (Name == null ? "" : Name) + "%' ORDER BY LongName";
+            else
+                sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE ID =" + PersonID.ToString();
+
+            IQuery query = CreateSQLPersonQuery(sqlQuery);
+            IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
+            return documentList;
+        }
     }
 }

@@ -58,5 +58,12 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <returns></returns>
         IList<GpdContractSurnameDto> GetPersons(int Id);
+        /// <summary>
+        /// Автозаполнение для физиков
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="PersonID"></param>
+        /// <returns></returns>
+        IList<GpdContractSurnameDto> GetAutocompletePersons(string Name, int PersonID);
     }
 }

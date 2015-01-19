@@ -31,7 +31,7 @@
                                 @Html.LabelFor(m => Model.Name)
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => Model.Name, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "250" } : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => Model.Name, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "250", style = "width:600px" } : (object)new { disabled = "disabled", style = "width:600px" })
                                 @Html.ValidationMessageFor(model => model.Name)
                             </td>
                         </tr>
@@ -40,7 +40,20 @@
                                 @Html.LabelFor(m => Model.PersonID)
                             </td>
                             <td>
+                                @*
                                 @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "LongName"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @Html.ValidationMessageFor(model => model.PersonID)
+                                *@
+
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                    <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
+                                }
+                                else
+                                {
+                                    <label>@Model.Surname</label>
+                                }
                                 @Html.ValidationMessageFor(model => model.PersonID)
                             </td>
                         </tr>
@@ -101,6 +114,7 @@
                             <td>
                                 @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.PayeerInfo, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayeeID)
+                                <input type="button" value="Создать новый реквизит" title="Создать новый реквизит" onclick="CreateEditDetail();"/>
                             </td>
                         </tr>
                         <tr>
@@ -289,12 +303,32 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //$("#BeginDate").datepicker();
-        //$("#EndDate").datepicker();
-        //$(".hasDatepicker").width("75px");
-        //setSortFields();
         setActiveMenuItem("moGpdRefDetail");
         $(":text").bind("keydown", function (e) { if (e.keyCode == 13) return false; });
+
+        //$("#Surname").keydown(function (e) { if (e.keyCode == 13) { if ($("#Operation").val() == 1) { this.form.submit(); } } });
+        //$("#Surname").blur(function () { $("#Operation").val('1'); ; if ($("#PersonID").val() != 0) { this.form.submit(); } });
+
+        $(function () {
+            $("[data-autocomplete-source]").each(
+                function () {
+                    //EditSetOn();
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                        select: function (event, ui) {
+                            $("#Surname").val(ui.item.label);
+                            $("#PersonID").val(ui.item.PersonID);
+                            //$("#Operation").val('-1');
+                            $("#Surname").focus();
+                            return true;
+                        }
+                    });
+                });
+            });
+
+
+
+        
     });
 
     function EditSetOn() {
@@ -333,6 +367,60 @@
         $("#StatusID").val('3');
         $("#Operation").val('0');
         return true;
+    }
+
+    function CreateEditDetail() {
+            createDetailDialog();
+        }
+    function createDetailDialog() {
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+        var PayeeID = $("#PayeeID").val();
+        //var typeId = $("#RequestTypeId").val();
+        var actionDetailDialogUrl = "@Url.Action("GpdRefDetailDialog", "GPD")";
+
+        var title = "Создание реквизита получателя";
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        //var url = actionDepDialogUrl + '?parentId='+ parentId+'&level='+level;
+        $(newDiv).load(actionDetailDialogUrl + "?id=" + PayeeID  + " #DialogTable"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: true,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 400,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    //if (!ValidateDepartment()) return;
+                    //SaveDepartment();
+                    $(this).dialog("close");
+//                        if (typeof ChangeMonth == 'function') {
+//                            ChangeMonth(); //call function
+//                        }
+                },
+                "Отмена": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
     }
  </script>   
 

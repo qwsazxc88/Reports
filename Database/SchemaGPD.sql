@@ -373,6 +373,7 @@ CREATE TABLE [dbo].[GpdDetailSets](
 	[PayerID] [int] NULL,
 	[PayeeID] [int] NULL,
 	[Account] [nvarchar](25) NULL,
+	[GUID] [nvarchar](40) NULL,
  CONSTRAINT [PK_GpdDetailSets] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
