@@ -108,11 +108,12 @@
                         @Html.ActionLink("Шаблоны", "Index", "Template")
                 </div>
                 }*@
+                @* Спрятано временно
                 @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
-               
+                *@
                 @if (UserDto.IsHelpServiceAvailable(dto))
                     {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
