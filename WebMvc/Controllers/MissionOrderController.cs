@@ -88,14 +88,9 @@ namespace WebMvc.Controllers
         {
             MissionHotelsModel model = new MissionHotelsModel();
             ModelState.Clear();
-            bool hasError = false;//!ValidateModel(model);
-            ////if (!hasError)
-            ////    SetMissionOrderFilterToSession(model);
+            bool hasError = false;
             RequestBl.SetMissionHotelsListModel(model, hasError);
-            //if (model.HasErrors)
-            //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
-            //return View();
         }
         /// <summary>
         /// Вызов страницы добавления/редактирования гостиниц
@@ -625,12 +620,6 @@ namespace WebMvc.Controllers
         public ActionResult MissionReportEdit(MissionReportEditModel model)
         {
             CorrectCheckboxes(model);
-            //CorrectDropdowns(model);
-            //if (!ValidateMissionOrderEditModel(model))
-            //{
-            //    RequestBl.ReloadDictionaries(model);
-            //    return View(model);
-            //}
 
             string error;
             if (!RequestBl.SaveMissionReportEditModel(model, out error) || !string.IsNullOrEmpty(error))
@@ -731,7 +720,7 @@ namespace WebMvc.Controllers
             return RedirectToAction("AdditionalMissionOrderEdit", new RouteValueDictionary { { "id", additionalOrderId } });
         }
         [HttpGet]
-        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | UserRole.Accountant | UserRole.OutsourcingManager |
           UserRole.Director | UserRole.Findep)]
         public ActionResult AdditionalMissionOrderEdit(int id)
         {

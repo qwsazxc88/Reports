@@ -46,8 +46,8 @@
                           <td>
                                 @Html.LabelFor(m => m.StatusId):
                             </td>
-                            <td>
-                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name")) 
+                            <td>                                
+                                @Html.DropDownListFor(model => model.StatusId, new SelectList(Model.Statuses, "ID", "Name"))
                              </td>
                         </tr>
                         @if (((ReportPrincipal)HttpContext.Current.User).UserRole != UserRole.Employee)

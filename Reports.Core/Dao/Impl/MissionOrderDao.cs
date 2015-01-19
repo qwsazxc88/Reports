@@ -161,6 +161,7 @@ namespace Reports.Core.Dao.Impl
                                 left join [dbo].[Users] uManagerAccount
                                     on (uManagerAccount.RoleId & 4) > 0
                                         and u.Email = uManagerAccount.Email
+                                        and uManagerAccount.Login like u.Login+N'R'
                                         and uManagerAccount.IsActive = 1
                                 left join [dbo].[Position]  up on up.Id = u.PositionId
                                 left join [dbo].[MissionGoal]  mg on mg.Id = v.MissionGoalId
@@ -187,7 +188,7 @@ namespace Reports.Core.Dao.Impl
             string whereString = GetWhereForUserRole(role, userId,ref sqlQuery);
             if (whereString.Length > 0)
                 whereString += @" and ";
-            if(role != UserRole.Director)
+            if((role & UserRole.Director) != UserRole.Director)
                 whereString += @" v.IsAdditional = 0 ";
             else
                 whereString += @" ((v.IsAdditional = 0) or (ao.NeedToAcceptByChief = 1)) ";
@@ -300,6 +301,9 @@ namespace Reports.Core.Dao.Impl
                 case 23:
                     orderBy = @" order by MissionGoal";
                     break;
+                case 24:
+                    orderBy = @" order by IsRecalculated";
+                    break;
             }
             if (sortDescending.Value)
                 orderBy += " DESC ";
@@ -323,8 +327,8 @@ namespace Reports.Core.Dao.Impl
                 #region Managers
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
-                    if(currentUser == null)
-                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных",userId));
+                    if (currentUser == null)
+                        throw new ArgumentException(string.Format("Не могу загрузить пользователя {0} из базы даннных", userId));
                     
                     string sqlQueryPart = string.Empty;
                     string sqlFlag = string.Empty;
@@ -377,6 +381,10 @@ namespace Reports.Core.Dao.Impl
                             sqlQueryPart += @"
                                 union
                                 select distinct employee.Id from Users employee
+                                    left join [dbo].[Users] employeeManagerAccount
+                                    on (employeeManagerAccount.RoleId & 4) > 0
+                                        and employeeManagerAccount.Login = u.Login+N'R'
+                                        and employeeManagerAccount.IsActive = 1
                                     inner join dbo.Department employeeDept
                                       on employee.DepartmentId = employeeDept.Id
                                         -- Исключить состоящих в ветке руководства
@@ -384,6 +392,7 @@ namespace Reports.Core.Dao.Impl
                                     inner join dbo.Department higherDept
                                       on employeeDept.Path like higherDept.Path+N'%'
                                 where (employee.RoleId & 2) > 0
+                                    and (employeeManagerAccount.Id is null or employeeManagerAccount.IsActive = 0)
                                     and currentUser.DepartmentId = higherDept.Id
                                     and not currentUser.Login = employee.Login + N'R'";
 
@@ -391,7 +400,7 @@ namespace Reports.Core.Dao.Impl
                                             and  v.ManagerDateAccept is null then 1 else 0 end as Flag";
                             break;
                         default:
-                            throw new ArgumentException(string.Format(StrInvalidManagerLevel,userId,currentUser.Level));
+                            throw new ArgumentException(string.Format(StrInvalidManagerLevel, userId, currentUser.Level));
                     }
 
                     sqlQueryPart = string.Format(@"u.Id in ( {0} )", sqlQueryPart);
@@ -402,14 +411,22 @@ namespace Reports.Core.Dao.Impl
                     sqlQueryPart += string.Format(@"
                         or u.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", userId);
                     sqlQueryPart += string.Format(@"
-                        or u.DepartmentId in
+                        or 
                         (
-                            select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
-                                inner join Department targetDept
-                                    on targetDept.Id = mrr.TargetDepartmentId
-                                inner join [dbo].[Department] branchDept
-                                    on branchDept.Path like targetDept.Path + '%'
-                            where mrr.UserId = {0} and mrr.RoleId = 1 and (u.RoleId & 2) > 0
+                            (u.RoleId & 2) > 0
+                            and
+                            u.DepartmentId in
+                            (
+                                select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                    inner join Department targetDept
+                                        on targetDept.Id = mrr.TargetDepartmentId
+                                    inner join [dbo].[Department] branchDept
+                                        on branchDept.Path like targetDept.Path + '%'
+                                    inner join Users
+                                        on mrr.UserId = {0}
+                                    inner join Role
+                                        on mrr.RoleId = 1
+                            )
                         )
                         ", userId);
                     sqlQueryPart = string.Format(@"({0})", sqlQueryPart);

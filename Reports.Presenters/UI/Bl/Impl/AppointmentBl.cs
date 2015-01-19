@@ -160,7 +160,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
             SetInitialDates(model);
             SetDictionariesToModel(model);
-            model.IsAddAvailable = role == UserRole.Manager;
+            model.IsAddAvailable = (role & UserRole.Manager) == UserRole.Manager;
             model.IsAddForStaffAvailable = role == UserRole.StaffManager;
             //SetInitialStatus(model);
             //SetIsAvailable(model);
@@ -297,7 +297,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         protected void SetCreatorDepartment(User creator,AppointmentEditModel model)
         {
-            if (creator.UserRole == UserRole.Manager)
+            if ((creator.UserRole & UserRole.Manager) == UserRole.Manager)
             {
                 List<DepartmentDto> departments;
                 switch (creator.Level)
@@ -332,7 +332,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             SetFlagsState(model, false);
             if(model.Id == 0)
             {
-                if (currRole != UserRole.Manager && model.StaffCreatorId != current.Id)
+                if ((currRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != current.Id)
                     throw new ArgumentException(string.Format(StrUserNotManager, current.Id));
                 model.IsEditable = true;
                 model.IsSaveAvailable = true;
@@ -524,9 +524,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             #region Заполнение списка вышестоящих руководителей
 
             IList<User> chiefs = GetChiefsForManager(user.Id)
-                .Where<User>(chief => chief.Level >= 3)
+                .Where<User>(chief => chief.Level >= 4)
                 .OrderByDescending<User, int?>(chief => chief.Level)
                 .ToList<User>();
+
+            // + руководители по ручным привязкам
+            IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, UserManualRole.ApprovesCommonRequests);
+            foreach (var manualRoleManager in manualRoleManagers)
+            {
+                if (!chiefs.Contains(manualRoleManager))
+                {
+                    chiefs.Add(manualRoleManager);
+                }
+            }
 
             StringBuilder chiefsBuilder = new StringBuilder();
             foreach (var chief in chiefs)
@@ -552,7 +562,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             level = 0;
             int departmentId = model.DepartmentId;
-            if (CurrentUser.UserRole != UserRole.Manager && model.StaffCreatorId != CurrentUser.Id)
+            if ((CurrentUser.UserRole & UserRole.Manager) != UserRole.Manager && model.StaffCreatorId != CurrentUser.Id)
                 return true;
             Department dep = DepartmentDao.Load(departmentId);
             if(dep == null)
@@ -562,8 +572,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             level = dep.ItemLevel.Value;
             if (dep.ItemLevel.Value != RequeredDepartmentLevel)
                 return false;
-            /*if (AuthenticationService.CurrentUser.UserRole == UserRole.Director)
-                return true;*/
+
             User currUser = UserDao.Load(model.UserId);
             if(currUser == null)
                 throw new ArgumentException(string.Format(StrUserNotFound, model.UserId));
@@ -617,14 +626,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
                
-                /*if (model.Id != 0)
-                    entity = AppointmentDao.Get(model.Id);*/
-                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
-                {
-                    error = "Редактирование заявки запрещено";
-                    return false;
-                }*/
-
                 if (model.Id == 0)
                 {
                     entity = new Appointment
@@ -649,54 +650,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                         model.ReloadPage = true;
                         return false;
                     }
-                    //if (model.IsDelete)
-                    //{
-                    //    if (current.UserRole == UserRole.OutsourcingManager)
-                    //        entity.DeleteAfterSendTo1C = true;
-                    //    entity.DeleteDate = DateTime.Now;
-                    //    //missionOrder.CreateDate = DateTime.Now;
-                    //    MissionOrderDao.SaveAndFlush(entity);
-                    //    if (entity.Mission != null)
-                    //    {
-                    //        Mission mission = entity.Mission;
-                    //        if (mission.SendTo1C.HasValue)
-                    //            mission.DeleteAfterSendTo1C = true;
-                    //        mission.DeleteDate = DateTime.Now;
-                    //        mission.CreateDate = DateTime.Now;
-                    //        MissionDao.SaveAndFlush(mission);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission for mission order with id {0}", entity.Id);
-                    //    MissionReport report = MissionReportDao.GetReportForOrder(entity.Id);
-                    //    if (report != null)
-                    //    {
-                    //        report.DeleteDate = DateTime.Now;
-                    //        report.EditDate = DateTime.Now;
-                    //        MissionReportDao.SaveAndFlush(report);
-                    //    }
-                    //    else
-                    //        Log.WarnFormat("No mission report for mission order with id {0}", entity.Id);
-                    //    /*SendEmailForUserRequest(missionOrder.User, current, missionOrder.Creator, true, missionOrder.Id,
-                    //        missionOrder.Number, RequestTypeEnum.ChildVacation, false);*/
-                    //    model.IsDelete = false;
-                    //}
-                    //else
-                    //{
-                        ChangeEntityProperties(current, entity, model, creator, out error);
-                        //List<string> cityList = missionOrder.Targets.Select(x => x.City).ToList();
-                        //string country = GetStringForList(cityList);
-                        //List<string> orgList = missionOrder.Targets.Select(x => x.Organization).ToList();
-                        //string org = GetStringForList(orgList);
+                    ChangeEntityProperties(current, entity, model, creator, out error);
+                    AppointmentDao.SaveAndFlush(entity);
+                    if (entity.Version != model.Version)
+                    {
+                        entity.EditDate = DateTime.Now;
                         AppointmentDao.SaveAndFlush(entity);
-                        if (entity.Version != model.Version)
-                        {
-                            entity.EditDate = DateTime.Now;
-                            AppointmentDao.SaveAndFlush(entity);
-                        }
                     }
-                    if (entity.DeleteDate.HasValue)
-                        model.IsDeleted = true;
-                //}
+                }
+                if (entity.DeleteDate.HasValue)
+                    model.IsDeleted = true;
                 model.DocumentNumber = entity.Number.ToString();
                 model.Version = entity.Version;
                 model.DateCreated = entity.CreateDate.ToShortDateString();
@@ -1181,11 +1144,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             try
             {
-                /*if (AuthenticationService.CurrentUser.UserRole != UserRole.PersonnelManager)
-                {
-                    model.Error = StrCommentCreationDedied;
-                    return false;
-                }*/
                 User user = UserDao.Load(AuthenticationService.CurrentUser.Id);
                 switch (type)
                 {
@@ -1453,18 +1411,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             AppointmentReport entity = null;
             try
             {
-                //creator = UserDao.Load(model.UserId);
                 IUser current = AuthenticationService.CurrentUser;
-                //AppointmentReport entity = null;
                 entity = AppointmentReportDao.Get(model.Id);
                 if (entity == null)
                     throw new ValidationException(string.Format(StrAppointmentReportNotFound, model.Id));
                 creator = UserDao.Load(entity.Appointment.Creator.Id);
-                /*if (!CheckUserMoRights(user, current, model.Id, entity, true))
-                {
-                    error = "Редактирование заявки запрещено";
-                    return false;
-                }*/
+
                 if (entity.Version != model.Version)
                 {
                     error = StrMultipleAccessError;

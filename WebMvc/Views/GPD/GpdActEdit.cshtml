@@ -1,0 +1,337 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.GpdActEditModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "Редактирование актов.";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="doc-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Создание/редактирование акта ГПД</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @if (@Model.StatusID == 1 || @Model.StatusID == 2)
+                                {
+                                    if (Model.Permissions[0].IsCreateAct)
+                                    {
+                                        <input type="button" value="Копировать" title="Создать новый акт на основе текущего" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.GCID })'"/>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:300px">
+                                @Html.LabelFor(m => m.ActDate):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.EditorFor(m => m.ActDate)
+                                    @Html.ValidationMessageFor(model => model.ActDate)
+                                }
+                                else
+                                {
+                                    <label id="ActDate">@GpdBl.FormatDateMY(@Model.ActDate)</label>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ActNumber):
+                            </td>
+                            <td>
+                                <label id="ActNumber">@Model.ActNumber</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Surname):
+                            </td>
+                            <td>
+                                <label id="Surname">@Model.Surname</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.NameContract):
+                            </td>
+                            <td>
+                                <label id="NameContract">@Model.NameContract</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.NumContract):
+                            </td>
+                            <td>
+                                <label id="NumContract">@Model.NumContract</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DepLevel3Name):
+                            </td>
+                            <td>
+                                <label id="DepLevel3Name">@Model.DepLevel3Name</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:300px">
+                                @Html.LabelFor(m => m.ChargingDate):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @*
+                                    @Html.EditorFor(m => m.ChargingDate, (object)new { onchange = @GpdBl.FormatDateMY(Model.ChargingDate) })
+                                    <input type=text onmousedown
+                                    *@
+                                    @Html.EditorFor(m => m.ChargingDate)
+                                    @Html.ValidationMessageFor(model => model.ChargingDate)
+                                    
+                                }
+                                else
+                                {
+                                    <label id="ChargingDate">@GpdBl.FormatDateMY(@Model.ChargingDate)</label>
+                                }
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.DateBegin):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.EditorFor(m => m.DateBegin)
+                                }
+                                else
+                                {
+                                    <label id="DateBegin">@RequestBl.FormatDate(@Model.DateBegin)</label>
+                                }
+                                
+                                @Html.LabelFor(m => m.DateEnd):
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.EditorFor(m => m.DateEnd)
+                                }
+                                else
+                                {
+                                    <label id="DateEnd">@RequestBl.FormatDate(@Model.DateEnd)</label>
+                                }
+                                @Html.ValidationMessageFor(model => model.DateBegin)
+                                @Html.ValidationMessageFor(model => model.DateEnd)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Amount):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.TextBoxFor(m => m.Amount, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.Amount)
+                                }
+                                else
+                                {
+                                    <label id="Amount">@RequestBl.FormatSum(@Model.Amount)</label>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.AmountPayment):
+                            </td>
+                            <td>
+                                <label id="AmountPayment">@RequestBl.FormatSum(@Model.AmountPayment)</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.POrderDate):
+                            </td>
+                            <td>
+                                <label id="POrderDate">@RequestBl.FormatDate(@Model.POrderDate)</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PurposePayment):
+                            </td>
+                            <td>
+                                @Html.TextAreaFor(m => m.PurposePayment, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { style = "width:400px", maxlength = "500" } : (object)new { style = "width:400px", disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.PurposePayment)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ESSSNum):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || Model.Id == 0)
+                                {
+                                    @Html.TextBoxFor(m => m.ESSSNum, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.ESSSNum)
+                                }
+                                else
+                                {
+                                    <label id="ESSSNum">@Model.ESSSNum</label>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Autor):
+                            </td>
+                            <td>
+                                <label id="AutorLabel">@Model.Autor</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.StatusName):
+                            </td>
+                            <td>
+                                <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
+                                <label id="StatusNameLabel">@Model.StatusName</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" id="ContractBeginDate" name="ContractBeginDate" value="@Model.ContractBeginDate" />
+                                <input type="hidden" id="ContractEndDate" name="ContractEndDate" value="@Model.ContractEndDate" />
+                                <input type="hidden" id="ActNumber" name="ActNumber" value="@Model.ActNumber" />
+                                <input type="hidden" id="ActDate" name="ActDate" value="@Model.ActDate" />
+                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
+                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
+                                <input type="hidden" id="DepLevel3Name" name="DepLevel3Name" value="@Model.DepLevel3Name" />
+                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
+                                <input type="hidden" id="GCID" name="GCID" value="@Model.GCID" />
+                                <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
+                                <input type="hidden" id="IsCancel" name="IsCancel" value="@Model.IsCancel" />
+                                <input type="hidden" id="ChargingDate" name="ChargingDate" value="@Model.ChargingDate" />
+                                <input type="hidden" id="DateBegin" name="DateBegin" value="@Model.DateBegin" />
+                                <input type="hidden" id="DateEnd" name="DateEnd" value="@Model.DateEnd" />
+                                <input type="hidden" id="Amount" name="Amount" value="@Model.Amount" />
+                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
+                                <input type="hidden" id="ESSSNum" name="ESSSNum" value="@Model.ESSSNum" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @if ((@Model.StatusID == 4 || @Model.Id == 0) && (Model.Permissions[0].IsWrite || Model.Permissions[0].IsDraft))
+                {
+                    <input type="submit" value="Черновик" title="Сохранить черновик в базе данных" onclick="SaveDraft();"/>
+                    <input type="submit" value="Записать" title="Сохранить акт в базе данных" onclick="SaveAct();"/>
+                }
+                
+                @if (@Model.StatusID != 1)
+                {
+                    if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCancel)
+                    {
+                        <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectAct();"/>
+                    }
+                }
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div class="comment-wrap">
+        <table id="CommentsTable" style="width: 100%;">
+        @if (Model.Permissions[0].IsComment && Model.Id != 0)
+        {
+            <tr>
+                <td>
+                    @Html.TextAreaFor(m => m.CommentStr, (object)new { style = "width:400px", maxlength = "500" })
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" value="Добавить комментарий" id="AddComment" onclick="OnAddComment();"/>
+                </td>
+            </tr>
+        }
+        
+        <tr>
+            <td style="font-weight:bold">Комментарии</td>
+        </tr>
+        <tr>
+            <td>
+                <div id="CommentError" style="color:Red" visible="false"/>
+            </td>    
+        </tr>    
+        @if (Model != null && Model.Comments != null && Model.Comments.Count > 0)
+        {
+            foreach (var attach in Model.Comments)
+            {
+            <tr>
+                <td class="comment-author">@attach.Creator  @attach.CreateDate</td>
+            </tr>
+            <tr>
+                <td class="comment-text">@attach.Comment</td>
+            </tr>   
+            }
+        }
+    </table>
+
+    </div>
+}
+
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+
+    $(document).ready(function () {
+        $("#ActDate").datepicker();
+        $("#DateBegin").datepicker();
+        $("#DateEnd").datepicker();
+        $("#ChargingDate").datepicker({dateFormat: "mm.yy"});      
+        $(".hasDatepicker").width("75px");
+        
+        $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
+        setActiveMenuItem("moAct");
+    });
+
+    function SaveDraft()
+    {
+        $("#StatusID").val('4');
+        return true;
+    }
+    function SaveAct()
+    {
+        $("#StatusID").val('2');
+        return true;
+    }
+    function RejectAct()
+    {
+        $("#StatusID").val('4');
+        $("#IsCancel").val('True');
+        return true;
+    }
+
+    function OnAddComment()
+    {
+        return true;
+    }
+
+</script>   

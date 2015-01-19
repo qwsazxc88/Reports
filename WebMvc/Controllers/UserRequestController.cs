@@ -912,10 +912,7 @@ namespace WebMvc.Controllers
 
                  if(model.BeginDate > model.EndDate)
                     ModelState.AddModelError("BeginDate", "Дата начала отпуска не может превышать дату окончания отпуска.");
-                 else if (!model.IsDelete && model.IsApproved
-                          /*((role == UserRole.Employee && model.IsApprovedByUser) ||
-                         (role == UserRole.Manager && model.IsApprovedByManager) ||
-                         (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager))*/)
+                 else if (!model.IsDelete && model.IsApproved)
                  {
                      DateTime beginDate = model.BeginDate.Value;
                      DateTime current = DateTime.Today;
@@ -940,21 +937,6 @@ namespace WebMvc.Controllers
                          Log.InfoFormat("Absence not found for sicklist {0}",model.Id);
                          ModelState.AddModelError(string.Empty,
           "Период, указанный в заявке,не соответствует данным по неявкам в табеле.Вы не можете согласовать эту заявку.");
-                         /*if (role == UserRole.Employee && model.IsApprovedByUser)
-                         {
-                             ModelState.Remove("IsApprovedByUser");
-                             model.IsApprovedByUser = false;
-                         }
-                         if (role == UserRole.Manager && model.IsApprovedByManager)
-                         {
-                             ModelState.Remove("IsApprovedByManager");
-                             model.IsApprovedByManager = false;
-                         }
-                         if (role == UserRole.PersonnelManager && model.IsApprovedByPersonnelManager)
-                         {
-                             ModelState.Remove("IsApprovedByPersonnelManager");
-                             model.IsApprovedByPersonnelManager = false;
-                         }*/
                      }
                  }
              }
@@ -2187,22 +2169,6 @@ namespace WebMvc.Controllers
             }
         }
 
-         /*[HttpGet]
-         public ActionResult DepartmentDialog(int id)
-         {
-             try
-             {
-                 //DepartmentTreeModel model = new DepartmentTreeModel { DepartmentID = id };
-                 DepartmentTreeModel model = RequestBl.GetDepartmentTreeModel(id);
-                 return PartialView(model);
-             }
-             catch (Exception ex)
-             {
-                 Log.Error("Exception", ex);
-                 string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
-                 return PartialView("DialogError", new DialogErrorModel { Error = error });
-             }
-         }*/
          [HttpGet]
          public ContentResult GetChildren(int parentId, int level)
          {
@@ -2328,20 +2294,5 @@ namespace WebMvc.Controllers
             return View(new TemplatesListModel());
         }*/
          #endregion
-    }
-    
-        /*struct keyWordEntry
-    {
-        public string keyword;
-        public int position;
-        public string spacesAfter;
-
-        public keyWordEntry(string kword, int pos, string spaces)
-        {
-            keyword = kword;
-            position = pos;
-            spacesAfter = spaces;
-        }
-    }*/
-        
+    }        
 }

@@ -163,11 +163,13 @@ namespace WebMvc.Controllers
             {
                 if (ValidateSaveTpModel(model))
                 {
+                    // Если дата точки больше текущей даты, Факт заполняется значениями из Плана
                     if(model.TpDay.Date > DateTime.Today)
                     {
                         model.FactPointId = model.PointId;
                         model.FactHours = model.Hours;
                         model.TpFactHours = model.TpHours;
+                        model.IsFactCreditAvailable = model.IsCreditAvailable;
                     }
                     RequestBl.SaveTerraPoint(model);
                 }

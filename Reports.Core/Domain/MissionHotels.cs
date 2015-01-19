@@ -9,6 +9,7 @@ namespace Reports.Core.Domain
     public class MissionHotels : AbstractEntityWithVersion
     {
         #region Fields
+        //public virtual int Id { get; set; }
         public virtual string Name { get; set; }
         public virtual string Account { get; set; }
         #endregion
