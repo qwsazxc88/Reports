@@ -59,7 +59,14 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string InternationalPassportIssuedBy { get; set; }
 
         public PrintEmploymentFileModel()
-        {            
+        {
+            NameChanges = new List<NameChangeDto>();
+            HigherEducationDiplomas = new List<HigherEducationDiplomaDto>();
+            Training = new List<TrainingDto>();
+            ForeignLanguages = new List<ForeignLanguageDto>();
+            ExperienceItems = new List<ExperienceItemDto>();
+            Children = new List<FamilyMemberDto>();
+            References = new List<ReferenceDto>();
         }
     }
 }

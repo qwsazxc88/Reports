@@ -87,7 +87,7 @@
         <TD>@item.CertificateIssuedBy</TD>
         <TD>@string.Format("{0}-{1}",
             item.BeginningDate.HasValue ? item.BeginningDate.Value.ToShortDateString() : "?",
-            item.EndDate.HasValue ? item.EndDate.Value.ToShortDateString() : "?",
+            item.EndDate.HasValue ? item.EndDate.Value.ToShortDateString() : "?"
         )</TD>
         <TD>@item.Speciality</TD>
     </TR>
@@ -142,7 +142,7 @@
 <FONT size=2>
 @foreach (var item in Model.ForeignLanguages)
 {
-    <BR>@string.Format("{0} - {1}", item.LanguageName, item.Level)
+    <BR />@string.Format("{0} - {1}", item.LanguageName, item.Level)
 }
 <BR>(читаете, переводите со словарем, можете объясняться, владеете свободно)</FONT></P>
 
@@ -197,34 +197,46 @@
 <P align=center>Место работы, должность, (рабочий, мобильный телефон).</P></TD>
 <TD>
 <P align=center>Адрес местожительства, (домашний, рабочий и мобильный телефон).</P></TD></TR>
-<TR>
-<TD rowSpan=8 td>
-<P align=justify>Жена (муж)<BR>Гражданский муж (жена)<BR></P>
-<P align=left>Паспортные данные:</P></TD>
-<TD>@Model.Spouse.Name</TD>
-<TD>@(Model.Spouse.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Spouse.PlaceOfBirth</TD>
-<TD>@Model.Spouse.WorksAt</TD>
-<TD>@Model.Spouse.Contacts</TD>
-</TR>
-<TR>
-<TD rowSpan=4 td>&nbsp;Отец</TD>
-<TD>@Model.Father.Name</TD>
-<TD>@(Model.Father.DateOfBirth.HasValue ? Model.Father.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Father.PlaceOfBirth</TD>
-<TD>@Model.Father.WorksAt</TD>
-<TD>@Model.Father.Contacts</TD>
-</TR>
-<TR>
-<TD rowSpan=4 td>&nbsp;Мать</TD>
-<TD>@Model.Mother.Name</TD>
-<TD>@(Model.Mother.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Mother.PlaceOfBirth</TD>
-<TD>@Model.Mother.WorksAt</TD>
-<TD>@Model.Mother.Contacts</TD>
-</TR>
+
+@if (Model.Spouse != null)
+{
+    <TR>
+        <TD>
+        <P align=left>&nbsp;Жена (муж)<BR>Гражданский муж (жена)<BR></P>
+        <P align=left>&nbsp;Паспортные данные:</P></TD>
+        <TD>@Model.Spouse.Name</TD>
+        <TD>@(Model.Spouse.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Spouse.PlaceOfBirth</TD>
+        <TD>@Model.Spouse.WorksAt</TD>
+        <TD>@Model.Spouse.Contacts</TD>
+    </TR>
+}
+
+@if (Model.Father != null)
+{
+    <TR>
+        <TD>&nbsp;Отец</TD>
+        <TD>@Model.Father.Name</TD>
+        <TD>@(Model.Father.DateOfBirth.HasValue ? Model.Father.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Father.PlaceOfBirth</TD>
+        <TD>@Model.Father.WorksAt</TD>
+        <TD>@Model.Father.Contacts</TD>
+    </TR>
+}
+
+@if (Model.Father != null)
+{
+    <TR>
+        <TD>&nbsp;Мать</TD>
+        <TD>@Model.Mother.Name</TD>
+        <TD>@(Model.Mother.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Mother.PlaceOfBirth</TD>
+        <TD>@Model.Mother.WorksAt</TD>
+        <TD>@Model.Mother.Contacts</TD>
+    </TR>
+}
 
 @foreach (var item in @Model.Children)
 {
     <TR>
-        <TD rowSpan=4 td>&nbsp;Мать</TD>
+        <TD>&nbsp;Дети</TD>
         <TD>@item.Name</TD>
         <TD>@(item.DateOfBirth.HasValue ? item.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@item.PlaceOfBirth</TD>
         <TD>@item.WorksAt</TD>
