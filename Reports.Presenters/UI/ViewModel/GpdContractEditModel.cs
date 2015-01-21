@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractEditModel
     {
-        [Display(Name = "№ заявки")]
+        [Display(Name = "Номер заявки")]
         public int Id { get; set; }
         public int CreatorID { get; set; }
         [Display(Name = "Ошибка")]
@@ -34,7 +34,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Наименование договора")]
         public string NameContract { get; set; }
 
-        [Display(Name = "№ договора в ЭССД")]
+        [Display(Name = "Номер договора в ЭССД")]
         public string NumContract { get; set; }
 
         [Display(Name = "Срок действия договора с")]
