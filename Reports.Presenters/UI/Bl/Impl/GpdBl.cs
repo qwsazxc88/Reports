@@ -853,7 +853,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.Persons = GpdContractDao.GetPersons(role, model.PersonID, model.Surname);
         }
-        
         /// <summary>
         /// Достаем список договоров.
         /// </summary>
@@ -915,8 +914,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.DateBegin == null)
                     ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
 
-                if (model.DateBegin < DateTime.Today && model.DateBegin.Value.Month != DateTime.Today.Month)
-                    ms.AddModelError("DateBegin", "Дата начала срока действия договора должна входить в текущий месяц!");
+                if (model.DateBegin < DateTime.Today) //&& model.DateBegin.Value.Month != DateTime.Today.Month)
+                    ms.AddModelError("DateBegin", "Дата начала срока действия договора не должна быть меньше текущей!");
 
                 if (model.DateEnd == null)
                     ms.AddModelError("DateEnd", "Укажите дату окончания действия договора!");

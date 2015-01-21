@@ -23,22 +23,6 @@
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
                                 <input type="hidden" id="DSID" name="DSID" value="@Model.DSID" />
-                                @*
-                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
-                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
-                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
-                                <input type="hidden" id="CTID" name="CTID" value="@Model.CTID" />
-                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
-                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
-                                <input type="hidden" id="GPDID" name="GPDID" value="@Model.GPDID" />
-                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
-                                <input type="hidden" id="Autor" name="Autor" value="@Model.Autor" />
-                                <input type="hidden" id="CreatorName" name="CreatorName" value="@Model.CreatorName" />
-                                <input type="hidden" id="CreateDate" name="CreateDate" value="@Model.CreateDate" />
-                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
-                                <input type="hidden" id="CTName" name="CTName" value="@Model.CTName" />
-                                <input type="hidden" id="StatusName" name="StatusName" value="@Model.StatusName" />
-                                *@
                             </td>
                         </tr>
                         <tr>
@@ -87,15 +71,8 @@
                                 }
                                 <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 
-                            @*
-                                <input type="hidden" id="SNILS" name="SNILS" value="@Model.SNILS" />
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson();", onblur = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
-                                *@
                                 @Html.ValidationMessageFor(model => model.PersonID)
                                 
-                                @*
-                                <label>СНИЛС:</label>
-                                <label>@Model.SNILS</label>*@
                             </td>
                         </tr>
                         <tr>
@@ -407,7 +384,7 @@
 
                 @if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCreateAct)
                 {
-                    <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
+                    <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="disabled = 'disabled', location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
                 }
                 
             </td>
@@ -433,9 +410,7 @@
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
         $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
         $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
-        //$("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == -1) {$("#Operation").val('1'); this.form.submit();} else {$("#Operation").val('-1');} } } );
         $("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
-        //onblur = "SelectPerson();  if(@Model.PersonID != 0) {this.form.submit();}"
         $("#Surname").blur(function(){ SelectPerson(); if($("#PersonID").val() != 0) { this.form.submit();}});
 
         if ($("#DSID").val() == 0){
@@ -470,11 +445,6 @@
                                                     {
                                                         $("#Surname").val(ui.item.label);
                                                         $("#PersonID").val(ui.item.PersonID);
-                                                        //$("#SNILS").val(ui.item.snils);
-                                                        //$("#PayerName").val(ui.item.PayerName);
-                                                        //$("#PayeeName").val(ui.item.PayeeName);
-                                                        //$("#BankName").val(ui.item.BankName);
-                                                        //$("#Account").val(ui.item.Account);
                                                         $("#DSID").val(ui.item.DSID);
                                                         $("#Operation").val('1');
                                                         $("#Surname").focus();
@@ -509,49 +479,6 @@
     function SelectPerson()
     {
         $("#Operation").val('1');
-        //alert($("#PersonID").text());
-        return true;
-    }
-    function SelectPayeed()
-    {
-        $("#Operation").val('1');
-        return true;
-    }
-    function AddRefDetails()
-    {
-        $('#refDetailRow').show();
-        $("#Operation").val(2);
-        $("#DetailStatusID").val('4');
-        return true;
-    }
-    function EditRefDetails()
-    {
-        $("#Operation").val(3);
-        $('#refDetailRow').show();
-        $("#DetailStatusID").val('2');
-        return true;
-    }
-    function EditModeOn() {
-        $('#refDetailRow').show();
-        $("#Operation").val(3);
-        $("#DetailStatusID").val('4');
-        return true;
-    }
-    function EditModeOff() {
-        $("#Operation").val('4');
-        $("#DetailStatusID").val('2');
-        return true;
-    }
-    function CancelEditMode() {
-        $("#Operation").val('0');
-        $("#DetailStatusID").val('2');
-        $("#StatusID").val('5')
-        $('#refDetailRow').hide();
-        return true;
-    }
-    function RefDetails(){
-        $("#Operation").val('5');
-        $('#refDetailRow').hide();
         return true;
     }
 </script>   

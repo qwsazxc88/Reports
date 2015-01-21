@@ -87,19 +87,20 @@ namespace WebMvc.Controllers
             ModelState.Clear();
             if (model.Operation == 1)
             {
-                //model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
                 model = GpdBl.SetGpdContractEdit(model);
                 return View(model);
             }
 
             GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
             if (ModelState.Count != 0)
+            {
+                model = GpdBl.SetGpdContractEdit(model);//чтобы не пропадали данные
                 return View(model);
+            }
             string error;
             //сохранение договора
             if (GpdBl.SaveGpdContract(model, out error))
             {
-                //model = GpdBl.SetGpdContractEdit(model.Id, 0, 0, null);
                 model = GpdBl.SetGpdContractEdit(model);
                 return View(model);
             }
@@ -148,7 +149,6 @@ namespace WebMvc.Controllers
         [HttpGet]
         public ActionResult GpdRefDetailEdit(int Id)
         {
-            //bool hasError = false;
             GpdRefDetailEditModel model = GpdBl.SetRefDetailEditModel(Id, Id == 0 ? 4 : 2, 0, false, 1, 0, 0, 0, 0);
             ModelState.Clear();
             if (model.hasErrors)
@@ -163,14 +163,11 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdRefDetailEdit(GpdRefDetailEditModel model)
         {
-            //bool hasError = false;
             ModelState.Clear();
             if (model.StatusID != 2)
             {
-                //string Name = model.Name;
                 int PersonID = model.PersonID;
                 model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, model.Operation, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId, model.PersonID);
-                //model.Name = Name;
                 model.PersonID = PersonID;
                 return View(model);
             }
@@ -259,7 +256,10 @@ namespace WebMvc.Controllers
             }
 
             if (!model.IsCancel)
+            {
                 GpdBl.CheckFillFieldsForGpdAct(model, ModelState);
+                model = GpdBl.SetActEditModel(model);
+            }
             if (ModelState.Count != 0)
                 return View(model);
             else
@@ -345,7 +345,7 @@ namespace WebMvc.Controllers
         [HttpPost]
         public ActionResult GpdRefDetailDialog(GpdRefDetailDialogModel model)
         {
-
+            //модальное окно посылает и принимает форму через ajax
             ModelState.Clear();
             GpdBl.CheckFillFieldsForGpdRefDetailDialog(model, ModelState);
 

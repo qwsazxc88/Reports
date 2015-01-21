@@ -192,21 +192,15 @@
     $(document).ready(function () {
         setActiveMenuItem("moGpdRefDetail");
         $(":text").bind("keydown", function (e) { if (e.keyCode == 13) return false; });
-        window.name = "ttt";
-
-        //$("#Surname").keydown(function (e) { if (e.keyCode == 13) { if ($("#Operation").val() == 1) { this.form.submit(); } } });
-        //$("#Surname").blur(function () { $("#Operation").val('1'); ; if ($("#PersonID").val() != 0) { this.form.submit(); } });
 
         $(function () {
             $("[data-autocomplete-source]").each(
                 function () {
-                    //EditSetOn();
                     var target = $(this);
                     target.autocomplete({ source: target.attr("data-autocomplete-source"),
                         select: function (event, ui) {
                             $("#Surname").val(ui.item.label);
                             $("#PersonID").val(ui.item.PersonID);
-                            //$("#Operation").val('-1');
                             $("#Surname").focus();
                             return true;
                         }
@@ -246,7 +240,6 @@
         var title = "Создание реквизита получателя";
         $(newDiv).text('Подождите, идет загрузка данных ...');
         $.ajaxSetup({ cache: false });
-        //var url = actionDepDialogUrl + '?parentId='+ parentId+'&level='+level;
         $(newDiv).load(actionDetailDialogUrl + "?id=" + PayeeID  + " #DetailForm"
             , function (response, status, xhr) {
                 if (status == "error") {
