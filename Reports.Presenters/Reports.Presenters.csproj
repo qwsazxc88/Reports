@@ -183,6 +183,7 @@
     <Compile Include="UI\ViewModel\Employment\MilitaryServiceModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PassportModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PersonnelManagersModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintPersonalDataObligationModel.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterModel.cs" />
     <Compile Include="UI\ViewModel\Employment\SignersModel.cs" />
     <Compile Include="UI\ViewModel\Employment\OnsiteTrainingModel.cs" />
@@ -201,6 +202,8 @@
     <Compile Include="UI\ViewModel\Employment\PrintContractFormModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintEmploymentOrderModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintLiabilityContractModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintPersonalDataAgreementModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintEmploymentFileModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />

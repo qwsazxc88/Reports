@@ -1,0 +1,77 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintPersonalDataAgreementModel
+@{
+    Layout = null;
+    ViewBag.Title = "Дополнительное соглашение (персональные данные)";
+}
+
+<HTML>
+<HEAD>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=GENERATOR content="MSHTML 11.00.9600.16521">
+</HEAD>
+<BODY>
+
+<P align=center><STRONG><BR>ДОПОЛНИТЕЛЬНОЕ СОГЛАШЕНИЕ № б/н</STRONG></P>
+<P align=center><STRONG>К ТРУДОВОМУ&nbsp; ДОГОВОРУ&nbsp; №@Model.EmploymentContractNumber от 
+@(Model.EmploymentContractDate.HasValue ? Model.EmploymentContractDate.Value.ToShortDateString() : "___ __________________ _______") г.</STRONG></P>
+<P align=right><STRONG> @Model.AgreementDate.ToShortDateString() г.</STRONG></P>
+<P align=left>&nbsp;&nbsp; Публичное акционерное общество «Совкомбанк», именуемое в дальнейшем «РАБОТОДАТЕЛЬ», 
+@Model.EmployerRepresentativeTemplate, с одной стороны, и @Model.EmployeeName, именуемый(ая) в дальнейшем «РАБОТНИК», с другой стороны, 
+заключили настоящее Дополнительное соглашение (далее – Соглашение)&nbsp; о нижеследующем:
+<BR>&nbsp;&nbsp; 1. Дополнить&nbsp; Трудовой договор №@Model.EmploymentContractNumber от
+@(Model.EmploymentContractDate.HasValue ? Model.EmploymentContractDate.Value.ToShortDateString() : "___ __________________ _______") (далее - Договор) пунктом следующего содержания:
+<BR>« п. 4.3.1.&nbsp; «РАБОТНИК не возражает&nbsp; против&nbsp; сообщения&nbsp; РАБОТОДАТЕЛЕМ&nbsp; сведений о РАБОТНИКЕ, 
+содержащих&nbsp; его персональные&nbsp;&nbsp; данные,&nbsp; в ООО «РусКонсалт» с целью&nbsp; осуществления услуг по расчету&nbsp; заработной платы РАБОТНИКА, 
+в том числе, но не ограничиваясь:<BR>- расчет сумм оплаты труда и других выплат, причитающихся мне как сотруднику Банка;<BR>- расчет налогов на доходы физических лиц;
+<BR>- расчет единого социального налога;<BR>&nbsp;- расчет других налогов и взносов, связанных с доходами физических лиц, 
+устанавливаемых Федеральным законодательством и законодательством субъектов Российской Федерации;<BR>&nbsp;- подготовку комплекта документов по оформлению выплат Работникам;
+<BR>- подготовку комплекта отчетных документов по налогам и взносам;<BR>&nbsp;&nbsp; Данное согласие&nbsp; действительно в течение всего времени работы&nbsp; 
+РАБОТНИКА&nbsp; у&nbsp; РАБОТОДАТЕЛЯ.&nbsp;<BR>&nbsp;&nbsp; 
+2. РАБОТОДАТЕЛЬ: ПАО "Совкомбанк"
+<BR>Место нахождения: 156000, Костромская обл, Костромской р-н, Кострома г, Текстильщиков пр-кт, дом № 46
+<BR>Телефон: (4942) 39-09-09
+<BR>К/с 30101810300000000743
+<BR>БИК 43469743
+<BR>ИНН 4402002936
+<BR>ОКПО 09139030
+<BR>
+3. РАБОТНИК:
+<BR>Паспорт: @Model.EmployeePassportSeriesNumber
+<BR>Выдан: @(Model.EmployeePassportDateOfIssue.HasValue ? @Model.EmployeePassportDateOfIssue.Value.ToShortDateString() : "___ __________________ _______")
+@Model.EmployeePassportIssuedBy
+<BR>Адрес регистрации: @Model.EmployeeAddress
+<BR>
+4. ПОДПИСИ СТОРОН</P><br /><br />
+<table>
+    <tr>
+        <th style="width: 50%;">РАБОТОДАТЕЛЬ:</th>
+        <th>РАБОТНИК:</th>
+    </tr>
+    <tr>
+        <td>________________________ /@Model.EmployerRepresentativeNameShortened/</td>
+        <td>________________________ /@Model.EmployeeNameShortened/</td>
+    </tr>
+</table>
+
+<br />
+
+<TABLE style="HEIGHT: 10px; WIDTH: 564px; BORDER-COLLAPSE: collapse" cellSpacing=0 cellPadding=0 width=564 border=0>
+<COLGROUP>
+<COL style="WIDTH: 47pt; mso-width-source: userset; mso-width-alt: 2645" span=9 width=62>
+<TBODY>
+
+<TR style="HEIGHT: 15pt" height=20>
+<TD class=xl66 style="BORDER-TOP: #d4d0c8; HEIGHT: 15pt; BORDER-RIGHT: #d4d0c8; WIDTH: 94pt; BORDER-BOTTOM: windowtext 0.5pt solid; BORDER-LEFT: #d4d0c8;" height=20 width=124 colSpan=2></TD>
+<TD class=xl65 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 47pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8; BACKGROUND-COLOR: transparent" width=62></TD>
+<TD class=xl65 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 47pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8; BACKGROUND-COLOR: transparent" width=62></TD>
+<TD class=xl65 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 47pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8; BACKGROUND-COLOR: transparent" width=62></TD>
+<TD class=xl65 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 47pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8; BACKGROUND-COLOR: transparent" width=62></TD>
+<TD class=xl65 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 47pt; BORDER-BOTTOM: #d4d0c8; BORDER-LEFT: #d4d0c8; BACKGROUND-COLOR: transparent" width=62></TD>
+<TD class=xl67 style="BORDER-TOP: #d4d0c8; BORDER-RIGHT: #d4d0c8; WIDTH: 94pt; BORDER-BOTTOM:  windowtext 0.5pt solid; BORDER-LEFT: #d4d0c8;" width=124 colSpan=2>
+<FONT size=2></FONT></TD></TR>
+
+</TBODY></TABLE>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; М.П.</P>
+
+</BODY></HTML>

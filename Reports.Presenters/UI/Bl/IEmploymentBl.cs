@@ -29,6 +29,9 @@ namespace Reports.Presenters.UI.Bl
         PrintContractFormModel GetPrintContractFormModel(int userId);
         PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId);
         PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId);
+        PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId);
+        PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId);
+        PrintEmploymentFileModel GetPrintEmploymentFileModel(int userId);
         IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending);
         
         void LoadDictionaries(GeneralInfoModel model);
