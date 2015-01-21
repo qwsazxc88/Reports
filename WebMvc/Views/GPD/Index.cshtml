@@ -1,0 +1,209 @@
+﻿@using Reports.Core
+@using Reports.Presenters.Services.Impl
+@using Reports.Presenters.UI.Bl.Impl;
+@model Reports.Presenters.UI.ViewModel.GpdContractModel
+@{
+    Layout = "~/Views/Shared/_LayoutGPD.cshtml";
+    ViewBag.Title = "ГПД";
+}
+
+@using (Html.BeginForm())
+{
+    <table style="width:100%">
+        <tr>
+            <td colspan="2">
+                <h5 >
+                    @Html.ValidationMessageFor(model => model.errorMessage)
+                </h5>
+                <div class="filter-wrap">
+                    <table style="width:100%">
+                        <tr>
+                            <td colspan="2">
+                                <b>Договоры</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.DepartmentName):
+                            </td>
+                            <td>
+                                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                                <input type="hidden" id="DepartmentName" name="DepartmentName" value="@Model.DepartmentName" />
+                                <input type="hidden" id="DepartmentId" name="DepartmentId" value="@Model.DepartmentId" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="button" value="Выбрать" onclick="changeDepartment();"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:220px">
+                                @Html.LabelFor(m => m.StatusID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.StatusID, new SelectList(Model.Statuses, "ID", "Name")) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.CTID):
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.CTID, new SelectList(Model.ChargingTypes, "ID", "Name")) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                @Html.LabelFor(m => m.DateBegin):
+                                @Html.EditorFor(model => model.DateBegin) 
+                                @Html.LabelFor(m => m.DateEnd):
+                                @Html.EditorFor(model => model.DateEnd) 
+                             </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Surname):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Surname) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.NumContract):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.NumContract) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
+                                <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindContract();"/>
+                                <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="action-wrap">
+                                    <table style="width:100%">
+                                        <tr>
+                                            <td>
+                                                @if (@Model.Permissions[0].IsCreate)
+                                                {
+                                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdContractEdit", "GPD", new { id = 0, PersonID = 0 })'"/>    
+                                                }
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
+                                <input type="hidden" id="SortDescending" name="SortDescending" value="@Model.SortDescending" />
+                                <table class="grid">
+                                    <tr>
+                                        <th>
+                                            @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
+                                        </th>
+                                        <th>
+                                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Вид начисления</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">№ договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата начала договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата окончания договора</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата пролонгации</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Плательщик</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort12" style="min-width:130px"><a href="#" onclick = "SortChanged(12);">Получатель</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Дирекция 3 ур.</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Подразделение 7ур.</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">Состояние</a></div>
+                                        </th>
+                                    </tr>
+                                    @if (Model.Contracts != null && Model.Contracts.Count > 0)
+                                    {
+                                        int i = 1;
+                                        foreach (var doc in Model.Contracts)
+                                        {
+                                            <tr>
+                                                <td>@i.ToString()</td>
+                                                <!--<td>@doc.Id</td>-->
+                                                <td>@doc.Surname</td>
+                                                <td>@doc.CTName</td>
+                                                <!--<td>@doc.NumContract</td>-->
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>
+                                                <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
+                                                <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                <td>@RequestBl.FormatDate(@doc.DateP)</td>
+                                                <td>@doc.PayerName</td>
+                                                <td>@doc.PayeeName</td>
+                                                <td>@doc.DepLevel3Name</td>
+                                                <td>@doc.DepLevel7Name</td>
+                                                <td>@doc.StatusName</td>
+                                            </tr>
+                                            i += 1;
+                                        }
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+}
+
+<script src="@Url.Content("~/Scripts/TableSort.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
+    var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
+    $(document).ready(function () {
+        $("#DateBegin").datepicker();
+        $("#DateEnd").datepicker();
+        $(".hasDatepicker").width("75px");
+        setSortFields();
+        setActiveMenuItem("moContract");
+    });
+
+    function resetFilter() {
+        $("#DateBegin").val('');
+        $("#DateEnd").val('');
+        $("#DepartmentName").val('');
+        $("#DepartmentId").val('0');
+        $("#DepartmentNameLabel").text('');
+        $("#DTID").val('0');
+        $("#StatusID").val('0');
+        $("#CTID").val('0');
+    }
+
+    function GetFindContract()
+    {
+        $("#IsFind").val('True');
+        return true;
+    }
+ </script>   

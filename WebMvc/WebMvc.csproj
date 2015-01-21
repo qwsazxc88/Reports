@@ -103,6 +103,7 @@
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\EmploymentController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\GPDController.cs" />
     <Compile Include="Controllers\GraphicsController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -122,6 +123,7 @@
   <ItemGroup>
     <Content Include="Content\Default.css" />
     <Content Include="Content\favicon.ico" />
+    <Content Include="Content\files\NewYear.jpg" />
     <Content Include="Content\files\Образец заявления о приеме.png" />
     <Content Include="Content\fileuploader.css" />
     <Content Include="Content\fileuploader.js" />
@@ -695,6 +697,12 @@
     <Content Include="Views\UserRequest\PrintDismissalList.cshtml" />
     <Content Include="Views\MissionOrder\MissionHotels.cshtml" />
     <Content Include="Views\MissionOrder\MissionHotelsEdit.cshtml" />
+    <Content Include="Views\GPD\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutGPD.cshtml" />
+    <Content Include="Views\Shared\_MenuPartialGPD.cshtml" />
+    <Content Include="Views\GPD\GpdRefDetail.cshtml" />
+    <Content Include="Views\GPD\GpdRefDetailEdit.cshtml" />
+    <Content Include="Views\GPD\GpdContractEdit.cshtml" />
     <Content Include="Views\Employment\GeneralInfoReadOnly.cshtml" />
     <Content Include="Views\Employment\PassportReadOnly.cshtml" />
     <Content Include="Views\Employment\EducationReadOnly.cshtml" />
@@ -732,6 +740,8 @@
     <Content Include="Views\Help\HelpQuestionEdit.cshtml" />
     <Content Include="Views\Help\QuestionRedirectDialog.cshtml" />
     <Content Include="Views\Help\QuestionRedirectDialogError.cshtml" />
+    <Content Include="Views\GPD\GpdActEdit.cshtml" />
+    <Content Include="Views\GPD\GpdActList.cshtml" />
     <Content Include="Views\Employment\PrintRoster.cshtml" />
     <Content Include="Views\Employment\PrintLiabilityContract.cshtml" />
     <Content Include="Views\Employment\PrintPersonalDataObligation.cshtml" />

@@ -492,6 +492,18 @@ namespace Reports.Core
              ImplementedBy(typeof(MissionHotelsDao)).
              LifeStyle.Is(type));
 
+            Register(Component.For(typeof(IGpdRefDetailDao)).
+             ImplementedBy(typeof(GpdRefDetailDao)).
+             LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdDetailSetDao)).
+             ImplementedBy(typeof(GpdDetailSetDao)).
+             LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdContractDao)).
+             ImplementedBy(typeof(GpdContractDao)).
+             LifeStyle.Is(type));
+            Register(Component.For(typeof(IGpdActDao)).
+             ImplementedBy(typeof(GpdActDao)).
+             LifeStyle.Is(type));
 
 
             Register(Component.For(typeof (IHelpVersionDao)).
@@ -530,7 +542,7 @@ namespace Reports.Core
             Register(Component.For<IEmploymentSignersDao>()
                 .ImplementedBy<EmploymentSignersDao>()
                 .LifeStyle.Is(type));
-
+            
             Register(Component.For(typeof(ISessionFactory))
                     .Named("ISessionFactory")
                     .Instance(SessionFactory)
