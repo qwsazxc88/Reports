@@ -9,14 +9,14 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdActEditModel
     {
-        [Display(Name = "№ заявки")]
+        [Display(Name = "Номер заявки")]
         public int Id { get; set; }
 
         [Display(Name = "Дата акта")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? ActDate { get; set; }
 
-        [Display(Name = "№ акта в ЭССД")]
+        [Display(Name = "Ноиер акта в ЭССД")]
         public string ActNumber { get; set; }
 
         [Display(Name = "ФИО")]
@@ -58,7 +58,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Назначение платежа")]
         public string PurposePayment { get; set; }
 
-        [Display(Name = "№ заявки в ЭССС")]
+        [Display(Name = "Номер заявки в ЭССС")]
         public string ESSSNum { get; set; }
 
         [Display(Name = "Автор")]

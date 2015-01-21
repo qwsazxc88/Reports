@@ -190,9 +190,12 @@
                         </tr>
                         <tr>
                             <td>
+                                @*
                                 @Html.LabelFor(m => m.DSID):
+                                *@
                             </td>
                             <td>
+                                @*
                                 @if (Model.StatusID == 4 || @Model.Id == 0)
                                 {
                                     <input type="text" name="DetailName" id="DetailName" value="@Model.DetailName" style="width:600px" data-autocomplete-source="@Url.Action("AutocompleteDetSetSearch", "GPD")" />
@@ -201,10 +204,11 @@
                                 {
                                     <label>@Model.Surname</label>
                                 }
+                                *@
                                 <input type="hidden" id="DSID" name="DSID" value="@Model.DSID"/>
-                                
+                                @*
                                 @Html.ValidationMessageFor(model => model.DSID)
-                                
+                                *@
                             </td>
                         </tr>
                         <tr>
