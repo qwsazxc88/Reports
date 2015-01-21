@@ -43,6 +43,7 @@ namespace Reports.Presenters.UI.Bl
 
         #region Акты
         GpdActEditModel SetActEditModel(int Id, int GCID, bool hasError);
+        GpdActEditModel SetActEditModel(GpdActEditModel model);
         void CheckFillFieldsForGpdAct(GpdActEditModel model, System.Web.Mvc.ModelStateDictionary ms);
         bool SaveGpdAct(GpdActEditModel model, out string error);
         void SetGpdActFind(GpdActListModel model, bool hasError);
@@ -53,6 +54,8 @@ namespace Reports.Presenters.UI.Bl
 
         #region Модальное окно создания/редактирования реквизитов
         GpdRefDetailDialogModel SetDetailDialog(int ID);
+        bool SaveGpdRefDetailDialog(GpdRefDetailDialogModel model, out string error);
+        void CheckFillFieldsForGpdRefDetailDialog(GpdRefDetailDialogModel model, System.Web.Mvc.ModelStateDictionary ms);
         #endregion
     }
 }

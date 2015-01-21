@@ -22,6 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         //[Display(Name = "Выбор реквизита")]
         public int Id { get; set; }
+        public int DetailID { get; set; }
 
         [Display(Name = "ИНН")]
         public string INN { get; set; }
@@ -43,5 +44,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }
+
+        public int CreatorID { get; set; }
     }
 }

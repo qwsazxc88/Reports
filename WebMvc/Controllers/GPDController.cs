@@ -184,8 +184,6 @@ namespace WebMvc.Controllers
                     string error;
                     if (GpdBl.SaveGpdRefDetail(model, out error))
                     {
-                        //думал, что после сохранения нужно возвращаться к списку
-                        //return RedirectToAction("GpdRefDetail");
                         model = GpdBl.SetRefDetailEditModel(model.Id, model.StatusID, 0, false, model.DTID, model.PayerID, model.PayeeID, model.DetailId, model.PersonID);
                         if (model.StatusID == 2)
                             model.errorMessage = "Запись сохранена!";
@@ -253,6 +251,13 @@ namespace WebMvc.Controllers
         {
             bool hasError = false;
             ModelState.Clear();
+            if (model.Operation == 1)
+            {
+                //model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
+                model = GpdBl.SetActEditModel(model);
+                return View(model);
+            }
+
             if (!model.IsCancel)
                 GpdBl.CheckFillFieldsForGpdAct(model, ModelState);
             if (ModelState.Count != 0)
@@ -281,8 +286,8 @@ namespace WebMvc.Controllers
         public ActionResult AutocompletePersonDetSetSearch(string term)
         {
             IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonDSAutocomplete(term, 0);
-            //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
-            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+            //var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PersonID = a.PersonID, DSID = a.Id }).Distinct();
 
             return Json(PersonList, JsonRequestBehavior.AllowGet);
         }
@@ -296,6 +301,19 @@ namespace WebMvc.Controllers
             IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonAutocomplete(term, 0);
             //var PersonList = Persons.Where(a => a.Name.Contains(term)).ToList().Select(a => new { label = a.Name, snils = a.SNILS, PersonID = a.Id }).Distinct();
             var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PersonID = a.Id }).Distinct();
+
+            return Json(PersonList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Автозаполнение для выбора набора в акте.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompleteDetSetSearch(string term)
+        {
+            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonDSAutocomplete(term, 0);
+            //var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+            var PersonList = Persons.ToList().Select(a => new { label = a.Name, DSID = a.Id }).Distinct();
 
             return Json(PersonList, JsonRequestBehavior.AllowGet);
         }
@@ -325,23 +343,31 @@ namespace WebMvc.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ContentResult GpdRefDetailDialog(GpdRefDetailDialogModel model)
+        public ActionResult GpdRefDetailDialog(GpdRefDetailDialogModel model)
         {
-            try
+
+            ModelState.Clear();
+            GpdBl.CheckFillFieldsForGpdRefDetailDialog(model, ModelState);
+
+            if (ModelState.Count != 0)
             {
-                //GpdRefDetailDialogModel model = GpdBl.SetDetailDialog(id);
-                //return PartialView(model);
-                
+                return PartialView(model);
             }
-            catch (Exception ex)
+            else
             {
-                //Log.Error("Exception", ex);
-                //string error = "Ошибка при загрузке данных: " + ex.GetBaseException().Message;
-                //return PartialView("DialogError", new DialogErrorModel { Error = error });
+                string error;
+                if (GpdBl.SaveGpdRefDetailDialog(model, out error))
+                {
+                    model = GpdBl.SetDetailDialog(model.Id);
+                    return PartialView(model);
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(error))
+                        ModelState.AddModelError("errorMessage", error);
+                    return PartialView(model);
+                }
             }
-            var jsonSerializer = new JavaScriptSerializer();
-            string jsonString = jsonSerializer.Serialize(model);
-            return Content(jsonString);
         }
     }
 }

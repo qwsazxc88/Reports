@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdActListModel
     {
-        [Display(Name = "№ документа")]
+        [Display(Name = "№ заявки")]
         public int? Id { get; set; }
 
         [Display(Name = "Структурное подразделение")]
@@ -31,7 +31,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
 
-        [Display(Name = "Поиск по № акта")]
+        [Display(Name = "Поиск по № акта в ЭССД")]
         public string ActNumber { get; set; }
 
         public IList<GpdActDto> Documents { get; set; }

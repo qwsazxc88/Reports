@@ -145,9 +145,23 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("SNILS", NHibernateUtil.String).
                 AddScalar("LongName", NHibernateUtil.String).
+                //реквизиты плательщика
                 AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayerINN", NHibernateUtil.String).
+                AddScalar("PayerKPP", NHibernateUtil.String).
+                AddScalar("PayerAccount", NHibernateUtil.String).
+                AddScalar("PayerBankName", NHibernateUtil.String).
+                AddScalar("PayerBankBIK", NHibernateUtil.String).
+                AddScalar("PayerCorrAccount", NHibernateUtil.String).
+                //реквизиты получателя
                 AddScalar("PayeeName", NHibernateUtil.String).
-                AddScalar("BankName", NHibernateUtil.String).
+                AddScalar("PayeeINN", NHibernateUtil.String).
+                AddScalar("PayeeKPP", NHibernateUtil.String).
+                AddScalar("PayeeAccount", NHibernateUtil.String).
+                AddScalar("PayeeBankName", NHibernateUtil.String).
+                AddScalar("PayeeBankBIK", NHibernateUtil.String).
+                AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+
                 AddScalar("Account", NHibernateUtil.String);
         }
         /// <summary>
@@ -265,6 +279,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DateP", NHibernateUtil.DateTime).
                 AddScalar("DatePOld", NHibernateUtil.DateTime).
                 AddScalar("GPDID", NHibernateUtil.String).
+                AddScalar("GPDContractID", NHibernateUtil.String).
                 AddScalar("PurposePayment", NHibernateUtil.String).
                 AddScalar("PurposePaymentPart", NHibernateUtil.String).
                 AddScalar("CreatorName", NHibernateUtil.String).
@@ -274,12 +289,26 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DepLevel3Name", NHibernateUtil.String).
                 AddScalar("DepLevel7Name", NHibernateUtil.String).
                 AddScalar("IsLong", NHibernateUtil.Boolean).
+                //реквизиты плательщика
                 AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayerINN", NHibernateUtil.String).
+                AddScalar("PayerKPP", NHibernateUtil.String).
+                AddScalar("PayerAccount", NHibernateUtil.String).
+                AddScalar("PayerBankName", NHibernateUtil.String).
+                AddScalar("PayerBankBIK", NHibernateUtil.String).
+                AddScalar("PayerCorrAccount", NHibernateUtil.String).
+                //реквизиты получателя
                 AddScalar("PayeeName", NHibernateUtil.String).
+                AddScalar("PayeeINN", NHibernateUtil.String).
+                AddScalar("PayeeKPP", NHibernateUtil.String).
+                AddScalar("PayeeAccount", NHibernateUtil.String).
+                AddScalar("PayeeBankName", NHibernateUtil.String).
+                AddScalar("PayeeBankBIK", NHibernateUtil.String).
+                AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+                AddScalar("Account", NHibernateUtil.String).
+
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
                 AddScalar("Amount", NHibernateUtil.Decimal).
-                AddScalar("BankName", NHibernateUtil.String).
-                AddScalar("Account", NHibernateUtil.String).
                 AddScalar("DSID", NHibernateUtil.Int32);
         }
         /// <summary>

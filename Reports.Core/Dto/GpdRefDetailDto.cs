@@ -69,6 +69,7 @@ namespace Reports.Core.Dto
         public virtual int PersonID { get; set; }
         public virtual int PayerID { get; set; }
         public virtual int PayeeID { get; set; }
+        public virtual bool AllowEdit { get; set; }
     }
     /// <summary>
     /// Для отображения списка наборов реквизитов

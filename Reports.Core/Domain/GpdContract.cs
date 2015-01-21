@@ -8,6 +8,7 @@ namespace Reports.Core.Domain
         #region Fields
         //public virtual int Id { get; set; }
         public virtual int DepartmentId { get; set; }
+        public virtual int CreatorID { get; set; }
         public virtual int PersonID { get; set; }
         public virtual int CTID { get; set; }
         public virtual int StatusID { get; set; }
@@ -15,17 +16,17 @@ namespace Reports.Core.Domain
         public virtual string NameContract { get; set; }
         public virtual DateTime? DateBegin { get; set; }
         public virtual DateTime? DateEnd { get; set; }
+        public virtual DateTime? DateP { get; set; }
         //public virtual int PayeeID { get; set; }
         //public virtual int PayerID { get; set; }
         public virtual string GPDID { get; set; }
+        public virtual string GPDContractID { get; set; }
         public virtual string PurposePayment { get; set; }
-        public virtual int CreatorID { get; set; }
-        public virtual DateTime? DateP { get; set; }
         public virtual bool IsLong { get; set; }
-        public virtual int PaymentPeriodID { get; set; }
+        public virtual int? PaymentPeriodID { get; set; }
         public virtual decimal Amount { get; set; }
         public virtual DateTime? EditDate { get; set; }
-        public virtual int? EditorID { get; set; }
+        public virtual int EditorID { get; set; }
         public virtual int DSID { get; set; }
 
         //журнал изменений даты пролонгации

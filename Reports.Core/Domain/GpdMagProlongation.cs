@@ -8,7 +8,7 @@ namespace Reports.Core.Domain
     /// </summary>
     public class GpdMagProlongation : AbstractEntity
     {
-        public virtual int GCID { get; set; }
+        //public virtual int GCID { get; set; }
         public virtual DateTime? DateP { get; set; }
         public virtual int CreatorID { get; set; }
 

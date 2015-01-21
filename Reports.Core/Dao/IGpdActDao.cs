@@ -61,5 +61,11 @@ namespace Reports.Core.Dao
         /// <param name="role"></param>
         /// <returns></returns>
         IList<GpdPermissionDto> GetPermission(UserRole role);
+        /// <summary>
+        /// наборы реквизитов
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        IList<GpdContractSurnameDto> GetAutocompletePersonDS(string Name, int DSID);
     }
 }

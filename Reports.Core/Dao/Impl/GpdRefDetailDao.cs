@@ -83,7 +83,7 @@ namespace Reports.Core.Dao.Impl
                 sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "DTID = " + DTID.ToString();
 
             sqlQuery += (sqlWhere.Length != 0 ? " WHERE " + sqlWhere : "");
-            sqlQuery += " ORDER BY Name";
+            sqlQuery += " ORDER BY Priority";
 
             IQuery query = CreateGRDQuery(sqlQuery);
             IList<GpdDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailDto))).List<GpdDetailDto>();
@@ -150,7 +150,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("EditorName", NHibernateUtil.String).
                 AddScalar("PersonID", NHibernateUtil.Int32).
                 AddScalar("PayerID", NHibernateUtil.Int32).
-                AddScalar("PayeeID", NHibernateUtil.Int32);
+                AddScalar("PayeeID", NHibernateUtil.Int32).
+                AddScalar("AllowEdit", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Составляем условие запроса.
