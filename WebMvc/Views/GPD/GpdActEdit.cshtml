@@ -484,12 +484,6 @@
                                           select : function(event, ui) 
                                                     {
                                                         $("#DetailName").val(ui.item.label);
-                                                        //$("#PersonID").val(ui.item.PersonID);
-                                                        //$("#SNILS").val(ui.item.snils);
-                                                        //$("#PayerName").val(ui.item.PayerName);
-                                                        //$("#PayeeName").val(ui.item.PayeeName);
-                                                        //$("#BankName").val(ui.item.BankName);
-                                                        //$("#Account").val(ui.item.Account);
                                                         $("#DSID").val(ui.item.DSID);
                                                         $("#Operation").val('1');
                                                         $("#DetailName").focus();
@@ -503,7 +497,7 @@
 
     function SaveDraft()
     {
-        $("#Operation").val('1');
+        //$("#Operation").val('1');
         $("#StatusID").val('4');
         return true;
     }
