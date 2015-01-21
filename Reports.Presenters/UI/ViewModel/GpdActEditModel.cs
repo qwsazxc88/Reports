@@ -85,7 +85,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string PayerKPP { get; set; }
         [Display(Name = "Расчетный счет")]
         public string PayerAccount { get; set; }
-        [Display(Name = "<Банк плательщика")]
+        [Display(Name = "Банк плательщика")]
         public string PayerBankName { get; set; }
         [Display(Name = "Бик плательщика")]
         public string PayerBankBIK { get; set; }
@@ -102,7 +102,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string PayeeKPP { get; set; }
         [Display(Name = "Расчетный счет")]
         public string PayeeAccount { get; set; }
-        [Display(Name = "<Банк получателя")]
+        [Display(Name = "Банк получателя")]
         public string PayeeBankName { get; set; }
         [Display(Name = "Бик получателя")]
         public string PayeeBankBIK { get; set; }
