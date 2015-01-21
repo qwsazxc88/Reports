@@ -194,6 +194,7 @@
     <Compile Include="UI\ViewModel\Employment\PrintEmploymentOrderModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintLiabilityContractModel.cs" />
     <Compile Include="UI\ViewModel\Employment\PrintPersonalDataAgreementModel.cs" />
+    <Compile Include="UI\ViewModel\Employment\PrintEmploymentFileModel.cs" />
     <Compile Include="UI\ViewModel\GradeListViewModel.cs" />
     <Compile Include="UI\ViewModel\GraphicsListModel.cs" />
     <Compile Include="UI\ViewModel\HelpEditVersionModel.cs" />

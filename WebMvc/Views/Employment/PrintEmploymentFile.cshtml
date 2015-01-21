@@ -1,0 +1,342 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PrintEmploymentFileModel
+@{
+    Layout = null;
+    ViewBag.Title = "Личный листок по учету кадров";
+}
+
+<HTML><HEAD>
+<META content="text/html; charset=utf-8" http-equiv=Content-Type>
+<META name=GENERATOR content="MSHTML 11.00.9600.16521"></HEAD>
+<BODY>
+<P align=center><STRONG>ЛИЧНЫЙ ЛИСТОК<BR>ПО УЧЕТУ КАДРОВ</STRONG></P>
+<P align=left>1. Фамилия @Model.LastName<BR>Имя @Model.FirstName Отчество @Model.Patronymic<BR>Если изменяли фамилию, имя или отчество, укажите когда, где и по какой причине
+<BR>
+@foreach (var item in @Model.NameChanges)
+{
+    <span>item.Date + " " + item.Place + " " + item.Reason</span><br />
+}
+</P>
+<P align=left>2. Пол @(Model.IsMale ? "мужской" : "женский")
+<P></P>
+<P align=left>3. Число, месяц и год рождения @(Model.DateOfBirth.HasValue ? Model.DateOfBirth.Value.ToShortDateString() : string.Empty)</P>
+<P align=left>4. Место рождения @Model.PlaceOfBirth<BR>
+<FONT size=2>(село, деревня, город, район, область, край, республика)<BR>________________________________________________________________________________________</FONT></P>
+@**@
+<P align=left><FONT size=2><FONT size=3>5. Семейное положение </FONT></FONT></P>
+<P align=left><FONT size=2><FONT size=3>6. Образование ________________________________________________________________</FONT></FONT></P><FONT size=2><FONT size=3>
+@**@
+<P align=left>
+<TABLE cellSpacing=0 width="100%" border=1 <table>
+<TBODY>
+<TR>
+<TD>
+<P class=MsoNormal style="TEXT-ALIGN: justify; MARGIN: 0cm 0cm 0pt" align=center>№<BR>п/п</P></TD>
+<TD>
+<P align=center><FONT size=2>Наименование высшего или среднего<BR>специального учебного заведения и место<BR>его нахождения.</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>Факультет или<BR>отделение.<BR></P></FONT></TD>
+<TD>
+<P align=center><FONT size=2>Год<BR>поступления.<BR></P></FONT></TD>
+<TD>
+<P align=center><FONT size=2>Год окончания<BR>или ухода.<BR></P></FONT></TD>
+<TD>
+<P align=center><FONT size=2>Специальность,<BR>№ диплома или <BR>удостоверения.</FONT></P></TD></TR>
+@{ int i = 0; }
+@foreach (var item in Model.HigherEducationDiplomas)
+{
+    <TR>
+        <TD>@(++i)</TD>
+        <TD>@item.IssuedBy</TD>
+        <TD>@item.Department</TD>
+        <TD>@item.AdmissionYear</TD>
+        <TD>@item.GraduationYear</TD>
+        <TD>@string.Format("{0}, {1} {2}", item.Speciality, item.Series, item.Number)</TD>
+    </TR>
+}
+
+</TBODY>
+</TABLE>
+
+</P>
+
+<P align=left>7. Повышение квалификации или переподготовка, курсы.<BR>
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD>
+<P align=center>№<BR>п/п</P></TD>
+<TD>
+<P align=center><FONT size=2>Наименование учебного&nbsp; заведения и<BR>учебного курса.</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>Период обучения.<BR></FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>Полученная специальность или<BR>квалификация.</FONT></P></TD></TR>
+
+<TR>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+
+@{ i = 0; }
+@foreach (var item in Model.Training)
+{
+    <TR>
+        <TD>@(++i)</TD>
+        <TD>@item.CertificateIssuedBy</TD>
+        <TD>@string.Format("{0}-{1}",
+            item.BeginningDate.HasValue ? item.BeginningDate.Value.ToShortDateString() : "?",
+            item.EndDate.HasValue ? item.EndDate.Value.ToShortDateString() : "?",
+        )</TD>
+        <TD>@item.Speciality</TD>
+    </TR>
+}
+
+</TBODY>
+</TABLE>
+
+</P>
+
+<P align=left>8. Адрес места регистрации по паспорту (прописке):<BR>
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD>
+<P align=center><FONT size=2>@Model.RegistrationZipCode</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>@Model.RegistrationAddress</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>@Model.PhoneNumbers</FONT></P></TD></TR>
+<TR>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+</TBODY>
+</TABLE>
+</P>
+
+<P align=left>9. Адрес фактического места жительства. По желанию (дополнительно) вы можете указать адрес кого-либо из проживающих по данному адресу близких родственников, соседей по общей жилплощади, совместно проживающих друзей, коллег (тел. мобильный, городской) для оперативного сообщения вам срочной информации. </P>
+<P align=left>
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD>
+<P align=center><FONT size=2>Точный почтовый адрес, индекс.</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>Ф.И.О. совместно проживающих.</FONT></P></TD>
+<TD>
+<P align=center><FONT size=2>Городской, мобильный телефон.</FONT></P></TD></TR>
+
+<TR>
+    <TD>@Model.ActualAddress</TD>
+    <TD>@Model.Cohabitants</TD>
+    <TD>&nbsp;</TD></TR>
+<TR>
+
+</TBODY>
+</TABLE>
+</P>
+
+<P align=left>10. Каким и в какой степени (указать уровень) иностранными языками владеете (в том числе языками стран СНГ), где и когда получена языковая подготовка
+<FONT size=2>
+@foreach (var item in Model.ForeignLanguages)
+{
+    <BR>@string.Format("{0} - {1}", item.LanguageName, item.Level)
+}
+<BR>(читаете, переводите со словарем, можете объясняться, владеете свободно)</FONT></P>
+
+<P align=left>11. Выполняемая работа с начала трудовой деятельности ( включая учебу в высших и средних учебных заедениях и военную службу). <BR><BR>
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD colSpan=2>
+<P align=center><FONT size=2>Месяц и год</FONT></P></TD>
+<TD rowSpan=2 td>
+<P align=center><FONT size=2>Должность с указанием учреждения, организации, предприятия, а также министерства (ведомства).</FONT></P></TD>
+<TD rowSpan=2 td>
+<P align=center><FONT size=2>Адрес учреждения, организации, телефон отдела кадров, секретаря.</FONT></P></TD></TR>
+<TR>
+<TD td width="15%"><FONT size=2 >поступления</FONT></TD>
+<TD td width="15%"><FONT size=2 >&nbsp;ухода</FONT></TD></TR>
+
+@foreach (var item in Model.ExperienceItems)
+{
+    <TR>
+        <TD>@item.BeginningDate</TD>
+        <TD>@item.EndDate</TD>
+        <TD>@item.Position<br />@item.Company</TD>
+        <TD>@item.CompanyContacts</TD>
+    </TR>
+}
+
+</TBODY>
+</TABLE>
+</P>
+<P align=left>12. Размер Вашей среднемесячной заработной платы по последнему месту работы @Model.AverageSalary
+<BR>______________________________________<BR>
+13. Имеете ли Вы какие-либо финансовые обязательства (закладные, ссуды, кредиты и т.д.), какие, перед кем, срок погашения @Model.Liabilities
+<BR>___________________________________________________________________________________</P>
+<P align=left>14. Причина смены последнего места работы ____________________________________________<BR>@Model.PreviousDismissalReason</P>
+<P align=left>15. Ф.И.О. и контактный телефон непосредственного руководителя или руководителя кадровой службы по прежнему месту работы
+<BR>@Model.PreviousSuperior</P>
+<P align=left>16. На какую должность претендуете<BR>
+@Model.PositionSought</P>
+<P align=left>17. Сведения о близких родственниках для целей информирования в случае наступления чрезвычайных ситуаций.</P>
+<P align=left>
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD>
+<P align=center>Степень родства.</P></TD>
+<TD width="30%" td>
+<P align=center>Фамилия, имя, отчество.</P></TD>
+<TD>
+<P align=center>Дата и место рождения.</P></TD>
+<TD>
+<P align=center>Место работы, должность, (рабочий, мобильный телефон).</P></TD>
+<TD>
+<P align=center>Адрес местожительства, (домашний, рабочий и мобильный телефон).</P></TD></TR>
+<TR>
+<TD rowSpan=8 td>
+<P align=justify>Жена (муж)<BR>Гражданский муж (жена)<BR></P>
+<P align=left>Паспортные данные:</P></TD>
+<TD>@Model.Spouse.Name</TD>
+<TD>@(Model.Spouse.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Spouse.PlaceOfBirth</TD>
+<TD>@Model.Spouse.WorksAt</TD>
+<TD>@Model.Spouse.Contacts</TD>
+</TR>
+<TR>
+<TD rowSpan=4 td>&nbsp;Отец</TD>
+<TD>@Model.Father.Name</TD>
+<TD>@(Model.Father.DateOfBirth.HasValue ? Model.Father.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Father.PlaceOfBirth</TD>
+<TD>@Model.Father.WorksAt</TD>
+<TD>@Model.Father.Contacts</TD>
+</TR>
+<TR>
+<TD rowSpan=4 td>&nbsp;Мать</TD>
+<TD>@Model.Mother.Name</TD>
+<TD>@(Model.Mother.DateOfBirth.HasValue ? Model.Spouse.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@Model.Mother.PlaceOfBirth</TD>
+<TD>@Model.Mother.WorksAt</TD>
+<TD>@Model.Mother.Contacts</TD>
+</TR>
+
+@foreach (var item in @Model.Children)
+{
+    <TR>
+        <TD rowSpan=4 td>&nbsp;Мать</TD>
+        <TD>@item.Name</TD>
+        <TD>@(item.DateOfBirth.HasValue ? item.DateOfBirth.Value.ToShortDateString() : string.Empty)<br />@item.PlaceOfBirth</TD>
+        <TD>@item.WorksAt</TD>
+        <TD>@item.Contacts</TD>
+    </TR>
+}
+
+</TBODY>
+</TABLE>
+</P>
+
+@*
+<P align=left>18. Отношение к воинской обязанности и воинское звание (копия военного билета прилагается).<BR>Статья и дата увольнения в запас ______________________________________________________</P>
+*@
+    
+<P align=left>19. Участие в войнах, каких-либо боевых действиях, ликвидации аварий, катастроф и стихийных бедствий @Model.MilitaryOperationsExperience</P>
+<P align=left>20. Имеете ли вы водительские права: №@Model.DriversLicenseNumber категория @Model.DriversLicenseCategories
+<BR>Дата выдачи @(Model.DriversLicenseDateOfIssue.HasValue ? Model.DriversLicenseDateOfIssue.Value.ToShortDateString() : string.Empty) Стаж (водительский) @Model.DrivingExperience</P>
+<P align=left>21. Имеете ли Вы автомашину: марка @Model.AutomobileMake государственный регистрационный знак @Model.AutomobileLicensePlateNumber</P>
+<P align=left>22. Имеете ли Вы возможность выезжать в служебные командировки @(Model.IsReadyForBusinessTrips ? "Да" : "Нет")</P>
+<P align=left>23. Какими видами спорта занимаетесь (занимались ранее, имеете ли спортивные разряды и звания)<BR>@Model.Sports<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
+<P align=left>24. Ваши увлечения
+<BR>@Model.Hobbies</P>
+<P align=left>25. Назовите одно или несколько наиболее важных событий (на Ваш взгляд) произошедших в Вашей жизни (в последние 3-5 лет)
+<BR>@Model.ImportantEvents</P>
+<P align=left>26. Рекомендации должностных лиц, знающих Вас по предыдущим местам работы, или рекомендации кого-либо из сотрудников нашего банка.</P>
+<P align=left>
+
+@*
+<TABLE cellSpacing=0 width="100%" border=1>
+<TBODY>
+<TR>
+<TD>Данные сотрудника.</TD>
+<TD>Рекомендация №1</TD>
+<TD>Откуда Вас знает рекомендующий?</TD>
+<TD>Рекомендация №2</TD>
+<TD>Откуда Вас знает рекомендующий?</TD></TR>
+
+<TR>
+<TD>Фамилия</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+<TR>
+<TD>Имя</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+<TR>
+<TD>Отчество</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+<TR>
+<TD>Место работы</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+<TR>
+<TD>Должность</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR>
+<TR>
+<TD>Телефон (рабочий, мобильный)</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD></TR></TBODY></TABLE></P>
+*@
+
+<P>27. Паспорт: серия @Model.InternalPassportSeries №@Model.InternalPassportNumber, код подразделения @Model.InternalPassportSubdivisionCode
+<BR>Дата выдачи @(Model.InternalPassportDateOfIssue.HasValue ? Model.InternalPassportDateOfIssue.Value.ToShortDateString() : string.Empty)
+<BR>Кем выдан @Model.InternationalPassportIssuedBy</P>
+
+<P>28. Заграничный паспорт: серия @Model.InternationalPassportSeries №@Model.InternationalPassportNumber<BR>Дата выдачи @Model.InternationalPassportDateOfIssue
+<BR>Кем выдан @Model.InternationalPassportIssuedBy</P>
+<P><STRONG><U>Примечание:</U></STRONG></P>
+
+<P>&nbsp; Я, @string.Format("{0} {1} {2}", Model.LastName, Model.FirstName, Model.Patronymic)<BR>заверяю, что мои ответы на вопросы анкеты являются полными, достоверными. В дальнейшем обязуюсь сообщать обо всех изменениях в своем положении в отдел персонала для их внесения в личное дело. Данные о трудовой деятельности, учебе соответствуют документам, удостоверяющим личность, записям в трудовой книжке, документам об образовании, воинской службе.<BR>"___" __________ 20__ г.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __________________<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (подпись)</P>
+<P>Фотография&nbsp; и данные&nbsp;о трудовой деятельности, учебе, образовании и воинской службе соответствуют документам, удостоверяющим личность.</P>
+<P>Сотрудник отдела кадров<BR>(Ф.И.О.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(подпись)<BR>"___" __________ 20__ г.</P>
+<P>Начальник Управления безопасности<BR>(Ф.И.О.)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(подпись)<BR>"___" __________ 20__ г.</P>
+<P><BR><FONT size=2><STRONG><U>Примечание:</U></STRONG> графы анкеты заполняются в соответствии с рекомендациями приложения.</FONT></P>
+<P align=center><STRONG>Приложение</STRONG><BR>(пояснения по порядку заполнения анкеты)</P>
+<P align=left><FONT size=2>&nbsp; &nbsp;<STRONG>Пункт 1.</STRONG> Если изменяли фамилию (имя, отчество) указать:</FONT></P></FONT></FONT>
+<UL>
+<LI><FONT size=2>прежнюю фамилию (если неоднократно, указать все фамилии;) </FONT>
+<LI><FONT size=2>когда, где, по какой причине (если неоднократно - к каждой фамилии; </FONT>
+<LI><FONT size=2>если не изменяли - "Не изменял(а)"</FONT>&nbsp;</LI></UL>
+<P><FONT size=2>&nbsp; &nbsp;<STRONG>Пункт 4.&nbsp;</STRONG>Указывать полное административно-территориальное название места&nbsp;рождения.</FONT></P>
+<P><FONT size=2>&nbsp;<STRONG>&nbsp; Пункт 7.</STRONG> Названия учебных заведений писать полностью (без сокращения).</FONT></P>
+<P><FONT size=2>&nbsp;&nbsp; <STRONG>Пункт 13. </STRONG>В графе время поступления и ухода с работы обязательно указывать месяц. Указывать полный адрес учреждения, организации (город, улица, до, контактный телефон кадрового органа). </FONT></P>
+<P><FONT size=2>&nbsp; <STRONG>Для проверки</STRONG> достоверности указанных в анкете данных <STRONG>необходимо</STRONG> предоставить в кадровый орган<STRONG> ксерокопии следующих документов:</STRONG></FONT></P>
+<UL>
+<LI><FONT size=2>паспорт - страницы, где есть записи; </FONT>
+<LI><FONT size=2>военный билет; </FONT>
+<LI><FONT size=2>трудовая книжка; </FONT>
+<LI><FONT size=2>все имеющиеся дипломы о высшем (среднем), специальном образовании; </FONT>
+<LI><FONT size=2>документ о пенсионном страховании; </FONT>
+<LI><FONT size=2>ИНН; </FONT>
+<LI><FONT size=2>свидетельство о регистрации; </FONT>
+<LI><FONT size=2>свидетельство о рождении ребенка; </FONT>
+<LI><FONT size=2>2 фотографии (3x4)</FONT> </LI></UL>
+<P align=center><STRONG>ДОПОЛНИТЕЛЬНЫЙ ЛИСТ ВОПРОСОВ</STRONG><BR>для кандидатов на вакантные должности, предусматривающие заключение договора о полной материальной ответственности</P>
+<P align=left>1. Наличие хронических заболеваний (по желанию) (если есть, то перечислите)<BR>____________________________________________________________________________________</P>
+<P align=left>2. Привлекались ли Вы к уголовной, административной или иной ответственности, когда, за что, мера наказания______________________________________________________________________<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
+<P align=left>3. Состоите ли Вы на психиатрическом или наркологическом учете (если да,то кто и где)<BR>____________________________________________________________________________________<BR>____________________________________________________________________________________</P>
+<P align=left>4. Ваше отношение к табакокурению:______________________________________________<BR>____________________________________________________________________________________</P>
+<P align=left>5. Ваше отношение к алкоголю:________________________________________________________<BR>____________________________________________________________________________________</P></BODY></HTML>

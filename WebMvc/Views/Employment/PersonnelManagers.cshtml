@@ -179,7 +179,8 @@
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать<br />ДС Персональные данные</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать<br />Обязательство конфиденциальность</button>
-        <button type="button" onclick="window.location.href='@Url.Action("GetPrintProfile", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать<br />личного листка<br />по учету кадров</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintAttachments", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
     </div>
  
 }

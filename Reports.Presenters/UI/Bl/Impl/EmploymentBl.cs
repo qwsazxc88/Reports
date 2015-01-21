@@ -422,10 +422,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                /*if (model.Father == null)
-                {
-                    model.Father = new FamilyMemberDto();
-                }*/
 
                 model.Mother = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
                     .ToList<FamilyMember>()
@@ -439,10 +435,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                /*if (model.Mother == null)
-                {
-                    model.Mother = new FamilyMemberDto();
-                }*/
 
                 model.Spouse = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
                     .ToList<FamilyMember>()
@@ -459,7 +451,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.Spouse == null)
                 {
                     model.IsMarried = false;
-                    //model.Spouse = new FamilyMemberDto();
                 }
                 else
                 {
@@ -1171,6 +1162,270 @@ namespace Reports.Presenters.UI.Bl.Impl
                     (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
                     (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);
             }
+
+            return model;
+        }
+
+        public PrintEmploymentFileModel GetPrintEmploymentFileModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintEmploymentFileModel model = new PrintEmploymentFileModel();
+
+            #region BackgroundCheck
+            if (candidate.BackgroundCheck != null)
+            {
+                model.AutomobileLicensePlateNumber = candidate.BackgroundCheck.AutomobileLicensePlateNumber;
+                model.AutomobileMake = candidate.BackgroundCheck.AutomobileMake;
+                model.AverageSalary = candidate.BackgroundCheck.AverageSalary;
+                model.DriversLicenseCategories = candidate.BackgroundCheck.DriversLicenseCategories;
+                model.DriversLicenseDateOfIssue = candidate.BackgroundCheck.DriversLicenseDateOfIssue;
+                model.DriversLicenseNumber = candidate.BackgroundCheck.DriversLicenseNumber;
+                model.DrivingExperience = candidate.BackgroundCheck.DrivingExperience;
+                model.Hobbies = candidate.BackgroundCheck.Hobbies;
+                model.ImportantEvents = candidate.BackgroundCheck.ImportantEvents;
+                model.IsReadyForBusinessTrips = candidate.BackgroundCheck.IsReadyForBusinessTrips;
+                model.Liabilities = candidate.BackgroundCheck.Liabilities;
+                model.MilitaryOperationsExperience = candidate.BackgroundCheck.MilitaryOperationsExperience;
+                model.PositionSought = candidate.BackgroundCheck.PositionSought;
+                model.PreviousDismissalReason = candidate.BackgroundCheck.PreviousDismissalReason;
+                model.PreviousSuperior = candidate.BackgroundCheck.PreviousSuperior;
+                if (candidate.BackgroundCheck.References != null)
+                {
+                    foreach (var item in candidate.BackgroundCheck.References)
+                    {
+                        model.References.Add(new ReferenceDto
+                        {
+                            FirstName = item.FirstName,
+                            LastName = item.LastName,
+                            Patronymic = item.Patronymic,
+                            Phone = item.Phone,
+                            Position = item.Position,
+                            Relation = item.Relation,
+                            WorksAt = item.WorksAt
+                        });
+                    }
+                }
+                model.Sports = candidate.BackgroundCheck.Sports;
+            } 
+            #endregion
+
+            #region Contacts
+            if (candidate.Contacts != null)
+            {
+                model.ActualAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}{7}",
+                    string.IsNullOrEmpty(candidate.Contacts.ZipCode) ? (candidate.Contacts.ZipCode + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.District) ? (candidate.Contacts.District + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.City) ? (candidate.Contacts.City + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                );
+                model.PhoneNumbers = string.Format("{0}, {1}", candidate.Contacts.HomePhone, candidate.Contacts.Mobile);
+
+            } 
+            #endregion
+
+            #region Education
+            if (candidate.Education != null)
+            {
+                if (candidate.Education.Training != null)
+                {
+                    foreach (var item in candidate.Education.Training)
+                    {
+                        model.Training.Add(new TrainingDto
+                        {
+                            BeginningDate = item.BeginningDate,
+                            CertificateIssuedBy = item.CertificateIssuedBy,
+                            EndDate = item.EndDate,
+                            Number = item.Number,
+                            Series = item.Series,
+                            Speciality = item.Speciality
+                        });
+                    }
+                }
+                if (candidate.Education.HigherEducationDiplomas != null)
+                {
+                    foreach (var item in candidate.Education.HigherEducationDiplomas)
+                    {
+                        model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
+                        {
+                            AdmissionYear = item.AdmissionYear,
+                            Department = item.Department,
+                            GraduationYear = item.GraduationYear,
+                            IssuedBy = item.IssuedBy,
+                            Number = item.Number,
+                            Profession = item.Profession,
+                            Qualification = item.Qualification,
+                            Series = item.Series,
+                            Speciality = item.Speciality
+                        });
+                    }
+                }
+
+            } 
+            #endregion
+
+            #region Experience
+            if (candidate.Experience != null)
+            {
+                if (candidate.Experience.ExperienceItems != null)
+                {
+                    foreach (var item in candidate.Experience.ExperienceItems)
+                    {
+                        model.ExperienceItems.Add(new ExperienceItemDto
+                        {
+                            BeginningDate = item.BeginningDate,
+                            Company = item.Company,
+                            CompanyContacts = item.CompanyContacts,
+                            EndDate = item.EndDate,
+                            Position = item.Position
+                        });
+                    }
+                }
+                foreach (var item in candidate.Experience.ExperienceItems)
+                {
+                    model.ExperienceItems.Add(new ExperienceItemDto
+                    {
+                        BeginningDate = item.BeginningDate,
+                        Company = item.Company,
+                        CompanyContacts = item.CompanyContacts,
+                        EndDate = item.EndDate,
+                        Position = item.Position
+                    });
+                }
+
+            } 
+            #endregion
+
+            #region Family
+            if (candidate.Family != null)
+            {
+                model.Cohabitants = candidate.Family.Cohabitants;
+                
+                if (candidate.Family.FamilyMembers != null)
+                {
+                    model.Father = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER)
+                    .ToList<FamilyMember>()
+                    .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                    {
+                        Contacts = x.Contacts,
+                        DateOfBirth = x.DateOfBirth,
+                        Name = x.Name,
+                        PassportData = x.PassportData,
+                        PlaceOfBirth = x.PlaceOfBirth,
+                        WorksAt = x.WorksAt
+                    })
+                    .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Mother = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
+                        .ToList<FamilyMember>()
+                        .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                        {
+                            Contacts = x.Contacts,
+                            DateOfBirth = x.DateOfBirth,
+                            Name = x.Name,
+                            PassportData = x.PassportData,
+                            PlaceOfBirth = x.PlaceOfBirth,
+                            WorksAt = x.WorksAt
+                        })
+                        .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Spouse = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
+                        .ToList<FamilyMember>()
+                        .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                        {
+                            Contacts = x.Contacts,
+                            DateOfBirth = x.DateOfBirth,
+                            Name = x.Name,
+                            PassportData = x.PassportData,
+                            PlaceOfBirth = x.PlaceOfBirth,
+                            WorksAt = x.WorksAt
+                        })
+                        .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Children = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
+                    .ToList<FamilyMember>()
+                    .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                    {
+                        Contacts = x.Contacts,
+                        DateOfBirth = x.DateOfBirth,
+                        Name = x.Name,
+                        PassportData = x.PassportData,
+                        PlaceOfBirth = x.PlaceOfBirth,
+                        WorksAt = x.WorksAt
+                    });
+                }
+                model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
+
+            } 
+            #endregion
+
+            #region GeneralInfo
+            if (candidate.GeneralInfo != null)
+            {
+                model.DateOfBirth = candidate.GeneralInfo.DateOfBirth;
+                model.FirstName = candidate.GeneralInfo.FirstName;
+                if (candidate.GeneralInfo.ForeignLanguages != null)
+                {
+                    foreach (var item in candidate.GeneralInfo.ForeignLanguages)
+                    {
+                        model.ForeignLanguages.Add(new ForeignLanguageDto
+                        {
+                            LanguageName = item.LanguageName,
+                            Level = item.Level
+                        });
+                    }
+                }
+                if (candidate.GeneralInfo.NameChanges != null)
+                {
+                    foreach (var item in candidate.GeneralInfo.NameChanges)
+                    {
+                        model.NameChanges.Add(new NameChangeDto
+                        {
+                            Date = item.Date,
+                            Place = item.Place,
+                            Reason = item.Reason
+                        });
+                    }
+                }
+                model.IsMale = candidate.GeneralInfo.IsMale;
+                model.LastName = candidate.GeneralInfo.LastName;
+                model.Patronymic = candidate.GeneralInfo.Patronymic;
+                model.PlaceOfBirth = string.Format("{0}, {1}, {2}", candidate.GeneralInfo.RegionOfBirth, candidate.GeneralInfo.DistrictOfBirth, candidate.GeneralInfo.CityOfBirth);
+
+            } 
+            #endregion
+
+            #region Passport
+            if (candidate.Passport != null)
+            {
+                model.InternalPassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.InternalPassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.InternalPassportNumber = candidate.Passport.InternalPassportNumber;
+                model.InternalPassportSeries = candidate.Passport.InternalPassportSeries;
+                model.InternalPassportSubdivisionCode = candidate.Passport.InternalPassportSubdivisionCode;
+
+                model.InternationalPassportDateOfIssue = candidate.Passport.InternationalPassportDateOfIssue;
+                model.InternationalPassportIssuedBy = candidate.Passport.InternationalPassportIssuedBy;
+                model.InternationalPassportNumber = candidate.Passport.InternationalPassportNumber;
+                model.InternationalPassportSeries = candidate.Passport.InternationalPassportSeries;
+
+                model.RegistrationZipCode = candidate.Contacts.ZipCode;
+
+                model.RegistrationAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}",
+                    string.IsNullOrEmpty(candidate.Passport.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.District) ? (candidate.Contacts.District + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.City) ? (candidate.Contacts.City + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                );
+
+            } 
+            #endregion
 
             return model;
         }

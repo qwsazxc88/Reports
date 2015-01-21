@@ -736,6 +736,7 @@
     <Content Include="Views\Employment\PrintLiabilityContract.cshtml" />
     <Content Include="Views\Employment\PrintPersonalDataObligation.cshtml" />
     <Content Include="Views\Employment\PrintPersonalDataAgreement.cshtml" />
+    <Content Include="Views\Employment\PrintEmploymentFile.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
