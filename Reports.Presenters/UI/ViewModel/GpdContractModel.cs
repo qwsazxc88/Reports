@@ -9,7 +9,9 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractModel
     {
-        public int Id { get; set; }
+        [Display(Name = "№ заявки")]
+        public int? Id { get; set; }
+
         public int CreatorID { get; set; }
         public string errorMessage { get; set; }
 
@@ -42,7 +44,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Поиск по ФИО")]
         public string Surname { get; set; }
 
-        [Display(Name = "Поиск по № договора")]
+        [Display(Name = "Поиск по № договора в ЭССД")]
         public string NumContract { get; set; }
 
         public IList<GpdContractDto> Contracts { get; set; }

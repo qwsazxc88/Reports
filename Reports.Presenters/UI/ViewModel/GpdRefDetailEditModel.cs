@@ -95,6 +95,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int CreatorID { get; set; }
         public int DetailCreatorID { get; set; }
         public int NewRow { get; set; } //1 - новый реквизит
+        public bool AllowEdit { get; set; }
 
         //public IList<GpdRefDetailFullDto> Documents { get; set; }
 

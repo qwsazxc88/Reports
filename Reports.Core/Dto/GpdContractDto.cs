@@ -27,9 +27,22 @@ namespace Reports.Core.Dto
         public int PersonID { get; set; }
         public string SNILS { get; set; }
         public string LongName { get; set; }
+        //плательщик
         public string PayerName { get; set; }
+        public string PayerINN { get; set; }
+        public string PayerKPP { get; set; }
+        public string PayerAccount { get; set; }
+        public string PayerBankName { get; set; }
+        public string PayerBankBIK { get; set; }
+        public string PayerCorrAccount { get; set; }
+        //получатель
         public string PayeeName { get; set; }
-        public string BankName { get; set; }
+        public string PayeeINN { get; set; }
+        public string PayeeKPP { get; set; }
+        public string PayeeAccount { get; set; }
+        public string PayeeBankName { get; set; }
+        public string PayeeBankBIK { get; set; }
+        public string PayeeCorrAccount { get; set; }
         public string Account { get; set; }
     }
     /// <summary>
@@ -53,6 +66,7 @@ namespace Reports.Core.Dto
         public DateTime? DateP { get; set; }
         public DateTime? DatePOld { get; set; }
         public string GPDID { get; set; }
+        public string GPDContractID { get; set; }
         public string PurposePayment { get; set; }
         public string PurposePaymentPart { get; set; }
         public string CreatorName { get; set; }
@@ -62,12 +76,26 @@ namespace Reports.Core.Dto
         public string DepLevel3Name { get; set; }
         public string DepLevel7Name { get; set; }
         public bool IsLong {get;set;}
+        //плательщик
         public string PayerName { get; set; }
+        public string PayerINN { get; set; }
+        public string PayerKPP { get; set; }
+        public string PayerAccount { get; set; }
+        public string PayerBankName { get; set; }
+        public string PayerBankBIK { get; set; }
+        public string PayerCorrAccount { get; set; }
+        //получатель
         public string PayeeName { get; set; }
+        public string PayeeINN { get; set; }
+        public string PayeeKPP { get; set; }
+        public string PayeeAccount { get; set; }
+        public string PayeeBankName { get; set; }
+        public string PayeeBankBIK { get; set; }
+        public string PayeeCorrAccount { get; set; }
+        public string Account { get; set; }
+
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }
-        public string BankName { get; set; }
-        public string Account { get; set; }
         public int DSID { get; set; }
     }
     /// <summary>

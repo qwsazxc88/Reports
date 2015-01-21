@@ -35,6 +35,14 @@
                         </tr>
                         <tr>
                             <td style="width:300px">
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                <label id="Id">@Model.Id</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:300px">
                                 @Html.LabelFor(m => m.ActDate):
                             </td>
                             <td>
@@ -45,7 +53,7 @@
                                 }
                                 else
                                 {
-                                    <label id="ActDate">@GpdBl.FormatDateMY(@Model.ActDate)</label>
+                                    <label id="ActDate">@GpdBl.FormatDate(@Model.ActDate)</label>
                                 }
                             </td>
                         </tr>
@@ -79,6 +87,16 @@
                             </td>
                             <td>
                                 <label id="NumContract">@Model.NumContract</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ContractBeginDate)
+                            </td>
+                            <td>
+                                <label id="ContractBeginDate">@RequestBl.FormatDate(@Model.ContractBeginDate)</label>
+                                @Html.LabelFor(m => m.ContractEndDate)
+                                <label id="ContractEndDate">@RequestBl.FormatDate(@Model.ContractEndDate)</label>
                             </td>
                         </tr>
                         <tr>
@@ -172,6 +190,25 @@
                         </tr>
                         <tr>
                             <td>
+                                @Html.LabelFor(m => m.DSID):
+                            </td>
+                            <td>
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    <input type="text" name="DetailName" id="DetailName" value="@Model.DetailName" style="width:600px" data-autocomplete-source="@Url.Action("AutocompleteDetSetSearch", "GPD")" />
+                                }
+                                else
+                                {
+                                    <label>@Model.Surname</label>
+                                }
+                                <input type="hidden" id="DSID" name="DSID" value="@Model.DSID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.DSID)
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 @Html.LabelFor(m => m.PurposePayment):
                             </td>
                             <td>
@@ -193,6 +230,128 @@
                                 {
                                     <label id="ESSSNum">@Model.ESSSNum</label>
                                 }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <table id="tblDetail" border="1">
+                                    <tr>
+                                        <td colspan="2">
+                                            <b>Реквизиты плательщика</b>
+                                        </td>
+                                        <td colspan="2">
+                                            <b>Реквизиты получактеля</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerName</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeName</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerINN)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerINN</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeINN)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeINN</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerKPP)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerKPP</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeKPP)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeKPP</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerAccount</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeAccount</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerBankName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerBankName</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeBankName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeBankName</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerBankBIK)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerBankBIK</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeBankBIK)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeBankBIK</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerCorrAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerCorrAccount</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeCorrAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeCorrAccount</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td>
+                                            @Html.LabelFor(m => m.Account)
+                                        </td>
+                                        <td>
+                                            <label>@Model.Account</label>
+                                            <input type="hidden" id="Account" name="Account" value="@Model.Account" />
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                         <tr>
@@ -223,6 +382,7 @@
                                 <input type="hidden" id="DepLevel3Name" name="DepLevel3Name" value="@Model.DepLevel3Name" />
                                 <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
                                 <input type="hidden" id="GCID" name="GCID" value="@Model.GCID" />
+                                <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="IsCancel" name="IsCancel" value="@Model.IsCancel" />
                                 <input type="hidden" id="ChargingDate" name="ChargingDate" value="@Model.ChargingDate" />
@@ -309,11 +469,41 @@
         $(".hasDatepicker").width("75px");
         
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
+        $("#DetailName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#DetailName").blur(function(){ SaveDraft(); if($("#DSID").val() != 0) { this.form.submit();}});
         setActiveMenuItem("moAct");
+
+
+        $(function () 
+        {
+            $("[data-autocomplete-source]").each(
+                function () 
+                {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                                          select : function(event, ui) 
+                                                    {
+                                                        $("#DetailName").val(ui.item.label);
+                                                        //$("#PersonID").val(ui.item.PersonID);
+                                                        //$("#SNILS").val(ui.item.snils);
+                                                        //$("#PayerName").val(ui.item.PayerName);
+                                                        //$("#PayeeName").val(ui.item.PayeeName);
+                                                        //$("#BankName").val(ui.item.BankName);
+                                                        //$("#Account").val(ui.item.Account);
+                                                        $("#DSID").val(ui.item.DSID);
+                                                        $("#Operation").val('1');
+                                                        $("#DetailName").focus();
+                                                        return true;
+                                                    }
+                                         });
+                  });
+        });
+
     });
 
     function SaveDraft()
     {
+        $("#Operation").val('1');
         $("#StatusID").val('4');
         return true;
     }

@@ -83,7 +83,7 @@ namespace Reports.Core.Dao.Impl
                 sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "DTID = " + DTID.ToString();
 
             sqlQuery += (sqlWhere.Length != 0 ? " WHERE " + sqlWhere : "");
-            sqlQuery += " ORDER BY Name";
+            sqlQuery += " ORDER BY Priority";
 
             IQuery query = CreateGRDQuery(sqlQuery);
             IList<GpdDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailDto))).List<GpdDetailDto>();
@@ -150,7 +150,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("EditorName", NHibernateUtil.String).
                 AddScalar("PersonID", NHibernateUtil.Int32).
                 AddScalar("PayerID", NHibernateUtil.Int32).
-                AddScalar("PayeeID", NHibernateUtil.Int32);
+                AddScalar("PayeeID", NHibernateUtil.Int32).
+                AddScalar("AllowEdit", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Составляем условие запроса.
@@ -253,6 +254,22 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Name", NHibernateUtil.String).
                 AddScalar("SNILS", NHibernateUtil.String).
                 AddScalar("LongName", NHibernateUtil.String);
+        }
+
+        public IList<GpdContractSurnameDto> GetAutocompletePersons(string Name, int PersonID)
+        {
+
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefPersons] ";
+            //sqlQuery += (Id != 0 ? " WHERE Id = " + Id.ToString() : "") + " ORDER BY Name";
+
+            if (PersonID == 0)
+                sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE LongName like '" + (Name == null ? "" : Name) + "%' ORDER BY LongName";
+            else
+                sqlQuery = @"SELECT * FROM vwGpdRefPersons WHERE ID =" + PersonID.ToString();
+
+            IQuery query = CreateSQLPersonQuery(sqlQuery);
+            IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
+            return documentList;
         }
     }
 }

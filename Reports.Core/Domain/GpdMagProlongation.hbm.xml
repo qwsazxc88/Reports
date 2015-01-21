@@ -6,11 +6,12 @@
     
     <property name="DateP" not-null="false"/>
     <property name="CreatorID" not-null="false"/>
-
     <many-to-one name="GpdContracts" class="GpdContract" column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract" index="IX_GpdMagProlongation_GpdContract" not-null="false"/>
+
+    
     <!--
     <property name="GCID" not-null="false"/>
-    <many-to-one name="GpdContracts" class="GpdContract" column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract" index="IX_GpdMagProlongation_GpdContract" not-null="true"/>
+    <many-to-one name="GpdContracts" class="GpdContract" column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract" index="IX_GpdMagProlongation_GpdContract" not-null="false"/>
     -->
   </class>
 </hibernate-mapping>

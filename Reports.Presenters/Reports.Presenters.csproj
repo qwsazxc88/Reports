@@ -191,6 +191,7 @@
     <Compile Include="UI\ViewModel\GpdActListModel.cs" />
     <Compile Include="UI\ViewModel\GpdContractEditModel.cs" />
     <Compile Include="UI\ViewModel\GpdContractModel.cs" />
+    <Compile Include="UI\ViewModel\GpdRefDetailDialogModel.cs" />
     <Compile Include="UI\ViewModel\GpdRefDetailEditModel.cs" />
     <Compile Include="UI\ViewModel\GpdRefDetailModel.cs" />
     <Compile Include="UI\ViewModel\Employment\RosterFiltersModel.cs" />

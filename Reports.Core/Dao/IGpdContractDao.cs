@@ -65,7 +65,7 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending"></param>
         /// <returns></returns>
         IList<GpdContractDto> GetContracts(UserRole role,
-                                            int Id,
+                                            int? Id,
                                             int DepartmentId,
                                             int CTID,
                                             DateTime? DateBegin,
