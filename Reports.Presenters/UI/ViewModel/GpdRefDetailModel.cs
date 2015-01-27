@@ -10,10 +10,10 @@ namespace Reports.Presenters.UI.ViewModel
     public class GpdRefDetailModel
     {
 
-        [Display(Name = "Поиск по наименованию")]
+        [Display(Name = "Поиск по наименованию реквизита")]
         public string Name { get; set; }
 
-        [Display(Name = "Поиск по названию контрагента")]
+        [Display(Name = "Поиск по наименованию контрагента")]
         public string ContractorName { get; set; }
 
         public IList<GpdDetailDto> Documents { get; set; }
