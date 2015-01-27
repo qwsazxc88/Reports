@@ -250,7 +250,7 @@ namespace Reports.Core.Dao.Impl
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (NumContract.Trim().Length != 0 ? " NumContract = '" + NumContract + "'" : "");//по номеру договора
                 if (Id != null && Id != 0)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " id = " + Id.ToString();//по номеру договора
-                if (StatusID != null && StatusID != 0)
+                if (StatusID != 0)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " StatusID = " + StatusID.ToString();//по статусу
             }
 
