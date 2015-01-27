@@ -915,14 +915,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         PAccountID = model.PAccountID,
                         MagEntities = new List<GpdMagProlongation>()
                     };
-                    //если черновик сохраняем без проверки на заполнение полей
-                    if (gpdContract.CTID == 0) gpdContract.CTID = null;
-                    if (gpdContract.PersonID == 0) gpdContract.PersonID = null;
-                    if (gpdContract.PaymentPeriodID == 0) gpdContract.PaymentPeriodID = null;
-                    if (gpdContract.PayerID == 0) gpdContract.PayerID = null;
-                    if (gpdContract.PayeeID == 0) gpdContract.PayeeID = null;
-                    if (gpdContract.PAccountID == 0) gpdContract.PAccountID = null;
-                    if (gpdContract.DepartmentId == 0) gpdContract.DepartmentId = null;
                 }
                 else
                 {
@@ -969,6 +961,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                         else
                             gpdContract.IsLong = false;
                     }
+                }
+
+
+                if (model.StatusID == 4)
+                {
+                    //если черновик сохраняем без проверки на заполнение полей
+                    if (gpdContract.CTID == 0) gpdContract.CTID = null;
+                    if (gpdContract.PersonID == 0) gpdContract.PersonID = null;
+                    if (gpdContract.PaymentPeriodID == 0) gpdContract.PaymentPeriodID = null;
+                    if (gpdContract.PayerID == 0) gpdContract.PayerID = null;
+                    if (gpdContract.PayeeID == 0) gpdContract.PayeeID = null;
+                    if (gpdContract.PAccountID == 0) gpdContract.PAccountID = null;
+                    if (gpdContract.DepartmentId == 0) gpdContract.DepartmentId = null;
                 }
 
                 ChangeEntityProperties(gpdContract, model, currentUseId.Id);
