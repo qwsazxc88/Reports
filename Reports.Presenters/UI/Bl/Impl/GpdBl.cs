@@ -830,14 +830,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PurposePayment == null)
                     ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
 
-                //если при создании жмут сразу на занести, то формируем поле, которое автоматически формируется, если жать на кнопку черновик
-                if (model.PurposePaymentPart == null)
+                if (model.PurposePayment != null)
                 {
-                    model.PurposePaymentPart = "Договор ГПХ # " + (model.Account != null && model.Account.Trim().Length != 0 ? model.Account : model.PayeeAccount) + " ## " + GpdContractDao.GetPersonName(model.PersonID) + " *";
-                }
+                    //если при создании жмут сразу на занести, то формируем поле, которое автоматически формируется, если жать на кнопку черновик
+                    if (model.PurposePaymentPart == null)
+                    {
+                        model.PurposePaymentPart = "Договор ГПХ # " + (model.Account != null && model.Account.Trim().Length != 0 ? model.Account : model.PayeeAccount) + " ## " + GpdContractDao.GetPersonName(model.PersonID) + " *";
+                    }
 
-                if (model.PurposePaymentPart.Trim().Length + model.PurposePayment.Trim().Length > 210)
-                    ms.AddModelError("PurposePayment", "Превышено количество символов!");
+                    if (model.PurposePaymentPart.Trim().Length + model.PurposePayment.Trim().Length > 210)
+                        ms.AddModelError("PurposePayment", "Превышено количество символов!");
+                }
 
                 if (model.Amount == 0)
                     ms.AddModelError("Amount", "Сумма не должна быть равна нулю!");
