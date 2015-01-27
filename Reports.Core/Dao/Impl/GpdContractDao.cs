@@ -395,5 +395,24 @@ namespace Reports.Core.Dao.Impl
         {
             return Session.CreateSQLQuery(sqlQuery).AddScalar("flgExists", NHibernateUtil.Boolean);
         }
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="PersonID">ID физ. лица.</param>
+        /// <returns></returns>
+        public string GetPersonName(int PersonID)
+        {
+            IQuery query = CreatePNQuery("SELECT isnull(LastName, '') + ' ' + isnull(FirstName, '') + ' ' + isnull(SecondName, '') as PersonName FROM dbo.RefPeople WHERE ID = " + PersonID.ToString());
+            return query.UniqueResult<string>();
+        }
+        /// <summary>
+        /// Создание подзапроса.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreatePNQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).AddScalar("PersonName", NHibernateUtil.String);
+        }
     }
 }

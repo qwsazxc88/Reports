@@ -100,5 +100,11 @@ namespace Reports.Core.Dao
         /// <param name="ID">ID договора</param>
         /// <returns></returns>
         bool ExistsReadyActs(int ID);
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="PersonID">ID физ. лица.</param>
+        /// <returns></returns>
+        string GetPersonName(int PersonID);
     }
 }
