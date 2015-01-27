@@ -85,6 +85,7 @@ namespace WebMvc.Controllers
         public ActionResult GpdContractEdit(GpdContractEditModel model)
         {
             ModelState.Clear();
+            int StatusID = model.StatusID;
             if (model.Operation == 1)
             {
                 model = GpdBl.SetGpdContractEdit(model);
@@ -101,16 +102,20 @@ namespace WebMvc.Controllers
             //сохранение договора
             if (GpdBl.SaveGpdContract(model, out error))
             {
-                model = GpdBl.SetGpdContractEdit(model);
+                model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, 0, null);
+                string Message = StatusID == 4 ? "Черновик вашего документа сохранен!" : (StatusID == 2 ? "Ваш документ успешно сохранен!" : "Занесение вашего документа отменено!");
+                ModelState.AddModelError("errorMessage", Message);
                 return View(model);
             }
             else
             {
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("errorMessage", error);
+                model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, 0, null);
                 return View(model);
             }
         }
+        
         /// <summary>
         /// Просмотр справочника реквизитов.
         /// </summary>
@@ -248,6 +253,7 @@ namespace WebMvc.Controllers
         {
             bool hasError = false;
             ModelState.Clear();
+            int StatusID = model.StatusID;
             if (model.Operation == 1)
             {
                 //model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, model.DepartmentId, model.DepartmentName);
@@ -268,28 +274,54 @@ namespace WebMvc.Controllers
                 if (GpdBl.SaveGpdAct(model, out error))
                 {
                     model = GpdBl.SetActEditModel(model.Id, model.GCID, hasError);
+                    string Message = StatusID == 4 ? "Черновик вашего документа сохранен!" : (StatusID == 2 ? "Ваш документ успешно сохранен!" : "Занесение вашего документа отменено!");
+                    ModelState.AddModelError("errorMessage", Message);
                     return View(model);
                 }
                 else
                 {
                     if (!string.IsNullOrEmpty(error))
                         ModelState.AddModelError("errorMessage", error);
+                    model = GpdBl.SetActEditModel(model.Id, model.GCID, hasError);
                     return View(model);
                 }
             }
         }
         /// <summary>
-        /// Автозаполнение фио в создании договора ГПД (выбор из наборов реквизитов).
+        /// Автозаполнение реквизитов плательщика.
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-        public ActionResult AutocompletePersonDetSetSearch(string term)
+        public ActionResult AutocompleteDetailPayer(string term)
         {
-            IList<GpdContractSurnameDto> Persons = GpdBl.GetPersonDSAutocomplete(term, 0);
-            //var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PayerName = a.PayerName, PayeeName = a.PayeeName, BankName = a.BankName, Account = a.Account, PersonID = a.PersonID, DSID = a.Id }).Distinct();
-            var PersonList = Persons.ToList().Select(a => new { label = a.LongName, PersonID = a.PersonID, DSID = a.Id }).Distinct();
+            IList<GpdContractDetailDto> Details = GpdBl.GetDetailsAutocomplete(term, 0);
+            var DetailsList = Details.ToList().Select(a => new { label = a.LongName, PayerID = a.Id }).Distinct();
 
-            return Json(PersonList, JsonRequestBehavior.AllowGet);
+            return Json(DetailsList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Автозаполнение реквизитов получателя.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompleteDetailPayeer(string term)
+        {
+            IList<GpdContractDetailDto> Details = GpdBl.GetDetailsAutocomplete(term, 0);
+            var DetailsList = Details.ToList().Select(a => new { label = a.LongName, PayeeID = a.Id }).Distinct();
+
+            return Json(DetailsList, JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Автозаполнение лицевого счета получателя.
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult AutocompleteDetailPAccount(string term)
+        {
+            IList<GpdContractDetailDto> Details = GpdBl.GetDetailsAutocomplete(term, 0);
+            var DetailsList = Details.ToList().Select(a => new { label = a.LongName, PAccountID = a.Id }).Distinct();
+
+            return Json(DetailsList, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
         /// Автозаполнение фио в создании набора реквизитов.
@@ -327,7 +359,10 @@ namespace WebMvc.Controllers
         {
             try
             {
+                int DetailType = Convert.ToInt32(id.ToString().Substring(0, 1));
+                id = Convert.ToInt32(id.ToString().Substring(1));
                 GpdRefDetailDialogModel model = GpdBl.SetDetailDialog(id);
+                model.DetailType = DetailType;
                 return PartialView(model);
             }
             catch (Exception ex)
@@ -348,7 +383,7 @@ namespace WebMvc.Controllers
             //модальное окно посылает и принимает форму через ajax
             ModelState.Clear();
             GpdBl.CheckFillFieldsForGpdRefDetailDialog(model, ModelState);
-
+            int DetailType = model.DetailType;
             if (ModelState.Count != 0)
             {
                 return PartialView(model);
@@ -359,6 +394,8 @@ namespace WebMvc.Controllers
                 if (GpdBl.SaveGpdRefDetailDialog(model, out error))
                 {
                     model = GpdBl.SetDetailDialog(model.Id);
+                    model.DetailType = DetailType;
+                    ModelState.AddModelError("errorMessage", "Реквизит успешно сохранен!");
                     return PartialView(model);
                 }
                 else

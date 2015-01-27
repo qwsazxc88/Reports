@@ -12,7 +12,7 @@
     <table style="width:100%">
         <tr>
             <td colspan="2">
-                <h5 >
+                <h5>
                     @Html.ValidationMessageFor(model => model.errorMessage)
                 </h5>
                 <div class="doc-wrap">
@@ -63,7 +63,7 @@
                             <td>
                                 @if (Model.StatusID == 4 || @Model.Id == 0)
                                 {
-                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonDetSetSearch", "GPD")" />
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="$('#Operation').val('0');"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
                                 }
                                 else
                                 {
@@ -144,7 +144,7 @@
                                 else
                                 {
                                     <label id="DateP">@RequestBl.FormatDate(@Model.DateP)</label>
-                                    <input type="hidden" id="DateP" name="DateP" value="@Model.DatePOld" />
+                                    <input type="hidden" id="DateP" name="DateP" value="@Model.DateP" />
                                 }
                                 <input type="hidden" id="DatePOld" name="DatePOld" value="@Model.DatePOld" />
                             </td>
@@ -192,6 +192,81 @@
                                 @Html.ValidationMessageFor(model => model.GPDContractID)
                             </td>
                         </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayerID):
+                            </td>
+                            <td>
+                                <input type="text" name="PayerName" id="PayerName" value="@Model.PayerName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayer", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(1, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(1, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PayerName</label>
+                                }
+                                *@
+                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PayerID)
+                                
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayeeID):
+                            </td>
+                            <td>
+                                <input type="text" name="PayeeName" id="PayeeName" value="@Model.PayeeName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayeer", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(2, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(2, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PayeeName</label>
+                                }
+                                *@
+                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PayeeID)
+                                
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PAccountID):
+                            </td>
+                            <td>
+                                <input type="text" name="PersonAccount" id="PersonAccount" value="@Model.PersonAccount" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPAccount", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый лицевой счет" onclick="CreateEditDetail(3, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий лицевой счет" onclick="CreateEditDetail(3, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PersonAccount</label>
+                                }
+                                *@
+                                <input type="hidden" id="PAccountID" name="PAccountID" value="@Model.PAccountID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PAccountID)
+                                
+                            </td>
+                        </tr>
                         <tr>
                             <td>
                                 @Html.LabelFor(m => m.PurposePayment):
@@ -229,10 +304,10 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            @Html.LabelFor(m => m.PayerName)
+                                            @Html.LabelFor(m => m.PayerContractor)
                                         </td>
                                         <td>
-                                            <label>@Model.PayerName</label>
+                                            <label>@Model.PayerContractor</label>
                                         </td>
                                         <td>
                                             @Html.LabelFor(m => m.PayeeName)
@@ -374,7 +449,7 @@
 
                 @if (@Model.StatusID != 1)
                 {
-                    
+
                     if (Model.Id != 0 && Model.StatusID != 4 && Model.Permissions[0].IsCancel)
                     {
                         <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
@@ -384,7 +459,7 @@
 
                 @if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCreateAct)
                 {
-                    <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="disabled = 'disabled', location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
+                    <input type="button" value="Создать акт" title="Создать акт на основе данного договора" onclick="location.href='@Url.Action("GpdActEdit", "GPD", new { id = 0, GCID = @Model.Id })'"/>
                 }
                 
             </td>
@@ -403,17 +478,18 @@
         $(".hasDatepicker").width("75px");
         setActiveMenuItem("moContract");
 
-        if ($("#Operation").val() == 0)
-            $('#refDetailRow').hide();
-
-
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
-        $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
-        $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
-        $("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
-        $("#Surname").blur(function(){ SelectPerson(); if($("#PersonID").val() != 0) { this.form.submit();}});
+        
+        $("#PayerName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayerName").blur(function(){ SelectPerson(); if($("#PayerID").val() != 0) { this.form.submit();}});
 
-        if ($("#DSID").val() == 0){
+        $("#PayeeName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayeeName").blur(function(){ SelectPerson(); if($("#PayeeID").val() != 0) { this.form.submit();}});
+
+        $("#PersonAccount").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PersonAccount").blur(function(){ SelectPerson(); if($("#PAccountID").val() != 0) { this.form.submit();}});
+
+        if ($("#PayerID").val() == 0 && $("#PayeeID").val() == 0 && $("#PAccountID").val() == 0){
             $("#tblDetail").hide();
          }
          else{
@@ -433,7 +509,7 @@
 //                }
 //        });
         
-
+        //автозаполнение физиков
         $(function () 
         {
             $("[data-autocomplete-source]").each(
@@ -443,11 +519,34 @@
                     target.autocomplete({ source: target.attr("data-autocomplete-source"),
                                           select : function(event, ui) 
                                                     {
-                                                        $("#Surname").val(ui.item.label);
-                                                        $("#PersonID").val(ui.item.PersonID);
-                                                        $("#DSID").val(ui.item.DSID);
-                                                        $("#Operation").val('1');
-                                                        $("#Surname").focus();
+                                                        //для физиков
+                                                        if (ui.item.PersonID != null){
+                                                            $("#Surname").val(ui.item.label);
+                                                            $("#PersonID").val(ui.item.PersonID);
+                                                            //$("#Operation").val('1');
+                                                            $("#Surname").focus();
+                                                        }
+                                                        //для плательщиков
+                                                        if (ui.item.PayerID != null){
+                                                            $("#PayerName").val(ui.item.label);
+                                                            $("#PayerID").val(ui.item.PayerID);
+                                                            $("#Operation").val('1');
+                                                            $("#PayerName").focus();
+                                                        }
+                                                        //для получателей
+                                                        if (ui.item.PayeeID != null){
+                                                            $("#PayeeName").val(ui.item.label);
+                                                            $("#PayeeID").val(ui.item.PayeeID);
+                                                            $("#Operation").val('1');
+                                                            $("#PayeeName").focus();
+                                                        }
+                                                        //для лицевых счетов
+                                                        if (ui.item.PAccountID != null){
+                                                            $("#PersonAccount").val(ui.item.label);
+                                                            $("#PAccountID").val(ui.item.PAccountID);
+                                                            $("#Operation").val('1');
+                                                            $("#PersonAccount").focus();
+                                                        }
                                                         return true;
                                                     }
                                          });
@@ -480,5 +579,100 @@
     {
         $("#Operation").val('1');
         return true;
+    }
+
+    function CreateEditDetail(DetOp, flgEdit) {
+            createDetailDialog(DetOp, flgEdit);
+        }
+    function createDetailDialog(DetOp, flgEdit) {
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+        var PID = DetOp;
+//        if (flgEdit == 1){
+//            PID = DetOp;
+//        }
+        var actionDetailDialogUrl = "@Url.Action("GpdRefDetailDialog", "GPD")";
+
+        var title = "";
+        if (DetOp == 1){
+            title = "Создание реквизита плательщика";
+            var PID = PID + (flgEdit == 1 ? $("#PayerID").val() : '0');
+        }
+        if (DetOp == 2){
+            title = "Создание реквизита получателя";
+            var PID = PID + (flgEdit == 1 ? $("#PayeeID").val() : '0');
+        }
+        if (DetOp == 3){
+            title = "Создание лицевого счета получателя";
+            var PID = PID + (flgEdit == 1 ? $("#PAccountID").val() : '0');
+        }
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + "?id=" + PID + " #DetailForm"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 500,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    var newval = $("#DetailID").val();
+                    if (DetOp == 1){
+                        $("#PayerID").val(newval);
+                        $("#PayerName").blur();
+                    }
+                    if (DetOp == 2){
+                        $("#PayeeID").val(newval);
+                        $("#PayeeName").blur();
+                    }
+                    if (DetOp == 3){
+                        $("#PAccountID").val(newval);
+                        $("#PersonAccount").blur();
+                    }
+                    $(this).dialog("close");
+                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(newDiv).dialog("open");
+
+    }
+    
+    function AjaxFormRequest(result_id,form_id,url) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type:     "POST", //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
     }
 </script>   

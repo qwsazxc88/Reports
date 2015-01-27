@@ -16,7 +16,7 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? ActDate { get; set; }
 
-        [Display(Name = "Ноиер акта в ЭССД")]
+        [Display(Name = "Номер акта в ЭССД")]
         public string ActNumber { get; set; }
 
         [Display(Name = "ФИО")]
@@ -77,8 +77,8 @@ namespace Reports.Presenters.UI.ViewModel
         public System.DateTime? ContractEndDate { get; set; }
 
         [Display(Name = "Плательщик")]
-        //public int PayerID { get; set; }
         public string PayerName { get; set; }
+        public int PayerID { get; set; }
         [Display(Name = "ИНН плательщика")]
         public string PayerINN { get; set; }
         [Display(Name = "КПП плательщика")]
@@ -94,8 +94,8 @@ namespace Reports.Presenters.UI.ViewModel
         //public IList<GpdContractDetailDto> Payers { get; set; }
 
         [Display(Name = "Получатель")]
-        //public int PayeeID { get; set; }
         public string PayeeName { get; set; }
+        public int PayeeID { get; set; }
         [Display(Name = "ИНН получателя")]
         public string PayeeINN { get; set; }
         [Display(Name = "КПП получателя")]
@@ -110,11 +110,7 @@ namespace Reports.Presenters.UI.ViewModel
         public string PayeeCorrAccount { get; set; }
         [Display(Name = "Лицевой счет получателя")]
         public string Account { get; set; }
-
-
-        [Display(Name = "Набор реквизитов")]
-        public int DSID { get; set; }
-        public string DetailName { get; set; }
+        public int PAccountID { get; set; }
 
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }

@@ -87,5 +87,18 @@ namespace Reports.Core.Dao
         /// <param name="role"></param>
         /// <returns></returns>
         IList<GpdPermissionDto> GetPermission(UserRole role);
+        /// <summary>
+        /// Реквизиты
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        IList<GpdContractDetailDto> GetAutocompleteDetails(string Name, int ID);
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="ID">ID договора</param>
+        /// <returns></returns>
+        bool ExistsReadyActs(int ID);
     }
 }

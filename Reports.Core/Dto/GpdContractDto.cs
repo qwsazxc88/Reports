@@ -77,6 +77,7 @@ namespace Reports.Core.Dto
         public string DepLevel7Name { get; set; }
         public bool IsLong {get;set;}
         //плательщик
+        public int PayerID { get; set; }
         public string PayerName { get; set; }
         public string PayerINN { get; set; }
         public string PayerKPP { get; set; }
@@ -84,7 +85,9 @@ namespace Reports.Core.Dto
         public string PayerBankName { get; set; }
         public string PayerBankBIK { get; set; }
         public string PayerCorrAccount { get; set; }
+        public string PayerContractor { get; set; }
         //получатель
+        public int PayeeID { get; set; }
         public string PayeeName { get; set; }
         public string PayeeINN { get; set; }
         public string PayeeKPP { get; set; }
@@ -92,19 +95,29 @@ namespace Reports.Core.Dto
         public string PayeeBankName { get; set; }
         public string PayeeBankBIK { get; set; }
         public string PayeeCorrAccount { get; set; }
+        public string PayeeContractor { get; set; }
+        //лицевой счет
+        public int PAccountID { get; set; }
+        public string PersonAccount { get; set; }
         public string Account { get; set; }
 
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }
-        public int DSID { get; set; }
+        //public int DSID { get; set; }
     }
     /// <summary>
     /// Список реквизитов.
     /// </summary>
     public class GpdContractDetailDto : GpdContractStatusesDto
     {
-        public int DTID { get; set; }
-        public string BankName { get; set; }
+        public string LongName { get; set; }
+        public string ContractorName { get; set; }
+        public string INN { get; set; }
+        public string KPP { get; set; }
         public string Account { get; set; }
+        public string PersonAccount { get; set; }
+        public string BankName { get; set; }
+        public string BankBIK { get; set; }
+        public string CorrAccount { get; set; }
     }
 }

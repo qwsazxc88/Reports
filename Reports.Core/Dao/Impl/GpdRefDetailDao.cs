@@ -68,22 +68,25 @@ namespace Reports.Core.Dao.Impl
         /// </summary>
         /// <param name="role">Группа пользователя.</param>
         /// <param name="Id">ID реквизита</param>
-        /// <param name="DTID">Тип реквизита</param>
+        /// <param name="Name">Название реквизита</param>
+        /// <param name="ContractorName">Название контрагента.</param>
+        /// <param name="SortBy">Номер поля для сортировки</param>
+        /// <param name="SortDescending">Направление сортировки</param>
         /// <returns></returns>
-        public IList<GpdDetailDto> GetRefDetail(UserRole role,
-            int Id,
-            int DTID)
+        public IList<GpdDetailDto> GetRefDetail(UserRole role, int Id, string Name, string ContractorName, int SortBy, bool? SortDescending)
         {
             string sqlWhere = "";
-            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdRefDetail] ";
+            string sqlQuery = @"SELECT * FROM [dbo].[vwGpdDetailList] ";
 
             if (Id != 0)
                 sqlWhere = "ID = " + Id.ToString();
-            if (DTID != 0)
-                sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "DTID = " + DTID.ToString();
+            if (Name != null && Name.Trim().Length != 0)
+                sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "Name like '" + Name + "%'";
+            if (ContractorName != null && ContractorName.Trim().Length != 0)
+                sqlWhere += (sqlWhere.Length != 0 ? " and " : "") + "ContractorName like '" + ContractorName + "%'";
 
             sqlQuery += (sqlWhere.Length != 0 ? " WHERE " + sqlWhere : "");
-            sqlQuery += " ORDER BY Priority";
+            sqlQuery += DetailOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateGRDQuery(sqlQuery);
             IList<GpdDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdDetailDto))).List<GpdDetailDto>();
@@ -94,13 +97,61 @@ namespace Reports.Core.Dao.Impl
             return Session.CreateSQLQuery(sqlQuery).
                 AddScalar("Id", NHibernateUtil.Int32).
                 AddScalar("Name", NHibernateUtil.String).
-                AddScalar("DTID", NHibernateUtil.Int32).
+                AddScalar("ContractorName", NHibernateUtil.String).
+                //AddScalar("DTID", NHibernateUtil.Int32).
                 AddScalar("INN", NHibernateUtil.String).
                 AddScalar("KPP", NHibernateUtil.String).
                 AddScalar("Account", NHibernateUtil.String).
                 AddScalar("BankName", NHibernateUtil.String).
                 AddScalar("BankBIK", NHibernateUtil.String).
-                AddScalar("CorrAccount", NHibernateUtil.String);
+                AddScalar("CorrAccount", NHibernateUtil.String).
+                AddScalar("PersonAccount", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Составляем вид сортировки.
+        /// </summary>
+        /// <param name="SortBy">Переключатель для поля сортировки.</param>
+        /// <param name="SortDescending">Направление сортировки.</param>
+        /// <returns></returns>
+        private string DetailOrderBy(int SortBy, bool? SortDescending)
+        {
+            if (SortBy == 0) return "";
+
+            string SqlOrderBy = " ORDER BY ";
+            switch (SortBy)
+            {
+                case 1:
+                    SqlOrderBy += "Id";
+                    break;
+                case 2:
+                    SqlOrderBy += "Name";
+                    break;
+                case 3:
+                    SqlOrderBy += "ContractorName";
+                    break;
+                case 4:
+                    SqlOrderBy += "INN";
+                    break;
+                case 5:
+                    SqlOrderBy += "KPP";
+                    break;
+                case 6:
+                    SqlOrderBy += "Account";
+                    break;
+                case 7:
+                    SqlOrderBy += "PersonAccount";
+                    break;
+                case 8:
+                    SqlOrderBy += "BankName";
+                    break;
+                case 9:
+                    SqlOrderBy += "BankBIK";
+                    break;
+                case 10:
+                    SqlOrderBy += "CorrAccount";
+                    break;
+            }
+            return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
         /// <summary>
         /// Запрос для наборов реквизитов.

@@ -119,7 +119,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             UserRole role = CurrentUser.UserRole;
             GetPermission(model);
-            model.Documents = GpdRefDetailDao.GetDetailSetList(0, model.Name, model.Surname, model.PayerName, model.PayeeName, true, model.SortBy, model.SortDescending);
+            model.Documents = GpdRefDetailDao.GetRefDetail(role, 0, model.Name, model.ContractorName, model.SortBy, model.SortDescending);
         }
         /// <summary>
         /// Проверяем правильность заполнения полей.
@@ -211,11 +211,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             //физики
             model.Persons = GpdRefDetailDao.GetPersons(0);
             //плательщики
-            model.PayerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 2);
+            //model.PayerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 2);
             //получатели
-            model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 1);
+            //model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 1);
             //список реквизитов
-            model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, model.DTID);
+            //model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, model.DTID);
         }
         /// <summary>
         /// Процедура сохранения записи в базе данных.
@@ -286,7 +286,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdrefDetail = new GpdRefDetail
                         {
                             Name = model.DetailName,
-                            DTID = model.DTID,
+                            //ContractorName = model
+                            //DTID = model.DTID,
                             INN = model.INN,
                             KPP = model.KPP,
                             Account = model.DetailAccount,
@@ -299,7 +300,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else
                     {
                         gpdrefDetail.Name = model.DetailName;
-                        gpdrefDetail.DTID = model.DTID;
+                        //gpdrefDetail.DTID = model.DTID;
                         gpdrefDetail.INN = model.INN;
                         gpdrefDetail.KPP = model.KPP;
                         gpdrefDetail.Account = model.DetailAccount;
@@ -380,78 +381,49 @@ namespace Reports.Presenters.UI.Bl.Impl
             //физики
             //model.Persons = GpdRefDetailDao.GetPersons(0);
             //плательщики
-            model.PayerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 2);
+            //model.PayerInfo = GpdRefDetailDao.GetRefDetail(role, 0);
             
-            if (model.PayerInfo.Count != 0)
-            {
-                //model.PayerID = PayerID == 0 ? model.PayerInfo[0].Id : model.PayerID;
-                foreach (var doc in model.PayerInfo)
-                {
-                    if (doc.Id == model.PayerID)
-                    {
-                        model.PayerName = doc.Name;
-                        model.PayerINN = doc.INN;
-                        model.PayerKPP = doc.KPP;
-                        model.PayerAccount = doc.Account;
-                        model.PayerBankName = doc.BankName;
-                        model.PayerBankBIK = doc.BankBIK;
-                        model.PayerCorrAccount = doc.CorrAccount;
-                        break;
-                    }
-                }
-            }
-
-            //получатели
-            model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, 0, 1);
-            if (model.PayeerInfo.Count != 0)
-            {
-                //model.PayeeID = PayeeID == 0 ? model.PayeerInfo[0].Id : model.PayeeID;
-                foreach (var doc in model.PayeerInfo)
-                {
-                    if (doc.Id == model.PayeeID)
-                    {
-                        model.PayeerName = doc.Name;
-                        model.PayeerINN = doc.INN;
-                        model.PayeerKPP = doc.KPP;
-                        model.PayeerAccount = doc.Account;
-                        model.PayeerBankName = doc.BankName;
-                        model.PayeerBankBIK = doc.BankBIK;
-                        model.PayeerCorrAccount = doc.CorrAccount;
-                        break;
-                    }
-                }
-            }
-
-            ////список реквизитов
-            //model.RefDetails = GpdRefDetailDao.GetRefDetail(role, 0, DTID);
-
-            ////если входим в режим редактирования реквизита
-            ////if (model.Operation == 2 && model.StatusID == 4)
-            //if (model.StatusID == 4 || model.StatusID == 2)
+            //if (model.PayerInfo.Count != 0)
             //{
-            //    if (model.RefDetails.Count != 0)
+            //    //model.PayerID = PayerID == 0 ? model.PayerInfo[0].Id : model.PayerID;
+            //    foreach (var doc in model.PayerInfo)
             //    {
-            //        foreach (var doc in model.RefDetails)
+            //        if (doc.Id == model.PayerID)
             //        {
-            //            if (doc.Id == model.DetailId || model.DetailId == 0 || model.RefDetails.Where(x => x.Id == model.DetailId).Count() == 0)
-            //            {
-            //                model.DTID = DTID;
-            //                model.DetailId = doc.Id;
-            //                model.DetailName = doc.Name;
-            //                model.INN = doc.INN;
-            //                model.KPP = doc.KPP;
-            //                model.DetailAccount = doc.Account;
-            //                model.BankName = doc.BankName;
-            //                model.BankBIK = doc.BankBIK;
-            //                model.CorrAccount = doc.CorrAccount;
-            //                break;
-            //            }
-            //            else
-            //            {
-            //            }
+            //            model.PayerName = doc.Name;
+            //            model.PayerINN = doc.INN;
+            //            model.PayerKPP = doc.KPP;
+            //            model.PayerAccount = doc.Account;
+            //            model.PayerBankName = doc.BankName;
+            //            model.PayerBankBIK = doc.BankBIK;
+            //            model.PayerCorrAccount = doc.CorrAccount;
+            //            break;
             //        }
             //    }
             //}
+
+            ////получатели
+            //model.PayeerInfo = GpdRefDetailDao.GetRefDetail(role, 0);
+            //if (model.PayeerInfo.Count != 0)
+            //{
+            //    //model.PayeeID = PayeeID == 0 ? model.PayeerInfo[0].Id : model.PayeeID;
+            //    foreach (var doc in model.PayeerInfo)
+            //    {
+            //        if (doc.Id == model.PayeeID)
+            //        {
+            //            model.PayeerName = doc.Name;
+            //            model.PayeerINN = doc.INN;
+            //            model.PayeerKPP = doc.KPP;
+            //            model.PayeerAccount = doc.Account;
+            //            model.PayeerBankName = doc.BankName;
+            //            model.PayeerBankBIK = doc.BankBIK;
+            //            model.PayeerCorrAccount = doc.CorrAccount;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            
             return model;
         }
         /// <summary>
@@ -551,6 +523,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             GpdContractEditModel model = new GpdContractEditModel();
             model.Id = Id;
+            model.errorMessage = "";
 
             UserRole role = CurrentUser.UserRole;
             model.Contracts = GpdContractDao.GetContracts(role, 
@@ -580,6 +553,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DateP = doc.DateP;
                     model.DatePOld = doc.DatePOld;
                     //плательщик
+                    model.PayerID = doc.PayerID;
                     model.PayeeName = doc.PayeeName;
                     model.PayerINN = doc.PayerINN;
                     model.PayerKPP = doc.PayerKPP;
@@ -587,7 +561,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayerBankName = doc.PayerBankName;
                     model.PayerBankBIK = doc.PayerBankBIK;
                     model.PayerCorrAccount = doc.PayerCorrAccount;
+                    model.PayerContractor = doc.PayerContractor;
                     //получатель
+                    model.PayeeID = doc.PayeeID;
                     model.PayerName = doc.PayerName;
                     model.PayeeINN = doc.PayeeINN;
                     model.PayeeKPP = doc.PayeeKPP;
@@ -595,6 +571,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayeeBankName = doc.PayeeBankName;
                     model.PayeeBankBIK = doc.PayeeBankBIK;
                     model.PayeeCorrAccount = doc.PayeeCorrAccount;
+                    model.PayeeContractor = doc.PayeeContractor;
+                    //лицевой счет
+                    model.PAccountID = doc.PAccountID;
+                    model.PersonAccount = doc.PersonAccount;
                     model.Account = doc.Account;
 
                     model.GPDID = doc.GPDID;
@@ -611,7 +591,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.StatusName = doc.StatusName;
                     model.PaymentPeriodID = doc.PaymentPeriodID;
                     model.Amount = doc.Amount;
-                    model.DSID = doc.DSID;
+                    //model.DSID = doc.DSID;
                     model.PurposePaymentPart = doc.PurposePaymentPart;
                 }
             }
@@ -625,43 +605,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             SetGpdContractEditDropDowns(model);
 
-            //заполняем поля после выбора фио в поле с автозаполнением
-            //если договор только зоздается и еще не сохранен, на странице уже могут выбрать набор
-            if (PersonID != 0 && Id == 0)
-            {
-                IList<GpdContractSurnameDto> Persons = GetPersonDSAutocomplete(null, PersonID);
-                if (Persons.Count != 0)
-                {
-                    foreach (var doc in Persons)
-                    {
-                        model.DSID = doc.Id;
-                        model.DepartmentId = DepId;
-                        model.DepartmentName = DepName;
-                        model.PersonID = doc.PersonID;
-                        model.Surname = doc.LongName;
-                        //плательщик
-                        model.PayeeName = doc.PayeeName;
-                        model.PayerINN = doc.PayerINN;
-                        model.PayerKPP = doc.PayerKPP;
-                        model.PayerAccount = doc.PayerAccount;
-                        model.PayerBankName = doc.PayerBankName;
-                        model.PayerBankBIK = doc.PayerBankBIK;
-                        model.PayerCorrAccount = doc.PayerCorrAccount;
-                        //получатель
-                        model.PayerName = doc.PayerName;
-                        model.PayeeINN = doc.PayeeINN;
-                        model.PayeeKPP = doc.PayeeKPP;
-                        model.PayeeAccount = doc.PayeeAccount;
-                        model.PayeeBankName = doc.PayeeBankName;
-                        model.PayeeBankBIK = doc.PayeeBankBIK;
-                        model.PayeeCorrAccount = doc.PayeeCorrAccount;
-                        model.Account = doc.Account;
-                        model.PurposePaymentPart = "Договор ГПХ # " + doc.Account + " ## " + doc.Name + " *";
-                        //model.PurposePayment = model.PurposePaymentPart + " " + model.PurposePayment; 
-                    }
-                }
-            }
-
 
             return model;
         }
@@ -672,115 +615,61 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <returns></returns>
         public GpdContractEditModel SetGpdContractEdit(GpdContractEditModel model)
         {
-
-            UserRole role = CurrentUser.UserRole;
-            model.Contracts = GpdContractDao.GetContracts(role,
-                model.Id,
-                model.DepartmentId,
-                model.CTID,
-                null, null,
-                model.Surname,
-                model.NumContract,
-                model.IsFind,
-                0, null);
-
-            if (model.Contracts.Count > 0)
+            //модель заполняем частично, если не прошли проверки и чтобы остались введенные пользователем данные
+            model.errorMessage = "";
+            model.Operation = 0;
+            
+            SetGpdContractEditDropDowns(model);
+            //плательщик
+            if (model.PayerID != 0)
             {
-                foreach (var doc in model.Contracts)
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PayerID);
+                if (Details.Count != 0)
                 {
-                    model.CreatorID = doc.CreatorID;
-                    model.DepartmentId = doc.DepartmentId;
-                    model.DepartmentName = doc.DepartmentName;
-                    model.PersonID = doc.PersonID;
-                    model.CTID = doc.CTID;
-                    model.StatusID = doc.StatusID;
-                    model.NumContract = doc.NumContract;
-                    model.NameContract = doc.NameContract;
-                    model.DateBegin = doc.DateBegin;
-                    model.DateEnd = doc.DateEnd;
-                    model.DateP = doc.DateP;
-                    model.DatePOld = doc.DatePOld;
-                    //плательщик
-                    model.PayeeName = doc.PayeeName;
-                    model.PayerINN = doc.PayerINN;
-                    model.PayerKPP = doc.PayerKPP;
-                    model.PayerAccount = doc.PayerAccount;
-                    model.PayerBankName = doc.PayerBankName;
-                    model.PayerBankBIK = doc.PayerBankBIK;
-                    model.PayerCorrAccount = doc.PayerCorrAccount;
-                    //получатель
-                    model.PayerName = doc.PayerName;
-                    model.PayeeINN = doc.PayeeINN;
-                    model.PayeeKPP = doc.PayeeKPP;
-                    model.PayeeAccount = doc.PayeeAccount;
-                    model.PayeeBankName = doc.PayeeBankName;
-                    model.PayeeBankBIK = doc.PayeeBankBIK;
-                    model.PayeeCorrAccount = doc.PayeeCorrAccount;
-                    model.Account = doc.Account;                    
-
-                    model.GPDID = doc.GPDID;
-                    model.GPDContractID = doc.GPDContractID;
-                    model.PurposePayment = doc.PurposePayment;
-                    if (doc.CreateDate == null)
-                        model.Autor = doc.Autor;
-                    else
-                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToShortDateString();
-                    model.CreatorName = doc.CreatorName;
-                    model.CreateDate = doc.CreateDate;
-                    model.Surname = doc.Surname;
-                    model.CTName = doc.CTName;
-                    model.StatusName = doc.StatusName;
-                    model.PaymentPeriodID = doc.PaymentPeriodID;
-                    //model.PayeeBankName = doc.PayeeBankName;
-                    model.Amount = doc.Amount;
-                    model.DSID = doc.DSID;
-                    model.PurposePaymentPart = doc.PurposePaymentPart;
+                    foreach (var doc in Details)
+                    {
+                        model.PayerName = doc.Name;
+                        model.PayerContractor = doc.ContractorName;
+                        model.PayerINN = doc.INN;
+                        model.PayerKPP = doc.KPP;
+                        model.PayerAccount = doc.Account;
+                        model.PayerBankName = doc.BankName;
+                        model.PayerBankBIK = doc.BankBIK;
+                        model.PayerCorrAccount = doc.CorrAccount;
+                    }
                 }
             }
-            else
+
+            //получатель
+            if (model.PayeeID != 0)
             {
-                model.StatusID = 4;
-                //model.DepartmentId = DepId;
-                //model.DepartmentName = DepName;
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PayeeID);
+                if (Details.Count != 0)
+                {
+                    foreach (var doc in Details)
+                    {
+                        model.PayeeName = doc.Name;
+                        model.PayeeContractor = doc.ContractorName;
+                        model.PayeeINN = doc.INN;
+                        model.PayeeKPP = doc.KPP;
+                        model.PayeeAccount = doc.Account;
+                        model.PayeeBankName = doc.BankName;
+                        model.PayeeBankBIK = doc.BankBIK;
+                        model.PayeeCorrAccount = doc.CorrAccount;
+                    }
+                }
             }
 
-
-            SetGpdContractEditDropDowns(model);
-
-            //заполняем поля после выбора фио в поле с автозаполнением
-            //если договор только зоздается и еще не сохранен, на странице уже могут набор
-            if (model.PersonID != 0 && model.Id == 0)
+            //лицевой счет
+            if (model.PAccountID != 0)
             {
-                IList<GpdContractSurnameDto> Persons = GetPersonDSAutocomplete(null, model.PersonID);
-                if (Persons.Count != 0)
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PAccountID);
+                if (Details.Count != 0)
                 {
-                    foreach (var doc in Persons)
+                    foreach (var doc in Details)
                     {
-                        model.DSID = doc.Id;
-                        //model.DepartmentId = DepId;
-                        //model.DepartmentName = DepName;
-                        model.PersonID = doc.PersonID;
-                        model.Surname = doc.LongName;
-                        //плательщик
-                        model.PayeeName = doc.PayeeName;
-                        model.PayerINN = doc.PayerINN;
-                        model.PayerKPP = doc.PayerKPP;
-                        model.PayerAccount = doc.PayerAccount;
-                        model.PayerBankName = doc.PayerBankName;
-                        model.PayerBankBIK = doc.PayerBankBIK;
-                        model.PayerCorrAccount = doc.PayerCorrAccount;
-                        //получатель
-                        model.PayerName = doc.PayerName;
-                        model.PayeeINN = doc.PayeeINN;
-                        model.PayeeKPP = doc.PayeeKPP;
-                        model.PayeeAccount = doc.PayeeAccount;
-                        model.PayeeBankName = doc.PayeeBankName;
-                        model.PayeeBankBIK = doc.PayeeBankBIK;
-                        model.PayeeCorrAccount = doc.PayeeCorrAccount;
-
-                        model.Account = doc.Account;
-                        model.PurposePaymentPart = "Договор ГПХ # " + doc.Account + " ## " + doc.Name + " *";
-                        //model.PurposePayment = model.PurposePaymentPart + " " + model.PurposePayment; 
+                        model.PersonAccount = doc.LongName;
+                        model.Account = doc.PersonAccount;
                     }
                 }
             }
@@ -844,15 +733,15 @@ namespace Reports.Presenters.UI.Bl.Impl
             UserRole role = CurrentUser.UserRole;
             model.ChargingTypes = GpdContractDao.GetChargingTypes(role, model.CTID, model.CTName);
         }
-        /// <summary>
-        /// Создаем список физических лиц для модели редактирования.
-        /// </summary>
-        /// <param name="model"></param>
-        public void SetGpdContractPersons(GpdContractEditModel model)
-        {
-            UserRole role = CurrentUser.UserRole;
-            model.Persons = GpdContractDao.GetPersons(role, model.PersonID, model.Surname);
-        }
+        ///// <summary>
+        ///// Создаем список физических лиц для модели редактирования.
+        ///// </summary>
+        ///// <param name="model"></param>
+        //public void SetGpdContractPersons(GpdContractEditModel model)
+        //{
+        //    UserRole role = CurrentUser.UserRole;
+        //    model.Persons = GpdContractDao.GetPersons(role, model.PersonID, model.Surname);
+        //}
         /// <summary>
         /// Достаем список договоров.
         /// </summary>
@@ -941,6 +830,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PurposePayment == null)
                     ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
 
+                if (model.PurposePaymentPart.Trim().Length + model.PurposePayment.Trim().Length > 210)
+                    ms.AddModelError("PurposePayment", "Превышено количество символов!");
+
                 if (model.Amount == 0)
                     ms.AddModelError("Amount", "Сумма не должна быть равна нулю!");
             }
@@ -955,6 +847,12 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveGpdContract(GpdContractEditModel model, out string error)
         {
             error = string.Empty;
+            //нельзя отменить договор, если есть занесеный акт 
+            if (model.StatusID == 3 && GpdContractDao.ExistsReadyActs(model.Id))
+            {
+                error = "Нельзя отклонить данный договор, так как к нему уже есть готовые акты! Чтобы отменить занесение договора нужно, чтобы акт имел статус черновика!";
+                return false;
+            }
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             IUser currentUseId = AuthenticationService.CurrentUser;
 
@@ -982,7 +880,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         IsLong = model.DateP.HasValue ? true : false,
                         PaymentPeriodID = model.PaymentPeriodID,
                         Amount = model.Amount,
-                        DSID = model.DSID,
+                        //DSID = model.DSID,
+                        PayerID = model.PayerID,
+                        PayeeID = model.PayeeID,
+                        PAccountID = model.PAccountID,
                         MagEntities = new List<GpdMagProlongation>()
                     };
                 }
@@ -1017,7 +918,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.PurposePayment = model.PurposePayment;
                         gpdContract.PaymentPeriodID = model.PaymentPeriodID;
                         gpdContract.Amount = model.Amount;
-                        gpdContract.DSID = model.DSID;
+                        //gpdContract.DSID = model.DSID;
+                        gpdContract.PayerID = model.PayerID;
+                        gpdContract.PayeeID = model.PayeeID;
+                        gpdContract.PAccountID = model.PAccountID;
                         gpdContract.EditDate = DateTime.Now;
                         gpdContract.EditorID = currentUseId.Id;
                         if (model.DateP.HasValue)
@@ -1080,6 +984,16 @@ namespace Reports.Presenters.UI.Bl.Impl
         public IList<GpdContractSurnameDto> GetPersonDSAutocomplete(string Name, int PersonID)
         {
             return GpdContractDao.GetAutocompletePersons(Name, PersonID);
+        }
+        /// <summary>
+        /// Автозаполнение реквизитов в договоре.
+        /// </summary>
+        /// <param name="Name">По названию реквизита.</param>
+        /// <param name="ID">По ID реквизита.</param>
+        /// <returns></returns>
+        public IList<GpdContractDetailDto> GetDetailsAutocomplete(string Name, int ID)
+        {
+            return GpdContractDao.GetAutocompleteDetails(Name, ID);
         }
         #endregion
 
@@ -1180,10 +1094,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.StatusName = doc.StatusName;
                     model.StatusID = doc.StatusID;
                     model.GCID = doc.GCID;
-                    model.DSID = doc.DSID;
-                    model.DetailName = doc.DetailName;
                     model.CreatorID = doc.CreatorID;
                     //плательщик
+                    model.PayerID = doc.PayerID;
                     model.PayeeName = doc.PayeeName;
                     model.PayerINN = doc.PayerINN;
                     model.PayerKPP = doc.PayerKPP;
@@ -1192,6 +1105,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayerBankBIK = doc.PayerBankBIK;
                     model.PayerCorrAccount = doc.PayerCorrAccount;
                     //получатель
+                    model.PayeeID = doc.PayeeID;
                     model.PayerName = doc.PayerName;
                     model.PayeeINN = doc.PayeeINN;
                     model.PayeeKPP = doc.PayeeKPP;
@@ -1199,6 +1113,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.PayeeBankName = doc.PayeeBankName;
                     model.PayeeBankBIK = doc.PayeeBankBIK;
                     model.PayeeCorrAccount = doc.PayeeCorrAccount;
+                    model.PAccountID = doc.PAccountID;
                     model.Account = doc.Account;                    
                 }
             }
@@ -1217,105 +1132,59 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             UserRole role = CurrentUser.UserRole;
             GetPermission(model);
-            IList<GpdActDto> document = null;
-            int DSID = model.DSID;
-            //создание нового акта
-            if (model.Id == 0)
-                document = GpdActDao.GetNewAct(role, model.GCID);
-            else //редактирование существующего
-                document = GpdActDao.GetAct(role, model.Id, false, model.DateBegin, model.DateEnd, 0, null, 0, null, 0, false);
-
-            if (document.Count > 0)
-            {
-                foreach (var doc in document)
-                {
-                    model.Id = doc.Id;
-                    model.ActDate = doc.ActDate;
-                    model.ActNumber = (model.Id == 0 ? doc.NumContract.ToString() + "/" + doc.GCCount.ToString() : doc.ActNumber);
-                    model.Surname = doc.Surname;
-                    model.NameContract = doc.NameContract;
-                    model.NumContract = doc.NumContract;// +(doc.ContractBeginDate.HasValue && doc.ContractEndDate.HasValue ? " с " + doc.ContractBeginDate.Value.ToShortDateString() + " по " + doc.ContractEndDate.Value.ToShortDateString() : "");
-                    model.ContractBeginDate = doc.ContractBeginDate;
-                    model.ContractEndDate = doc.ContractEndDate;
-                    model.DepLevel3Name = doc.DepLevel3Name;
-                    model.ChargingDate = doc.ChargingDate;
-                    model.DateBegin = doc.DateBegin;
-                    model.DateEnd = doc.DateEnd;
-                    model.Amount = doc.Amount;
-                    model.AmountPayment = doc.AmountPayment;
-                    model.POrderDate = doc.POrderDate;
-                    model.PurposePayment = doc.PurposePayment;
-                    model.ESSSNum = doc.ESSSNum;
-                    model.Autor = doc.CreatorName + (doc.CreateDate.HasValue ? " - " + doc.CreateDate.Value.ToShortDateString() : "");
-                    model.StatusName = doc.StatusName;
-                    model.StatusID = doc.StatusID;
-                    model.GCID = doc.GCID;
-                    model.DSID = doc.DSID;
-                    model.DetailName = doc.DetailName;
-                    model.CreatorID = doc.CreatorID;
-                    //плательщик
-                    model.PayeeName = doc.PayeeName;
-                    model.PayerINN = doc.PayerINN;
-                    model.PayerKPP = doc.PayerKPP;
-                    model.PayerAccount = doc.PayerAccount;
-                    model.PayerBankName = doc.PayerBankName;
-                    model.PayerBankBIK = doc.PayerBankBIK;
-                    model.PayerCorrAccount = doc.PayerCorrAccount;
-                    //получатель
-                    model.PayerName = doc.PayerName;
-                    model.PayeeINN = doc.PayeeINN;
-                    model.PayeeKPP = doc.PayeeKPP;
-                    model.PayeeAccount = doc.PayeeAccount;
-                    model.PayeeBankName = doc.PayeeBankName;
-                    model.PayeeBankBIK = doc.PayeeBankBIK;
-                    model.PayeeCorrAccount = doc.PayeeCorrAccount;
-                    model.Account = doc.Account;                    
-                }
-            }
-            else
-            {
-                model.StatusID = 4;
-                //model.DepartmentId = DepId;
-                //model.DepartmentName = DepName;
-            }
-
+            //IList<GpdActDto> document = null;
+            model.errorMessage = "";
+            
 
             model.Comments = GpdActDao.GetComments(model.Id);
 
-            //заполняем поля после выбора фио в поле с автозаполнением
-            //если договор только зоздается и еще не сохранен, на странице уже могут набор
-            if (DSID != 0 && model.Id == 0)
+            //плательщик
+            if (model.PayerID != 0)
             {
-                IList<GpdContractSurnameDto> Details = GpdActDao.GetAutocompletePersonDS(null, DSID);
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PayerID);
                 if (Details.Count != 0)
                 {
                     foreach (var doc in Details)
                     {
-                        model.DSID = doc.Id;
-                        //model.DepartmentId = DepId;
-                        //model.DepartmentName = DepName;
-                        //model.PersonID = doc.PersonID;
-                        model.DetailName = doc.Name;
-                        //плательщик
-                        model.PayeeName = doc.PayeeName;
-                        model.PayerINN = doc.PayerINN;
-                        model.PayerKPP = doc.PayerKPP;
-                        model.PayerAccount = doc.PayerAccount;
-                        model.PayerBankName = doc.PayerBankName;
-                        model.PayerBankBIK = doc.PayerBankBIK;
-                        model.PayerCorrAccount = doc.PayerCorrAccount;
-                        //получатель
-                        model.PayerName = doc.PayerName;
-                        model.PayeeINN = doc.PayeeINN;
-                        model.PayeeKPP = doc.PayeeKPP;
-                        model.PayeeAccount = doc.PayeeAccount;
-                        model.PayeeBankName = doc.PayeeBankName;
-                        model.PayeeBankBIK = doc.PayeeBankBIK;
-                        model.PayeeCorrAccount = doc.PayeeCorrAccount;
+                        model.PayerName = doc.Name;
+                        model.PayerINN = doc.INN;
+                        model.PayerKPP = doc.KPP;
+                        model.PayerAccount = doc.Account;
+                        model.PayerBankName = doc.BankName;
+                        model.PayerBankBIK = doc.BankBIK;
+                        model.PayerCorrAccount = doc.CorrAccount;
+                    }
+                }
+            }
 
-                        model.Account = doc.Account;
-                        //model.PurposePaymentPart = "Договор ГПХ # " + doc.Account + " ## " + doc.Name + " *";
-                        //model.PurposePayment = model.PurposePaymentPart + " " + model.PurposePayment; 
+            //получатель
+            if (model.PayeeID != 0)
+            {
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PayeeID);
+                if (Details.Count != 0)
+                {
+                    foreach (var doc in Details)
+                    {
+                        model.PayeeName = doc.Name;
+                        model.PayeeINN = doc.INN;
+                        model.PayeeKPP = doc.KPP;
+                        model.PayeeAccount = doc.Account;
+                        model.PayeeBankName = doc.BankName;
+                        model.PayeeBankBIK = doc.BankBIK;
+                        model.PayeeCorrAccount = doc.CorrAccount;
+                    }
+                }
+            }
+
+            //лицевой счет
+            if (model.PAccountID != 0)
+            {
+                IList<GpdContractDetailDto> Details = GetDetailsAutocomplete(null, model.PAccountID);
+                if (Details.Count != 0)
+                {
+                    foreach (var doc in Details)
+                    {
+                        model.Account = doc.PersonAccount;
                     }
                 }
             }
@@ -1370,6 +1239,9 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.PurposePayment == null)
                 ms.AddModelError("PurposePayment", "Укажите Назначение договора!");
 
+            if (model.PurposePayment != null && model.PurposePayment.Length > 210)
+                ms.AddModelError("PurposePayment", "Первышено количество символов!");
+
             if (model.ESSSNum == null)
                 ms.AddModelError("ESSSNum", "Укажите № заявки ЭССС!");
 
@@ -1382,6 +1254,25 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SaveGpdAct(GpdActEditModel model, out string error)
         {
             error = string.Empty;
+
+            //к текущему договору не должны повторяться номера актов
+            if (GpdActDao.ExistsActsByNumber(model.Id, model.GCID, model.ActNumber))
+            {
+                error = "К данному договору уже существует акт с таким номером!";
+                if (model.Id == 0)
+                    error += " Повторите попытку создания акта!";
+                else
+                    error += " Попробуйте найти акт к данному договору и с таким номером в реестре!";
+                return false;
+            }
+
+            //договор не должен быть в статусе черновика
+            if (model.StatusID != 4 && !GpdActDao.CheckContractEntry(model.GCID))
+            {
+                error = "Нельзя подготовить акт к выгрузке, так как договор для данного акта имеет статус черновика!";
+                return false;
+            }
+
             UserRole currentUserRole = AuthenticationService.CurrentUser.UserRole;
             IUser currentUseId = AuthenticationService.CurrentUser;
 
@@ -1399,7 +1290,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         ActNumber = model.ActNumber,
                         ActDate = model.ActDate,
                         GCID = model.GCID,
-                        DSID = model.DSID,
                         ChargingDate = model.ChargingDate,
                         DateBegin = model.DateBegin,
                         DateEnd = model.DateEnd,
@@ -1425,7 +1315,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdAct.PurposePayment = model.PurposePayment;
                     gpdAct.ESSSNum = model.ESSSNum;
                     gpdAct.StatusID = model.StatusID;
-                    gpdAct.DSID = model.DSID;
                 }
 
                 AddComment(gpdAct, model);  //добавление комментария                
@@ -1522,26 +1411,28 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (ID != 0)
             {
                 UserRole role = CurrentUser.UserRole;
-                IList<GpdDetailDto> PayeerInfo = GpdRefDetailDao.GetRefDetail(role, ID, 1);
-                if (PayeerInfo.Count != 0)
+                IList<GpdDetailDto> DetailInfo = GpdRefDetailDao.GetRefDetail(role, ID, null, null, 0, null);
+                if (DetailInfo.Count != 0)
                 {
-                    foreach (var doc in PayeerInfo)
+                    foreach (var doc in DetailInfo)
                     {
                         model.Id = doc.Id;
                         model.DetailID = doc.Id;
-                        model.DTID = doc.DTID;
+                        //model.DTID = doc.DTID;
                         model.Name = doc.Name;
+                        model.ContractorName = doc.ContractorName;
                         model.INN = doc.INN;
                         model.KPP = doc.KPP;
                         model.Account = doc.Account;
                         model.BankName = doc.BankName;
                         model.BankBIK = doc.BankBIK;
                         model.CorrAccount = doc.CorrAccount;
+                        model.PersonAccount = doc.PersonAccount;
                     }
                 }
             }
-            else
-                model.DTID = 1;
+            //else
+            //    model.DTID = 1;
             return model;
         }
         /// <summary>
@@ -1556,35 +1447,44 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.Name != null && model.Name.Trim().Length > 150)
                 ms.AddModelError("Name", "Превышено допустимое количество символов!");
 
-            if (model.INN == null)
-                ms.AddModelError("INN", "Заполните поле 'ИНН'");
-            if (model.INN != null && model.INN.Trim().Length > 12)
-                ms.AddModelError("INN", "Превышено допустимое количество символов!");
+            if (model.ContractorName == null)
+                ms.AddModelError("ContractorName", "Заполните поле 'Наименование'");
+            if (model.ContractorName != null && model.ContractorName.Trim().Length > 150)
+                ms.AddModelError("ContractorName", "Превышено допустимое количество символов!");
 
-            if (model.KPP == null)
-                ms.AddModelError("KPP", "Заполните поле 'КПП'");
-            if (model.KPP != null && model.KPP.Trim().Length > 9)
-                ms.AddModelError("KPP", "Превышено допустимое количество символов!");
+            //if (model.INN == null)
+            //    ms.AddModelError("INN", "Заполните поле 'ИНН'");
+            //if (model.INN != null && model.INN.Trim().Length > 12)
+            //    ms.AddModelError("INN", "Превышено допустимое количество символов!");
 
-            if (model.Account == null)
-                ms.AddModelError("Account", "Заполните поле 'Расчетный счет'");
-            if (model.Account != null && model.Account.Trim().Length > 20)
+            //if (model.KPP == null)
+            //    ms.AddModelError("KPP", "Заполните поле 'КПП'");
+            //if (model.KPP != null && model.KPP.Trim().Length > 9)
+            //    ms.AddModelError("KPP", "Превышено допустимое количество символов!");
+
+            //if (model.Account == null)
+            //    ms.AddModelError("Account", "Заполните поле 'Расчетный счет'");
+            if (model.Account != null && model.Account.Trim().Length > 23)
                 ms.AddModelError("Account", "Превышено допустимое количество символов!");
 
-            if (model.BankName == null)
-                ms.AddModelError("BankName", "Заполните поле 'Банк'");
-            if (model.BankName != null && model.BankName.Trim().Length > 100)
-                ms.AddModelError("BankName", "Превышено допустимое количество символов!");
+            //if (model.BankName == null)
+            //    ms.AddModelError("BankName", "Заполните поле 'Банк'");
+            //if (model.BankName != null && model.BankName.Trim().Length > 100)
+            //    ms.AddModelError("BankName", "Превышено допустимое количество символов!");
 
-            if (model.BankBIK == null)
-                ms.AddModelError("BankBIK", "Заполните поле 'Банк БИК'");
-            if (model.BankBIK != null && model.BankBIK.Trim().Length > 9)
-                ms.AddModelError("BankBIK", "Превышено допустимое количество символов!");
+            //if (model.BankBIK == null)
+            //    ms.AddModelError("BankBIK", "Заполните поле 'Банк БИК'");
+            //if (model.BankBIK != null && model.BankBIK.Trim().Length > 9)
+            //    ms.AddModelError("BankBIK", "Превышено допустимое количество символов!");
 
-            if (model.CorrAccount == null)
-                ms.AddModelError("CorrAccount", "Заполните поле 'Банк кор/счет'");
-            if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 20)
+            //if (model.CorrAccount == null)
+            //    ms.AddModelError("CorrAccount", "Заполните поле 'Банк кор/счет'");
+            if (model.CorrAccount != null && model.CorrAccount.Trim().Length > 23)
                 ms.AddModelError("Name", "Превышено допустимое количество символов!");
+
+
+            if (model.PersonAccount != null && model.PersonAccount.Trim().Length > 23)
+                ms.AddModelError("PersonAccount", "Превышено допустимое количество символов!");
         }
         /// <summary>
         /// Процедура сохранения записи в базе данных.
@@ -1607,26 +1507,30 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdrefDetail = new GpdRefDetail
                     {
                         Name = model.Name,
-                        DTID = 1,//model.DTID,
+                        ContractorName = model.ContractorName,
+                        //DTID = 1,//model.DTID,
                         INN = model.INN,
                         KPP = model.KPP,
                         Account = model.Account,
                         BankName = model.BankName,
                         BankBIK = model.BankBIK,
                         CorrAccount = model.CorrAccount,
+                        PersonAccount = model.PersonAccount,
                         CreatorID = currentUseId.Id,
                     };
                 }
                 else
                 {
                     gpdrefDetail.Name = model.Name;
-                    gpdrefDetail.DTID = 1;// model.DTID;
+                    gpdrefDetail.ContractorName = model.ContractorName;
+                    //gpdrefDetail.DTID = 1;// model.DTID;
                     gpdrefDetail.INN = model.INN;
                     gpdrefDetail.KPP = model.KPP;
                     gpdrefDetail.Account = model.Account;
                     gpdrefDetail.BankName = model.BankName;
                     gpdrefDetail.BankBIK = model.BankBIK;
                     gpdrefDetail.CorrAccount = model.CorrAccount;
+                    gpdrefDetail.PersonAccount = model.PersonAccount;
                     gpdrefDetail.CreatorID = model.CreatorID;
                     gpdrefDetail.EditorID = currentUseId.Id;
                     gpdrefDetail.EditDate = DateTime.Now;
@@ -1645,6 +1549,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
         #endregion
+
+        
         public static string FormatDateMY(DateTime? date)
         {
             return date.HasValue ? date.Value.Month.ToString() + "." + date.Value.Year.ToString() : string.Empty;

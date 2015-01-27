@@ -38,7 +38,10 @@
                                 @Html.LabelFor(m => m.Id):
                             </td>
                             <td>
-                                <label id="Id">@Model.Id</label>
+                                @if (Model.Id != 0)
+                                {
+                                    <label id="Id">@Model.Id</label>
+                                }
                             </td>
                         </tr>
                         <tr>
@@ -186,29 +189,6 @@
                             </td>
                             <td>
                                 <label id="POrderDate">@RequestBl.FormatDate(@Model.POrderDate)</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @*
-                                @Html.LabelFor(m => m.DSID):
-                                *@
-                            </td>
-                            <td>
-                                @*
-                                @if (Model.StatusID == 4 || @Model.Id == 0)
-                                {
-                                    <input type="text" name="DetailName" id="DetailName" value="@Model.DetailName" style="width:600px" data-autocomplete-source="@Url.Action("AutocompleteDetSetSearch", "GPD")" />
-                                }
-                                else
-                                {
-                                    <label>@Model.Surname</label>
-                                }
-                                *@
-                                <input type="hidden" id="DSID" name="DSID" value="@Model.DSID"/>
-                                @*
-                                @Html.ValidationMessageFor(model => model.DSID)
-                                *@
                             </td>
                         </tr>
                         <tr>
@@ -413,7 +393,7 @@
                 {
                     if (@Model.StatusID != 4 && @Model.Id != 0 && Model.Permissions[0].IsCancel)
                     {
-                        <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectAct();"/>
+                        <input type="submit" value="Отклонить" title="Отклонить акт" onclick="RejectAct();"/>
                     }
                 }
             </td>
@@ -473,29 +453,7 @@
         $(".hasDatepicker").width("75px");
         
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
-        $("#DetailName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
-        $("#DetailName").blur(function(){ SaveDraft(); if($("#DSID").val() != 0) { this.form.submit();}});
         setActiveMenuItem("moAct");
-
-
-        $(function () 
-        {
-            $("[data-autocomplete-source]").each(
-                function () 
-                {
-                    var target = $(this);
-                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
-                                          select : function(event, ui) 
-                                                    {
-                                                        $("#DetailName").val(ui.item.label);
-                                                        $("#DSID").val(ui.item.DSID);
-                                                        $("#Operation").val('1');
-                                                        $("#DetailName").focus();
-                                                        return true;
-                                                    }
-                                         });
-                  });
-        });
 
     });
 

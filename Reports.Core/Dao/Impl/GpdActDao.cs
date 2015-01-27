@@ -125,12 +125,11 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("StatusName", NHibernateUtil.String).
                 AddScalar("GCID", NHibernateUtil.Int32).
                 AddScalar("CTName", NHibernateUtil.String).
-                AddScalar("DSID", NHibernateUtil.Int32).
-                AddScalar("DetailName", NHibernateUtil.String).
                 AddScalar("DateP", NHibernateUtil.DateTime).
                 AddScalar("DepLevel7Name", NHibernateUtil.String).
                 AddScalar("GPDID", NHibernateUtil.String).
                 //реквизиты плательщика
+                AddScalar("PayerID", NHibernateUtil.Int32).
                 AddScalar("PayerName", NHibernateUtil.String).
                 AddScalar("PayerINN", NHibernateUtil.String).
                 AddScalar("PayerKPP", NHibernateUtil.String).
@@ -139,6 +138,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayerBankBIK", NHibernateUtil.String).
                 AddScalar("PayerCorrAccount", NHibernateUtil.String).
                 //реквизиты получателя
+                AddScalar("PayeeID", NHibernateUtil.Int32).
                 AddScalar("PayeeName", NHibernateUtil.String).
                 AddScalar("PayeeINN", NHibernateUtil.String).
                 AddScalar("PayeeKPP", NHibernateUtil.String).
@@ -146,6 +146,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeBankName", NHibernateUtil.String).
                 AddScalar("PayeeBankBIK", NHibernateUtil.String).
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+                AddScalar("PAccountID", NHibernateUtil.Int32).
                 AddScalar("Account", NHibernateUtil.String);
         }
         /// <summary>
@@ -356,6 +357,45 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
 
                 AddScalar("Account", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора с повторяющимися номерами.
+        /// </summary>
+        /// <param name="ID">ID акта</param>
+        /// <param name="GCID"> договора</param>
+        /// <param name="ActNumber">Номер акта</param>
+        /// <returns></returns>
+        public bool ExistsActsByNumber(int ID, int GCID, string ActNumber)
+        {
+            string SqlQuery = "";
+            if (ID == 0)
+                SqlQuery = "SELECT cast(case when count(*) > 0 then 1 else 0 end as bit) flgExists FROM dbo.GpdAct WHERE GCID = " + GCID.ToString() + " and ActNumber = '" + ActNumber + "'";
+            else
+                SqlQuery = "SELECT cast(case when count(*) > 0 then 1 else 0 end as bit) flgExists FROM dbo.GpdAct WHERE GCID = " + GCID.ToString() + " and ActNumber = '" + ActNumber + "' and ID <> " + ID.ToString();
+
+            IQuery query = CreateEAQuery(SqlQuery);
+            return query.UniqueResult<bool>();
+        }
+        /// <summary>
+        /// Проверка на статус договора.
+        /// </summary>
+        /// <param name="GCID"> договора</param>
+        /// <returns></returns>
+        public bool CheckContractEntry(int GCID)
+        {
+            string SqlQuery = "SELECT cast(case when StatusID <> 4 then 1 else 0 end as bit) flgExists FROM dbo.GpdContract WHERE ID = " + GCID.ToString();
+
+            IQuery query = CreateEAQuery(SqlQuery);
+            return query.UniqueResult<bool>();
+        }
+        /// <summary>
+        /// Создание подзапроса.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateEAQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).AddScalar("flgExists", NHibernateUtil.Boolean);
         }
     }
 }
