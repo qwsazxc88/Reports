@@ -584,7 +584,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
-                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToLongDateString();
+                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToShortDateString() + " - " + doc.CreateDate.ToShortTimeString();
                     model.CreatorName = doc.CreatorName;
                     model.CreateDate = doc.CreateDate;
                     model.Surname = doc.Surname;
@@ -1128,7 +1128,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.POrderDate = doc.POrderDate;
                     model.PurposePayment = doc.PurposePayment;
                     model.ESSSNum = doc.ESSSNum;
-                    model.Autor = doc.CreatorName + (doc.CreateDate.HasValue ? " - " + doc.CreateDate.Value.ToShortDateString() : "");
+                    model.Autor = doc.CreatorName + (doc.CreateDate.HasValue ? " - " + doc.CreateDate.Value.ToShortDateString() + " - " + doc.CreateDate.Value.ToShortTimeString() : "");
                     model.StatusName = doc.StatusName;
                     model.StatusID = doc.StatusID;
                     model.GCID = doc.GCID;
