@@ -226,6 +226,7 @@ namespace Reports.Core.Dao.Impl
                                             string Surname,
                                             string NumContract,
                                             bool IsFind,
+                                            int StatusID,
                                             int SortBy,
                                             bool? SortDescending)
         {
@@ -249,6 +250,8 @@ namespace Reports.Core.Dao.Impl
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + (NumContract.Trim().Length != 0 ? " NumContract = '" + NumContract + "'" : "");//по номеру договора
                 if (Id != null && Id != 0)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " id = " + Id.ToString();//по номеру договора
+                if (StatusID != null && StatusID != 0)
+                    SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " StatusID = " + StatusID.ToString();//по статусу
             }
 
             sqlQuery = sqlQuery + (SqlWhere.Length != 0 ? " WHERE " + SqlWhere : "") + SqlOrderBy(SortBy, SortDescending);
@@ -354,8 +357,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Account", NHibernateUtil.String).
 
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
-                AddScalar("Amount", NHibernateUtil.Decimal);
-                //AddScalar("DSID", NHibernateUtil.Int32);
+                AddScalar("Amount", NHibernateUtil.Decimal).
+                AddScalar("flgRed", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Достаем уровень подразделения.
