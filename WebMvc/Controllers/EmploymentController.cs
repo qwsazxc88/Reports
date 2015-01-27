@@ -922,6 +922,24 @@ namespace WebMvc.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPrintPersonalDataAgreement(int userId)
+        {
+            return GetPrintForm("PrintPersonalDataAgreement", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintPersonalDataObligation(int userId)
+        {
+            return GetPrintForm("PrintPersonalDataObligation", userId);
+        }
+
+        [HttpGet]
+        public ActionResult GetPrintEmploymentFile(int userId)
+        {
+            return GetPrintForm("PrintEmploymentFile", userId);
+        }
+
+        [HttpGet]
         public ActionResult GetPrintRoster(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
         {
             return GetListPrintForm("PrintRoster", filters, sortBy, sortDescending, true);
@@ -949,6 +967,27 @@ namespace WebMvc.Controllers
         public ActionResult PrintLiabilityContract(int userId)
         {
             PrintLiabilityContractModel model = EmploymentBl.GetPrintLiabilityContractModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintPersonalDataAgreement(int userId)
+        {
+            PrintPersonalDataAgreementModel model = EmploymentBl.GetPrintPersonalDataAgreementModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintPersonalDataObligation(int userId)
+        {
+            PrintPersonalDataObligationModel model = EmploymentBl.GetPrintPersonalDataObligationModel(userId);
+            return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult PrintEmploymentFile(int userId)
+        {
+            PrintEmploymentFileModel model = EmploymentBl.GetPrintEmploymentFileModel(userId);
             return View(model);
         }
 
