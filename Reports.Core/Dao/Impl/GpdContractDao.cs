@@ -165,6 +165,45 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Account", NHibernateUtil.String);
         }
         /// <summary>
+        /// Запрос для реквизитов получателей и плательщиков
+        /// </summary>
+        /// <param name="Name">По рабочему названию</param>
+        /// <param name="ID">По ID</param>
+        /// <returns></returns>
+        public IList<GpdContractDetailDto> GetAutocompleteDetails(string Name, int ID)
+        {
+            string sqlQuery = "";
+            if (ID == 0)
+                sqlQuery = @"SELECT * FROM vwGpdDetailList WHERE LongName like '" + (Name == null ? "" : Name) + "%' ORDER BY LongName";
+            else
+                sqlQuery = @"SELECT * FROM vwGpdDetailList WHERE ID =" + ID.ToString();
+
+            IQuery query = CreateDetailsQuery(sqlQuery);
+            IList<GpdContractDetailDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractDetailDto))).List<GpdContractDetailDto>();
+            return documentList;
+        }
+        /// <summary>
+        /// Создание запроса физических лиц.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateDetailsQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("LongName", NHibernateUtil.String).
+                //реквизиты 
+                AddScalar("ContractorName", NHibernateUtil.String).
+                AddScalar("INN", NHibernateUtil.String).
+                AddScalar("KPP", NHibernateUtil.String).
+                AddScalar("Account", NHibernateUtil.String).
+                AddScalar("PersonAccount", NHibernateUtil.String).
+                AddScalar("BankName", NHibernateUtil.String).
+                AddScalar("BankBIK", NHibernateUtil.String).
+                AddScalar("CorrAccount", NHibernateUtil.String);
+        }
+        /// <summary>
         /// Список договоров.
         /// </summary>
         /// <param name="role"></param>
@@ -290,6 +329,7 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("DepLevel7Name", NHibernateUtil.String).
                 AddScalar("IsLong", NHibernateUtil.Boolean).
                 //реквизиты плательщика
+                AddScalar("PayerID", NHibernateUtil.Int32).
                 AddScalar("PayerName", NHibernateUtil.String).
                 AddScalar("PayerINN", NHibernateUtil.String).
                 AddScalar("PayerKPP", NHibernateUtil.String).
@@ -297,7 +337,9 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayerBankName", NHibernateUtil.String).
                 AddScalar("PayerBankBIK", NHibernateUtil.String).
                 AddScalar("PayerCorrAccount", NHibernateUtil.String).
+                AddScalar("PayerContractor", NHibernateUtil.String).
                 //реквизиты получателя
+                AddScalar("PayeeID", NHibernateUtil.Int32).
                 AddScalar("PayeeName", NHibernateUtil.String).
                 AddScalar("PayeeINN", NHibernateUtil.String).
                 AddScalar("PayeeKPP", NHibernateUtil.String).
@@ -305,11 +347,15 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeBankName", NHibernateUtil.String).
                 AddScalar("PayeeBankBIK", NHibernateUtil.String).
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+                AddScalar("PayeeContractor", NHibernateUtil.String).
+                //лицевой счет
+                AddScalar("PAccountID", NHibernateUtil.Int32).
+                AddScalar("PersonAccount", NHibernateUtil.String).
                 AddScalar("Account", NHibernateUtil.String).
 
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
-                AddScalar("Amount", NHibernateUtil.Decimal).
-                AddScalar("DSID", NHibernateUtil.Int32);
+                AddScalar("Amount", NHibernateUtil.Decimal);
+                //AddScalar("DSID", NHibernateUtil.Int32);
         }
         /// <summary>
         /// Достаем уровень подразделения.
@@ -329,6 +375,25 @@ namespace Reports.Core.Dao.Impl
         public virtual IQuery CreateDLQuery(string sqlQuery)
         {
             return Session.CreateSQLQuery(sqlQuery).AddScalar("ItemLevel", NHibernateUtil.Int32);
+        }
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="ID">ID договора</param>
+        /// <returns></returns>
+        public bool ExistsReadyActs(int ID)
+        {
+            IQuery query = CreateERQuery("SELECT cast(case when count(*) > 0 then 1 else 0 end as bit) flgExists FROM dbo.GpdAct WHERE StatusID <> 4 and GCID = " + ID.ToString());
+            return query.UniqueResult<bool>();
+        }
+        /// <summary>
+        /// Создание подзапроса.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateERQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).AddScalar("flgExists", NHibernateUtil.Boolean);
         }
     }
 }

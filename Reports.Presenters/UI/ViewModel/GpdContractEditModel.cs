@@ -22,7 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО ГПД")]
         public int PersonID { get; set; }
         public string Surname { get; set; }
-        public IList<GpdContractSurnameDto> Persons { get; set; }
+        //public IList<GpdContractSurnameDto> Persons { get; set; }
 
         [Display(Name = "Вид начисления по договору")]
         public int CTID { get; set; }
@@ -51,7 +51,7 @@ namespace Reports.Presenters.UI.ViewModel
         public System.DateTime? DatePOld { get; set; }
 
         [Display(Name = "Плательщик")]
-        //public int PayerID { get; set; }
+        public int PayerID { get; set; }
         public string PayerName { get; set; }
         [Display(Name = "ИНН плательщика")]
         public string PayerINN { get; set; }
@@ -65,10 +65,12 @@ namespace Reports.Presenters.UI.ViewModel
         public string PayerBankBIK { get; set; }
         [Display(Name = "Кор. счет. плательщика")]
         public string PayerCorrAccount { get; set; }
+        [Display(Name = "Плательщик")]
+        public string PayerContractor { get; set; }
         //public IList<GpdContractDetailDto> Payers { get; set; }
 
         [Display(Name = "Получатель")]
-        //public int PayeeID { get; set; }
+        public int PayeeID { get; set; }
         public string PayeeName { get; set; }
         [Display(Name = "ИНН получателя")]
         public string PayeeINN { get; set; }
@@ -82,6 +84,10 @@ namespace Reports.Presenters.UI.ViewModel
         public string PayeeBankBIK { get; set; }
         [Display(Name = "Кор. счет. получателя")]
         public string PayeeCorrAccount { get; set; }
+        [Display(Name = "Получатель")]
+        public string PayeeContractor { get; set; }
+
+
         //public IList<GpdContractDetailDto> Payeers { get; set; }
 
         [Display(Name = "ID физического лица (ГПД) в ЭССД")]
@@ -114,6 +120,10 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Лицевой счет получателя")]
         public string Account { get; set; }
+        [Display(Name = "Лицевой счет получателя")]
+        public int PAccountID { get; set; }
+        public string PersonAccount { get; set; }
+        
 
         public IList<GpdContractDto> Contracts { get; set; }
         public bool hasErrors { get; set; }

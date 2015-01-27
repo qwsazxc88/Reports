@@ -35,12 +35,13 @@ namespace Reports.Core.Dto
         public string StatusName { get; set; }
         public int GCID { get; set; }
         public string CTName { get; set; }
-        public int DSID { get; set; }
+        //public int DSID { get; set; }
         public string DetailName { get; set; }
         public DateTime? DateP { get; set; }
         public string DepLevel7Name { get; set; }
         public string GPDID { get; set; }
         //плательщик
+        public int PayerID { get; set; }
         public string PayerName { get; set; }
         public string PayerINN { get; set; }
         public string PayerKPP { get; set; }
@@ -49,6 +50,7 @@ namespace Reports.Core.Dto
         public string PayerBankBIK { get; set; }
         public string PayerCorrAccount { get; set; }
         //получатель
+        public int PayeeID { get; set; }
         public string PayeeName { get; set; }
         public string PayeeINN { get; set; }
         public string PayeeKPP { get; set; }
@@ -56,6 +58,7 @@ namespace Reports.Core.Dto
         public string PayeeBankName { get; set; }
         public string PayeeBankBIK { get; set; }
         public string PayeeCorrAccount { get; set; }
+        public int PAccountID { get; set; }
         public string Account { get; set; }
     }
     /// <summary>

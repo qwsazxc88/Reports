@@ -13,16 +13,20 @@ namespace Reports.Presenters.UI.ViewModel
         //public IList<GpdDetailDto> RefDetails { get; set; }
 
         //[Display(Name = "Тип реквизита")]
-        public int DTID { get; set; }
+        //public int DTID { get; set; }
         //public string TypeName { get; set; }
         //public IList<GpdRefDetailDto> DetailTypes { get; set; }
 
         [Display(Name = "Наименование")]
         public string Name { get; set; }
 
+        [Display(Name = "Наименование контрагента")]
+        public string ContractorName { get; set; }
+
         //[Display(Name = "Выбор реквизита")]
         public int Id { get; set; }
         public int DetailID { get; set; }
+        public int DetailType { get; set; }
 
         [Display(Name = "ИНН")]
         public string INN { get; set; }
@@ -38,6 +42,9 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Банк БИК")]
         public string BankBIK { get; set; }
+
+        [Display(Name = "Лицевой счет")]
+        public string PersonAccount { get; set; }
 
         [Display(Name = "Банк кор/счет")]
         public string CorrAccount { get; set; }

@@ -18,7 +18,6 @@ namespace Reports.Core.Domain
         public virtual string PurposePayment { get; set; }
         public virtual string ESSSNum { get; set; }
         public virtual int StatusID { get; set; }
-        public virtual int DSID { get; set; }
 
         //комментарии
         public virtual IList<GpdActComment> Comments { get; set; }

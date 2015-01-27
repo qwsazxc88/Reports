@@ -67,5 +67,19 @@ namespace Reports.Core.Dao
         /// <param name="Name"></param>
         /// <returns></returns>
         IList<GpdContractSurnameDto> GetAutocompletePersonDS(string Name, int DSID);
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора с повторяющимися номерами.
+        /// </summary>
+        /// <param name="ID">ID акта</param>
+        /// <param name="GCID"> договора</param>
+        /// <param name="ActNumber">Номер акта</param>
+        /// <returns></returns>
+        bool ExistsActsByNumber(int ID, int GCID, string ActNumber);
+        /// <summary>
+        /// Проверка на статус договора.
+        /// </summary>
+        /// <param name="GCID"> договора</param>
+        /// <returns></returns>
+        bool CheckContractEntry(int GCID);
     }
 }

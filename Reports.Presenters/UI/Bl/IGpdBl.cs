@@ -28,7 +28,7 @@ namespace Reports.Presenters.UI.Bl
         void SetGpdContractStatuses(GpdContractModel model);
         void SetGpdContractChargingTypes(GpdContractModel model);
         void SetGpdContractChargingTypes(GpdContractEditModel model);
-        void SetGpdContractPersons(GpdContractEditModel model);
+        //void SetGpdContractPersons(GpdContractEditModel model);
         GpdContractEditModel SetGpdContractEdit(int Id, int PersonID, int DepId, string DepName);
         GpdContractEditModel SetGpdContractEdit(GpdContractEditModel model);
         void CheckFillFieldsForGpdContract(GpdContractEditModel model, System.Web.Mvc.ModelStateDictionary ms);
@@ -39,6 +39,7 @@ namespace Reports.Presenters.UI.Bl
         void GetPermission(GpdContractEditModel model);
         void SetGpdContractEditDropDowns(GpdContractEditModel model);
         IList<GpdContractSurnameDto> GetPersonDSAutocomplete(string Name, int PersonID);
+        IList<GpdContractDetailDto> GetDetailsAutocomplete(string Name, int ID);
         #endregion
 
         #region Акты
@@ -57,5 +58,7 @@ namespace Reports.Presenters.UI.Bl
         bool SaveGpdRefDetailDialog(GpdRefDetailDialogModel model, out string error);
         void CheckFillFieldsForGpdRefDetailDialog(GpdRefDetailDialogModel model, System.Web.Mvc.ModelStateDictionary ms);
         #endregion
+
+        
     }
 }

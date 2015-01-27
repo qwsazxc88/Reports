@@ -9,51 +9,16 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdRefDetailModel
     {
-        //public int Id { get; set; }
-        //public int CreatorID { get; set; }
 
         [Display(Name = "Поиск по наименованию")]
         public string Name { get; set; }
 
-        [Display(Name = "Поиск по физическому лицу")]
-        public string Surname { get; set; }
+        [Display(Name = "Поиск по названию контрагента")]
+        public string ContractorName { get; set; }
 
-        [Display(Name = "Поиск по плательщику")]
-        public string PayerName { get; set; }
-
-        [Display(Name = "Поиск по получателю")]
-        public string PayeeName { get; set; }
-
-        public IList<GpdDetailSetsListDto> Documents { get; set; }
+        public IList<GpdDetailDto> Documents { get; set; }
 
 
-        //[Display(Name = "Тип реквизита")]
-        //public int DTID { get; set; }
-        //public string TypeName { get; set; }
-        //public IList<GpdRefDetailDto> DetailTypes {get; set;}
-
-        
-
-        //[Display(Name = "ИНН")]
-        //public string INN { get; set; }
-
-        //[Display(Name = "КПП")]
-        //public string KPP { get; set; }
-
-        //[Display(Name = "Расчетный счет")]
-        //public string Account { get; set; }
-
-        //[Display(Name = "Банк")]
-        //public string BankName { get; set; }
-
-        //[Display(Name = "Банк БИК")]
-        //public string BankBIK { get; set; }
-
-        //[Display(Name = "Банк кор/счет")]
-        //public string CorrAccount { get; set; }
-
-        //[Display(Name = "Код банка")]
-        //public string Code { get; set; }
 
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }
