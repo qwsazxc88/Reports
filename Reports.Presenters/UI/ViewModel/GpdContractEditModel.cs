@@ -52,6 +52,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Плательщик")]
         public int PayerID { get; set; }
+        [Display(Name = "Плательщик")]
         public string PayerName { get; set; }
         [Display(Name = "ИНН плательщика")]
         public string PayerINN { get; set; }
@@ -71,6 +72,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         [Display(Name = "Получатель")]
         public int PayeeID { get; set; }
+        [Display(Name = "Получатель")]
         public string PayeeName { get; set; }
         [Display(Name = "ИНН получателя")]
         public string PayeeINN { get; set; }
