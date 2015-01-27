@@ -73,6 +73,7 @@ namespace Reports.Core.Dao
                                             string Surname,
                                             string NumContract,
                                             bool IsFind,
+                                            int StatusID,
                                             int SortBy,
                                             bool? SortDescending);
         /// <summary>

@@ -121,6 +121,9 @@
                                             <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
                                         </th>
                                         <th>
+                                            <div id="sort13" style="min-width:130px"><a href="#" onclick = "SortChanged(13);">Дата и время <br />заявки</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
                                         </th>
                                         <th>
@@ -135,9 +138,11 @@
                                         <th>
                                             <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата окончания <br />договора</a></div>
                                         </th>
+                                        @*
                                         <th>
                                             <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата пролонгации</a></div>
                                         </th>
+                                        *@
                                         <th>
                                             <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Плательщик</a></div>
                                         </th>
@@ -163,20 +168,30 @@
                                                 <td>@i.ToString()</td>
                                                 <!--<td>@doc.Id</td>-->
                                                 <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.Id</a></td>
+                                                <td>@doc.CreateDate</td>
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <td>@doc.NumContract</td>
                                                 <!--<td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>-->
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
-                                                <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                @if (doc.flgRed)
+                                                {
+                                                    <td style="background-color:red">@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                }
+                                                @*
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
+                                                *@
                                                 <td>@doc.PayerContractor</td>
                                                 <td>@doc.PayeeContractor</td>
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@doc.StatusName</td>
                                             </tr>
-                                            i += 1;
+                                                i += 1;
                                         }
                                     }
                                 </table>

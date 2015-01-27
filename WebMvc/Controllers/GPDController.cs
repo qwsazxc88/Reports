@@ -92,7 +92,9 @@ namespace WebMvc.Controllers
                 return View(model);
             }
 
-            GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+            if (model.StatusID == 2)
+                GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+
             if (ModelState.Count != 0)
             {
                 model = GpdBl.SetGpdContractEdit(model);//чтобы не пропадали данные
@@ -263,7 +265,8 @@ namespace WebMvc.Controllers
 
             if (!model.IsCancel)
             {
-                GpdBl.CheckFillFieldsForGpdAct(model, ModelState);
+                if (model.StatusID == 2)
+                    GpdBl.CheckFillFieldsForGpdAct(model, ModelState);
                 model = GpdBl.SetActEditModel(model);
             }
             if (ModelState.Count != 0)

@@ -1169,6 +1169,7 @@ AS
 SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
 			 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
        C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, isnull(K.DateP, A.DateEnd) as DateEnd, 
+			 cast(case when datediff(d, isnull(K.DateP, A.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, A.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
 			 A.GPDID, A.GPDContractID, A.DSID, 
        A.PurposePayment, 'Договор ГПХ # ' + isnull(H.PersonAccount, J.Account) + ' ## ' + B.LastName + ' ' + B.FirstName + ' ' + B.SecondName + ' *' as PurposePaymentPart,
 			 --A.DateP as DateP, 
@@ -1185,17 +1186,17 @@ SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName,
 			 A.PaymentPeriodID, A.Amount, A.PAccountID, H.PersonAccount as Account,
 			 H.Name + case when H.PersonAccount is not null then ' (лицевой счет: ' + H.PersonAccount else ' (расчетный счет: ' + H.Account end + ')' as PersonAccount
 FROM dbo.GpdContract AS A 
-		 INNER JOIN dbo.RefPeople AS B ON B.Id = A.PersonID 
-		 INNER JOIN dbo.GpdChargingType AS C ON C.Id = A.CTID 
-		 INNER JOIN dbo.GpdRefStatus AS E ON E.Id = A.StatusID 
+		 LEFT JOIN dbo.RefPeople AS B ON B.Id = A.PersonID 
+		 LEFT JOIN dbo.GpdChargingType AS C ON C.Id = A.CTID 
+		 LEFT JOIN dbo.GpdRefStatus AS E ON E.Id = A.StatusID 
 		 LEFT JOIN dbo.Users AS F ON F.Id = A.CreatorID 
-		 INNER JOIN dbo.Department AS G ON G.Id = A.DepartmentId 
+		 LEFT JOIN dbo.Department AS G ON G.Id = A.DepartmentId 
 		 LEFT JOIN dbo.Department as dep3 ON G.[Path] like dep3.[Path] + N'%' and dep3.ItemLevel = 3 
 		 --INNER JOIN dbo.GpdDetailSets as H ON H.ID = A.DSID
 		 --INNER JOIN dbo.GpdRefDetail as I ON I.Id = H.PayerID
 		 --INNER JOIN dbo.GpdRefDetail as J ON J.id = H.PayeeID
-		 INNER JOIN dbo.GpdRefDetail as I ON I.Id = A.PayerID
-		 INNER JOIN dbo.GpdRefDetail as J ON J.id = A.PayeeID
+		 LEFT JOIN dbo.GpdRefDetail as I ON I.Id = A.PayerID
+		 LEFT JOIN dbo.GpdRefDetail as J ON J.id = A.PayeeID
 		 LEFT JOIN dbo.GpdRefDetail as H ON H.Id = A.PAccountID
 		 LEFT JOIN (SELECT GCID, max(DateP) as DateP FROM dbo.GpdMagProlongation GROUP BY GCID) as K ON K.GCID = A.Id
 
@@ -1214,6 +1215,7 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) as GCCount
 			 B.NameContract, B.NumContract, B.DateBegin as ContractBeginDate, isnull(K.DateP, B.DateEnd) as ContractEndDate,
 			 E.Name AS CreatorName, A.CreateDate, dep3.Name AS DepLevel3Name, A.ChargingDate, A.DateBegin, A.DateEnd,
 			 A.Amount, isnull(A.AmountPayment, 0) as AmountPayment, A.POrderDate, A.PurposePayment, A.ESSSNum, A.StatusID, G.Name AS StatusName, B.Id as GCID, 
+			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
 			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, M.ContractorName as PayerName, M.INN as PayerINN, M.KPP as PayerKPP, M.Account as PayerAccount, M.BankName as PayerBankName, M.BankBIK as PayerBankBIK, M.CorrAccount as PayerCorrAccount,
@@ -1253,6 +1255,7 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) + 1 as GCC
 			 A.Amount, 0 as AmountPayment, A.POrderDate, 
 			 'Договор ГПХ # ' + isnull(L.PersonAccount, J.Account) + ' ## ' + D.LastName + ' ' + D.FirstName + ' ' + D.SecondName + ' * ' + B.PurposePayment as PurposePayment, 
 			 A.ESSSNum, G.Id as StatusID, G.Name AS StatusName, B.Id as GCID, 
+			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
 			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, I.ContractorName as PayerName, I.INN as PayerINN, I.KPP as PayerKPP, I.Account as PayerAccount, I.BankName as PayerBankName, I.BankBIK as PayerBankBIK, I.CorrAccount as PayerCorrAccount,

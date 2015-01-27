@@ -534,6 +534,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Surname,
                 model.NumContract,
                 model.IsFind,
+                model.StatusID,
                 0, null);
 
             if (model.Contracts.Count > 0)
@@ -583,7 +584,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (doc.CreateDate == null)
                         model.Autor = doc.Autor;
                     else
-                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToShortDateString();
+                        model.Autor = doc.CreatorName + " Дата создания договора " + doc.CreateDate.ToLongDateString();
                     model.CreatorName = doc.CreatorName;
                     model.CreateDate = doc.CreateDate;
                     model.Surname = doc.Surname;
@@ -593,6 +594,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.Amount = doc.Amount;
                     //model.DSID = doc.DSID;
                     model.PurposePaymentPart = doc.PurposePaymentPart;
+                    model.flgRed = doc.flgRed;
                 }
             }
             else
@@ -758,6 +760,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Surname,
                 model.NumContract,
                 model.IsFind,
+                model.StatusID,
                 model.SortBy,
                 model.SortDescending);
         }
@@ -895,6 +898,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                         PAccountID = model.PAccountID,
                         MagEntities = new List<GpdMagProlongation>()
                     };
+                    //если черновик сохраняем без проверки на заполнение полей
+                    if (gpdContract.CTID == 0) gpdContract.CTID = null;
+                    if (gpdContract.PersonID == 0) gpdContract.PersonID = null;
+                    if (gpdContract.PaymentPeriodID == 0) gpdContract.PaymentPeriodID = null;
+                    if (gpdContract.PayerID == 0) gpdContract.PayerID = null;
+                    if (gpdContract.PayeeID == 0) gpdContract.PayeeID = null;
+                    if (gpdContract.PAccountID == 0) gpdContract.PAccountID = null;
+                    if (gpdContract.DepartmentId == 0) gpdContract.DepartmentId = null;
                 }
                 else
                 {
@@ -971,6 +982,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         /// <param name="UserID">ID пользователя.</param>
         protected void ChangeEntityProperties(GpdContract entity, GpdContractEditModel model, int UserID)
         {
+            if (model.DateP == null) return;
             if (model.DateP.HasValue && model.DatePOld != model.DateP)
             {
                 //создаем строку для подчиненной таблицы

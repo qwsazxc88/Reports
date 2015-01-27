@@ -103,7 +103,7 @@ namespace Reports.Core.Dto
 
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }
-        //public int DSID { get; set; }
+        public bool flgRed { get; set; }
     }
     /// <summary>
     /// Список реквизитов.

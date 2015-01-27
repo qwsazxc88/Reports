@@ -22,7 +22,6 @@
                                 <b>Создание/редактирование договора ГПД</b>
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
-                                <input type="hidden" id="DSID" name="DSID" value="@Model.DSID" />
                             </td>
                         </tr>
                         <tr>
@@ -136,7 +135,7 @@
                                 @Html.LabelFor(m => m.DateP):
                             </td>
                             <td>
-                                @if ((DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30)) && @Model.StatusID != 4)
+                                @if (Model.flgRed)
                                 {
                                     @Html.EditorFor(m => m.DateP)
                                     @Html.ValidationMessageFor(model => model.DateP)

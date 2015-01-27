@@ -60,6 +60,7 @@ namespace Reports.Core.Dto
         public string PayeeCorrAccount { get; set; }
         public int PAccountID { get; set; }
         public string Account { get; set; }
+        public bool flgRed { get; set; }
     }
     /// <summary>
     /// Список статусов договора.

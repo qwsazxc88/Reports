@@ -147,7 +147,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("PayeeBankBIK", NHibernateUtil.String).
                 AddScalar("PayeeCorrAccount", NHibernateUtil.String).
                 AddScalar("PAccountID", NHibernateUtil.Int32).
-                AddScalar("Account", NHibernateUtil.String);
+                AddScalar("Account", NHibernateUtil.String).
+                AddScalar("flgRed", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Список статусов актов.
@@ -278,6 +279,9 @@ namespace Reports.Core.Dao.Impl
                     break;
                 case 19:
                     SqlOrderBy += "Amount";
+                    break;
+                case 20:
+                    SqlOrderBy += "CreateDate";
                     break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");

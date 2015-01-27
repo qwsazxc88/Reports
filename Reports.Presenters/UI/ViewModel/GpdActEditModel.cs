@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdActEditModel
     {
-        [Display(Name = "Номер заявки")]
+        [Display(Name = "Номер заявки (web)")]
         public int Id { get; set; }
 
         [Display(Name = "Дата акта")]

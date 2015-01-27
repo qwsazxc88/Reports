@@ -7,10 +7,10 @@ namespace Reports.Core.Domain
     {
         #region Fields
         //public virtual int Id { get; set; }
-        public virtual int DepartmentId { get; set; }
+        public virtual int? DepartmentId { get; set; }
         public virtual int CreatorID { get; set; }
-        public virtual int PersonID { get; set; }
-        public virtual int CTID { get; set; }
+        public virtual int? PersonID { get; set; }
+        public virtual int? CTID { get; set; }
         public virtual int StatusID { get; set; }
         public virtual string NumContract { get; set; }
         public virtual string NameContract { get; set; }
@@ -28,9 +28,9 @@ namespace Reports.Core.Domain
         public virtual DateTime? EditDate { get; set; }
         public virtual int EditorID { get; set; }
         //public virtual int DSID { get; set; }
-        public virtual int PayerID { get; set; }
-        public virtual int PayeeID { get; set; }
-        public virtual int PAccountID { get; set; }
+        public virtual int? PayerID { get; set; }
+        public virtual int? PayeeID { get; set; }
+        public virtual int? PAccountID { get; set; }
 
         //журнал изменений даты пролонгации
         public virtual IList<GpdMagProlongation> MagEntities { get; set; }

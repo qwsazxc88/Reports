@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractEditModel
     {
-        [Display(Name = "Номер заявки")]
+        [Display(Name = "Номер заявки (web)")]
         public int Id { get; set; }
         public int CreatorID { get; set; }
         [Display(Name = "Ошибка")]
@@ -45,7 +45,7 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateEnd { get; set; }
 
-        [Display(Name = "Дата пролонгации")]
+        [Display(Name = "Договор продлен до")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateP { get; set; }
         public System.DateTime? DatePOld { get; set; }
@@ -134,7 +134,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsFind { get; set; }
         public bool IsLong { get; set; }
         public int Operation { get; set; }
-        public int DSID { get; set; }
+        public bool flgRed { get; set; }
 
         //права
         public IList<GpdPermissionDto> Permissions { get; set; }

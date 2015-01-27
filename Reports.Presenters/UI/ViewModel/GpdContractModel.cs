@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractModel
     {
-        [Display(Name = "Номер заявки")]
+        [Display(Name = "Номер заявки (web)")]
         public int? Id { get; set; }
 
         public int CreatorID { get; set; }
