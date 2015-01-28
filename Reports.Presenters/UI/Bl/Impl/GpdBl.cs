@@ -800,6 +800,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PersonID == 0)
                     ms.AddModelError("PersonID", "Выберите физическое лицо из списка!");
 
+                if (model.PayerID == 0)
+                    ms.AddModelError("PayerID", "Укажите плательщика!");
+
+                if (model.PayeeID == 0)
+                    ms.AddModelError("PayeeID", "Укажите получателя!");
+
                 if (model.CTID == 0)
                     ms.AddModelError("CTID", "Выберите вид начисления из списка!");
 
