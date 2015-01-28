@@ -12,7 +12,7 @@
     <table style="width:100%">
         <tr>
             <td colspan="2">
-                <h5 >
+                <h5>
                     @Html.ValidationMessageFor(model => model.errorMessage)
                 </h5>
                 <div class="doc-wrap">
@@ -22,23 +22,6 @@
                                 <b>Создание/редактирование договора ГПД</b>
                                 <input type="hidden" id="CreatorID" name="CreatorID" value="@Model.CreatorID" />
                                 <input type="hidden" id="Operation" name="Operation" value="@Model.Operation" />
-                                <input type="hidden" id="DSID" name="DSID" value="@Model.DSID" />
-                                @*
-                                <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID" />
-                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID" />
-                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID" />
-                                <input type="hidden" id="CTID" name="CTID" value="@Model.CTID" />
-                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract" />
-                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract" />
-                                <input type="hidden" id="GPDID" name="GPDID" value="@Model.GPDID" />
-                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
-                                <input type="hidden" id="Autor" name="Autor" value="@Model.Autor" />
-                                <input type="hidden" id="CreatorName" name="CreatorName" value="@Model.CreatorName" />
-                                <input type="hidden" id="CreateDate" name="CreateDate" value="@Model.CreateDate" />
-                                <input type="hidden" id="Surname" name="Surname" value="@Model.Surname" />
-                                <input type="hidden" id="CTName" name="CTName" value="@Model.CTName" />
-                                <input type="hidden" id="StatusName" name="StatusName" value="@Model.StatusName" />
-                                *@
                             </td>
                         </tr>
                         <tr>
@@ -79,7 +62,7 @@
                             <td>
                                 @if (Model.StatusID == 4 || @Model.Id == 0)
                                 {
-                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" onchange="$('#Operation').val('0');"  data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
                                 }
                                 else
                                 {
@@ -87,15 +70,8 @@
                                 }
                                 <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
                                 
-                            @*
-                                <input type="hidden" id="SNILS" name="SNILS" value="@Model.SNILS" />
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPerson();", onblur = "SelectPerson(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
-                                *@
                                 @Html.ValidationMessageFor(model => model.PersonID)
                                 
-                                @*
-                                <label>СНИЛС:</label>
-                                <label>@Model.SNILS</label>*@
                             </td>
                         </tr>
                         <tr>
@@ -159,7 +135,7 @@
                                 @Html.LabelFor(m => m.DateP):
                             </td>
                             <td>
-                                @if ((DateTime.Now >= @Model.DateEnd || (@Model.DateEnd.HasValue && @Model.DateEnd.Value.Subtract(DateTime.Now).Days <= 30)) && @Model.StatusID != 4)
+                                @if (Model.flgRed)
                                 {
                                     @Html.EditorFor(m => m.DateP)
                                     @Html.ValidationMessageFor(model => model.DateP)
@@ -167,7 +143,7 @@
                                 else
                                 {
                                     <label id="DateP">@RequestBl.FormatDate(@Model.DateP)</label>
-                                    <input type="hidden" id="DateP" name="DateP" value="@Model.DatePOld" />
+                                    <input type="hidden" id="DateP" name="DateP" value="@Model.DateP" />
                                 }
                                 <input type="hidden" id="DatePOld" name="DatePOld" value="@Model.DatePOld" />
                             </td>
@@ -199,69 +175,95 @@
                         </tr>
                         <tr>
                             <td>
-                                @Html.LabelFor(m => m.PayerName):
-                            </td>
-                            <td>
-                                @*
-                                @Html.DropDownListFor(model => model.PayerID, new SelectList(Model.Payers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
-                                @Html.ValidationMessageFor(model => model.PayerID)*@
-                                <label>@Model.PayerName</label>
-                                <input type="hidden" id="PayerName" name="PayerName" value="@Model.PayerName" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.PayeeName):
-                            </td>
-                            <td>
-                                <label>@Model.PayeeName</label>
-                                <input type="hidden" id="PayeeName" name="PayeeName" value="@Model.PayeeName" />
-                                @*
-                                @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.Payeers, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? (object)new { onchange = "SelectPayeed();", onblur = "SelectPayeed(); this.form.submit();" } : (object)new { disabled = "disabled" }) 
-                                @Html.ValidationMessageFor(model => model.PayeeID)
-                                @if (@Model.Permissions[0].IsWrite && @Model.StatusID == 4)
-                                {
-                                    if (Model.Operation == 0)
-                                    {
-                                        <input type="submit" value="Добавить" title="Добавить новые реквизиты" id="refDetailAdd" onclick="AddRefDetails();"/>
-                                    }
-                                    if (Model.Id != 0 && Model.Operation == 0)
-                                    {
-                                        <input type="submit" value="Изменить" title="Изменить текущие реквизиты" id="refDetailEdit" onclick="EditRefDetails();"/>
-                                    }
-                                    if (Model.Operation == 0)
-                                    {
-                                        <input type="submit" value="Выбрать из справочника" title="Загрузить в выпадающий список весь справочник реквизитов" id="refDetailList" onclick="RefDetails();"/>
-                                    }
-                                }
-                                *@
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>Банк получателя:</label>
-                            </td>
-                            <td>
-                                <label>@Model.BankName</label>
-                                <input type="hidden" id="BankName" name="BankName" value="@Model.BankName" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label>Расчетный счет получателя:</label>
-                            </td>
-                            <td>
-                                <label>@Model.Account</label>
-                                <input type="hidden" id="Account" name="Account" value="@Model.Account" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
                                 @Html.LabelFor(m => m.GPDID):
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.GPDID, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
                                 @Html.ValidationMessageFor(model => model.GPDID)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.GPDContractID):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.GPDContractID, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                @Html.ValidationMessageFor(model => model.GPDContractID)
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayerID):
+                            </td>
+                            <td>
+                                <input type="text" name="PayerName" id="PayerName" value="@Model.PayerName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayer", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(1, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(1, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PayerName</label>
+                                }
+                                *@
+                                <input type="hidden" id="PayerID" name="PayerID" value="@Model.PayerID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PayerID)
+                                
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PayeeID):
+                            </td>
+                            <td>
+                                <input type="text" name="PayeeName" id="PayeeName" value="@Model.PayeeName" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPayeer", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый реквизит" onclick="CreateEditDetail(2, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий реквизит" onclick="CreateEditDetail(2, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PayeeName</label>
+                                }
+                                *@
+                                <input type="hidden" id="PayeeID" name="PayeeID" value="@Model.PayeeID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PayeeID)
+                                
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.PAccountID):
+                            </td>
+                            <td>
+                                <input type="text" name="PersonAccount" id="PersonAccount" value="@Model.PersonAccount" style="width:600px" onchange="SelectPerson();"  data-autocomplete-source="@Url.Action("AutocompleteDetailPAccount", "GPD")" />
+                                <input type="button" value="Создать" title="Создать новый лицевой счет" onclick="CreateEditDetail(3, 0);"/>
+                                <input type="button" value="Редактировать" title="Редактировать текущий лицевой счет" onclick="CreateEditDetail(3, 1);"/>
+                                @*
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    <label>@Model.PersonAccount</label>
+                                }
+                                *@
+                                <input type="hidden" id="PAccountID" name="PAccountID" value="@Model.PAccountID"/>
+                                
+                                @Html.ValidationMessageFor(model => model.PAccountID)
+                                
                             </td>
                         </tr>
                         <tr>
@@ -289,11 +291,125 @@
                             </td>
                         </tr>
                         <tr>
-                            <td>
-                                @Html.LabelFor(m => m.Autor):
-                            </td>
-                            <td>
-                                <label id="AutorLabel">@Model.Autor</label>
+                            <td colspan="2">
+                                <table id="tblDetail" border="1">
+                                    <tr>
+                                        <td colspan="2">
+                                            <b>Реквизиты плательщика</b>
+                                        </td>
+                                        <td colspan="2">
+                                            <b>Реквизиты получактеля</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerContractor)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerContractor</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeName</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerINN)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerINN</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeINN)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeINN</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerKPP)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerKPP</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeKPP)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeKPP</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerAccount</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeAccount</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerBankName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerBankName</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeBankName)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeBankName</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerBankBIK)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerBankBIK</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeBankBIK)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeBankBIK</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayerCorrAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayerCorrAccount</label>
+                                        </td>
+                                        <td>
+                                            @Html.LabelFor(m => m.PayeeCorrAccount)
+                                        </td>
+                                        <td>
+                                            <label>@Model.PayeeCorrAccount</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td>
+                                            @Html.LabelFor(m => m.Account)
+                                        </td>
+                                        <td>
+                                            <label>@Model.Account</label>
+                                            <input type="hidden" id="Account" name="Account" value="@Model.Account" />
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                         <tr>
@@ -303,6 +419,14 @@
                             <td>
                                 <input type="hidden" id="StatusID" name="StatusID" value="@Model.StatusID" />
                                 <label id="StatusNameLabel">@Model.StatusName</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Autor):
+                            </td>
+                            <td>
+                                <label id="AutorLabel">@Model.Autor</label>
                             </td>
                         </tr>
                     </table>
@@ -324,7 +448,7 @@
 
                 @if (@Model.StatusID != 1)
                 {
-                    
+
                     if (Model.Id != 0 && Model.StatusID != 4 && Model.Permissions[0].IsCancel)
                     {
                         <input type="submit" value="Отклонить" title="Отклонить договор" onclick="RejectContract();"/>
@@ -353,17 +477,23 @@
         $(".hasDatepicker").width("75px");
         setActiveMenuItem("moContract");
 
-        if ($("#Operation").val() == 0)
-            $('#refDetailRow').hide();
-
-
         $(":text").bind("keydown", function(e){if (e.keyCode == 13) return false;});
-        $("#PersonID").keydown(function(e){if (e.keyCode == 13) this.blur();});
-        $("#PayeeID").keydown(function(e){if (e.keyCode == 13) this.blur();});
-        //$("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == -1) {$("#Operation").val('1'); this.form.submit();} else {$("#Operation").val('-1');} } } );
-        $("#Surname").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
-        //onblur = "SelectPerson();  if(@Model.PersonID != 0) {this.form.submit();}"
-        $("#Surname").blur(function(){ SelectPerson(); if($("#PersonID").val() != 0) { this.form.submit();}});
+        
+        $("#PayerName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayerName").blur(function(){ SelectPerson(); if($("#PayerID").val() != 0) { this.form.submit();}});
+
+        $("#PayeeName").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PayeeName").blur(function(){ SelectPerson(); if($("#PayeeID").val() != 0) { this.form.submit();}});
+
+        $("#PersonAccount").keydown(function(e){if (e.keyCode == 13) { if ($("#Operation").val() == 1) {this.form.submit();}  } } );
+        $("#PersonAccount").blur(function(){ SelectPerson(); if($("#PAccountID").val() != 0) { this.form.submit();}});
+
+        if ($("#PayerID").val() == 0 && $("#PayeeID").val() == 0 && $("#PAccountID").val() == 0){
+            $("#tblDetail").hide();
+         }
+         else{
+            $("#tblDetail").show();
+         }
 
 //        $('#PurposePayment').keydown(function () {
 //                if ($(this).val().indexOf($("#PurposePaymentPart").val()) != 0) {
@@ -378,7 +508,7 @@
 //                }
 //        });
         
-
+        //автозаполнение физиков
         $(function () 
         {
             $("[data-autocomplete-source]").each(
@@ -388,16 +518,34 @@
                     target.autocomplete({ source: target.attr("data-autocomplete-source"),
                                           select : function(event, ui) 
                                                     {
-                                                        $("#Surname").val(ui.item.label);
-                                                        $("#PersonID").val(ui.item.PersonID);
-                                                        //$("#SNILS").val(ui.item.snils);
-                                                        $("#PayerName").val(ui.item.PayerName);
-                                                        $("#PayeeName").val(ui.item.PayeeName);
-                                                        $("#BankName").val(ui.item.BankName);
-                                                        $("#Account").val(ui.item.Account);
-                                                        $("#DSID").val(ui.item.DSID);
-                                                        $("#Operation").val('1');
-                                                        $("#Surname").focus();
+                                                        //для физиков
+                                                        if (ui.item.PersonID != null){
+                                                            $("#Surname").val(ui.item.label);
+                                                            $("#PersonID").val(ui.item.PersonID);
+                                                            //$("#Operation").val('1');
+                                                            $("#Surname").focus();
+                                                        }
+                                                        //для плательщиков
+                                                        if (ui.item.PayerID != null){
+                                                            $("#PayerName").val(ui.item.label);
+                                                            $("#PayerID").val(ui.item.PayerID);
+                                                            $("#Operation").val('1');
+                                                            $("#PayerName").focus();
+                                                        }
+                                                        //для получателей
+                                                        if (ui.item.PayeeID != null){
+                                                            $("#PayeeName").val(ui.item.label);
+                                                            $("#PayeeID").val(ui.item.PayeeID);
+                                                            $("#Operation").val('1');
+                                                            $("#PayeeName").focus();
+                                                        }
+                                                        //для лицевых счетов
+                                                        if (ui.item.PAccountID != null){
+                                                            $("#PersonAccount").val(ui.item.label);
+                                                            $("#PAccountID").val(ui.item.PAccountID);
+                                                            $("#Operation").val('1');
+                                                            $("#PersonAccount").focus();
+                                                        }
                                                         return true;
                                                     }
                                          });
@@ -429,49 +577,102 @@
     function SelectPerson()
     {
         $("#Operation").val('1');
-        //alert($("#PersonID").text());
         return true;
     }
-    function SelectPayeed()
-    {
-        $("#Operation").val('1');
-        return true;
+
+
+    function CreateEditDetail(DetOp, flgEdit) {
+            createDetailDialog(DetOp, flgEdit);
+        }
+    function createDetailDialog(DetOp, flgEdit) {
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+        var PID = DetOp;
+//        if (flgEdit == 1){
+//            PID = DetOp;
+//        }
+        var actionDetailDialogUrl = "@Url.Action("GpdRefDetailDialog", "GPD")";
+
+        var title = "";
+        if (DetOp == 1){
+            title = "Создание реквизита плательщика";
+            var PID = PID + (flgEdit == 1 ? $("#PayerID").val() : '0');
+        }
+        if (DetOp == 2){
+            title = "Создание реквизита получателя";
+            var PID = PID + (flgEdit == 1 ? $("#PayeeID").val() : '0');
+        }
+        if (DetOp == 3){
+            title = "Создание лицевого счета получателя";
+            var PID = PID + (flgEdit == 1 ? $("#PAccountID").val() : '0');
+        }
+
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + "?id=" + PID + " #DetailForm"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 500,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    var newval = $("#DetailID").val();
+                    if (DetOp == 1){
+                        $("#PayerID").val(newval);
+                        $("#PayerName").blur();
+                    }
+                    if (DetOp == 2){
+                        $("#PayeeID").val(newval);
+                        $("#PayeeName").blur();
+                    }
+                    if (DetOp == 3){
+                        $("#PAccountID").val(newval);
+                        $("#PersonAccount").blur();
+                    }
+                    $(this).dialog("close");
+                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(newDiv).dialog("open");
+
     }
-    function AddRefDetails()
-    {
-        $('#refDetailRow').show();
-        $("#Operation").val(2);
-        $("#DetailStatusID").val('4');
-        return true;
-    }
-    function EditRefDetails()
-    {
-        $("#Operation").val(3);
-        $('#refDetailRow').show();
-        $("#DetailStatusID").val('2');
-        return true;
-    }
-    function EditModeOn() {
-        $('#refDetailRow').show();
-        $("#Operation").val(3);
-        $("#DetailStatusID").val('4');
-        return true;
-    }
-    function EditModeOff() {
-        $("#Operation").val('4');
-        $("#DetailStatusID").val('2');
-        return true;
-    }
-    function CancelEditMode() {
-        $("#Operation").val('0');
-        $("#DetailStatusID").val('2');
-        $("#StatusID").val('5')
-        $('#refDetailRow').hide();
-        return true;
-    }
-    function RefDetails(){
-        $("#Operation").val('5');
-        $('#refDetailRow').hide();
-        return true;
+    
+    function AjaxFormRequest(result_id,form_id,url) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type:     "POST", //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
     }
 </script>   

@@ -1,0 +1,113 @@
+﻿@model Reports.Presenters.UI.ViewModel.GpdRefDetailDialogModel
+@{
+    ViewBag.Title = "Редактирование справочника реквизитов";
+}
+
+<form id="DetailForm" method="post" action="/GPD/GpdRefDetailDialog" target="divDetailDialog">
+    <h1 >
+        <label id="errorMessage" style="color:red">@Model.errorMessage</label>
+        @Html.ValidationMessageFor(model => model.errorMessage)
+    </h1>
+    <table border="0" cellpadding="0" cellspacing="0" id = "DialogTable" style="width:100%;height:100px">
+        <tr>
+            <td colspan="2"><div id="SelectDepartmentError" style="color:Red;display:none;"/></td>
+            </tr>
+        <tr>
+            <td style="width:220px">
+                <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+                <input type="hidden" id="DetailID" name="DetailID" value="@Model.DetailID"/>
+                <input type="hidden" id="DetailType" name="DetailType" value="@Model.DetailType"/>
+                @Html.LabelFor(model => model.Name):
+            </td>
+            <td style="width:100%">
+                @Html.TextBoxFor(model => model.Name, (object)new { maxlength = "150", style = "width:100%" })
+                @Html.ValidationMessageFor(model => model.Name)
+            </td>
+        </tr>
+        <tr>
+            <td style="width:220px">
+                @Html.LabelFor(model => model.ContractorName):
+            </td>
+            <td style="width:100%">
+                @Html.TextBoxFor(model => model.ContractorName, (object)new { maxlength = "150", style = "width:100%" })
+                @Html.ValidationMessageFor(model => model.ContractorName)
+            </td>
+        </tr>
+        @if (Model.DetailType != 3)
+        {
+                <tr>
+                <td>
+                    @Html.LabelFor(model => model.INN):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.INN, (object)new { maxlength = "12" })
+                    @Html.ValidationMessageFor(model => model.INN)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.KPP):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.KPP, (object)new { maxlength = "9" })
+                    @Html.ValidationMessageFor(model => model.KPP)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.Account):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.Account, (object)new { maxlength = "23" })
+                    @Html.ValidationMessageFor(model => model.Account)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.BankName):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.BankName, (object)new { maxlength = "100", style = "width:100%" })
+                    @Html.ValidationMessageFor(model => model.BankName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.BankBIK):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.BankBIK, (object)new { maxlength = "9" })
+                    @Html.ValidationMessageFor(model => model.BankBIK)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.CorrAccount):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.CorrAccount, (object)new { maxlength = "23" })
+                    @Html.ValidationMessageFor(model => model.CorrAccount)
+                </td>
+            </tr>
+        }
+        @if (Model.DetailType == 3)
+        {
+            <tr>
+                <td>
+                    @Html.LabelFor(model => model.PersonAccount):
+                </td>
+                <td>
+                    @Html.TextBoxFor(model => model.PersonAccount, (object)new { maxlength = "23" })
+                    @Html.ValidationMessageFor(model => model.PersonAccount)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">
+                <input type="button" value="Записать" title="Сохранить введенные данные в базе данных" onclick="AjaxFormRequest('divDetailDialog', 'DetailForm', '/GPD/GpdRefDetailDialog')"/>
+            </td>
+        </tr>
+    </table>
+</form>    
+        
+

@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdContractEditModel
     {
-        [Display(Name = "№ документа")]
+        [Display(Name = "Номер заявки (web)")]
         public int Id { get; set; }
         public int CreatorID { get; set; }
         [Display(Name = "Ошибка")]
@@ -22,7 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "ФИО ГПД")]
         public int PersonID { get; set; }
         public string Surname { get; set; }
-        public IList<GpdContractSurnameDto> Persons { get; set; }
+        //public IList<GpdContractSurnameDto> Persons { get; set; }
 
         [Display(Name = "Вид начисления по договору")]
         public int CTID { get; set; }
@@ -34,7 +34,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Наименование договора")]
         public string NameContract { get; set; }
 
-        [Display(Name = "№ договора")]
+        [Display(Name = "Номер договора в ЭССД")]
         public string NumContract { get; set; }
 
         [Display(Name = "Срок действия договора с")]
@@ -45,23 +45,58 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateEnd { get; set; }
 
-        [Display(Name = "Дата пролонгации")]
+        [Display(Name = "Договор продлен до")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? DateP { get; set; }
         public System.DateTime? DatePOld { get; set; }
 
         [Display(Name = "Плательщик")]
-        //public int PayerID { get; set; }
+        public int PayerID { get; set; }
+        [Display(Name = "Плательщик")]
         public string PayerName { get; set; }
+        [Display(Name = "ИНН плательщика")]
+        public string PayerINN { get; set; }
+        [Display(Name = "КПП плательщика")]
+        public string PayerKPP { get; set; }
+        [Display(Name = "Расчетный счет")]
+        public string PayerAccount { get; set; }
+        [Display(Name = "Банк плательщика")]
+        public string PayerBankName { get; set; }
+        [Display(Name = "Бик плательщика")]
+        public string PayerBankBIK { get; set; }
+        [Display(Name = "Кор. счет. плательщика")]
+        public string PayerCorrAccount { get; set; }
+        [Display(Name = "Плательщик")]
+        public string PayerContractor { get; set; }
         //public IList<GpdContractDetailDto> Payers { get; set; }
 
-        [Display(Name = "Получатель по платежному поручению")]
-        //public int PayeeID { get; set; }
+        [Display(Name = "Получатель")]
+        public int PayeeID { get; set; }
+        [Display(Name = "Получатель")]
         public string PayeeName { get; set; }
+        [Display(Name = "ИНН получателя")]
+        public string PayeeINN { get; set; }
+        [Display(Name = "КПП получателя")]
+        public string PayeeKPP { get; set; }
+        [Display(Name = "Расчетный счет")]
+        public string PayeeAccount { get; set; }
+        [Display(Name = "Банк получателя")]
+        public string PayeeBankName { get; set; }
+        [Display(Name = "Бик получателя")]
+        public string PayeeBankBIK { get; set; }
+        [Display(Name = "Кор. счет. получателя")]
+        public string PayeeCorrAccount { get; set; }
+        [Display(Name = "Получатель")]
+        public string PayeeContractor { get; set; }
+
+
         //public IList<GpdContractDetailDto> Payeers { get; set; }
 
-        [Display(Name = "ID ГПД в ЭССС")]
+        [Display(Name = "ID физического лица (ГПД) в ЭССД")]
         public string GPDID { get; set; }
+
+        [Display(Name = "ID договора с физ. лицом (ГПД) в ЭССД")]
+        public string GPDContractID { get; set; }
 
         [Display(Name = "Назначение платежа")]
         public string PurposePayment { get; set; }
@@ -85,6 +120,13 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:### ### ### ###.##}", ApplyFormatInEditMode = true)]
         public System.Decimal Amount { get; set; }
 
+        [Display(Name = "Лицевой счет получателя")]
+        public string Account { get; set; }
+        [Display(Name = "Лицевой счет получателя")]
+        public int PAccountID { get; set; }
+        public string PersonAccount { get; set; }
+        
+
         public IList<GpdContractDto> Contracts { get; set; }
         public bool hasErrors { get; set; }
         public string CreatorName { get; set; }
@@ -92,9 +134,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsFind { get; set; }
         public bool IsLong { get; set; }
         public int Operation { get; set; }
-        public string BankName { get; set; }
-        public string Account { get; set; }
-        public int DSID { get; set; }
+        public bool flgRed { get; set; }
 
         //права
         public IList<GpdPermissionDto> Permissions { get; set; }

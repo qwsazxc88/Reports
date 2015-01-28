@@ -78,6 +78,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Id) 
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
                                 <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindContract();"/>
@@ -110,23 +118,31 @@
                                             @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
                                         </th>
                                         <th>
+                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort13" style="min-width:130px"><a href="#" onclick = "SortChanged(13);">Дата и время <br />заявки</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
                                         </th>
                                         <th>
                                             <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Вид начисления</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">№ договора</a></div>
+                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Номер договора <br />в ЭССД</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата начала договора</a></div>
+                                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата начала <br />договора</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата окончания договора</a></div>
+                                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата окончания <br />договора</a></div>
                                         </th>
+                                        @*
                                         <th>
                                             <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата пролонгации</a></div>
                                         </th>
+                                        *@
                                         <th>
                                             <div id="sort11" style="min-width:130px"><a href="#" onclick = "SortChanged(11);">Плательщик</a></div>
                                         </th>
@@ -151,20 +167,31 @@
                                             <tr>
                                                 <td>@i.ToString()</td>
                                                 <!--<td>@doc.Id</td>-->
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.Id</a></td>
+                                                <td>@doc.CreateDate</td>
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
-                                                <!--<td>@doc.NumContract</td>-->
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>
+                                                <td>@doc.NumContract</td>
+                                                <!--<td><a class="ui-notify-close" href='@Url.Action("GpdContractEdit", "GPD", new { id = doc.Id, PersonID = 0 })' style="cursor:hand">@doc.NumContract</a></td>-->
                                                 <td>@RequestBl.FormatDate(@doc.DateBegin)</td>
-                                                <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                @if (doc.flgRed)
+                                                {
+                                                    <td style="background-color:red">@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@RequestBl.FormatDate(@doc.DateEnd)</td>
+                                                }
+                                                @*
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
-                                                <td>@doc.PayerName</td>
-                                                <td>@doc.PayeeName</td>
+                                                *@
+                                                <td>@doc.PayerContractor</td>
+                                                <td>@doc.PayeeContractor</td>
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
                                                 <td>@doc.StatusName</td>
                                             </tr>
-                                            i += 1;
+                                                i += 1;
                                         }
                                     }
                                 </table>
@@ -199,6 +226,9 @@
         $("#DTID").val('0');
         $("#StatusID").val('0');
         $("#CTID").val('0');
+        $("#Surname").val('');
+        $("#NumContract").val('');
+        $("#Id").val('');
     }
 
     function GetFindContract()

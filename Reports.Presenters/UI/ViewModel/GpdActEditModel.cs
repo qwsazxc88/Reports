@@ -9,13 +9,14 @@ namespace Reports.Presenters.UI.ViewModel
     /// </summary>
     public class GpdActEditModel
     {
+        [Display(Name = "Номер заявки (web)")]
         public int Id { get; set; }
 
         [Display(Name = "Дата акта")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? ActDate { get; set; }
 
-        [Display(Name = "№ акта")]
+        [Display(Name = "Номер акта в ЭССД")]
         public string ActNumber { get; set; }
 
         [Display(Name = "ФИО")]
@@ -24,7 +25,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Наименование договора")]
         public string NameContract { get; set; }
 
-        [Display(Name = "Номер и срок действия договора")]
+        [Display(Name = "Номер договора")]
         public string NumContract { get; set; }
 
         [Display(Name = "Подразделение 3 ур.")]
@@ -57,7 +58,7 @@ namespace Reports.Presenters.UI.ViewModel
         [Display(Name = "Назначение платежа")]
         public string PurposePayment { get; set; }
 
-        [Display(Name = "№ заявки в ЭССС")]
+        [Display(Name = "Номер заявки в ЭССС")]
         public string ESSSNum { get; set; }
 
         [Display(Name = "Автор")]
@@ -67,13 +68,58 @@ namespace Reports.Presenters.UI.ViewModel
         public string StatusName { get; set; }
         public int StatusID { get; set; }
 
+        [Display(Name = "Срок действия договора с ")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public System.DateTime? ContractBeginDate { get; set; }
+
+        [Display(Name = " по ")]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public System.DateTime? ContractEndDate { get; set; }
+
+        [Display(Name = "Плательщик")]
+        public string PayerName { get; set; }
+        public int PayerID { get; set; }
+        [Display(Name = "ИНН плательщика")]
+        public string PayerINN { get; set; }
+        [Display(Name = "КПП плательщика")]
+        public string PayerKPP { get; set; }
+        [Display(Name = "Расчетный счет")]
+        public string PayerAccount { get; set; }
+        [Display(Name = "Банк плательщика")]
+        public string PayerBankName { get; set; }
+        [Display(Name = "Бик плательщика")]
+        public string PayerBankBIK { get; set; }
+        [Display(Name = "Кор. счет. плательщика")]
+        public string PayerCorrAccount { get; set; }
+        //public IList<GpdContractDetailDto> Payers { get; set; }
+
+        [Display(Name = "Получатель")]
+        public string PayeeName { get; set; }
+        public int PayeeID { get; set; }
+        [Display(Name = "ИНН получателя")]
+        public string PayeeINN { get; set; }
+        [Display(Name = "КПП получателя")]
+        public string PayeeKPP { get; set; }
+        [Display(Name = "Расчетный счет")]
+        public string PayeeAccount { get; set; }
+        [Display(Name = "Банк получателя")]
+        public string PayeeBankName { get; set; }
+        [Display(Name = "Бик получателя")]
+        public string PayeeBankBIK { get; set; }
+        [Display(Name = "Кор. счет. получателя")]
+        public string PayeeCorrAccount { get; set; }
+        [Display(Name = "Лицевой счет получателя")]
+        public string Account { get; set; }
+        public int PAccountID { get; set; }
+
         [Display(Name = "Ошибка")]
         public string errorMessage { get; set; }
         public bool hasErrors { get; set; }
-        public System.DateTime? ContractBeginDate { get; set; }
-        public System.DateTime? ContractEndDate { get; set; }
+
+        
         public int GCID { get; set; }
         public int CreatorID { get; set; }
+        public int Operation { get; set; }
         public bool IsCancel { get; set; }
 
         public IList<GpdActCommentDto> Comments { get; set; }

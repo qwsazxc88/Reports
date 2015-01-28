@@ -31,7 +31,7 @@
                                 @Html.LabelFor(m => Model.Name)
                             </td>
                             <td>
-                                @Html.TextBoxFor(m => Model.Name, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "250" } : (object)new { disabled = "disabled" })
+                                @Html.TextBoxFor(m => Model.Name, (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { maxlength = "250", style = "width:600px" } : (object)new { disabled = "disabled", style = "width:600px" })
                                 @Html.ValidationMessageFor(model => model.Name)
                             </td>
                         </tr>
@@ -40,7 +40,15 @@
                                 @Html.LabelFor(m => Model.PersonID)
                             </td>
                             <td>
-                                @Html.DropDownListFor(model => model.PersonID, new SelectList(Model.Persons, "ID", "LongName"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                @if (Model.StatusID == 4 || @Model.Id == 0)
+                                {
+                                    <input type="text" name="Surname" id="Surname" value="@Model.Surname" style="width:600px" data-autocomplete-source="@Url.Action("AutocompletePersonSearch", "GPD")" />
+                                    <input type="hidden" id="PersonID" name="PersonID" value="@Model.PersonID"/>
+                                }
+                                else
+                                {
+                                    <label>@Model.Surname</label>
+                                }
                                 @Html.ValidationMessageFor(model => model.PersonID)
                             </td>
                         </tr>
@@ -101,6 +109,10 @@
                             <td>
                                 @Html.DropDownListFor(model => model.PayeeID, new SelectList(Model.PayeerInfo, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 1) || @Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
                                 @Html.ValidationMessageFor(model => model.PayeeID)
+                                @if ((Model.Permissions[0].IsWrite && Model.AllowEdit) || (Model.Permissions[0].IsWrite && Model.Id == 0))
+                                {
+                                    <input type="button" value="Создать новый реквизит" title="Создать новый реквизит" onclick="CreateEditDetail();"/>
+                                }
                             </td>
                         </tr>
                         <tr>
@@ -168,133 +180,34 @@
                                 }
                             </td>
                         </tr>
-                        @*
-                        <tr>
-                            <td colspan="2">
-                                <br />
-                                <b>Создание/редактирование реквизитов</b>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.DTID):
-                            </td>
-                            <td>
-                                @Html.DropDownListFor(model => model.DTID, new SelectList(Model.DetailTypes, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
-                                @Html.ValidationMessageFor(model => model.DTID)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(m => m.DetailId):
-                            </td>
-                            <td>
-                                @Html.DropDownListFor(model => model.DetailId, new SelectList(Model.RefDetails, "ID", "Name"), (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { onchange = "this.form.submit();" } : (object)new { disabled = "disabled" }) 
-                                @Html.ValidationMessageFor(model => model.DetailId)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.DetailName):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.DetailName, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.DetailName)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.INN):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.INN, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "12" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.INN)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.KPP):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.KPP, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.KPP)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.DetailAccount):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.DetailAccount, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.DetailAccount)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.BankName):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.BankName, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "100" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.BankName)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.BankBIK):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.BankBIK, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "9" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.BankBIK)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Html.LabelFor(model => model.CorrAccount):
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.CorrAccount, (Model.StatusID == 4 && Model.Operation == 2) || Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
-                                @Html.ValidationMessageFor(model => model.CorrAccount)
-                            </td>
-                        </tr>
-                        *@
                     </table>
                 </div>
             </td>
         </tr>
-        @*
-        <tr>
-            <td colspan="2">
-                @if (@Model.Permissions[0].IsWrite)
-                {
-                    if ((@Model.StatusID == 4 && @Model.Operation == 2) || @Model.Id == 0)
-                    {
-                        <input type="submit" value="Записать" title="Сохранить введенные данные в базе данных" onclick="EditModeOff();"/>
-                        <input type="submit" value="Создать" title="Создать новый реквизит" onclick="NewDetail();"/>
-                        if (@Model.Operation == 2)
-                        {
-                            <input type="submit" value="Отменить" title="Перейти в режим просмотра текущего реквизита" onclick="CancelEditMode();"/>
-                        }
-                    }
-                    if (@Model.StatusID == 2)
-                    {
-                        <input type="submit" value="Редактировать" title="Перейти в режим редактирования текущего реквизита" onclick="EditModeOn();"/>
-                    }
-                }
-            </td>
-        </tr>
-        *@
     </table>
 
 }
 
 <script type="text/javascript">
     $(document).ready(function () {
-        //$("#BeginDate").datepicker();
-        //$("#EndDate").datepicker();
-        //$(".hasDatepicker").width("75px");
-        //setSortFields();
         setActiveMenuItem("moGpdRefDetail");
         $(":text").bind("keydown", function (e) { if (e.keyCode == 13) return false; });
+
+        $(function () {
+            $("[data-autocomplete-source]").each(
+                function () {
+                    var target = $(this);
+                    target.autocomplete({ source: target.attr("data-autocomplete-source"),
+                        select: function (event, ui) {
+                            $("#Surname").val(ui.item.label);
+                            $("#PersonID").val(ui.item.PersonID);
+                            $("#Surname").focus();
+                            return true;
+                        }
+                    });
+                });
+            });
+       
     });
 
     function EditSetOn() {
@@ -313,26 +226,75 @@
         return true;
     }
 
-    function EditModeOn() {
-        $("#StatusID").val('4');
-        $("#Operation").val('2');
-        return true;
+    function CreateEditDetail() {
+            createDetailDialog();
+        }
+    function createDetailDialog() {
+        var elem = document.createElement('div');
+        elem.id = "divDetailDialog";
+        var newDiv = $(elem);
+        var PayeeID = $("#PayeeID").val();
+        var actionDetailDialogUrl = "@Url.Action("GpdRefDetailDialog", "GPD")";
+
+
+        var title = "Создание реквизита получателя";
+        $(newDiv).text('Подождите, идет загрузка данных ...');
+        $.ajaxSetup({ cache: false });
+        $(newDiv).load(actionDetailDialogUrl + "?id=" + PayeeID  + " #DetailForm"
+            , function (response, status, xhr) {
+                if (status == "error") {
+                    var msg = "Произошла ошибка: ";
+                    $(newDiv).html("<div style='color:Red'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                }
+            }
+        );
+                $(newDiv).dialog(
+        { // initialize dialog box
+            autoOpen: false,
+            modal: true,
+            title: title,
+            // fix IE6  
+            bgiframe: true,
+            draggable: false,
+            resizable: false,
+            width: 700,
+            height: 500,
+            close: function (event, ui) {
+                $(this).dialog("destroy").remove();
+            },
+            buttons:
+            {
+                "OK": function () {
+                    var newval = $("#DetailID").val();
+                    $("#PayeeID").val(newval);
+                    $("#PayeeID").change();
+                    $(this).dialog("close");
+                }
+//                ,
+//                "Отмена": function () {
+//                    $(this).dialog("close");
+//                }
+            }
+        });
+
+        $(newDiv).dialog("open");
+
     }
-    function EditModeOff() {
-        $("#StatusID").val('2');
-        $("#Operation").val('2');
-        return true;
+    
+    function AjaxFormRequest(result_id,form_id,url) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type:     "POST", //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
     }
-    function NewDetail() {
-        $("#StatusID").val('2');
-        $("#NewRow").val('1');
-        $("#Operation").val('2');
-        return true;
-    }
-    function CancelEditMode() {
-        $("#StatusID").val('3');
-        $("#Operation").val('0');
-        return true;
-    }
+   
  </script>   
 

@@ -14,23 +14,28 @@
     <property name="DateBegin" type="date" not-null="false"/>
     <property name="DateEnd" type="date" not-null="false"/>
     <property name="DateP" type="date" not-null="false"/>
-    <!--
+    
     <property name="PayeeID" not-null="false"/>
     <property name="PayerID" not-null="false"/>
-    -->
+    <property name="PAccountID" not-null="false"/>
+    
     <property name="GPDID" not-null="false"/>
+    <property name="GPDContractID" not-null="false"/>
     <property name="PurposePayment" not-null="false"/>
     <property name="IsLong" not-null="false"/>
     <property name="PaymentPeriodID" not-null="false"/>
     <property name="Amount" not-null="false"/>
     <property name="EditDate" not-null="false"/>
     <property name="EditorID" not-null="false"/>
+    <!--
     <property name="DSID" not-null="false"/>
+    -->
 
+    
     <bag name="MagEntities" lazy="true" inverse="true" cascade="all-delete-orphan">
       <key column="GCID" foreign-key="FK_GpdMagProlongation_GpdContract"/>
       <one-to-many class="GpdMagProlongation"/>
     </bag>
-
+    
   </class>
 </hibernate-mapping>

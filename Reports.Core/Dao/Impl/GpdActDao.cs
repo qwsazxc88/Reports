@@ -70,7 +70,7 @@ namespace Reports.Core.Dao.Impl
         /// <param name="SortDescending">Признак направления сортировки.</param>
         /// <returns></returns>
         public IList<GpdActDto> GetAct(UserRole role, 
-                                        int ID, 
+                                        int? ID, 
                                         bool IsFind,
                                         DateTime? DateBegin,
                                         DateTime? DateEnd, 
@@ -86,7 +86,7 @@ namespace Reports.Core.Dao.Impl
             if (!IsFind)
                 sqlQuery += "WHERE Id = " + ID.ToString();
             else
-                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber) + ActListSqlOrderBy(SortBy, SortDescending);
+                sqlQuery += ActListSqlWhere(DateBegin, DateEnd, DepartmentId, Surname, StatusID, ActNumber, ID) + ActListSqlOrderBy(SortBy, SortDescending);
 
             IQuery query = CreateActQuery(sqlQuery);
             IList<GpdActDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdActDto))).List<GpdActDto>();
@@ -127,7 +127,28 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("CTName", NHibernateUtil.String).
                 AddScalar("DateP", NHibernateUtil.DateTime).
                 AddScalar("DepLevel7Name", NHibernateUtil.String).
-                AddScalar("GPDID", NHibernateUtil.String);
+                AddScalar("GPDID", NHibernateUtil.String).
+                //реквизиты плательщика
+                AddScalar("PayerID", NHibernateUtil.Int32).
+                AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayerINN", NHibernateUtil.String).
+                AddScalar("PayerKPP", NHibernateUtil.String).
+                AddScalar("PayerAccount", NHibernateUtil.String).
+                AddScalar("PayerBankName", NHibernateUtil.String).
+                AddScalar("PayerBankBIK", NHibernateUtil.String).
+                AddScalar("PayerCorrAccount", NHibernateUtil.String).
+                //реквизиты получателя
+                AddScalar("PayeeID", NHibernateUtil.Int32).
+                AddScalar("PayeeName", NHibernateUtil.String).
+                AddScalar("PayeeINN", NHibernateUtil.String).
+                AddScalar("PayeeKPP", NHibernateUtil.String).
+                AddScalar("PayeeAccount", NHibernateUtil.String).
+                AddScalar("PayeeBankName", NHibernateUtil.String).
+                AddScalar("PayeeBankBIK", NHibernateUtil.String).
+                AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+                AddScalar("PAccountID", NHibernateUtil.Int32).
+                AddScalar("Account", NHibernateUtil.String).
+                AddScalar("flgRed", NHibernateUtil.Boolean);
         }
         /// <summary>
         /// Список статусов актов.
@@ -164,8 +185,9 @@ namespace Reports.Core.Dao.Impl
         /// <param name="Surname">ФИО физического лица.</param>
         /// <param name="StatusID">ID статуса акта.</param>
         /// <param name="ActNumber">№ акта</param>
+        /// <param name="id">ID акта</param>
         /// <returns></returns>
-        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID, string ActNumber)
+        private string ActListSqlWhere(DateTime? DateBegin, DateTime? DateEnd, int DepartmentId, string Surname, int StatusID, string ActNumber, int? ID)
         {
             string SqlWhere = "";
             if (DateBegin.HasValue && DateEnd.HasValue)
@@ -182,6 +204,9 @@ namespace Reports.Core.Dao.Impl
 
             if (ActNumber != null && ActNumber.Trim().Length != 0)
                 SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ActNumber = '" + ActNumber + "'" : " and ActNumber = '" + ActNumber + "'";
+
+            if (ID != null && ID != 0)
+                SqlWhere += SqlWhere.Length == 0 ? "  WHERE  ID = " + ID.ToString() + "" : " and ID = " + ID.ToString() + "";
 
             return SqlWhere;
         }
@@ -255,6 +280,9 @@ namespace Reports.Core.Dao.Impl
                 case 19:
                     SqlOrderBy += "Amount";
                     break;
+                case 20:
+                    SqlOrderBy += "CreateDate";
+                    break;
             }
             return SqlOrderBy += (SortDescending.HasValue && !SortDescending.Value ? "" : " desc");
         }
@@ -284,6 +312,94 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("Comment", NHibernateUtil.String).
                 AddScalar("CreateDate", NHibernateUtil.DateTime).
                 AddScalar("Creator", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Список физических лиц с набором реквизитов.
+        /// </summary>
+        /// <param name="Name">ФИО физ лица</param>
+        /// <returns></returns>
+        public IList<GpdContractSurnameDto> GetAutocompletePersonDS(string Name, int DSID)
+        {
+            string sqlQuery = "";
+            if (DSID == 0)
+                sqlQuery = @"SELECT * FROM vwGpdDetailSetList WHERE Name like '" + (Name == null ? "" : Name) + "%' ORDER BY LongName";
+            else
+                sqlQuery = @"SELECT * FROM vwGpdDetailSetList WHERE ID =" + DSID.ToString();
+
+            IQuery query = CreatePersonQuery(sqlQuery);
+            IList<GpdContractSurnameDto> documentList = query.SetResultTransformer(Transformers.AliasToBean(typeof(GpdContractSurnameDto))).List<GpdContractSurnameDto>();
+            return documentList;
+        }
+        /// <summary>
+        /// Создание запроса физических лиц.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreatePersonQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).
+                AddScalar("Id", NHibernateUtil.Int32).
+                AddScalar("PersonID", NHibernateUtil.Int32).
+                AddScalar("Name", NHibernateUtil.String).
+                AddScalar("SNILS", NHibernateUtil.String).
+                AddScalar("LongName", NHibernateUtil.String).
+                //реквизиты плательщика
+                AddScalar("PayerName", NHibernateUtil.String).
+                AddScalar("PayerINN", NHibernateUtil.String).
+                AddScalar("PayerKPP", NHibernateUtil.String).
+                AddScalar("PayerAccount", NHibernateUtil.String).
+                AddScalar("PayerBankName", NHibernateUtil.String).
+                AddScalar("PayerBankBIK", NHibernateUtil.String).
+                AddScalar("PayerCorrAccount", NHibernateUtil.String).
+                //реквизиты получателя
+                AddScalar("PayeeName", NHibernateUtil.String).
+                AddScalar("PayeeINN", NHibernateUtil.String).
+                AddScalar("PayeeKPP", NHibernateUtil.String).
+                AddScalar("PayeeAccount", NHibernateUtil.String).
+                AddScalar("PayeeBankName", NHibernateUtil.String).
+                AddScalar("PayeeBankBIK", NHibernateUtil.String).
+                AddScalar("PayeeCorrAccount", NHibernateUtil.String).
+
+                AddScalar("Account", NHibernateUtil.String);
+        }
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора с повторяющимися номерами.
+        /// </summary>
+        /// <param name="ID">ID акта</param>
+        /// <param name="GCID"> договора</param>
+        /// <param name="ActNumber">Номер акта</param>
+        /// <returns></returns>
+        public bool ExistsActsByNumber(int ID, int GCID, string ActNumber)
+        {
+            string SqlQuery = "";
+            if (ID == 0)
+                SqlQuery = "SELECT cast(case when count(*) > 0 then 1 else 0 end as bit) flgExists FROM dbo.GpdAct WHERE GCID = " + GCID.ToString() + " and ActNumber = '" + ActNumber + "'";
+            else
+                SqlQuery = "SELECT cast(case when count(*) > 0 then 1 else 0 end as bit) flgExists FROM dbo.GpdAct WHERE GCID = " + GCID.ToString() + " and ActNumber = '" + ActNumber + "' and ID <> " + ID.ToString();
+
+            IQuery query = CreateEAQuery(SqlQuery);
+            return query.UniqueResult<bool>();
+        }
+        /// <summary>
+        /// Проверка на статус договора.
+        /// </summary>
+        /// <param name="GCID"> договора</param>
+        /// <returns></returns>
+        public bool CheckContractEntry(int GCID)
+        {
+            string SqlQuery = "SELECT cast(case when StatusID <> 4 then 1 else 0 end as bit) flgExists FROM dbo.GpdContract WHERE ID = " + GCID.ToString();
+
+            IQuery query = CreateEAQuery(SqlQuery);
+            return query.UniqueResult<bool>();
+        }
+        /// <summary>
+        /// Создание подзапроса.
+        /// </summary>
+        /// <param name="sqlQuery"></param>
+        /// <returns></returns>
+        public virtual IQuery CreateEAQuery(string sqlQuery)
+        {
+            return Session.CreateSQLQuery(sqlQuery).AddScalar("flgExists", NHibernateUtil.Boolean);
         }
     }
 }

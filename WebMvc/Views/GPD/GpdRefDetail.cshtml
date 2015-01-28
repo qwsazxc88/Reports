@@ -33,26 +33,10 @@
         </tr>
         <tr>
             <td>
-                @Html.LabelFor(model => model.Surname):
+                @Html.LabelFor(model => model.ContractorName):
             </td>
             <td>
-                @Html.TextBoxFor(model => model.Surname)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(model => model.PayerName):
-            </td>
-            <td>
-                @Html.TextBoxFor(model => model.PayerName)
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @Html.LabelFor(model => model.PayeeName):
-            </td>
-            <td>
-                @Html.TextBoxFor(model => model.PayeeName)
+                @Html.TextBoxFor(model => model.ContractorName)
             </td>
         </tr>
         <tr>
@@ -61,6 +45,7 @@
                 <input type="button" value="Очистить" title="Очистить поля запросной формы" onclick="resetFilter();"/>
             </td>
         </tr>
+        @*
         <tr>
             <td colspan="2">
                 <div class="action-wrap">
@@ -69,7 +54,7 @@
                             <td>
                                 @if (@Model.Permissions[0].IsCreate)
                                 {
-                                    <input type="button" value="Создать" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
+                                    <input type="button" value="Создать реквизиты нового физ. лица (ГПД)" title="Создать новую запись" onclick="location.href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = 0 })'"/>    
                                 }
                             </td>
                         </tr>
@@ -77,6 +62,7 @@
                 </div>
             </td>
         </tr>
+        *@
         <tr>
             <td colspan="2">
                 <input type="hidden" id="SortBy" name="SortBy" value="@Model.SortBy" />
@@ -86,34 +72,32 @@
                         <th>
                             @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
                         </th>
-                        @*
                         <th>
-                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Наименование</a></div>
-                        </th>
-                        *@
-                        <th>
-                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Фактический получатель</a></div>
+                            <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">Наименование реквизита</a></div>
                         </th>
                         <th>
-                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Плательщик</a></div>
+                            <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Наименование контрагента</a></div>
                         </th>
                         <th>
-                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Получатель</a></div>
+                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">ИНН</a></div>
                         </th>
                         <th>
-                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Расчетный/лицевой <br />счет факт. получателя</a></div>
+                            <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">КПП</a></div>
                         </th>
                         <th>
-                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата <br />создания</a></div>
+                            <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Расчетный счет</a></div>
                         </th>
                         <th>
-                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">ФИО создавшего</a></div>
+                            <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Лицевой счет</a></div>
                         </th>
                         <th>
-                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Дата изменения</a></div>
+                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Банк</a></div>
                         </th>
                         <th>
-                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">ФИО изменившего</a></div>
+                            <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Банк БИК</a></div>
+                        </th>
+                        <th>
+                            <div id="sort10" style="min-width:130px"><a href="#" onclick = "SortChanged(10);">Корр. счет</a></div>
                         </th>
                     </tr>
                     @if (Model.Documents != null && Model.Documents.Count > 0)
@@ -124,29 +108,16 @@
                             <tr>
                                 <td>@i.ToString()</td>
                                 @*<td>@doc.Id</td>*@
-                                @*<td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Name</a></td>*@
-                                <td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Surname</a></td>
-                                <td>@doc.PayerName</td>
-                                <td>@doc.PayeeName</td>
+                                <td>@doc.Name</td>
+                                @*<td><a class="ui-notify-close" href='@Url.Action("GpdrefDetailEdit", "GPD", new { id = doc.Id })' style="cursor:hand">@doc.Surname</a></td>*@
+                                <td>@doc.ContractorName</td>
+                                <td>@doc.INN</td>
+                                <td>@doc.KPP</td>
                                 <td>@doc.Account</td>
-                                @if(@doc.CreateDate.HasValue)
-                                {
-                                    <td>@doc.CreateDate.Value.ToShortDateString() - @doc.CreateDate.Value.ToShortTimeString()</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                <td>@doc.CreatorName</td>
-                                @if(@doc.EditDate.HasValue)
-                                {
-                                    <td>@doc.EditDate.Value.ToShortDateString() - @doc.EditDate.Value.ToShortTimeString()</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                <td>@doc.EditorName</td>
+                                <td>@doc.PersonAccount</td>
+                                <td>@doc.BankName</td>
+                                <td>@doc.BankBIK</td>
+                                <td>@doc.CorrAccount</td>
                             </tr>
                             i += 1;
                         }

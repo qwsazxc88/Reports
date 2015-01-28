@@ -22,11 +22,12 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <param name="role"></param>
         /// <param name="Id">ID реквизита</param>
-        /// <param name="DTID">Тип реквизита</param>
+        /// <param name="Name">Название реквизита</param>
+        /// <param name="ContractorName">Название контрагента.</param>
+        /// <param name="SortBy">Номер поля для сортировки</param>
+        /// <param name="SortDescending">Направление сортировки</param>
         /// <returns></returns>
-        IList<GpdDetailDto> GetRefDetail(UserRole role,
-            int Id,
-            int DTID);
+        IList<GpdDetailDto> GetRefDetail(UserRole role, int Id, string Name, string ContractorName, int SortBy, bool? SortDescending);
         /// <summary>
         /// Права.
         /// </summary>
@@ -58,5 +59,12 @@ namespace Reports.Core.Dao
         /// </summary>
         /// <returns></returns>
         IList<GpdContractSurnameDto> GetPersons(int Id);
+        /// <summary>
+        /// Автозаполнение для физиков
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="PersonID"></param>
+        /// <returns></returns>
+        IList<GpdContractSurnameDto> GetAutocompletePersons(string Name, int PersonID);
     }
 }

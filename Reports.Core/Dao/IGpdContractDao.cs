@@ -65,7 +65,7 @@ namespace Reports.Core.Dao
         /// <param name="SortDescending"></param>
         /// <returns></returns>
         IList<GpdContractDto> GetContracts(UserRole role,
-                                            int Id,
+                                            int? Id,
                                             int DepartmentId,
                                             int CTID,
                                             DateTime? DateBegin,
@@ -73,6 +73,7 @@ namespace Reports.Core.Dao
                                             string Surname,
                                             string NumContract,
                                             bool IsFind,
+                                            int StatusID,
                                             int SortBy,
                                             bool? SortDescending);
         /// <summary>
@@ -87,5 +88,24 @@ namespace Reports.Core.Dao
         /// <param name="role"></param>
         /// <returns></returns>
         IList<GpdPermissionDto> GetPermission(UserRole role);
+        /// <summary>
+        /// Реквизиты
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        IList<GpdContractDetailDto> GetAutocompleteDetails(string Name, int ID);
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="ID">ID договора</param>
+        /// <returns></returns>
+        bool ExistsReadyActs(int ID);
+        /// <summary>
+        /// Проверка на наличие занесенных актов для договора.
+        /// </summary>
+        /// <param name="PersonID">ID физ. лица.</param>
+        /// <returns></returns>
+        string GetPersonName(int PersonID);
     }
 }

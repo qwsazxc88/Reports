@@ -741,6 +741,7 @@
     <Content Include="Views\Help\QuestionRedirectDialogError.cshtml" />
     <Content Include="Views\GPD\GpdActEdit.cshtml" />
     <Content Include="Views\GPD\GpdActList.cshtml" />
+    <Content Include="Views\GPD\GpdRefDetailDialog.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

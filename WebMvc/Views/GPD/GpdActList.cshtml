@@ -70,6 +70,14 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Id):
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.Id) 
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2">
                                 <input type="hidden" id="IsFind" name="IsFind" value="@Model.IsFind" />
                                 <input type="submit" value="Выбрать" title="Выбрать записи по указанным параметрам" onclick="GetFindAct();"/>
@@ -86,13 +94,19 @@
                                             @*<div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">*@№ п/п@*</a></div>*@
                                         </th>
                                         <th>
+                                            <div id="sort1" style="min-width:130px"><a href="#" onclick = "SortChanged(1);">Номер заявки</a></div>
+                                        </th>
+                                        <th>
+                                            <div id="sort20" style="min-width:130px"><a href="#" onclick = "SortChanged(20);">Дата и время акта</a></div>
+                                        </th>
+                                        <th>
                                             <div id="sort2" style="min-width:130px"><a href="#" onclick = "SortChanged(2);">ФИО</a></div>
                                         </th>
                                         <th>
                                             <div id="sort3" style="min-width:130px"><a href="#" onclick = "SortChanged(3);">Вид начисления</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">№ договора</a></div>
+                                            <div id="sort4" style="min-width:130px"><a href="#" onclick = "SortChanged(4);">Номер договора <br />в ЭССД</a></div>
                                         </th>
                                         <th>
                                             <div id="sort5" style="min-width:130px"><a href="#" onclick = "SortChanged(5);">Дата <br />начала <br />договора</a></div>
@@ -100,11 +114,13 @@
                                         <th>
                                             <div id="sort6" style="min-width:130px"><a href="#" onclick = "SortChanged(6);">Дата <br />окончания <br />договора</a></div>
                                         </th>
+                                        @*
                                         <th>
                                             <div id="sort7" style="min-width:130px"><a href="#" onclick = "SortChanged(7);">Дата <br />пролонгации</a></div>
                                         </th>
+                                        *@
                                         <th>
-                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">№ акта</a></div>
+                                            <div id="sort8" style="min-width:130px"><a href="#" onclick = "SortChanged(8);">Номер акта в ЭССД</a></div>
                                         </th>
                                         <th>
                                             <div id="sort9" style="min-width:130px"><a href="#" onclick = "SortChanged(9);">Дата акта</a></div>
@@ -134,7 +150,7 @@
                                             <div id="sort16" style="min-width:130px"><a href="#" onclick = "SortChanged(16);">ID ГПД в ЭССС</a></div>
                                         </th>
                                         <th>
-                                            <div id="sort17" style="min-width:130px"><a href="#" onclick = "SortChanged(17);">№ заявки в ЭССС</a></div>
+                                            <div id="sort17" style="min-width:130px"><a href="#" onclick = "SortChanged(17);">Номер заявки в ЭССС</a></div>
                                         </th>
                                         <th>
                                             <div id="sort18" style="min-width:130px"><a href="#" onclick = "SortChanged(18);">Состояние</a></div>
@@ -147,15 +163,27 @@
                                         foreach (var doc in Model.Documents)
                                         {
                                             <tr>
-                                                @*<td>@doc.Id</td>*@
                                                 <td>@i.ToString()</td>
+                                                <!--<td>@doc.Id</td>-->
+                                                <td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.Id</a></td>
+                                                <td>@doc.CreateDate</td>
                                                 <td>@doc.Surname</td>
                                                 <td>@doc.CTName</td>
                                                 <td>@doc.NumContract</td>
                                                 <td>@RequestBl.FormatDate(@doc.ContractBeginDate)</td>
-                                                <td>@RequestBl.FormatDate(@doc.ContractEndDate)</td>
+                                                @if (doc.flgRed)
+                                                {
+                                                    <td style="background-color:red">@RequestBl.FormatDate(@doc.ContractEndDate)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@RequestBl.FormatDate(@doc.ContractEndDate)</td>
+                                                }
+                                                @*
                                                 <td>@RequestBl.FormatDate(@doc.DateP)</td>
-                                                <td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>
+                                                *@
+                                                <!--<td><a class="ui-notify-close" href='@Url.Action("GpdActEdit", "GPD", new { id = @doc.Id, GCID = @doc.GCID })' style="cursor:hand">@doc.ActNumber</a></td>-->
+                                                <td>@doc.ActNumber</td>
                                                 <td>@RequestBl.FormatDate(@doc.ActDate)</td>
                                                 <td>@doc.DepLevel3Name</td>
                                                 <td>@doc.DepLevel7Name</td>
@@ -204,6 +232,9 @@
         $("#DepartmentNameLabel").text('');
         $("#StatusID").val('0');
         $("#IsFind").val('False');
+        $("#Surname").val('');
+        $("#ActNumber").val('');
+        $("#Id").val('');
     }
 
     function GetFindAct()
