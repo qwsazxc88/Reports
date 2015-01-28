@@ -38,7 +38,8 @@ SELECT A.Id as DSID, B.Id as DetailID, C.Id as PersonID, A.name as SetName, C.La
 			 B.BankName, B.BankBIK, B.CorrAccount
 INTO #TMP
 FROM GpdDetailSets as A
-INNER JOIN GpdRefDetail as B ON B.Id = A.PayeeID
+INNER JOIN GpdRefDetail as B ON B.Id = A.PayeeID 
+--and b.OldRecord is null and b.DTID is not null --это для докачанных данных, убрать когда на рабочем данные буду обрабатывать
 INNER JOIN RefPeople as C ON C.Id = A.PersonID 
 WHERE b.DTID = 1
 ORDER BY A.id

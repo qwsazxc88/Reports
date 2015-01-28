@@ -24,7 +24,7 @@ namespace WebMvc.Controllers
     /// <summary>
     /// Контролер для ГПД.
     /// </summary>
-
+    [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
         UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
 
@@ -68,10 +68,12 @@ namespace WebMvc.Controllers
         /// <param name="PersonID">ID физического лица</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult GpdContractEdit(int Id, int PersonID)
+        public ActionResult GpdContractEdit(int Id, int PersonID, string Msg)
         {
             GpdContractEditModel model = GpdBl.SetGpdContractEdit(Id, PersonID, 0, null);
             ModelState.Clear();
+            if (Msg != null && Msg.Trim().Length != 0)
+                ModelState.AddModelError("errorMessage", Msg);
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
             return View(model);
@@ -98,16 +100,20 @@ namespace WebMvc.Controllers
             if (ModelState.Count != 0)
             {
                 model = GpdBl.SetGpdContractEdit(model);//чтобы не пропадали данные
+                model.StatusID = 4;
                 return View(model);
             }
             string error;
             //сохранение договора
             if (GpdBl.SaveGpdContract(model, out error))
             {
-                model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, 0, null);
+                //model = GpdBl.SetGpdContractEdit(model.Id, model.PersonID, 0, null);
                 string Message = StatusID == 4 ? "Черновик вашего документа сохранен!" : (StatusID == 2 ? "Ваш документ успешно сохранен!" : "Занесение вашего документа отменено!");
-                ModelState.AddModelError("errorMessage", Message);
-                return View(model);
+                //ModelState.AddModelError("errorMessage", Message);
+                //Response.Redirect(Url.Action("GpdContractEdit", "GPD", new { Id = model.Id, PersonID = 0 }));//чтобы не срабатывало нажатие на F5 после сохранения и не множились записи
+                //Session["GpdContractEdit_Post"] = true;
+                return RedirectToAction("GpdContractEdit", "GPD", new { Id = model.Id, PersonID = 0, Msg = Message });//чтобы не срабатывало нажатие на F5 после сохранения и не множились записи
+                //return View(model);
             }
             else
             {
@@ -236,11 +242,15 @@ namespace WebMvc.Controllers
         /// <param name="GCID">ID договора.</param>
         /// <returns></returns>
         [HttpGet]
-        public ActionResult GpdActEdit(int Id, int GCID)
+        public ActionResult GpdActEdit(int Id, int GCID, string Msg)
         {
             bool hasError = false;
             GpdActEditModel model = GpdBl.SetActEditModel(Id, GCID, hasError);
+
             ModelState.Clear();
+            if (Msg != null && Msg.Trim().Length != 0)
+                ModelState.AddModelError("errorMessage", Msg);
+
             if (model.hasErrors)
                 ModelState.AddModelError("errorMessage", "Произошла ошибка при загрузке страницы!");
             return View(model);
@@ -269,16 +279,20 @@ namespace WebMvc.Controllers
                 model = GpdBl.SetActEditModel(model);
             }
             if (ModelState.Count != 0)
+            {
+                model.StatusID = 4;
                 return View(model);
+            }
             else
             {
                 string error;
                 if (GpdBl.SaveGpdAct(model, out error))
                 {
-                    model = GpdBl.SetActEditModel(model.Id, model.GCID, hasError);
+                    //model = GpdBl.SetActEditModel(model.Id, model.GCID, hasError);
                     string Message = StatusID == 4 ? "Черновик вашего документа сохранен!" : (StatusID == 2 ? "Ваш документ успешно сохранен!" : "Занесение вашего документа отменено!");
-                    ModelState.AddModelError("errorMessage", Message);
-                    return View(model);
+                    //ModelState.AddModelError("errorMessage", Message);
+                    return RedirectToAction("GpdActEdit", "GPD", new { Id = model.Id, GCID = 0, Msg = Message });//View(model);
+                    //return View(model);
                 }
                 else
                 {
