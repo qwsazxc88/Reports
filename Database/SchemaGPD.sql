@@ -740,7 +740,6 @@ CREATE TABLE [dbo].[GpdAct](
 	[ActNumber] [nvarchar](50) NULL,
 	[ActDate] [datetime] NULL,
 	[GCID] [int] NULL,
-	[DSID] [int] NULL,
 	[ChargingDate] [datetime] NULL,
 	[DateBegin] [datetime] NULL,
 	[DateEnd] [datetime] NULL,
@@ -779,13 +778,6 @@ GO
 ALTER TABLE [dbo].[GpdAct] CHECK CONSTRAINT [FK_GpdAct_GpdContract]
 GO
 
-ALTER TABLE [dbo].[GpdAct]  WITH CHECK ADD  CONSTRAINT [FK_GpdAct_GpdDetailSets] FOREIGN KEY([DSID])
-REFERENCES [dbo].[GpdDetailSets] ([ID])
-GO
-
-ALTER TABLE [dbo].[GpdAct] CHECK CONSTRAINT [FK_GpdAct_GpdDetailSets]
-GO
-
 ALTER TABLE [dbo].[GpdAct]  WITH CHECK ADD  CONSTRAINT [FK_GpdAct_GpdRefStatus] FOREIGN KEY([StatusID])
 REFERENCES [dbo].[GpdRefStatus] ([Id])
 GO
@@ -818,9 +810,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата акта' , @
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID договора' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdAct', @level2type=N'COLUMN',@level2name=N'GCID'
-GO
-
-EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'ID набора реквизитов' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdAct', @level2type=N'COLUMN',@level2name=N'DSID'
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Дата начисления' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'GpdAct', @level2type=N'COLUMN',@level2name=N'ChargingDate'
@@ -1395,10 +1384,10 @@ SELECT A.ID, A.Name, A.PersonID, B.Name as Surname, A.PayerID, C.Name as PayerNa
 			 A.CreatorID, A.CreateDate, E.[Name] as CreatorName,
 			 A.EditorID, A.EditDate, F.[Name] as EditorName, B.LongName, B.SNILS,--, D.Account as PayeeAccount
 			 C.INN as PayerINN, C.KPP as PayerKPP, C.Account as PayerAccount, C.BankName as PayerBankName, C.BankBIK as PayerBankBIK, C.CorrAccount as PayerCorrAccount,
-			 D.INN as PayeeINN, D.KPP as PayeeKPP, D.Account as PayeeAccount, D.BankName as PayeeBankName, D.BankBIK as PayeeBankBIK, D.CorrAccount as PayeeCorrAccount,
+			 D.INN as PayeeINN, D.KPP as PayeeKPP, D.Account as PayeeAccount, D.BankName as PayeeBankName, D.BankBIK as PayeeBankBIK, D.CorrAccount as PayeeCorrAccount/*,
 			 cast(case when exists (SELECT * FROM GpdContract WHERE DSID = A.ID and StatusID = 1) or
 										  exists (SELECT * FROM GpdAct WHERE DSID = A.ID and StatusID = 1) 
-								 then 0 else 1 end as bit) as AllowEdit
+								 then 0 else 1 end as bit) as AllowEdit*/
 FROM dbo.GpdDetailSets as A
 INNER JOIN dbo.vwGpdRefPersons as B ON B.Id = A.PersonID
 INNER JOIN dbo.GpdRefDetail as C ON C.Id = A.PayerID
