@@ -1578,7 +1578,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     gpdrefDetail.BankBIK = model.BankBIK;
                     gpdrefDetail.CorrAccount = model.CorrAccount;
                     gpdrefDetail.PersonAccount = model.PersonAccount;
-                    gpdrefDetail.CreatorID = model.CreatorID;
+                    //gpdrefDetail.CreatorID = model.CreatorID;
                     gpdrefDetail.EditorID = currentUseId.Id;
                     gpdrefDetail.EditDate = DateTime.Now;
                 }
