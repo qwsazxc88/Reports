@@ -94,8 +94,8 @@ namespace WebMvc.Controllers
                 return View(model);
             }
 
-            
-            GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
+            if (model.StatusID == 2 || model.StatusID == 4)
+                GpdBl.CheckFillFieldsForGpdContract(model, ModelState);
 
             if (ModelState.Count != 0)
             {
