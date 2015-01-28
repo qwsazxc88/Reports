@@ -150,8 +150,8 @@ ORDER BY DetailID, ContractorName
 
 --11798
 --7452
---DROP TABLE #TMP
---DROP TABLE #GpdRefDetailTmp
+DROP TABLE #TMP
+DROP TABLE #GpdRefDetailTmp
 
 
 /*
