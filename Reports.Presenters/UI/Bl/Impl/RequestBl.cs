@@ -4258,7 +4258,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                                 {
                                     model.IsApprovedEnable = true;
                                 }
+
+                                //делаем доступными кнопки согласования для кадровиков
+                                //если состояние 'Отправлено кадровику', то делаем доступной кнопку 'Отправлено на согласование'
+                                if (!entity.PersonnelManagerDateAccept.HasValue && entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue)
+                                    model.IsApprovedEnable = true;
+                                else
+                                {//если состояние 'Отправлено руководителю', то делаем доступной кнопку 'за всех'
+                                    if (!entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue)
+                                        model.IsApprovedForAllEnable = true;
+                                }
+                                
                             }
+
 
                             // и кадровики, и расчетчики могут послать уведомление об ошибках пользователю, если заявка отправлена пользователем на согласование, но еще не выгружена в 1С
                             if (entity.UserDateAccept != null && entity.SendTo1C == null)
