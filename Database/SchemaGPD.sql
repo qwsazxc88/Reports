@@ -1158,7 +1158,7 @@ AS
 SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName, 
 			 A.PersonID, B.LastName + ' ' + B.FirstName + ' ' + B.SecondName AS Surname, A.CTID, 
        C.Name AS CTName, A.StatusID, E.Name AS StatusName, A.NumContract, A.NameContract, A.DateBegin, isnull(K.DateP, A.DateEnd) as DateEnd, 
-			 cast(case when datediff(d, isnull(K.DateP, A.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, A.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
+			 cast(case when datediff(d, isnull(K.DateP, A.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, A.DateEnd), getdate()) <= 1180 then 1 else 0 end as bit) as flgRed,
 			 A.GPDID, A.GPDContractID, A.DSID, 
        A.PurposePayment, 'Договор ГПХ # ' + isnull(H.PersonAccount, J.Account) + ' ## ' + B.LastName + ' ' + B.FirstName + ' ' + B.SecondName + ' *' as PurposePaymentPart,
 			 --A.DateP as DateP, 
@@ -1204,7 +1204,7 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) as GCCount
 			 B.NameContract, B.NumContract, B.DateBegin as ContractBeginDate, isnull(K.DateP, B.DateEnd) as ContractEndDate,
 			 E.Name AS CreatorName, A.CreateDate, dep3.Name AS DepLevel3Name, A.ChargingDate, A.DateBegin, A.DateEnd,
 			 A.Amount, isnull(A.AmountPayment, 0) as AmountPayment, A.POrderDate, A.PurposePayment, A.ESSSNum, A.StatusID, G.Name AS StatusName, B.Id as GCID, 
-			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
+			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 1180 then 1 else 0 end as bit) as flgRed,
 			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, M.ContractorName as PayerName, M.INN as PayerINN, M.KPP as PayerKPP, M.Account as PayerAccount, M.BankName as PayerBankName, M.BankBIK as PayerBankBIK, M.CorrAccount as PayerCorrAccount,
@@ -1244,7 +1244,7 @@ SELECT A.Id, A.CreatorID, A.ActDate, A.ActNumber, isnull(C.Gcount, 0) + 1 as GCC
 			 A.Amount, 0 as AmountPayment, A.POrderDate, 
 			 'Договор ГПХ # ' + isnull(L.PersonAccount, J.Account) + ' ## ' + D.LastName + ' ' + D.FirstName + ' ' + D.SecondName + ' * ' + B.PurposePayment as PurposePayment, 
 			 A.ESSSNum, G.Id as StatusID, G.Name AS StatusName, B.Id as GCID, 
-			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 10 then 1 else 0 end as bit) as flgRed,
+			 cast(case when datediff(d, isnull(K.DateP, B.DateEnd), getdate()) >= -30 and datediff(d, isnull(K.DateP, B.DateEnd), getdate()) <= 1180 then 1 else 0 end as bit) as flgRed,
 			 H.[Name] as CTName, B.DateP, F.[Name] as DepLevel7Name, B.GPDID, B.DepartmentId,
 			 --плательщик
 			 B.PayerID, I.ContractorName as PayerName, I.INN as PayerINN, I.KPP as PayerKPP, I.Account as PayerAccount, I.BankName as PayerBankName, I.BankBIK as PayerBankBIK, I.CorrAccount as PayerCorrAccount,
