@@ -80,6 +80,7 @@
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.CTID, new SelectList(Model.ChargingTypes, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                <input type="hidden" id="CTID" name="CTID" value="@Model.CTID"/>
                                 @Html.ValidationMessageFor(model => model.CTID)
                             </td>
                         </tr>
@@ -89,6 +90,7 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.NameContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "150" } : (object)new { disabled = "disabled" })
+                                <input type="hidden" id="NameContract" name="NameContract" value="@Model.NameContract"/>
                                 @Html.ValidationMessageFor(model => model.NameContract)
                             </td>
                         </tr>
@@ -98,6 +100,7 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.NumContract, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "30" } : (object)new { disabled = "disabled" })
+                                <input type="hidden" id="NumContract" name="NumContract" value="@Model.NumContract"/>
                                 @Html.ValidationMessageFor(model => model.NumContract)
                             </td>
                         </tr>
@@ -154,6 +157,7 @@
                             </td>
                             <td>
                                 @Html.DropDownListFor(model => model.PaymentPeriodID, new SelectList(Model.PaymentPeriods, "ID", "Name"), Model.StatusID == 4 || @Model.Id == 0 ? null : (object)new { disabled = "disabled" }) 
+                                <input type="hidden" id="PaymentPeriodID" name="PaymentPeriodID" value="@Model.PaymentPeriodID" />
                                 @Html.ValidationMessageFor(model => model.PaymentPeriodID)
                             </td>
                         </tr>
@@ -179,6 +183,7 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.GPDID, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                <input type="hidden" id="GPDID" name="GPDID" value="@Model.GPDID" />
                                 @Html.ValidationMessageFor(model => model.GPDID)
                             </td>
                         </tr>
@@ -188,6 +193,7 @@
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.GPDContractID, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { maxlength = "20" } : (object)new { disabled = "disabled" })
+                                <input type="hidden" id="GPDContractID" name="GPDContractID" value="@Model.GPDContractID" />
                                 @Html.ValidationMessageFor(model => model.GPDContractID)
                             </td>
                         </tr>
@@ -275,13 +281,14 @@
                                     <table border="1">
                                         <tr>
                                             <td>
-                                            <input type="hidden" id="PurposePaymentPart" name="PurposePaymentPart" value="@Model.PurposePaymentPart" />
+                                                <input type="hidden" id="PurposePaymentPart" name="PurposePaymentPart" value="@Model.PurposePaymentPart" />
                                                 <input type="text" value="@Model.PurposePaymentPart" readonly="true" style="width:600px"/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
                                                 @Html.TextAreaFor(m => m.PurposePayment, Model.StatusID == 4 || @Model.Id == 0 ? (object)new { style = "width:600px", maxlength = "500" } : (object)new { style = "width:600px", disabled = "disabled" })
+                                                <input type="hidden" id="PurposePayment" name="PurposePayment" value="@Model.PurposePayment" />
                                             </td>
                                         </tr>
                                     </table>
