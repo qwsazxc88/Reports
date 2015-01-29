@@ -818,9 +818,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.DateBegin == null)
                     ms.AddModelError("DateBegin", "Укажите дату начала действия договора!");
 
-                if (model.DateBegin.HasValue && model.DateBegin.Value.Year < 2014) //временно разрешили вводить договоры задним числом
-                //if (model.DateBegin < DateTime.Today) //&& model.DateBegin.Value.Month != DateTime.Today.Month)
-                    ms.AddModelError("DateBegin", "Дата начала срока действия договора не должна быть меньше текущей!");
+                if (model.DateP.HasValue)
+                {
+                    if (model.DateBegin.HasValue && model.DateBegin.Value.Year < 2014) //временно разрешили вводить договоры задним числом
+                        //if (model.DateBegin < DateTime.Today) //&& model.DateBegin.Value.Month != DateTime.Today.Month)
+                        ms.AddModelError("DateBegin", "Дата начала срока действия договора не должна быть меньше текущей!");
+                }
 
                 if (model.DateEnd == null)
                     ms.AddModelError("DateEnd", "Укажите дату окончания действия договора!");
