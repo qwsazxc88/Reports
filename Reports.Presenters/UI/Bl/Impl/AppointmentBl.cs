@@ -274,7 +274,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Salary = FormatSum(entity.Salary);
                 model.Schedule = entity.Schedule;
                 model.TypeId = entity.Type?1:0;
-                model.UserId = entity.Creator.Id;//todo ???
+                model.UserId = entity.Creator.Id;
                 model.VacationCount = entity.VacationCount.ToString();
                 model.Version = entity.Version;
             }

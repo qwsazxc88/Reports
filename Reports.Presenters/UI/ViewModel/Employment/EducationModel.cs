@@ -7,7 +7,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 {
     public class EducationModel : AbstractEmploymentModel
     {
-        [Display(Name = "Сведения об образовании (высшее, неполное высшее)")]
+        [Display(Name = "Сведения об образовании (высшее, неполное высшее, начальное профессиональное, среднее профессиональное)")]
         public IList<HigherEducationDiplomaDto> HigherEducationDiplomas { get; set; } //ok
 
         [Display(Name = "Послевузовское образование")]

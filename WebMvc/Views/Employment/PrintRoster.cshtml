@@ -1,0 +1,178 @@
+﻿@model IList<Reports.Core.Dto.Employment2.CandidateDto>
+@{
+    Layout = null;
+}
+
+<html>
+<head>
+    <style>
+		table { border-collapse: collapse; }
+		th { text-align: center; }
+        th, td { border: 1px solid gray; padding: 3px;}
+        .centered { text-align: center; }
+    </style>
+</head>
+
+<body>
+	
+	<h1>Реестр кандидатов</h1>
+
+    <table>
+
+    <tr style="vertical-align:bottom;">
+        
+        <th>
+            №<br />п/п
+        </th>
+        
+        <th>
+            ФИО
+        </th>
+
+        <th>
+            Город<br />места<br />работы
+        </th>
+
+        <th>
+            Структурное<br />подразделение
+        </th>
+
+        <th>
+            Должность
+        </th>        
+        
+        <th>
+            Дата<br />приема
+        </th>
+        
+        <th>
+            Номер<br />приказа
+        </th>
+        
+        <th>
+            Дата<br />приказа
+        </th>
+
+        <th>
+            Номер<br />трудового<br />договора
+        </th>
+
+        <th>
+            Дата<br />окончания<br />СТД
+        </th>
+
+        <th>
+            Сотрудник<br />переведен на<br />бессрочный ТД
+        </th>
+
+        <th>
+            Исп.<br />срок
+        </th>
+
+        <th>
+            График<br />работы
+        </th>
+
+        <th>
+            Дата<br />рождения
+        </th>
+
+        <th>
+            Инвалидность
+        </th>
+
+        <th>
+            Грейд
+        </th>
+
+        <th>
+            Текущее<br />состояние
+        </th>
+                    
+    </tr>
+
+    @{ int i = 1; }
+
+    @foreach (var candidate in Model)
+    {  
+        <tr>
+        
+            <td style="text-align: right;">
+                @i
+            </td>
+        
+            <td>
+                @candidate.Name
+            </td>
+
+            <td>
+                &nbsp;@candidate.WorkCity
+            </td>
+
+            <td>
+                &nbsp;@candidate.Department
+            </td>
+
+            <td>
+                &nbsp;@candidate.Position
+            </td>        
+        
+            <td>
+                &nbsp;@(candidate.EmploymentDate.HasValue ? candidate.EmploymentDate.Value.ToShortDateString() : String.Empty)
+            </td>
+        
+            <td>
+                &nbsp;@candidate.EmploymentOrderNumber
+            </td>
+        
+            <td>
+                &nbsp;@(candidate.EmploymentOrderDate.HasValue ? candidate.EmploymentOrderDate.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td>
+                &nbsp;@candidate.ContractNumber
+            </td>
+
+            <td @if (candidate.IsFixedTermContract != null && candidate.IsFixedTermContract.Value)
+                {<text>style="background-color:yellow"</text>}>
+                &nbsp;@(candidate.ContractEndDate.HasValue ? candidate.ContractEndDate.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td class="centered">
+                @Html.DisplayFor(m => m[i - 1].IsContractChangedToIndefinite, new { disabled = "disabled" })
+            </td>
+
+            @* Вид работы (осн./совм.) *@
+            @* Характер работы (пост./врем.) *@
+
+            <td>
+                &nbsp;@candidate.ProbationaryPeriod
+            </td>
+
+            <td>
+                &nbsp;@candidate.Schedule
+            </td>
+
+            <td>
+                &nbsp;@(candidate.DateOfBirth.HasValue ? candidate.DateOfBirth.Value.ToShortDateString() : String.Empty)
+            </td>
+
+            <td>
+                &nbsp;@candidate.Disabilities
+            </td>
+
+            <td>
+                &nbsp;@candidate.Grade
+            </td>
+
+            <td>
+                &nbsp;@candidate.Status
+            </td>        
+            
+            @{i++;}
+        </tr>        
+    }
+
+    </table>
+</body>
+</html>

@@ -28,6 +28,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]
         public string ContractNumber { get; set; }
 
+        public bool IsHourlySalaryBasis { get; set; }
+
         [Display(Name = "Северная надбавка")]
         public decimal? NorthernAreaAddition { get; set; }
 
@@ -84,13 +86,44 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         // Скан заявления на вычет
 
         [Display(Name = "Группа доступа"),
-            Required(ErrorMessage = "Обязательное поле")]
+            Required(ErrorMessage = "*")]
         public int AccessGroupId { get; set; }
         public IEnumerable<SelectListItem> AccessGroups { get; set; }
+
+        [Display(Name = "Уровень"),
+            Required(ErrorMessage = "*"),
+            Range(2, 7, ErrorMessage = "Требуется число от 2 до 7")]
+        public int? Level { get; set; }
+
+        public bool? IsFixedTermContract { get; set; }
+        public bool IsContractChangedToIndefinite { get; set; }
+
+        [Display(Name = "Окончание ТД"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ContractEndDate { get; set; }
+
+        [Display(Name = "Дата ДС"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? SupplementaryAgreementCreateDate { get; set; }
+
+        [Display(Name = "Номер ДС")]
+        public int? SupplementaryAgreementNumber { get; set; }
+
+        [Display(Name = "Дата приказа"),
+            DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? ChangeContractToIndefiniteOrderCreateDate { get; set; }
+
+        [Display(Name = "Номер приказа")]
+        public int? ChangeContractToIndefiniteOrderNumber { get; set; }
 
         [Display(Name = "Оформлен прием. Кадровик"),
             StringLength(50, ErrorMessage = "Не более 100 знаков.")]
         public string ApprovedByPersonnelManager { get; set; }
+
+        [Display(Name = "Подписант"),
+            Required(ErrorMessage = "*")]
+        public int SignerId { get; set; }
+        public IEnumerable<SelectListItem> Signers { get; set; }
 
         public PersonnelManagersModel()
         {

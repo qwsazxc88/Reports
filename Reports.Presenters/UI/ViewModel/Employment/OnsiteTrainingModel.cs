@@ -41,8 +41,6 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         public bool IsApproveByTrainerAvailable { get; set; }
         
-        public bool? ApprovalStatus { get; set; }
-        public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
         public string ApproverName { get; set; }
 
         public OnsiteTrainingModel()

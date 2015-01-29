@@ -23,7 +23,10 @@ namespace ReportsTaskRunner.Helpers
                 
                 foreach (var to in toList)
                 {
-                    mailMessage.To.Add(new MailAddress(to, to));
+                    if (!string.IsNullOrEmpty(to))
+                    {
+                        mailMessage.To.Add(new MailAddress(to, to));
+                    }
                 }
 
                 mailMessage.Subject = subject;

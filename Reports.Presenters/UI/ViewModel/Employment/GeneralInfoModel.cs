@@ -60,11 +60,10 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         public string CityOfBirth { get; set; } //ok
         
         [Display(Name = "Знание иностранных языков")]
-        public IList<ForeignLanguageDto> ForeignLanguages { get; set; } //TODO: EMPL кнопка добавления
+        public IList<ForeignLanguageDto> ForeignLanguages { get; set; }
 
         [Display(Name = "ИНН №", Prompt = "12 цифр"),
-            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр"),
-            Required(ErrorMessage = "*")]
+            RegularExpression(@"^\d{12}$", ErrorMessage = "Требуется 12 цифр")]
         public string INN { get; set; } //ok
         [Display(Name = "СНИЛС №", Prompt = "###-###-###-##"),
             RegularExpression(@"^(\d{3}-){3}\d{2}$", ErrorMessage = "Требуется формат ###-###-###-##"),
@@ -97,8 +96,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             Required(ErrorMessage = "*")]
         public int StatusId { get; set; }
         public IEnumerable<SelectListItem> StatusItems { get; set; } //ok
-        
-        [Display(Name = "Согласен на обработку своих персональных данных")]
+
+        [Display(Name = "Согласен на обработку своих персональных данных"), RequiredTrue(ErrorMessage = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.")]
         public bool AgreedToPersonalDataProcessing { get; set; } //ok
 
         public HttpPostedFileBase PhotoFile { get; set; }

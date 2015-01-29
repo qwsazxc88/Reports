@@ -1,0 +1,1 @@
+alter table Signer add Position NVARCHAR(250) null

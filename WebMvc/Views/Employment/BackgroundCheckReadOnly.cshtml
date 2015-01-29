@@ -253,12 +253,13 @@
 {
     @Html.HiddenFor(m => m.UserId)
     <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null)
-        {        
-            @Html.LabelFor(m => m.ApprovalStatus)
-            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })
+        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
+        {
+            @Html.LabelFor(m => m.ApprovalStatus)<br />
+            @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />            
+            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, string.Empty, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
         }
-        @if (Model.ApprovalStatus != null)
+        @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
         {
             <span class="fakeFormField">@Model.ApproverName</span>
         }
@@ -269,8 +270,24 @@
     </div>
 }
 
+<script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
-        setActiveMenuItem("empBackgroundCheck");        
+        setActiveMenuItem("empBackgroundCheck");
+        UIHelpers.handleCheckboxState($("#IsApprovalSkipped"),
+            {
+                $target: $("#ApprovalStatus"),
+                act: function () {
+                    this.$target.hide();
+                }
+            },
+            {
+                $target: $("#ApprovalStatus"),
+                act: function () {
+                    this.$target.show();
+                }
+            },
+            true);
     });
 </script>

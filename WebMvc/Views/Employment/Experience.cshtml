@@ -200,7 +200,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empExperience");
-        attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#WorkBookDateOfIssue, #WorkBookSupplementDateOfIssue, #BeginningDate, #EndDate'), "-60:+0", true);
 
         var $addExperienceItemDialog = $('#add-experience-item-dialog').dialog(
         {
@@ -232,8 +232,8 @@
                 {
                     $tbody.append(
                         "<tr><td>" +
-                        convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
-                        convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].BeginningDate) + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].EndDate) + "</td><td>" +
                         dataReceived[i].Company + "</td><td>" +
                         dataReceived[i].Position + "</td><td>" +
                         dataReceived[i].CompanyContacts + 

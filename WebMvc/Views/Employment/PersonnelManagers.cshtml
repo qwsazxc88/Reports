@@ -4,6 +4,8 @@
     ViewBag.Title = "Прием - Кадры";
 }
 
+<span style="color:red;">@ViewBag.Error</span>
+
 @using (Html.BeginForm("PersonnelManagers", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(m => m.UserId)
@@ -30,6 +32,39 @@
             @Html.LabelFor(m => m.ContractNumber)&nbsp;@Html.ValidationMessageFor(m => m.ContractNumber)<br />
             @Html.TextBoxFor(m => m.ContractNumber, new { @class = "halfwidth" })
         </div>
+        @if (Model.IsFixedTermContract.HasValue && Model.IsFixedTermContract.Value)
+        {
+            <div class="formfield">
+                @Html.LabelFor(m => m.ContractEndDate)&nbsp;@Html.ValidationMessageFor(m => m.ContractEndDate)<br />
+                @Html.EditorFor(m => m.ContractEndDate)
+            </div>
+        }
+        
+        @if (Model.IsContractChangedToIndefinite)
+        {
+            <div class="formfield">
+                @Html.LabelFor(m => m.SupplementaryAgreementCreateDate)&nbsp;@Html.ValidationMessageFor(m => m.SupplementaryAgreementCreateDate)<br />
+                @Html.EditorFor(m => m.SupplementaryAgreementCreateDate)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.SupplementaryAgreementNumber)&nbsp;@Html.ValidationMessageFor(m => m.SupplementaryAgreementNumber)<br />
+                @Html.EditorFor(m => m.SupplementaryAgreementNumber)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.ChangeContractToIndefiniteOrderCreateDate)&nbsp;@Html.ValidationMessageFor(m => m.ChangeContractToIndefiniteOrderCreateDate)<br />
+                @Html.EditorFor(m => m.ChangeContractToIndefiniteOrderCreateDate)
+            </div>
+            <div class="formfield">
+                @Html.LabelFor(m => m.ChangeContractToIndefiniteOrderNumber)&nbsp;@Html.ValidationMessageFor(m => m.ChangeContractToIndefiniteOrderNumber)<br />
+                @Html.EditorFor(m => m.ChangeContractToIndefiniteOrderNumber)
+            </div>
+        }
+
+        <div class="formfield clear" id="isHourlySalaryBasisContainer">            
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, false, new { @id = "IsHourlySalaryBasisFalse" })<label for="IsHourlySalaryBasisFalse">Оклад по дням</label>
+            @Html.RadioButtonFor(m => m.IsHourlySalaryBasis, true, new { @id = "IsHourlySalaryBasisTrue" })<label for="IsHourlySalaryBasisTrue">Оклад по часам</label>
+        </div>
+
         <div class="formfield clearleft">
             @Html.LabelFor(m => m.NorthernAreaAddition)&nbsp;@Html.ValidationMessageFor(m => m.NorthernAreaAddition)<br />
             @Html.TextBoxFor(m => m.NorthernAreaAddition, new { @class = "calc halfwidth" })
@@ -123,6 +158,15 @@
             @Html.LabelFor(m => m.AccessGroupId)&nbsp;@Html.ValidationMessageFor(m => m.AccessGroupId)<br />
             @Html.DropDownListFor(m => m.AccessGroupId, Model.AccessGroups)
         </div>
+        <div class="formfield">
+            @Html.LabelFor(m => m.Level)&nbsp;@Html.ValidationMessageFor(m => m.Level)<br />
+            @Html.TextBoxFor(m => m.Level, new { @class = "calc halfwidth" })
+        </div>
+        <div class="formfield clear">
+            @Html.LabelFor(m => m.SignerId)&nbsp;@Html.ValidationMessageFor(m => m.SignerId)<br />
+            @Html.DropDownListFor(m => m.SignerId, Model.Signers, string.Empty)
+        </div>
+
         <div class="formfield clearleft">
             <button type="submit">Сохранить</button>                
         </div>            
@@ -131,11 +175,12 @@
     <div class="buttonpanel">
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintContractForm", "Employment", new { userId = Model.UserId })';">Печать<br />трудового договора</button>
         <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentOrder", "Employment", new { userId = Model.UserId })';">Печать<br />приказа о приеме</button>
-        <button type="submit">Печать<br />Т2</button>
-        <button type="submit">Печать<br />договора Мат. ответственность</button>
-        <button type="submit">Печать<br />ДС Персональные данные</button>
-        <button type="submit">Печать<br />Обязательство конфиденциальность</button>
-        <button type="submit">Печать<br />реестра личного дела</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintT2", "Employment", new { userId = Model.UserId })';">Печать<br />Т2</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintLiabilityContract", "Employment", new { userId = Model.UserId })';">Печать<br />договора Мат. ответственность</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataAgreement", "Employment", new { userId = Model.UserId })';">Печать<br />ДС Персональные данные</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintPersonalDataObligation", "Employment", new { userId = Model.UserId })';">Печать<br />Обязательство конфиденциальность</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintEmploymentFile", "Employment", new { userId = Model.UserId })';">Печать<br />личного листка<br />по учету кадров</button>
+        <button type="button" onclick="window.location.href='@Url.Action("GetPrintAttachments", "Employment", new { userId = Model.UserId })';">Печать<br />реестра личного дела</button>
     </div>
  
 }
@@ -145,6 +190,9 @@
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empPersonnelManagers");
-        attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+        UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
+        $('#isHourlySalaryBasisContainer').buttonset();
     });
 </script>

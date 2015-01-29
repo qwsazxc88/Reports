@@ -294,6 +294,7 @@
     <Compile Include="Dao\Impl\DisabilityDegreeDao.cs" />
     <Compile Include="Dao\Impl\PersonalAccountContractorDao.cs" />
     <Compile Include="Dao\Impl\ScheduleDao.cs" />
+    <Compile Include="Dao\Impl\EmploymentSignersDao.cs" />
     <Compile Include="Dao\IPersonalAccountContractorDao.cs" />
     <Compile Include="Dao\IPositionDao.cs" />
     <Compile Include="Dao\IReportDao.cs" />
@@ -345,6 +346,7 @@
     <Compile Include="Dao\IEmploymentManagersDao.cs" />
     <Compile Include="Dao\IEmploymentPersonnelManagersDao.cs" />
     <Compile Include="Dao\IAdditionalVacationTypeDao.cs" />
+    <Compile Include="Dao\IEmploymentSignersDao.cs" />
     <Compile Include="Domain\Absence.cs" />
     <Compile Include="Domain\AbsenceComment.cs" />
     <Compile Include="Domain\AbsenceType.cs" />
@@ -398,6 +400,8 @@
     <Compile Include="Domain\Employment2\PersonnelManagers.cs" />
     <Compile Include="Domain\Employment2\ConscriptionStatus.cs" />
     <Compile Include="Domain\Employment2\PersonalAccountContractor.cs" />
+    <Compile Include="Domain\Employment2\SupplementaryAgreement.cs" />
+    <Compile Include="Domain\Employment2\Signer.cs" />
     <Compile Include="Domain\EmploymentAddition.cs" />
     <Compile Include="Domain\EmploymentComment.cs" />
     <Compile Include="Domain\EmploymentHoursType.cs" />
@@ -534,6 +538,8 @@
     <Compile Include="Dto\Employment2\ReferenceDto.cs" />
     <Compile Include="Dto\Employment2\ForeignLanguageDto.cs" />
     <Compile Include="Dto\Employment2\CandidateApprovalDto.cs" />
+    <Compile Include="Dto\Employment2\SignerDto.cs" />
+    <Compile Include="Dto\Employment2\CandidateChangeContractToIndefiniteDto.cs" />
     <Compile Include="Dto\GpdActDto.cs" />
     <Compile Include="Dto\GpdContractDto.cs" />
     <Compile Include="Dto\GpdRefDetailDto.cs" />
@@ -1077,6 +1083,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\HelpQuestionHistoryEntity.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\SupplementaryAgreement.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Domain\Employment2\Signer.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Domain\GpdMagProlongation.hbm.xml">

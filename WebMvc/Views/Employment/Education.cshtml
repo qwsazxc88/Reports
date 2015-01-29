@@ -401,7 +401,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empEducation");
-        attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
+        UIHelpers.attachDatepickerToInputs($('#CertificationDate, #CertificateDateOfIssue'), "-50:+0", true);
 
         var $addHigherEducationDiplomaDialog = $('#add-higher-education-diploma-dialog').dialog(
         {

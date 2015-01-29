@@ -706,7 +706,7 @@ margin-right:5px;
 div.letter
 {
     padding: 5px;
-    width: 760px;
+    width: 960px;
     background-color: Silver;
 }
 
@@ -727,7 +727,8 @@ span.fakeFormField
     border:2px inset #eee;
     background-color: #eee;
     padding: 1px;
-    min-width: 1em;
+    min-height: 1.2em;
+    min-width: 2em;
 }
 
 span.buttonLink
@@ -746,6 +747,13 @@ span.buttonLink
 span.buttonLink a
 {
     text-decoration: none;
+}
+
+span.anchorLink
+{
+    text-decoration: underline;
+    color: Blue;
+    cursor: pointer;
 }
 
 .announcement
