@@ -4268,7 +4268,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     if (!entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue)
                                         model.IsApprovedForAllEnable = true;
                                 }
-                                
                             }
 
 
@@ -4298,6 +4297,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     // Разрешить удаление, если согласовано всеми и выгружено в 1С
                     else if (entity.SendTo1C.HasValue && !entity.DeleteDate.HasValue && isSuperPersonnelManager)
                         model.IsDeleteAvailable = true;
+                    else if (entity.PersonnelManagerDateAccept.HasValue && entity.ManagerDateAccept.HasValue && entity.UserDateAccept.HasValue) //в состоянии 'Согласованно кадровиком' показываем кнопку 'отклонить заявку'
+                            model.IsDeleteAvailable = true;
                     break;
                     /*
                 case UserRole.OutsourcingManager:
