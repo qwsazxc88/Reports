@@ -411,12 +411,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
-                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
+                Where(x => x.Id != 1).ToList<IdNameDto>();//исключил одну строку
             if (model.Id == 0)
                 model.ProductionTimeTypeId = 2;
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
-               Where(x => x.Id != 3).ToList<IdNameDto>(); //удалил из списка почту России
+               Where(x => x.Id != 3 && x.Id != 2).ToList<IdNameDto>(); //удалил из списка почту России и курьер-сервис
 
             if(model.TypeId == 0)
                 model.TypeId = types.First().Id;
@@ -627,8 +628,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsEditable)
             {
                 HelpServiceType type = HelpServiceTypeDao.Load(model.TypeId);
-                if (fileDto != null && entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
-                    RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+                if (model.Id != 0)
+                {
+                    if (fileDto != null && entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
+                        RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+                }
                 entity.Type = type;
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
@@ -1189,11 +1193,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
-                    if ((entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
-                        && (!entity.ConsultantRoleId.HasValue || 
-                             entity.ConsultantRoleId.Value == (int) UserRole.ConsultantOutsourcing))
-                    {
-                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
+                    //if ((entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
+                    //    && (!entity.ConsultantRoleId.HasValue || 
+                    //         entity.ConsultantRoleId.Value == (int) UserRole.ConsultantOutsourcing))
+                    //{
+                    //}
+                    //могут отвечать на любые открытые вопросы, не важно кому направленные
+                    //вытащил кусок из закомментаренного условия
+                    if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
@@ -1206,7 +1213,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsRedirectAvailable = true;
                             model.IsBeginWorkAvailable = true;
                         }
-                    }
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
@@ -1567,8 +1573,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             
 
                         }
-                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
-                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        if (/*entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
+                            &&*/ model.Operation == 3 && entity.BeginWorkDate.HasValue)
                         {
                             entity.EndWorkDate = DateTime.Now;
                             HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
