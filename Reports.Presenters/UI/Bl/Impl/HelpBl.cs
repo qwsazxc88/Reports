@@ -411,12 +411,13 @@ namespace Reports.Presenters.UI.Bl.Impl
             List<HelpServiceType> types = HelpServiceTypeDao.LoadAllSortedByOrder();
             model.Types = types.ConvertAll(x => new IdNameDto { Id = x.Id,Name = x.Name});
             model.ProductionTimeTypes = HelpServiceProductionTimeDao.LoadAllSortedByOrder().
-                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name });
+                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
+                Where(x => x.Id != 1).ToList<IdNameDto>();//исключил одну строку
             if (model.Id == 0)
                 model.ProductionTimeTypeId = 2;
             model.TransferMethodTypes = HelpServiceTransferMethodDao.LoadAllSortedByOrder().
                ConvertAll(x => new IdNameDto { Id = x.Id, Name = x.Name }).
-               Where(x => x.Id != 3).ToList<IdNameDto>(); //удалил из списка почту России
+               Where(x => x.Id != 3 && x.Id != 2).ToList<IdNameDto>(); //удалил из списка почту России и курьер-сервис
 
             if(model.TypeId == 0)
                 model.TypeId = types.First().Id;
@@ -627,8 +628,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             if (model.IsEditable)
             {
                 HelpServiceType type = HelpServiceTypeDao.Load(model.TypeId);
-                if (fileDto != null && entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
-                    RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+                if (model.Id != 0)
+                {
+                    if (fileDto != null && entity.Type.IsAttachmentAvailable && model.AttachmentId != 0)
+                        RequestAttachmentDao.DeleteAndFlush(model.AttachmentId);
+                }
                 entity.Type = type;
                 entity.ProductionTime = HelpServiceProductionTimeDao.Load(model.ProductionTimeTypeId);
                 entity.TransferMethod = helpServiceTransferMethodDao.Load(model.TransferMethodTypeId);
@@ -1189,11 +1193,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     break;
                 case UserRole.ConsultantOutsourcing:
-                    if ((entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
-                        && (!entity.ConsultantRoleId.HasValue || 
-                             entity.ConsultantRoleId.Value == (int) UserRole.ConsultantOutsourcing))
-                    {
-                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
+                    //if ((entity.ConsultantOutsourcing == null || (entity.ConsultantOutsourcing.Id == current.Id))
+                    //    && (!entity.ConsultantRoleId.HasValue || 
+                    //         entity.ConsultantRoleId.Value == (int) UserRole.ConsultantOutsourcing))
+                    //{
+                    //}
+                    //могут отвечать на любые открытые вопросы, не важно кому направленные
+                    //вытащил кусок из закомментаренного условия
+                    if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == current.Id
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
@@ -1206,7 +1213,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsRedirectAvailable = true;
                             model.IsBeginWorkAvailable = true;
                         }
-                    }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                                model.IsEndAvailable = true;//могут закрывать тему 
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
@@ -1238,7 +1246,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
-                            model.IsRedirectAvailable = false;
+                            model.IsRedirectAvailable = true;//разрешил перенаправлять
                             model.IsSaveAvailable = false;
                             model.IsAnswerEditable = true;
                         }
@@ -1567,8 +1575,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             
 
                         }
-                        if (entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
-                            && model.Operation == 3 && entity.BeginWorkDate.HasValue)
+                        if (/*entity.ConsultantOutsourcing != null && entity.ConsultantOutsourcing.Id == currUser.Id
+                            &&*/ model.Operation == 3 && entity.BeginWorkDate.HasValue)
                         {
                             entity.EndWorkDate = DateTime.Now;
                             HelpQuestionHistoryEntity endWork = new HelpQuestionHistoryEntity
@@ -1585,6 +1593,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                             };
                             entity.HistoryEntities.Add(endWork);
                         }
+
+                        if (entity.EndWorkDate.HasValue)//можно закрыть тему
+                        {
+                            if (model.Operation == 4)
+                            {
+                                entity.ConfirmWorkDate = DateTime.Now;
+                                HelpQuestionHistoryEntity confirm = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 4,// confirm
+                                };
+                                entity.HistoryEntities.Add(confirm);
+                            }
+                        }
+
                         if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
                         {
                             entity.ConsultantRoleId = model.RedirectRoleId;
@@ -1882,6 +1911,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
                 model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
             }
+
+            if (CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager) return model;//для консультантов КО разрешаем перенаправление вопроса консультанту аутсора
+
             if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel)
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantPersonnel);
