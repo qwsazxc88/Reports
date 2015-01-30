@@ -1213,6 +1213,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                             model.IsRedirectAvailable = true;
                             model.IsBeginWorkAvailable = true;
                         }
+                        if (entity.EndWorkDate.HasValue && !entity.ConfirmWorkDate.HasValue)
+                                model.IsEndAvailable = true;//могут закрывать тему 
                     break;
                 case UserRole.ConsultantPersonnel:
                     if ((entity.ConsultantPersonnel == null || (entity.ConsultantPersonnel.Id == current.Id))
@@ -1244,7 +1246,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
-                            model.IsRedirectAvailable = false;
+                            model.IsRedirectAvailable = true;//разрешил перенаправлять
                             model.IsSaveAvailable = false;
                             model.IsAnswerEditable = true;
                         }
@@ -1591,6 +1593,27 @@ namespace Reports.Presenters.UI.Bl.Impl
                             };
                             entity.HistoryEntities.Add(endWork);
                         }
+
+                        if (entity.EndWorkDate.HasValue)//можно закрыть тему
+                        {
+                            if (model.Operation == 4)
+                            {
+                                entity.ConfirmWorkDate = DateTime.Now;
+                                HelpQuestionHistoryEntity confirm = new HelpQuestionHistoryEntity
+                                {
+                                    Answer = entity.Answer,
+                                    CreateDate = DateTime.Now,
+                                    Creator = currUser,
+                                    CreatorRoleId = (int)currRole,
+                                    Question = entity.Question,
+                                    RecipientRoleId = (int)currRole,
+                                    Request = entity,
+                                    Type = 4,// confirm
+                                };
+                                entity.HistoryEntities.Add(confirm);
+                            }
+                        }
+
                         if (model.Operation == 6 && entity.SendDate.HasValue && !entity.EndWorkDate.HasValue) //redirect
                         {
                             entity.ConsultantRoleId = model.RedirectRoleId;
@@ -1888,6 +1911,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                 Role role = GetRoleForId(roles, (int) UserRole.ConsultantOutsourcing);
                 model.Roles.Add(new IdNameDto{Id = role.Id,Name = role.Name});
             }
+
+            if (CurrentUser.UserRole == UserRole.ConsultantOutsorsingManager) return model;//для консультантов КО разрешаем перенаправление вопроса консультанту аутсора
+
             if ((CurrentUser.UserRole & UserRole.ConsultantPersonnel) != UserRole.ConsultantPersonnel)
             {
                 Role role = GetRoleForId(roles, (int)UserRole.ConsultantPersonnel);
