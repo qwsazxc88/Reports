@@ -42,6 +42,8 @@ namespace Reports.Core.Dao.Impl
                 , personnelManagers.EmploymentOrderDate EmploymentOrderDate
                 , personnelManagers.ContractNumber ContractNumber
                 , personnelManagers.ContractDate ContractDate
+                , personnelManagers.ContractEndDate ContractEndDate
+                , candidateUser.IsFixedTermContract IsFixedTermContract
                 , managers.ProbationaryPeriod ProbationaryPeriod
                 , schedule.Name Schedule
                 , generalInfo.DateOfBirth DateOfBirth
@@ -68,6 +70,20 @@ namespace Reports.Core.Dao.Impl
 					end Status
                 , managers.ManagerApprovalStatus IsApprovedByManager
                 , managers.HigherManagerApprovalStatus IsApprovedByHigherManager
+                , supplementaryAgreement.CreateDate SupplementaryAgreementCreateDate
+                , supplementaryAgreement.Number SupplementaryAgreementNumber
+                , supplementaryAgreement.OrderCreateDate IndefiniteContractOrderCreateDate
+                , supplementaryAgreement.OrderNumber IndefiniteContractOrderNumber
+                , case
+                    when supplementaryAgreement.Id > 0
+                        then 1
+                    else 0
+                    end IsContractChangedToIndefinite
+                , case
+                    when candidate.AppointmentCreatorId = :currentId and candidateUser.IsFixedTermContract = 0
+                        then 1
+                    else 0
+                    end IsChangeContractToIndefiniteAvailable
 				, case
 					when candidate.Status = 3 and candidate.AppointmentCreatorId = :currentId 
 						then 1
@@ -81,6 +97,7 @@ namespace Reports.Core.Dao.Impl
                 left join dbo.GeneralInfo generalInfo on candidate.GeneralInfoId = generalInfo.Id
                 left join dbo.Managers managers on candidate.ManagersId = managers.Id
                 left join dbo.PersonnelManagers personnelManagers on candidate.PersonnelManagersId = personnelManagers.Id
+                left join dbo.SupplementaryAgreement supplementaryAgreement on supplementaryAgreement.PersonnelManagersId = personnelManagers.Id
                 left join dbo.Department department on managers.DepartmentId = department.Id
                 left join dbo.Position position on managers.PositionId = position.Id
                 left join dbo.Schedule schedule on managers.ScheduleId = schedule.Id
@@ -129,7 +146,6 @@ namespace Reports.Core.Dao.Impl
             return criteria.List<EmploymentCandidate>();
         }
 
-        //ok
         public override string GetWhereForUserRole(UserRole role, int currentId)
         {            
             string sqlQueryPart = string.Empty;
@@ -176,7 +192,6 @@ namespace Reports.Core.Dao.Impl
             return sqlQueryPart;
         }
 
-        //ok
         public override string GetStatusWhere(string whereString, int statusId)
         {
             if (statusId > 0)
@@ -187,7 +202,6 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        //ok
         public override string GetDatesWhere(string whereString, DateTime? beginDate, DateTime? endDate)
         {
             if (beginDate.HasValue)
@@ -201,7 +215,6 @@ namespace Reports.Core.Dao.Impl
             return whereString;
         }
 
-        //ok
         public override string GetDepartmentWhere(string whereString, int departmentId)
         {
             if (departmentId != 0)
@@ -237,6 +250,59 @@ namespace Reports.Core.Dao.Impl
                 sqlQuery += @" where " + whereString;
             }
 
+            switch (sortedBy)
+            {
+                case 1:
+                    orderBy = "Name";
+                    break;
+                case 2:
+                    orderBy = "WorkCity";
+                    break;
+                case 3:
+                    orderBy = "Department";
+                    break;
+                case 4:
+                    orderBy = "Position";
+                    break;
+                case 5:
+                    orderBy = "EmploymentDate";
+                    break;
+                case 6:
+                    orderBy = "EmploymentOrderNumber";
+                    break;
+                case 7:
+                    orderBy = "EmploymentOrderDate";
+                    break;
+                case 8:
+                    orderBy = "ContractNumber";
+                    break;
+                case 9:
+                    orderBy = "ProbationaryPeriod";
+                    break;
+                case 10:
+                    orderBy = "Schedule";
+                    break;
+                case 11:
+                    orderBy = "DateOfBirth";
+                    break;
+                case 12:
+                    orderBy = "Disabilities";
+                    break;
+                case 13:
+                    orderBy = "Grade";
+                    break;
+                case 14:
+                    orderBy = "Status";
+                    break;
+                default:
+                    orderBy = "Name";
+                    break;
+            }
+
+            orderBy = string.Format(@" order by {0} {1} ", orderBy, (orderBy.Length > 0 && sortDescending.HasValue && sortDescending.Value) ? "desc" : string.Empty);
+
+            sqlQuery += orderBy;
+
             return sqlQuery;
         }
 
@@ -254,16 +320,25 @@ namespace Reports.Core.Dao.Impl
                 .AddScalar("EmploymentOrderDate", NHibernateUtil.DateTime)
                 .AddScalar("ContractNumber", NHibernateUtil.String)
                 .AddScalar("ContractDate", NHibernateUtil.DateTime)
+                .AddScalar("ContractEndDate", NHibernateUtil.DateTime)
+                .AddScalar("IsFixedTermContract", NHibernateUtil.Boolean)
                 .AddScalar("ProbationaryPeriod", NHibernateUtil.String)
                 .AddScalar("Schedule", NHibernateUtil.String)
                 .AddScalar("DateOfBirth", NHibernateUtil.DateTime)
                 .AddScalar("Disabilities", NHibernateUtil.String)
                 .AddScalar("Grade", NHibernateUtil.Int32)
                 .AddScalar("Status", NHibernateUtil.String)
+                .AddScalar("IsChangeContractToIndefiniteAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApprovedByManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApprovedByHigherManager", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByManagerAvailable", NHibernateUtil.Boolean)
                 .AddScalar("IsApproveByHigherManagerAvailable", NHibernateUtil.Boolean)
+
+                .AddScalar("IsContractChangedToIndefinite", NHibernateUtil.Boolean)
+                .AddScalar("SupplementaryAgreementCreateDate", NHibernateUtil.DateTime)
+                .AddScalar("SupplementaryAgreementNumber", NHibernateUtil.Int32)
+                .AddScalar("IndefiniteContractOrderCreateDate", NHibernateUtil.DateTime)
+                .AddScalar("IndefiniteContractOrderNumber", NHibernateUtil.Int32)
                 ;
 
             return query;

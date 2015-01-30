@@ -22,6 +22,9 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(100, ErrorMessage = "Не более 100 знаков.")]
         public string EmploymentConditions { get; set; } //ok
 
+        [Display(Name = "Вид занятости")]
+        public bool IsSecondaryJob { get; set; } //ok
+
         [Display(Name = "График работы")]
         public int? ScheduleId { get; set; }
         public IEnumerable<SelectListItem> Schedules { get; set; }
@@ -30,11 +33,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
             StringLength(50, ErrorMessage = "Не более 200 знаков.")]
         public string ProbationaryPeriod { get; set; } //ok
 
-        [Display(Name = "Оклад по дням")]
-        public decimal? DailySalaryBasis { get; set; }
-
-        [Display(Name = "Оклад по часам")]
-        public decimal? HourlySalaryBasis { get; set; }
+        [Display(Name = "Базовый должностной оклад")]
+        public decimal? SalaryBasis { get; set; }
 
         [Display(Name = "Ставка")]
         public decimal? SalaryMultiplier { get; set; }
@@ -69,10 +69,12 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
         [Display(Name = "Согласование (Руководитель)")]
         public bool? ManagerApprovalStatus { get; set; }
         public string ApprovingManagerName { get; set; }
+        public DateTime? ManagerApprovalDate { get; set; }
 
         [Display(Name = "Согласование (Вышестоящий руководитель)")]
         public bool? HigherManagerApprovalStatus { get; set; }
         public string ApprovingHigherManagerName { get; set; }
+        public DateTime? HigherManagerApprovalDate { get; set; }
 
         public IEnumerable<SelectListItem> ApprovalStatuses { get; set; }
 

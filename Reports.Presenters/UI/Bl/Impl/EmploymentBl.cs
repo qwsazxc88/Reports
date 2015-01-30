@@ -21,13 +21,18 @@ namespace Reports.Presenters.UI.Bl.Impl
 {
     public class EmploymentBl : RequestBl, IEmploymentBl
     {
+        #region Constants
+
         public const string StrIncorrectManagerLevel = "Неправильный уровень {0} руководителя (id {1}) в базе данных.";
         public const string StrNoDepartmentForManager = "Не указано структурное подраздаление для руководителя (id {0}).";
+        public const string StrNotAgreedToPersonalDataProcessing = "Сохранение невозможно: отсутствует согласие на обработку персональных данных.";
 
         public const int MinManagerLevel = 2;
         public const int MaxManagerLevel = 6;
 
         public int RUSSIAN_FEDERATION = 643;
+
+        #endregion
 
         #region Dependencies
 
@@ -185,14 +190,19 @@ namespace Reports.Presenters.UI.Bl.Impl
             set { missionOrderRoleRecordDao = value; }
         }
 
+        protected IEmploymentSignersDao employmentSignersDao;
+        public IEmploymentSignersDao EmploymentSignersDao
+        {
+            get { return Validate.Dependency(employmentSignersDao); }
+            set { employmentSignersDao = value; }
+        }
+
         #endregion
 
         #region Get Model
 
         public GeneralInfoModel GetGeneralInfoModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
-            //UserRole role = AuthenticationService.CurrentUser.UserRole;
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             GeneralInfoModel model = new GeneralInfoModel { UserId = userId.Value };
             LoadDictionaries(model);
@@ -271,7 +281,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public PassportModel GetPassportModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             PassportModel model = new PassportModel { UserId = userId.Value };
             Passport entity = null;
@@ -310,7 +319,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public EducationModel GetEducationModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             EducationModel model = new EducationModel { UserId = userId.Value };
             Education entity = null;
@@ -378,7 +386,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public FamilyModel GetFamilyModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             FamilyModel model = new FamilyModel { UserId = userId.Value };
             Family entity = null;
@@ -415,10 +422,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                /*if (model.Father == null)
-                {
-                    model.Father = new FamilyMemberDto();
-                }*/
 
                 model.Mother = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
                     .ToList<FamilyMember>()
@@ -432,10 +435,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                         WorksAt = x.WorksAt
                     })
                     .FirstOrDefault<FamilyMemberDto>();
-                /*if (model.Mother == null)
-                {
-                    model.Mother = new FamilyMemberDto();
-                }*/
 
                 model.Spouse = entity.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
                     .ToList<FamilyMember>()
@@ -452,7 +451,6 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.Spouse == null)
                 {
                     model.IsMarried = false;
-                    //model.Spouse = new FamilyMemberDto();
                 }
                 else
                 {
@@ -467,7 +465,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public MilitaryServiceModel GetMilitaryServiceModel(int? userId = null)
         {
-            // TODO: EMPL доработать реализацию
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             MilitaryServiceModel model = new MilitaryServiceModel { UserId = userId.Value };
             MilitaryService entity = null;
@@ -506,7 +503,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ExperienceModel GetExperienceModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ExperienceModel model = new ExperienceModel { UserId = userId.Value };
             Experience entity = null;
@@ -543,7 +539,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public ContactsModel GetContactsModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ContactsModel model = new ContactsModel { UserId = userId.Value };
             Contacts entity = null;
@@ -575,7 +570,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public BackgroundCheckModel GetBackgroundCheckModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             BackgroundCheckModel model = new BackgroundCheckModel { UserId = userId.Value };
             BackgroundCheck entity = null;
@@ -626,6 +620,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.IsDraft = true;
                 model.IsFinal = entity.IsFinal;
 
+                model.IsApprovalSkipped = entity.IsApprovalSkipped;
                 model.ApproverName = entity.Approver == null ? string.Empty : entity.Approver.Name;
                 model.ApprovalStatus = entity.ApprovalStatus;
                 model.IsApproveBySecurityAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
@@ -637,7 +632,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public OnsiteTrainingModel GetOnsiteTrainingModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             OnsiteTrainingModel model = new OnsiteTrainingModel { UserId = userId.Value };
             OnsiteTraining entity = null;
@@ -658,10 +652,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.Type = entity.Type;
 
                 model.ApproverName = entity.Approver != null ? entity.Approver.Name : string.Empty;
-                model.ApprovalStatus = entity.IsComplete;
-                model.IsApproveByTrainerAvailable = (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
-                    && ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer);
+                model.IsApproveByTrainerAvailable = ((AuthenticationService.CurrentUser.UserRole & UserRole.Trainer) == UserRole.Trainer
+                    && !entity.IsFinal);
+
+                model.IsDraft = true;
+                model.IsFinal = entity.IsFinal;
             }
+            else
+            {
+                model.IsDraft = true;
+                model.IsFinal = false;
+                model.IsApproveByTrainerAvailable = true;
+            }
+
             LoadDictionaries(model);
             return model;
         }
@@ -669,20 +672,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         public ApplicationLetterModel GetApplicationLetterModel(int? userId = null)
         {
             userId = userId ?? AuthenticationService.CurrentUser.Id;
+            EmploymentCandidate candidate = GetCandidate(userId.Value);
             ApplicationLetterModel model = new ApplicationLetterModel { UserId = userId.Value };
 
             int attachmentId = 0;
             string attachmentFilename = string.Empty;
-            GetAttachmentData(ref attachmentId, ref attachmentFilename, GetCandidate(userId.Value).Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
+            GetAttachmentData(ref attachmentId, ref attachmentFilename, candidate.Id, RequestAttachmentTypeEnum.ApplicationLetterScan);
             model.ApplicationLetterScanAttachmentId = attachmentId;
             model.ApplicationLetterScanAttachmentFilename = attachmentFilename;
+            model.IsApplicationLetterUploadAvailable = candidate.Status == EmploymentStatus.PENDING_APPLICATION_LETTER && !(model.ApplicationLetterScanAttachmentId > 0);
 
             return model;
         }
 
         public ManagersModel GetManagersModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             ManagersModel model = new ManagersModel { UserId = userId.Value };
             Managers entity = null;
@@ -694,12 +698,23 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             if (entity != null)
             {
-                model.Bonus = entity.Bonus;
-                model.DailySalaryBasis = entity.DailySalaryBasis;
-                model.DepartmentId = entity.Department != null ? entity.Department.Id : 0;
-                model.DepartmentName = entity.Department != null ? entity.Department.Name : string.Empty;
+                model.Bonus = entity.Bonus;                
+
+                // Если подразделение еще не заполнено,
+                // пытаемся подтянуть его из временной учетной записи соответствующего пользователя
+                model.DepartmentId = entity.Department != null
+                    ? entity.Department.Id
+                    : (entity.Candidate.User.Department != null
+                        ? entity.Candidate.User.Department.Id
+                        : 0);
+                model.DepartmentName = entity.Department != null
+                    ? entity.Department.Name
+                    : (entity.Candidate.User.Department != null
+                        ? entity.Candidate.User.Department.Name
+                        : string.Empty);
+
                 model.EmploymentConditions = entity.EmploymentConditions;
-                model.HourlySalaryBasis = entity.HourlySalaryBasis;
+                model.IsSecondaryJob = entity.IsSecondaryJob;
                 model.IsFront = entity.IsFront;
                 model.IsLiable = entity.IsLiable;
                 model.PersonalAddition = entity.PersonalAddition;
@@ -707,16 +722,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.PositionId = entity.Position != null ? entity.Position.Id : 0;
                 model.ProbationaryPeriod = entity.ProbationaryPeriod;
                 model.RequestNumber = entity.RequestNumber;
+                model.SalaryBasis = entity.SalaryBasis;
                 model.SalaryMultiplier = entity.SalaryMultiplier;
                 model.ScheduleId = entity.Schedule != null ? (int?)entity.Schedule.Id : null;
                 model.WorkCity = entity.WorkCity;
 
                 model.ApprovingManagerName = entity.ApprovingManager != null ? entity.ApprovingManager.Name : string.Empty;
                 model.ApprovingHigherManagerName = entity.ApprovingHigherManager != null ? entity.ApprovingHigherManager.Name : string.Empty;
+                model.ManagerApprovalDate = entity.ManagerApprovalDate;
                 model.ManagerRejectionReason = entity.ManagerRejectionReason;
 
                 model.ManagerApprovalStatus = entity.ManagerApprovalStatus;
                 model.HigherManagerApprovalStatus = entity.HigherManagerApprovalStatus;
+                model.HigherManagerApprovalDate = entity.HigherManagerApprovalDate;
                 model.HigherManagerRejectionReason = entity.HigherManagerRejectionReason;
             }
 
@@ -734,7 +752,6 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public PersonnelManagersModel GetPersonnelManagersModel(int? userId = null)
         {
-            // TODO: EMPL заменить реализацией
             userId = userId ?? AuthenticationService.CurrentUser.Id;
             PersonnelManagersModel model = new PersonnelManagersModel { UserId = userId.Value };
             PersonnelManagers entity = null;
@@ -752,6 +769,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.AreaMultiplier = entity.AreaMultiplier;
                 model.CompetenceAddition = entity.CompetenceAddition;
                 model.ContractDate = entity.ContractDate;
+                model.ContractEndDate = entity.ContractEndDate;
                 model.ContractNumber = entity.ContractNumber;
                 model.EmploymentDate = entity.EmploymentDate;
                 model.EmploymentOrderDate = entity.EmploymentOrderDate;
@@ -761,12 +779,26 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.InsurableExperienceDays = entity.InsurableExperienceDays;
                 model.InsurableExperienceMonths = entity.InsurableExperienceMonths;
                 model.InsurableExperienceYears = entity.InsurableExperienceYears;
+
+                model.IsFixedTermContract = entity.Candidate.User.IsFixedTermContract;
+                model.IsHourlySalaryBasis = entity.IsHourlySalaryBasis;
+                model.IsContractChangedToIndefinite = entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0;
+                if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
+                {
+                    model.SupplementaryAgreementCreateDate = entity.SupplementaryAgreements[0].CreateDate;
+                    model.SupplementaryAgreementNumber = entity.SupplementaryAgreements[0].Number;
+                    model.ChangeContractToIndefiniteOrderCreateDate = entity.SupplementaryAgreements[0].OrderCreateDate;
+                    model.ChangeContractToIndefiniteOrderNumber = entity.SupplementaryAgreements[0].OrderNumber;
+                }
+
+                model.Level = entity.Candidate.User.Level;
                 model.NorthernAreaAddition = entity.NorthernAreaAddition;
                 model.OverallExperienceDays = entity.OverallExperienceDays;
                 model.OverallExperienceMonths = entity.OverallExperienceMonths;
                 model.OverallExperienceYears = entity.OverallExperienceYears;
                 model.PersonalAccount = entity.PersonalAccount;
                 model.PersonalAccountContractorId = entity.PersonalAccountContractor != null ? entity.PersonalAccountContractor.Id : 0;
+                model.SignerId = entity.Signer != null ? entity.Signer.Id : 0;
                 model.TravelRelatedAddition = entity.TravelRelatedAddition;
             }
 
@@ -818,15 +850,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                     filters != null ? filters.BeginDate : null,
                     filters != null ? filters.EndDate : null,
                     filters != null ? filters.UserName : null,
-                    0,
-                    null);
+                    filters.SortBy,
+                    filters.SortDescending);
+
+                model.SortBy = filters.SortBy;
+                model.SortDescending = filters.SortDescending;
             }
 
             LoadDictionaries(model);
 
+            model.IsBulkChangeContractToIndefiniteAvailable = model.Roster.Any(x => x.IsChangeContractToIndefiniteAvailable);
             model.IsBulkApproveByManagerAvailable = model.Roster.Any(x => x.IsApproveByManagerAvailable);
             model.IsBulkApproveByHigherManagerAvailable = model.Roster.Any(x => x.IsApproveByHigherManagerAvailable);
-
+                                    
             return model;
         }
 
@@ -847,52 +883,575 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         public SignersModel GetSignersModel()
         {
-            // TODO: EMPL заменить реализацией
-            return new SignersModel();
+            var model = new SignersModel
+            {
+                SignerToAddOrEdit = new SignerDto { Id = 0 },
+                Signers = EmploymentSignersDao.LoadAllSorted().ToList()
+                    .ConvertAll(x => new SignerDto { Id = x.Id, Name = x.Name, Position = x.Position, PreamblePartyTemplate = x.PreamblePartyTemplate })
+                    .OrderBy(x => x.Name)
+                    .ToList()
+            };
+
+            return model;
         }
 
         public PrintContractFormModel GetPrintContractFormModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);
-            PrintContractFormModel model = new PrintContractFormModel
+            PrintContractFormModel model = new PrintContractFormModel();
+
+            if (candidate.GeneralInfo != null)
             {
-                ContractDate = candidate.PersonnelManagers.ContractDate,
-                Department = candidate.Managers.Department.Name,
-                EmployeeAddress = candidate.Passport.ZipCode + ", " + candidate.Passport.Region ?? string.Empty + ", " + candidate.Passport.District ?? string.Empty
-                    + ", " + candidate.Passport.City + ", " + candidate.Passport.Street ?? string.Empty + ", " + candidate.Passport.StreetNumber ?? string.Empty
-                    + ", " + candidate.Passport.Building ?? string.Empty + ", " + candidate.Passport.Apartment ?? string.Empty,
-                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
-                EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
-                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + "."),
-                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
-                Number = candidate.PersonnelManagers.ContractNumber,
-                PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue,
-                PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy,
-                PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber,
-                Position = candidate.Managers.Position.Name,
-                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod,
-                WorkCity = candidate.Managers.WorkCity
-            };
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName[0] + ". "
+                    + (string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? string.Empty : candidate.GeneralInfo.Patronymic[0].ToString() + ".");
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+                model.PassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.PassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.PassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.WorkCity = candidate.Managers.WorkCity;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
+                model.Schedule = candidate.Managers.Schedule != null ? candidate.Managers.Schedule.Name : string.Empty;
+                model.SalaryBasis = candidate.Managers.SalaryBasis;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;
+                model.Number = candidate.PersonnelManagers.ContractNumber;
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened += string.Format(" {0}.", employerRepresentativeNameParts[i][0]);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }                
+            }
+
+            model.IsFixedTermContract = candidate.User.IsFixedTermContract;
+            
             return model;
         }
 
         public PrintEmploymentOrderModel GetPrintEmploymentOrderModel(int userId)
         {
             EmploymentCandidate candidate = GetCandidate(userId);
-            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel
+            PrintEmploymentOrderModel model = new PrintEmploymentOrderModel();
+
+            if (candidate.GeneralInfo != null)
             {
-                Addition = candidate.Managers.PositionAddition,
-                Conditions = candidate.Managers.EmploymentConditions,
-                ContractDate = candidate.PersonnelManagers.ContractDate,
-                ContractNumber = candidate.PersonnelManagers.ContractNumber,
-                Department = candidate.Managers.Department.Name,
-                EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty,
-                EmploymentDate = candidate.PersonnelManagers.EmploymentDate,
-                OrderDate = candidate.PersonnelManagers.EmploymentOrderDate,
-                OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber,
-                Position = candidate.Managers.Position.Name,
-                ProbationaryPeriod = candidate.Managers.ProbationaryPeriod
-            };
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.PersonalAddition = candidate.Managers.PersonalAddition;
+                model.PositionAddition = candidate.Managers.PositionAddition;
+                model.Conditions = candidate.Managers.EmploymentConditions;
+                model.Department = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+                model.IsSecondaryJob = candidate.Managers.IsSecondaryJob;
+                model.Position = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.ProbationaryPeriod = candidate.Managers.ProbationaryPeriod;
+                model.SalaryBasis = candidate.Managers.SalaryBasis;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.AreaAddition = candidate.PersonnelManagers.AreaAddition;
+                model.CompetenceAddition = candidate.PersonnelManagers.CompetenceAddition;
+                model.ContractDate = candidate.PersonnelManagers.ContractDate;
+                model.ContractEndDate = candidate.PersonnelManagers.ContractEndDate;
+                model.ContractNumber = candidate.PersonnelManagers.ContractNumber;                
+                model.EmploymentDate = candidate.PersonnelManagers.EmploymentDate;                
+                model.FrontOfficeExperienceAddition = candidate.PersonnelManagers.FrontOfficeExperienceAddition;
+                model.NorthernAreaAddition = candidate.PersonnelManagers.NorthernAreaAddition;
+                model.OrderDate = candidate.PersonnelManagers.EmploymentOrderDate;
+                model.OrderNumber = candidate.PersonnelManagers.EmploymentOrderNumber;
+                model.TravelRelatedAddition = candidate.PersonnelManagers.TravelRelatedAddition;
+
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    model.EmployerRepresentativeNameShortened = candidate.PersonnelManagers.Signer.Name;
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return model;
+        }
+
+        public PrintLiabilityContractModel GetPrintLiabilityContractModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintLiabilityContractModel model = new PrintLiabilityContractModel();
+
+            model.ContractDate = DateTime.Now;
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);                
+            }
+
+            if (candidate.Contacts != null)
+            {
+                model.EmployeePhone = candidate.Contacts.Mobile;
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeePassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+                model.EmployeePassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.EmployeePassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+            }
+
+            if (candidate.Managers != null)
+            {
+                model.EmployeePosition = candidate.Managers.Position != null ? candidate.Managers.Position.Name : string.Empty;
+                model.EmployeeDepartment = candidate.Managers.Department != null ? candidate.Managers.Department.Name : string.Empty;
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    model.EmployerRepresentativePosition = candidate.PersonnelManagers.Signer.Position;
+
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }
+            }
+
+            return model;
+        }
+
+        public PrintPersonalDataAgreementModel GetPrintPersonalDataAgreementModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintPersonalDataAgreementModel model = new PrintPersonalDataAgreementModel();
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);  
+            }
+
+            if (candidate.Passport != null)
+            {
+                model.EmployeePassportSeriesNumber = candidate.Passport.InternalPassportSeries + " " + candidate.Passport.InternalPassportNumber;
+                model.EmployeePassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.EmployeePassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.EmployeeAddress = candidate.Passport.ZipCode
+                    + (!string.IsNullOrEmpty(candidate.Passport.Region) ? ", " + candidate.Passport.Region : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.District) ? ", " + candidate.Passport.District : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.City) ? ", " + candidate.Passport.City : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Street) ? ", " + candidate.Passport.Street : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? ", " + candidate.Passport.StreetNumber : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Building) ? " " + candidate.Passport.Building : string.Empty)
+                    + (!string.IsNullOrEmpty(candidate.Passport.Apartment) ? ", кв. " + candidate.Passport.Apartment : string.Empty);
+            }
+
+            if (candidate.PersonnelManagers != null)
+            {
+                model.EmploymentContractDate = candidate.PersonnelManagers.ContractDate;
+                model.EmploymentContractNumber = candidate.PersonnelManagers.ContractNumber;
+
+                if (candidate.PersonnelManagers.Signer != null)
+                {
+                    if (!string.IsNullOrEmpty(candidate.PersonnelManagers.Signer.Name))
+                    {
+                        string[] employerRepresentativeNameParts = candidate.PersonnelManagers.Signer.Name.Split(' ');
+                        if (employerRepresentativeNameParts.Length >= 2)
+                        {
+                            model.EmployerRepresentativeNameShortened = employerRepresentativeNameParts[0];
+                            for (int i = 1; i < employerRepresentativeNameParts.Length; i++)
+                            {
+                                model.EmployerRepresentativeNameShortened =
+                                    string.Format("{0}. {1}", employerRepresentativeNameParts[i][0], model.EmployerRepresentativeNameShortened);
+                            }
+                        }
+                    }
+
+                    model.EmployerRepresentativeTemplate = candidate.PersonnelManagers.Signer.PreamblePartyTemplate;
+                }
+            }
+
+            model.AgreementDate = DateTime.Now;
+
+            return model;
+        }
+
+        public PrintPersonalDataObligationModel GetPrintPersonalDataObligationModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintPersonalDataObligationModel model = new PrintPersonalDataObligationModel();
+
+            if (candidate.GeneralInfo != null)
+            {
+                model.EmployeeName = candidate.GeneralInfo.LastName + " " + candidate.GeneralInfo.FirstName + " " + candidate.GeneralInfo.Patronymic ?? string.Empty;
+                model.EmployeeNameShortened = candidate.GeneralInfo.LastName + " " +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.FirstName) ? candidate.GeneralInfo.FirstName[0] + "." : string.Empty) +
+                    (!string.IsNullOrEmpty(candidate.GeneralInfo.Patronymic) ? candidate.GeneralInfo.Patronymic[0] + "." : string.Empty);
+            }
+
+            return model;
+        }
+
+        public PrintEmploymentFileModel GetPrintEmploymentFileModel(int userId)
+        {
+            EmploymentCandidate candidate = GetCandidate(userId);
+            PrintEmploymentFileModel model = new PrintEmploymentFileModel();
+
+            #region BackgroundCheck
+            if (candidate.BackgroundCheck != null)
+            {
+                model.AutomobileLicensePlateNumber = candidate.BackgroundCheck.AutomobileLicensePlateNumber;
+                model.AutomobileMake = candidate.BackgroundCheck.AutomobileMake;
+                model.AverageSalary = candidate.BackgroundCheck.AverageSalary;
+                model.DriversLicenseCategories = candidate.BackgroundCheck.DriversLicenseCategories;
+                model.DriversLicenseDateOfIssue = candidate.BackgroundCheck.DriversLicenseDateOfIssue;
+                model.DriversLicenseNumber = candidate.BackgroundCheck.DriversLicenseNumber;
+                model.DrivingExperience = candidate.BackgroundCheck.DrivingExperience;
+                model.Hobbies = candidate.BackgroundCheck.Hobbies;
+                model.ImportantEvents = candidate.BackgroundCheck.ImportantEvents;
+                model.IsReadyForBusinessTrips = candidate.BackgroundCheck.IsReadyForBusinessTrips;
+                model.Liabilities = candidate.BackgroundCheck.Liabilities;
+                model.MilitaryOperationsExperience = candidate.BackgroundCheck.MilitaryOperationsExperience;
+                model.PositionSought = candidate.BackgroundCheck.PositionSought;
+                model.PreviousDismissalReason = candidate.BackgroundCheck.PreviousDismissalReason;
+                model.PreviousSuperior = candidate.BackgroundCheck.PreviousSuperior;
+                if (candidate.BackgroundCheck.References != null)
+                {
+                    foreach (var item in candidate.BackgroundCheck.References)
+                    {
+                        model.References.Add(new ReferenceDto
+                        {
+                            FirstName = item.FirstName,
+                            LastName = item.LastName,
+                            Patronymic = item.Patronymic,
+                            Phone = item.Phone,
+                            Position = item.Position,
+                            Relation = item.Relation,
+                            WorksAt = item.WorksAt
+                        });
+                    }
+                }
+                model.Sports = candidate.BackgroundCheck.Sports;
+            } 
+            #endregion
+
+            #region Contacts
+            if (candidate.Contacts != null)
+            {
+                model.ActualAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}{7}",
+                    string.IsNullOrEmpty(candidate.Contacts.ZipCode) ? (candidate.Contacts.ZipCode + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.District) ? (candidate.Contacts.District + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.City) ? (candidate.Contacts.City + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Contacts.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                );
+                model.PhoneNumbers = string.Format("{0}, {1}", candidate.Contacts.HomePhone, candidate.Contacts.Mobile);
+
+            } 
+            #endregion
+
+            #region Education
+            if (candidate.Education != null)
+            {
+                if (candidate.Education.Training != null)
+                {
+                    foreach (var item in candidate.Education.Training)
+                    {
+                        model.Training.Add(new TrainingDto
+                        {
+                            BeginningDate = item.BeginningDate,
+                            CertificateIssuedBy = item.CertificateIssuedBy,
+                            EndDate = item.EndDate,
+                            Number = item.Number,
+                            Series = item.Series,
+                            Speciality = item.Speciality
+                        });
+                    }
+                }
+                if (candidate.Education.HigherEducationDiplomas != null)
+                {
+                    foreach (var item in candidate.Education.HigherEducationDiplomas)
+                    {
+                        model.HigherEducationDiplomas.Add(new HigherEducationDiplomaDto
+                        {
+                            AdmissionYear = item.AdmissionYear,
+                            Department = item.Department,
+                            GraduationYear = item.GraduationYear,
+                            IssuedBy = item.IssuedBy,
+                            Number = item.Number,
+                            Profession = item.Profession,
+                            Qualification = item.Qualification,
+                            Series = item.Series,
+                            Speciality = item.Speciality
+                        });
+                    }
+                }
+
+            } 
+            #endregion
+
+            #region Experience
+            if (candidate.Experience != null)
+            {
+                if (candidate.Experience.ExperienceItems != null)
+                {
+                    foreach (var item in candidate.Experience.ExperienceItems)
+                    {
+                        model.ExperienceItems.Add(new ExperienceItemDto
+                        {
+                            BeginningDate = item.BeginningDate,
+                            Company = item.Company,
+                            CompanyContacts = item.CompanyContacts,
+                            EndDate = item.EndDate,
+                            Position = item.Position
+                        });
+                    }
+                }
+                foreach (var item in candidate.Experience.ExperienceItems)
+                {
+                    model.ExperienceItems.Add(new ExperienceItemDto
+                    {
+                        BeginningDate = item.BeginningDate,
+                        Company = item.Company,
+                        CompanyContacts = item.CompanyContacts,
+                        EndDate = item.EndDate,
+                        Position = item.Position
+                    });
+                }
+
+            } 
+            #endregion
+
+            #region Family
+            if (candidate.Family != null)
+            {
+                model.Cohabitants = candidate.Family.Cohabitants;
+                
+                if (candidate.Family.FamilyMembers != null)
+                {
+                    model.Father = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.FATHER)
+                    .ToList<FamilyMember>()
+                    .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                    {
+                        Contacts = x.Contacts,
+                        DateOfBirth = x.DateOfBirth,
+                        Name = x.Name,
+                        PassportData = x.PassportData,
+                        PlaceOfBirth = x.PlaceOfBirth,
+                        WorksAt = x.WorksAt
+                    })
+                    .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Mother = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.MOTHER)
+                        .ToList<FamilyMember>()
+                        .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                        {
+                            Contacts = x.Contacts,
+                            DateOfBirth = x.DateOfBirth,
+                            Name = x.Name,
+                            PassportData = x.PassportData,
+                            PlaceOfBirth = x.PlaceOfBirth,
+                            WorksAt = x.WorksAt
+                        })
+                        .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Spouse = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.SPOUSE)
+                        .ToList<FamilyMember>()
+                        .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                        {
+                            Contacts = x.Contacts,
+                            DateOfBirth = x.DateOfBirth,
+                            Name = x.Name,
+                            PassportData = x.PassportData,
+                            PlaceOfBirth = x.PlaceOfBirth,
+                            WorksAt = x.WorksAt
+                        })
+                        .FirstOrDefault<FamilyMemberDto>();
+
+                    model.Children = candidate.Family.FamilyMembers.Where<FamilyMember>(x => x.RelationshipId == FamilyRelationship.CHILD)
+                    .ToList<FamilyMember>()
+                    .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
+                    {
+                        Contacts = x.Contacts,
+                        DateOfBirth = x.DateOfBirth,
+                        Name = x.Name,
+                        PassportData = x.PassportData,
+                        PlaceOfBirth = x.PlaceOfBirth,
+                        WorksAt = x.WorksAt
+                    });
+                }
+                model.IsMarried = candidate.Family.FamilyMembers.Any(fm => fm.RelationshipId == FamilyRelationship.SPOUSE);
+
+            } 
+            #endregion
+
+            #region GeneralInfo
+            if (candidate.GeneralInfo != null)
+            {
+                model.DateOfBirth = candidate.GeneralInfo.DateOfBirth;
+                model.FirstName = candidate.GeneralInfo.FirstName;
+                if (candidate.GeneralInfo.ForeignLanguages != null)
+                {
+                    foreach (var item in candidate.GeneralInfo.ForeignLanguages)
+                    {
+                        model.ForeignLanguages.Add(new ForeignLanguageDto
+                        {
+                            LanguageName = item.LanguageName,
+                            Level = item.Level
+                        });
+                    }
+                }
+                if (candidate.GeneralInfo.NameChanges != null)
+                {
+                    foreach (var item in candidate.GeneralInfo.NameChanges)
+                    {
+                        model.NameChanges.Add(new NameChangeDto
+                        {
+                            Date = item.Date,
+                            Place = item.Place,
+                            Reason = item.Reason
+                        });
+                    }
+                }
+                model.IsMale = candidate.GeneralInfo.IsMale;
+                model.LastName = candidate.GeneralInfo.LastName;
+                model.Patronymic = candidate.GeneralInfo.Patronymic;
+                model.PlaceOfBirth = string.Format("{0}, {1}, {2}", candidate.GeneralInfo.RegionOfBirth, candidate.GeneralInfo.DistrictOfBirth, candidate.GeneralInfo.CityOfBirth);
+
+            } 
+            #endregion
+
+            #region Passport
+            if (candidate.Passport != null)
+            {
+                model.InternalPassportDateOfIssue = candidate.Passport.InternalPassportDateOfIssue;
+                model.InternalPassportIssuedBy = candidate.Passport.InternalPassportIssuedBy;
+                model.InternalPassportNumber = candidate.Passport.InternalPassportNumber;
+                model.InternalPassportSeries = candidate.Passport.InternalPassportSeries;
+                model.InternalPassportSubdivisionCode = candidate.Passport.InternalPassportSubdivisionCode;
+
+                model.InternationalPassportDateOfIssue = candidate.Passport.InternationalPassportDateOfIssue;
+                model.InternationalPassportIssuedBy = candidate.Passport.InternationalPassportIssuedBy;
+                model.InternationalPassportNumber = candidate.Passport.InternationalPassportNumber;
+                model.InternationalPassportSeries = candidate.Passport.InternationalPassportSeries;
+
+                model.RegistrationZipCode = candidate.Contacts.ZipCode;
+
+                model.RegistrationAddress = string.Format("{0}{1}{2}{3}{4}{5}{6}",
+                    string.IsNullOrEmpty(candidate.Passport.Region) ? (candidate.Contacts.Region + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.District) ? (candidate.Contacts.District + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.City) ? (candidate.Contacts.City + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Street) ? (candidate.Contacts.Street + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.StreetNumber) ? (candidate.Contacts.StreetNumber + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Building) ? (candidate.Contacts.Building + ", ") : string.Empty,
+                    string.IsNullOrEmpty(candidate.Passport.Apartment) ? (candidate.Contacts.Apartment) : string.Empty
+                );
+
+            } 
+            #endregion
+
+            return model;
+        }
+
+        public IList<CandidateDto> GetPrintRosterModel(RosterFiltersModel filters, int? sortBy, bool? sortDescending)
+        {
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IList<CandidateDto> model = null;
+
+            if (filters == null)
+            {
+                model = new List<CandidateDto>();
+            }
+            else
+            {
+                model = EmploymentCandidateDao.GetCandidates(current.Id,
+                    current.UserRole,
+                    filters != null ? filters.DepartmentId : 0,
+                    filters != null ? (filters.StatusId.HasValue ? filters.StatusId.Value : 0) : 0,
+                    filters != null ? filters.BeginDate : null,
+                    filters != null ? filters.EndDate : null,
+                    filters != null ? filters.UserName : null,
+                    filters.SortBy,
+                    filters.SortDescending);
+            }
+
             return model;
         }
 
@@ -941,7 +1500,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
         public void LoadDictionaries(OnsiteTrainingModel model)
         {
-            model.ApprovalStatuses = GetOnsiteTrainingStatuses();
+            //
         }
         public void LoadDictionaries(ManagersModel model)
         {
@@ -954,6 +1513,7 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             model.PersonalAccountContractors = GetPersonalAccountContractors();
             model.AccessGroups = GetAccessGroups();
+            model.Signers = GetSigners();
         }
         public void LoadDictionaries(RosterModel model)
         {
@@ -1102,6 +1662,11 @@ namespace Reports.Presenters.UI.Bl.Impl
             return AccessGroupDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Value);
         }
 
+        public IEnumerable<SelectListItem> GetSigners()
+        {
+            return EmploymentSignersDao.LoadAllSorted().ToList().ConvertAll(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name }).OrderBy(x => x.Text);
+        }        
+
         public IEnumerable<SelectListItem> GetEmploymentStatuses()
         {
             return new List<SelectListItem>
@@ -1125,15 +1690,6 @@ namespace Reports.Presenters.UI.Bl.Impl
             };
         }
 
-        public IEnumerable<SelectListItem> GetOnsiteTrainingStatuses()
-        {
-            return new List<SelectListItem>
-            {
-                new SelectListItem {Text = "Обучение пройдено", Value = "true"},
-                new SelectListItem {Text = "Обучение не пройдено", Value = "false"}
-            };
-        }
-
         #endregion
 
         #region Process Saving
@@ -1141,12 +1697,21 @@ namespace Reports.Presenters.UI.Bl.Impl
         public int? CreateCandidate(CreateCandidateModel model, out string error)
         {
             error = string.Empty;
-            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+            IUser current = AuthenticationService.CurrentUser;
+            User currentUser = UserDao.Load(current.Id);
             User onBehalfOfManager = model.OnBehalfOfManagerId.HasValue ? UserDao.Load(model.OnBehalfOfManagerId.Value) : null;
+            Department department = DepartmentDao.Load(model.DepartmentId);
 
-            if ((current.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
+            if ((currentUser.UserRole & (UserRole.Manager | UserRole.Chief | UserRole.Director)) == 0 && onBehalfOfManager == null)
             {
                 error = "Необходимо выбрать руководителя, от имени которого Вы добавляете кандидата.";
+                return null;
+            }
+
+            // Проверка прав руководителя на подразделение
+            if (!IsUserManagerForDepartment(department, onBehalfOfManager == null ? currentUser : onBehalfOfManager))
+            {
+                error = "Отсутствуют права на выбранное подразделение.";
                 return null;
             }
             
@@ -1159,15 +1724,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsNew = true,
                 Name = string.Empty,
                 RoleId = (int)UserRole.Candidate,
-                Department = DepartmentDao.Load(model.DepartmentId),
+                Department = department,
                 GivesCredit = false,
-                IsMainManager = false
+                IsMainManager = false,
+                IsFixedTermContract = model.IsFixedTermContract
             };
 
             EmploymentCandidate candidate = new EmploymentCandidate
             {
                 User = newUser,
-                AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : current,
+                AppointmentCreator = onBehalfOfManager != null ? onBehalfOfManager : currentUser,
                 QuestionnaireDate = DateTime.Now                
             };
             
@@ -1224,12 +1790,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 Candidate = candidate,
                 IsReadyForBusinessTrips = false,
-                IsFinal = false
+                IsFinal = false,
+                IsApprovalSkipped = false
             };
 
             candidate.OnsiteTraining = new OnsiteTraining
             {
-                Candidate = candidate
+                Candidate = candidate,
+                IsFinal = false
             };
 
             candidate.Managers = new Managers
@@ -1268,9 +1836,14 @@ namespace Reports.Presenters.UI.Bl.Impl
             try
             {
                 user = UserDao.Load(model.UserId);
-                    SetEntity<TVM, TE>(entity, model);
-                    EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
-                    SaveAttachments<TVM>(model);
+
+                if (!SetEntity<TVM, TE>(entity, model, out error))
+                {
+                    return false;
+                }
+                
+                EmploymentCommonDao.SaveOrUpdateDocument<TE>(entity);
+                SaveAttachments<TVM>(model);
             }
             catch (Exception)
             {
@@ -1297,6 +1870,21 @@ namespace Reports.Presenters.UI.Bl.Impl
             return true;
         }
 
+        public bool ProcessSaving(SignerDto itemToSave, out string error)
+        {
+            error = string.Empty;
+
+            Signer entity = EmploymentSignersDao.Get(itemToSave.Id) ?? new Signer();
+            entity.Name = itemToSave.Name;
+            entity.Position = itemToSave.Position;
+            entity.PreamblePartyTemplate = itemToSave.PreamblePartyTemplate;
+
+            EmploymentSignersDao.SaveAndFlush(entity);
+
+            return true;
+        }
+
+        #region SaveAttachments
         public void SaveAttachments<TVM>(TVM viewModel)
             where TVM : AbstractEmploymentModel
         {
@@ -1310,7 +1898,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case "PassportModel":
                     SavePassportAttachments(viewModel as PassportModel, candidateId);
                     break;
-                    
+
                 case "FamilyModel":
                     SaveFamilyAttachments(viewModel as FamilyModel, candidateId);
                     break;
@@ -1329,7 +1917,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 default:
                     break;
             }
-        }        
+        }
 
         protected void SaveGeneralInfoAttachments(GeneralInfoModel model, int candidateId)
         {
@@ -1370,7 +1958,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
         }
 
-        // TODO: SaveEducationAttachments
+        // TODO: EMPL SaveEducationAttachments
 
         protected void SaveFamilyAttachments(FamilyModel model, int candidateId)
         {
@@ -1380,7 +1968,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.MarriageCertificateScanAttachmentId, fileDto, RequestAttachmentTypeEnum.MarriageCertificateScan, out fileName);
             }
-            // TODO: Upload Child Birth Certificates
+            // TODO: EMPL Загрузка сканов свидетельств о рождении
         }
 
         protected void SaveMilitaryServiceAttachments(MilitaryServiceModel model, int candidateId)
@@ -1439,69 +2027,61 @@ namespace Reports.Presenters.UI.Bl.Impl
                 string fileName = string.Empty;
                 SaveAttachment(candidateId, model.ApplicationLetterScanAttachmentId, fileDto, RequestAttachmentTypeEnum.ApplicationLetterScan, out fileName);
             }
-        }
+        } 
+        #endregion
 
         #endregion        
 
         #region SetEntity
 
-        protected void SetEntity<TVM, TE>(TE entity, TVM viewModel)
+        protected bool SetEntity<TVM, TE>(TE entity, TVM viewModel, out string error)
         {
             switch (entity.GetType().Name)
             {
-                case "GeneralInfo":
-                    SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel);
-                    break;
-                case "Passport":
-                    SetPassportEntity(entity as Passport, viewModel as PassportModel);
-                    break;
-                case "Education":
-                    SetEducationEntity(entity as Education, viewModel as EducationModel);
-                    break;
-                case "Family":
-                    SetFamilyEntity(entity as Family, viewModel as FamilyModel);
-                    break;
-                case "MilitaryService":
-                    SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel);
-                    break;
-                case "Experience":
-                    SetExperienceEntity(entity as Experience, viewModel as ExperienceModel);
-                    break;
-                case "Contacts":
-                    SetContactsEntity(entity as Contacts, viewModel as ContactsModel);
-                    break;
-                case "BackgroundCheck":
-                    SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel);
-                    break;
-                //case "OnsiteTraining":
-                //    SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel);
-                //    break;
-                case "Managers":
-                    SetManagersEntity(entity as Managers, viewModel as ManagersModel);
-                    break;
-                case "PersonnelManagers":
-                    SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel);
-                    break;
+                case "GeneralInfo": return SetGeneralInfoEntity(entity as GeneralInfo, viewModel as GeneralInfoModel, out error);
+                case "Passport": return SetPassportEntity(entity as Passport, viewModel as PassportModel, out error);
+                case "Education": return SetEducationEntity(entity as Education, viewModel as EducationModel, out error);
+                case "Family": return SetFamilyEntity(entity as Family, viewModel as FamilyModel, out error);
+                case "MilitaryService": return SetMilitaryServiceEntity(entity as MilitaryService, viewModel as MilitaryServiceModel, out error);
+                case "Experience": return SetExperienceEntity(entity as Experience, viewModel as ExperienceModel, out error);
+                case "Contacts": return SetContactsEntity(entity as Contacts, viewModel as ContactsModel, out error);
+                case "BackgroundCheck": return SetBackgroundCheckEntity(entity as BackgroundCheck, viewModel as BackgroundCheckModel, out error);
+                //case "OnsiteTraining": return SetOnsiteTrainingEntity(entity as OnsiteTraining, viewModel as OnsiteTrainingModel, out error);
+                case "Managers": return SetManagersEntity(entity as Managers, viewModel as ManagersModel, out error);
+                case "PersonnelManagers": return SetPersonnelManagersEntity(entity as PersonnelManagers, viewModel as PersonnelManagersModel, out error);
                 default:
-                    break;
+                    error = "Неизвестный тип документа";
+                    return false;
             }            
         }
 
-        protected void SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel)
+        protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
-            entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
+            error = string.Empty;
+
+            if (viewModel.AgreedToPersonalDataProcessing)
+            {
+                entity.AgreedToPersonalDataProcessing = viewModel.AgreedToPersonalDataProcessing;
+            }
+            else
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.GeneralInfo = entity;
             entity.Citizenship = CountryDao.Load(viewModel.CitizenshipId);
             entity.CityOfBirth = viewModel.CityOfBirth;
             entity.DateOfBirth = viewModel.DateOfBirth;
-                        
+
             entity.DisabilityCertificateDateOfIssue = viewModel.DisabilityCertificateDateOfIssue;
             entity.DisabilityCertificateExpirationDate = viewModel.DisabilityCertificateExpirationDate;
             entity.DisabilityCertificateNumber = viewModel.DisabilityCertificateNumber;
             entity.DisabilityCertificateSeries = viewModel.DisabilityCertificateSeries;
             entity.DisabilityDegree = viewModel.DisabilityDegreeId.HasValue ? DisabilityDegreeDao.Load(viewModel.DisabilityDegreeId.Value) : null;
-            
+
             entity.DistrictOfBirth = viewModel.DistrictOfBirth;
             entity.FirstName = viewModel.FirstName;
 
@@ -1544,11 +2124,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Patronymic = viewModel.IsPatronymicAbsent ? String.Empty : viewModel.Patronymic;
             entity.RegionOfBirth = viewModel.RegionOfBirth;
             entity.SNILS = viewModel.SNILS;
-            entity.Status = viewModel.StatusId;            
+            entity.Status = viewModel.StatusId;
+            #endregion
+
+            return true;
         }
 
-        protected void SetPassportEntity(Passport entity, PassportModel viewModel)
+        protected bool SetPassportEntity(Passport entity, PassportModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
             entity.Candidate = GetCandidate(viewModel.UserId);
@@ -1571,10 +2163,22 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.ZipCode = viewModel.ZipCode;
+            #endregion
+
+            return true;
         }
 
-        protected void SetEducationEntity(Education entity, EducationModel viewModel)
+        protected bool SetEducationEntity(Education entity, EducationModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Education = entity;
 
@@ -1652,13 +2256,25 @@ namespace Reports.Presenters.UI.Bl.Impl
             }
 
             entity.IsFinal = !viewModel.IsDraft;
+            #endregion
+
+            return true;
         }
 
-        protected void SetFamilyEntity(Family entity, FamilyModel viewModel)
+        protected bool SetFamilyEntity(Family entity, FamilyModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Family = entity;
-            
+
             entity.Cohabitants = viewModel.Cohabitants;
 
             if (entity.FamilyMembers == null)
@@ -1707,37 +2323,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                 entity.FamilyMembers.Add(SetFamilyMember(new FamilyMember(), FamilyRelationship.CHILD, viewModel.Children[lastIndex]));
             }
 
-            entity.IsFinal = !viewModel.IsDraft;
-        }
+            entity.IsFinal = !viewModel.IsDraft; 
+            #endregion
 
-        protected FamilyMember GetFamilyMemberByRelationship(IList<FamilyMember> familyMembers, FamilyRelationship relationship)
+            return true;
+        }
+        
+        protected bool SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel, out string error)
         {
-            FamilyMember result = null;
-            for (var i = 0; i < familyMembers.Count; i++)
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
             {
-                if (familyMembers[i].RelationshipId == relationship)
-                {
-                    result = familyMembers[i];
-                    break;
-                }
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
             }
-            return result;
-        }
 
-        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
-        {
-            familyMember.Contacts = data.Contacts;
-            familyMember.DateOfBirth = data.DateOfBirth;
-            familyMember.Name = data.Name;
-            familyMember.PassportData = data.PassportData;
-            familyMember.PlaceOfBirth = data.PlaceOfBirth;
-            familyMember.WorksAt = data.WorksAt;
-            familyMember.RelationshipId = relationship;
-            return familyMember;
-        }
-
-        protected void SetMilitaryServiceEntity(MilitaryService entity, MilitaryServiceModel viewModel)
-        {
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.MilitaryService = entity;
             entity.CombatFitness = viewModel.CombatFitness;
@@ -1759,11 +2361,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.RegistrationExpiration = viewModel.RegistrationExpiration;
             entity.ReserveCategory = viewModel.ReserveCategory;
             entity.SpecialityCategory = viewModel.SpecialityCategory;
-            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo;
+            entity.SpecialMilitaryServiceRegistrationInfo = viewModel.SpecialMilitaryServiceRegistrationInfo; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetExperienceEntity(Experience entity, ExperienceModel viewModel)
+        protected bool SetExperienceEntity(Experience entity, ExperienceModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Experience = entity;
 
@@ -1786,14 +2400,26 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.IsFinal = !viewModel.IsDraft;
             entity.WorkBookDateOfIssue = viewModel.WorkBookDateOfIssue;
             entity.WorkBookNumber = viewModel.WorkBookNumber;
-            entity.WorkBookSeries = viewModel.WorkBookSeries;            
+            entity.WorkBookSeries = viewModel.WorkBookSeries;
             entity.WorkBookSupplementDateOfIssue = viewModel.WorkBookSupplementDateOfIssue;
             entity.WorkBookSupplementNumber = viewModel.WorkBookSupplementNumber;
-            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries;
+            entity.WorkBookSupplementSeries = viewModel.WorkBookSupplementSeries; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetContactsEntity(Contacts entity, ContactsModel viewModel)
+        protected bool SetContactsEntity(Contacts entity, ContactsModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.Apartment = viewModel.Apartment;
             entity.Building = viewModel.Building;
             entity.Candidate = GetCandidate(viewModel.UserId);
@@ -1808,11 +2434,23 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Street = viewModel.Street;
             entity.StreetNumber = viewModel.StreetNumber;
             entity.WorkPhone = viewModel.WorkPhone;
-            entity.ZipCode = viewModel.ZipCode;
+            entity.ZipCode = viewModel.ZipCode; 
+            #endregion
+
+            return true;
         }
 
-        protected void SetBackgroundCheckEntity(BackgroundCheck entity, BackgroundCheckModel viewModel)
+        protected bool SetBackgroundCheckEntity(BackgroundCheck entity, BackgroundCheckModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.AutomobileLicensePlateNumber = viewModel.AutomobileLicensePlateNumber;
             entity.AutomobileMake = viewModel.AutomobileMake;
             entity.AverageSalary = viewModel.AverageSalary;
@@ -1857,11 +2495,14 @@ namespace Reports.Presenters.UI.Bl.Impl
 
             entity.Smoking = viewModel.Smoking;
             entity.Sports = viewModel.Sports;
-            // TODO: Добавить проверку завершенности всех предыдущих документов
+            // TODO: EMPL Добавить проверку завершенности всех предыдущих документов
             if (entity.IsFinal)
             {
                 entity.Candidate.Status = EmploymentStatus.PENDING_APPROVAL_BY_SECURITY;
-            }
+            } 
+            #endregion
+
+            return true;
         }
 
         #region Deleted
@@ -1882,34 +2523,55 @@ namespace Reports.Presenters.UI.Bl.Impl
         */
         #endregion
 
-        protected void SetManagersEntity(Managers entity, ManagersModel viewModel)
+        protected bool SetManagersEntity(Managers entity, ManagersModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            User currentUser = UserDao.Get(AuthenticationService.CurrentUser.Id);
+            Department department = DepartmentDao.Get(viewModel.DepartmentId);            
+
+            // Проверка прав руководителя на подразделение
+            if (!IsUserManagerForDepartment(department, currentUser))
+            {
+                error = "Отсутствуют права на выбранное подразделение.";
+                return false;
+            }
+
             entity.Bonus = viewModel.Bonus;
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.Managers = entity;
-            entity.DailySalaryBasis = viewModel.DailySalaryBasis;
             entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
             entity.EmploymentConditions = viewModel.EmploymentConditions;            
-            entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
             entity.IsFront = viewModel.IsFront;
             entity.IsLiable = viewModel.IsLiable;
+            entity.IsSecondaryJob = viewModel.IsSecondaryJob;
             entity.PersonalAddition = viewModel.PersonalAddition;
             entity.Position = PositionDao.Load(viewModel.PositionId);
             entity.PositionAddition = viewModel.PositionAddition;
             entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
             entity.RequestNumber = viewModel.RequestNumber;
+            entity.SalaryBasis = viewModel.SalaryBasis;
             entity.SalaryMultiplier = viewModel.SalaryMultiplier;
             if (viewModel.ScheduleId.HasValue)
             {
                 entity.Schedule = ScheduleDao.Load(viewModel.ScheduleId.Value);
             }
             entity.WorkCity = viewModel.WorkCity;
+            
+            return true;
         }
-        
 
-        
-        protected void SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel)
+        protected bool SetPersonnelManagersEntity(PersonnelManagers entity, PersonnelManagersModel viewModel, out string error)
         {
+            error = string.Empty;
+
+            if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+            {
+                error = StrNotAgreedToPersonalDataProcessing;
+                return false;
+            }
+
+            #region SetEntityProps
             entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
             //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
             entity.AreaAddition = viewModel.AreaAddition;
@@ -1917,6 +2579,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.Candidate = GetCandidate(viewModel.UserId);
             entity.Candidate.PersonnelManagers = entity;
             entity.Candidate.User.Grade = viewModel.Grade;
+            entity.Candidate.User.Level = viewModel.Level;
             entity.CompetenceAddition = viewModel.CompetenceAddition;
             entity.ContractDate = viewModel.ContractDate;
             entity.ContractNumber = viewModel.ContractNumber;
@@ -1927,15 +2590,57 @@ namespace Reports.Presenters.UI.Bl.Impl
             entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
             entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
             entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+            entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
             entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
             entity.OverallExperienceDays = viewModel.OverallExperienceDays;
             entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
             entity.OverallExperienceYears = viewModel.OverallExperienceYears;
             entity.PersonalAccount = viewModel.PersonalAccount;
             entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+            entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
             entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+            if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
+            {
+                entity.SupplementaryAgreements[0].CreateDate = viewModel.SupplementaryAgreementCreateDate;
+                entity.SupplementaryAgreements[0].Number = viewModel.SupplementaryAgreementNumber;
+                entity.SupplementaryAgreements[0].OrderCreateDate = viewModel.ChangeContractToIndefiniteOrderCreateDate;
+                entity.SupplementaryAgreements[0].OrderNumber = viewModel.ChangeContractToIndefiniteOrderNumber;
+            }
+            #endregion
+
+            return true;
         }
-        
+
+        #endregion
+
+        #region SetEntityHelpers
+
+        protected FamilyMember GetFamilyMemberByRelationship(IList<FamilyMember> familyMembers, FamilyRelationship relationship)
+        {
+            FamilyMember result = null;
+            for (var i = 0; i < familyMembers.Count; i++)
+            {
+                if (familyMembers[i].RelationshipId == relationship)
+                {
+                    result = familyMembers[i];
+                    break;
+                }
+            }
+            return result;
+        }
+
+        protected FamilyMember SetFamilyMember(FamilyMember familyMember, FamilyRelationship relationship, FamilyMemberDto data)
+        {
+            familyMember.Contacts = data.Contacts;
+            familyMember.DateOfBirth = data.DateOfBirth;
+            familyMember.Name = data.Name;
+            familyMember.PassportData = data.PassportData;
+            familyMember.PlaceOfBirth = data.PlaceOfBirth;
+            familyMember.WorksAt = data.WorksAt;
+            familyMember.RelationshipId = relationship;
+            return familyMember;
+        }
+
         protected EmploymentCandidate GetCandidate(int userId)
         {
             return EmploymentCommonDao.GetCandidateByUserId(userId);
@@ -1977,7 +2682,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
         #region Approve
 
-        public bool ApproveBackgroundCheck(int userId, bool? approvalStatus, out string error)
+        public bool ApproveBackgroundCheck(int userId, bool IsApprovalSkipped, bool? approvalStatus, out string error)
         {
             error = string.Empty;
 
@@ -1992,13 +2697,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity != null)
                 {
-                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY)
-                    {
+                    if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && !IsApprovalSkipped)
+                    {                            
                         entity.ApprovalStatus = approvalStatus;
                         entity.Approver = UserDao.Get(current.Id);
                         if (approvalStatus == true)
                         {
-                            entity.Candidate.Status = EmploymentStatus.PENDING_REPORT_BY_TRAINER;
+                            entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
                         }
                         else if (approvalStatus == false)
                         {
@@ -2007,6 +2712,18 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
                         {
                             error = "Ошибка согласования.";
+                            return false;
+                        }
+                        return true;
+                    }
+                    else if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_SECURITY && IsApprovalSkipped)
+                    {
+                        entity.ApprovalStatus = approvalStatus;
+                        entity.Approver = UserDao.Get(current.Id);
+                        entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
+                        if (!EmploymentCommonDao.SaveOrUpdateDocument<BackgroundCheck>(entity))
+                        {
+                            error = "Ошибка изменения статуса.";
                             return false;
                         }
                         return true;
@@ -2047,19 +2764,22 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity = new OnsiteTraining();
                     entity.Candidate = GetCandidate(viewModel.UserId);
                 }
-                if (entity.Candidate.Status == EmploymentStatus.PENDING_REPORT_BY_TRAINER)
-                {
-                    entity.BeginningDate = viewModel.BeginningDate;                    
-                    entity.Candidate.OnsiteTraining = entity;
-                    entity.Comments = viewModel.Comments;
-                    entity.Description = viewModel.Description;
-                    entity.EndDate = viewModel.EndDate;
-                    entity.IsComplete = viewModel.IsComplete;
-                    entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
-                    entity.Results = viewModel.Results;
-                    entity.Type = viewModel.Type;
 
-                    entity.Approver = UserDao.Get(current.Id);
+                entity.BeginningDate = viewModel.BeginningDate;
+                entity.Candidate.OnsiteTraining = entity;
+                entity.Comments = viewModel.Comments;
+                entity.Description = viewModel.Description;
+                entity.EndDate = viewModel.EndDate;
+                entity.IsComplete = viewModel.IsComplete;
+                entity.ReasonsForIncompleteTraining = viewModel.ReasonsForIncompleteTraining;
+                entity.Results = viewModel.Results;
+                entity.Type = viewModel.Type;
+                entity.IsFinal = !viewModel.IsDraft;
+
+                entity.Approver = UserDao.Get(current.Id);
+
+                #region Удалено. Причина: согласование тренером больше не является обязательным этапом приема и не влияет на последовательность смены статусов
+                /*
                     if (viewModel.IsComplete == true)
                     {
                         entity.Candidate.Status = EmploymentStatus.PENDING_APPLICATION_LETTER;
@@ -2067,18 +2787,16 @@ namespace Reports.Presenters.UI.Bl.Impl
                     else if (viewModel.IsComplete == false)
                     {
                         entity.Candidate.Status = EmploymentStatus.REJECTED;
-                    }
-                    if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
-                    {
-                        error = "Ошибка сохранения.";
-                        return false;
-                    }
-                    return true;
-                }
-                else
+                    }*/
+
+                #endregion
+
+                if (!EmploymentCommonDao.SaveOrUpdateDocument<OnsiteTraining>(entity))
                 {
-                    error = "Невозможно сохранить документ на данном этапе.";
+                    error = "Ошибка сохранения.";
+                    return false;
                 }
+                return true;
             }
             else
             {
@@ -2092,7 +2810,6 @@ namespace Reports.Presenters.UI.Bl.Impl
         {
             error = string.Empty;
 
-            // TODO: Добавить реализацию
             IUser current = AuthenticationService.CurrentUser;
             if ((current.UserRole & UserRole.Manager) == UserRole.Manager)
             {
@@ -2114,10 +2831,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.Bonus = viewModel.Bonus;
                         entity.Candidate = GetCandidate(viewModel.UserId);
                         entity.Candidate.Managers = entity;
-                        entity.DailySalaryBasis = viewModel.DailySalaryBasis;
                         entity.Department = DepartmentDao.Load(viewModel.DepartmentId);
                         entity.EmploymentConditions = viewModel.EmploymentConditions;
-                        entity.HourlySalaryBasis = viewModel.HourlySalaryBasis;
                         entity.IsFront = viewModel.IsFront;
                         entity.IsLiable = viewModel.IsLiable;
                         entity.PersonalAddition = viewModel.PersonalAddition;
@@ -2125,6 +2840,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         entity.PositionAddition = viewModel.PositionAddition;
                         entity.ProbationaryPeriod = viewModel.ProbationaryPeriod;
                         entity.RequestNumber = viewModel.RequestNumber;
+                        entity.SalaryBasis = viewModel.SalaryBasis;
                         entity.SalaryMultiplier = viewModel.SalaryMultiplier;
                         entity.Schedule = viewModel.ScheduleId.HasValue ? ScheduleDao.Load(viewModel.ScheduleId.Value) : null;
                         entity.WorkCity = viewModel.WorkCity;
@@ -2141,6 +2857,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             entity.ManagerApprovalStatus = false;
                         }
                         entity.ApprovingManager = entity.Candidate.AppointmentCreator;
+                        entity.ManagerApprovalDate = DateTime.Now;
                         if (!EmploymentCommonDao.SaveOrUpdateDocument<Managers>(entity))
                         {
                             error = "Ошибка сохранения.";
@@ -2190,6 +2907,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (entity.Candidate.Status == EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER)
                     {                        
                         entity.ApprovingHigherManager = current;
+                        entity.HigherManagerApprovalDate = DateTime.Now;
                         if (approvalStatus == true)
                         {
                             entity.Candidate.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
@@ -2228,11 +2946,13 @@ namespace Reports.Presenters.UI.Bl.Impl
         public bool SavePersonnelManagersReport(PersonnelManagersModel viewModel, out string error)
         {
             error = string.Empty;
-
+            
             IUser current = AuthenticationService.CurrentUser;
             if ((current.UserRole & UserRole.PersonnelManager) == UserRole.PersonnelManager)
             {
                 PersonnelManagers entity = null;
+                EmploymentCandidate candidate = GetCandidate(viewModel.UserId);
+
                 int? id = EmploymentCommonDao.GetDocumentId<PersonnelManagers>(viewModel.UserId);
                 if (id.HasValue)
                 {
@@ -2240,10 +2960,19 @@ namespace Reports.Presenters.UI.Bl.Impl
                 }
                 if (entity == null)
                 {
-                    entity = new PersonnelManagers();
+                    entity = new PersonnelManagers { Candidate = candidate };
                 }
 
-                if (GetCandidate(viewModel.UserId).Status == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER)
+                if (entity.Candidate.GeneralInfo == null || !entity.Candidate.GeneralInfo.AgreedToPersonalDataProcessing)
+                {
+                    error = StrNotAgreedToPersonalDataProcessing;
+                    return false;
+                }
+
+                EmploymentStatus candidateStatus = candidate.Status;
+
+                if (candidateStatus == EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER
+                    || candidateStatus == EmploymentStatus.COMPLETE)
                 {
                     entity.AccessGroup = AccessGroupDao.Load(viewModel.AccessGroupId);
                     //entity.ApprovedByPersonnelManager = viewModel.ApprovedByPersonnelManager;
@@ -2252,8 +2981,10 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Candidate = GetCandidate(viewModel.UserId);
                     entity.Candidate.PersonnelManagers = entity;
                     entity.Candidate.User.Grade = viewModel.Grade;
+                    entity.Candidate.User.Level = viewModel.Level;
                     entity.CompetenceAddition = viewModel.CompetenceAddition;
                     entity.ContractDate = viewModel.ContractDate;
+                    entity.ContractEndDate = viewModel.ContractEndDate;
                     entity.ContractNumber = viewModel.ContractNumber;
                     entity.EmploymentDate = viewModel.EmploymentDate;
                     entity.EmploymentOrderDate = viewModel.EmploymentOrderDate;
@@ -2262,13 +2993,23 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.InsurableExperienceDays = viewModel.InsurableExperienceDays;
                     entity.InsurableExperienceMonths = viewModel.InsurableExperienceMonths;
                     entity.InsurableExperienceYears = viewModel.InsurableExperienceYears;
+                    entity.IsHourlySalaryBasis = viewModel.IsHourlySalaryBasis;
                     entity.NorthernAreaAddition = viewModel.NorthernAreaAddition;
                     entity.OverallExperienceDays = viewModel.OverallExperienceDays;
                     entity.OverallExperienceMonths = viewModel.OverallExperienceMonths;
                     entity.OverallExperienceYears = viewModel.OverallExperienceYears;
                     entity.PersonalAccount = viewModel.PersonalAccount;
                     entity.PersonalAccountContractor = PersonalAccountContractorDao.Load(viewModel.PersonalAccountContractorId);
+                    entity.Signer = EmploymentSignersDao.Load(viewModel.SignerId);
                     entity.TravelRelatedAddition = viewModel.TravelRelatedAddition;
+
+                    if (entity.SupplementaryAgreements != null && entity.SupplementaryAgreements.Count > 0)
+                    {
+                        entity.SupplementaryAgreements[0].CreateDate = viewModel.SupplementaryAgreementCreateDate;
+                        entity.SupplementaryAgreements[0].Number = viewModel.SupplementaryAgreementNumber;
+                        entity.SupplementaryAgreements[0].OrderCreateDate = viewModel.ChangeContractToIndefiniteOrderCreateDate;
+                        entity.SupplementaryAgreements[0].OrderNumber = viewModel.ChangeContractToIndefiniteOrderNumber;
+                    }
 
                     //entity.Approver = UserDao.Get(current.Id);
                     entity.Candidate.Status = EmploymentStatus.COMPLETE;
@@ -2315,7 +3056,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Status = EmploymentStatus.PENDING_APPROVAL_BY_HIGHER_MANAGER;
                     entity.Managers.ApprovingManager = current;
                     entity.Managers.ManagerApprovalStatus = true;
-                    EmploymentCandidateDao.SaveAndFlush(entity);
+                    EmploymentCandidateDao.Save(entity);
                 }
 
                 entities = EmploymentCandidateDao.LoadForIdsList(idsToApproveByHigherManager).ToList();
@@ -2324,8 +3065,9 @@ namespace Reports.Presenters.UI.Bl.Impl
                     entity.Status = EmploymentStatus.PENDING_FINALIZATION_BY_PERSONNEL_MANAGER;
                     entity.Managers.ApprovingHigherManager = current;
                     entity.Managers.HigherManagerApprovalStatus = true;
-                    EmploymentCandidateDao.SaveAndFlush(entity);
+                    EmploymentCandidateDao.Save(entity);
                 }
+                EmploymentCandidateDao.Flush();
             }
 
             
@@ -2334,6 +3076,43 @@ namespace Reports.Presenters.UI.Bl.Impl
         }
 
         #endregion
+
+        public bool SaveContractChangesToIndefinite(IList<CandidateChangeContractToIndefiniteDto> roster, out string error)
+        {
+            error = string.Empty;
+
+            IList<int> idsToChangeContractToIndefinite;
+
+            User current = UserDao.Load(AuthenticationService.CurrentUser.Id);
+
+            if (roster != null && ((current.UserRole & UserRole.Manager) == UserRole.Manager ||
+                                          (current.UserRole & UserRole.Chief) == UserRole.Chief ||
+                                          (current.UserRole & UserRole.Director) == UserRole.Director))
+            {
+                idsToChangeContractToIndefinite = roster.Where(x => x.IsContractChangedToIndefinite == true).Select(x => x.Id).ToList();
+
+                List<EmploymentCandidate> entities = EmploymentCandidateDao.LoadForIdsList(idsToChangeContractToIndefinite).ToList();
+                foreach (EmploymentCandidate entity in entities)
+                {
+                    if (entity.PersonnelManagers == null)
+                    {
+                        entity.PersonnelManagers = new PersonnelManagers { Candidate = entity };
+                    }
+
+                    if (entity.PersonnelManagers.SupplementaryAgreements.Count == 0)
+                    {
+                        entity.PersonnelManagers.SupplementaryAgreements.Add(new SupplementaryAgreement { PersonnelManagers = entity.PersonnelManagers });
+                        EmploymentCandidateDao.Save(entity);
+                    }
+
+                    entity.User.IsFixedTermContract = true;
+                    entity.PersonnelManagers.ContractEndDate = null;
+                }
+                EmploymentCandidateDao.Flush();
+            }
+
+            return true;
+        }
 
         public bool IsCurrentUserChiefForCreator(User current, User creator)
         {
@@ -2393,6 +3172,12 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 return "Roster";
             }
+        }
+
+        public bool IsFixedTermContract(int userId)
+        {
+            User user = UserDao.Get(userId);
+            return user != null && user.IsFixedTermContract.HasValue && user.IsFixedTermContract.Value;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
     public class ExperienceModel : AbstractEmploymentModel
     {
         [Display(Name = "Трудовая деятельность")]
-        public IList<ExperienceItemDto> ExperienceItems { get; set; } // TODO: EMPL Кнопка добавления записей
+        public IList<ExperienceItemDto> ExperienceItems { get; set; }
 
         [Display(Name = "Серия"),
             StringLength(20, ErrorMessage = "Не более 20 знаков.")]

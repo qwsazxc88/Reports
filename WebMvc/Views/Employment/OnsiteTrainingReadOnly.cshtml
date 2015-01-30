@@ -41,6 +41,14 @@
     </tr>
     <tr>
         <td>
+            @Html.LabelFor(m => m.Results)
+        </td>
+        <td>
+            <span class="fakeFormField">@Html.DisplayFor(m => m.Results)</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
             @Html.LabelFor(m => m.IsComplete)
         </td>
         <td>
@@ -54,19 +62,10 @@
         <td>
             <span class="fakeFormField">@Html.DisplayFor(m => m.ReasonsForIncompleteTraining)</span>
         </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(m => m.Results)
-        </td>
-        <td>
-            <span class="fakeFormField">@Html.DisplayFor(m => m.Results)</span>
-        </td>
-    </tr>
-        
+    </tr>            
     <tr>
         <td colspan="2">
-            @if (Model.ApprovalStatus != null)
+            @if (Model.IsComplete != null)
             {
                 <text>Тренер: </text><span class="fakeFormField">@Model.ApproverName</span>
             }
@@ -89,6 +88,6 @@
 <script  type="text/javascript">
     $(document).ready(function () {
         setActiveMenuItem("empOnsiteTraining");
-        attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#BeginningDate, #EndDate'), "-1:+1", true);
     });
 </script>
