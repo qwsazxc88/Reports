@@ -25,8 +25,7 @@ namespace WebMvc.Controllers
     /// Контролер для ГПД.
     /// </summary>
     [PreventSpamAttribute]
-    [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.Accountant | UserRole.OutsourcingManager |
-        UserRole.Director | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+    [ReportAuthorize(UserRole.Accountant | UserRole.OutsourcingManager)]
 
     public class GPDController : BaseController
     {
