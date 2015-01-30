@@ -51,7 +51,7 @@ namespace Reports.Presenters.UI.ViewModel
         [DisplayFormat(DataFormatString = "{0:### ### ### ###.##}", ApplyFormatInEditMode = true)]
         public decimal AmountPayment { get; set; }
 
-        [Display(Name = "Дата платежного поручения")]
+        [Display(Name = "Дата начисления")]
         [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         public System.DateTime? POrderDate { get; set; }
 
