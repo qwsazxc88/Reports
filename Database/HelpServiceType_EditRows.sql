@@ -6,7 +6,7 @@ UPDATE HelpServiceType SET Name = N'Справка с места работы с указанием должности
 
 --добавляем новые строки часть по шаблону строки с id = 3, а другая по шаблону записи с id = 1
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Заявление на имущественный вычет' as Name, 7 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
+SELECT N'Заявление на налоговый вычет' as Name, 7 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
 SELECT N'Справка для центра занятости' as Name, 8 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
@@ -29,6 +29,9 @@ SELECT N'Выписка из кадрового приказа' as Name, 13 as SortOrder, IsPeriodAvailab
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
 SELECT N'Пакет документов для кассира' as Name, 14 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
 
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Пакет документов для пособия на ребенка' as Name, 15 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+
 
 --меняем сортировку по алфавиту
 UPDATE HelpServiceType SET SortOrder = 0
@@ -47,3 +50,4 @@ select * from HelpServiceType order by SortOrder
 
 --в справочнике способов передачи (HelpServiceTransferMethod) редактируем записи
 UPDATE HelpServiceTransferMethod SET Name = N'ИнфоУслуги' WHERE Id = 1
+

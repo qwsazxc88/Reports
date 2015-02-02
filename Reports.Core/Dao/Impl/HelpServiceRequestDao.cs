@@ -234,10 +234,10 @@ namespace Reports.Core.Dao.Impl
                     //return sqlQueryPart;
                 case UserRole.PersonnelManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (2, 4, 5) ";
+                    return @"  v.[TypeId] in (2, 3, 4, 5, 7, 8, 10, 11) ";
                 case UserRole.ConsultantOutsorsingManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6) ";
+                    return @"  v.[TypeId] in (1, 3, 6, 9, 12, 13, 14, 15) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
