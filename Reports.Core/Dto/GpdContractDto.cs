@@ -104,6 +104,7 @@ namespace Reports.Core.Dto
         public int PaymentPeriodID { get; set; }
         public decimal Amount { get; set; }
         public bool flgRed { get; set; }
+        public System.DateTime? SendTo1C { get; set; }
     }
     /// <summary>
     /// Список реквизитов.

@@ -358,7 +358,8 @@ namespace Reports.Core.Dao.Impl
 
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
                 AddScalar("Amount", NHibernateUtil.Decimal).
-                AddScalar("flgRed", NHibernateUtil.Boolean);
+                AddScalar("flgRed", NHibernateUtil.Boolean).
+                AddScalar("SendTo1C", NHibernateUtil.DateTime);
         }
         /// <summary>
         /// Достаем уровень подразделения.
