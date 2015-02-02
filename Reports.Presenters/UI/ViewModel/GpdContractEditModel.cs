@@ -135,6 +135,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsLong { get; set; }
         public int Operation { get; set; }
         public bool flgRed { get; set; }
+        public System.DateTime? SendTo1C { get; set; }
 
         //права
         public IList<GpdPermissionDto> Permissions { get; set; }

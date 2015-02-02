@@ -595,6 +595,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     //model.DSID = doc.DSID;
                     model.PurposePaymentPart = doc.PurposePaymentPart;
                     model.flgRed = doc.flgRed;
+                    model.SendTo1C = doc.SendTo1C;
                 }
             }
             else
@@ -840,11 +841,11 @@ namespace Reports.Presenters.UI.Bl.Impl
                 if (model.PaymentPeriodID == 0)
                     ms.AddModelError("PaymentPeriodID", "Укажите срок оплаты!");
 
-                if (model.GPDID == null)
-                    ms.AddModelError("GPDID", "Заполните поле 'ID физического лица (ГПД) в ЭССД'!");
+                //if (model.GPDID == null)
+                //    ms.AddModelError("GPDID", "Заполните поле 'ID физического лица (ГПД) в ЭССД'!");
 
-                if (model.GPDContractID == null)
-                    ms.AddModelError("GPDContractID", "Заполните поле 'ID договора с физ. лицом (ГПД) в ЭССД'!");
+                //if (model.GPDContractID == null)
+                //    ms.AddModelError("GPDContractID", "Заполните поле 'ID договора с физ. лицом (ГПД) в ЭССД'!");
 
                 if (model.PurposePayment == null)
                     ms.AddModelError("PurposePayment", "Заполните поле 'Назначение платежа'!");
@@ -936,7 +937,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         gpdContract.DepartmentId = model.DepartmentId;
                         gpdContract.PersonID = model.PersonID;
                         gpdContract.CTID = model.CTID;
-                        gpdContract.StatusID = model.StatusID;
+                        gpdContract.StatusID = model.SendTo1C.HasValue ? 1 : model.StatusID;
                         gpdContract.NumContract = model.NumContract;
                         gpdContract.NameContract = model.NameContract;
                         gpdContract.DateBegin = model.DateBegin.Value;
@@ -956,6 +957,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                         {
                             gpdContract.DateP = model.DateP.Value;
                             gpdContract.IsLong = true;
+                            //gpdContract.StatusID = model.StatusID;
                         }
                         else
                             gpdContract.IsLong = false;
