@@ -1173,7 +1173,8 @@ SELECT A.Id as [Id], A.CreatorID, A.DepartmentId, G.Name AS DepartmentName,
 			 --null as PayeeContractor,
 			 J.ContractorName as PayeeContractor,--новое поле
 			 A.PaymentPeriodID, A.Amount, A.PAccountID, H.PersonAccount as Account,
-			 H.Name + case when H.PersonAccount is not null then ' (лицевой счет: ' + H.PersonAccount else ' (расчетный счет: ' + H.Account end + ')' as PersonAccount
+			 H.Name + case when H.PersonAccount is not null then ' (лицевой счет: ' + H.PersonAccount else ' (расчетный счет: ' + H.Account end + ')' as PersonAccount,
+			 A.SendTo1C
 FROM dbo.GpdContract AS A 
 		 LEFT JOIN dbo.RefPeople AS B ON B.Id = A.PersonID 
 		 LEFT JOIN dbo.GpdChargingType AS C ON C.Id = A.CTID 
