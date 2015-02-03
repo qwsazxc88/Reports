@@ -107,8 +107,15 @@
          <div class="podmenu">    
             @if (UserDto.IsHelpServiceAvailable(dto))
             {
-                <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
-                <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Задать вопрос", "ServiceQuestionsList", "Help")</div> 
+                if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+                {
+                    <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
+                }
+                else 
+                {
+                    <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
+                    <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Задать вопрос", "ServiceQuestionsList", "Help")</div> 
+                }
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>
             }
             else if (UserDto.IsHelpQuestionAvailable(dto))
