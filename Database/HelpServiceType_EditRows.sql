@@ -6,7 +6,7 @@ UPDATE HelpServiceType SET Name = N'Справка с места работы с указанием должности
 
 --добавляем новые строки часть по шаблону строки с id = 3, а другая по шаблону записи с id = 1
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Заявление на налоговый вычет' as Name, 7 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
+SELECT N'Заявление на налоговый вычет (стандартный) с пакетом подтверждающих документов' as Name, 7 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
 SELECT N'Справка для центра занятости' as Name, 8 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
@@ -24,14 +24,25 @@ INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsA
 SELECT N'Справка для визы с места работы' as Name, 12 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Выписка из кадрового приказа' as Name, 13 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+SELECT N'Выписка из кадрового приказа' as Name, 13 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Пакет документов для кассира' as Name, 14 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+SELECT N'Пакет документов для кассира' as Name, 14 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Пакет документов для пособия на ребенка' as Name, 15 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+SELECT N'Пакет документов для оформления пособия на ребенка сотруднику Банка' as Name, 15 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Справка с места работы по образцу Клиента' as Name, 16 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
+
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Справка о невыплате единовременного пособия при рождении ребенка' as Name, 17 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Справка о ненахождении в отпуске по уходу за ребенком до 1,5 лет и о неначислении ежемесячного пособия до 1,5 лет' as Name, 18 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
+
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Справка о ненахождении в отпуске по уходу за ребенком до 3 лет и о неначислении ежемесячного пособия до 3 лет' as Name, 19 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 1
 
 --меняем сортировку по алфавиту
 UPDATE HelpServiceType SET SortOrder = 0

@@ -384,6 +384,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                             && entity.BeginWorkDate.HasValue && !entity.EndWorkDate.HasValue)
                         {
                             model.IsEndWorkAvailable = true;
+                            model.IsNotEndWorkAvailable = true;
                             model.IsConsultantOutsourcingEditable = true;
                             model.IsSaveAvailable = true;
                         }
@@ -400,6 +401,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             model.IsEditable = state;
             model.IsEndAvailable = state;
             model.IsEndWorkAvailable = state;
+            model.IsNotEndWorkAvailable = state;
             model.IsSaveAvailable = state;
             model.IsSendAvailable = state;
             model.IsConsultantOutsourcingEditable = state;
@@ -743,6 +745,12 @@ namespace Reports.Presenters.UI.Bl.Impl
                         if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
                             && model.Operation == 3 && entity.BeginWorkDate.HasValue)
                             entity.EndWorkDate = DateTime.Now;
+                        if (entity.Consultant != null && entity.Consultant.Id == currUser.Id
+                            && model.Operation == 6 && entity.BeginWorkDate.HasValue)
+                        {
+                            entity.EndWorkDate = DateTime.Now;
+                            entity.NotEndWorkDate = DateTime.Now;
+                        }
                     }
                     break;
                 case UserRole.PersonnelManager:
