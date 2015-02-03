@@ -24,10 +24,10 @@ INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsA
 SELECT N'Справка для визы с места работы' as Name, 12 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Выписка из кадрового приказа' as Name, 13 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
+SELECT N'Выписка из кадрового приказа' as Name, 13 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, 0 FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Пакет документов для кассира' as Name, 14 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
+SELECT N'Пакет документов для кассира' as Name, 14 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, 0 FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
 SELECT N'Пакет документов для оформления пособия на ребенка сотруднику Банка' as Name, 15 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
