@@ -11,6 +11,7 @@
     <property name="EndWorkDate" not-null="false"/>
     <property name="ConfirmWorkDate" not-null="false"/>
     <property name="RejectWorkDate" not-null="false"/>
+    <property name="NotEndWorkDate" not-null="false"/>
     <property name="Number"  not-null="true"/>
     <property name="Address"  not-null="false"/>
 	  

@@ -33,6 +33,7 @@
                     <input type="hidden" id="IsEndAvailable" name="IsEndAvailable" value="@Model.IsEndAvailable" />
                     <input type="hidden" id="IsBeginWorkAvailable" name="IsBeginWorkAvailable" value="@Model.IsBeginWorkAvailable" />
                     <input type="hidden" id="IsEndWorkAvailable" name="IsEndWorkAvailable" value="@Model.IsEndWorkAvailable" />
+                    <input type="hidden" id="IsNotEndWorkAvailable" name="IsNotEndWorkAvailable" value="@Model.IsNotEndWorkAvailable" />
                     <input type="hidden" id="IsConsultantOutsourcingEditable" name="IsConsultantOutsourcingEditable" value="@Model.IsConsultantOutsourcingEditable" />
 
                     <input type="hidden" id="IsAttachmentVisible" name="IsAttachmentVisible" value="@Model.IsAttachmentVisible" />
@@ -143,9 +144,14 @@
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
                                                                                            {<text>style="display:none"</text>}/>
+                   @if (Model.IsAttachmentVisible)
+                   {
+                        <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
+                   }
               
                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Услугой не удовлетворен(а), повторить запрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
                                                                                               {<text>style="display:none"</text>}/>
+
                 </td>
             </tr>
         </table>
@@ -209,6 +215,12 @@
         $("#Operation").val(5);
         return true;
     }
+    function NotEndWork()
+    {
+        $("#Operation").val(6);
+        return true;
+    }
+
     function IsFieldNotEmpty(control)
     {
         clearControlErrors(control);
