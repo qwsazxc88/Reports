@@ -575,6 +575,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                     model.DocumentNumber = entity.Number.ToString();
                     model.DateCreated = entity.CreateDate.ToShortDateString();
                     model.Creator = entity.Creator.FullName;
+                    if (fileDto != null && entity.Type.IsAttachmentAvailable)
+                        ChangeEntityProperties(entity, model, fileDto, currUser, out error);//если создается черновик, то цепляем файл образца
                 }
                 else
                 {
@@ -643,7 +645,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                                     ? model.PeriodId.HasValue ? helpServicePeriodDao.Load(model.PeriodId.Value) : null
                                     : null;
                 entity.Address = model.Address;
-                if(fileDto != null && entity.Type.IsAttachmentAvailable)
+                if(fileDto != null && entity.Type.IsAttachmentAvailable && entity.Id != 0)
                 {
                     RequestAttachment attachment = new RequestAttachment
                                                        {
