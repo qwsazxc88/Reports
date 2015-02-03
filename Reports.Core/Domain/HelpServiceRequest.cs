@@ -16,6 +16,7 @@ namespace Reports.Core.Domain
         public virtual DateTime? EndWorkDate { get; set; }
         public virtual DateTime? ConfirmWorkDate { get; set; }
         public virtual DateTime? RejectWorkDate { get; set; }
+        public virtual DateTime? NotEndWorkDate { get; set; }
         
         public virtual int Number { get; set; }
 
