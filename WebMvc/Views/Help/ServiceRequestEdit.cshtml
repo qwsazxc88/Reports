@@ -144,7 +144,7 @@
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Услуга сформирована" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
                                                                                            {<text>style="display:none"</text>}/>
-                   @if (Model.IsRequirementsVisible)
+                   @if (Model.IsAttachmentVisible)
                    {
                         <input type="submit" value="Закрыть услугу" onclick="return NotEndWork();" @if (!Model.IsNotEndWorkAvailable){<text>style="display:none"</text>}/>
                    }
