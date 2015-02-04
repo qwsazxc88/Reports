@@ -217,8 +217,8 @@
     var actionDepUrl = "@Url.Action("GetChildren", "Home")";    
     var actionDepDialogUrl = "@Url.Action("DepartmentDialog", "Home")";
     $(document).ready(function () {
-        $("#DateBegin").datepicker();
-        $("#DateEnd").datepicker();
+        $("#DateBegin").datepicker({changeYear: true});
+        $("#DateEnd").datepicker({changeYear: true});
         $(".hasDatepicker").width("75px");
         setSortFields();
         setActiveMenuItem("moAct");
