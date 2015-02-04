@@ -1,6 +1,9 @@
 ﻿@using Reports.Core
 @using Reports.Presenters.Services.Impl
 @using Reports.Presenters.UI.Bl.Impl;
+@{
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
 @model Reports.Presenters.UI.ViewModel.HelpQuestionEditModel
 @{
     Layout = "~/Views/Shared/_HelpInfo.cshtml";
@@ -74,25 +77,37 @@
                                                                                                     {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить вопрос" onclick="return SendRequest();" @if (!Model.IsSendAvailable)
                                                                                                  {<text>style="display:none"</text>}/>
-                   <input type="submit" value="Ответом удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
-                                                                                              {<text>style="display:none"</text>}/>
+                   
+                   @if ((UserRole.ConsultantOutsourcing & dto.UserRole) > 0)
+                   {
+                    <input type="submit" value="Закрыть тему" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                                                                                             {<text>style="display:none"</text>}/>
+                   }
+                   else
+                   {
+                       <input type="submit" value="Ответом удовлетворен(а)" onclick="return EndRequest();" @if (!Model.IsEndAvailable)
+                                                                                                           {<text>style="display:none"</text>}/>
+                   }
                  
                    <input type="submit" value="Принять вопрос в работу" onclick="return BeginWork();" @if (!Model.IsBeginWorkAvailable)
                                                                                                       {<text>style="display:none"</text>}/>
                    <input type="submit" value="Отправить ответ" onclick="return EndWork();" @if (!Model.IsEndWorkAvailable)
-                                                                                           {<text>style="display:none"</text>}/>
+                                                                                            {<text>style="display:none"</text>}/>
                    <input type="button" value="Перенаправить вопрос" onclick="return Redirect();" @if (!Model.IsRedirectAvailable)
-                                                                                           {<text>style="display:none"</text>}/>
-              
-                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<input type="submit" value="Ответом не удовлетворен(а), задать новый вопрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
-                                                                                              {<text>style="display:none"</text>}/>
+                                                                                                  {<text>style="display:none"</text>}/>
+                   &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                   @if ((UserRole.Employee & dto.UserRole) > 0)
+                   {
+                       <input type="submit" value="Ответом не удовлетворен(а), задать новый вопрос" onclick="return RejectRequest();" @if (!Model.IsEndAvailable)
+                                                                                                                                                                    {<text>style="display:none"</text>}/>
+                   }
                 </td>
             </tr>
         </table>
     </div>
     <br />
-    if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
-    {
+                                                                                                                                                                    if (Model.HistoryEntities != null && Model.HistoryEntities.Count > 0)
+                                                                                                                                                                    {
         <div>
             <table style="width:100%">
              <tr>
@@ -115,7 +130,10 @@
                         @entity.Message
                     </td>
                 </tr>
-                <tr @if (!string.IsNullOrEmpty(entity.Answer)){<text>style="border-bottom:1px solid"</text>} else {<text>style="border-bottom:2px solid"</text>}>
+                <tr @if (!string.IsNullOrEmpty(entity.Answer))
+                    {<text>style="border-bottom:1px solid"</text>}
+                    else
+                    {<text>style="border-bottom:2px solid"</text>}>
                     <td>
                         Вопрос:
                     </td>
@@ -123,8 +141,8 @@
                          @entity.Question
                     </td>
                 </tr>
-                if (!string.IsNullOrEmpty(entity.Answer))
-                {
+                    if (!string.IsNullOrEmpty(entity.Answer))
+                    {
                  <tr style="border-bottom:2px solid">
                     <td>
                         Ответ:
@@ -133,11 +151,11 @@
                          @entity.Answer
                     </td>
                 </tr>
-                }
+                    }
             }
             </table>
         </div>
-    }
+                                                                                                                                                                    }
 }
 <script type="text/javascript">
  var actionDepUrl = "@Url.Action("GetChildren", "Home")";

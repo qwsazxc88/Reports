@@ -64,6 +64,7 @@ namespace WebMvc.Controllers
         public ActionResult Index()
         {
             //UserRole.PersonnelManager
+            //var dto = UserDto;
             var model = HelpBl.GetServiceRequestsList();
             //SetMissionOrderListModelFromSession(model);
             return View(model);

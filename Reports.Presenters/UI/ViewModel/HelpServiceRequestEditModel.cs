@@ -22,7 +22,7 @@ namespace Reports.Presenters.UI.ViewModel
         public int AttachmentId { get; set; }
         public bool IsAttachmentVisible { get; set; }
 
-        [Display(Name = "Требования к справке")]
+        [Display(Name = "Требования к документам")]
         public string Requirements { get; set; }
         public bool IsRequirementsVisible { get; set; }
 
@@ -56,6 +56,7 @@ namespace Reports.Presenters.UI.ViewModel
         public bool IsBeginWorkAvailable { get; set; }
         public bool IsConsultantOutsourcingEditable { get; set; }
         public bool IsEndWorkAvailable { get; set; }
+        public bool IsNotEndWorkAvailable { get; set; }
 
         public int Operation { get; set; }
 
