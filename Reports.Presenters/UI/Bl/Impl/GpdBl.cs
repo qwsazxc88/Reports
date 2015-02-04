@@ -919,49 +919,50 @@ namespace Reports.Presenters.UI.Bl.Impl
                 else
                 {
                     gpdContract = GpdContractDao.Get(model.Id);
-                    if (gpdContract.StatusID != 4)
-                    {
-                        gpdContract.StatusID = model.StatusID == 3 ? 4 : model.StatusID;
+                    //if (model.DateP.HasValue && gpdContract.StatusID != 4)
+                    //{
+                    //    gpdContract.StatusID = model.StatusID == 3 ? 4 : model.StatusID;
 
-                        if (model.DateP.HasValue && model.DatePOld.Value != model.DateP.Value)
-                        {
-                            gpdContract.DateP = model.DateP.Value;
-                            gpdContract.IsLong = model.DateP.HasValue ? true : false;
-                            gpdContract.EditDate = DateTime.Now;
-                            gpdContract.EditorID = currentUseId.Id;
-                        }
+                    //    if (model.DateP.HasValue && model.DatePOld.Value != model.DateP.Value)
+                    //    {
+                    //        gpdContract.DateP = model.DateP.Value;
+                    //        gpdContract.IsLong = model.DateP.HasValue ? true : false;
+                    //        gpdContract.EditDate = DateTime.Now;
+                    //        gpdContract.EditorID = currentUseId.Id;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    //gpdContract.CreatorID = model.CreatorID;
+                        
+                    //}
+                    gpdContract.DepartmentId = model.DepartmentId;
+                    gpdContract.PersonID = model.PersonID;
+                    gpdContract.CTID = model.CTID;
+                    gpdContract.StatusID = model.SendTo1C.HasValue ? 1 : model.StatusID == 3 ? 4 : model.StatusID;
+                    gpdContract.NumContract = model.NumContract;
+                    gpdContract.NameContract = model.NameContract;
+                    gpdContract.DateBegin = model.DateBegin.Value;
+                    gpdContract.DateEnd = model.DateEnd.Value;
+                    gpdContract.GPDID = model.GPDID;
+                    gpdContract.GPDContractID = model.GPDContractID;
+                    gpdContract.PurposePayment = model.PurposePayment;
+                    gpdContract.PaymentPeriodID = model.PaymentPeriodID;
+                    gpdContract.Amount = model.Amount;
+                    //gpdContract.DSID = model.DSID;
+                    gpdContract.PayerID = model.PayerID;
+                    gpdContract.PayeeID = model.PayeeID;
+                    gpdContract.PAccountID = model.PAccountID;
+                    gpdContract.EditDate = DateTime.Now;
+                    gpdContract.EditorID = currentUseId.Id;
+                    if (model.DateP.HasValue)
+                    {
+                        gpdContract.DateP = model.DateP.Value;
+                        gpdContract.IsLong = true;
+                        //gpdContract.StatusID = model.StatusID;
                     }
                     else
-                    {
-                        //gpdContract.CreatorID = model.CreatorID;
-                        gpdContract.DepartmentId = model.DepartmentId;
-                        gpdContract.PersonID = model.PersonID;
-                        gpdContract.CTID = model.CTID;
-                        gpdContract.StatusID = model.SendTo1C.HasValue ? 1 : model.StatusID;
-                        gpdContract.NumContract = model.NumContract;
-                        gpdContract.NameContract = model.NameContract;
-                        gpdContract.DateBegin = model.DateBegin.Value;
-                        gpdContract.DateEnd = model.DateEnd.Value;
-                        gpdContract.GPDID = model.GPDID;
-                        gpdContract.GPDContractID = model.GPDContractID;
-                        gpdContract.PurposePayment = model.PurposePayment;
-                        gpdContract.PaymentPeriodID = model.PaymentPeriodID;
-                        gpdContract.Amount = model.Amount;
-                        //gpdContract.DSID = model.DSID;
-                        gpdContract.PayerID = model.PayerID;
-                        gpdContract.PayeeID = model.PayeeID;
-                        gpdContract.PAccountID = model.PAccountID;
-                        gpdContract.EditDate = DateTime.Now;
-                        gpdContract.EditorID = currentUseId.Id;
-                        if (model.DateP.HasValue)
-                        {
-                            gpdContract.DateP = model.DateP.Value;
-                            gpdContract.IsLong = true;
-                            //gpdContract.StatusID = model.StatusID;
-                        }
-                        else
-                            gpdContract.IsLong = false;
-                    }
+                        gpdContract.IsLong = false;
                 }
 
 
