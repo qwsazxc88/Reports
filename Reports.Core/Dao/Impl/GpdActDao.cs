@@ -81,7 +81,7 @@ namespace Reports.Core.Dao.Impl
                                         int SortBy, 
                                         bool? SortDescending)
         {
-            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] ";
+            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] as A";
 
             if (!IsFind)
                 sqlQuery += "WHERE Id = " + ID.ToString();
@@ -193,8 +193,13 @@ namespace Reports.Core.Dao.Impl
             if (DateBegin.HasValue && DateEnd.HasValue)
                 SqlWhere = " WHERE ActDate between '" + DateBegin.Value.ToString("d") + "' and '" + DateEnd.Value.ToString("d") + "'";
 
+            //if (DepartmentId != 0)
+            //    SqlWhere += SqlWhere.Length == 0 ? "  WHERE  DepartmentId = " + DepartmentId.ToString() : " and DepartmentId = " + DepartmentId.ToString();
             if (DepartmentId != 0)
-                SqlWhere += SqlWhere.Length == 0 ? "  WHERE  DepartmentId = " + DepartmentId.ToString() : " and DepartmentId = " + DepartmentId.ToString();
+                SqlWhere += SqlWhere.Length == 0 ? @"  WHERE exists (select d1.ID from dbo.Department d
+				                                                     inner join dbo.Department d1 on d1.Path like d.Path +'%' and A.DepartmentID = d1.ID and d.Id = " + DepartmentId.ToString() + ")" :
+                                                   @"  and exists (select d1.ID from dbo.Department d
+				                                                   inner join dbo.Department d1 on d1.Path like d.Path +'%' and A.DepartmentID = d1.ID and d.Id = " + DepartmentId.ToString() + ")";
 
             if (Surname != null && Surname.Trim().Length != 0)
                 SqlWhere += SqlWhere.Length == 0 ? "  WHERE  Surname like '" + Surname + "%'" : " and Surname like '" + Surname + "%'";
