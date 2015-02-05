@@ -49,7 +49,6 @@ namespace WebMvc.Controllers
         [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
         public ActionResult Index()
         {
-            string aa = "";
             return RedirectToAction(EmploymentBl.GetStartView());
         } 
         #endregion
