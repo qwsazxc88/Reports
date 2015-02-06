@@ -1007,6 +1007,8 @@ namespace Reports.Presenters.UI.Bl.Impl
             {
                 case UserRole.Employee:
                     return entity.User.Id == current.Id;
+                case UserRole.DismissedEmployee:
+                    return entity.User.Id == current.Id;
                 case UserRole.Manager:
                     if (entity.User.Department == null)
                        throw new ArgumentException(string.Format(StrInvalidUserDepartment, entity.User.Id));
