@@ -56,6 +56,8 @@ namespace Reports.Presenters.Services.Impl
                 //    return SafetyZoneRoles.RegisterDoctor;
                 if (IsInRole(ReportRoleConstants.ConsultantOutsorsingManager))
                     return UserRole.ConsultantOutsorsingManager;
+                if (IsInRole(ReportRoleConstants.DismissedEmployee))
+                    return UserRole.DismissedEmployee;
                 return IsInRole(ReportRoleConstants.PersonnelManager) ?
                        UserRole.PersonnelManager :
                        UserRole.NoRole;
