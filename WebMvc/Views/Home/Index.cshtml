@@ -45,8 +45,9 @@
                         }
                     </div>  
                   }
-                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.ConsultantOutsorsingManager)) == 0)
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)) == 0)
                 {
+                    
                     <div @if (Model.menuId == 1)
                          {<text>class="mainOn"</text>}
                          else
@@ -109,7 +110,7 @@
                 </div>
                 }*@
 
-                @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0)
+                @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0 && (dto.UserRole & UserRole.DismissedEmployee) == 0)
                 {
                     <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
                 }
