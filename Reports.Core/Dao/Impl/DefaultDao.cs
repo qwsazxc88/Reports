@@ -447,6 +447,12 @@ namespace Reports.Core.Dao.Impl
                     return string.Format(" u.Id = {0} ", userId);
                 #endregion
 
+                #region DismissedEmployee:
+                case UserRole.DismissedEmployee:
+                    // sqlQuery = string.Format(sqlQuery, @" 0 as Flag", string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
+                #endregion
+
                 #region Managers
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);

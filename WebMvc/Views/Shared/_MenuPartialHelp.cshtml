@@ -33,6 +33,10 @@
                     {
                         @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                     }
+                    else if ((dto.UserRole & UserRole.DismissedEmployee) > 0)
+                    {
+                        @Html.ActionLink("Табель", "DismissalList", "UserRequest")
+                    }
                 </div> 
                 }
                 @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)) == 0)

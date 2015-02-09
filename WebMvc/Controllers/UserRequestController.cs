@@ -22,7 +22,7 @@ namespace WebMvc.Controllers
     [PreventSpamAttribute]
     [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager | 
         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
-        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
+        UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist | UserRole.DismissedEmployee)]
     public class UserRequestController : BaseController
     {
         
@@ -40,7 +40,10 @@ namespace WebMvc.Controllers
         //
         // GET: /UserRequestController/
          #region CreateRequest
-        [HttpGet] 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult CreateRequest()
          {
              int? userId = new int?();
@@ -135,6 +138,9 @@ namespace WebMvc.Controllers
              }
          }
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AllRequestList()
          {
              AllRequestListModel model = RequestBl.GetAllRequestListModel();
@@ -150,6 +156,9 @@ namespace WebMvc.Controllers
 
          #region Employment
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult EmploymentList()
          {
              EmploymentListModel model = RequestBl.GetEmploymentListModel();
@@ -162,6 +171,9 @@ namespace WebMvc.Controllers
              return View(model);
          }
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult EmploymentEdit(int id, int userId)
          {
              EmploymentEditModel model = RequestBl.GetEmploymentEditModel(id, userId);
@@ -328,6 +340,9 @@ namespace WebMvc.Controllers
 
          #region Timesheet Correction
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult TimesheetCorrectionList()
          {
              TimesheetCorrectionListModel model = RequestBl.GetTimesheetCorrectionListModel();
@@ -340,6 +355,9 @@ namespace WebMvc.Controllers
              return View(model);
          }
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult TimesheetCorrectionEdit(int id, int userId)
          {
              TimesheetCorrectionEditModel model = RequestBl.GetTimesheetCorrectionEditModel(id, userId);
@@ -1017,6 +1035,9 @@ namespace WebMvc.Controllers
 
          #region Absence
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AbsenceList()
          {
              AbsenceListModel model = RequestBl.GetAbsenceListModel();
@@ -1038,6 +1059,9 @@ namespace WebMvc.Controllers
              return ModelState.IsValid;
          }
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult AbsenceEdit(int id, int userId)
          {
              //int? userId = new int?();
@@ -1100,6 +1124,9 @@ namespace WebMvc.Controllers
 
          #region Vacation
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult VacationList()
          {
              //int? userId = new int?();
@@ -1123,6 +1150,9 @@ namespace WebMvc.Controllers
          }
 
         [HttpGet]
+        [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+         UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+         UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult VacationEdit(int id,int userId)
          {
              //int? userId = new int?();
@@ -1272,6 +1302,9 @@ namespace WebMvc.Controllers
 
          #region Child Vacation
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult ChildVacationList()
          {
              //int? userId = new int?();
@@ -1295,6 +1328,9 @@ namespace WebMvc.Controllers
 
 
          [HttpGet]
+         [ReportAuthorize(UserRole.Employee | UserRole.Manager | UserRole.PersonnelManager |
+          UserRole.Inspector | UserRole.Chief | UserRole.OutsourcingManager |
+          UserRole.Director | UserRole.Accountant | UserRole.Secretary | UserRole.Findep | UserRole.Archivist)]
          public ActionResult ChildVacationEdit(int id, int userId)
          {
              //int? userId = new int?();
