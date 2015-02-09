@@ -81,7 +81,7 @@ namespace Reports.Core.Dao.Impl
                                         int SortBy, 
                                         bool? SortDescending)
         {
-            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] as A";
+            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdActList] as A ";
 
             if (!IsFind)
                 sqlQuery += "WHERE Id = " + ID.ToString();

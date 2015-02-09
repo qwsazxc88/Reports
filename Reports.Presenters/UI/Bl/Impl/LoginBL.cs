@@ -209,6 +209,8 @@ namespace Reports.Presenters.UI.Bl.Impl
                 roles.Add(UserRole.ConsultantAccountant);
             if ((user.UserRole & UserRole.ConsultantOutsorsingManager) > 0 && !roles.Contains(UserRole.ConsultantOutsorsingManager))
                 roles.Add(UserRole.ConsultantOutsorsingManager);
+            if ((user.UserRole & UserRole.DismissedEmployee) > 0 && !roles.Contains(UserRole.DismissedEmployee))
+                roles.Add(UserRole.DismissedEmployee);
         }
         public string GetUserRole(IUser dto,out bool isLinkAvailable)
         {
