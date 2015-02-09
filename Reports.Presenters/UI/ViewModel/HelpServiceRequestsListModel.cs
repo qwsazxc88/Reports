@@ -49,5 +49,7 @@ namespace Reports.Presenters.UI.ViewModel
 
         public bool HasErrors { get; set; }
         public string Address { get; set; }
+
+        public bool NotVisibleMessage { get; set; }
     }
 }

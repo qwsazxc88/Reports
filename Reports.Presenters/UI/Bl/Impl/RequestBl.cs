@@ -1987,6 +1987,31 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
 
                     break;
+                case UserRole.DismissedEmployee:
+                    if (!entity.UserDateAccept.HasValue && !entity.DeleteDate.HasValue)
+                    {
+                        if (model.AttachmentId > 0)
+                            model.IsApprovedEnable = true;
+                        if (!entity.ManagerDateAccept.HasValue && !entity.PersonnelManagerDateAccept.HasValue && !entity.SendTo1C.HasValue)
+                            model.IsTypeEditable = true;
+
+                        // Уволенный может прикрепить заявление на выдачу ТК при статусе "Черновик"                        
+                        model.IsWorkbookRequestAllowed = true;
+                    }
+
+                    if (model.IsPostedTo1C)
+                    {
+                        // Уволенный может прикрепить сканы подписанных приказа, Т2 и соглашения
+                        model.IsConfirmationAllowed = true;
+                        model.IsT2Allowed = true;
+                        model.IsDismissalAgreementAllowed = true;
+
+                        model.IsViewDismissalAgreementAllowed = true;
+                        model.IsViewF182NAllowed = true;
+                        model.IsViewF2NDFLAllowed = true;
+                    }
+
+                    break;
                 case UserRole.Manager:
                     //RequestPrintForm formMan = RequestPrintFormDao.FindByRequestAndTypeId(id, RequestPrintFormTypeEnum.Dismissal);
                     //model.IsPrintAvailable = formMan != null;
@@ -2387,6 +2412,17 @@ namespace Reports.Presenters.UI.Bl.Impl
                 SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
                     entity.Number, RequestTypeEnum.Dismissal, false);
             } 
+            #endregion
+
+            #region Согласование уволенным
+            if ((current.UserRole & UserRole.DismissedEmployee) == UserRole.DismissedEmployee && current.Id == model.UserId
+                    && !entity.UserDateAccept.HasValue
+                    && model.IsApproved)
+            {
+                entity.UserDateAccept = DateTime.Now;
+                SendEmailForUserRequest(entity.User, current, entity.Creator, false, entity.Id,
+                    entity.Number, RequestTypeEnum.Dismissal, false);
+            }
             #endregion
 
             #region Согласование руководителем
@@ -5358,6 +5394,13 @@ namespace Reports.Presenters.UI.Bl.Impl
                     if (user.Id != current.Id)
                     {
                         Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1}",user.Id,current.Id);
+                        return false;
+                    }
+                    break;
+                case UserRole.DismissedEmployee:
+                    if (user.Id != current.Id)
+                    {
+                        Log.ErrorFormat("CheckUserRights user.Id {0} current.Id {1}", user.Id, current.Id);
                         return false;
                     }
                     break;

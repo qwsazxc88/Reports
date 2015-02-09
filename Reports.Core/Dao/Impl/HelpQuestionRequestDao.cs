@@ -242,6 +242,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Employee:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
+                case UserRole.DismissedEmployee:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
                     string sqlQueryPart = string.Empty;

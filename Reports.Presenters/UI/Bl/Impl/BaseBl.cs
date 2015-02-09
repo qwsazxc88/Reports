@@ -239,6 +239,14 @@ namespace Reports.Presenters.UI.Bl.Impl
                     }
                     to = user.Manager.Email;
                     break;
+                case UserRole.DismissedEmployee:
+                    if (user.Manager == null || string.IsNullOrEmpty(user.Manager.Email))
+                    {
+                        Log.ErrorFormat("Cannot send e-mail (request {0},requestType {1}) from user {2} to manager - no manager or empty email", requestId, requestType, user.Id);
+                        return null;
+                    }
+                    to = user.Manager.Email;
+                    break;
                 case UserRole.Manager:
                     foreach (User u in user.Personnels)
                     {
