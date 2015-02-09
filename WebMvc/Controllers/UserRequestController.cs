@@ -2183,7 +2183,7 @@ namespace WebMvc.Controllers
          }
          protected void CheckEndDate(ICheckForEntityEndDate model)
          {
-            //CheckRequestDate(model.IsDelete, model.EndDate);
+            CheckRequestDate(model.IsDelete, model.EndDate);
          }
         protected void CheckRequestDate(bool isDelete,DateTime? date)
         {
