@@ -26,21 +26,29 @@
                     {
                         @Html.ActionLink("Табель", "TimesheetList", "Employee", new { managerId = dto.Id }, null)
                     }
-                    else if ((dto.UserRole & UserRole.Manager) > 0
+                    else if ((dto.UserRole & UserRole.Manager) > 0 
                           || (dto.UserRole & UserRole.PersonnelManager) > 0
                           || (dto.UserRole & UserRole.Inspector) > 0
                           || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                     {
                         @Html.ActionLink("Табель", "AllRequestList", "UserRequest")
                     }
+                    else if ((dto.UserRole & UserRole.DismissedEmployee) > 0)
+                    {
+                        @Html.ActionLink("Табель", "DismissalList", "UserRequest")
+                    }
                 </div> 
                 }
-                <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
-                </div> 
-                <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
-                </div>  
+                @if ((dto.UserRole & (UserRole.Candidate | UserRole.Security | UserRole.Trainer | UserRole.ConsultantOutsorsingManager | UserRole.DismissedEmployee)) == 0)
+                {
+                    <div id="liCharge" class="mainMenuItem">@Html.ActionLink("Начисления", "Index", "Home", new { menuId = "1" }, null)
+                    </div> 
+                    <div id="liMember" class="mainMenuItem">@Html.ActionLink("Штатное расписание", "Index", "Home", new { menuId = "2" }, null)
+                    </div>  
+                }
+                
                 <div id="liDeduction" class="mainMenuItem">
-                @if ((dto.UserRole & UserRole.Accountant) > 0 
+                @if ((dto.UserRole & UserRole.Accountant) > 0
                     || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                 {
                     @Html.ActionLink("Удержания", "Index", "Deduction")
@@ -77,7 +85,7 @@
                 </div>*@
                 @if (UserDto.IsHelpServiceAvailable(dto))
                 {
-                <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
+                    <div id="liHelp" class="mainOn">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
                 }
                 else if (UserDto.IsHelpQuestionAvailable(dto))
                 {
@@ -99,18 +107,21 @@
                     <div id="liAppointment" class="mainMenuItem">@Html.ActionLink("Подбор персонала", "Index", "Appointment")
                     </div> 
                  }  
-                 @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0 || (dto.UserRole & UserRole.Manager) > 0
-                     || (dto.UserRole & UserRole.Employee) > 0 || (dto.UserRole & UserRole.PersonnelManager) > 0)
+                 @if ((dto.UserRole & UserRole.Accountant) > 0 || (dto.UserRole & UserRole.OutsourcingManager) > 0)
                  {
                     <div id="liGPD" class="mainMenuItem">@Html.ActionLink("ГПД", "Index", "GPD")</div>
                  }
         </div>  
          <div class="podmenu">    
             @if (UserDto.IsHelpServiceAvailable(dto))
-            {  
-                <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
-                if ((dto.UserRole & UserRole.PersonnelManager) == 0)
-                {      
+            {
+                if ((dto.UserRole & UserRole.PersonnelManager) > 0)
+                {
+                    <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
+                }
+                else
+                {
+                    <div class="menuitem" id="helpAllRequests">@Html.ActionLink("Заказать услугу", "Index", "Help")</div> 
                     <div class="menuitem" id="helpQuestionsRequests">@Html.ActionLink("Задать вопрос", "ServiceQuestionsList", "Help")</div> 
                 }
                 <div class="menuitem" id="helpTemplate">@Html.ActionLink("Шаблоны", "Template", "Help")</div>

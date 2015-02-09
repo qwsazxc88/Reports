@@ -231,7 +231,7 @@ namespace Reports.Core.Dao.Impl
                                             bool? SortDescending)
         {
 
-            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdContractList]";
+            string sqlQuery = @"SELECT  *  FROM [dbo].[vwGpdContractList] as A";
 
             string SqlWhere = "";
 
@@ -239,7 +239,11 @@ namespace Reports.Core.Dao.Impl
                 SqlWhere = "Id = " + Id.ToString();
             else
             {
-                SqlWhere = (DepartmentId != 0 ? " DepartmentId = " + DepartmentId.ToString() : "");//подразделение
+                if (DepartmentId != 0)
+                    SqlWhere = @"exists (select d1.ID from dbo.Department d
+				                         inner join dbo.Department d1 on d1.Path like d.Path +'%' and A.DepartmentID = d1.ID and d.Id = " + DepartmentId.ToString() + ")";
+                    //SqlWhere = (DepartmentId != 0 ? " DepartmentId = " + DepartmentId.ToString() : "");//подразделение
+
                 SqlWhere = SqlWhere + (SqlWhere.Length != 0 && CTID != 0 ? " and " : "") + (CTID != 0 ? " CTID = " + CTID.ToString() : "");//вид начисления
                 if (DateBegin.HasValue && DateEnd.HasValue)
                     SqlWhere = SqlWhere + (SqlWhere.Length != 0 ? " and " : "") + " DateBegin between '" + DateBegin.Value.ToString("d") + "' and '" + DateEnd.Value.ToString("d") + "'";//дата начала действия договора
@@ -358,7 +362,8 @@ namespace Reports.Core.Dao.Impl
 
                 AddScalar("PaymentPeriodID", NHibernateUtil.Int32).
                 AddScalar("Amount", NHibernateUtil.Decimal).
-                AddScalar("flgRed", NHibernateUtil.Boolean);
+                AddScalar("flgRed", NHibernateUtil.Boolean).
+                AddScalar("SendTo1C", NHibernateUtil.DateTime);
         }
         /// <summary>
         /// Достаем уровень подразделения.

@@ -242,6 +242,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Employee:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
+                case UserRole.DismissedEmployee:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
                     string sqlQueryPart = string.Empty;
@@ -275,7 +278,7 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.ConsultantOutsorsingManager:
                     sqlQuery = string.Format(sqlQuery, string.Empty);
                     //показываем вопросы руководителей, которые перенаправлены на эту роль
-                    return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then (case when v.ConsultantRoleId = " + (int)UserRole.ConsultantOutsorsingManager + " then 0 else 1 end) else 0 end) = 0 ";
+                    return " (case when v.CreatorRoleId = 4 and v.UserId = v.CreatorId then (case when v.ConsultantRoleId = " + (int)UserRole.ConsultantOutsorsingManager + " then 0 else 1 end) else 0 end) = 0 and r.id = " + Convert.ToString((int)UserRole.ConsultantOutsorsingManager) + " ";
                 //return sqlQueryPart;
                 case UserRole.ConsultantPersonnel:
                     sqlQuery = string.Format(sqlQuery, string.Empty);

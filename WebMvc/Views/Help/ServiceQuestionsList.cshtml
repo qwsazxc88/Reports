@@ -96,7 +96,7 @@
             <table style="width:100%">
                     <tr>
                             <td>
-                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee)
+                                @if ((((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Employee) || (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.DismissedEmployee)
                                     /*|| (((ReportPrincipal)HttpContext.Current.User).UserRole == UserRole.Manager)*/)
                                 {
                                     <input type="button" value="Задать вопрос" onclick="location.href='@Url.Action("HelpQuestionEdit", "Help", new { id = 0 })'"/>   

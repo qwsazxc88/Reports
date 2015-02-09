@@ -44,15 +44,17 @@ namespace Reports.Core.Dao.Impl
                                 case when v.[SendDate] is null then 1
                                      when v.[SendDate] is not null and v.[BeginWorkDate] is null then 2 
                                      when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then 3 
-                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then 4
+                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null and v.[NotEndWorkDate] is null then 4
                                      when v.[ConfirmWorkDate] is not null then 5 
+                                     when v.[NotEndWorkDate] is not null then 6
                                     else 0
                                 end as StatusNumber,
                                 case when v.[SendDate] is null then N'Черновик сотрудника'
                                      when v.[SendDate] is not null and v.[BeginWorkDate] is null then N'Услуга запрошена' 
                                      when v.[BeginWorkDate] is not null and v.[EndWorkDate] is null then N'Услуга формируется' 
-                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null then N'Услуга сформирована' 
+                                     when v.[EndWorkDate] is not null and v.[ConfirmWorkDate] is null and v.[NotEndWorkDate] is null then N'Услуга сформирована' 
                                      when v.[ConfirmWorkDate] is not null then N'Услуга оказана' 
+                                     when v.[NotEndWorkDate] is not null then N'Услуга не может быть сформирована'
                                     else N''
                                 end as Status,
                                 v.Address as address,
@@ -203,6 +205,9 @@ namespace Reports.Core.Dao.Impl
                 case UserRole.Employee:
                     sqlQuery = string.Format(sqlQuery,string.Empty);
                     return string.Format(" u.Id = {0} ", userId);
+                case UserRole.DismissedEmployee:
+                    sqlQuery = string.Format(sqlQuery, string.Empty);
+                    return string.Format(" u.Id = {0} ", userId);
                 case UserRole.Manager:
                     User currentUser = UserDao.Load(userId);
                     string sqlQueryPart = string.Empty;
@@ -232,12 +237,20 @@ namespace Reports.Core.Dao.Impl
                                 currentUser.Level));
                     }
                     //return sqlQueryPart;
-                case UserRole.PersonnelManager:
+                case UserRole.PersonnelManager://кадровик
+                    if (userId == 10)//расчетчики
+                    {
+                        sqlQuery = string.Format(sqlQuery, string.Empty);
+                        return @"  v.[TypeId] in (2, 4, 5, 7, 8, 10, 11, 16) ";
+                    }
+                    else
+                    {
+                        sqlQuery = string.Format(sqlQuery, string.Empty);
+                        return string.Empty;
+                    }
+                case UserRole.ConsultantOutsorsingManager://кадровики ОК
                     sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (2, 4, 5) ";
-                case UserRole.ConsultantOutsorsingManager:
-                    sqlQuery = string.Format(sqlQuery, string.Empty);
-                    return @"  v.[TypeId] in (1, 3, 6) ";
+                    return @"  v.[TypeId] in (1, 3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20) ";
                 case UserRole.OutsourcingManager:
                 case UserRole.ConsultantOutsourcing:
                 case UserRole.Admin:
