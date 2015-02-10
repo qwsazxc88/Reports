@@ -5644,7 +5644,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.GetType().Name == "ChildVacationEditModel" || model.GetType().Name == "DismissalEditModel" || model.GetType().Name == "ClearanceChecklistEditModel")
                 //managers.Clear();
                 managers = GetManagersForEmployee(user.Id, 4)
-                    .Where<User>(manager => manager.Level != 4 && manager.Department.Id != 4395)
+                    .Where<User>(manager => (manager.Level != 4 && manager.Department.Id != 4395) && (manager.Level != 6 && manager.Department.Id != 6409))
                     .OrderByDescending<User, int?>(manager => manager.Level)
                     .ToList<User>();
             else
