@@ -120,9 +120,9 @@
                 }
 
                 @if (UserDto.IsHelpServiceAvailable(dto))
-                    {
+                {
                     <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "Index", "Help")</div> 
-                    }
+                }
                 else if (UserDto.IsHelpQuestionAvailable(dto))
                 {
                         <div id="liHelp" class="mainMenuItem">@Html.ActionLink("ИнфоУслуги", "ServiceQuestionsList", "Help")</div> 
