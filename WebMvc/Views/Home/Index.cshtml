@@ -116,7 +116,10 @@
 
                 @if ((dto.UserRole & UserRole.ConsultantOutsorsingManager) == 0 && (dto.UserRole & UserRole.DismissedEmployee) == 0)
                 {
-                    <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                    if ((dto.UserRole & UserRole.OutsourcingManager) > 0)
+                    {
+                        <div id="liEmployment" class="mainMenuItem">@Html.ActionLink("Прием", "Index", "Employment")</div>
+                    }
                 }
 
                 @if (UserDto.IsHelpServiceAvailable(dto))
