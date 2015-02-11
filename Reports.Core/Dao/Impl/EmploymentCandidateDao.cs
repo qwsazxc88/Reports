@@ -167,14 +167,41 @@ namespace Reports.Core.Dao.Impl
                         break;
                     // руководитель 3 уровня видит кандидатов, заявки на подбор которых создавали руководители нижележащих уровней его ветки
                     case 3:
-                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > 3)
+//                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > 3)
+//                            ";
+//                        break;
+                    case 4:
+                    case 5:
+                        // руководители уровней ниже 3 согласуют кандидатов созданных руководителями уровнем ниже
+                        sqlQueryPart += @" or (appointmentCreatorDepartment.Path like currentDepartment.Path + N'%' and appointmentCreator.Level > " + currentUser.Level.ToString() + @")
                             ";
                         break;
-                    // руководители уровней ниже 3 не согласуют кандидатов как вышестоящие руководители -> не видят их
                     default:
                         break;
                 }
                 sqlQueryPart = string.Format("( {0} )", sqlQueryPart);
+                // Ручные привязки человек-человек и человек-подразделение из ManualRoleRecord
+                sqlQueryPart += string.Format(@"
+                        or currentUser.Id in (select mrr.TargetUserId from [dbo].[ManualRoleRecord] mrr where mrr.UserId = {0} and mrr.RoleId = 1)", currentUser.Id);
+                sqlQueryPart += string.Format(@"
+                        or 
+                        (
+                            --(u.RoleId & 2) > 0
+                            --and
+                            currentUser.DepartmentId in
+                            (
+                                select distinct branchDept.Id from [dbo].[ManualRoleRecord] mrr
+                                    inner join Department targetDept
+                                        on targetDept.Id = mrr.TargetDepartmentId
+                                    inner join [dbo].[Department] branchDept
+                                        on branchDept.Path like targetDept.Path + '%'
+                                    inner join Users
+                                        on mrr.UserId = {0}
+                                    inner join Role
+                                        on mrr.RoleId = 1
+                            )
+                        )
+                        ", currentUser.Id);
             }
 
             else if ((role & (UserRole.PersonnelManager
