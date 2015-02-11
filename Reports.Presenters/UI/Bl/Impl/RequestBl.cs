@@ -5633,9 +5633,38 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.ManagerName = user.Manager.FullName;
 
             // Руководители до 4 уровня по ветке
-            IList<User> managers = GetManagersForEmployee(user.Id, 4)
+            IList<User> managers = null;
+            //для ветки руководства скб
+            if (user.Department.Path.StartsWith("9900424.9900426.9900427."))
+            {
+                //для приказов на командировки, авансовых отчетов убираем руководителей 4 уровня
+                if (model.GetType().Name == "MissionOrderEditModel" || model.GetType().Name == "MissionReportEditModel" || model.GetType().Name == "SicklistEditModel" ||
+                    model.GetType().Name == "MissionEditModel" || model.GetType().Name == "AbsenceEditModel" || model.GetType().Name == "VacationEditModel" ||
+                    model.GetType().Name == "ChildVacationEditModel" || model.GetType().Name == "DismissalEditModel" || model.GetType().Name == "ClearanceChecklistEditModel")
+                    //managers.Clear();
+                    managers = GetManagersForEmployee(user.Id, 4)
+                        //.Where<User>(manager => (manager.Level != 4 && manager.Department.Id != 4395) && (manager.Level != 6 && manager.Department.Id != 6409))
+                        .Where<User>(manager => (manager.Level == 2 && (manager.Id == 111 || manager.Id == 143)))
+                        .OrderByDescending<User, int?>(manager => manager.Level)
+                        .ToList<User>();
+                else
+                {
+                    managers = GetManagersForEmployee(user.Id, 4)
+                    .OrderByDescending<User, int?>(manager => manager.Level)
+                    .ToList<User>();
+                }
+            }
+            else
+            {
+                managers = GetManagersForEmployee(user.Id, 4)
                 .OrderByDescending<User, int?>(manager => manager.Level)
                 .ToList<User>();
+            }
+                
+
+            
+
+
             // + руководители по ручным привязкам
             IList<User> manualRoleManagers = ManualRoleRecordDao.GetManualRoleHoldersForUser(user.Id, manualRoleForManagersList);
             foreach (var manualRoleManager in manualRoleManagers)

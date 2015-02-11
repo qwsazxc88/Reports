@@ -77,7 +77,6 @@ namespace WebMvc.Controllers
             //if (!hasError)
             //    SetMissionOrderFilterToSession(model);
             HelpBl.SetServiceRequestsListModel(model, hasError);
-            model.NotVisibleMessage = true;
             //if (model.HasErrors)
             //    ModelState.AddModelError(string.Empty, "При согласовании приказов произошла(и) ошибка(и).Не все приказы были согласованы.");
             return View(model);
