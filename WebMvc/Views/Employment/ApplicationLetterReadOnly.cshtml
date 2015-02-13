@@ -1,0 +1,44 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.ApplicationLetterModel
+@{
+    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Прием - Заявление о приеме на работу";
+}
+
+<span style="color:red;">@ViewBag.Error</span>
+
+@using (Html.BeginForm("ApplicationLetter", "Employment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @*Html.HiddenFor(m => m.UserId)*@
+    
+    <fieldset class="bordered doc-wrap panel">
+    <legend>Заявление о приеме</legend>
+        @if (Model.IsApplicationLetterUploadAvailable)
+        {
+            <div class="formfield clear">
+                Выбрать скан для загрузки<br /><input type="file" name="ApplicationLetterScanFile" />
+                <button type="submit">Отправить</button>
+            </div>
+        }
+        
+        @if (Model.ApplicationLetterScanAttachmentId > 0)
+        {
+            <div class="formfield">
+                <br />Скан:
+                <a class="ui-notify-close" href='@Url.Action("ViewAttachment", new { Id = Model.ApplicationLetterScanAttachmentId })' style="cursor:hand" target="_blank">
+                    @Model.ApplicationLetterScanAttachmentFilename
+                </a>
+            </div>
+        }
+
+        <div class="letter clear" style="text-align: center">
+            <h3 style="text-align: center;">Образец текста заявления о приеме на работу</h3>
+            <img src="@Url.Content("~/Content/files/Образец заявления о приеме.png")" alt="Образец заявления о приеме" />
+        </div>
+    </fieldset>
+}  
+
+<script>
+    $(document).ready(function () {
+        setActiveMenuItem("empApplicationLetter");
+    });
+</script>

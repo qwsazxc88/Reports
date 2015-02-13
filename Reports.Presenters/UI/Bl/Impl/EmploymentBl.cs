@@ -1722,7 +1722,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 IsFirstTimeLogin = true,
                 IsActive = true,
                 IsNew = true,
-                Name = string.Empty,
+                Name = model.Surname,//string.Empty,
                 RoleId = (int)UserRole.Candidate,
                 Department = department,
                 GivesCredit = false,
@@ -1740,7 +1740,7 @@ namespace Reports.Presenters.UI.Bl.Impl
             EmploymentCommonDao.SaveAndFlush(candidate);
 
             candidate.User.Login = "c" + candidate.Id.ToString();
-            candidate.User.Name = candidate.User.Login;
+            candidate.User.Name = model.Surname;//candidate.User.Login;
 
             // Create blank employment pages
             candidate.GeneralInfo = new GeneralInfo
