@@ -98,6 +98,15 @@
                             @Html.TextBoxFor(model => model.UserName)
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            @Html.LabelFor(m => m.SicklistNumber):
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SicklistNumber)
+                        </td>
+                    </tr>
+                    
                 }
                 <tr>
                     <td colspan="2">
@@ -174,6 +183,9 @@
                         <div id="sort6"><a href="#"  onclick = "SortChanged(6);">Номер</a></div>
                     </th>
                     <th>
+                        <div id="sort12"><a href="#"  onclick = "SortChanged(12);">Номер <br />больничного</a></div>
+                    </th>
+                    <th>
                         <div id="sort4"><a href="#"  onclick = "SortChanged(4);">Тип заявки</a></div>
                     </th>
                     <th>
@@ -210,6 +222,7 @@
                             <td>@doc.UserName</td>
                             <td>@doc.Date</td>
                             <td>@doc.Number</td>
+                            <td>@doc.SicklistNumber</td>
                             <td>@doc.RequestType</td>
                             <td>@doc.RequestStatus</td>
                             <td style="white-space:nowrap">@doc.BeginDate.ToString("dd.MM.yyyy") - @doc.EndDate.ToString("dd.MM.yyyy")</td>
@@ -224,8 +237,8 @@
                             @*<td>@doc.BeginDate.ToString("dd.MM.yyyy")</td>
                             <td>@doc.EndDate.ToString("dd.MM.yyyy")</td>*@
                         </tr>
-                        i++;
-                    }                    
+                            i++;
+                    }
                 }
             </table>
             <input type="hidden" name="anticache" value=@DateTime.Now />

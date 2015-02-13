@@ -613,6 +613,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                null,
                 model.SortBy,model.SortDescending).ToList().ConvertAll(x => new AllRequestDto
                 {
                     Date = x.Date,
@@ -3708,6 +3709,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 model.BeginDate,
                 model.EndDate,
                 model.UserName,
+                model.SicklistNumber,
                 model.SortBy,
                 model.SortDescending);
         }
