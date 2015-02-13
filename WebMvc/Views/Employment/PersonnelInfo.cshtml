@@ -8,7 +8,7 @@
 }
 
 
-@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Post))
+@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Get))
 {
     <input type="hidden" id="CandidateID" name="CandidateID" value="@Model.CandidateID" />
     <input type="hidden" id="IsCandidateInfoAvailable" name="IsCandidateInfoAvailable" value="@Model.IsCandidateInfoAvailable" />
