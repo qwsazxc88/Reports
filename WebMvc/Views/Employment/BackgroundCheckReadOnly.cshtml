@@ -1,6 +1,12 @@
 ﻿@model Reports.Presenters.UI.ViewModel.Employment2.BackgroundCheckModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
 @{
-    //Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+    if ((dto.UserRole & UserRole.Candidate) > 0)
+    {
+        Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    }
     ViewBag.Title = "Прием - Служба безопасности";
 }
 
