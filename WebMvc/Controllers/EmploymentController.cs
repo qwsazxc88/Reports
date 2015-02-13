@@ -484,7 +484,7 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Security)]
-        public ActionResult BackgroundCheckApprove(int userId, bool isApprovalSkipped, bool? approvalStatus)
+        public ActionResult BackgroundCheckReadOnly(int userId, bool isApprovalSkipped, bool? approvalStatus)
         {
             string error = String.Empty;
 
@@ -494,7 +494,7 @@ namespace WebMvc.Controllers
             {
                 ViewBag.Error = error;
                 BackgroundCheckModel model = EmploymentBl.GetBackgroundCheckModel();
-                return View("BackgroundCheckReadOnly", model);
+                return PartialView("BackgroundCheckReadOnly", model);
             }
             else
             {

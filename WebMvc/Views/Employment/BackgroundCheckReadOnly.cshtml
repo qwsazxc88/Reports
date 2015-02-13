@@ -255,26 +255,26 @@
     }
 </div>
 
-@using (Html.BeginForm("BackgroundCheckApprove", "Employment", FormMethod.Post))
-{
-    @Html.HiddenFor(m => m.UserId)
-    <div class="clear">
-        @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
-        {
-            @Html.LabelFor(m => m.ApprovalStatus)<br />
-            @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />            
-            @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, string.Empty, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
-        }
-        @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
-        {
-            <span class="fakeFormField">@Model.ApproverName</span>
-        }
-        @if (Model.IsApproveBySecurityAvailable)
-        {
-            <button>Применить</button>
-        }
-    </div>
-}
+<form id="CheckApproveForm" action="/Employment/BackgroundCheckReadOnly" target="tabs8" method="post">
+        @Html.HiddenFor(m => m.UserId)
+        <div class="clear">
+            @if (Model.IsApproveBySecurityAvailable || Model.ApprovalStatus != null || Model.IsApprovalSkipped)
+            {
+                @Html.LabelFor(m => m.ApprovalStatus)<br />
+                @Html.EditorFor(m => m.IsApprovalSkipped, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })@Html.LabelFor(m => m.IsApprovalSkipped)<br />            
+                @Html.DropDownListFor(m => m.ApprovalStatus, Model.ApprovalStatuses, string.Empty, Model.IsApproveBySecurityAvailable ? null : new { disabled = "disabled" })            
+            }
+            @if (Model.ApprovalStatus != null || Model.IsApprovalSkipped)
+            {
+                <span class="fakeFormField">@Model.ApproverName</span>
+            }
+            @if (Model.IsApproveBySecurityAvailable)
+            {
+                <!--<button>Применить</button>-->
+                <input type="button" value="Применить" onclick="AjaxFormRequest('tabs8', 'CheckApproveForm', '/Employment/BackgroundCheckReadOnly', 'POST')" />
+            }
+        </div>
+    </form>
 
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
@@ -296,4 +296,5 @@
             },
             true);
     });
+
 </script>
