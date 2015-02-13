@@ -33,7 +33,7 @@ namespace Reports.Core.Dao.Impl
         protected const string sqlSelectForCandidateList =
             @"select candidate.Id Id
                 , candidate.UserId UserId
-                , generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic as Name
+                , isnull(generalInfo.LastName + ' ' + generalInfo.FirstName + ' ' + generalInfo.Patronymic, candidateUser.Name) as Name
                 , managers.WorkCity WorkCity
                 , department.Name Department
                 , position.Name Position

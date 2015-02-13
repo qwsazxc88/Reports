@@ -69,12 +69,13 @@ namespace WebMvc.Controllers
             if (ValidateModel(model))
             {
                 model.UserId = EmploymentBl.CreateCandidate(model, out error);
-                ViewBag.Error = error;
+                //ViewBag.Error = error;
             }
 
             if (!string.IsNullOrEmpty(error))
             {
-                ViewBag.Error = error;
+                //ViewBag.Error = error;
+                ModelState.AddModelError("DepartmentId", error);
             }
 
             return View(model);
@@ -99,6 +100,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetGeneralInfoModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("GeneralInfoReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult GeneralInfoReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetGeneralInfoModel(id);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -156,6 +165,14 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("PassportReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult PassportReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetPassportModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Passport(PassportModel model, IEnumerable<HttpPostedFileBase> files)
@@ -179,6 +196,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetEducationModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("EducationReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult EducationReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetEducationModel(id);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -262,6 +287,14 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("FamilyReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult FamilyReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetFamilyModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Family(FamilyModel model, IEnumerable<HttpPostedFileBase> files)
@@ -300,6 +333,13 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("MilitaryServiceReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        public ActionResult MilitaryServiceReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetMilitaryServiceModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult MilitaryService(MilitaryServiceModel model, IEnumerable<HttpPostedFileBase> files)
@@ -323,6 +363,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetExperienceModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ExperienceReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ExperienceReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetExperienceModel(id);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -364,6 +412,14 @@ namespace WebMvc.Controllers
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("ContactsReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ContactsReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetContactsModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult Contacts(ContactsModel model)
@@ -387,6 +443,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetBackgroundCheckModel(id);
             return (model.IsFinal || id.HasValue) && !EmploymentBl.IsUnlimitedEditAvailable() ? View("BackgroundCheckReadOnly", model) : View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult BackgroundCheckReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetBackgroundCheckModel(id);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -448,6 +512,14 @@ namespace WebMvc.Controllers
             return model.IsFinal ? View("OnsiteTrainingReadOnly", model) : View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult OnsiteTrainingReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetOnsiteTrainingModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Trainer)]
         public ActionResult OnsiteTraining(OnsiteTrainingModel model)
@@ -482,6 +554,14 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager | UserRole.Candidate)]
+        public ActionResult ApplicationLetterReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetApplicationLetterModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate)]
         public ActionResult ApplicationLetter(ApplicationLetterModel model)
@@ -503,6 +583,14 @@ namespace WebMvc.Controllers
         {
             var model = EmploymentBl.GetManagersModel(id);
             return View(model);
+        }
+
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult ManagersReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetManagersModel(id);
+            return PartialView(model);
         }
 
         [HttpPost]
@@ -555,6 +643,14 @@ namespace WebMvc.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult PersonnelManagersReadOnly(int? id)
+        {
+            var model = EmploymentBl.GetPersonnelManagersModel(id);
+            return PartialView(model);
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.PersonnelManager | UserRole.OutsourcingManager)]
         public ActionResult PersonnelManagers(PersonnelManagersModel model, IEnumerable<HttpPostedFileBase> files)
@@ -600,6 +696,19 @@ namespace WebMvc.Controllers
                 EmploymentBl.SaveApprovals(roster, out error);
             }
             */
+            return View(model);
+        }
+        
+        [HttpGet]
+        [ReportAuthorize(UserRole.Manager | UserRole.Chief | UserRole.Director | UserRole.Security | UserRole.Trainer | UserRole.PersonnelManager | UserRole.OutsourcingManager)]
+        public ActionResult PersonnelInfo(int ID, bool IsCandidateInfoAvailable, bool IsBackgroundCheckAvailable, bool IsManagersAvailable, bool IsPersonalManagersAvailable)
+        {
+            PersonnelInfoModel model = new PersonnelInfoModel();
+            model.CandidateID = ID;
+            model.IsCandidateInfoAvailable = IsCandidateInfoAvailable;
+            model.IsBackgroundCheckAvailable = IsBackgroundCheckAvailable;
+            model.IsManagersAvailable = IsManagersAvailable;
+            model.IsPersonalManagersAvailable = IsPersonalManagersAvailable;
             return View(model);
         }
 
@@ -711,9 +820,15 @@ namespace WebMvc.Controllers
             numberOfFilledFields += string.IsNullOrEmpty(model.SNILS) ? 0 : 1;
             numberOfFilledFields += model.DateOfBirth.HasValue ? 1 : 0;
 
+            if (model.Surname == null)
+                ModelState.AddModelError("Surname", "Заполните ФИО кандидата!");
+
+            if (model.DepartmentId == 0)
+                ModelState.AddModelError("DepartmentId", "Выберите структурное подразделение!");
+
             if (numberOfFilledFields < 2)
             {
-                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных.");
+                ModelState.AddModelError(string.Empty, "Необходимо заполнить хотя бы 2 поля личных данных, кроме ФИО.");
             }
 
             if (model.DateOfBirth > DateTime.Now.AddYears(-minimumAge))

@@ -1,0 +1,150 @@
+﻿@model Reports.Presenters.UI.ViewModel.Employment2.PersonnelInfoModel
+@using Reports.Presenters.Services.Impl
+@using Reports.Core
+@{
+    Layout = "~/Views/Shared/_LayoutEmployment.cshtml";
+    ViewBag.Title = "Просмотр личных данных кандидата";
+    var dto = UserDto.Deserialize(((FormsIdentity)(HttpContext.Current.User.Identity)).Ticket.UserData);
+}
+
+
+@using (Html.BeginForm("PersonnelInfo", "Employment", FormMethod.Post))
+{
+    <input type="hidden" id="CandidateID" name="CandidateID" value="@Model.CandidateID" />
+    <input type="hidden" id="IsCandidateInfoAvailable" name="IsCandidateInfoAvailable" value="@Model.IsCandidateInfoAvailable" />
+    <input type="hidden" id="IsBackgroundCheckAvailable" name="IsBackgroundCheckAvailable" value="@Model.IsBackgroundCheckAvailable" />
+    <input type="hidden" id="IsManagersAvailable" name="IsManagersAvailable" value="@Model.IsManagersAvailable" />
+    <input type="hidden" id="IsPersonalManagersAvailable" name="IsPersonalManagersAvailable" value="@Model.IsPersonalManagersAvailable" />
+    
+    <div id="tabs">
+        <ul>
+            @if (Model.IsCandidateInfoAvailable)
+            {
+                <li><a href="#tabs1">Общая информация</a></li>
+                <li><a href="#tabs2">Паспортные данные</a></li>
+                <li><a href="#tabs3">Образование</a></li>
+                <li><a href="#tabs4">Состав семьи</a></li>
+                <li><a href="#tabs5">Воинский учет</a></li>
+                <li><a href="#tabs6">Трудовая деятельность</a></li>
+                <li><a href="#tabs7">Контактные данные</a></li>
+            }
+            @if (Model.IsBackgroundCheckAvailable)
+            {
+                <li><a href="#tabs8">Служба безопасности</a></li>
+            }
+            
+            @if ((dto.UserRole & UserRole.Security) == 0)
+            {
+                <li><a href="#tabs9">Обучение</a></li>
+            }
+
+            @if (Model.IsCandidateInfoAvailable && ((dto.UserRole & UserRole.Security) == 0))
+            {
+                <li><a href="#tabs10">Заявление о приеме</a></li>
+            }
+            @if (Model.IsManagersAvailable)
+            {
+                <li><a href="#tabs11">Руководители</a></li>
+            }
+            @if (Model.IsPersonalManagersAvailable)
+            {
+                <li><a href="#tabs12">Кадры</a></li>
+            }
+        </ul>
+
+        <div id="tabs1"></div>
+        <div id="tabs2"></div>
+        <div id="tabs3"></div>
+        <div id="tabs4"></div>
+        <div id="tabs5"></div>
+        <div id="tabs6"></div>
+        <div id="tabs7"></div>
+        <div id="tabs8"></div>
+        <div id="tabs9"></div>
+        <div id="tabs10"></div>
+        <div id="tabs11"></div>
+        <div id="tabs12"></div>
+        
+        
+    </div>
+}
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        setActiveMenuItem("empRoster");
+        $('#tabs').tabs({ selected: -1,
+            spinner: "Загрузка...",
+            select: function (e, ui) {
+                if (ui.panel.id == "tabs1") {
+                    $("#tabs1").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs1", "GeneralInfoReadOnly", "/Employment/GeneralInfoReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs2") {
+                    $("#tabs2").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs2", "PassportReadOnly", "/Employment/PassportReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs3") {
+                    $("#tabs3").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs3", "EducationReadOnly", "/Employment/EducationReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs4") {
+                    $("#tabs4").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs4", "FamilyReadOnly", "/Employment/FamilyReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs5") {
+                    $("#tabs5").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs5", "MilitaryServiceReadOnly", "/Employment/MilitaryServiceReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs6") {
+                    $("#tabs6").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs6", "ExperienceReadOnly", "/Employment/ExperienceReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs7") {
+                    $("#tabs7").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs7", "ContactsReadOnly", "/Employment/ContactsReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs8") {
+                    $("#tabs8").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs8", "BackgroundCheckReadOnly", "/Employment/BackgroundCheckReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs9") {
+                    $("#tabs9").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs9", "OnsiteTrainingReadOnly", "/Employment/OnsiteTrainingReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs10") {
+                    $("#tabs10").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs10", "ApplicationLetterReadOnly", "/Employment/ApplicationLetterReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs11") {
+                    $("#tabs11").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs11", "ManagersReadOnly", "/Employment/ManagersReadOnly?Id=@Model.CandidateID", "GET");
+                }
+                if (ui.panel.id == "tabs12") {
+                    $("#tabs12").text('Подождите, идет загрузка данных ...');
+                    AjaxFormRequest("tabs12", "PersonnelManagersReadOnly", "/Employment/PersonnelManagersReadOnly?Id=@Model.CandidateID", "GET");
+                }
+            }
+        });
+        $('#tabs').tabs("select", 0);
+    });
+
+
+    function AjaxFormRequest(result_id,form_id,url,TypePost) {
+        jQuery.ajax({
+            url:     url, //Адрес подгружаемой страницы
+            type: TypePost, //Тип запроса
+            dataType: "html", //Тип данных
+            data: jQuery("#"+form_id).serialize(), 
+            success: function(response) { //Если все нормально
+            document.getElementById(result_id).innerHTML = response;
+                },
+            error: function(response) { //Если ошибка
+            document.getElementById(result_id).innerHTML = "Ошибка при отправке формы";
+                }   
+        });
+    }
+</script>

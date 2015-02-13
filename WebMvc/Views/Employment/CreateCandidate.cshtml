@@ -9,55 +9,61 @@
 
 @using (Html.BeginForm("CreateCandidate", "Employment", FormMethod.Post))
 {
-    <fieldset class="bordered doc-wrap panel">
-    <legend>Добавление кандидата</legend>
-        <div class="formfield">
-            @Html.LabelFor(m => m.PassportData)&nbsp;@Html.ValidationMessageFor(m => m.PassportData)<br />
-            @Html.TextBoxFor(m => m.PassportData)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
-            @Html.TextBoxFor(m => m.SNILS)
-        </div>
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
-            @Html.TextBoxFor(m => m.DateOfBirth)
-        </div>
-
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.DepartmentName):
-        </div>
-        <div class="formfield">
-            <label id="DepartmentNameLabel">@Model.DepartmentName</label>
-            @Html.HiddenFor(m => m.DepartmentName)
-            @Html.HiddenFor(m => m.DepartmentId)
-        </div>
-        <div class="formfield clear">
-            <input type="button" value="Выбрать" onclick="changeDepartment();"/>
-        </div>
-
-        <div class="formfield clear">
-            @Html.LabelFor(m => m.IsFixedTermContract)<br />
-            @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
-            @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
-        </div>
-
-        @if (Model.IsOnBehalfOfManagerAvailable)
-        {
-            @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
+    <div class="doc-wrap">
+            <fieldset class="bordered doc-wrap panel">
+            <legend>Добавление кандидата</legend>
+            <div class="formfield">
+                @Html.LabelFor(m => m.Surname)&nbsp;@Html.ValidationMessageFor(m => m.Surname)<br />
+                @Html.TextBoxFor(m => m.Surname)
+            </div>
             <div class="formfield clear">
-                @Html.LabelFor(m => m.OnBehalfOfManagerName):
+                @Html.LabelFor(m => m.PassportData)&nbsp;@Html.ValidationMessageFor(m => m.PassportData)<br />
+                @Html.TextBoxFor(m => m.PassportData)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.SNILS)&nbsp;@Html.ValidationMessageFor(m => m.SNILS)<br />
+                @Html.TextBoxFor(m => m.SNILS)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DateOfBirth)&nbsp;@Html.ValidationMessageFor(m => m.DateOfBirth)<br />
+                @Html.TextBoxFor(m => m.DateOfBirth)
+            </div>
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.DepartmentName):
             </div>
             <div class="formfield">
-                <label id="OnBehalfOfManagerNameLabel">@Model.OnBehalfOfManagerName</label>
-                @Html.HiddenFor(m => m.OnBehalfOfManagerId)
-                @Html.HiddenFor(m => m.OnBehalfOfManagerName)
+                <label id="DepartmentNameLabel">@Model.DepartmentName</label>
+                @Html.HiddenFor(m => m.DepartmentName)
+                @Html.HiddenFor(m => m.DepartmentId)
             </div>
             <div class="formfield clear">
-                <input type="button" value="Выбрать" onclick="changeManager();"/>
+                <input type="button" value="Выбрать" onclick="changeDepartment();"/>
             </div>
-        }
-    </fieldset>
+
+            <div class="formfield clear">
+                @Html.LabelFor(m => m.IsFixedTermContract)<br />
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, false, new { @id = "IsFixedTermContractFalse" })<label for="IsFixedTermContractFalse">Бессрочный</label>
+                @Html.RadioButtonFor(m => m.IsFixedTermContract, true, new { @id = "IsFixedTermContractTrue" })<label for="IsFixedTermContractTrue">Срочный</label>
+            </div>
+
+            @if (Model.IsOnBehalfOfManagerAvailable)
+            {
+                @Html.HiddenFor(m => m.IsOnBehalfOfManagerAvailable)
+                <div class="formfield clear">
+                    @Html.LabelFor(m => m.OnBehalfOfManagerName):
+                </div>
+                <div class="formfield">
+                    <label id="OnBehalfOfManagerNameLabel">@Model.OnBehalfOfManagerName</label>
+                    @Html.HiddenFor(m => m.OnBehalfOfManagerId)
+                    @Html.HiddenFor(m => m.OnBehalfOfManagerName)
+                </div>
+                <div class="formfield clear">
+                    <input type="button" value="Выбрать" onclick="changeManager();"/>
+                </div>
+            }
+        </fieldset>
+    </div>
+    
     
     <div class="clear">        
         @if (!Model.UserId.HasValue)

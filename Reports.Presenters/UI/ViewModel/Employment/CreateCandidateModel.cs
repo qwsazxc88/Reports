@@ -34,6 +34,8 @@ namespace Reports.Presenters.UI.ViewModel.Employment2
 
         // Id временного пользователя
         public int? UserId { get; set; }
+        [Display(Name = "ФИО")]
+        public string Surname { get; set; }
 
         public bool IsOnBehalfOfManagerAvailable { get; set; }
     }

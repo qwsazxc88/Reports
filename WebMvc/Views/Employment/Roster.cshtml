@@ -213,7 +213,7 @@
             </td>
         
             <td rowspan="2">
-                @candidate.Name
+                <a class="ui-notify-close" href='@Url.Action("PersonnelInfo", "Employment", new { id = @candidate.UserId, IsCandidateInfoAvailable = Model.IsCandidateInfoAvailable, IsBackgroundCheckAvailable = Model.IsBackgroundCheckAvailable, IsManagersAvailable = Model.IsManagersAvailable, IsPersonalManagersAvailable = Model.IsPersonalManagersAvailable })' style="cursor:hand">@candidate.Name</a>
             </td>
 
             <td rowspan="2" class="displayLinks" style="vertical-align:bottom; padding: 0;">
