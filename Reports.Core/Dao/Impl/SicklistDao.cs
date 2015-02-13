@@ -28,6 +28,7 @@ namespace Reports.Core.Dao.Impl
                DateTime? beginDate,
                DateTime? endDate,
                string userName, 
+               string SicklistNumber,
                int sortedBy,
                bool? sortDescending
             )
@@ -50,6 +51,16 @@ namespace Reports.Core.Dao.Impl
             whereString = GetPositionWhere(whereString, positionId);
             whereString = GetDepartmentWhere(whereString, departmentId);
             whereString = GetUserNameWhere(whereString, userName);
+
+            //фильт по номеру больничного
+            if (SicklistNumber != null)
+            {
+                if (whereString.Trim().Length != 0)
+                    whereString += " and SicklistNumber = '" + SicklistNumber + "' ";
+                else
+                    whereString += " SicklistNumber = '" + SicklistNumber + "' ";
+            }
+
             sqlQuery = GetSqlQueryOrdered(sqlQuery, whereString, sortedBy, sortDescending);
 
             IQuery query = CreateQuery(sqlQuery);
@@ -73,7 +84,8 @@ namespace Reports.Core.Dao.Impl
                 AddScalar("RequestType", NHibernateUtil.String).
                 AddScalar("RequestStatus", NHibernateUtil.String).
                 AddScalar("UserExperienceIn1C", NHibernateUtil.Boolean).
-                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean);
+                AddScalar("IsOriginalReceived", NHibernateUtil.Boolean).
+                AddScalar("SicklistNumber", NHibernateUtil.String);
         }
 
         public bool ResetApprovals(int id)
