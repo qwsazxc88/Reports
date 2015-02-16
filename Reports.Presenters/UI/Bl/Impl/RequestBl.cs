@@ -7542,7 +7542,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                 case UserRole.Accountant:
                     if (!deduction.SendTo1C.HasValue && !deduction.DeleteDate.HasValue)
                     {
-                        if(deduction.EditDate.Month >= DateTime.Today.Month)
+                        if (deduction.EditDate.Month == DateTime.Today.Month && deduction.EditDate.Year == DateTime.Today.Year)
                             model.IsEditable = true;
                         model.IsDeleteAvailable = true;
                     }

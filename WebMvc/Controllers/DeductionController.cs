@@ -113,11 +113,19 @@ namespace WebMvc.Controllers
                 else if (sum <= 0)
                     ModelState.AddModelError("Sum", "Поле 'Сумма' должно быть положительным числом.");
             }
-            if (model.TypeId != (int)DeductionTypeEnum.Deduction)
+            if (Convert.ToDateTime(model.DateEdited).Month == DateTime.Today.Month && Convert.ToDateTime(model.DateEdited).Year == DateTime.Today.Year)
             {
-                if(!model.DismissalDate.HasValue)
-                    ModelState.AddModelError("DismissalDate", "'Дата увольнения' - обязательное поле.");
+                if (model.TypeId != (int)DeductionTypeEnum.Deduction)
+                {
+                    if (!model.DismissalDate.HasValue)
+                        ModelState.AddModelError("DismissalDate", "'Дата увольнения' - обязательное поле.");
+                }
             }
+            else
+            {
+                ModelState.AddModelError("DismissalDate", "Отклонение заявки в прошлом периоде запрещено!");
+            }
+            
             return ModelState.IsValid;
         }
 
