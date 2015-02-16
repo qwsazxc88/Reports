@@ -2058,6 +2058,43 @@ namespace Reports.Presenters.UI.Bl.Impl
         protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
             error = string.Empty;
+            //даем сохранять смену фамилии и владение языками в режиме черновика, без требования поставить птицу о соглашении на обоработку своих личных данных
+            if (!viewModel.AgreedToPersonalDataProcessing)
+            {
+                if (entity.ForeignLanguages == null)
+                {
+                    entity.ForeignLanguages = new List<ForeignLanguage>();
+                }
+                if (viewModel.ForeignLanguages != null && viewModel.ForeignLanguages.Count > entity.ForeignLanguages.Count)
+                {
+                    int lastIndex = viewModel.ForeignLanguages.Count - 1;
+                    entity.ForeignLanguages.Add(new ForeignLanguage
+                    {
+                        LanguageName = viewModel.ForeignLanguages[lastIndex].LanguageName,
+                        Level = viewModel.ForeignLanguages[lastIndex].Level
+                    });
+                }
+
+                if (entity.NameChanges == null)
+                {
+                    entity.NameChanges = new List<NameChange>();
+                }
+                if (viewModel.NameChanges != null && viewModel.NameChanges.Count > entity.NameChanges.Count)
+                {
+                    int lastIndex = viewModel.NameChanges.Count - 1;
+                    entity.NameChanges.Add(new NameChange
+                    {
+                        Date = viewModel.NameChanges[lastIndex].Date,
+                        Place = viewModel.NameChanges[lastIndex].Place,
+                        PreviousName = viewModel.NameChanges[lastIndex].PreviousName,
+                        Reason = viewModel.NameChanges[lastIndex].Reason
+                    });
+                }
+
+                return true;
+            }
+
+
 
             if (viewModel.AgreedToPersonalDataProcessing)
             {
