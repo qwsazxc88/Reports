@@ -140,6 +140,38 @@ namespace WebMvc.Controllers
             return Json(model.NameChanges);
         }
 
+        [HttpGet]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoDeleteNameChange(int NameID)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            //model.NameChanges.Add(itemToDelete);
+            //EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel();
+            return Json(model.NameChanges);
+
+
+            //bool saveResult;
+            //try
+            //{
+            //    DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
+            //    saveResult = EmploymentBl.DeleteAttachment(model);
+            //    error = model.Error;
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error("Exception on DeleteAttachment:", ex);
+            //    error = ex.GetBaseException().Message;
+            //    saveResult = false;
+            //}
+            //return Json(new { Error = error, Result = saveResult });
+        }
+
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd)

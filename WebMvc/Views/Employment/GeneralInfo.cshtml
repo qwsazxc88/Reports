@@ -65,6 +65,9 @@
                                 <th>
                                     @Html.LabelFor(m => m.NameChanges[0].Reason)
                                 </th>
+                                <th>
+                                    @Html.LabelFor(m => m.NameChanges[0].Id)
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,6 +85,10 @@
                                     </td>
                                     <td>
                                         @Model.NameChanges[i].Reason
+                                    </td>
+                                    <td>
+                                        <a onclick="DeleteNameChange(@Model.NameChanges[i].Id);" href="#" data-index=@Model.NameChanges[i].Id>Удалить</a>
+                                        <input type="button" value="Удалить" onclick="DeleteNameChange(@Model.NameChanges[i].Id);" />
                                     </td>
                                     @*<td id="delete-name-change">
                                         <a href="" data-index=@i>Удалить</a>
@@ -309,6 +316,23 @@
         return false;
     }
 
+
+    function DeleteNameChange(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
+        var url = actionUrl + "?NameID=" + id;
+        $.getJSON(url,
+                       function (data) {
+                            if(!data.Result){
+                                alert('Ошибка удаления строки:'+ data.Error);
+                            }
+                            else {
+                               location.reload(true);
+                           }
+                       }
+                     );
+        return false;
+    }
+
     // BEGIN Add Name Change
 
     $(document).ready(function () {
@@ -360,6 +384,7 @@
         };
 
         // END Add Name Change
+
 
         // BEGIN Add Foreign Language
 
@@ -413,6 +438,35 @@
             $addForeignLanguageDialog.dialog("open");
             e.preventDefault();
         });
+
+
+//        $("#delete-name-change").click(function (e){
+//            processDeleteNameChange();
+//            e.preventDefault();
+//        });
+
+//        var processDeleteNameChange = function()
+//        {
+//            var url = "@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
+//            var dataToSend = $("#add-name-change-dialog form").serialize();
+//            $.post(url, dataToSend, function(dataReceived){
+//                var $table = $("#name-changes-container>table");
+//                var $rows = $("#name-changes-container>table .name-change-row");
+//                $rows.remove();
+//                for (var i = 0; i < dataReceived.length; i++)
+//                {
+//                    $table.append(
+//                        "<tr class=\"name-change-row\"><td>" +
+//                        (dataReceived[i].Id ? dataReceived[i].Id : "") + "</td><td>" +
+//                        dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+//                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+//                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + 
+//                        "</td></tr>"
+//                    );
+//                }
+//            }, "json");
+//        };
 
         UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
             {

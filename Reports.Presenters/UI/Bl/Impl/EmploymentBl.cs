@@ -248,7 +248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 foreach (var item in entity.NameChanges)
                 {
-                    model.NameChanges.Add(new NameChangeDto { Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
+                    model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
 
                 model.Patronymic = entity.Patronymic;
