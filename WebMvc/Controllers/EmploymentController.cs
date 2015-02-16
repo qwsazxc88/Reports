@@ -152,14 +152,14 @@ namespace WebMvc.Controllers
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
-            return Json(model.NameChanges);
+            //return Json(model.NameChanges);
 
 
-            //bool saveResult;
+            bool saveResult;
             //try
             //{
             //    DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
-            //    saveResult = EmploymentBl.DeleteAttachment(model);
+            saveResult = true;// EmploymentBl.DeleteAttachment(model);
             //    error = model.Error;
 
             //}
@@ -169,7 +169,7 @@ namespace WebMvc.Controllers
             //    error = ex.GetBaseException().Message;
             //    saveResult = false;
             //}
-            //return Json(new { Error = error, Result = saveResult });
+            return Json(new { Error = error, Result = saveResult });
         }
 
         [HttpPost]
