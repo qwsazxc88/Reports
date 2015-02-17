@@ -48,7 +48,8 @@ INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsA
 SELECT N'Материальная помощь' as Name, 20 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
-SELECT N'Налоговый вычет (имущественный)' as Name, 20 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 7
+SELECT N'Заявление на налоговый вычет (имущественный) с пакетом подтверждающих документов' as Name, 20 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 7
+
 
 --меняем сортировку по алфавиту
 UPDATE HelpServiceType SET SortOrder = 0
