@@ -47,6 +47,9 @@ SELECT N'Справка о ненахождении в отпуске по уходу за ребенком до 3 лет и о нена
 INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
 SELECT N'Материальная помощь' as Name, 20 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 3
 
+INSERT INTO HelpServiceType (Name, SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable)
+SELECT N'Налоговый вычет (имущественный)' as Name, 20 as SortOrder, IsPeriodAvailable, IsRequirementsAvailable, IsAttachmentAvailable FROM HelpServiceType WHERE Id = 7
+
 --меняем сортировку по алфавиту
 UPDATE HelpServiceType SET SortOrder = 0
 
