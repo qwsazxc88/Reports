@@ -70,7 +70,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="name-changes">
                             @for (var i = 0; i < Model.NameChanges.Count; i++)
                             {
                                 <tr class="name-change-row">
@@ -321,12 +321,37 @@
         var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
         var url = actionUrl + "?NameID=" + id;
         $.getJSON(url,
-                       function (data) {
-                            if(!data.Result){
-                                alert('Ошибка удаления строки:'+ data.Error);
+                       function (result) {
+                            if(result.Error != ''){
+                                $('#Error').text(result.Error);
+                                $('#Error').show(); 
                             }
-                            else {
-                               location.reload(true);
+                            else{
+                                $('#Error').text("");
+                                $('#Error').hide(); 
+                                var tableValues = '<tbody id="name-changes">';
+                                $.each(data, function (item, data) {
+                                    tableValues += '<tr class="name-change-row">';
+                                    tableValues += '<td>';
+                                    tableValues += data.PreviousName;
+                                    tableValues += '</td>';
+                                    tableValues += '<td>';
+                                    tableValues += data.Date;
+                                    tableValues += '</td>';
+                                    tableValues += '<td>';
+                                    tableValues += data.Place;
+                                    tableValues += '</td>';
+                                    tableValues += '<td>';
+                                    tableValues += data.Reason;
+                                    tableValues += '</td>';
+                                    tableValues += '<td>';
+                                    tableValues += '<input type="button" value="Удалить" onclick="DeleteNameChange(' + data.Id + ');" />';
+                                    tableValues += '</td>';
+                                    tableValues += '</tr>';
+                                })
+                                tableValues += '/tbody';
+                                var tv = $('#name-changes');
+                                options.replaceWith(tableValues);
                            }
                        }
                      );

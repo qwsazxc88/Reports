@@ -17,6 +17,7 @@ using System.Configuration;
 using System.Text;
 using System.Web.Security;
 using System.Diagnostics;
+using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
@@ -142,7 +143,7 @@ namespace WebMvc.Controllers
 
         [HttpGet]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ActionResult GeneralInfoDeleteNameChange(int NameID)
+        public ContentResult GeneralInfoDeleteNameChange(int NameID)
         {
             string error = String.Empty;
 
@@ -169,7 +170,20 @@ namespace WebMvc.Controllers
             //    error = ex.GetBaseException().Message;
             //    saveResult = false;
             //}
-            return Json(new { Error = error, Result = saveResult });
+
+            //try
+            //{
+            //    HelpBl.GetDictionariesStates(typeId, model);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error("Exception on GetDictionariesStates:", ex);
+            //    model.Error = ex.GetBaseException().Message;
+            //}
+
+            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+            var jsonString = jsonSerializer.Serialize(model);
+            return Content(jsonString);
         }
 
         [HttpPost]
