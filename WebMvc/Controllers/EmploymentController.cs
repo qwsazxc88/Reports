@@ -141,49 +141,18 @@ namespace WebMvc.Controllers
             return Json(model.NameChanges);
         }
 
-        [HttpGet]
+        [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
-        public ContentResult GeneralInfoDeleteNameChange(int NameID)
+        public ActionResult GeneralInfoDeleteNameChange(int NameID)
         {
             string error = String.Empty;
 
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
-            //model.NameChanges.Add(itemToDelete);
-            //EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            EmploymentBl.DeleteNameChange(model, NameID);
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();
-            //return Json(model.NameChanges);
-
-
-            bool saveResult;
-            //try
-            //{
-            //    DeleteAttacmentModel model = new DeleteAttacmentModel { Id = id };
-            saveResult = true;// EmploymentBl.DeleteAttachment(model);
-            //    error = model.Error;
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error("Exception on DeleteAttachment:", ex);
-            //    error = ex.GetBaseException().Message;
-            //    saveResult = false;
-            //}
-
-            //try
-            //{
-            //    HelpBl.GetDictionariesStates(typeId, model);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error("Exception on GetDictionariesStates:", ex);
-            //    model.Error = ex.GetBaseException().Message;
-            //}
-
-            JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-            var jsonString = jsonSerializer.Serialize(model);
-            return Content(jsonString);
+            return Json(model.NameChanges);
         }
 
         [HttpPost]
@@ -195,6 +164,19 @@ namespace WebMvc.Controllers
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.ForeignLanguages.Add(itemToAdd);
             EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel();
+            return Json(model.ForeignLanguages);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoDeleteForeignLanguage(int LanguageID)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            EmploymentBl.DeleteLanguage(model, LanguageID);
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();

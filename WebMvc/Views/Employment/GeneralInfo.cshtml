@@ -65,9 +65,12 @@
                                 <th>
                                     @Html.LabelFor(m => m.NameChanges[0].Reason)
                                 </th>
-                                <th>
-                                    @Html.LabelFor(m => m.NameChanges[0].Id)
-                                </th>
+                                @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                {
+                                    <th>
+                                        @*@Html.LabelFor(m => m.NameChanges[0].Id)*@
+                                    </th>
+                                }
                             </tr>
                         </thead>
                         <tbody id="name-changes">
@@ -86,13 +89,12 @@
                                     <td>
                                         @Model.NameChanges[i].Reason
                                     </td>
-                                    <td>
-                                        <a onclick="DeleteNameChange(@Model.NameChanges[i].Id);" href="#" data-index=@Model.NameChanges[i].Id>Удалить</a>
-                                        <input type="button" value="Удалить" onclick="DeleteNameChange(@Model.NameChanges[i].Id);" />
-                                    </td>
-                                    @*<td id="delete-name-change">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.NameChanges != null && Model.NameChanges.Count != 0)
+                                    {
+                                        <td>
+                                            <a onclick="DeleteNameChange(@Model.NameChanges[i].Id);" href="#" data-index=@Model.NameChanges[i].Id>Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -144,6 +146,10 @@
                                 <th>
                                     @Html.LabelFor(m => m.ForeignLanguages[0].Level)
                                 </th>
+                                @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                {
+                                    <th></th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -156,9 +162,12 @@
                                     <td>
                                         @Model.ForeignLanguages[i].Level
                                     </td>
-                                    @*<td id="delete-foreign-language">
-                                        <a href="" data-index=@i>Удалить</a>
-                                    </td>*@
+                                    @if (Model.ForeignLanguages != null && Model.ForeignLanguages.Count != 0)
+                                    {
+                                        <td id="delete-foreign-language">
+                                            <a onclick="DeleteForeignLanguages(@Model.ForeignLanguages[i].Id);" href="#" data-index=@Model.ForeignLanguages[i].Id>Удалить</a>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
@@ -316,48 +325,52 @@
         return false;
     }
 
-
+    
     function DeleteNameChange(Id){
         var actionUrl="@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
-        var url = actionUrl + "?NameID=" + id;
-        $.getJSON(url,
-                       function (result) {
-                            if(result.Error != ''){
-                                $('#Error').text(result.Error);
-                                $('#Error').show(); 
-                            }
-                            else{
-                                $('#Error').text("");
-                                $('#Error').hide(); 
-                                var tableValues = '<tbody id="name-changes">';
-                                $.each(data, function (item, data) {
-                                    tableValues += '<tr class="name-change-row">';
-                                    tableValues += '<td>';
-                                    tableValues += data.PreviousName;
-                                    tableValues += '</td>';
-                                    tableValues += '<td>';
-                                    tableValues += data.Date;
-                                    tableValues += '</td>';
-                                    tableValues += '<td>';
-                                    tableValues += data.Place;
-                                    tableValues += '</td>';
-                                    tableValues += '<td>';
-                                    tableValues += data.Reason;
-                                    tableValues += '</td>';
-                                    tableValues += '<td>';
-                                    tableValues += '<input type="button" value="Удалить" onclick="DeleteNameChange(' + data.Id + ');" />';
-                                    tableValues += '</td>';
-                                    tableValues += '</tr>';
-                                })
-                                tableValues += '/tbody';
-                                var tv = $('#name-changes');
-                                options.replaceWith(tableValues);
-                           }
-                       }
-                     );
-        return false;
+        var url = actionUrl + "?NameID=" + Id;
+
+        var dataToSend = $("#add-name-change-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#name-changes-container>table");
+                var $rows = $("#name-changes-container>table .name-change-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"name-change-row\"><td>" +
+                        (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
+                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
+                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
     }
 
+    function DeleteForeignLanguages(Id){
+        var actionUrl="@Url.Action("GeneralInfoDeleteForeignLanguage", "Employment")";
+        var url = actionUrl + "?LanguageID=" + Id;
+
+        var dataToSend = $("#add-foreign-language-dialog form").serialize();
+            $.post(url, dataToSend, function(dataReceived){
+                var $table = $("#foreign-languages-container>table");
+                var $rows = $("#foreign-languages-container>table .foreign-language-row");
+                $rows.remove();
+                for (var i = 0; i < dataReceived.length; i++)
+                {
+                    $table.append(
+                        "<tr class=\"foreign-language-row\"><td>" +
+                        (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") +  "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
+                    );
+                }
+            }, "json");
+    }
+
+    
     // BEGIN Add Name Change
 
     $(document).ready(function () {
@@ -401,8 +414,8 @@
                         (dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
                         UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
                         (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
-                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + "</td><td>" +
+                        "<a onclick='DeleteNameChange(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
@@ -445,8 +458,8 @@
                     $table.append(
                         "<tr class=\"foreign-language-row\"><td>" +
                         (dataReceived[i].LanguageName ? dataReceived[i].LanguageName : "") + "</td><td>" +
-                        (dataReceived[i].Level ? dataReceived[i].Level : "") + 
-                        "</td></tr>"
+                        (dataReceived[i].Level ? dataReceived[i].Level : "") + "</td><td>" +
+                        "<a onclick='DeleteForeignLanguages(" + dataReceived[i].Id + ");' href='#' data-index=" + dataReceived[i].Id + ">Удалить</a></td></tr>"
                     );
                 }
             }, "json");
@@ -465,33 +478,6 @@
         });
 
 
-//        $("#delete-name-change").click(function (e){
-//            processDeleteNameChange();
-//            e.preventDefault();
-//        });
-
-//        var processDeleteNameChange = function()
-//        {
-//            var url = "@Url.Action("GeneralInfoDeleteNameChange", "Employment")";
-//            var dataToSend = $("#add-name-change-dialog form").serialize();
-//            $.post(url, dataToSend, function(dataReceived){
-//                var $table = $("#name-changes-container>table");
-//                var $rows = $("#name-changes-container>table .name-change-row");
-//                $rows.remove();
-//                for (var i = 0; i < dataReceived.length; i++)
-//                {
-//                    $table.append(
-//                        "<tr class=\"name-change-row\"><td>" +
-//                        (dataReceived[i].Id ? dataReceived[i].Id : "") + "</td><td>" +
-//                        dataReceived[i].PreviousName ? dataReceived[i].PreviousName : "") + "</td><td>" +
-//                        UIHelpers.convertMSJsonDateToShortDateString(dataReceived[i].Date) + "</td><td>" +
-//                        (dataReceived[i].Place ? dataReceived[i].Place : "") + "</td><td>" +
-//                        (dataReceived[i].Reason ? dataReceived[i].Reason : "") + 
-//                        "</td></tr>"
-//                    );
-//                }
-//            }, "json");
-//        };
 
         UIHelpers.handleCheckboxState($("#IsPatronymicAbsent"),
             {

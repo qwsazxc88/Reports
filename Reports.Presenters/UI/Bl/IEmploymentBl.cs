@@ -90,5 +90,7 @@ namespace Reports.Presenters.UI.Bl
         bool DeleteAttachment(DeleteAttacmentModel model);
 
         bool IsFixedTermContract(int userId);
+        void DeleteNameChange(GeneralInfoModel model, int NameID);
+        void DeleteLanguage(GeneralInfoModel model, int LanguageID);
     }
 }
