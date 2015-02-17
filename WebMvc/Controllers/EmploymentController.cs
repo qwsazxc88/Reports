@@ -17,6 +17,7 @@ using System.Configuration;
 using System.Text;
 using System.Web.Security;
 using System.Diagnostics;
+using System.Web.Script.Serialization;
 
 namespace WebMvc.Controllers
 {
@@ -142,6 +143,20 @@ namespace WebMvc.Controllers
 
         [HttpPost]
         [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoDeleteNameChange(int NameID)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            EmploymentBl.DeleteNameChange(model, NameID);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel();
+            return Json(model.NameChanges);
+        }
+
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
         public ActionResult GeneralInfoAddForeignLanguage(ForeignLanguageDto itemToAdd)
         {
             string error = String.Empty;
@@ -149,6 +164,19 @@ namespace WebMvc.Controllers
             GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
             model.ForeignLanguages.Add(itemToAdd);
             EmploymentBl.ProcessSaving<GeneralInfoModel, GeneralInfo>(model, out error);
+            ViewBag.Error = error;
+
+            model = EmploymentBl.GetGeneralInfoModel();
+            return Json(model.ForeignLanguages);
+        }
+        [HttpPost]
+        [ReportAuthorize(UserRole.Candidate | UserRole.PersonnelManager)]
+        public ActionResult GeneralInfoDeleteForeignLanguage(int LanguageID)
+        {
+            string error = String.Empty;
+
+            GeneralInfoModel model = EmploymentBl.GetGeneralInfoModel();
+            EmploymentBl.DeleteLanguage(model, LanguageID);
             ViewBag.Error = error;
 
             model = EmploymentBl.GetGeneralInfoModel();

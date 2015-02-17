@@ -233,7 +233,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 foreach (var item in entity.ForeignLanguages)
                 {
-                    model.ForeignLanguages.Add(new ForeignLanguageDto { LanguageName = item.LanguageName, Level = item.Level });
+                    model.ForeignLanguages.Add(new ForeignLanguageDto { Id = item.Id, LanguageName = item.LanguageName, Level = item.Level });
                 }
 
                 model.INN = entity.INN;
@@ -248,7 +248,7 @@ namespace Reports.Presenters.UI.Bl.Impl
 
                 foreach (var item in entity.NameChanges)
                 {
-                    model.NameChanges.Add(new NameChangeDto { Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
+                    model.NameChanges.Add(new NameChangeDto { Id = item.Id, Date = item.Date, Place = item.Place, PreviousName = item.PreviousName, Reason = item.Reason });
                 }
 
                 model.Patronymic = entity.Patronymic;
@@ -2054,7 +2054,44 @@ namespace Reports.Presenters.UI.Bl.Impl
                     return false;
             }            
         }
-
+        /// <summary>
+        /// Удаление строки из раздела об изменении фамили
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="NameID"></param>
+        public void DeleteNameChange(GeneralInfoModel model, int NameID)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(model.UserId);
+            GeneralInfo entity = EmploymentCommonDao.GetEntityById<GeneralInfo>(id);
+            foreach (var nc in entity.NameChanges)
+            {
+                if (nc.Id == NameID)
+                {
+                    entity.NameChanges.Remove(nc);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<GeneralInfo>(entity);
+        }
+        /// <summary>
+        /// Удаление строки из раздела о владении языками
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="NameID"></param>
+        public void DeleteLanguage(GeneralInfoModel model, int LanguageID)
+        {
+            int id = EmploymentCommonDao.GetDocumentId<GeneralInfo>(model.UserId);
+            GeneralInfo entity = EmploymentCommonDao.GetEntityById<GeneralInfo>(id);
+            foreach (var fl in entity.ForeignLanguages)
+            {
+                if (fl.Id == LanguageID)
+                {
+                    entity.ForeignLanguages.Remove(fl);
+                    break;
+                }
+            }
+            EmploymentCommonDao.SaveOrUpdateDocument<GeneralInfo>(entity);
+        }
         protected bool SetGeneralInfoEntity(GeneralInfo entity, GeneralInfoModel viewModel, out string error)
         {
             error = string.Empty;
