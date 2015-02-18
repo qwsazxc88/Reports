@@ -419,6 +419,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -432,6 +433,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,
@@ -445,6 +447,7 @@ namespace Reports.Presenters.UI.Bl.Impl
                     .ToList<FamilyMember>()
                     .ConvertAll<FamilyMemberDto>(x => new FamilyMemberDto
                     {
+                        Id = x.Id,
                         Contacts = x.Contacts,
                         DateOfBirth = x.DateOfBirth,
                         Name = x.Name,

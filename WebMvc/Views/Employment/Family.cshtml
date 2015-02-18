@@ -41,7 +41,7 @@
                 <th>
                     Адрес места жительства,<br />(домашний, мобильный телефон)
                 </th>
-                @if (@Model.Children != null && @Model.Children.Count != 0)
+                @if ((@Model.Children != null && @Model.Children.Count != 0) || @Model.IsMarried)
                 {
                     <th></th>
                 }
@@ -70,9 +70,14 @@
                 <td>
                     @Html.TextAreaFor(m => m.Spouse.Contacts)
                 </td>
-                @if (@Model.Children != null && @Model.Children.Count != 0)
+                @if ((@Model.Children != null && @Model.Children.Count != 0) || @Model.IsMarried)
                 {
-                    <td></td>
+                    <td>
+                        @if (@Model.Spouse != null)
+                        {
+                            <a href="#" onclick="DeleteFamilyRow(@Model.Spouse.Id, true)">Удалить</a>
+                        }
+                    </td>
                 }
             </tr>
             <tr style="vertical-align:top;">
@@ -97,7 +102,7 @@
                 <td>
                     @Html.TextAreaFor(m => m.Father.Contacts)
                 </td>
-                @if (@Model.Children != null && @Model.Children.Count != 0)
+                @if ((@Model.Children != null && @Model.Children.Count != 0) || @Model.IsMarried)
                 {
                     <td></td>
                 }
@@ -124,7 +129,7 @@
                 <td>
                     @Html.TextAreaFor(m => m.Mother.Contacts)
                 </td>
-                @if (@Model.Children != null && @Model.Children.Count != 0)
+                @if ((@Model.Children != null && @Model.Children.Count != 0) || @Model.IsMarried)
                 {
                     <td></td>
                 }
@@ -157,7 +162,7 @@
                     @if (@Model.Children != null && @Model.Children.Count != 0)
                     {
                         <td>
-                            <a href="#" onclick="DeleteFamilyRow(@Model.Children[i].Id)">Удалить</a>
+                            <a href="#" onclick="DeleteFamilyRow(@Model.Children[i].Id, false)">Удалить</a>
                         </td>
                     }
                 </tr>
@@ -231,8 +236,11 @@
 <script src="/Scripts/UIHelpers.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-    function DeleteFamilyRow(Id) {
+    function DeleteFamilyRow(Id, IsSpouse) {
         $("#RowID").val(Id);
+        if (IsSpouse){
+            $("#IsMarried").val('false');
+        }
         $("#btn").click();
     }
 
@@ -295,7 +303,7 @@
                         (dataReceived[i].PlaceOfBirth ? dataReceived[i].PlaceOfBirth : "") + "</td><td>" +
                         (dataReceived[i].WorksAt ? dataReceived[i].WorksAt : "") + "</td><td>" +
                         (dataReceived[i].Contacts ? dataReceived[i].Contacts : "") + "</td><td>" +
-                        "<a onclick='DeleteFamilyRow(" + dataReceived[i].Id + ");' href='#' >Удалить</a></td></tr>"
+                        "<a onclick='DeleteFamilyRow(" + dataReceived[i].Id + ", false);' href='#' >Удалить</a></td></tr>"
                     );
                 }
             }, "json");

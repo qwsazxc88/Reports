@@ -188,7 +188,7 @@
 }
 
 
-
+@*
     <script src="../../Scripts/jquery-1.4.4.min.js" type="text/javascript"></script>
     <script src="../../Scripts/jquery-ui-1.8.9.custom.min.js" type="text/javascript"></script>
     <script src="../../Scripts/jquery.validate.min.js" type="text/javascript"></script>
@@ -201,19 +201,17 @@
     <script src="../../Scripts/jquery.bgiframe.js" type="text/javascript"></script>
     <script src="../../Scripts/jquery.ui.datepicker-ru.js" type="text/javascript"></script>
     <script src="../../Scripts/common.js" type="text/javascript"></script>
+    *@
 
-
-    @*
+    
 <script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
-*@
+
 <script  type="text/javascript">
     $(document).ready(function () {
-        setActiveMenuItem("empPersonnelManagers");
-        //UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
-        //UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
-        //UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
-        $("#EmploymentOrderDate").datepicker();
-        $("#EmploymentDate").datepicker();
+        //setActiveMenuItem("empPersonnelManagers");
+        UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+        UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+        UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
         $('#isHourlySalaryBasisContainer').buttonset();
     });
 </script>

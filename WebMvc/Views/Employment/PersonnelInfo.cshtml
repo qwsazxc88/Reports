@@ -70,12 +70,13 @@
 }
 
 
-
+<script src="../../Scripts/UIHelpers.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 
     $(document).ready(function () {
         setActiveMenuItem("empRoster");
+
         $('#tabs').tabs({ selected: -1,
             spinner: "Загрузка...",
             select: function (e, ui) {
@@ -126,10 +127,18 @@
                 if (ui.panel.id == "tabs12") {
                     $("#tabs12").text('Подождите, идет загрузка данных ...');
                     AjaxFormRequest("tabs12", "PersonnelManagersReadOnly", "/Employment/PersonnelManagersReadOnly?Id=@Model.CandidateID", "GET");
+                    //после окончания выполнения запроса цепляем календари и обработчики
+                    $("#tabs12").ajaxStop(function () {
+                                                UIHelpers.attachDatepickerToInputs($('#EmploymentOrderDate, #EmploymentDate, #ContractDate'), "-1:+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#ContractEndDate'), "-0:+10;+1", true);
+                                                UIHelpers.attachDatepickerToInputs($('#SupplementaryAgreementCreateDate, #ChangeContractToIndefiniteOrderCreateDate'), "-20:+0;-20Y;+0", true);
+                                                $('#isHourlySalaryBasisContainer').buttonset();
+                                         });
                 }
             }
         });
         $('#tabs').tabs("select", 0);
+
     });
 
 
